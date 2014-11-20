@@ -26,7 +26,8 @@ return array(
 	|
 	*/
 
-	'default' => 'mysql',
+
+	'default' => 'mongodb',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -46,33 +47,44 @@ return array(
 
 	'connections' => array(
 
+		'mongodb' => array(
+
+		    'driver'   => 'mongodb',
+		    'host'     => 'localhost',
+		    'port'     => 27017,
+		    ##'username' => 'admin',
+		    ##'password' => 'admin',
+		    'database' => 'fitadmin'
+		),
+
+
 		'sqlite' => array(
 			'driver'   => 'sqlite',
 			'database' => __DIR__.'/../database/production.sqlite',
 			'prefix'   => '',
-		),
+			),
 
 		'mysql' => array(
 			'driver'    => 'mysql',
 			'host'      => 'localhost',
-			'database'  => 'forge',
-			'username'  => 'forge',
+			'database'  => 'database',
+			'username'  => 'root',
 			'password'  => '',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
-		),
+			),
 
 		'pgsql' => array(
 			'driver'   => 'pgsql',
 			'host'     => 'localhost',
-			'database' => 'forge',
-			'username' => 'forge',
+			'database' => 'database',
+			'username' => 'root',
 			'password' => '',
 			'charset'  => 'utf8',
 			'prefix'   => '',
 			'schema'   => 'public',
-		),
+			),
 
 		'sqlsrv' => array(
 			'driver'   => 'sqlsrv',
@@ -81,9 +93,9 @@ return array(
 			'username' => 'root',
 			'password' => '',
 			'prefix'   => '',
-		),
+			),
 
-	),
+		),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -92,7 +104,7 @@ return array(
 	|
 	| This table keeps track of all the migrations that have already run for
 	| your application. Using this information, we can determine which of
-	| the migrations on disk haven't actually been run in the database.
+	| the migrations on disk have not actually be run in the databases.
 	|
 	*/
 
@@ -111,14 +123,14 @@ return array(
 
 	'redis' => array(
 
-		'cluster' => false,
+		'cluster' => true,
 
 		'default' => array(
 			'host'     => '127.0.0.1',
 			'port'     => 6379,
 			'database' => 0,
+			),
+
 		),
 
-	),
-
-);
+	);
