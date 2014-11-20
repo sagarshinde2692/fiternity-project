@@ -13,7 +13,7 @@ return array(
 	|
 	*/
 
-	'debug' => false,
+	'debug' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -26,7 +26,7 @@ return array(
 	|
 	*/
 
-	'url' => 'http://localhost',
+	'url' => 'http://api.fitternity.com',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -78,7 +78,7 @@ return array(
 	|
 	*/
 
-	'key' => 'YourSecretKey!!!',
+	'key' => 'llUcLdw8v9nl6kEzYDW5uwGRRRJkpIOV',
 
 	'cipher' => MCRYPT_RIJNDAEL_128,
 
@@ -121,7 +121,9 @@ return array(
 		'Illuminate\Validation\ValidationServiceProvider',
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
-
+		'Jenssegers\Mongodb\MongodbServiceProvider',
+		'Shift31\LaravelElasticsearch\LaravelElasticsearchServiceProvider',	
+		'Hugofirth\Mailchimp\MailchimpServiceProvider',	
 	),
 
 	/*
@@ -188,6 +190,8 @@ return array(
 		'URL'               => 'Illuminate\Support\Facades\URL',
 		'Validator'         => 'Illuminate\Support\Facades\Validator',
 		'View'              => 'Illuminate\Support\Facades\View',
+		'Moloquent'       => 'Jenssegers\Mongodb\Model',
+		'MailchimpWrapper'       => 'Hugofirth\Mailchimp\Facades\MailchimpWrapper',
 
 	),
 

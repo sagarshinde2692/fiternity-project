@@ -10,8 +10,8 @@
 | and give it the Closure to execute when that URI is requested.
 |
 */
-
-Route::get('/', function()
-{
-	return View::make('hello');
-});
+#################################################################
+/******** DEBUG SECTION START HERE ********** */
+Route::get('/', function() { return "laravel 4.2 goes here....";});
+Route::get('/test', function() { return "laravel 4.2 goes here....";});
+/******** DEBUG SECTION END HERE ***********/

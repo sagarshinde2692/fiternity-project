@@ -2,17 +2,16 @@
 
 class BaseController extends Controller {
 
-	/**
-	 * Setup the layout used by the controller.
-	 *
-	 * @return void
-	 */
-	protected function setupLayout()
-	{
-		if ( ! is_null($this->layout))
-		{
-			$this->layout = View::make($this->layout);
-		}
-	}
+	protected $perpage;
+
+    /**
+     * @constructor
+     */
+    public function __construct() {
+
+     	//echo "call in base";
+     	//$this->perpage =  Config::get('app.perpage');
+    }
+
 
 }

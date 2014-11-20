@@ -1,0 +1,35 @@
+<?php
+
+/** 
+ * ModelName : Blog.
+ * Maintains a list of functions used for Blog.
+ *
+ * @author Sanjay Sahu <sanjay.id7@gmail.com>
+ */
+
+
+class Blog extends \Basemodel {
+
+	protected $collection = "blogs";
+
+	public static $rules = array(
+		'title' => 'required'
+		);
+
+	public function category(){
+		return $this->belongsTo('Blogcategory');
+	}
+
+	public function categorytags(){
+		return $this->belongsToMany('Blogcategorytag', null, 'finders', 'categorytags');
+	}
+
+	public function author(){
+		return $this->belongsTo('User','author_id');
+	}
+
+	public function expert(){
+		return $this->belongsTo('User','expert_id');
+	}
+
+}
