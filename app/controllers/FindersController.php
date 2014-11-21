@@ -15,7 +15,7 @@ class FindersController extends \BaseController {
 
 	public function __construct() {
 		parent::__construct();	
-		$this->elasticsearch_url = "http://".Config::get('elasticsearch.elasticsearch_host').":".Config::get('elasticsearch.elasticsearch_port').'/'.Config::get('elasticsearch.elasticsearch_default_index').'/';
+		$this->elasticsearch_url = "http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
 	}
 
 
@@ -92,7 +92,7 @@ class FindersController extends \BaseController {
 
 		$request = array(
 			'url' => $this->elasticsearch_url."finder/$documentid",
-			'port' => Config::get('elasticsearch.elasticsearch_port'),
+			'port' => Config::get('app.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => json_encode($postfields_data)
 			);

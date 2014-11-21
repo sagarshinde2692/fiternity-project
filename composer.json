@@ -7,7 +7,6 @@
 	"require": {
 		"laravel/framework": "4.2.*",
 		"jenssegers/mongodb": "*",
-		"elasticsearch/elasticsearch": "~1.0",
 		"shift31/laravel-elasticsearch": "1.0.*@dev",
 		"hugofirth/mailchimp": "2.0.*"
 	},

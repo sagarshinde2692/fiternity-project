@@ -195,4 +195,10 @@ return array(
 
 	),
 
+	'perpage' 						=> 50,
+   	'elasticsearch_host' 			=> '54.179.134.14',
+    'elasticsearch_default_index' 	=> 'fitadmin',
+    'elasticsearch_port' 			=> 9200,
+
+    
 );
