@@ -31,6 +31,7 @@ class BlogsController extends \BaseController {
 			return $blogs;
 	}
 
+
 	public function blogdetail($slug){
 		$data = array();
 		$tslug = (string) $slug;
@@ -79,15 +80,19 @@ class BlogsController extends \BaseController {
 	}
 
 	public function getCategoryBLogs($cat){
-		$category = (string) $cat;		
-    	$blogs = Blogcategory::with(array('blogs' => 
-    										function($query){
-    											$query->orderBy('_id', 'DESC')->where('status', '=', '1');
-    										}//funciton
-    									)//array
-    								)//with
-    						 	->where('slug','=',$category)
-    						   	->get();
+		$category 			= (string) $cat;		
+		$blogcategory		=  Blogcategory::where('slug','=',$category)->firstOrFail();
+		$blogcategoryid 	= (int) $blogcategory['_id'];	
+
+		$blogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+						->with('categorytags')
+						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+						->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+						->where('status', '=', '1')
+						->where('category_id','=',$blogcategoryid)
+						->orderBy('_id', 'desc')
+						->get();	
+
 		return $blogs;
 	}
 
