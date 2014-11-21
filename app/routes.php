@@ -14,7 +14,7 @@ Route::get('/test', function() { return "laravel 4.2 goes here....";});
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
 
-Route::get('/home', 'HomeApiController@getHomePageData');
+Route::get('/home', 'HomeController@getHomePageData');
 
 ##############################################################################
 /******************** USERS SECTION START HERE ***********************/
@@ -30,6 +30,9 @@ Route::get('/author/{username}', 'UsersController@getAuthor');
 ##############################################################################
 /******************** FINDERS SECTION START HERE ***********************/
 Route::get('finderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail'));
+Route::post('updatefinderrating/', array('as' => 'finders.updatefinderrating','uses' => 'FindersController@updatefinderrating'));
+Route::get('getfinderleftside/', array('as' => 'finders.getfinderleftside','uses' => 'FindersController@getfinderleftside'));
+Route::get('getallfinders/', array('as' => 'finders.getallfinders','uses' => 'FindersController@getallfinders'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -49,9 +52,9 @@ Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 
 ##############################################################################
 /******************** SEARCH SECTION START HERE ********************/
-Route::post('/search', 'SearchApiController@getGlobal');
-Route::post('/search/finders', 'SearchApiController@getFinders');
-Route::post('/findersearch', 'SearchApiController@getFindersv2');
+Route::post('/search', 'SearchController@getGlobal');
+Route::post('/search/finders', 'SearchController@getFinders');
+Route::post('/findersearch', 'SearchController@getFindersv2');
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
@@ -59,6 +62,7 @@ Route::post('/findersearch', 'SearchApiController@getFindersv2');
 
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
+Route::post('/notify/{notifytype}','EmailSmsApiController@triggerNotify');
 Route::post('/email/requestcallback','EmailSmsApiController@RequestCallback');
 Route::post('/email/booktrial','EmailSmsApiController@BookTrail');
 Route::post('/email/finderlead','EmailSmsApiController@FinderLead');
@@ -73,7 +77,6 @@ Route::post('/subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
 Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
 Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
 Route::post('/landing', 'CaptureApiController@postCapture');
-
 
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/

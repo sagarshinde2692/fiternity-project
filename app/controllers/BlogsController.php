@@ -96,9 +96,19 @@ class BlogsController extends \BaseController {
 		foreach ($items as $item) {  
 			$data = $item->toArray();
 			array_set($blogdata, 'created_at', date(strtotime($data['created_at'])));
-			array_set($blogdata, 'views', intval(0));
+			array_set($blogdata, 'updated_at', date(strtotime($data['updated_at'])));		
 			$blog = Blog::findOrFail($data['_id']);
 			$blog->update($blogdata);
+		}
+
+		$items = User::orderBy('_id')->get();
+		$userdata = array();
+		foreach ($items as $item) {  
+			$data = $item->toArray();
+			array_set($userdata, 'created_at', date(strtotime($data['created_at'])));	
+			array_set($userdata, 'updated_at', date(strtotime($data['updated_at'])));			
+			$blog = User::findOrFail($data['_id']);
+			$blog->update($userdata);
 		}
 
 	}
