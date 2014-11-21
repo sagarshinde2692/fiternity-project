@@ -236,12 +236,13 @@ class SearchController extends \BaseController {
 
 
 	public function getFindersv2() {			
-		$searchParams = array();
-		$facetssize =  $this->facetssize;	
-		$type = "finder";		    	
-		$filters = "";		
-		$from =  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
-		$size =  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;						
+		//echo "asdfsdf";exit;
+		$searchParams 	= 	array();
+		$facetssize 	=  	$this->facetssize;	
+		$type 			= 	"finder";		    	
+		$filters 		= 	"";		
+		$from 			=  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$size 			=  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;						
 
 		//filters 
 		$filters = "";		 
@@ -319,7 +320,7 @@ class SearchController extends \BaseController {
 		$searchParams['type']  = $type;
 		//$searchParams['size'] = $this->limit;
 		$searchParams['body'] = $serachbody;
-		//printPretty($searchParams);exit;
+		//print_pretty($searchParams);exit;
 		$results =  Es::search($searchParams);
 		//printPretty($results);
 		return $results;

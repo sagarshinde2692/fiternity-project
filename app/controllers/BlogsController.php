@@ -16,18 +16,19 @@ class BlogsController extends \BaseController {
 
     // Limiting to something
 	public function getBlogs($limit,$offset){	
-		$offset =  ((int) $offset) ? (int) $offset : 0;	
-		$limit = ((int) $limit) ? (int) $limit : 10;	
-		$blogs = Blog::with('user')->where('status', '=', '1')->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();		
-		$blogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-				->with('categorytags')
-				->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
-				->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-				->skip($offset)
-				->take($limit)
-				->where('slug','=',$tslug)
-				->firstOrFail();		
-		return $blogs;
+		$offset =  	((int) $offset) ? (int) $offset : 0;	
+		$limit 	= 	((int) $limit) ? (int) $limit : 10;	
+		$blogs 	=	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+						->with('categorytags')
+						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+						->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))							
+						->where('status', '=', '1')
+						->orderBy('_id', 'desc')
+						->skip($offset)
+						->take($limit)
+						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+						->toArray();
+			return $blogs;
 	}
 
 	public function blogdetail($slug){

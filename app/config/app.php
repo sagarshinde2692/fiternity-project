@@ -190,8 +190,8 @@ return array(
 		'URL'               => 'Illuminate\Support\Facades\URL',
 		'Validator'         => 'Illuminate\Support\Facades\Validator',
 		'View'              => 'Illuminate\Support\Facades\View',
-		'Moloquent'       => 'Jenssegers\Mongodb\Model',
-		'MailchimpWrapper'       => 'Hugofirth\Mailchimp\Facades\MailchimpWrapper',
+		'Moloquent'       	=> 'Jenssegers\Mongodb\Model',
+		'MailchimpWrapper'  => 'Hugofirth\Mailchimp\Facades\MailchimpWrapper',
 
 	),
 
