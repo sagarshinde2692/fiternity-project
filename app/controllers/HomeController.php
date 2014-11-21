@@ -26,7 +26,7 @@ class HomeController extends BaseController {
 										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 										->whereIn('slug', $finder_slugs)
 										->remember($cachetime)
-										->get(array('_id','average_rating','category_id','coverimage','slug','category','location_id','location'))
+										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location'))
 										->take(8)
 										->toArray();
 		$recent_blogs 		= 	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
