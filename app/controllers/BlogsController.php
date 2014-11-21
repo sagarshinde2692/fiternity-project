@@ -91,7 +91,7 @@ class BlogsController extends \BaseController {
 						->where('status', '=', '1')
 						->where('category_id','=',$blogcategoryid)
 						->orderBy('_id', 'desc')
-						->get();	
+						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'));	
 
 		return $blogs;
 	}
