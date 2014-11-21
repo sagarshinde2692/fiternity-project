@@ -17,7 +17,7 @@ class Blog extends \Basemodel {
 		);
 
 	public function category(){
-		return $this->belongsTo('Blogcategory');
+		return $this->belongsTo('Blogcategory','category_id');
 	}
 
 	public function categorytags(){

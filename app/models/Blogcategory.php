@@ -24,7 +24,7 @@ class Blogcategory extends \Basemodel {
 
 	public function blogs(){
 		
-		return $this->hasMany('Blog');
+		return $this->hasMany('Blog','category_id');
 	}
 
 
