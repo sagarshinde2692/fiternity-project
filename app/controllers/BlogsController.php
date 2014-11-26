@@ -18,7 +18,7 @@ class BlogsController extends \BaseController {
 	public function getBlogs($limit = '',$offset = ''){	
 		$offset =  	($offset != '') ? (int) $offset : 0;	
 		$limit 	= 	($limit != '') ? (int) $limit : 70;	
-		$blogs 	=	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		$blogs 	=	Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
 						->with('categorytags')
 						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 						->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))							
@@ -83,12 +83,11 @@ class BlogsController extends \BaseController {
 
 	}
 
-	public function getCategoryBLogs($cat){
-		$category 			= (string) $cat;		
+	public function getCategoryBLogs($cat){		
 		$blogcategory		=  Blogcategory::where('slug','=',$category)->firstOrFail();
 		$blogcategoryid 	= (int) $blogcategory['_id'];	
 
-		$blogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
+		$catblogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
 						->with('categorytags')
 						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 						->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
@@ -98,7 +97,7 @@ class BlogsController extends \BaseController {
 						->remember(Config::get('app.cachetime'))
 						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'));	
 
-		return $blogs;
+		return $catblogs;
 	}
 
 	public function updateblogdate(){
