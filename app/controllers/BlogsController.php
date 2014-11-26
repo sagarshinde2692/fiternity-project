@@ -15,9 +15,9 @@ class BlogsController extends \BaseController {
     }
 
     // Limiting to something
-	public function getBlogs($limit,$offset){	
-		$offset =  	((int) $offset) ? (int) $offset : 0;	
-		$limit 	= 	((int) $limit) ? (int) $limit : 10;	
+	public function getBlogs($limit = '',$offset = ''){	
+		$offset =  	($offset != '') ? (int) $offset : 0;	
+		$limit 	= 	($limit != '') ? (int) $limit : 70;	
 		$blogs 	=	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 						->with('categorytags')
 						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
