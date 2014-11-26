@@ -2,7 +2,7 @@
 
 use Hugofirth\Mailchimp\Facades\MailchimpWrapper;
 
-class EmailSmsApiController extends BaseAPIController {
+class EmailSmsApiController extends \BaseController {
 
 	protected $reciver_email = "info@fitternity.com";
 	protected $reciver_name = "Leads From Website";
