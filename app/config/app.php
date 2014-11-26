@@ -195,6 +195,7 @@ return array(
 
 	),
 
+	'cachetime' 					=> 10,
 	'perpage' 						=> 50,
    	'elasticsearch_host' 			=> '54.179.134.14',
     'elasticsearch_default_index' 	=> 'fitadmin',

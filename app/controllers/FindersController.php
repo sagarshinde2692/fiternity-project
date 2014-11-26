@@ -29,6 +29,7 @@ class FindersController extends \BaseController {
 						->with('offerings')
 						->with('facilities')
 						->where('slug','=',$tslug)
+						->remember(Config::get('app.cachetime'))
 						->first();
 		if($finder){
 			$data['finder'] 		= $finder;

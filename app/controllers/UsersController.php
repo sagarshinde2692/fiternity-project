@@ -36,7 +36,7 @@ class UsersController extends \BaseController {
 	 * Return list of experts.
 	 */
 	public function getExperts(){
-		$users = User::where('usergroups',"expert")->orderBy('ordering')->get();
+		$users = User::where('usergroups',"expert")->orderBy('ordering')->remember(Config::get('app.cachetime'))->get();
 		return $users;
 	}
 
@@ -49,6 +49,7 @@ class UsersController extends \BaseController {
 		$user = User::with('blogs')
 					->with('validatedblogs')
 					->where('username','=',$username)
+					->remember(Config::get('app.cachetime'))
 					->firstOrFail();	
 				
 		return $user;		
@@ -58,7 +59,7 @@ class UsersController extends \BaseController {
 	 * Return list of author.
 	 */
 	public function getAuthors(){
-		$users = User::where('usergroups',"author")->orderBy('ordering')->get();
+		$users = User::where('usergroups',"author")->orderBy('ordering')->remember(Config::get('app.cachetime'))->get();
 		return $users;
 	}
 
@@ -66,10 +67,11 @@ class UsersController extends \BaseController {
 	 * Return author detail.
 	 */
 	public function getAuthor($username){
-		$username = (string) $username;		
-		$user = User::with('blogs')
-					->where('username','=',$username)
-					->firstOrFail();	
+		$username 	= (string) $username;		
+		$user 		= User::with('blogs')
+						->where('username','=',$username)
+						->remember(Config::get('app.cachetime'))
+						->firstOrFail();	
 		return $user;		
 	}
 

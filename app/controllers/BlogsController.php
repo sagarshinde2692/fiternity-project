@@ -26,6 +26,7 @@ class BlogsController extends \BaseController {
 						->orderBy('_id', 'desc')
 						->skip($offset)
 						->take($limit)
+						->remember(Config::get('app.cachetime'))
 						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 						->toArray();
 			return $blogs;
@@ -40,6 +41,7 @@ class BlogsController extends \BaseController {
 						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 						->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
 						->where('slug','=',$tslug)
+						->remember(Config::get('app.cachetime'))
 						->firstOrFail();
 						//->get();
 		
@@ -57,6 +59,7 @@ class BlogsController extends \BaseController {
 							->where('category_id','=',$blogcategoryid)
 							->where('status', '=', '1')
 							->orderBy('_id', 'desc')
+							->remember(Config::get('app.cachetime'))
 							->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 							->take(4)->toArray();
 
@@ -67,6 +70,7 @@ class BlogsController extends \BaseController {
 							->where('_id','!=',$blogid)
 							->where('status', '=', '1')
 							->orderBy('_id', 'desc')
+							->remember(Config::get('app.cachetime'))
 							->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 							->take(5)->toArray();
 
@@ -91,6 +95,7 @@ class BlogsController extends \BaseController {
 						->where('status', '=', '1')
 						->where('category_id','=',$blogcategoryid)
 						->orderBy('_id', 'desc')
+						->remember(Config::get('app.cachetime'))
 						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'));	
 
 		return $blogs;
