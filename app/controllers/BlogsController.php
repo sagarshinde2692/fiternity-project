@@ -84,9 +84,9 @@ class BlogsController extends \BaseController {
 	}
 
 	public function getCategoryBLogs($cat){		
-		
+
 		$blogcategory		=  Blogcategory::where('slug','=',$cat)->firstOrFail();
-		echo $blogcategoryid 	= (int) $blogcategory['_id'];	exit;
+		$blogcategoryid 	= (int) $blogcategory['_id'];	
 
 		$catblogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
 						->with('categorytags')
