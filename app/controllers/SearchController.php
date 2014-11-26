@@ -327,7 +327,10 @@ class SearchController extends \BaseController {
 		
 	}
 
-	
+	public function getFindersv3(){
+		
+		//echo $body; exit;
+	}
 
 	public function getFindersJsonData() {				
 		$searchParams = array();
