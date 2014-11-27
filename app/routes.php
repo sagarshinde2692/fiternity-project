@@ -79,5 +79,6 @@ Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
 Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
 Route::post('/landing', 'CaptureApiController@postCapture');
 
+
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/

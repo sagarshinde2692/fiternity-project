@@ -327,10 +327,47 @@ class SearchController extends \BaseController {
 		
 	}
 
+
+
 	public function getFindersv3(){
 		
+		echo "calling getFindersv3";
+		$searchParams 		= 	array();
+		$type 				= 	"finder";		    	
+		$filters 			= 	"";		
+		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
+
+		$category 			=	(Input::json()->get('category')) ? str_ireplace(',', '","',Input::json()->get('category')) : '';		
+		$location 			=	(Input::json()->get('location')) ? str_ireplace(',', '","',Input::json()->get('location')) : '';		
+		$offerings 			=	(Input::json()->get('offerings')) ? str_ireplace(',', '","',Input::json()->get('offerings')) : '';		
+		$facilities 		=	(Input::json()->get('facilities')) ? str_ireplace(',', '","',Input::json()->get('facilities')) : '';		
+		$price_range 		=	(Input::json()->get('price_range')) ? str_ireplace(',', '","',Input::json()->get('price_range')) : '';		
 
 
+		//filters 
+		$category_filter 		= ($category != '') ? '{"terms" : {  "category": ["'.$category.'"] }},'  : '';	
+		$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.$category.'"] }},'  : '';
+		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.$location.'"] }},'  : '';	
+		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.$location.'"] }},'  : '';	
+		$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.$offerings.'"] }},'  : '';
+		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.$facilities.'"] }},'  : '';	
+		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.$price_range.'"] }},'  : '';	
+		
+
+		$body =	'{				
+			"from": '.$from.',
+			"size": '.$size.',
+			"query": {
+				"filtered": {
+					"query": {
+						"match_all": {}
+					}
+				}
+			}
+		}';
+
+		//echo $body; exit;
 
 
 
