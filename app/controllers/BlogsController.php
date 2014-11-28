@@ -26,7 +26,6 @@ class BlogsController extends \BaseController {
 						->orderBy('_id', 'desc')
 						->skip($offset)
 						->take($limit)
-						//->remember(Config::get('app.cachetime'))
 						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 						->toArray();
 			return $blogs;
