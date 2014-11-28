@@ -50,7 +50,7 @@ return array(
 		'mongodb' => array(
 
 		    'driver'   => 'mongodb',
-		    //'host'     => 'localhost',
+		    // 'host'     => 'localhost',
 		    'host'     => 'fitn.in',
 		    'port'     => 27017,
 		    ##'username' => 'admin',

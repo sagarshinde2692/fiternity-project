@@ -320,4 +320,45 @@ class EmailSmsApiController extends \BaseController {
 		);
 		$this->sendEmail($emaildata);
 	}
+
+	public function fivefitnesscustomer(){
+		$reciver_email = "ut.mehrotra@gmail.com";
+		$reciver_name = "Leads From Website";
+		date_default_timezone_set("Asia/Kolkata");
+		$emaildata = array(
+			'email_template' => 'emails.finder.fivefitness', 
+			'email_template_data' => $data = array(
+				'name' => Input::json()->get('name'), 
+				'email' => Input::json()->get('email'), 
+				'phone' => Input::json()->get('phone'),
+				'vendor' => implode(",",Input::json()->get('vendor')),
+				'location' => Input::json()->get('location'),
+				'date' => date("h:i:sa")        
+				), 
+			'reciver_email' => $reciver_email, 
+			'reciver_name' => $reciver_name, 
+			'reciver_subject' => '5 Fitness requests' 
+			);
+		$this->sendEmail($emaildata);
+		$data = array(
+				'capture_type' => 'fivefitness',
+				'name' => Input::json()->get('name'), 
+				'email' => Input::json()->get('email'), 
+				'phone' => Input::json()->get('phone'),
+				'vendor' => implode(",",Input::json()->get('vendor')),
+				'location' => Input::json()->get('location'),
+				'date' => date("h:i:sa")        
+			);
+		$storecapture = Capture::create($data);
+		// $smsdata = array(
+		// 	'send_to' => Input::json()->get('phone'),
+		// 	'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',
+		// 	);
+		// $this->sendSMS($smsdata);
+		$resp = array(
+			'status' => 200,
+			'message' => "Recieved the Request"
+			);
+		return Response::json($resp);
+	}
 }
