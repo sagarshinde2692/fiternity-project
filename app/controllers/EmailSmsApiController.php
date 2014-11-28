@@ -366,7 +366,7 @@ class EmailSmsApiController extends \BaseController {
 		$reciver_name = "Leads From 5-fitness page";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => 'emails.finder.fivefitness', 
+			'email_template' => 'emails.finder.refund', 
 			'email_template_data' => $data = array(
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 

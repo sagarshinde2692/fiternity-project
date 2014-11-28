@@ -357,9 +357,11 @@ class SearchController extends \BaseController {
 		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.$price_range.'"] }},'  : '';	
 		
 
+		
 		$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
-		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
 		$shouldfilter = '"should": ['.$should_filtervalue.'],';	//used for location , category, price range
+		
+		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
 		$mustfilter = '"must": ['.$must_filtervalue.']';		//used for offering and facilities
 		$filtervalue = trim($shouldfilter.$mustfilter,',');	
 
