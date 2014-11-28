@@ -346,8 +346,7 @@ class EmailSmsApiController extends \BaseController {
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
 				'vendor' => implode(",",Input::json()->get('vendor')),
-				'location' => Input::json()->get('location'),
-				'date' => date("h:i:sa")        
+				'location' => Input::json()->get('location')
 			);
 		$storecapture = Capture::create($data);
 		// $smsdata = array(
