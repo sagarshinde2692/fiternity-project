@@ -337,11 +337,11 @@ class EmailSmsApiController extends \BaseController {
 				), 
 			'reciver_email' => $reciver_email, 
 			'reciver_name' => $reciver_name, 
-			'reciver_subject' => '5 Fitness requests' 
+			'reciver_subject' => '5 Fitness requests alternative' 
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
-				'capture_type' => 'fivefitness',
+				'capture_type' => 'fivefitness_alternative',
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
@@ -379,7 +379,7 @@ class EmailSmsApiController extends \BaseController {
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
-				'capture_type' => 'fivefitness',
+				'capture_type' => 'fivefitness_refund',
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),

@@ -417,7 +417,7 @@ class SearchController extends \BaseController {
 			}
 		}';
 
-		//echo $body; exit;
+		echo $body; exit;
 		$serachbody = json_decode($body,true);
 		$searchParams['index'] = 'fitadmin';
 		$searchParams['type']  = $type;
