@@ -15,6 +15,8 @@ Route::get('/test', function() { return "laravel 4.2 goes here....";});
 ##############################################################################
 
 Route::get('/home', 'HomeController@getHomePageData');
+Route::get('/fivefitness', 'HomeController@fivefitness');
+
 
 ##############################################################################
 /******************** USERS SECTION START HERE ***********************/
@@ -78,6 +80,7 @@ Route::post('/subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
 Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
 Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
 Route::post('/landing', 'CaptureApiController@postCapture');
+Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
 
 
 ##############################################################################
