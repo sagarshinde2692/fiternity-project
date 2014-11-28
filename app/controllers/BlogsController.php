@@ -15,9 +15,9 @@ class BlogsController extends \BaseController {
     }
 
     // Limiting to something
-	public function getBlogs($offset = 0,$limit = 10){	
+	public function getBlogs($limit = 10, $offset = 0){	
 		$offset =  	(int) $offset;	
-		$limit 	= 	(int) $limit;
+		$limit 	= 	(int) $limit;	
 		$blogs 	=	Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
 						->with('categorytags')
 						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
@@ -30,7 +30,6 @@ class BlogsController extends \BaseController {
 						->toArray();
 			return $blogs;
 	}
-
 
 	public function blogdetail($slug){
 		$data = array();
@@ -96,9 +95,28 @@ class BlogsController extends \BaseController {
 						->orderBy('_id', 'desc')
 						->remember(Config::get('app.cachetime'))
 						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'));	
-
 		return $catblogs;
 	}
+
+	public function getCategoryBLogsLimit($cat, $limit = 10, $offset = 0){		
+
+		$blogcategory		=  Blogcategory::where('slug','=',$cat)->firstOrFail();
+		$blogcategoryid 	= (int) $blogcategory['_id'];	
+
+		$catblogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
+						->with('categorytags')
+						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+						->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+						->where('status', '=', '1')
+						->where('category_id','=',$blogcategoryid)
+						->orderBy('_id', 'desc')
+						->skip($offset)
+						->take($limit)
+						->remember(Config::get('app.cachetime'))
+						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'));	
+		return $catblogs;
+	}
+
 
 	public function updateblogdate(){
 		$items = Blog::orderBy('_id')->get();

@@ -42,9 +42,10 @@ Route::get('getallfinders/', array('as' => 'finders.getallfinders','uses' => 'Fi
 
 ##############################################################################
 /******************** BLOGS SECTION START HERE ********************/
-Route::get('/blogs/{offset}/{limit}', 'BlogsController@getBlogs');
+Route::get('/blogs/{limit}/{offset}', 'BlogsController@getBlogs');
 Route::get('blogdetail/{slug}', array('as' => 'blogs.blogdetail','uses' => 'BlogsController@blogdetail'));
 Route::get('/blogs/{cat}', 'BlogsController@getCategoryBLogs');
+Route::get('/blogbycategory/{cat}/{limit}/{offset}', 'BlogsController@getCategoryBLogsLimit');
 Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 
 
