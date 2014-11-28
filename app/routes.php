@@ -57,7 +57,7 @@ Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 Route::post('/search', 'SearchController@getGlobal');
 Route::post('/search/finders', 'SearchController@getFinders');
 Route::post('/findersearch', 'SearchController@getFindersv2');
-Route::post('/findersearch3', 'SearchController@getFindersv3');
+Route::post('/findersearchv3', 'SearchController@getFindersv3');
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
