@@ -331,10 +331,11 @@ class SearchController extends \BaseController {
 
 	public function getFindersv3(){
 		
-		echo "calling getFindersv3";
+		//echo "calling getFindersv3";
 		$searchParams 		= 	array();
 		$type 				= 	"finder";		    	
-		$filters 			= 	"";		
+		$filters 			=	"";	
+		$selectedfields 	= 	"";		
 		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
@@ -350,25 +351,82 @@ class SearchController extends \BaseController {
 		$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.$category.'"] }},'  : '';
 		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.$location.'"] }},'  : '';	
 		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.$location.'"] }},'  : '';	
+
 		$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.$offerings.'"] }},'  : '';
 		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.$facilities.'"] }},'  : '';	
 		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.$price_range.'"] }},'  : '';	
 		
 
+		$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
+		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
+		$shouldfilter = '"should": ['.$should_filtervalue.'],';	//used for location , category, price range
+		$mustfilter = '"must": ['.$must_filtervalue.']';		//used for offering and facilities
+		$filtervalue = trim($shouldfilter.$mustfilter,',');	
+
+		if($shouldfilter != '' || $mustfilter != ''){
+			$filters = ',"filter": { 
+							"bool" : {'.$filtervalue.'}
+						},"_cache" : true';
+		}
+
+
+		/*
+		$should_filtervalue = trim($regions_filter.$region_tags_filter,',');	
+		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
+		$shouldfilter = '"should": ['.$should_filtervalue.'],';	//used for location 
+		$mustfilter = '"must": ['.$must_filtervalue.']';		//used for offering and facilities
+		$filtervalue = trim($shouldfilter.$mustfilter,',');	
+
+		if($shouldfilter != '' || $mustfilter != ''){
+			$filters = ',"filter": { 
+							"bool" : {'.$filtervalue.'}
+						},"_cache" : true';
+		}
+
+		*/
+
+		$selectedfields = '"fields": ["title","average_rating","category","categorytags","location","locationtags","finder_type","popularity"],';
+
 		$body =	'{				
 			"from": '.$from.',
 			"size": '.$size.',
 			"query": {
-				"filtered": {
-					"query": {
-						"match_all": {}
+				"function_score": {
+					"functions": [
+					{
+						"script_score": {
+							"script": "log(doc[\'popularity\'].value)"
+						}
+					},
+					{
+						"script_score": {
+							"script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)"
+						}
 					}
+					],
+					"query": {
+						"filtered": {
+							"query": {
+								"match_all": {}
+							}'.$filters.'
+						}
+					},
+					"score_mode": "sum",
+					"boost_mode": "replace"
 				}
 			}
 		}';
 
 		//echo $body; exit;
-
+		$serachbody = json_decode($body,true);
+		$searchParams['index'] = 'fitadmin';
+		$searchParams['type']  = $type;
+		//$searchParams['size'] = $this->limit;
+		$searchParams['body'] = $serachbody;
+		//print_pretty($searchParams);exit;
+		$results =  Es::search($searchParams);
+		//printPretty($results);
+		return $results;
 
 
 		//echo $body; exit;

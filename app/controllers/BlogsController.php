@@ -15,9 +15,9 @@ class BlogsController extends \BaseController {
     }
 
     // Limiting to something
-	public function getBlogs($limit = '',$offset = ''){	
-		$offset =  	($offset != '') ? (int) $offset : 0;	
-		$limit 	= 	($limit != '') ? (int) $limit : 70;	
+	public function getBlogs($limit = 10,$offset = 0){	
+		$offset =  	(int) $offset;	
+		$limit 	= 	(int) $limit;	
 		$blogs 	=	Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
 						->with('categorytags')
 						->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
@@ -26,7 +26,7 @@ class BlogsController extends \BaseController {
 						->orderBy('_id', 'desc')
 						->skip($offset)
 						->take($limit)
-						->remember(Config::get('app.cachetime'))
+						//->remember(Config::get('app.cachetime'))
 						->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 						->toArray();
 			return $blogs;
