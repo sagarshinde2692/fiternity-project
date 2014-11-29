@@ -340,7 +340,7 @@ class SearchController extends \BaseController {
 		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
 		$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
-		$location 			=	(Input::json()->get('location')) ? Input::json()->get('location') : '';		
+		$location 			=	(Input::json()->get('regions')) ? Input::json()->get('regions') : '';		
 		$offerings 			=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
 		$facilities 		=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
 		$price_range 		=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
