@@ -138,7 +138,7 @@ class FindersController extends \BaseController {
 		$finderdata = array();
 		foreach ($items as $item) {  
 			$data 	= $item->toArray();
-				//print_pretty($data);
+			//print_pretty($data);
 			array_set($finderdata, 'location_id', 69);
 			$finder = Finder::findOrFail($data['_id']);
 			$response = $finder->update($finderdata);
