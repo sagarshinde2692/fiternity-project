@@ -76,9 +76,11 @@ class BlogsController extends \BaseController {
 			$relatedfinders 	=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->where('category_id','=',$findercategoryid)
+											->where('finder_type', '=', 1)
+											->where('status', '=', '1')
 											->remember(Config::get('app.cachetime'))
 											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location'))
-											->toArray();				
+											->take(4)->toArray();				
 
 			$data = array('blog' 	=> $blog,
 						  'related' => $relatedblogs,
