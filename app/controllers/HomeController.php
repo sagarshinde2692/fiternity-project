@@ -23,7 +23,7 @@ class HomeController extends BaseController {
 											   'bharat-thakur-s-artistic-yoga-bandra-west');
 
 		$finder_zumba_slugs 	=		array('dance-beat-mumbai-chowpatty', 
-											   'aamad-performing-arts-andheri-west', 
+											   'aamad-performing-arts-versova', 
 											   'y-s-dance-academy', 
 											   'house-of-wow-bandra-west');
 
