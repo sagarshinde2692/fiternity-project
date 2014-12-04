@@ -20,8 +20,8 @@ class FindersController extends \BaseController {
 
 
 	public function finderdetail($slug){
-		$data = array();
-		$tslug = (string) $slug;
+		$data 	= array();
+		$tslug 	= (string) $slug;
 		$finder = Finder::with('category')
 						->with('location')
 						->with('categorytags')
@@ -32,8 +32,37 @@ class FindersController extends \BaseController {
 						//->remember(Config::get('app.cachetime'))
 						->first();
 		if($finder){
-			$data['finder'] 		= $finder;
-			$data['statusfinder'] 	= 200;
+			$finderdata 		=	$finder->toArray();
+			$finderid 			= (int) $finderdata['_id'];
+			$findercategoryid 	= (int) $finderdata['category_id'];
+			$finderlocationid 	= (int) $finderdata['location_id'];	
+			
+			$nearby_same_category 				= 			Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+																	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+																	->where('category_id','=',$findercategoryid)
+																	->where('location_id','=',$finderlocationid)
+																	->where('finder_type', '=', 1)
+																	->where('_id','!=',$finderid)
+																	->where('status', '=', '1')
+																	->remember(Config::get('app.cachetime'))
+																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+																	->take(5)->toArray();	
+
+			$nearby_other_category 				= 			Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+																	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+																	->where('category_id','!=',$findercategoryid)
+																	->where('location_id','=',$finderlocationid)
+																	->where('finder_type', '=', 1)
+																	->where('_id','!=',$finderid)
+																	->where('status', '=', '1')
+																	->remember(Config::get('app.cachetime'))
+																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+																	->take(5)->toArray();	
+
+			$data['finder'] 						= 		$finder;
+			$data['statusfinder'] 					= 		200;
+			$data['nearby_same_category'] 			= 		$nearby_same_category;
+			$data['nearby_other_category'] 			= 		$nearby_other_category;
 			return $data;
 		}else{
 			$updatefindersulg 		= Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();

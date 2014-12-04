@@ -45,36 +45,47 @@ class BlogsController extends \BaseController {
 		
 		$blogid 			= (int) $blog['_id'];	
 		$blogcategoryid 	= (int) $blog['category_id'];	
+		$findercategoryid 	= (int) $blog['finder_category_id'];
 
 		//return $blog;
 					
 		if($blog){			
-			$relatedblogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-							->with('categorytags')
-							->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
-							->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))							
-							->where('_id','!=',$blogid)
-							->where('category_id','=',$blogcategoryid)
-							->where('status', '=', '1')
-							->orderBy('_id', 'desc')
-							->remember(Config::get('app.cachetime'))
-							->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
-							->take(4)->toArray();
+			$relatedblogs 		= 	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+										->with('categorytags')
+										->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+										->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))							
+										->where('_id','!=',$blogid)
+										->where('category_id','=',$blogcategoryid)
+										->where('status', '=', '1')
+										->orderBy('_id', 'desc')
+										->remember(Config::get('app.cachetime'))
+										->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+										->take(4)->toArray();
 
-			$recentblogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-							->with('categorytags')
-							->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
-							->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-							->where('_id','!=',$blogid)
-							->where('status', '=', '1')
-							->orderBy('_id', 'desc')
-							->remember(Config::get('app.cachetime'))
-							->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
-							->take(5)->toArray();
+			$recentblogs 		= 	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+										->with('categorytags')
+										->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+										->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+										->where('_id','!=',$blogid)
+										->where('status', '=', '1')
+										->orderBy('_id', 'desc')
+										->remember(Config::get('app.cachetime'))
+										->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+										->take(5)->toArray();
 
-			$data = array('blog' => $blog,
-						   'related' => $relatedblogs,
-						   'popular' => $recentblogs
+			$relatedfinders 	=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+											->where('category_id','=',$findercategoryid)
+											->where('finder_type', '=', 1)
+											->where('status', '=', '1')
+											->remember(Config::get('app.cachetime'))
+											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+											->take(4)->toArray();				
+
+			$data = array('blog' 	=> $blog,
+						  'related' => $relatedblogs,
+						  'popular' => $recentblogs,
+						  'relatedfinders' => $relatedfinders
 						);
 			return $data;
 		}
