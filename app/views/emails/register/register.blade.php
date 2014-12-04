@@ -100,7 +100,7 @@ img[class="img2"] { width: 40% !important; height: auto !important; }
                                                         </tr>
                                                         <tr>
                                                             <td align="center" style="line-height:0px;">
-                                                                <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://a.fitn.in/global/logo_black.svg" width="116" height="30" alt="logo" />
+                                                                <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/logo1.png" width="116" height="30" alt="logo" />
                                                             </td>
                                                         </tr>
                                                     </table>
@@ -215,7 +215,7 @@ img[class="img2"] { width: 40% !important; height: auto !important; }
                                             </tr>
                                             <tr>
                                                 <td align="center" style="line-height:0px;">
-                                                    <img style="display:block; line-height:0px; font-size:0px; border:0px;" class="img1" src="f.png" width="520" height="170" />
+                                                    <img style="display:block; line-height:0px; font-size:0px; border:0px;" class="img1" src="http://b.fitn.in/global/f.png" width="520" height="170" />
                                                 </td>
                                             </tr>
                                             <tr>
