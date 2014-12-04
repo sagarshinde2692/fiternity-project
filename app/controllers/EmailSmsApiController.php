@@ -397,4 +397,15 @@ class EmailSmsApiController extends \BaseController {
 			);
 		return Response::json($resp);
 	}
+	public function utk(){
+		$emaildata = array(
+		'email_template' => 'emails.register.register',
+		'email_template_data' => $data = array(
+				'name' => 'Utk'       
+				), 
+		'reciver_email' => 'ut.mehrotra@gmail.com', 
+		'reciver_name' => 'Utkarsh', 
+		'reciver_subject' => 'Trial');
+		$this->sendEmail($emaildata);
+	}
 }

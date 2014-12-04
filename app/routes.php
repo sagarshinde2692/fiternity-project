@@ -83,6 +83,7 @@ Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
 Route::post('/landing', 'CaptureApiController@postCapture');
 Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
 Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
+Route::get('/utemail', 'EmailSmsApiController@utk');
 
 
 ##############################################################################
