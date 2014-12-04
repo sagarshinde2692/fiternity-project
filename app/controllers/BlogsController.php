@@ -79,7 +79,7 @@ class BlogsController extends \BaseController {
 											->where('finder_type', '=', 1)
 											->where('status', '=', '1')
 											->remember(Config::get('app.cachetime'))
-											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location'))
+											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 											->take(4)->toArray();				
 
 			$data = array('blog' 	=> $blog,

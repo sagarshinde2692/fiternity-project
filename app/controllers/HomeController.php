@@ -36,7 +36,7 @@ class HomeController extends BaseController {
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->whereIn('slug', $finder_slugs)
 											->remember(Config::get('app.cachetime'))
-											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location'))
+											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 											->groupBy('category.name')
 											->toArray();
 
