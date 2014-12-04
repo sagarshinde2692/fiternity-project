@@ -48,7 +48,7 @@ class FindersController extends \BaseController {
 																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 																	->take(5)->toArray();	
 
-			$nearby_same_other_category 		= 			Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+			$nearby_other_category 				= 			Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 																	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 																	->where('category_id','!=',$findercategoryid)
 																	->where('location_id','=',$finderlocationid)
@@ -62,7 +62,7 @@ class FindersController extends \BaseController {
 			$data['finder'] 						= 		$finder;
 			$data['statusfinder'] 					= 		200;
 			$data['nearby_same_category'] 			= 		$nearby_same_category;
-			$data['nearby_same_other_category'] 	= 		$nearby_same_other_category;
+			$data['nearby_other_category'] 			= 		$nearby_other_category;
 			return $data;
 		}else{
 			$updatefindersulg 		= Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
