@@ -45,7 +45,7 @@ class FindersController extends \BaseController {
 																	->where('_id','!=',$finderid)
 																	->where('status', '=', '1')
 																	->remember(Config::get('app.cachetime'))
-																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo'))
 																	->take(5)->toArray();	
 
 			$nearby_other_category 				= 			Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
@@ -56,7 +56,7 @@ class FindersController extends \BaseController {
 																	->where('_id','!=',$finderid)
 																	->where('status', '=', '1')
 																	->remember(Config::get('app.cachetime'))
-																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo'))
 																	->take(5)->toArray();	
 
 			$data['finder'] 						= 		$finder;
