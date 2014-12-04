@@ -73,7 +73,7 @@ class BlogsController extends \BaseController {
 										->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 										->take(5)->toArray();
 
-			$relatedfinders 	=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			$relatedfinders 	=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->where('category_id','=',$findercategoryid)
 											->where('finder_type', '=', 1)
