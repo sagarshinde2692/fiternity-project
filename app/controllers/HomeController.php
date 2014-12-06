@@ -22,7 +22,7 @@ class HomeController extends BaseController {
 											   'yogacara-healing-arts-bandra-west', 
 											   'bharat-thakur-s-artistic-yoga-bandra-west');
 
-		$finder_zumba_slugs 	=		array('dance-beat-mumbai-chowpatty', 
+		$finder_zumba_slugs 	=		array('dance-beat-mumbai-hughes-road', 
 											   'aamad-performing-arts-versova', 
 											   'y-s-dance-academy', 
 											   'house-of-wow-bandra-west');
@@ -32,13 +32,18 @@ class HomeController extends BaseController {
 		$categorytags			= 		Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 		$locations				= 		Location::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 
-		$popular_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->whereIn('slug', $finder_slugs)
 											->remember(Config::get('app.cachetime'))
 											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 											->groupBy('category.name')
 											->toArray();
+
+		array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
+		array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
+		array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
+
 
 		$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 											->with('categorytags')
@@ -49,6 +54,7 @@ class HomeController extends BaseController {
 											->remember(Config::get('app.cachetime'))
 											->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 											->take(4)->toArray();		
+
 		$homedata 				= 	array(			
 										'categorytags' => $categorytags,
 										'locations' => $locations,
