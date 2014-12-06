@@ -8,7 +8,7 @@
  */
 
 
-class Findercategorytag extends \Moloquent {
+class Findercategorytag extends \Basemodel {
 
 	protected $collection = "findercategorytags";
 
@@ -16,11 +16,6 @@ class Findercategorytag extends \Moloquent {
 	public static $rules = [
 							'name' => 'required'
 					];
-
-	// Don't forget to fill this array
-	//protected $fillable = [];
-
-	protected $guarded = array();
 
 	public function offerings(){
 
@@ -32,9 +27,5 @@ class Findercategorytag extends \Moloquent {
 		return $this->belongsToMany('Finder', null, 'finders', 'categorytags');
 	}
 
-	public function scopeActive ($query){
-
-		return $query->where('status','=','1');
-	}
-
+	
 }

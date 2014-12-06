@@ -10,6 +10,15 @@ class HomeController extends BaseController {
 
 	public function getHomePageData(){   
 
+
+		// $relatedfinders_blogs	=	Findercategorytag::with('finders')
+		// 												->active()
+		// 												->where('_id', '=', 1)
+		// 												->get()
+		// 												->toArray();
+		// return Response::json($relatedfinders_blogs);
+
+
 		$categorytags = $locations = $popular_finders =	$recent_blogs =	array();						
 		
 		$finder_gym_slugs 		=		array('golds-gym-bandra-west', 
