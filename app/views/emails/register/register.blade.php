@@ -445,19 +445,19 @@
                                                         </tr>
                                                         <!--Content-->
                                                         <tr>
-                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/all/bandra-west" target="_blank" style="color:#404040">Bandra West</td>
+                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/fitness/bandra-west" target="_blank" style="color:#404040">Bandra West</td>
                                                         </tr>
                                                         <tr>
-                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/all/juhu" target="_blank" style="color:#404040">Juhu</td>
+                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/fitness/juhu" target="_blank" style="color:#404040">Juhu</td>
                                                         </tr>
                                                         <tr>
-                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/all/andheri-west" target="_blank" style="color:#404040">Andheri West</td>
+                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/fitness/andheri-west" target="_blank" style="color:#404040">Andheri West</td>
                                                         </tr>
                                                         <tr>
-                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/all/lokhandwala" target="_blank" style="color:#404040">Lokhandwala</td>
+                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/fitness/lokhandwala" target="_blank" style="color:#404040">Lokhandwala</td>
                                                         </tr>
                                                         <tr>
-                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/all/churchgate+colaba+grant-road+hughes-road+kemps-corner+malabar-hill+marine-lines" target="_blank" style="color:#404040">South Mumbai</td>
+                                                            <td align="center" valign="bottom" style="font-family: 'Open Sans', Arial, sans-serif; font-size:11px;color:#404040; line-height:26px;"><a href="http://www.fitternity.com/mumbai/fitness/churchgate+colaba+grant-road+hughes-road+kemps-corner+malabar-hill+marine-lines" target="_blank" style="color:#404040">South Mumbai</td>
                                                         </tr>
                                                         <!--End Content-->
                                                     </table>

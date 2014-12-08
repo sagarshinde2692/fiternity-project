@@ -18,17 +18,23 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function sendEmail($emaildata){
+		$email_lists			= 	Config::get('mail.cc_emailids');
+		$email_template 		= 	$emaildata['email_template'];
+		$email_template_data 	= 	$emaildata['email_template_data'];
+		$reciver_email 			= 	$emaildata['reciver_email'];
+		$reciver_name 			= 	$emaildata['reciver_name'];
+		$reciver_subject 		= 	$emaildata['reciver_subject'];
+		
+		array_push($email_lists,$reciver_email);
 
-		$email_template = $emaildata['email_template'];
-		$email_template_data = $emaildata['email_template_data'];
-		$reciver_email = $emaildata['reciver_email'];
-		$reciver_name = $emaildata['reciver_name'];
-		$reciver_subject = $emaildata['reciver_subject'];
+		foreach ($email_lists as $email){			
+			Mail::send($email_template, $email_template_data, function($message) use ($email,$reciver_name,$reciver_subject){
 
-		Mail::send($email_template, $email_template_data, function($message) use ($reciver_email,$reciver_name,$reciver_subject)
-		{
-			$message->to($reciver_email, $reciver_name)->subject($reciver_subject);
-		});
+				$message->to($email, $reciver_name)->subject($reciver_subject);
+
+			});
+		}
+
 	}
 
 	public function sendSMS($smsdata){
@@ -59,7 +65,11 @@ class EmailSmsApiController extends \BaseController {
 			'reciver_name' => $this->reciver_name, 
 			'reciver_subject' => 'Request A Callback' 
 			);
+
+
+
 		$this->sendEmail($emaildata);
+
 
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
@@ -133,145 +143,145 @@ class EmailSmsApiController extends \BaseController {
 
 
 
-	public function findercreated() {
-		$emaildata = array(
-			'email_template' => 'emails.finder.create', 
-			'email_template_data' => $data = array(
-				'finder_id'=> Input::json()->get('finder_id'),
-				'finder_owner'=> Input::json()->get('finder_owner'), 
-				'approval_status'=> Input::json()->get('approval_status'), 
-				'finder_link'=> Input::json()->get('finder_link') 
-				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'New Finder' 
-			);
+	// public function findercreated() {
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.finder.create', 
+	// 		'email_template_data' => $data = array(
+	// 			'finder_id'=> Input::json()->get('finder_id'),
+	// 			'finder_owner'=> Input::json()->get('finder_owner'), 
+	// 			'approval_status'=> Input::json()->get('approval_status'), 
+	// 			'finder_link'=> Input::json()->get('finder_link') 
+	// 			), 
+	// 		'reciver_email' => $this->reciver_email, 
+	// 		'reciver_name' => $this->reciver_name, 
+	// 		'reciver_subject' => 'New Finder' 
+	// 		);
 
-		$this->sendEmail($emaildata);
-	}
-
-
-	public function ReviewOnfinder(){
-		$emaildata = array(
-			'email_template' => 'emails.finder.review', 
-			'email_template_data' => 		$data = array(
-				'finder_name'=> Input::json()->get('finder_name'),
-				'finder_location'=> Input::json()->get('finder_location'),
-				'name' => Input::json()->get('name'),
-				'date' => Input::json()->get('date'),
-				'time' => Input::json()->get('time'),
-				'review_posted'=> Input::json()->get('review_posted'),
-				'rating'=> Input::json()->get('rating')
-				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Review on finder' 
-			);
-		$this->sendEmail($emaildata);
-	}
+	// 	$this->sendEmail($emaildata);
+	// }
 
 
-	public function JoinCommunity(){
-		$emaildata = array(
-			'email_template' => 'emails.community.createcom', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('fullname'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('mobile'),
-				'address' => Input::json()->get('address')
-				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Request to Create A community' 
-			);
-		$this->sendEmail($emaildata);
-	}
+	// public function ReviewOnfinder(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.finder.review', 
+	// 		'email_template_data' => 		$data = array(
+	// 			'finder_name'=> Input::json()->get('finder_name'),
+	// 			'finder_location'=> Input::json()->get('finder_location'),
+	// 			'name' => Input::json()->get('name'),
+	// 			'date' => Input::json()->get('date'),
+	// 			'time' => Input::json()->get('time'),
+	// 			'review_posted'=> Input::json()->get('review_posted'),
+	// 			'rating'=> Input::json()->get('rating')
+	// 			), 
+	// 		'reciver_email' => $this->reciver_email, 
+	// 		'reciver_name' => $this->reciver_name, 
+	// 		'reciver_subject' => 'Review on finder' 
+	// 		);
+	// 	$this->sendEmail($emaildata);
+	// }
 
 
-	public function CustomerJoinCommunity(){
-		$emaildata = array(
-			'email_template' => 'emails.community.joincom', 
-			'email_template_data' => $data = array(
-				'cust_name' => Input::json()->get('fullname'),
-				'com_name' => Input::json()->get('com_name')
-				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Join a Community' 
-			);
-		$this->sendEmail($emaildata);
-	}
+	// public function JoinCommunity(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.community.createcom', 
+	// 		'email_template_data' => $data = array(
+	// 			'name' => Input::json()->get('fullname'), 
+	// 			'email' => Input::json()->get('email'), 
+	// 			'phone' => Input::json()->get('mobile'),
+	// 			'address' => Input::json()->get('address')
+	// 			), 
+	// 		'reciver_email' => $this->reciver_email, 
+	// 		'reciver_name' => $this->reciver_name, 
+	// 		'reciver_subject' => 'Request to Create A community' 
+	// 		);
+	// 	$this->sendEmail($emaildata);
+	// }
+
+
+	// public function CustomerJoinCommunity(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.community.joincom', 
+	// 		'email_template_data' => $data = array(
+	// 			'cust_name' => Input::json()->get('fullname'),
+	// 			'com_name' => Input::json()->get('com_name')
+	// 			), 
+	// 		'reciver_email' => $this->reciver_email, 
+	// 		'reciver_name' => $this->reciver_name, 
+	// 		'reciver_subject' => 'Join a Community' 
+	// 		);
+	// 	$this->sendEmail($emaildata);
+	// }
 	
 
-	public function InterestCommunity(){
-		$emaildata = array(
-			'email_template' => 'emails.community.interest', 
-			'email_template_data' => $data = array(
-				'communityname' => Input::json()->get('communityname'),
-				'communityleader' => Input::json()->get('communityleader'),
-				'communityleaderemail' => Input::json()->get('communityleaderemail'),
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'address' => Input::json()->get('address')
-				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Interest In Community' 
-			);
-		$this->sendEmail($emaildata);
-	}
+	// public function InterestCommunity(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.community.interest', 
+	// 		'email_template_data' => $data = array(
+	// 			'communityname' => Input::json()->get('communityname'),
+	// 			'communityleader' => Input::json()->get('communityleader'),
+	// 			'communityleaderemail' => Input::json()->get('communityleaderemail'),
+	// 			'name' => Input::json()->get('name'), 
+	// 			'email' => Input::json()->get('email'), 
+	// 			'phone' => Input::json()->get('phone'),
+	// 			'address' => Input::json()->get('address')
+	// 			), 
+	// 		'reciver_email' => $this->reciver_email, 
+	// 		'reciver_name' => $this->reciver_name, 
+	// 		'reciver_subject' => 'Interest In Community' 
+	// 		);
+	// 	$this->sendEmail($emaildata);
+	// }
 
-	public function CustomerCreateCommunity(){
-		$emaildata = array(
-			'email_template' => 'emails.community.createcom', 
-			'email_template_data' => $data = array(
-				'cust_name' => Input::json()->get('cust_name')
-				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Create A community' 
-			);
-		$this->sendEmail($emaildata);
-	}
+	// public function CustomerCreateCommunity(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.community.createcom', 
+	// 		'email_template_data' => $data = array(
+	// 			'cust_name' => Input::json()->get('cust_name')
+	// 			), 
+	// 		'reciver_email' => $this->reciver_email, 
+	// 		'reciver_name' => $this->reciver_name, 
+	// 		'reciver_subject' => 'Create A community' 
+	// 		);
+	// 	$this->sendEmail($emaildata);
+	// }
 
 
-		public function CreateCommunity(){
-		$emaildata = array(
-			'email_template' => 'emails.community.create',
-			'email_template_data' => $data = array(
-				'fullname' => Input::json()->get('fullname'),
-				'email' => Input::json()->get('email'),
-				'mobile' => Input::json()->get('mobile'),
-				'communityname' => Input::json()->get('communityname'),
-				'location' => Input::json()->get('location'),
-				'others' => Input::json()->get('others'),
-				'date' => date("h:i:sa")
-				),
-				'reciver_email' => $this->reciver_email,
-				'reciver_name' => $this->reciver_name,
-				'reciver_subject' => 'Create an community'
-		);
-		$this->sendEmail($emaildata);
-	}
+	// 	public function CreateCommunity(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.community.create',
+	// 		'email_template_data' => $data = array(
+	// 			'fullname' => Input::json()->get('fullname'),
+	// 			'email' => Input::json()->get('email'),
+	// 			'mobile' => Input::json()->get('mobile'),
+	// 			'communityname' => Input::json()->get('communityname'),
+	// 			'location' => Input::json()->get('location'),
+	// 			'others' => Input::json()->get('others'),
+	// 			'date' => date("h:i:sa")
+	// 			),
+	// 			'reciver_email' => $this->reciver_email,
+	// 			'reciver_name' => $this->reciver_name,
+	// 			'reciver_subject' => 'Create an community'
+	// 	);
+	// 	$this->sendEmail($emaildata);
+	// }
 
-	public function CommentOnBlog(){
-		$emaildata = array(
-			'email_template' => 'emails.blog.comment', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'article' =>Input::json()->get('article'), 
-				'date' =>Input::json()->get('date'), 
-				'time' => Input::json()->get('time'), 
-				'comment' => Input::json()->get('comment')
-				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Comment On Blog' 
-			);
-		$this->sendEmail($emaildata);
-	}
+	// public function CommentOnBlog(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.blog.comment', 
+	// 		'email_template_data' => $data = array(
+	// 			'name' => Input::json()->get('name'), 
+	// 			'email' => Input::json()->get('email'), 
+	// 			'article' =>Input::json()->get('article'), 
+	// 			'date' =>Input::json()->get('date'), 
+	// 			'time' => Input::json()->get('time'), 
+	// 			'comment' => Input::json()->get('comment')
+	// 			), 
+	// 		'reciver_email' => $this->reciver_email, 
+	// 		'reciver_name' => $this->reciver_name, 
+	// 		'reciver_subject' => 'Comment On Blog' 
+	// 		);
+	// 	$this->sendEmail($emaildata);
+	// }
 
 	public function SubscribeNewsletter(){
 		$list_id = 'd2a433c826';
@@ -282,44 +292,44 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 
-	public function JoinEvent(){
-		$emaildata = array(
-			'email_template' => 'emails.events.join',
-			'email_template_data' => $data = array(
-				'fullname' => Input::json()->get('fullname'),
-				'email' => Input::json()->get('email'),
-				'mobile' => Input::json()->get('mobile'),
-				'eventname' => Input::json()->get('eventname'),
-				'location' => Input::json()->get('location'),
-				'others' => Input::json()->get('others'),
-				'date' => date("h:i:sa")
-				),
-				'reciver_email' => $this->reciver_email,
-				'reciver_name' => $this->reciver_name,
-				'reciver_subject' => 'Join an event'
-		);
-		$this->sendEmail($emaildata);
-	}
+	// public function JoinEvent(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.events.join',
+	// 		'email_template_data' => $data = array(
+	// 			'fullname' => Input::json()->get('fullname'),
+	// 			'email' => Input::json()->get('email'),
+	// 			'mobile' => Input::json()->get('mobile'),
+	// 			'eventname' => Input::json()->get('eventname'),
+	// 			'location' => Input::json()->get('location'),
+	// 			'others' => Input::json()->get('others'),
+	// 			'date' => date("h:i:sa")
+	// 			),
+	// 			'reciver_email' => $this->reciver_email,
+	// 			'reciver_name' => $this->reciver_name,
+	// 			'reciver_subject' => 'Join an event'
+	// 	);
+	// 	$this->sendEmail($emaildata);
+	// }
 
 
-		public function CreateEvent(){
-		$emaildata = array(
-			'email_template' => 'emails.events.create',
-			'email_template_data' => $data = array(
-				'fullname' => Input::json()->get('fullname'),
-				'email' => Input::json()->get('email'),
-				'mobile' => Input::json()->get('mobile'),
-				'eventname' => Input::json()->get('eventname'),
-				'location' => Input::json()->get('location'),
-				'others' => Input::json()->get('others'),
-				'date' => date("h:i:sa")
-				),
-				'reciver_email' => $this->reciver_email,
-				'reciver_name' => $this->reciver_name,
-				'reciver_subject' => 'Create an event'
-		);
-		$this->sendEmail($emaildata);
-	}
+	// 	public function CreateEvent(){
+	// 	$emaildata = array(
+	// 		'email_template' => 'emails.events.create',
+	// 		'email_template_data' => $data = array(
+	// 			'fullname' => Input::json()->get('fullname'),
+	// 			'email' => Input::json()->get('email'),
+	// 			'mobile' => Input::json()->get('mobile'),
+	// 			'eventname' => Input::json()->get('eventname'),
+	// 			'location' => Input::json()->get('location'),
+	// 			'others' => Input::json()->get('others'),
+	// 			'date' => date("h:i:sa")
+	// 			),
+	// 			'reciver_email' => $this->reciver_email,
+	// 			'reciver_name' => $this->reciver_name,
+	// 			'reciver_subject' => 'Create an event'
+	// 	);
+	// 	$this->sendEmail($emaildata);
+	// }
 
 	public function fivefitnesscustomer(){
 		$reciver_email = "info@fitternity.com";
@@ -397,17 +407,41 @@ class EmailSmsApiController extends \BaseController {
 			);
 		return Response::json($resp);
 	}
+
 	public function registerme(){
 		$emaildata = array(
-		'email_template' => 'emails.register.register',
-		'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'),
-				'email' => Input::json()->get('email'), 		       
-				'pass' => Input::json()->get('password')
-				), 
-		'reciver_email' => Input::json()->get('email'), 
-		'reciver_name' => Input::json()->get('name'),
-		'reciver_subject' => 'Welcome mail from Fitternity');
+						'email_template' => 'emails.register.register',
+						'email_template_data' => $data = array(
+								'name' => Input::json()->get('name'),
+								'email' => Input::json()->get('email'), 		       
+								'pass' => Input::json()->get('password')
+								), 
+						'reciver_email' => Input::json()->get('email'), 
+						'reciver_name' => Input::json()->get('name'),
+						'reciver_subject' => 'Welcome mail from Fitternity'
+					);
+
 		$this->sendEmail($emaildata);
+
+		// $ccemals = array('sanjay.id7@gmail.com','neha@fitternity.com','jayamvora@fitternity.com','info@fitternity.com' );
+		// //$ccemals = array('sanjay.id7@gmail.com','info@fitternity.com');
+
+		// foreach ($ccemals as $email){
+		// 	$emaildata = array(
+		// 				'email_template' => 'emails.register.register',
+		// 				'email_template_data' => $data = array(
+		// 						'name' => Input::json()->get('name'),
+		// 						'email' =>  Input::json()->get('email'), 		       
+		// 						'pass' => Input::json()->get('password')
+		// 						), 
+		// 				'reciver_email' => $email, 
+		// 				'reciver_name' => Input::json()->get('name'),
+		// 				'reciver_subject' => 'Welcome mail from Fitternity'
+		// 			);
+
+		// 	$this->sendEmail($emaildata);
+		// }
+
+
 	}
 }
