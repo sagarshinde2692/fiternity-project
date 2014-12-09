@@ -406,7 +406,7 @@ class SearchController extends \BaseController {
 					"functions": ['.$basecategory_score.'
 					{
 						"script_score": {
-							"script": "(doc[\'popularity\'].value > 0 ? log(doc[\'popularity\'].value) : 0)"
+							"script": "log(doc[\'popularity\'].value)"
 						}
 					},
 					{
