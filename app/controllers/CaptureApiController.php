@@ -1,7 +1,7 @@
 <?php
 
 
-class CaptureApiController extends BaseAPIController {
+class CaptureController extends \BaseController {
 
 	public function __construct()
 	{
@@ -13,10 +13,10 @@ class CaptureApiController extends BaseAPIController {
 		});
 	}
 
-	public function postCapture()
-	{
+	public function postCapture(){
+		
 		$data = array(
-				'capture_type' => 'fitness_guide',
+				'capture_type' => Input::json()->get('capture_type'),
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'),
 				'mobile' => Input::json()->get('mobile'),

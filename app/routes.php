@@ -80,7 +80,7 @@ Route::post('/email/commentonblog','EmailSmsApiController@CommentOnBlog');
 Route::post('/subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
 Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
 Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
-Route::post('/landing', 'CaptureApiController@postCapture');
+Route::post('/landing', 'CaptureController@postCapture');
 Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
 Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
 Route::post('/registerme', 'EmailSmsApiController@registerme');
