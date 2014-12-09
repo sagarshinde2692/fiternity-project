@@ -73,6 +73,22 @@ class HomeController extends BaseController {
 		return Response::json($homedata);
 	}
 
+	public function zumbadiscover(){
+		$finder_slugs 		=		array('mint-v-s-fitness-khar-west', 
+											   'zumba-with-illumination', 
+											   'reebok-fitness-studio-khar-west', 
+											   'frequencee-hughes-road',
+											   'the-soul-studio',
+											   'studio-balance-hughes-road',
+											   'house-of-wow-bandra-west',
+											   'nritya-studio-navi-mumbai',
+											   'dance-beat-mumbai-hughes-road',
+											   'zumba-with-yogesh-kushalkar',
+											   'jgs-fitness-centre-santacruz-west',
+											   'rudra-shala-malad-west');
+		$zumba = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))->whereIn('slug', $finder_slugs)->get(array('_id','title','average_rating','category_id','category','slug','contact','coverimage'));
+		return Response::json($zumba);
 
+	}
 
 }																																																																																																																																																																																																																																																																										

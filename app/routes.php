@@ -15,7 +15,7 @@ Route::get('/test', function() { return "laravel 4.2 goes here....";});
 ##############################################################################
 
 Route::get('/home', 'HomeController@getHomePageData');
-Route::get('/fivefitness', 'HomeController@fivefitness');
+Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 
 
 ##############################################################################
@@ -84,6 +84,8 @@ Route::post('/landing', 'CaptureApiController@postCapture');
 Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
 Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
 Route::post('/registerme', 'EmailSmsApiController@registerme');
+Route::post('/landingpage/conversion', 'EmailSmsApiController@landingconversion');
+Route::post('/landingpage/callback', 'EmailSmsApiController@landingpagecallback');
 
 
 ##############################################################################
