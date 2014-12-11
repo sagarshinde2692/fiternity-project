@@ -430,7 +430,6 @@ class EmailSmsApiController extends \BaseController {
 		$data = array(
 				'capture_type' => Input::json()->get('capture_type'),
 				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone')
 			);
 		$storecapture = Capture::create($data);
@@ -468,7 +467,6 @@ class EmailSmsApiController extends \BaseController {
 		$data = array(
 				'capture_type' => Input::json()->get('capture_type'),
 				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
 				'vendor' => implode(",",Input::json()->get('vendor')),
 				'location' => Input::json()->get('location'),
