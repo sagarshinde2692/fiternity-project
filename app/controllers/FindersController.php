@@ -75,7 +75,7 @@ class FindersController extends \BaseController {
 
 	public function getfinderleftside(){
 		$data = array('categorytag_offerings' => Findercategorytag::active()->with('offerings')->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
-					'locations' => Location::active()->orderBy('name')->get(array('name','_id','slug')),
+					'locations' => Location::active()->whereIn('cities',array(1))->orderBy('name')->get(array('name','_id','slug')),
 					'price_range' => array(
 							array("slug" =>"one","name" => "less than 1000"),
 							array("slug"=>"two","name" => "1000-2500"),	
