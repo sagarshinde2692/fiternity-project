@@ -42,17 +42,16 @@ class HomeController extends BaseController {
 		$locations				= 		Location::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 
 		$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-											->whereIn('slug', $finder_slugs)
-											->remember(Config::get('app.cachetime'))
-											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
-											->groupBy('category.name')
-											->toArray();
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->whereIn('slug', $finder_slugs)
+												->remember(Config::get('app.cachetime'))
+												->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+												->groupBy('category.name')
+												->toArray();
 
 		array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
 		array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
 		array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
-
 
 		$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 											->with('categorytags')

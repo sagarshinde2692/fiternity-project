@@ -82,10 +82,19 @@ class BlogsController extends \BaseController {
 											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 											->take(4)->toArray();				
 
-			$data = array('blog' 	=> $blog,
-						  'related' => $relatedblogs,
-						  'popular' => $recentblogs,
-						  'relatedfinders' => $relatedfinders
+			$categorytags		= 	Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$locations			= 	Location::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$category 			=	Findercategory::where('_id',$findercategoryid)
+													->remember(Config::get('app.cachetime'))
+													->first(array('name','slug'));
+
+			$data = array('blog' 			=> $blog,
+						  'related' 		=> $relatedblogs,
+						  'popular' 		=> $recentblogs,
+						  'relatedfinders' 	=> $relatedfinders,
+						  'categorytags' 	=> $categorytags,
+						  'locations' 		=> $locations,
+						  'findercategory' 	=> $category
 						);
 			return $data;
 		}
