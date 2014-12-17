@@ -83,7 +83,7 @@ class BlogsController extends \BaseController {
 											->take(4)->toArray();				
 
 			$categorytags		= 	Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-			$locations			= 	Location::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$locations			= 	Location::active()->whereIn('cities',array(1))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$category 			=	Findercategory::where('_id',$findercategoryid)
 													->remember(Config::get('app.cachetime'))
 													->first(array('name','slug'));
