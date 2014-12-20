@@ -171,7 +171,7 @@
                         </td>
                     </tr>
                     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
-                       
+                     
                         <tr>
                             <td align="center" bgcolor="#FFFFFF">
                                 <table class="table600" width="600" border="0" align="center" cellpadding="0" cellspacing="0">
@@ -550,43 +550,43 @@
                     <tr>
                         <td>
                             <table width="180" border="0" align="center" cellpadding="0" cellspacing="0" class="table3-3">
-                                    <tr>
-                                        <td height="30"></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="center">
-                                            <table width="180" border="0" align="center" cellpadding="0" cellspacing="0">
-                                                <tr>
-                                                    <td width="20" align="center" style="line-height:0px;">
-                                                        <a href="#">
-                                                            <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-facebook.png" width="9" height="15" alt="facebook" />
-                                                        </a>
-                                                    </td>
-                                                    <td width="10"></td>
-                                                    <td width="20" align="center" style="line-height:0px;">
-                                                        <a href="#">
-                                                            <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-twitter.png" width="16" height="12" alt="twitter" />
-                                                        </a>
-                                                    </td>
-                                                    <td width="10"></td>
-                                                    <td width="20" align="center" style="line-height:0px;">
-                                                        <a href="#">
-                                                            <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-googleplus.png" width="19" height="15" alt="googleplus" />
-                                                        </a>
-                                                    </td>
-                                                    <td width="10"></td>
-                                                    <td width="20" align="center" style="line-height:0px;">
-                                                        <a href="#">
-                                                            <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-pinterest.png" width="11" height="15" alt="pinterest" />
-                                                        </a>
-                                                    </td>
-                                                    <td width="10"></td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </table>
-                                         
+                                <tr>
+                                    <td height="30"></td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <table width="180" border="0" align="center" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td width="20" align="center" style="line-height:0px;">
+                                                    <a href="#">
+                                                        <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-facebook.png" width="9" height="15" alt="facebook" />
+                                                    </a>
+                                                </td>
+                                                <td width="10"></td>
+                                                <td width="20" align="center" style="line-height:0px;">
+                                                    <a href="#">
+                                                        <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-twitter.png" width="16" height="12" alt="twitter" />
+                                                    </a>
+                                                </td>
+                                                <td width="10"></td>
+                                                <td width="20" align="center" style="line-height:0px;">
+                                                    <a href="#">
+                                                        <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-googleplus.png" width="19" height="15" alt="googleplus" />
+                                                    </a>
+                                                </td>
+                                                <td width="10"></td>
+                                                <td width="20" align="center" style="line-height:0px;">
+                                                    <a href="#">
+                                                        <img style="display:block; line-height:0px; font-size:0px; border:0px;" src="http://b.fitn.in/global/icon-pinterest.png" width="11" height="15" alt="pinterest" />
+                                                    </a>
+                                                </td>
+                                                <td width="10"></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
                         </td>
                     </tr>
                 </table>
