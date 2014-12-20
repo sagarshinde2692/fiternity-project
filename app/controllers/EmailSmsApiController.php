@@ -4,7 +4,7 @@ use Hugofirth\Mailchimp\Facades\MailchimpWrapper;
 
 class EmailSmsApiController extends \BaseController {
 
-	protected $reciver_email = "info@fitternity.com";
+	protected $reciver_email = "mailus@fitternity.com";
 	protected $reciver_name = "Leads From Website";
 
 	public function __construct()
@@ -151,7 +151,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function fivefitnesscustomer(){
-		$reciver_email = "info@fitternity.com";
+		$reciver_email = "mailus@fitternity.com";
 		$reciver_name = "Leads From 5-fitness page";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
@@ -191,7 +191,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function refundfivefitnesscustomer(){
-		$reciver_email = "info@fitternity.com";
+		$reciver_email = "mailus@fitternity.com";
 		$reciver_name = "Leads From 5-fitness page";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
@@ -228,7 +228,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function landingpagecallback(){
-		$reciver_email = "info@fitternity.com";
+		$reciver_email = "mailus@fitternity.com";
 		$reciver_name = "Leads From Fitternity";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
@@ -246,25 +246,24 @@ class EmailSmsApiController extends \BaseController {
 			'reciver_subject' => Input::json()->get('subject') 
 			);
 		$this->sendEmail($emaildata);
-		$data = array(
-				'capture_type' => Input::json()->get('capture_type'),
-				'name' => Input::json()->get('name'), 
-				'phone' => Input::json()->get('phone')
-			);
-		$storecapture = Capture::create($data);
-		// $smsdata = array(
-		// 	'send_to' => Input::json()->get('phone'),
-		// 	'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',
+
+		// $data = array(
+		// 		'capture_type' => Input::json()->get('capture_type'),
+		// 		'name' => Input::json()->get('name'), 
+		// 		'phone' => Input::json()->get('phone')
 		// 	);
-		// $this->sendSMS($smsdata);
+
+		$data = Input::json()->all();
+		$storecapture = Capture::create($data);
 		$resp = array(
 			'status' => 200,
 			'message' => "Recieved the Request"
 			);
 		return Response::json($resp);
 	}
+
 	public function landingconversion(){
-		$reciver_email = "info@fitternity.com";
+		$reciver_email = "mailus@fitternity.com";
 		$reciver_name = "Leads From Fitternity";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
@@ -290,6 +289,7 @@ class EmailSmsApiController extends \BaseController {
 				'vendor' => implode(",",Input::json()->get('vendor')),
 				'location' => Input::json()->get('location'),
 			);
+
 		$storecapture = Capture::create($data);
 		// $smsdata = array(
 		// 	'send_to' => Input::json()->get('phone'),

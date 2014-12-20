@@ -57,7 +57,7 @@ return array(
 	|
 	*/
 
-	'from' => array('address' => 'info@fitternity.com', 'name' => 'Fitternity'),
+	'from' => array('address' => 'mailus@fitternity.com', 'name' => 'Fitternity'),
 
 	/*
 	|--------------------------------------------------------------------------
