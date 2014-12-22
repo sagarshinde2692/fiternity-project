@@ -66,11 +66,7 @@ class EmailSmsApiController extends \BaseController {
 			'reciver_subject' => 'Request A Callback' 
 			);
 
-
-
 		$this->sendEmail($emaildata);
-
-
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
 			'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',

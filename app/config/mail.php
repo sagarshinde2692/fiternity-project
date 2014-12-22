@@ -126,7 +126,7 @@ return array(
 
 	//'cc_emailids' => array('sanjay.id7@gmail.com','neha@fitternity.com','jayamvora@fitternity.com','info@fitternity.com'),
 	//'cc_emailids' => array('sanjay.id7@gmail.com','info@fitternity.com'),
-	'cc_emailids' => array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+	'cc_emailids' => array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
 
 
 );
