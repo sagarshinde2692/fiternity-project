@@ -115,7 +115,7 @@ class EmailSmsApiController extends \BaseController {
 				), 
 			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial'), 
-			'email_subject' 	=> 'Request For Book a Trail' 
+			'email_subject' 	=> 'Request For Book a Trial' 
 			);
 		$this->sendEmail($emaildata);
 
