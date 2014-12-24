@@ -91,5 +91,10 @@ Route::post('/landingpage/callback', 'EmailSmsApiController@landingpagecallback'
 
 
 Route::get('/email/testemail','EmailSmsApiController@testemail');
+
+
+Route::post('/queue/push', function(){
+	return Queue::marshal();
+});
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
