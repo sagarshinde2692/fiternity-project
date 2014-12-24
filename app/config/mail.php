@@ -127,7 +127,17 @@ return array(
 	//'cc_emailids' => array('sanjay.id7@gmail.com','neha@fitternity.com','jayamvora@fitternity.com','info@fitternity.com'),
 	//'cc_emailids' => array('sanjay.id7@gmail.com','info@fitternity.com'),
 	//'cc_emailids' => array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
-	'cc_emailids' => array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+	'cc_emailids' 									=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 
+	'bcc_emailds_request_callback' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','sanjay.fitternity@gmail.com'),
+	'bcc_emailds_book_trial' 						=> 	array('sanjay.id7@gmail.com','info@fitternity.com','sanjay.fitternity@gmail.com'),
+	'bcc_emailds_register_me' 						=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+
+	'bcc_emailds_request_callback_landing_page' 	=> 	array('sanjay.id7@gmail.com','info@fitternity.com','sanjay.fitternity@gmail.com'),
+	'bcc_emailds_book_trial_landing_page' 			=> 	array('sanjay.id7@gmail.com','info@fitternity.com','sanjay.fitternity@gmail.com'),
+	
+	'bcc_emailds_finder_lead_pop'					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','sanjay.fitternity@gmail.com'),
+	'bcc_emailds_fivefitness_alternative' 			=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+	'bcc_emailds_fivefitness_refund'	 			=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 
 );

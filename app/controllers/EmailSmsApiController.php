@@ -21,22 +21,32 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function sendEmail($emaildata){
-		$email_lists			= 	Config::get('mail.cc_emailids');
+
 		$email_template 		= 	$emaildata['email_template'];
 		$email_template_data 	= 	$emaildata['email_template_data'];
-		$reciver_email 			= 	$emaildata['reciver_email'];
-		$reciver_name 			= 	$emaildata['reciver_name'];
-		$reciver_subject 		= 	$emaildata['reciver_subject'];
+
+		$to 					= 	$email_template_data['email'];
+		$reciver_name 			= 	$email_template_data['name'];
+		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
+		$email_subject 			= 	$emaildata['email_subject'];		
 		
-		array_push($email_lists,$reciver_email);
+		
+		// print "<pre>";print_r($email_template_data);print_r($bcc_emailids); 
+		// echo "$to   ----  $reciver_name";
+		// exit;
 
-		foreach ($email_lists as $email){			
-			Mail::queue($email_template, $email_template_data, function($message) use ($email,$reciver_name,$reciver_subject){
 
-				$message->to($email, $reciver_name)->subject($reciver_subject);
+		//array_push($email_lists,$reciver_email);
+		// foreach ($email_lists as $email){			
+		// 	Mail::queue($email_template, $email_template_data, function($message) use ($email,$reciver_name,$email_subject){
+		// 		$message->to($email, $reciver_name)->subject($email_subject);
+		// 	});
+		// }
 
+		Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+				$message->to($email, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
 			});
-		}
+
 
 	}
 
@@ -50,11 +60,17 @@ class EmailSmsApiController extends \BaseController {
 				$to = 'sanjay.id7@gmail.com';
 				$reciver_name = 'sanjay sahu';
 				$cc_emailids = array('sanjay.fitternity@gmail.com','info@fitternity.com');
-				$reciver_subject = 'subject of test email';
-				$message->to($to, $reciver_name)->bcc($cc_emailids)->subject($reciver_subject);
+				$email_subject = 'subject of test email';
+				$message->to($to, $reciver_name)->bcc($cc_emailids)->subject($email_subject);
 
 			});
 
+		/*
+			Queue:push(function($job) use ($data){
+				$data['string'];
+				$job->delete();
+			});
+		*/
 	}
 
 	public function RequestCallback() {
@@ -67,21 +83,19 @@ class EmailSmsApiController extends \BaseController {
 				'phone' => Input::json()->get('phone'),
 				'date' => date("h:i:sa")        
 				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Request A Callback' 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
+			'email_subject' 	=> 'Request A Callback' 
 			);
 
 		$this->sendEmail($emaildata);
+		
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
 			'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',
 			);
 		$this->sendSMS($smsdata);
-		$resp = array(
-			'status' => 200,
-			'message' => "Recieved the Request"
-			);
+
+		$resp = array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
 
@@ -98,9 +112,8 @@ class EmailSmsApiController extends \BaseController {
 				'service'	=> Input::json()->get('service'),
 				'date' => date("h:i:sa")
 				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'Request For Book a Trail' 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial'), 
+			'email_subject' 	=> 'Request For Book a Trail' 
 			);
 		$this->sendEmail($emaildata);
 
@@ -110,10 +123,8 @@ class EmailSmsApiController extends \BaseController {
 			);
 
 		$this->sendSMS($smsdata);
-		$resp = array(
-			'status' => 200,
-			'message' => "Book a Trial"
-			);
+		
+		$resp = array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);		
 	}
 
@@ -129,14 +140,12 @@ class EmailSmsApiController extends \BaseController {
 				'findertitle' => Input::json()->get('findertitle'),
 				'finderaddress' => Input::json()->get('finderaddress')
 				), 
-			'reciver_email' => $this->reciver_email, 
-			'reciver_name' => $this->reciver_name, 
-			'reciver_subject' => 'lead generator popup' 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_lead_pop'), 
+			'email_subject' 	=> 'lead generator popup' 
 			);
 		$this->sendEmail($emaildata);
 
 		$smsdata = array(
-			// 'send_to' => Input::json()->get('phone'), // Number of customer 
 			'send_to' => '9870747016',
 			'message_body'=>Input::json()->get('name').', Thanks for your enquiry about '.Input::json()->get('findertitle').'. We will call you within 24 hours. Team Fitternity',
 			);
@@ -153,8 +162,6 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function fivefitnesscustomer(){
-		$reciver_email = "mailus@fitternity.com";
-		$reciver_name = "Leads From 5-fitness page";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
 			'email_template' => 'emails.finder.fivefitness', 
@@ -166,9 +173,8 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 				'date' => date("h:i:sa")        
 				), 
-			'reciver_email' => $reciver_email, 
-			'reciver_name' => $reciver_name, 
-			'reciver_subject' => '5 Fitness requests alternative' 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_alternative'), 
+			'email_subject' => '5 Fitness requests alternative' 
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
@@ -179,22 +185,13 @@ class EmailSmsApiController extends \BaseController {
 				'vendor' => implode(",",Input::json()->get('vendor')),
 				'location' => Input::json()->get('location'),
 			);
+
 		$storecapture = Capture::create($data);
-		// $smsdata = array(
-		// 	'send_to' => Input::json()->get('phone'),
-		// 	'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',
-		// 	);
-		// $this->sendSMS($smsdata);
-		$resp = array(
-			'status' => 200,
-			'message' => "Recieved the Request"
-			);
+		$resp = array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
 
 	public function refundfivefitnesscustomer(){
-		$reciver_email = "mailus@fitternity.com";
-		$reciver_name = "Leads From 5-fitness page";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
 			'email_template' => 'emails.finder.refund', 
@@ -204,11 +201,11 @@ class EmailSmsApiController extends \BaseController {
 				'phone' => Input::json()->get('phone'),
 				'date' => date("h:i:sa")        
 				), 
-			'reciver_email' => $reciver_email, 
-			'reciver_name' => $reciver_name, 
-			'reciver_subject' => '5 Fitness requests refund' 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_refund'), 
+			'email_subject' 	=> '5 Fitness requests refund' 
 			);
 		$this->sendEmail($emaildata);
+
 		$data = array(
 				'capture_type' => 'fivefitness_refund',
 				'name' => Input::json()->get('name'), 
@@ -217,21 +214,11 @@ class EmailSmsApiController extends \BaseController {
 				'refund' => 1
 			);
 		$storecapture = Capture::create($data);
-		// $smsdata = array(
-		// 	'send_to' => Input::json()->get('phone'),
-		// 	'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',
-		// 	);
-		// $this->sendSMS($smsdata);
-		$resp = array(
-			'status' => 200,
-			'message' => "Recieved the Request"
-			);
+		$resp = array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
 
 	public function landingpagecallback(){
-		$reciver_email = "mailus@fitternity.com";
-		$reciver_name = "Leads From Fitternity";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
 			'email_template' => 'emails.finder.landingcallbacks', 
@@ -243,30 +230,18 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 				'date' => date("h:i:sa")        
 				), 
-			'reciver_email' => 'ut.mehrotra@gmail.com', 
-			'reciver_name' => $reciver_name, 
-			'reciver_subject' => Input::json()->get('subject') 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'), 
+			'email_subject' => Input::json()->get('subject') 
 			);
 		$this->sendEmail($emaildata);
 
-		// $data = array(
-		// 		'capture_type' => Input::json()->get('capture_type'),
-		// 		'name' => Input::json()->get('name'), 
-		// 		'phone' => Input::json()->get('phone')
-		// 	);
-
-		$data = Input::json()->all();
-		$storecapture = Capture::create($data);
-		$resp = array(
-			'status' => 200,
-			'message' => "Recieved the Request"
-			);
+		$data 			= Input::json()->all();
+		$storecapture 	= Capture::create($data);
+		$resp 			= array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
 
 	public function landingconversion(){
-		$reciver_email = "mailus@fitternity.com";
-		$reciver_name = "Leads From Fitternity";
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
 			'email_template' => 'emails.finder.fivefitness', 
@@ -279,9 +254,8 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 				'date' => date("h:i:sa")        
 				), 
-			'reciver_email' => 'ut.mehrotra@gmail.com', 
-			'reciver_name' => $reciver_name, 
-			'reciver_subject' => Input::json()->get('subject')
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
+			'email_subject' => Input::json()->get('subject')
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
@@ -292,16 +266,8 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 			);
 
-		$storecapture = Capture::create($data);
-		// $smsdata = array(
-		// 	'send_to' => Input::json()->get('phone'),
-		// 	'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',
-		// 	);
-		// $this->sendSMS($smsdata);
-		$resp = array(
-			'status' => 200,
-			'message' => "Recieved the Request"
-			);
+		$storecapture 	= Capture::create($data);
+		$resp 			= array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
 
@@ -313,9 +279,8 @@ class EmailSmsApiController extends \BaseController {
 								'email' => Input::json()->get('email'), 		       
 								'pass' => Input::json()->get('password')
 								), 
-						'reciver_email' => Input::json()->get('email'), 
-						'reciver_name' => Input::json()->get('name'),
-						'reciver_subject' => 'Welcome mail from Fitternity'
+						'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_register_me'), 
+						'email_subject' 	=>  'Welcome mail from Fitternity'
 					);
 
 		$this->sendEmail($emaildata);
