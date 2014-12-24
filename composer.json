@@ -8,7 +8,8 @@
 		"laravel/framework": "4.2.*",
 		"jenssegers/mongodb": "*",
 		"shift31/laravel-elasticsearch": "1.0.*@dev",
-		"hugofirth/mailchimp": "2.0.*"
+		"hugofirth/mailchimp": "2.0.*",
+		"iron-io/iron_mq": "dev-master"
 	},
 	"autoload": {
 		"classmap": [
