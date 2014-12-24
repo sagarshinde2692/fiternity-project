@@ -60,7 +60,7 @@ class EmailSmsApiController extends \BaseController {
 				$to = 'sanjay.id7@gmail.com';
 				$reciver_name = 'sanjay sahu';
 				$reciver_subject = 'subject of test email';
-				$cc_emailids = 'sanjay.fitternity@gmail.com'
+				$cc_emailids = 'sanjay.fitternity@gmail.com';
 				//$message->to('sanjay.id@gmail.com')->bcc('sanjay.@example.com');				
 				$message->to($to, $reciver_name)->cc($cc_emailids)->subject($reciver_subject);
 
