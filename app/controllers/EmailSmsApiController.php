@@ -44,7 +44,7 @@ class EmailSmsApiController extends \BaseController {
 		// }
 
 		Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
-				$message->to($email, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
+				$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
 			});
 
 
