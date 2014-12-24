@@ -25,8 +25,8 @@ class EmailSmsApiController extends \BaseController {
 		$email_template 		= 	$emaildata['email_template'];
 		$email_template_data 	= 	$emaildata['email_template_data'];
 
-		$to 					= 	$email_template_data['email'];
 		$reciver_name 			= 	$email_template_data['name'];
+		$to 					= 	$emaildata['to'];
 		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
 		$email_subject 			= 	$emaildata['email_subject'];		
 		
@@ -83,6 +83,7 @@ class EmailSmsApiController extends \BaseController {
 				'phone' => Input::json()->get('phone'),
 				'date' => date("h:i:sa")        
 				), 
+			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
 			'email_subject' 	=> 'Request A Callback' 
 			);
@@ -112,6 +113,7 @@ class EmailSmsApiController extends \BaseController {
 				'service'	=> Input::json()->get('service'),
 				'date' => date("h:i:sa")
 				), 
+			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial'), 
 			'email_subject' 	=> 'Request For Book a Trail' 
 			);
@@ -140,6 +142,7 @@ class EmailSmsApiController extends \BaseController {
 				'findertitle' => Input::json()->get('findertitle'),
 				'finderaddress' => Input::json()->get('finderaddress')
 				), 
+			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_lead_pop'), 
 			'email_subject' 	=> 'lead generator popup' 
 			);
@@ -173,8 +176,9 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 				'date' => date("h:i:sa")        
 				), 
+			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_alternative'), 
-			'email_subject' => '5 Fitness requests alternative' 
+			'email_subject' 	=> '5 Fitness requests alternative' 
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
@@ -201,6 +205,7 @@ class EmailSmsApiController extends \BaseController {
 				'phone' => Input::json()->get('phone'),
 				'date' => date("h:i:sa")        
 				), 
+			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_refund'), 
 			'email_subject' 	=> '5 Fitness requests refund' 
 			);
@@ -230,8 +235,9 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 				'date' => date("h:i:sa")        
 				), 
+			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'), 
-			'email_subject' => Input::json()->get('subject') 
+			'email_subject' 	=> Input::json()->get('subject') 
 			);
 		$this->sendEmail($emaildata);
 
@@ -279,6 +285,7 @@ class EmailSmsApiController extends \BaseController {
 								'email' => Input::json()->get('email'), 		       
 								'pass' => Input::json()->get('password')
 								), 
+						'to'				=> 	Input::json()->get('email'), 
 						'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_register_me'), 
 						'email_subject' 	=>  'Welcome mail from Fitternity'
 					);
