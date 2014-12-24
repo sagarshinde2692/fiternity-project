@@ -7,16 +7,6 @@ class EmailSmsApiController extends \BaseController {
 	protected $reciver_email = "mailus@fitternity.com";
 	protected $reciver_name = "Leads From Website";
 
-	// public function __construct()
-	// {
-	// 	$this->afterFilter(function($response)
-	// 	{
-	// 		header("Access-Control-Allow-Origin: *");
-	// 		header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-	// 		return $response;
-	// 	});
-	// }
-
 	public function sendSMS($smsdata){
 
 		$to = $smsdata['send_to'];
@@ -41,7 +31,7 @@ class EmailSmsApiController extends \BaseController {
 		array_push($email_lists,$reciver_email);
 
 		foreach ($email_lists as $email){			
-			Mail::send($email_template, $email_template_data, function($message) use ($email,$reciver_name,$reciver_subject){
+			Mail::queue($email_template, $email_template_data, function($message) use ($email,$reciver_name,$reciver_subject){
 
 				$message->to($email, $reciver_name)->subject($reciver_subject);
 
