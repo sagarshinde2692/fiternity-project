@@ -59,8 +59,8 @@ class EmailSmsApiController extends \BaseController {
 		Mail::send($email_template, $email_template_data, function($message){
 				$to = 'sanjay.id7@gmail.com';
 				$reciver_name = 'sanjay sahu';
+				$cc_emailids = array('sanjay.fitternity@gmail.com');
 				$reciver_subject = 'subject of test email';
-				$cc_emailids = 'sanjay.fitternity@gmail.com';
 				//$message->to('sanjay.id@gmail.com')->bcc('sanjay.@example.com');				
 				$message->to($to, $reciver_name)->cc($cc_emailids)->subject($reciver_subject);
 
