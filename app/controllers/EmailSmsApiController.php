@@ -61,8 +61,8 @@ class EmailSmsApiController extends \BaseController {
 				$reciver_name = 'sanjay sahu';
 				$cc_emailids = array('sanjay.fitternity@gmail.com','info@fitternity.com');
 				$reciver_subject = 'subject of test email';
-				//$message->to('sanjay.id@gmail.com')->bcc('sanjay.@example.com');				
-				$message->to($to, $reciver_name)->cc($cc_emailids)->subject($reciver_subject);
+				//$message->to($to, $reciver_name)->cc($cc_emailids)->bcc($cc_emailids)->subject($reciver_subject);
+				$message->to($to, $reciver_name)->bcc($cc_emailids)->subject($reciver_subject);
 
 			});
 
