@@ -7,14 +7,27 @@ class EmailSmsApiController extends \BaseController {
 	protected $reciver_email = "mailus@fitternity.com";
 	protected $reciver_name = "Leads From Website";
 
-	public function __construct()
-	{
-		$this->afterFilter(function($response)
-		{
-			header("Access-Control-Allow-Origin: *");
-			header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-			return $response;
-		});
+	// public function __construct()
+	// {
+	// 	$this->afterFilter(function($response)
+	// 	{
+	// 		header("Access-Control-Allow-Origin: *");
+	// 		header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+	// 		return $response;
+	// 	});
+	// }
+
+	public function sendSMS($smsdata){
+
+		$to = $smsdata['send_to'];
+		$message = $smsdata['message_body'];
+		$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $live_url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$response = curl_exec($ch);
+		curl_close($ch);
 	}
 
 	public function sendEmail($emaildata){
@@ -37,19 +50,22 @@ class EmailSmsApiController extends \BaseController {
 
 	}
 
-	public function sendSMS($smsdata){
 
-		$to = $smsdata['send_to'];
-		$message = $smsdata['message_body'];
-		$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $live_url);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec($ch);
-		curl_close($ch);
+	public function testemail(){
+
+		$email_template = 'emails.testemail';
+		$email_template_data = array();
+
+		Mail::send($email_template, $email_template_data, function($message){
+				$to = 'sanjay.id@gmail.com';
+				$reciver_name = 'sanjay sahu';
+				$reciver_subject = 'subject of test email';
+				//$message->to('sanjay.id@gmail.com')->bcc('sanjay.@example.com');				
+				$message->to($to, $reciver_name)->subject($reciver_subject);
+
+			});
+
 	}
-
 
 	public function RequestCallback() {
 		date_default_timezone_set("Asia/Kolkata");
@@ -315,6 +331,7 @@ class EmailSmsApiController extends \BaseController {
 		$this->sendEmail($emaildata);
 
 	}
+
 
 
 

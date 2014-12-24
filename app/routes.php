@@ -88,5 +88,8 @@ Route::post('/landingpage/conversion', 'EmailSmsApiController@landingconversion'
 Route::post('/landingpage/callback', 'EmailSmsApiController@landingpagecallback');
 
 
+
+
+Route::get('/email/testemail','EmailSmsApiController@testemail');
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
