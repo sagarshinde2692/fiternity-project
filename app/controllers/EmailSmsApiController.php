@@ -25,10 +25,10 @@ class EmailSmsApiController extends \BaseController {
 		$email_template 		= 	$emaildata['email_template'];
 		$email_template_data 	= 	$emaildata['email_template_data'];
 
-		$reciver_name 			= 	$email_template_data['name'];
+		$reciver_name 			= 	ucwords($email_template_data['name']);
 		$to 					= 	$emaildata['to'];
 		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
-		$email_subject 			= 	$emaildata['email_subject'];		
+		$email_subject 			= 	ucfirst($emaildata['email_subject']);		
 		
 		
 		// print "<pre>";print_r($email_template_data);print_r($bcc_emailids); 
@@ -260,8 +260,9 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 				'date' => date("h:i:sa")        
 				), 
+			'to'				=> 	Config::get('mail.to'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
-			'email_subject' => Input::json()->get('subject')
+			'email_subject' 	=> 	Input::json()->get('subject')
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
