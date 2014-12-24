@@ -57,11 +57,11 @@ class EmailSmsApiController extends \BaseController {
 		$email_template_data = array();
 
 		Mail::send($email_template, $email_template_data, function($message){
-				$to = 'sanjay.id@gmail.com';
+				$to = 'sanjay.id7@gmail.com';
 				$reciver_name = 'sanjay sahu';
 				$reciver_subject = 'subject of test email';
 				//$message->to('sanjay.id@gmail.com')->bcc('sanjay.@example.com');				
-				$message->to($to, $reciver_name)->subject($reciver_subject);
+				$message->to($'sanjay.id@gmail.com', 'sanjay sahu')->subject('subject of test email');
 
 			});
 
