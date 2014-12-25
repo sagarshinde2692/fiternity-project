@@ -86,6 +86,7 @@ Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitn
 Route::post('/registerme', 'EmailSmsApiController@registerme');
 Route::post('/landingpage/conversion', 'EmailSmsApiController@landingconversion');
 Route::post('/landingpage/callback', 'EmailSmsApiController@landingpagecallback');
+Route::post('/offeravailed', 'EmailSmsApiController@offeravailed');
 
 
 

@@ -226,7 +226,7 @@ class EmailSmsApiController extends \BaseController {
 	public function landingpagecallback(){
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => 'emails.finder.landingcallbacks', 
+			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
 			'email_template_data' => $data = array(
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
@@ -295,7 +295,36 @@ class EmailSmsApiController extends \BaseController {
 
 	}
 
+	public function offeravailed(){
+		date_default_timezone_set("Asia/Kolkata");
+		$emaildata = array(
+			'email_template' => 'emails.finder.offeravailed', 
+			'email_template_data' => $data = array(
+				'name' => Input::json()->get('name'), 
+				'email' => Input::json()->get('email'), 
+				'phone' => Input::json()->get('phone'),
+				'findertitle' => Input::json()->get('vendor'),
+				'title' => Input::json()->get('title'),
+				'location' => Input::json()->get('location'),
+				'date' => date("h:i:sa")        
+				), 
+			'to'				=> 	Config::get('mail.to'), 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
+			'email_subject' 	=> 	Input::json()->get('subject')
+			);
+		$this->sendEmail($emaildata);
+		$data = array(
+				'capture_type' => Input::json()->get('capture_type'),
+				'name' => Input::json()->get('name'), 
+				'phone' => Input::json()->get('phone'),
+				'findertitle' => Input::json()->get('vendor'),
+				'location' => Input::json()->get('location'),
+			);
 
+		$storecapture 	= Capture::create($data);
+		$resp 			= array('status' => 200,'message' => "Recieved the Request");
+		return Response::json($resp);
+	}
 
 
 }
