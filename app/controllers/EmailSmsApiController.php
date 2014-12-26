@@ -90,7 +90,7 @@ class EmailSmsApiController extends \BaseController {
 		
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
-			'message_body'=>Input::json()->get('name').', Thanks for your request for a call back. We\'ll call you within 24 hours. Team Fitternity',
+			'message_body'=>'Hi 'ucwords(Input::json()->get('name')).', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
 			);
 		$this->sendSMS($smsdata);
 
@@ -123,7 +123,7 @@ class EmailSmsApiController extends \BaseController {
 
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
-			'message_body'=>Input::json()->get('name').', Thanks for your request to book a trial at '. Input::json()->get('finder') .'. We will call you within 24 hours to arrange a time. Team Fitternity',
+			'message_body'=>'Hi '.ucwords(Input::json()->get('name')).', Thank you for the request to book a trial at '. ucwords(Input::json()->get('finder')) .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
 			);
 
 		$this->sendSMS($smsdata);
@@ -155,7 +155,7 @@ class EmailSmsApiController extends \BaseController {
 
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
-			'message_body'=>Input::json()->get('name').', Thanks for your request to book a trial at '. implode(",",Input::json()>get('vendor')) .'. We will call you within 24 hours to arrange a time. Team Fitternity',
+			'message_body'=>'Hi '.ucwords(Input::json()->get('name')).', Thank you for the request to book a trial at '. ucwords(implode(",",Input::json()>get('vendor'))) .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
 			);
 		$this->sendSMS($smsdata);
 
