@@ -309,7 +309,7 @@ class EmailSmsApiController extends \BaseController {
 				'date' => date("h:i:sa")        
 				), 
 			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_offer_pop'), 
 			'email_subject' 	=> 	Input::json()->get('subject')
 			);
 		$this->sendEmail($emaildata);
