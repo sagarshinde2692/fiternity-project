@@ -29,13 +29,8 @@ class EmailSmsApiController extends \BaseController {
 		$to 					= 	$emaildata['to'];
 		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
 		$email_subject 			= 	ucfirst($emaildata['email_subject']);		
+		$send_bcc_status 		= 	$emaildata['send_bcc_status'];
 		
-		
-		// print "<pre>";print_r($email_template_data);print_r($bcc_emailids); 
-		// echo "$to   ----  $reciver_name";
-		// exit;
-
-
 		//array_push($email_lists,$reciver_email);
 		// foreach ($email_lists as $email){			
 		// 	Mail::queue($email_template, $email_template_data, function($message) use ($email,$reciver_name,$email_subject){
@@ -43,12 +38,19 @@ class EmailSmsApiController extends \BaseController {
 		// 	});
 		// }
 
-		Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
-				$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
-			});
+		if($send_bcc_status == 1){
+			Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+					$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
+				});			
+		}else{
+			Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+					$message->to($to, $reciver_name)->subject($email_subject);
+				});			
+		}
 
 
 	}
+
 
 
 	public function testemail(){
@@ -65,27 +67,23 @@ class EmailSmsApiController extends \BaseController {
 
 			});
 
-		/*
-			Queue:push(function($job) use ($data){
-				$data['string'];
-				$job->delete();
-			});
-		*/
+		/* Queue:push(function($job) use ($data){ $data['string']; $job->delete();  }); */
 	}
 
 	public function RequestCallback() {
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => 'emails.callback', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
-			'email_subject' 	=> 'Request A Callback' 
+				'email_template' => 'emails.callback', 
+				'email_template_data' => $data = array(
+					'name' => Input::json()->get('name'), 
+					'email' => Input::json()->get('email'), 
+					'phone' => Input::json()->get('phone'),
+					'date' => date("h:i:sa")        
+					), 
+				'to'				=> 	Config::get('mail.to_neha'), 
+				'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
+				'email_subject' 	=> 'Request A Callback',
+				'send_bcc_status' 	=> 1
 			);
 
 		$this->sendEmail($emaildata);
@@ -103,19 +101,20 @@ class EmailSmsApiController extends \BaseController {
 	public function BookTrail() {
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => 'emails.finder.booktrial', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'finder' => Input::json()->get('finder'),
-				'location' => Input::json()->get('location'),
-				'service'	=> Input::json()->get('service'),
-				'date' => date("h:i:sa")
-				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial'), 
-			'email_subject' 	=> 'Request For Book a Trial' 
+				'email_template' => 'emails.finder.booktrial', 
+				'email_template_data' => $data = array(
+					'name' => Input::json()->get('name'), 
+					'email' => Input::json()->get('email'), 
+					'phone' => Input::json()->get('phone'),
+					'finder' => Input::json()->get('finder'),
+					'location' => Input::json()->get('location'),
+					'service'	=> Input::json()->get('service'),
+					'date' => date("h:i:sa")
+					), 
+				'to'				=> 	Config::get('mail.to_neha'), 
+				'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial'), 
+				'email_subject' 	=> 'Request For Book a Trial',
+				'send_bcc_status' 	=> 1 
 			);
 		$this->sendEmail($emaildata);
 
@@ -125,26 +124,26 @@ class EmailSmsApiController extends \BaseController {
 			);
 
 		$this->sendSMS($smsdata);
-		
-		$resp = array('status' => 200,'message' => "Book a Trial");
+		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);		
 	}
 
 	public function FinderLead(){
 		$emaildata = array(
-			'email_template' => 'emails.finder.finderlead', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'location' => Input::json()->get('location'),
-				'date' => Input::json()->get('date'),
-				'findertitle' => Input::json()->get('findertitle'),
-				'finderaddress' => Input::json()->get('finderaddress')
-				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_lead_pop'), 
-			'email_subject' 	=> 'lead generator popup' 
+				'email_template' => 'emails.finder.finderlead', 
+				'email_template_data' => $data = array(
+					'name' => Input::json()->get('name'), 
+					'email' => Input::json()->get('email'), 
+					'phone' => Input::json()->get('phone'),
+					'location' => Input::json()->get('location'),
+					'date' => Input::json()->get('date'),
+					'findertitle' => Input::json()->get('findertitle'),
+					'finderaddress' => Input::json()->get('finderaddress')
+					), 
+				'to'				=> 	Config::get('mail.to_neha'), 
+				'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_lead_pop'), 
+				'email_subject' 	=> 'lead generator popup',
+				'send_bcc_status' 	=> 1 
 			);
 		$this->sendEmail($emaildata);
 
@@ -167,18 +166,19 @@ class EmailSmsApiController extends \BaseController {
 	public function fivefitnesscustomer(){
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => 'emails.finder.fivefitness', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'vendor' => implode(",",Input::json()->get('vendor')),
-				'location' => Input::json()->get('location'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_alternative'), 
-			'email_subject' 	=> '5 Fitness requests alternative' 
+				'email_template' => 'emails.finder.fivefitness', 
+				'email_template_data' => $data = array(
+					'name' => Input::json()->get('name'), 
+					'email' => Input::json()->get('email'), 
+					'phone' => Input::json()->get('phone'),
+					'vendor' => implode(",",Input::json()->get('vendor')),
+					'location' => Input::json()->get('location'),
+					'date' => date("h:i:sa")        
+					), 
+				'to'				=> 	Config::get('mail.to_mailus'), 
+				'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_alternative'), 
+				'email_subject' 	=> '5 Fitness requests alternative',
+				'send_bcc_status' 	=> 0 
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
@@ -198,16 +198,17 @@ class EmailSmsApiController extends \BaseController {
 	public function refundfivefitnesscustomer(){
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => 'emails.finder.refund', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_refund'), 
-			'email_subject' 	=> '5 Fitness requests refund' 
+				'email_template' => 'emails.finder.refund', 
+				'email_template_data' => $data = array(
+					'name' => Input::json()->get('name'), 
+					'email' => Input::json()->get('email'), 
+					'phone' => Input::json()->get('phone'),
+					'date' => date("h:i:sa")        
+					), 
+				'to'				=> 	Config::get('mail.to_mailus'), 
+				'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_refund'), 
+				'email_subject' 	=> '5 Fitness requests refund',
+				'send_bcc_status' 	=> 0 
 			);
 		$this->sendEmail($emaildata);
 
@@ -226,18 +227,19 @@ class EmailSmsApiController extends \BaseController {
 	public function landingpagecallback(){
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'findertitle' => Input::json()->get('title'),
-				'location' => Input::json()->get('location'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'), 
-			'email_subject' 	=> Input::json()->get('subject') 
+				'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
+				'email_template_data' => $data = array(
+					'name' => Input::json()->get('name'), 
+					'email' => Input::json()->get('email'), 
+					'phone' => Input::json()->get('phone'),
+					'findertitle' => Input::json()->get('title'),
+					'location' => Input::json()->get('location'),
+					'date' => date("h:i:sa")        
+					), 
+				'to'				=> 	Config::get('mail.to_neha'), 
+				'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'), 
+				'email_subject' 	=> Input::json()->get('subject'),
+				'send_bcc_status' 	=> 1 
 			);
 		$this->sendEmail($emaildata);
 
@@ -250,19 +252,20 @@ class EmailSmsApiController extends \BaseController {
 	public function landingconversion(){
 		date_default_timezone_set("Asia/Kolkata");
 		$emaildata = array(
-			'email_template' => 'emails.finder.fivefitness', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'vendor' => implode(",",Input::json()->get('vendor')),
-				'title' => Input::json()->get('title'),
-				'location' => Input::json()->get('location'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
-			'email_subject' 	=> 	Input::json()->get('subject')
+				'email_template' => 'emails.finder.fivefitness', 
+				'email_template_data' => $data = array(
+					'name' => Input::json()->get('name'), 
+					'email' => Input::json()->get('email'), 
+					'phone' => Input::json()->get('phone'),
+					'vendor' => implode(",",Input::json()->get('vendor')),
+					'title' => Input::json()->get('title'),
+					'location' => Input::json()->get('location'),
+					'date' => date("h:i:sa")        
+					), 
+				'to'				=> 	Config::get('mail.to_neha'), 
+				'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
+				'email_subject' 	=> 	Input::json()->get('subject'),
+				'send_bcc_status' 	=> 1
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
@@ -288,7 +291,8 @@ class EmailSmsApiController extends \BaseController {
 								), 
 						'to'				=> 	Input::json()->get('email'), 
 						'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_register_me'), 
-						'email_subject' 	=>  'Welcome mail from Fitternity'
+						'email_subject' 	=>  'Welcome mail from Fitternity',
+						'send_bcc_status' 	=> 1
 					);
 
 		$this->sendEmail($emaildata);
@@ -308,8 +312,8 @@ class EmailSmsApiController extends \BaseController {
 				'location' => Input::json()->get('location'),
 				'date' => date("h:i:sa")        
 				), 
-			'to'				=> 	Config::get('mail.to'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_offer_pop'), 
+			'to'				=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
 			'email_subject' 	=> 	Input::json()->get('subject')
 			);
 		$this->sendEmail($emaildata);
