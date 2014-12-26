@@ -69,6 +69,7 @@ Route::post('/findersearchv3', 'SearchController@getFindersv3');
 Route::post('/notify/{notifytype}','EmailSmsApiController@triggerNotify');
 Route::post('/email/requestcallback','EmailSmsApiController@RequestCallback');
 Route::post('/email/booktrial','EmailSmsApiController@BookTrail');
+Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
 Route::post('/email/finderlead','EmailSmsApiController@FinderLead');
 Route::post('/email/emailfinder','EmailSmsApiController@EmailSmsFinder');
 Route::post('/email/newfinder','EmailSmsApiController@findercreated');
