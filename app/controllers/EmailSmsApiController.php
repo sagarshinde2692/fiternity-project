@@ -90,7 +90,7 @@ class EmailSmsApiController extends \BaseController {
 		
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
-			'message_body'=>'Hi 'Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
 			);
 		$this->sendSMS($smsdata);
 
