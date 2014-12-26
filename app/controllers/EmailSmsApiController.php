@@ -314,7 +314,8 @@ class EmailSmsApiController extends \BaseController {
 				), 
 			'to'				=> 	Config::get('mail.to_neha'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'), 
-			'email_subject' 	=> 	Input::json()->get('subject')
+			'email_subject' 	=> 	Input::json()->get('subject'),
+			'send_bcc_status' 	=> 	1
 			);
 		$this->sendEmail($emaildata);
 		$data = array(
