@@ -353,6 +353,14 @@ class EmailSmsApiController extends \BaseController {
 			'send_bcc_status' 	=> 	1
 			);
 		$this->sendEmail($emaildata);
+
+		$smsdata = array(
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for availing the offer. We will call you shortly to arrange the same. Regards - Team Fitternity'
+			);
+
+		$this->sendSMS($smsdata);
+
 		$data = array(
 			'capture_type' => Input::json()->get('capture_type'),
 			'name' => Input::json()->get('name'), 
