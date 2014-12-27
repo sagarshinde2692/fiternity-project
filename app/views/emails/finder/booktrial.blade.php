@@ -37,6 +37,14 @@
                                     <td>{{$location}}</td>
                                 </tr>
                                 <tr>
+                                    <td>Preferred Time:</td>
+                                    <td>{{$preferred_time}}</td>
+                                </tr>
+                                <tr>
+                                    <td>Preferred Day:</td>
+                                    <td>{{$preferred_day}}</td>
+                                </tr>
+                                <tr>
                                     <td>Date:</td>
                                     <td>{{$date}}</td>
                                 </tr>

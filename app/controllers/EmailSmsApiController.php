@@ -78,6 +78,7 @@ class EmailSmsApiController extends \BaseController {
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
+				'preferred_time' => Input::json()->get('preferred_time'),
 				'date' => date("h:i:sa")        
 				), 
 			'to'				=> 	Config::get('mail.to_neha'), 
@@ -102,14 +103,16 @@ class EmailSmsApiController extends \BaseController {
 	public function BookTrail() {
 		date_default_timezone_set("Asia/Kolkata");
 		$data = array(
-			'capture_type' 	=>		'book_trial',
-			'name' 			=>		Input::json()->get('name'), 
-			'email' 		=>		Input::json()->get('email'), 
-			'phone' 		=>		Input::json()->get('phone'),
-			'finder' 		=>		Input::json()->get('finder'),
-			'location' 		=>		Input::json()->get('location'),
-			'service'		=>		Input::json()->get('service'),
-			'date' 			=>		date("h:i:sa")
+			'capture_type' 			=>		'book_trial',
+			'name' 					=>		Input::json()->get('name'), 
+			'email' 				=>		Input::json()->get('email'), 
+			'phone' 				=>		Input::json()->get('phone'),
+			'finder' 				=>		Input::json()->get('finder'),
+			'location' 				=>		Input::json()->get('location'),
+			'service'				=>		Input::json()->get('service'),
+			'preferred_time'		=>		Input::json()->get('preferred_time'),
+			'preferred_day'			=>		Input::json()->get('preferred_day'),
+			'date' 					=>		date("h:i:sa")
 			);
 		$emaildata = array(
 			'email_template' 		=> 	'emails.finder.booktrial', 

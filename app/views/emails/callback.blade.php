@@ -29,6 +29,10 @@
 									<td>User Phone:</td>
 									<td>{{$phone}}</td>
 								</tr>
+                                <tr>
+                                    <td>Preferred Time:</td>
+                                    <td>{{$preferred_time}}</td>
+                                </tr>								
 								<tr>
 									<td>Date:</td>
 									<td>{{$date}}</td>
