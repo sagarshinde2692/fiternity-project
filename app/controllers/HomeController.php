@@ -29,7 +29,7 @@ class HomeController extends BaseController {
 		$finder_yoga_slugs 		=		array('cosmic-fusion-santacruz-west', 
 											   'mandeep-hot-yoga-lokhandwala', 
 											   'yogacara-healing-arts-bandra-west', 
-											   'bharat-thakur-s-artistic-yoga-bandra-west');
+											   'samanta-duggal');
 
 		$finder_zumba_slugs 	=		array('dance-beat-mumbai-hughes-road', 
 											   'aamad-performing-arts-versova', 
