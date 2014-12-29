@@ -329,7 +329,7 @@ class EmailSmsApiController extends \BaseController {
 				), 
 			'to'				=> 	Input::json()->get('email'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_register_me'), 
-			'email_subject' 	=>  'Welcome mail from Fitternity',
+			'email_subject' 	=>  'Welcome mail to Fitternity',
 			'send_bcc_status' 	=> 1
 			);
 
