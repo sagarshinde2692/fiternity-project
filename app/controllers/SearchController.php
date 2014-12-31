@@ -443,6 +443,125 @@ class SearchController extends \BaseController {
 		//echo $body; exit;
 	}
 
+
+
+
+	public function getFitmaniaFinders(){
+		
+		//echo "calling getFindersv3";
+		$searchParams 		= 	array();
+		$type 				= 	"findermembership";		    	
+		$filters 			=	"";	
+		$selectedfields 	= 	"";		
+		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
+
+		$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
+		$location 			=	(Input::json()->get('regions')) ? Input::json()->get('regions') : '';		
+		$offerings 			=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
+		$facilities 		=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
+		$price_range 		=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
+
+		//filters 
+		$category_filter 		= ($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
+		$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
+		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
+		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
+		$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
+		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';	
+		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","',Input::json()->get('price_range')).'"] }},'  : '';	
+
+		$shouldfilter = $mustfilter = '';
+		
+		//used for location , category, 	
+		if($location_filter != ''){			
+			//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
+			$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
+			$shouldfilter = '"should": ['.$should_filtervalue.'],';	
+		}
+		
+		//used for offering, facilities and price range
+		if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+			$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
+			$mustfilter = '"must": ['.$must_filtervalue.']';		
+		}
+
+		if($shouldfilter != '' || $mustfilter != ''){
+			$filtervalue = trim($shouldfilter.$mustfilter,',');	
+			$filters = ',"filter": { 
+							"bool" : {'.$filtervalue.'}
+						},"_cache" : true';
+		}
+
+		$selectedfields = '"fields": ["title","average_rating","category","categorytags","location","locationtags","finder_type","popularity"],';
+
+		if($category == ''){
+			$query = '"match_all": {}';
+			$basecategory_score = '';		
+		}else{
+			$query = '"multi_match": {
+						"query": "'.$category.'",
+						"fields": [
+						"category",
+						"categorytags"
+						]
+					}';	
+			$basecategory_score	= '{
+										"script_score": {
+											"script": "(doc[\'category\'].value == \''.$category.'\' ? 10 : 0)"
+										}
+									},';
+		}
+
+
+
+		$body =	'{				
+			"from": '.$from.',
+			"size": '.$size.',
+			"query": {
+				"function_score": {
+					"functions": ['.$basecategory_score.'
+					{
+						"script_score": {
+							"script": "log(doc[\'popularity\'].value)"
+						}
+					},
+					{
+						"script_score": {
+							"script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)"
+						}
+					}
+					],
+					"query": {
+						"filtered": {
+							"query": {'
+								.$query.
+							'}'.$filters.'
+						}
+					},
+					"score_mode": "sum",
+					"boost_mode": "replace"
+				}
+			}
+		}';
+
+		//echo $body; exit;
+		$serachbody = json_decode($body,true);
+		$searchParams['index'] = 'fitadmin';
+		$searchParams['type']  = $type;
+		//$searchParams['size'] = $this->limit;
+		$searchParams['body'] = $serachbody;
+		//print_pretty($searchParams);exit;
+		$results =  Es::search($searchParams);
+		//printPretty($results);
+		return $results;
+
+
+		//echo $body; exit;
+	}
+
+
+
 	public function getFindersJsonData() {				
 		$searchParams = array();
 		$type = "finder";		       
