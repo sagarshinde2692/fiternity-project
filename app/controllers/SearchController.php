@@ -518,6 +518,20 @@ class SearchController extends \BaseController {
 		$body =	'{				
 			"from": '.$from.',
 			"size": '.$size.',
+			"aggs" : {
+				"all_categorys" : {
+		            "global" : {}, 
+		            "aggs" : { 
+		                "category" : { "terms" : { "field" : "category", "size": 10000} }
+		            }
+		        },
+		        "all_locations" : {
+		            "global" : {}, 
+		            "aggs" : { 
+		                "location" : { "terms" : { "field" : "location", "size": 10000} }
+		            }
+		        }
+		    },
 			"query": {
 				"function_score": {
 					"functions": ['.$basecategory_score.'
