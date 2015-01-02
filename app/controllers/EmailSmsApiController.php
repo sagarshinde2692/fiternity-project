@@ -341,7 +341,7 @@ class EmailSmsApiController extends \BaseController {
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
-				'location' => Input::json()->get('location')
+				'location' => Input::json()->get('location'),
 				'vendor' => Input::json()->get('vendor'),
 				'finder_offer' => Input::json()->get('finder_offer')
 				);
