@@ -559,17 +559,6 @@ class SearchController extends \BaseController {
 			}
 		}';
 
-		//echo $body; exit;
-		//$serachbody = json_decode($body,true);		
-		// $searchParams['index'] = 'fitadmin';
-		// $searchParams['type']  = $type;
-		// //$searchParams['size'] = $this->limit;
-		// $searchParams['body'] = $serachbody;
-		// //print_pretty($searchParams);exit;
-		// $results =  Es::search($searchParams);
-		//printPretty($results);
-		//return $results;
-
 
 		$serachbody = $body;
 		$request = array(
@@ -621,8 +610,6 @@ class SearchController extends \BaseController {
 
 		$resp 	= array('deals_of_week' => $deals_of_week, 'search_results' => $search_results );
 		return Response::json($resp);
-
-
 		//echo $body; exit;
 	}
 
