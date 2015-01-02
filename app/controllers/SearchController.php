@@ -576,39 +576,39 @@ class SearchController extends \BaseController {
 						  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 						  		'price'=>99,
 						  		'special_price'=>99,
-						  		'largeImage'=>'http://a.fitn.in/featured/10/p/1.jpg'					  		
+						  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg'					  		
 						  	),	
 							array(
 						  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 						  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 						  		'price'=>1850,
 						  		'special_price'=>1850,
-						  		'largeImage'=>'http://a.fitn.in/featured/10/p/2.jpg'					  		
+						  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg'					  		
 						  	),	
 						  	array(
 						  		'name'=>'Harbinger Classic WristWrap Gloves',
 						  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 						  		'price'=>1949,
 						  		'special_price'=>1949,
-						  		'largeImage'=>'http://a.fitn.in/featured/10/p/3.jpg'					  		
+						  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg'					  		
 						  	),	
 						  	array(
 						  		'name'=>'TEGO Antimicrobial Towel',
 						  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 						  		'price'=>499,
 						  		'special_price'=>499,
-						  		'largeImage'=>'http://a.fitn.in/featured/10/p/4.jpg'					  		
+						  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg'					  		
 						  	),	
 						  	array(
 						  		'name'=>'Accu-Check Active Meter Only Kit',
 						  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 						  		'price'=>1480,
 						  		'special_price'=>1480,
-						  		'largeImage'=>'http://a.fitn.in/featured/10/p/5.jpg'					  		
-						  	),	
+						  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg'					  		
+						  	)
 				);
 
-		$resp 	= array('deals_of_week' => $deals_of_week, 'search_results' => json_decode($search_results,true));
+		$resp 	= 	array('deals_of_week' => $deals_of_week, 'search_results' => json_decode($search_results,true));
 		return Response::json($resp);
 		//echo $body; exit;
 	}
