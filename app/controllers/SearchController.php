@@ -560,14 +560,25 @@ class SearchController extends \BaseController {
 		}';
 
 		//echo $body; exit;
-		$serachbody = json_decode($body,true);
-		$searchParams['index'] = 'fitadmin';
-		$searchParams['type']  = $type;
-		//$searchParams['size'] = $this->limit;
-		$searchParams['body'] = $serachbody;
-		//print_pretty($searchParams);exit;
-		$results =  Es::search($searchParams);
+		//$serachbody = json_decode($body,true);		
+		// $searchParams['index'] = 'fitadmin';
+		// $searchParams['type']  = $type;
+		// //$searchParams['size'] = $this->limit;
+		// $searchParams['body'] = $serachbody;
+		// //print_pretty($searchParams);exit;
+		// $results =  Es::search($searchParams);
 		//printPretty($results);
+
+
+		$serachbody = $body;
+		$request = array(
+			'url' => "http://54.179.134.14:9200/fitadmin/findermembership/_search",
+			'port' => 9200,
+			'method' => 'POST',
+			'postfields' => $serachbody
+			);
+		
+		$results = es_curl_request($request);
 		return $results;
 
 
