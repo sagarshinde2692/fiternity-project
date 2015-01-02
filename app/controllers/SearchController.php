@@ -608,7 +608,7 @@ class SearchController extends \BaseController {
 						  	),	
 				);
 
-		$resp 	= array('deals_of_week' => $deals_of_week, 'search_results' => $search_results );
+		$resp 	= json_encode(array('deals_of_week' => $deals_of_week, 'search_results' => $search_results));
 		return Response::json($resp);
 		//echo $body; exit;
 	}
