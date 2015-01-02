@@ -576,6 +576,7 @@ class SearchController extends \BaseController {
 
 
 	public function get_deals_of_day(){
+		date_default_timezone_set("Asia/Kolkata");
 		$deals_of_day 	= 	array();
 		$weekday 		= 	strtolower(date('l'));
 		if($weekday == ""){ $weekday = "sunday";}

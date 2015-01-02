@@ -99,7 +99,6 @@ class EmailSmsApiController extends \BaseController {
 		return Response::json($resp);
 	}
 
-
 	public function BookTrail() {
 		date_default_timezone_set("Asia/Kolkata");
 		$data = array(
@@ -191,7 +190,6 @@ class EmailSmsApiController extends \BaseController {
 			);
 		$this->sendSMS($smsdata);
 	}
-
 
 	public function SubscribeNewsletter(){
 		$list_id = 'd2a433c826';
@@ -339,21 +337,21 @@ class EmailSmsApiController extends \BaseController {
 
 	public function offeravailed(){
 		date_default_timezone_set("Asia/Kolkata");
-		$emaildata = array(
-			'email_template' => 'emails.finder.offeravailed', 
-			'email_template_data' => $data = array(
+		$data = array(
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
-				'findertitle' => Input::json()->get('vendor'),
-				'title' => Input::json()->get('title'),
-				'location' => Input::json()->get('location'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'				=> 	Config::get('mail.to_neha'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_offer_pop'), 
-			'email_subject' 	=> 	'Request for Available Offer - '.Input::json()->get('vendor'),
-			'send_bcc_status' 	=> 	1
+				'location' => Input::json()->get('location')
+				'vendor' => Input::json()->get('vendor'),
+				'finder_offer' => Input::json()->get('finder_offer')
+				);
+		$emaildata = array(
+			'email_template' 		=> 	'emails.finder.offeravailed', 
+			'email_template_data' 	=> 	$data, 
+			'to'					=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_finder_offer_pop'), 
+			'email_subject' 		=> 	'Request for Available Offer - '.Input::json()->get('vendor'),
+			'send_bcc_status' 		=> 	1
 			);
 		$this->sendEmail($emaildata);
 
@@ -363,14 +361,6 @@ class EmailSmsApiController extends \BaseController {
 			);
 
 		$this->sendSMS($smsdata);
-
-		$data = array(
-			'capture_type' => Input::json()->get('capture_type'),
-			'name' => Input::json()->get('name'), 
-			'phone' => Input::json()->get('phone'),
-			'findertitle' => Input::json()->get('vendor'),
-			'location' => Input::json()->get('location'),
-			);
 
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
