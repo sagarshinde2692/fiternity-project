@@ -589,60 +589,60 @@ class SearchController extends \BaseController {
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"product"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
 								  	),array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"service"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"service"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"service"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
 								  	)
 
 						);
@@ -654,60 +654,60 @@ class SearchController extends \BaseController {
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"product"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
 								  	),array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"service"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"service"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"service"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
 								  	)
 
 						);
@@ -719,60 +719,60 @@ class SearchController extends \BaseController {
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"product"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
 								  	),array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"service"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"service"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"service"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
 								  	)
 
 						);
@@ -784,60 +784,60 @@ class SearchController extends \BaseController {
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"product"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
 								  	),array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"service"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"service"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"service"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
 								  	)
 
 						);
@@ -849,60 +849,60 @@ class SearchController extends \BaseController {
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"product"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
 								  	),array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"service"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"service"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"service"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
 								  	)
 
 						);
@@ -914,62 +914,61 @@ class SearchController extends \BaseController {
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"product"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
 								  	),array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"service"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"service"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"service"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
 								  	)
-
 						);
 			break;
 
@@ -979,62 +978,61 @@ class SearchController extends \BaseController {
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"product"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
 								  	),array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
 								  		'url'=>'http://store.fitternity.com/jiwa-diabetic-care-atta-1-kg',
 								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'price'=>99,'special_price'=>99,'type'=>"service"
+								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
 								  		'url'=>'http://store.fitternity.com/high-voltage-whey-6000-1-kg-chocolate',
 								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'price'=>1850,'special_price'=>1850,'type'=>"service"
+								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Harbinger Classic WristWrap Gloves',
 								  		'url'=>'http://store.fitternity.com/harbinger-classic-wristwrap-gloves',
 								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'TEGO Antimicrobial Towel',
 								  		'url'=>'http://store.fitternity.com/tego-antimicrobial-towel',
 								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'price'=>499,'special_price'=>499,'type'=>"service"
+								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
 								  	),	
 								  	array(
 								  		'name'=>'Accu-Check Active Meter Only Kit',
 								  		'url'=>'http://store.fitternity.com/accu-chek-active-meter-only-kit',
 								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
 								  	)
-
 						);
 			break;
 	    }//switch
