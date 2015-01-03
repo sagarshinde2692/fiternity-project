@@ -343,7 +343,8 @@ class EmailSmsApiController extends \BaseController {
 				'phone' => Input::json()->get('phone'),
 				'location' => Input::json()->get('location'),
 				'vendor' => Input::json()->get('vendor'),
-				'finder_offer' => Input::json()->get('finder_offer')
+				'finder_offer' => Input::json()->get('finder_offer'),
+				'capture_type' => Input::json()->get('capture_type')
 				);
 		$emaildata = array(
 			'email_template' 		=> 	'emails.finder.offeravailed', 
