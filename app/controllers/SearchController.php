@@ -640,170 +640,101 @@ class SearchController extends \BaseController {
 			break;
 
 			case "monday":
-			$deals_of_day   = array(
-								  array(
-								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
-								  	),
-									array(
-								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
-								  	),
+			$deals_of_day   = array(								  
 								  	array(
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',						  		
-								  		'discount'=>97,'price'=>3500,'special_price'=>99,'type'=>"service"
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+										'location'=>'Bandra , Chowpatty',
+								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',				  		
-								  		'discount'=>72,'price'=>3500,'special_price'=>999,'type'=>"service"
+								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sukoon-rajani',
+								  		'location'=>'Bandra , Marine Drive',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'name'=>'Zumba with Yogesh Kushalkar - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_3.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
+								  		'location'=>'Lokhandwala,Khar,Ghatkopar',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'name'=>'Zumba with illumination - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
+								  		'location'=>'Andheri,Kandivali,Goregaon,Dahisar',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	)
-
 						);
 			break;
 
 			case "tuesday":
 			$deals_of_day   = array(
-								  array(
-								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
-								  	),
-									array(
-								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
-								  	),
 								  	array(
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>97,'price'=>3500,'special_price'=>99,'type'=>"service"
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+										'location'=>'Bandra , Chowpatty',
+								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>72,'price'=>3500,'special_price'=>999,'type'=>"service"
+								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sukoon-rajani',
+								  		'location'=>'Bandra , Marine Drive',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'name'=>'Zumba with Yogesh Kushalkar - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_3.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
+								  		'location'=>'Lokhandwala,Khar,Ghatkopar',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'name'=>'Zumba with illumination - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
+								  		'location'=>'Andheri,Kandivali,Goregaon,Dahisar',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	)
-
 						);
 			break;
 
 			case "wednesday":
 			$deals_of_day   = array(
-								  array(
-								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
-								  	),
-									array(
-								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
-								  	),
 								  	array(
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>97,'price'=>3500,'special_price'=>99,'type'=>"service"
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+										'location'=>'Bandra , Chowpatty',
+								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>72,'price'=>3500,'special_price'=>999,'type'=>"service"
+								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sukoon-rajani',
+								  		'location'=>'Bandra , Marine Drive',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
+								  		'name'=>'Zumba with Yogesh Kushalkar - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_3.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
+								  		'location'=>'Lokhandwala,Khar,Ghatkopar',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
+								  		'name'=>'Zumba with illumination - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
+								  		'location'=>'Andheri,Kandivali,Goregaon,Dahisar',
+								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	)
-
 						);
 			break;
 
