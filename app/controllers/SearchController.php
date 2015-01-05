@@ -699,7 +699,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Zumba with illumination - 12 Sessions',
 								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Andheri,Kandivali,Goregaon,Dahisar',
+								  		'location'=>'Andheri to Dahisar',
 								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	)
 						);
@@ -732,7 +732,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Zumba with illumination - 12 Sessions',
 								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Andheri,Kandivali,Goregaon,Dahisar',
+								  		'location'=>'Andheri to Dahisar',
 								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
 								  	)
 						);
