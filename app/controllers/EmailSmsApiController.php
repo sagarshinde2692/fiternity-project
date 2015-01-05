@@ -347,7 +347,7 @@ class EmailSmsApiController extends \BaseController {
 				'capture_type' => Input::json()->get('capture_type')
 				);
 
-		$capture_type_subject =  str_replace("-"," ",Input::json()->get('capture_type')); 
+		$capture_type_subject =  ucfirst(str_replace("-"," ",Input::json()->get('capture_type'))); 
 		
 
 		$emaildata = array(
@@ -355,7 +355,7 @@ class EmailSmsApiController extends \BaseController {
 			'email_template_data' 	=> 	$data, 
 			'to'					=> 	Config::get('mail.to_neha'), 
 			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_finder_offer_pop'), 
-			'email_subject' 		=> 	'Request for Available Offer - '. $capture_type_subject ." ".Input::json()->get('vendor'),
+			'email_subject' 		=> 	$capture_type_subject ." ".Input::json()->get('vendor'),
 			'send_bcc_status' 		=> 	1
 			);
 		$this->sendEmail($emaildata);
