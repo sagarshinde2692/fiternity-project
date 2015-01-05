@@ -587,7 +587,7 @@ class SearchController extends \BaseController {
 			$deals_of_day   = array(
 								  array(
 								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
+								  		'image'=>'http://b.fitn.in/featured/10/p/1.jpg',					  		
 								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
 								  	),
 									array(
@@ -612,12 +612,12 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',					  		
 								  		'discount'=>97,'price'=>3500,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',					  		
 								  		'discount'=>72,'price'=>3500,'special_price'=>999,'type'=>"service"
 								  	),	
 								  	array(
@@ -668,12 +668,12 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',						  		
 								  		'discount'=>97,'price'=>3500,'special_price'=>99,'type'=>"service"
 								  	),
 									array(
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',				  		
 								  		'discount'=>72,'price'=>3500,'special_price'=>999,'type'=>"service"
 								  	),	
 								  	array(
