@@ -645,7 +645,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
 								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra , Chowpatty',
+										'location'=>'Bandra',
 								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
@@ -678,7 +678,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
 								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra , Chowpatty',
+										'location'=>'Bandra',
 								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
