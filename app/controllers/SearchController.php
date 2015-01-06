@@ -646,7 +646,7 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
 										'location'=>'Bandra',
-								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
 									array(
 								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
@@ -668,7 +668,14 @@ class SearchController extends \BaseController {
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
 								  		'location'=>'Andheri to Dahisar',
 								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
-								  	)
+								  	),
+								  	array(
+								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+										'location'=>'Bandra',
+								  		'discount'=>'42%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  	),	
 						);
 			break;
 
@@ -679,7 +686,7 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
 										'location'=>'Bandra',
-								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
 									array(
 								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
@@ -718,8 +725,8 @@ class SearchController extends \BaseController {
 								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
 								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra , Chowpatty',
-								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+										'location'=>'Bandra',
+								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
 									array(
 								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
@@ -741,7 +748,14 @@ class SearchController extends \BaseController {
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
 								  		'location'=>'Andheri to Dahisar',
 								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
-								  	)
+								  	),
+								  	array(
+								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+										'location'=>'Bandra',
+								  		'discount'=>'42%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  	),	
 						);
 			break;
 
