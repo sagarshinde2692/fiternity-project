@@ -716,6 +716,14 @@ class SearchController extends \BaseController {
 										'location'=>'Bandra',
 								  		'discount'=>'42%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
 								  	),								  	
+									array(
+								  		'name'=>"V's Fitness - Zumba - 1 Month 24 Sessions",
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_5.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
+										'location'=>'Khar, Powai',
+								  		'discount'=>'50%','price'=>5000,'special_price'=>2499,'type'=>"service",'sold_out'=>0
+								  	),	
+			
 						);
 			break;
 
