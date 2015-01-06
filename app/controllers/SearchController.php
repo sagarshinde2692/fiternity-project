@@ -701,7 +701,14 @@ class SearchController extends \BaseController {
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
 								  		'location'=>'Andheri to Dahisar',
 								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
-								  	)
+								  	),
+								  	array(
+								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+										'location'=>'Bandra',
+								  		'discount'=>'42%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  	),								  	
 						);
 			break;
 
