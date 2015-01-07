@@ -731,10 +731,10 @@ class SearchController extends \BaseController {
 			$deals_of_day   = array(
 								  	array(
 								  		'name'=>'Bodyholics - Combine Training - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_4.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_4s.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
 								  		'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'97%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'97%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
 								  	array(
 								  		'name'=>'Mint Fitness - Group X Training - 6 Months + 6 Months FREE',
@@ -757,6 +757,13 @@ class SearchController extends \BaseController {
 								  		'location'=>'Khar',
 								  		'discount'=>'30%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
 								  	),	
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_4.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
+								  		'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+								  	),
 								  	array(
 								  		'name'=>'F2  - Unlimited Sessions - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/7_5.jpg',		
@@ -771,10 +778,10 @@ class SearchController extends \BaseController {
 			$deals_of_day   = array(
 								  	array(
 								  		'name'=>'Bodyholics - Combine Training - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_4.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_4s.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
 								  		'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'97%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'97%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
 								  	array(
 								  		'name'=>'Mint Fitness - Group X Training - 6 Months + 6 Months FREE',
@@ -797,6 +804,13 @@ class SearchController extends \BaseController {
 								  		'location'=>'Khar',
 								  		'discount'=>'30%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
 								  	),	
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_4.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
+								  		'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+								  	),
 								  	array(
 								  		'name'=>'F2  - Unlimited Sessions - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/7_5.jpg',		
