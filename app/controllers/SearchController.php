@@ -576,12 +576,13 @@ class SearchController extends \BaseController {
 
 
 	public function get_deals_of_day(){
-		date_default_timezone_set("America/Sao_Paulo");
+		date_default_timezone_set("America/New_York");
 		$deals_of_day 	= 	array();
 		$weekday 		= 	strtolower(date('l'));
 		if($weekday == ""){ $weekday = "sunday";}
-		
 		//echo $weekday;
+		//return date('m/d/Y h:i:s a', time());
+		
 		switch ($weekday) {
 			case "sunday":
 			$deals_of_day   = array(
