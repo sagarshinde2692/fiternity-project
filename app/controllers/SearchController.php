@@ -730,96 +730,80 @@ class SearchController extends \BaseController {
 			case "wednesday":
 			$deals_of_day   = array(
 								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1s.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+								  		'name'=>'Mint Fitness - Group X Training - 6 Months + 6 Months FREE',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
 										'location'=>'Bandra',
-								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'50%','price'=>15499,'special_price'=>7750,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sukoon-rajani',
-								  		'location'=>'Bandra , Marine Drive',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+								  		'name'=>"V's Fitness - Group X Training - 6 Months + 6 Months FREE",
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_2.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/v-s-fitness-powai',
+								  		'location'=>'Powai',
+								  		'discount'=>'15%','price'=>29999,'special_price'=>15000,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Zumba with Yogesh Kushalkar - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_3.jpg',
+								  		'name'=>'Reebok Fitness Studio - 12 sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_3.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
-								  		'location'=>'Lokhandwala,Khar,Ghatkopar',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+								  		'location'=>'Khar',
+								  		'discount'=>'30%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Zumba with illumination - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_4.jpg',	
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Andheri to Dahisar',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+								  		'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
+								  		'name'=>'F2  - Unlimited Sessions - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_5.jpg',		
 								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra',
-								  		'discount'=>'42%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+										'location'=>'Khar',
+								  		'discount'=>'20%','price'=>6500,'special_price'=>5200,'type'=>"service",'sold_out'=>0
 								  	),	
 						);
 			break;
 
 			case "thursday":
 			$deals_of_day   = array(
-								  array(
-								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
+								  	array(
+								  		'name'=>'Mint Fitness - Group X Training - 6 Months + 6 Months FREE',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_1.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
+										'location'=>'Bandra',
+								  		'discount'=>'50%','price'=>15499,'special_price'=>7750,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'name'=>"V's Fitness - Group X Training - 6 Months + 6 Months FREE",
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_2.jpg',
+								  		'finder_url' => 'http://www.fitternity.com/v-s-fitness-powai',
+								  		'location'=>'Powai',
+								  		'discount'=>'15%','price'=>29999,'special_price'=>15000,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'name'=>'Reebok Fitness Studio - 12 sessions',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_3.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
+								  		'location'=>'Khar',
+								  		'discount'=>'30%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_4.jpg',	
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
+								  		'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>97,'price'=>3500,'special_price'=>99,'type'=>"service"
-								  	),
-									array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>72,'price'=>3500,'special_price'=>999,'type'=>"service"
+								  		'name'=>'F2  - Unlimited Sessions - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/7_5.jpg',		
+								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
+										'location'=>'Khar',
+								  		'discount'=>'20%','price'=>6500,'special_price'=>5200,'type'=>"service",'sold_out'=>0
 								  	),	
-								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
-								  	),	
-								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
-								  	)
-
 						);
 			break;
 
