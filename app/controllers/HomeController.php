@@ -98,20 +98,20 @@ class HomeController extends BaseController {
 		$western_suburbs_finders 			= 		Finder::whereIn('_id', $western_suburbs_finder_ids)
 															->remember(Config::get('app.cachetime'))
 															->get(array('_id','title','slug','coverimage'));
-		array_set($finders,  'western_suburbs_finders', $western_suburbs_finders);		
+		array_set($finders,  'western_suburbs_finders', array('title'=>'western_suburbs_finders', 'finders' => $western_suburbs_finders));		
 
 		$central_mumbai_finder_ids 			=		array(1257,2);
 		$central_mumbai_finders 			= 		Finder::whereIn('_id', $central_mumbai_finder_ids)
 															->remember(Config::get('app.cachetime'))
 															->get(array('_id','title','slug','coverimage'));
-		array_set($finders,  'central_mumbai_finders', $central_mumbai_finders);		
+		array_set($finders,  'central_mumbai_finders', array('title'=>'central_mumbai_finders', 'finders' => $central_mumbai_finders));		
 
 
 		$south_mumbai_finder_ids 			=		array(1257,2);
 		$south_mumbai_finders 				= 		Finder::whereIn('_id', $south_mumbai_finder_ids)
 															->remember(Config::get('app.cachetime'))
 															->get(array('_id','title','slug','coverimage'));
-		array_set($finders,  'south_mumbai_finders', $south_mumbai_finders);		
+		array_set($finders,  'south_mumbai_finders', array('title'=>'south_mumbai_finders', 'finders' => $south_mumbai_finders));		
 
 
 		return Response::json($finders);
