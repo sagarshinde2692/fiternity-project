@@ -92,14 +92,6 @@ class HomeController extends BaseController {
 
 
 	public function fitcardpagefinders(){
-
-		// return $category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		// 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		// 												->where('finder_type', '=', 1)
-		// 												->where('status', '=', '1')
-		// 												->get(array('_id','title','slug','category_id','category'));
-
-
 		$finders							= 		array();
 
 		$bandra_vileparle_finder_ids 		=		array(579,878,590,1606,1580,752,566,131,1747,1813,1021,424,1451,905,1388,1630,728,1031,1495,816,902,1650,1424,1587,1080,224,984,1563,1242,223,1887,1751,1493,1783,1691,1516,1781,1784,827,147,417,1676,1885,825,569,61,1431,123,968,1664,571,881,1673,1704,900,1623,1766,1765,596,400,1452,1604,1690,987,1431,1607,1656,1666,1621,1673,613,1473,1242,616);
@@ -136,5 +128,34 @@ class HomeController extends BaseController {
 		return Response::json($finders);
 
 	}	
+
+	public function specialoffers_finder(){
+		$finders							= 		array();
+
+		$findersrs 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->where('finder_type', '=', 1)
+														->where('status', '=', '1')
+														//->whereIn('_id', array(570))
+														->get(array('_id','title','slug','category_id','category','special_offer_title'))
+														//->take(1)
+														->toArray();
+
+
+		foreach ($findersrs as $key => $value) {
+             $postdata = array(
+                'finderid' => $value['_id'],
+                'category' => strtolower($value['category']['name']),
+                'slug' => $value['slug'],
+                'title' => strtolower($value['title']),
+                'special_offer_title' => (isset($value['special_offer_title']) && $value['special_offer_title'] != '') ? $value['special_offer_title'] : ""
+            );
+	        array_push($finders, $postdata);         
+
+		}
+
+		return Response::json($finders);
+
+	}
 
 }																																																																																																																																																																																																																																																																										

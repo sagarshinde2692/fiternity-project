@@ -17,6 +17,7 @@ Route::get('/test', function() { return "laravel 4.2 goes here....";});
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
+Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 
 ##############################################################################
 /******************** USERS SECTION START HERE ***********************/
