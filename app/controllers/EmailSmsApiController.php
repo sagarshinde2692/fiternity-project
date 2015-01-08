@@ -284,6 +284,36 @@ class EmailSmsApiController extends \BaseController {
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
+	public function landingpageregister(){
+		date_default_timezone_set("Asia/Kolkata");
+		$emaildata = array(
+			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
+			'email_template_data' => $data = array(
+				'name' => Input::json()->get('name'), 
+				'email' => Input::json()->get('email'), 
+				'phone' => Input::json()->get('phone'),
+				'findertitle' => Input::json()->get('title'),
+				'location' => Input::json()->get('location'),
+				'date' => date("h:i:sa")        
+				), 
+			'to'				=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'), 
+			'email_subject' 	=> Input::json()->get('subject'),
+			'send_bcc_status' 	=> 1 
+			);
+		$this->sendEmail($emaildata);
+		$code = rand(1000,99999);
+		$smsdata = array(
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Your registration code is '.$code
+			);
+
+		$this->sendSMS($smsdata);
+		$data 			= Input::json()->all();
+		$storecapture 	= Capture::create($data);
+		$resp 			= array('status' => 200,'message' => "Recieved the Request");
+		return Response::json($resp);
+	}
 
 	public function landingconversion(){
 		date_default_timezone_set("Asia/Kolkata");
