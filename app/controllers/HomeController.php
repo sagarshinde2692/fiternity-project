@@ -94,24 +94,35 @@ class HomeController extends BaseController {
 	public function fitcardpagefinders(){
 		$finders							= 		array();
 
-		$western_suburbs_finder_ids 		=		array(1257,2);
-		$western_suburbs_finders 			= 		Finder::whereIn('_id', $western_suburbs_finder_ids)
+		$bandra_vileparle_finder_ids 		=		array(579,878,590,1606,1580,752,566,131,1747,1813,1021,424,1451,905,1388,1630,728,1031,1495,816,902,1650,1424,1587,1080,224,984,1563,1242,223,1887,1751,1493,1783,1691,1516,1781,1784,827,147,417,1676,1885,825,569,61,1431,123,968,1664,571,881,1673,1704,900,1623,1766,1765,596,400,1452,1604,1690,987,1431,1607,1656,1666,1621,1673,613,1473,1242,616);
+		$bandra_vileparle_finders 			= 		Finder::whereIn('_id', $bandra_vileparle_finder_ids)
 															->remember(Config::get('app.cachetime'))
 															->get(array('_id','title','slug','coverimage'));
-		array_set($finders,  'western_suburbs_finders', array('title'=>'western_suburbs_finders', 'finders' => $western_suburbs_finders));		
+		array_set($finders,  'bandra_vileparle_finders', array('title'=>'Bandra to Vile Parle', 'finders' => $bandra_vileparle_finders));		
 
-		$central_mumbai_finder_ids 			=		array(1257,2);
-		$central_mumbai_finders 			= 		Finder::whereIn('_id', $central_mumbai_finder_ids)
+
+
+		$andheri_borivalii_finder_ids 		=		array(1579,1261,1705,401,561,341,1655,1513,1510,739,1514,570,1260,1261,40,1465,523,576,1332,166,1447,602,1428,224,1887,1786,604,1771,1257,1751,1523,1554,1235,1209,439,1421,625,1020,1522,1392,1667,1484,1041,1435,1694,1259,1413,45,449,1330,227,1697,1395,1511,1154,1873,1698,1691,1389,412,1642,1480,1676,417,1682,1069,1677,1445,1424,223,1214,1688,1080,1490);
+		$andheri_borivalii_finders 			= 		Finder::whereIn('_id', $andheri_borivalii_finder_ids)
 															->remember(Config::get('app.cachetime'))
 															->get(array('_id','title','slug','coverimage'));
-		array_set($finders,  'central_mumbai_finders', array('title'=>'central_mumbai_finders', 'finders' => $central_mumbai_finders));		
+		array_set($finders,  'andheri_borivalii_finders', array('title'=>'Bandra to Vile Parle', 'finders' => $andheri_borivalii_finders));		
 
 
-		$south_mumbai_finder_ids 			=		array(1257,2);
+
+		$south_mumbai_finder_ids 			=		array(718,329,26,25,1603,1605,1449,328,171,1296,1327,1422,1710,1441,1293,1295,903,1835,1639,983,1851,569,1764,1823,1493,1646,1242,1563,1783,1887,984,1612,827,417,1888,1782,138,731,1,422,1122,1781,1029,1706,1331,1333,1233);
 		$south_mumbai_finders 				= 		Finder::whereIn('_id', $south_mumbai_finder_ids)
 															->remember(Config::get('app.cachetime'))
 															->get(array('_id','title','slug','coverimage'));
-		array_set($finders,  'south_mumbai_finders', array('title'=>'south_mumbai_finders', 'finders' => $south_mumbai_finders));		
+		array_set($finders,  'south_mumbai_finders', array('title'=>'South Mumbai', 'finders' => $south_mumbai_finders));		
+
+
+		$central_suburbs_finder_ids 		=		array(1450,1602,413,1609,437,1501,927,1494,700,1264,1269,1357,256,1030,170,417,1454,1581,1266);
+		$central_suburbs_finders 			= 		Finder::whereIn('_id', $central_suburbs_finder_ids)
+															->remember(Config::get('app.cachetime'))
+															->get(array('_id','title','slug','coverimage'));
+		array_set($finders,  'central_suburbs_finders', array('title'=>'Central Suburbs', 'finders' => $central_suburbs_finders));		
+
 
 
 		return Response::json($finders);
