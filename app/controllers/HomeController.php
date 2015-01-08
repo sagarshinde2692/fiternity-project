@@ -106,7 +106,7 @@ class HomeController extends BaseController {
 		$andheri_borivalii_finders 			= 		Finder::whereIn('_id', $andheri_borivalii_finder_ids)
 															->remember(Config::get('app.cachetime'))
 															->get(array('_id','title','slug','coverimage'));
-		array_set($finders,  'andheri_borivalii_finders', array('title'=>'Bandra to Vile Parle', 'finders' => $andheri_borivalii_finders));		
+		array_set($finders,  'andheri_borivalii_finders', array('title'=>'Andheri to Borivali', 'finders' => $andheri_borivalii_finders));		
 
 
 
