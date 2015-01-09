@@ -588,142 +588,123 @@ class SearchController extends \BaseController {
 			case "sunday":
 			$deals_of_day   = array(
 								  array(
-								  		'name'=>'Jiwa Diabetic care Atta - 1 KG',
-								  		'image'=>'http://b.fitn.in/featured/10/p/1.jpg',					  		
-								  		'discount'=>50,'price'=>99,'special_price'=>99,'type'=>"product"
+								  		'name'=>'Muscle N Mind - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_1.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'40%','price'=>22000,'special_price'=>13200,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'Beyond Fitness - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_2.jpg',	
+										'location'=>'Malabar Hill',
+								  		'discount'=>'50%','price'=>40000,'special_price'=>20000,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>'High Voltage Whey 6000 1 KG - Chocolate',
-								  		'image'=>'http://a.fitn.in/featured/10/p/2.jpg',					  		
-								  		'discount'=>50,'price'=>1850,'special_price'=>1850,'type'=>"product"
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_3.jpg',
+								  		'location'=>'Opera House',
+								  		'discount'=>'30%','price'=>23000,'special_price'=>16100,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http_date()://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"product"
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_4.jpg',
+								  		'location'=>'Mumbai Central',
+								  		'discount'=>'30%','price'=>17500,'special_price'=>12250,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"product"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"product"									  		
+								  		'name'=>'Integym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_5.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'25%','price'=>18000,'special_price'=>13500,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',					  		
-								  		'discount'=>97,'price'=>3500,'special_price'=>99,'type'=>"service"
-								  	),
-									array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',					  		
-								  		'discount'=>72,'price'=>3500,'special_price'=>999,'type'=>"service"
+								  		'name'=>'Powerhouse Gym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_6.jpg',		
+										'location'=>'Mumbai Central',
+								  		'discount'=>'13%','price'=>7500,'special_price'=>6500,'type'=>"service",'sold_out'=>0
 								  	),	
-								  	array(
-								  		'name'=>'Harbinger Classic WristWrap Gloves',
-								  		'image'=>'http://a.fitn.in/featured/10/p/3.jpg',					  		
-								  		'discount'=>50,'price'=>1949,'special_price'=>1949,'type'=>"service"
-								  	),	
-								  	array(
-								  		'name'=>'TEGO Antimicrobial Towel',
-								  		'image'=>'http://a.fitn.in/featured/10/p/4.jpg',
-								  		'discount'=>50,'price'=>499,'special_price'=>499,'type'=>"service"
-								  	),	
-								  	array(
-								  		'name'=>'Accu-Check Active Meter Only Kit',
-								  		'image'=>'http://a.fitn.in/featured/10/p/5.jpg',					  		
-								  		'discount'=>50,'price'=>1480,'special_price'=>1480,'type'=>"service"									  		
-								  	)
 
 						);
 			break;
 
 			case "monday":
 			$deals_of_day   = array(								  
+								   array(
+								  		'name'=>'Muscle N Mind - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_1.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'40%','price'=>22000,'special_price'=>13200,'type'=>"service",'sold_out'=>0
+								  	),
 								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1s.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra',
-								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'name'=>'Beyond Fitness - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_2.jpg',	
+										'location'=>'Malabar Hill',
+								  		'discount'=>'50%','price'=>40000,'special_price'=>20000,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sukoon-rajani',
-								  		'location'=>'Bandra , Marine Drive',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_3.jpg',
+								  		'location'=>'Opera House',
+								  		'discount'=>'30%','price'=>23000,'special_price'=>16100,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Zumba with Yogesh Kushalkar - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_3.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
-								  		'location'=>'Lokhandwala,Khar,Ghatkopar',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_4.jpg',
+								  		'location'=>'Mumbai Central',
+								  		'discount'=>'30%','price'=>17500,'special_price'=>12250,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Zumba with illumination - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Andheri to Dahisar',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Integym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_5.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'25%','price'=>18000,'special_price'=>13500,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra',
-								  		'discount'=>'42%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Powerhouse Gym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_6.jpg',		
+										'location'=>'Mumbai Central',
+								  		'discount'=>'13%','price'=>7500,'special_price'=>6500,'type'=>"service",'sold_out'=>0
 								  	),	
 						);
 			break;
 
 			case "tuesday":
 			$deals_of_day   = array(
-								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1s.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra',
-								  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>1
-								  	),
-									array(
-								  		'name'=>'Zumba with Sukoon Rajani - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_2.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sukoon-rajani',
-								  		'location'=>'Bandra , Marine Drive',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	array(
-								  		'name'=>'Zumba with Yogesh Kushalkar - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_3.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
-								  		'location'=>'Lokhandwala,Khar,Ghatkopar',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	array(
-								  		'name'=>'Zumba with illumination - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_4.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Andheri to Dahisar',
-								  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+								   array(
+								  		'name'=>'Muscle N Mind - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_1.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'40%','price'=>22000,'special_price'=>13200,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Zumba with Sucheta Pal - 12 Sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_1.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra',
-								  		'discount'=>'42%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
-								  	),								  	
+								  		'name'=>'Beyond Fitness - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_2.jpg',	
+										'location'=>'Malabar Hill',
+								  		'discount'=>'50%','price'=>40000,'special_price'=>20000,'type'=>"service",'sold_out'=>0
+								  	),
 									array(
-								  		'name'=>"V's Fitness - Zumba - 1 Month 24 Sessions",
-								  		'image'=>'http://b.fitn.in/global/fitmania/5_5.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
-										'location'=>'Khar, Powai',
-								  		'discount'=>'50%','price'=>5000,'special_price'=>2499,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_3.jpg',
+								  		'location'=>'Opera House',
+								  		'discount'=>'30%','price'=>23000,'special_price'=>16100,'type'=>"service",'sold_out'=>0
+								  	),	
+								  	array(
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_4.jpg',
+								  		'location'=>'Mumbai Central',
+								  		'discount'=>'30%','price'=>17500,'special_price'=>12250,'type'=>"service",'sold_out'=>0
+								  	),	
+								  	array(
+								  		'name'=>'Integym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_5.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'25%','price'=>18000,'special_price'=>13500,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'Powerhouse Gym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_6.jpg',		
+										'location'=>'Mumbai Central',
+								  		'discount'=>'13%','price'=>7500,'special_price'=>6500,'type'=>"service",'sold_out'=>0
 								  	),	
 			
 						);
@@ -873,46 +854,40 @@ class SearchController extends \BaseController {
 			case "saturday":
 			$deals_of_day   = array(
 								  array(
-								  		'name'=>'Korean Martial Arts - Taekwondo 1 month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_1.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'7 Bunglows',
-								  		'discount'=>'95%','price'=>2000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Muscle N Mind - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_1.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'40%','price'=>22000,'special_price'=>13200,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Total Combat Fitness - 1 month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_2.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
-										'location'=>'Kandivali , Andheri , Dadar',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Beyond Fitness - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_2.jpg',	
+										'location'=>'Malabar Hill',
+								  		'discount'=>'50%','price'=>40000,'special_price'=>20000,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>"Fighting Fit - 1 Month",
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_3.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/v-s-fitness-powai',
-								  		'location'=>'Bandra,Khar,Worli,Tardeo',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_3.jpg',
+								  		'location'=>'Opera House',
+								  		'discount'=>'30%','price'=>23000,'special_price'=>16100,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_4.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
-								  		'location'=>'Juhu',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_4.jpg',
+								  		'location'=>'Mumbai Central',
+								  		'discount'=>'30%','price'=>17500,'special_price'=>12250,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Capoeira Mumbai Kids Classes - 1 Month ',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_5.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Khar',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Integym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_5.jpg',	
+								  		'location'=>'Colaba',
+								  		'discount'=>'25%','price'=>18000,'special_price'=>13500,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Xtreme Fight Federation - 1 Session',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_6.jpg',		
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra , Andheri , Tardeo , Lokhandwala , Marine Drive',
-								  		'discount'=>'66%','price'=>750,'special_price'=>250,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Powerhouse Gym - 1 Year Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/10_6.jpg',		
+										'location'=>'Mumbai Central',
+								  		'discount'=>'13%','price'=>7500,'special_price'=>6500,'type'=>"service",'sold_out'=>0
 								  	),	
 						);
 			break;
