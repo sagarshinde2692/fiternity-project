@@ -404,6 +404,7 @@ class EmailSmsApiController extends \BaseController {
 
 
 	public function fitcardbuy(){
+		date_default_timezone_set("Asia/Kolkata");
 		$data = array(
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
