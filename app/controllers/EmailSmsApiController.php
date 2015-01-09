@@ -410,7 +410,8 @@ class EmailSmsApiController extends \BaseController {
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
 				'location' => Input::json()->get('location'),
-				'capture_type' => 'fitcardbuy'
+				'capture_type' => 'fitcardbuy',
+				'date' => date("h:i:sa")  
 				);
 
 		$emaildata = array(

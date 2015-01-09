@@ -18,7 +18,7 @@
 								<tr><td>User Email:</td><td>{{$email}}</td></tr>
 								<tr><td>User Phone:</td><td>{{$phone}}</td></tr>
 								<tr><td>User Location:</td><td>{{$location}}</td></tr>
-								<tr><td>Date:</td><td>{{ date('h:i:sa') }}</td></tr>
+								<tr><td>Date:</td><td>{{ $date }}</td></tr>
 							</table> 
 
 							<p style="font-size:16px;color:#464646;text-align:justify;">
