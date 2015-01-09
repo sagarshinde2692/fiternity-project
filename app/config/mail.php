@@ -135,6 +135,7 @@ return array(
 
 	'bcc_emailds_request_callback' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
 	'bcc_emailds_book_trial' 						=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_fitcardbuy' 						=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
 	'bcc_emailds_register_me' 						=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 
 	'bcc_emailds_request_callback_landing_page' 	=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),

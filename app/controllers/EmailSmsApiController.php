@@ -403,4 +403,36 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 
+	public function fitcardbuy(){
+		$data = array(
+				'name' => Input::json()->get('name'), 
+				'email' => Input::json()->get('email'), 
+				'phone' => Input::json()->get('phone'),
+				'location' => Input::json()->get('location'),
+				'capture_type' => 'fitcardbuy'
+				);
+
+		$emaildata = array(
+			'email_template' 		=> 	'emails.finder.fitcardbuy', 
+			'email_template_data' 	=> 	$data, 
+			'to'					=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_fitcardbuy'), 
+			'email_subject' 		=> 'Request for fitcard purchase',
+			'send_bcc_status' 		=> 	1
+			);
+		$this->sendEmail($emaildata);
+
+		$smsdata = array(
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for purchasing FitCard. You will be receiving a call and email from us to kickstart your fitness journey.'
+		);
+
+		$this->sendSMS($smsdata);
+
+		$storecapture 	= Capture::create($data);
+		$resp 			= array('status' => 200,'message' => "Recieved the Request");
+		return Response::json($resp);
+
+	}
+
 }
