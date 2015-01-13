@@ -108,7 +108,7 @@ class SearchController extends \BaseController {
 			}
 		}';
 
-		return $body;exit;
+		//return $body;exit;
 		//$serachbody = Input::json()->all();
 		//$searchParams['size'] = $this->limit;
 		$serachbody = json_decode($body,true);		
@@ -637,7 +637,7 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>40000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
@@ -652,6 +652,12 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
 								  		'location'=>'Andheri West',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>40000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
@@ -672,7 +678,7 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
@@ -705,7 +711,13 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
-								  	),						  		
+								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 						);
 			break;
 
@@ -719,7 +731,7 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
@@ -752,7 +764,13 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
-								  	),						  		
+								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 						);
 			break;
 
@@ -766,7 +784,7 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
@@ -799,7 +817,13 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
-								  	),						  		
+								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 						);
 			break;
 
@@ -813,7 +837,7 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
@@ -846,7 +870,13 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
-								  	),						  		
+								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 						);
 			break;
 
@@ -860,7 +890,7 @@ class SearchController extends \BaseController {
 								  	),
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
@@ -893,7 +923,13 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
-								  	),						  		
+								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 						);
 			break;
 	    }//switch
@@ -1031,19 +1067,75 @@ class SearchController extends \BaseController {
 	}
 
 
-	public function getFindersJsonData() {				
-		$searchParams = array();
-		$type = "finder";		       
-		$body = Input::json()->all();		
+
+
+
+	public function getGlobalv2() {
+		$searchParams 	= 	array();
+		$type 			= 	"finder";		 		
+		$filters 		= 	"";		 		
+		$globalkeyword 	=  Input::json()->get('keyword');
+		$from 			=  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$size 			=  (Input::json()->get('size')) ? Input::json()->get('size') : 10;		
+
+
+		$body = '
+		{
+			"from": '.$from.',
+			"size": '.$size.',
+			"query": {
+				"function_score": {
+					"functions": [
+					{
+						"script_score": {
+							"script": "log(doc[\'popularity\'].value)"
+						}
+					},
+					{
+						"script_score": {
+							"script": "(doc[\'_type\'].value == \'finder\' ? 100 : 0)"
+						}
+					},
+					{
+						"script_score": {
+							"script": "(doc[\'finder.finder_type\'].value > 0 ? 20 : 0)"
+						}
+					}
+					],
+					"query": {
+						"filtered": {
+							"query": {
+								"multi_match": {
+									"query": "'.$globalkeyword.'",
+									"fields": [
+									"finder.title^30",
+									"finder.category^20",
+									"finder.location.region^10",
+									"finder.category_tags^5",
+									"finder.location.region_tags^5"
+									]
+								}
+							}
+							'.$filters.'
+						}
+					},
+					"score_mode": "sum",
+					"boost_mode": "sum"
+				}
+			}
+		}';
+
+		return $body;exit;
+		//$serachbody = Input::json()->all();
+		//$searchParams['size'] = $this->limit;
+		$serachbody = json_decode($body,true);		
 		$searchParams['index'] = $this->indice;
-		$searchParams['type']  = $type;
-		$searchParams['size'] = $this->limit;
-		$searchParams['body'] = $body;
-		//printPretty($searchParams);exit;
+		$searchParams['type']  = $type;		
+		$searchParams['body'] = $serachbody;
+		//print"<pre>";print_r($searchParams);exit;
 		$results =  Es::search($searchParams);
 		//printPretty($results);
-		return $results;
-		
+		return $results;		
 	}
 
 
@@ -1164,14 +1256,20 @@ class SearchController extends \BaseController {
 
 	}
 
-
-
-
-
-
-
-
-
+	public function getFindersJsonData() {				
+		$searchParams = array();
+		$type = "finder";		       
+		$body = Input::json()->all();		
+		$searchParams['index'] = $this->indice;
+		$searchParams['type']  = $type;
+		$searchParams['size'] = $this->limit;
+		$searchParams['body'] = $body;
+		//printPretty($searchParams);exit;
+		$results =  Es::search($searchParams);
+		//printPretty($results);
+		return $results;
+		
+	}
 
 
 
