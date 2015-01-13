@@ -1076,13 +1076,27 @@ class SearchController extends \BaseController {
 		$filters 		= 	"";		 		
 		$globalkeyword 	=  Input::json()->get('keyword');
 		$from 			=  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
-		$size 			=  (Input::json()->get('size')) ? Input::json()->get('size') : 10;		
+		$size 			=  (Input::json()->get('size')) ? Input::json()->get('size') : 5;		
 
 
 		$body = '
 		{
 			"from": '.$from.',
 			"size": '.$size.',
+			"aggs" : {
+				"all_categorys" : {
+		            "global" : {}, 
+		            "aggs" : { 
+		                "category" : { "terms" : { "field" : "category", "size": 10000} }
+		            }
+		        },
+		        "all_locations" : {
+		            "global" : {}, 
+		            "aggs" : { 
+		                "location" : { "terms" : { "field" : "location", "size": 10000} }
+		            }
+		        }
+		    },
 			"query": {
 				"function_score": {
 					"functions": [
@@ -1093,12 +1107,7 @@ class SearchController extends \BaseController {
 					},
 					{
 						"script_score": {
-							"script": "(doc[\'_type\'].value == \'finder\' ? 100 : 0)"
-						}
-					},
-					{
-						"script_score": {
-							"script": "(doc[\'finder.finder_type\'].value > 0 ? 20 : 0)"
+							"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 0)"
 						}
 					}
 					],
@@ -1108,11 +1117,11 @@ class SearchController extends \BaseController {
 								"multi_match": {
 									"query": "'.$globalkeyword.'",
 									"fields": [
-									"finder.title^30",
+									"finder.title^50",
 									"finder.category^20",
-									"finder.location.region^10",
-									"finder.category_tags^5",
-									"finder.location.region_tags^5"
+									"finder.categorytags^5",
+									"finder.location^20",
+									"finder.locationtags^5"
 									]
 								}
 							}
@@ -1126,14 +1135,14 @@ class SearchController extends \BaseController {
 		}';
 
 		return $body;exit;
-		//$serachbody = Input::json()->all();
-		//$searchParams['size'] = $this->limit;
-		$serachbody = json_decode($body,true);		
-		$searchParams['index'] = $this->indice;
-		$searchParams['type']  = $type;		
-		$searchParams['body'] = $serachbody;
+		//$serachbody 			= 	Input::json()->all();
+		//$searchParams['size'] = 	$this->limit;
+		$serachbody 			=	json_decode($body,true);		
+		$searchParams['index'] 	=	$this->indice;
+		$searchParams['type']  	=	$type;		
+		$searchParams['body'] 	=	$serachbody;
 		//print"<pre>";print_r($searchParams);exit;
-		$results =  Es::search($searchParams);
+		$results 				=	Es::search($searchParams);
 		//printPretty($results);
 		return $results;		
 	}
