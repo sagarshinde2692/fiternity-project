@@ -690,7 +690,7 @@ class SearchController extends \BaseController {
 								  	),	
 								  	array(
 								  		'name'=>'The Soul Studio (Folka)',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_5.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
 								  		'location'=>'Andheri West',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
@@ -705,145 +705,109 @@ class SearchController extends \BaseController {
 
 			case "wednesday":
 			$deals_of_day   = array(
-								  	array(
-								  		'name'=>'Bodyholics - Combine Training - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_4s.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'97%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								   array(
+								  		'name'=>'48 Fitness',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Mint Fitness - Group X Training - 6 Months + 6 Months FREE',
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_1.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
-										'location'=>'Bandra',
-								  		'discount'=>'50%','price'=>15499,'special_price'=>7750,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Anytime Fitness',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>40000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>"V's Fitness - Group X Training - 6 Months + 6 Months FREE",
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_2.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/v-s-fitness-powai',
-								  		'location'=>'Powai',
-								  		'discount'=>'15%','price'=>29999,'special_price'=>15000,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Fitness First",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
+								  		'location'=>'Oshiwara',
+								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Reebok Fitness Studio - 12 sessions',
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_3.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
-								  		'location'=>'Khar',
-								  		'discount'=>'30%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	array(
-								  		'name'=>'Bodyholics - Combine Training - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_4.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+								  		'name'=>'The Soul Studio (Folka)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'F2  - Unlimited Sessions - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/7_5.jpg',		
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Khar',
-								  		'discount'=>'20%','price'=>6500,'special_price'=>5200,'type'=>"service",'sold_out'=>0
-								  	),	
+								  		'name'=>"Endurance Fitness",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
+								  		'location'=>'Juhu',
+								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  	),				
 						);
 			break;
 
 			case "thursday":
 			$deals_of_day   = array(
-								  	array(
-								  		'name'=>'Korean Martial Arts - Taekwondo 1 month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_1.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'7 Bunglows',
-								  		'discount'=>'95%','price'=>2000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								   array(
+								  		'name'=>'48 Fitness',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Total Combat Fitness - 1 month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_2.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
-										'location'=>'Kandivali , Andheri , Dadar',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Anytime Fitness',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>40000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>"Fighting Fit - 1 Month",
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_3.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/v-s-fitness-powai',
-								  		'location'=>'Bandra,Khar,Worli,Tardeo',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Fitness First",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
+								  		'location'=>'Oshiwara',
+								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_4.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
-								  		'location'=>'Juhu',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	array(
-								  		'name'=>'Capoeira Mumbai Kids Classes - 1 Month ',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_5.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Khar',
+								  		'name'=>'The Soul Studio (Folka)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Xtreme Fight Federation - 1 Session',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_6.jpg',		
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra , Andheri , Tardeo , Lokhandwala , Marine Drive',
-								  		'discount'=>'66%','price'=>750,'special_price'=>250,'type'=>"service",'sold_out'=>0
-								  	),	
+								  		'name'=>"Endurance Fitness",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
+								  		'location'=>'Juhu',
+								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  	),				
 						);
 			break;
 
 			case "friday":
 			$deals_of_day   = array(
-								  array(
-								  		'name'=>'Korean Martial Arts - Taekwondo 1 month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_1.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'7 Bunglows',
-								  		'discount'=>'95%','price'=>2000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								   array(
+								  		'name'=>'48 Fitness',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Total Combat Fitness - 1 month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_2.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/mint-v-s-fitness-khar-west',
-										'location'=>'Kandivali , Andheri , Dadar',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Anytime Fitness',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>40000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>"Fighting Fit - 1 Month",
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_3.jpg',
-								  		'finder_url' => 'http://www.fitternity.com/v-s-fitness-powai',
-								  		'location'=>'Bandra,Khar,Worli,Tardeo',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Fitness First",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
+								  		'location'=>'Oshiwara',
+								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
-								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_4.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-yogesh-kushalkar',
-								  		'location'=>'Juhu',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	array(
-								  		'name'=>'Capoeira Mumbai Kids Classes - 1 Month ',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_5.jpg',	
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-illumination',
-								  		'location'=>'Khar',
+								  		'name'=>'The Soul Studio (Folka)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Xtreme Fight Federation - 1 Session',
-								  		'image'=>'http://b.fitn.in/global/fitmania/8_6.jpg',		
-								  		'finder_url' => 'http://www.fitternity.com/zumba-with-sucheta-pal',
-										'location'=>'Bandra , Andheri , Tardeo , Lokhandwala , Marine Drive',
-								  		'discount'=>'66%','price'=>750,'special_price'=>250,'type'=>"service",'sold_out'=>0
-								  	),	
+								  		'name'=>"Endurance Fitness",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
+								  		'location'=>'Juhu',
+								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  	),				
 						);
 			break;
-
+			
 			case "saturday":
 			$deals_of_day   = array(
 								  array(
