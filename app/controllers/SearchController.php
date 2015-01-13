@@ -714,7 +714,7 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
@@ -767,7 +767,7 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
@@ -820,7 +820,7 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
@@ -873,7 +873,7 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
@@ -926,7 +926,7 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
