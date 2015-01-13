@@ -707,7 +707,7 @@ class SearchController extends \BaseController {
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
 								  	array(
-								  		'name'=>'Zest 4 Life - 1 Month (All Fitness Forms)',
+								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
@@ -760,7 +760,7 @@ class SearchController extends \BaseController {
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
 								  	array(
-								  		'name'=>'Zest 4 Life - 1 Month (All Fitness Forms)',
+								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
@@ -813,7 +813,7 @@ class SearchController extends \BaseController {
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
 								  	array(
-								  		'name'=>'Zest 4 Life - 1 Month (All Fitness Forms)',
+								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
@@ -866,7 +866,7 @@ class SearchController extends \BaseController {
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
 								  	array(
-								  		'name'=>'Zest 4 Life - 1 Month (All Fitness Forms)',
+								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
@@ -919,7 +919,7 @@ class SearchController extends \BaseController {
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
 								  	array(
-								  		'name'=>'Zest 4 Life - 1 Month (All Fitness Forms)',
+								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
@@ -1134,7 +1134,7 @@ class SearchController extends \BaseController {
 			}
 		}';
 
-		return $body;exit;
+		//return $body;exit;
 		//$serachbody 			= 	Input::json()->all();
 		//$searchParams['size'] = 	$this->limit;
 		$serachbody 			=	json_decode($body,true);		
