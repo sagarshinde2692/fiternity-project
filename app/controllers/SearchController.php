@@ -1000,7 +1000,6 @@ class SearchController extends \BaseController {
 
 
 	public function getFitcardFinders(){
-			
 		$searchParams 		= 	array();
 		$type 				= 	"fitcardfinder";		    	
 		$filters 			=	"";	
