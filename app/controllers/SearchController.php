@@ -787,7 +787,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
 										'location'=>'Bandra,Khar,Worli,Tardeo',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
@@ -799,25 +799,25 @@ class SearchController extends \BaseController {
 								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Bodyholics - Combine Training - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
 										'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),								  	
 								  	array(
 								  		'name'=>'Powerhouse - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Activ8  - Pilates - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 						);
 			break;
@@ -876,7 +876,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
 										'location'=>'Bandra,Khar,Worli,Tardeo',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
@@ -888,25 +888,25 @@ class SearchController extends \BaseController {
 								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Bodyholics - Combine Training - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
 										'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),								  	
 								  	array(
 								  		'name'=>'Powerhouse - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Activ8  - Pilates - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 						);
 			break;
@@ -965,7 +965,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
 										'location'=>'Bandra,Khar,Worli,Tardeo',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
@@ -977,25 +977,25 @@ class SearchController extends \BaseController {
 								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Bodyholics - Combine Training - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
 										'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),								  	
 								  	array(
 								  		'name'=>'Powerhouse - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Activ8  - Pilates - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 						);
 			break;
@@ -1054,7 +1054,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
 										'location'=>'Bandra,Khar,Worli,Tardeo',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
@@ -1066,25 +1066,25 @@ class SearchController extends \BaseController {
 								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Bodyholics - Combine Training - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
 										'location'=>'Lokhandwala,Malad',
-								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),								  	
 								  	array(
 								  		'name'=>'Powerhouse - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>'Activ8  - Pilates - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 						);
 			break;
