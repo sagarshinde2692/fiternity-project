@@ -760,17 +760,17 @@ class SearchController extends \BaseController {
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
-								  	),			  		
-								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
 								  		'location'=>'Juhu',
 								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
 								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 								  	array(
 								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -825,17 +825,17 @@ class SearchController extends \BaseController {
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
-								  	),			  		
-								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
 								  		'location'=>'Juhu',
 								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
 								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 								  	array(
 								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -890,17 +890,17 @@ class SearchController extends \BaseController {
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
-								  	),			  		
-								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
 								  		'location'=>'Juhu',
 								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
 								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 								  	array(
 								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -927,7 +927,7 @@ class SearchController extends \BaseController {
 								  	),									  	
 						);
 			break;
-
+			
 			case "saturday":
 			$deals_of_day   = array(
 								   array(
@@ -955,17 +955,17 @@ class SearchController extends \BaseController {
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
-								  	),			  		
-								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
 								  		'location'=>'Juhu',
 								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
 								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 								  	array(
 								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
