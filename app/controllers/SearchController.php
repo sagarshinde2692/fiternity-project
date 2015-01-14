@@ -741,12 +741,6 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
-								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
-								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
@@ -789,12 +783,42 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
+								  	array(
+								  		'name'=>'Fighting Fit - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
+										'location'=>'Bandra,Khar,Worli,Tardeo',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),									  	
+								  	),	
+								  	array(
+								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
+										'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  	),								  	
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),		
 						);
 			break;
 
@@ -806,12 +830,6 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
-								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
-								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
@@ -854,12 +872,42 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
+								  	array(
+								  		'name'=>'Fighting Fit - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
+										'location'=>'Bandra,Khar,Worli,Tardeo',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),									  	
+								  	),	
+								  	array(
+								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
+										'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  	),								  	
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),		
 						);
 			break;
 
@@ -871,12 +919,6 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
-								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
-								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
@@ -919,12 +961,42 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
+								  	array(
+								  		'name'=>'Fighting Fit - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
+										'location'=>'Bandra,Khar,Worli,Tardeo',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),									  	
+								  	),	
+								  	array(
+								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
+										'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  	),								  	
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),		
 						);
 			break;
 
@@ -936,12 +1008,6 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
-								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
-								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
@@ -984,12 +1050,42 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
+								  	array(
+								  		'name'=>'Fighting Fit - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
+										'location'=>'Bandra,Khar,Worli,Tardeo',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),									  	
+								  	),	
+								  	array(
+								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
+										'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>1
+								  	),								  	
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),		
 						);
 			break;
 	    }//switch
@@ -1001,7 +1097,7 @@ class SearchController extends \BaseController {
 
 	public function getFitcardFinders(){
 
-		
+
 		$searchParams 		= 	array();
 		$type 				= 	"fitcardfinder";		    	
 		$filters 			=	"";	
@@ -1156,16 +1252,27 @@ class SearchController extends \BaseController {
 		            "aggs" : { 
 		                "location" : { "terms" : { "field" : "location", "size": 10000} }
 		            }
-		        }
+		        },
+				"all_offerings" : {
+		            "global" : {}, 
+		            "aggs" : { 
+		                "offerings" : { "terms" : { "field" : "offerings", "size": 10000} }
+		            }
+		        },
+				"all_facilities" : {
+		            "global" : {}, 
+		            "aggs" : { 
+		                "facilities" : { "terms" : { "field" : "facilities", "size": 10000} }
+		            }
+		        },		        		        
+	            "resultset_categorys": { "terms": {"field": "category","size": 10000 } },
+	            "resultset_locations": { "terms": {"field": "location","size": 10000 } },
+	            "resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
+	            "resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
 		    },
 			"query": {
 				"function_score": {
 					"functions": [
-					{
-						"script_score": {
-							"script": "log(doc[\'popularity\'].value)"
-						}
-					},
 					{
 						"script_score": {
 							"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 0)"
@@ -1195,17 +1302,32 @@ class SearchController extends \BaseController {
 			}
 		}';
 
+
 		return $body;exit;
-		//$serachbody 			= 	Input::json()->all();
-		//$searchParams['size'] = 	$this->limit;
-		$serachbody 			=	json_decode($body,true);		
-		$searchParams['index'] 	=	$this->indice;
-		$searchParams['type']  	=	$type;		
-		$searchParams['body'] 	=	$serachbody;
-		//print"<pre>";print_r($searchParams);exit;
-		$results 				=	Es::search($searchParams);
-		//printPretty($results);
-		return $results;		
+
+		$serachbody = $body;
+		$request = array(
+			'url' => "http://54.179.134.14:9200/fitadmin/finder/_search",
+			'port' => 9200,
+			'method' => 'POST',
+			'postfields' => $serachbody
+			);
+		
+		$search_results 	=	es_curl_request($request);
+		$resp 				= 	array('search_results' => json_decode($search_results,true));
+		return Response::json($resp);
+		//echo $body; exit;
+
+		// //$serachbody 			= 	Input::json()->all();
+		// //$searchParams['size'] = 	$this->limit;
+		// $serachbody 			=	json_decode($body,true);		
+		// $searchParams['index'] 	=	$this->indice;
+		// $searchParams['type']  	=	$type;		
+		// $searchParams['body'] 	=	$serachbody;
+		// //print"<pre>";print_r($searchParams);exit;
+		// $results 				=	Es::search($searchParams);
+		// //printPretty($results);
+		// return $results;		
 	}
 
 
