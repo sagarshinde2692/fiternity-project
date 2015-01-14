@@ -680,7 +680,7 @@ class SearchController extends \BaseController {
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
 										'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
@@ -695,6 +695,12 @@ class SearchController extends \BaseController {
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
+								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
 								  		'location'=>'Juhu',
@@ -708,16 +714,22 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_77.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
-								  	),			
-								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
-								  	),			  		
+								  	),		
+									array(
+								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+									array(
+								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),									  	
 						);
 			break;
 
@@ -767,19 +779,19 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_77.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_8.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_9.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),									  	
@@ -832,19 +844,19 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_77.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_8.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_9.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),									  	
@@ -897,19 +909,19 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_77.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_8.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_9.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),									  	
@@ -962,19 +974,19 @@ class SearchController extends \BaseController {
 								  	),			
 								  	array(
 								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_7.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_77.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_8.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),		
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_9.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),									  	
