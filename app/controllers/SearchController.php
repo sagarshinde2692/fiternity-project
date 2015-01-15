@@ -930,14 +930,14 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	
-								  	array(
-								  		'name'=>'Powerhouse - 3 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-								  	),	
+								  	),									  	
+								   array(
+								  		'name'=>'48 Fitness - 1 Session Pass',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
+								  	),
+
 								  	array(
 								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -950,12 +950,12 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
-								   array(
-								  		'name'=>'48 Fitness - 1 Session Pass',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
-								  	),
+								  	array(
+								  		'name'=>'Powerhouse - 3 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+								  	),	
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
@@ -1032,14 +1032,14 @@ class SearchController extends \BaseController {
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	
-								  	array(
-								  		'name'=>'Powerhouse - 3 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-								  	),	
+								  	),									  	
+								   array(
+								  		'name'=>'48 Fitness - 1 Session Pass',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
+								  	),
+
 								  	array(
 								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -1052,12 +1052,12 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
-								   array(
-								  		'name'=>'48 Fitness - 1 Session Pass',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
-								  	),
+								  	array(
+								  		'name'=>'Powerhouse - 3 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+								  	),	
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
@@ -1124,23 +1124,24 @@ class SearchController extends \BaseController {
 			case "saturday":
 			$deals_of_day   = array(
 								  	array(
-								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
-								  	array(
 								  		'name'=>'Powerhouse - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13s.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
+								  	),									  	
+								   array(
+								  		'name'=>'48 Fitness - 1 Session Pass',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
+								  	),
+
 								  	array(
 								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -1153,12 +1154,12 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
-								   array(
-								  		'name'=>'48 Fitness - 1 Session Pass',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
-								  	),
+								  	array(
+								  		'name'=>'Powerhouse - 3 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+								  	),	
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
@@ -1207,6 +1208,18 @@ class SearchController extends \BaseController {
 								  		'location'=>'Andheri West',
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'10%','price'=>6400,'special_price'=>5760,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14s.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),		
 						);
 			break;
 	    }//switch
@@ -1346,12 +1359,50 @@ class SearchController extends \BaseController {
 
 
 	public function getGlobalv2() {
-		$searchParams 	= 	array();
-		$type 			= 	"finder";		 		
-		$filters 		= 	"";		 		
-		$globalkeyword 	=  Input::json()->get('keyword');
-		$from 			=  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
-		$size 			=  (Input::json()->get('size')) ? Input::json()->get('size') : 5;		
+		$searchParams 			=	array();
+		$type 					= 	"finder";		 		
+		$filters 				= 	"";		 		
+		$globalkeyword 			=  	Input::json()->get('keyword');
+		$from 					=  	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$size 					=  	(Input::json()->get('size')) ? Input::json()->get('size') : 5;		
+
+
+		$category 				=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
+		$location 				=	(Input::json()->get('location')) ? Input::json()->get('location') : '';		
+		$offerings 				=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
+		$facilities 			=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
+		$price_range 			=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
+
+		//filters 
+		$category_filter 		=	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
+		$categorytags_filter 	=	($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
+		$location_filter 		=	($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
+		$locationtags_filter 	=	($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
+		$offerings_filter 		=	($offerings != '') ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
+		$facilities_filter 		=	($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';	
+		$price_range_filter 	=	($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","',Input::json()->get('price_range')).'"] }},'  : '';	
+
+		$shouldfilter = $mustfilter = '';
+		
+		//used for location , category, 	
+		if($location_filter != ''){			
+			//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
+			$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
+			$shouldfilter = '"should": ['.$should_filtervalue.'],';	
+		}
+		
+		//used for offering, facilities and price range
+		if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+			$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
+			$mustfilter = '"must": ['.$must_filtervalue.']';		
+		}
+
+		if($shouldfilter != '' || $mustfilter != ''){
+			$filtervalue = trim($shouldfilter.$mustfilter,',');	
+			$filters = ',"filter": { 
+							"bool" : {'.$filtervalue.'}
+						},"_cache" : true';
+		}
 
 
 		$body = '
