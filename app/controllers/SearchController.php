@@ -586,49 +586,25 @@ class SearchController extends \BaseController {
 		
 		switch ($weekday) {
 			case "sunday":
-			$deals_of_day   = array(
-								  array(
-								  		'name'=>'Muscle N Mind - 1 Year Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/10_1.jpg',	
-								  		'location'=>'Colaba',
-								  		'discount'=>'40%','price'=>22000,'special_price'=>13200,'type'=>"service",'sold_out'=>0
-								  	),
+				$deals_of_day   = array(
 								  	array(
-								  		'name'=>'Beyond Fitness - 1 Year Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/10_2.jpg',	
-										'location'=>'Malabar Hill',
-								  		'discount'=>'50%','price'=>40000,'special_price'=>20000,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
-								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
-								  		'image'=>'http://b.fitn.in/global/fitmania/10_3.jpg',
-								  		'location'=>'Opera House',
-								  		'discount'=>'30%','price'=>23000,'special_price'=>16100,'type'=>"service",'sold_out'=>0
+								  		'name'=>"Fitness First - 1 Week Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
+								  		'location'=>'Oshiwara',
+								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 								  	),	
-								  	array(
-								  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
-								  		'image'=>'http://b.fitn.in/global/fitmania/10_4.jpg',
-								  		'location'=>'Mumbai Central',
-								  		'discount'=>'30%','price'=>17500,'special_price'=>12250,'type'=>"service",'sold_out'=>0
-								  	),	
-								  	array(
-								  		'name'=>'Integym - 1 Year Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/10_5.jpg',	
-								  		'location'=>'Colaba',
-								  		'discount'=>'25%','price'=>18000,'special_price'=>13500,'type'=>"service",'sold_out'=>0
-								  	),
-								  	array(
-								  		'name'=>'Powerhouse Gym - 1 Year Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/10_6.jpg',		
-										'location'=>'Mumbai Central',
-								  		'discount'=>'13%','price'=>7500,'special_price'=>6500,'type'=>"service",'sold_out'=>0
-								  	),	
-
-						);
-			break;
-
-			case "monday":
-			$deals_of_day   = array(
 								   array(
 								  		'name'=>'48 Fitness - 1 Session Pass',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
@@ -636,16 +612,28 @@ class SearchController extends \BaseController {
 								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
+								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
+								  		'location'=>'Juhu',
+								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+								  	),			
+								  	array(
 								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2s.jpg',	
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
 										'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>40000,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
 									array(
-								  		'name'=>"Fitness First - 1 Week Gym Membership",
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
-								  		'location'=>'Oshiwara',
-								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
+								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+									array(
+								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),	
 								  	array(
 								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
@@ -654,17 +642,124 @@ class SearchController extends \BaseController {
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
-								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
-										'location'=>'Lokhandwala',
-								  		'discount'=>'63%','price'=>40000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
+								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
+								  	),			
+								  	array(
+								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_77.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Fighting Fit - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
+										'location'=>'Bandra,Khar,Worli,Tardeo',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
+										'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+								  	),								  	
+						);
+			break;
+
+			case "monday":
+				$deals_of_day   = array(
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
+									array(
+								  		'name'=>"Fitness First - 1 Week Gym Membership",
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_3.jpg',
+								  		'location'=>'Oshiwara',
+								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
+								  	),	
+								   array(
+								  		'name'=>'48 Fitness - 1 Session Pass',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_4.jpg',
 								  		'location'=>'Juhu',
 								  		'discount'=>'30%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
-								  	),				
+								  	),			
+								  	array(
+								  		'name'=>'Anytime Fitness - 1 Month Gym Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_2.jpg',	
+										'location'=>'Lokhandwala',
+								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+								  	),			  		
+									array(
+								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+									array(
+								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),	
+								  	array(
+								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
+								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
+								  	),			
+								  	array(
+								  		'name'=>'Zest 4 Life - 1 Week RobusFit',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_77.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Fighting Fit - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
+										'location'=>'Bandra,Khar,Worli,Tardeo',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
+								  	array(
+								  		'name'=>'Bodyholics - Combine Training - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_12.jpg',	
+										'location'=>'Lokhandwala,Malad',
+								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+								  	),								  	
 						);
 			break;
 
@@ -824,11 +919,17 @@ class SearchController extends \BaseController {
 
 			case "thursday":
 			$deals_of_day   = array(
-								   array(
-								  		'name'=>'48 Fitness - 1 Session Pass',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
@@ -836,11 +937,11 @@ class SearchController extends \BaseController {
 								  		'location'=>'Oshiwara',
 								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 								  	),	
-								  	array(
-								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
-								  		'location'=>'Andheri West',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								   array(
+								  		'name'=>'48 Fitness - 1 Session Pass',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
@@ -854,6 +955,24 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
+									array(
+								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+									array(
+								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),	
+								  	array(
+								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
 								  	array(
 								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -866,24 +985,12 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),		
-									array(
-								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
 										'location'=>'Bandra,Khar,Worli,Tardeo',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
-									array(
-								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
 								  	array(
 								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
@@ -896,28 +1003,22 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala,Malad',
 								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),								  	
-								  	array(
-								  		'name'=>'Powerhouse - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),
-								  	array(
-								  		'name'=>'Activ8  - Pilates - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
 						);
 			break;
 
 			case "friday":
-			$deals_of_day   = array(
-								   array(
-								  		'name'=>'48 Fitness - 1 Session Pass',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
+				$deals_of_day   = array(
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
@@ -925,11 +1026,11 @@ class SearchController extends \BaseController {
 								  		'location'=>'Oshiwara',
 								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 								  	),	
-								  	array(
-								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
-								  		'location'=>'Andheri West',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								   array(
+								  		'name'=>'48 Fitness - 1 Session Pass',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
@@ -943,6 +1044,24 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
+									array(
+								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+									array(
+								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),	
+								  	array(
+								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
 								  	array(
 								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -955,24 +1074,12 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),		
-									array(
-								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
 										'location'=>'Bandra,Khar,Worli,Tardeo',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
-									array(
-								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
 								  	array(
 								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
@@ -985,28 +1092,22 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala,Malad',
 								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),								  	
-								  	array(
-								  		'name'=>'Powerhouse - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),
-								  	array(
-								  		'name'=>'Activ8  - Pilates - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
 						);
 			break;
 
 			case "saturday":
-			$deals_of_day   = array(
-								   array(
-								  		'name'=>'48 Fitness - 1 Session Pass',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
+				$deals_of_day   = array(
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+								  	array(
+								  		'name'=>'Powerhouse - 1 Month',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
 								  		'name'=>"Fitness First - 1 Week Gym Membership",
@@ -1014,11 +1115,11 @@ class SearchController extends \BaseController {
 								  		'location'=>'Oshiwara',
 								  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 								  	),	
-								  	array(
-								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
-								  		'location'=>'Andheri West',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								   array(
+								  		'name'=>'48 Fitness - 1 Session Pass',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_1.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
 								  	array(
 								  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
@@ -1032,6 +1133,24 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala',
 								  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
 								  	),			  		
+									array(
+								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),		
+									array(
+								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
+								  		'location'=>'Lokhandwala',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),	
+								  	array(
+								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
+								  		'location'=>'Andheri West',
+								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  	),
 								  	array(
 								  		'name'=>'The Soul Studio - 1 Month (All Fitness Forms)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -1044,24 +1163,12 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),		
-									array(
-								  		'name'=>'Bodyholics Parkour - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_88.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'98%','price'=>4000,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
 										'location'=>'Bandra,Khar,Worli,Tardeo',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
-									array(
-								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_99.jpg',	
-								  		'location'=>'Lokhandwala',
-								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),	
 								  	array(
 								  		'name'=>'Kaustubh Kickboxing Academy - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_11.jpg',	
@@ -1074,18 +1181,6 @@ class SearchController extends \BaseController {
 										'location'=>'Lokhandwala,Malad',
 								  		'discount'=>'25%','price'=>4000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 								  	),								  	
-								  	array(
-								  		'name'=>'Powerhouse - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),
-								  	array(
-								  		'name'=>'Activ8  - Pilates - 1 Month',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
 						);
 			break;
 	    }//switch
