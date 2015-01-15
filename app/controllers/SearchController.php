@@ -937,7 +937,6 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
-
 								  	array(
 								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
