@@ -920,29 +920,22 @@ class SearchController extends \BaseController {
 			case "thursday":
 			$deals_of_day   = array(
 								  	array(
-								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_14s.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
-								  	array(
 								  		'name'=>'Powerhouse - 1 Month Gym Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13s.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
-
 								  	array(
 								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'10%','price'=>6400,'special_price'=>5760,'type'=>"service",'sold_out'=>0
 								  	),		
 								  	array(
-								  		'name'=>'Powerhouse - 1 Month Gym Membership',
+								  		'name'=>'Powerhouse - 3 Month Gym Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 								  	),	
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
@@ -1016,35 +1009,34 @@ class SearchController extends \BaseController {
 								  		'location'=>'Andheri West',
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14s.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),		
 						);
 			break;
 
 			case "friday":
 			$deals_of_day   = array(
 								  	array(
-								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
-								  		'image'=>'http://b.fitn.in/global/fitmania/13_14s.jpg',	
-										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
-								  	),		
-								  	array(
 								  		'name'=>'Powerhouse - 1 Month Gym Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13s.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>1
 								  	),
-
 								  	array(
 								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_14.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'10%','price'=>6400,'special_price'=>5760,'type'=>"service",'sold_out'=>0
 								  	),		
 								  	array(
-								  		'name'=>'Powerhouse - 1 Month Gym Membership',
+								  		'name'=>'Powerhouse - 3 Month Gym Membership',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_13.jpg',	
 										'location'=>'Juhu',
-								  		'discount'=>'97%','price'=>3000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+								  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 								  	),	
 									array(
 								  		'name'=>'Bodyholics Cardio Boxing - 1 Month Membership',
@@ -1118,6 +1110,12 @@ class SearchController extends \BaseController {
 								  		'location'=>'Andheri West',
 								  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
 								  	),			
+								  	array(
+								  		'name'=>'Activ8  - Pilates - 1 Month Membership',
+								  		'image'=>'http://b.fitn.in/global/fitmania/13_14s.jpg',	
+										'location'=>'Juhu',
+								  		'discount'=>'98%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
+								  	),		
 						);
 			break;
 
