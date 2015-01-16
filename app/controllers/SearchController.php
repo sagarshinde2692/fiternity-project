@@ -598,7 +598,7 @@ class SearchController extends \BaseController {
 							  	),			  		
 							  	array(
 							  		'name'=>"Toni's Power Play Pilates - 1 Session(Personal Training)",
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_4.pg',	
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_4.jpg',	
 									'location'=>'Prabhadevi to Bandra',
 							  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 							  	),	
