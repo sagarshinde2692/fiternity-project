@@ -566,8 +566,8 @@ class SearchController extends \BaseController {
 		$search_results 	=	es_curl_request($request);
 		$deals_of_day   	=	$this->get_deals_of_day();
 		$resp 				= 	array("deals_of_day" => $deals_of_day, 
-										"deals_today_communication" => "Fitness in Andheri West", 
-										"deals_tomorrow_communication" => "Pilates", 
+										"deals_today_communication" => "Pilates", 
+										"deals_tomorrow_communication" => "Marothon Training", 
 										"deals_coming_communication" => "Martial Arts, Yoga & More....", 
 										"search_results" => json_decode($search_results,true)
 									);
@@ -614,7 +614,6 @@ class SearchController extends \BaseController {
 							  		'location'=>'Juhu',
 							  		'discount'=>'20%','price'=>8250,'special_price'=>6600,'type'=>"service",'sold_out'=>0
 							  	),	
-
 							);
 
         return $deals_of_day;
