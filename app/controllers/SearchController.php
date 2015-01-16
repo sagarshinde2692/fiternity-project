@@ -1060,7 +1060,7 @@ class SearchController extends \BaseController {
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
-										'location'=>'Bandra,Khar,Worli,Tardeo',
+										'location'=>'Bandra,Juhu',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
@@ -1140,7 +1140,6 @@ class SearchController extends \BaseController {
 								  		'location'=>'Lokhandwala',
 								  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
 								  	),
-
 								  	array(
 								  		'name'=>'The Soul Studio (Folka) - 1 Month (FOLKA)',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_55.jpg',	
@@ -1162,7 +1161,7 @@ class SearchController extends \BaseController {
 								  	array(
 								  		'name'=>'Fighting Fit - 1 Month',
 								  		'image'=>'http://b.fitn.in/global/fitmania/13_10.jpg',	
-										'location'=>'Bandra,Khar,Worli,Tardeo',
+										'location'=>'Bandra,Juhu',
 								  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 								  	),
 									array(
@@ -1255,10 +1254,13 @@ class SearchController extends \BaseController {
 
 		$shouldfilter = $mustfilter = '';
 		
+		$category_filter;
+
+
 		//used for location , category, 	
-		if($location_filter != ''){			
+		if($location_filter != '' || $category_filter != ''){			
 			//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
-			$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
+			$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
 			$shouldfilter = '"should": ['.$should_filtervalue.'],';	
 		}
 		
@@ -1358,19 +1360,24 @@ class SearchController extends \BaseController {
 
 
 	public function getGlobalv2() {
+		//var_dump(Input::json()->all());
+		//var_dump(Input::json()->all());
+		//var_dump(Input::json()->get('category'));
+
 		$searchParams 			=	array();
 		$type 					= 	"finder";		 		
 		$filters 				= 	"";		 		
-		$globalkeyword 			=  	Input::json()->get('keyword');
+		$globalkeyword 			=  	(Input::json()->get('keyword')) ? Input::json()->get('keyword') : "";
 		$from 					=  	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 					=  	(Input::json()->get('size')) ? Input::json()->get('size') : 5;		
-
 
 		$category 				=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
 		$location 				=	(Input::json()->get('location')) ? Input::json()->get('location') : '';		
 		$offerings 				=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
 		$facilities 			=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
 		$price_range 			=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
+
+
 
 		//filters 
 		$category_filter 		=	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
@@ -1383,18 +1390,27 @@ class SearchController extends \BaseController {
 
 		$shouldfilter = $mustfilter = '';
 		
-		//used for location , category, 	
-		if($location_filter != ''){			
-			//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
-			$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
-			$shouldfilter = '"should": ['.$should_filtervalue.'],';	
-		}
+		//return $category_filter;exit;
+
+		// //used for location , category, 	
+		// if($category_filter != '' || $location_filter != ''){			
+		// 	$should_filtervalue = trim($category_filter.$location_filter,',');	
+		// 	//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
+		// 	$shouldfilter = '"should": ['.$should_filtervalue.'],';	
+		// }
 		
-		//used for offering, facilities and price range
-		if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
-			$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
+		// //used for offering, facilities and price range
+		// if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+		// 	$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
+		// 	$mustfilter = '"must": ['.$must_filtervalue.']';		
+		// }
+
+
+		if($category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+			$must_filtervalue = trim($category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
 			$mustfilter = '"must": ['.$must_filtervalue.']';		
 		}
+
 
 		if($shouldfilter != '' || $mustfilter != ''){
 			$filtervalue = trim($shouldfilter.$mustfilter,',');	
@@ -1403,36 +1419,21 @@ class SearchController extends \BaseController {
 						},"_cache" : true';
 		}
 
+		//return $filters;exit;
 
-		$body = '
-		{
-			"from": '.$from.',
-			"size": '.$size.',
-			"aggs" : {
-				"all_categorys" : {
+		/*
+		"all_categorys" : {
 		            "global" : {}, 
 		            "aggs" : { 
 		                "category" : { "terms" : { "field" : "category", "size": 10000} }
 		            }
 		        },
-		        "all_locations" : {
-		            "global" : {}, 
-		            "aggs" : { 
-		                "location" : { "terms" : { "field" : "location", "size": 10000} }
-		            }
-		        },
-				"all_offerings" : {
-		            "global" : {}, 
-		            "aggs" : { 
-		                "offerings" : { "terms" : { "field" : "offerings", "size": 10000} }
-		            }
-		        },
-				"all_facilities" : {
-		            "global" : {}, 
-		            "aggs" : { 
-		                "facilities" : { "terms" : { "field" : "facilities", "size": 10000} }
-		            }
-		        },		        		        
+		*/		        
+		$body = '
+		{
+			"from": '.$from.',
+			"size": '.$size.',
+			"aggs" : {						        		        
 	            "resultset_categorys": { "terms": {"field": "category","size": 10000 } },
 	            "resultset_locations": { "terms": {"field": "location","size": 10000 } },
 	            "resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
@@ -1482,20 +1483,17 @@ class SearchController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
-		$resp 				= 	array('search_results' => json_decode($search_results,true));
-		return Response::json($resp);
-		//echo $body; exit;
+		
+		if($category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+			$firsttime_query_execution = 0;
+		}else{
+			$firsttime_query_execution = 1;
+		}
+		
+		$resp 				= 	array('search_results' => json_decode($search_results,true),'firsttime_query_execution' =>$firsttime_query_execution);
 
-		// //$serachbody 			= 	Input::json()->all();
-		// //$searchParams['size'] = 	$this->limit;
-		// $serachbody 			=	json_decode($body,true);		
-		// $searchParams['index'] 	=	$this->indice;
-		// $searchParams['type']  	=	$type;		
-		// $searchParams['body'] 	=	$serachbody;
-		// //print"<pre>";print_r($searchParams);exit;
-		// $results 				=	Es::search($searchParams);
-		// //printPretty($results);
-		// return $results;		
+		return Response::json($resp);
+				
 	}
 
 
