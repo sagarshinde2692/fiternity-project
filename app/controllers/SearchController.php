@@ -1120,6 +1120,7 @@ class SearchController extends \BaseController {
 						);
 			break;
 
+
 			case "saturday":
 			$deals_of_day   = array(
 								  	array(
