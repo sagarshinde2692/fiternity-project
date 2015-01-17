@@ -860,7 +860,7 @@ class SearchController extends \BaseController {
 			"from": '.$from.',
 			"size": '.$size.',
 			"aggs" : {						        		        
-	            "resultset_categorys": { "terms": {"field": "category","size": 10000 } },
+	            "resultset_categories": { "terms": {"field": "category","size": 10000 } },
 	            "resultset_locations": { "terms": {"field": "location","size": 10000 } },
 	            "resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
 	            "resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
