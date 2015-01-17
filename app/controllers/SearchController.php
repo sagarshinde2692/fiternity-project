@@ -592,9 +592,9 @@ class SearchController extends \BaseController {
 							  	),	
 							   array(
 							  		'name'=>'Activ8 - Pilates - 1 Month - 8 Sessions',
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_1.jpg',	
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_11s.jpg',	
 							  		'location'=>'Juhu',
-							  		'discount'=>'99%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
+							  		'discount'=>'99%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
 							  	),
 							  	array(
 							  		'name'=>'The Pilates Studio - 1 Session Reformer Pilates',
