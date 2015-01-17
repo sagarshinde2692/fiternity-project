@@ -156,7 +156,7 @@ class HomeController extends BaseController {
 										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 										->whereIn('_id', array(1029,1030,1032,1033,1034,1035,1554,1705,1706))
 										->remember(Config::get('app.cachetime'))
-										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','contact'))
 										->toArray();
 
 		return Response::json($finders);										
