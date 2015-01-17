@@ -567,7 +567,7 @@ class SearchController extends \BaseController {
 		$deals_of_day   	=	$this->get_deals_of_day();
 		$resp 				= 	array("deals_of_day" => $deals_of_day, 
 										"deals_today_communication" => "Pilates", 
-										"deals_tomorrow_communication" => "Marathon Training", 
+										"deals_tomorrow_communication" => "Power House", 
 										"deals_coming_communication" => "Martial Arts, Yoga & More....", 
 										"search_results" => json_decode($search_results,true)
 									);
@@ -588,7 +588,7 @@ class SearchController extends \BaseController {
 							  		'name'=>"Namrata Purohit - 1 Session Reformer Pilates",
 							  		'image'=>'http://b.fitn.in/global/fitmania/17_7.jpg',
 							  		'location'=>'Santacruz',
-							  		'discount'=>'99%','price'=>8250,'special_price'=>6600,'type'=>"service",'sold_out'=>0
+							  		'discount'=>'99%','price'=>4000,'special_price'=>49,'type'=>"service",'sold_out'=>0
 							  	),	
 							   array(
 							  		'name'=>'Activ8 - Pilates - 1 Month - 8 Sessions',
@@ -604,7 +604,7 @@ class SearchController extends \BaseController {
 							  	),
 							  	array(
 							  		'name'=>'Pilates by Sheetal Shah - 1 Session Reformer Pilates',
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_3.jpg',	
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_33.jpg',	
 									'location'=>'Worli',
 							  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 							  	),			  		
