@@ -578,11 +578,23 @@ class SearchController extends \BaseController {
 	public function get_deals_of_day(){
 
 		$deals_of_day   = array(
+							  	array(
+							  		'name'=>"Radhika Karle - 1 Session Mat Pilates",
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_10.jpg',
+							  		'location'=>'Vile Parle East',
+							  		'discount'=>'99%','price'=>3371,'special_price'=>49,'type'=>"service",'sold_out'=>0
+							  	),								  								  	
+							  	array(
+							  		'name'=>"Namrata Purohit - 1 Session Reformer Pilates",
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_7.jpg',
+							  		'location'=>'Santacruz',
+							  		'discount'=>'99%','price'=>8250,'special_price'=>6600,'type'=>"service",'sold_out'=>0
+							  	),	
 							   array(
 							  		'name'=>'Activ8 - Pilates - 1 Month - 8 Sessions',
 							  		'image'=>'http://b.fitn.in/global/fitmania/17_1.jpg',	
 							  		'location'=>'Juhu',
-							  		'discount'=>'20%','price'=>6400,'special_price'=>5120,'type'=>"service",'sold_out'=>0
+							  		'discount'=>'99%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>0
 							  	),
 							  	array(
 							  		'name'=>'The Pilates Studio - 1 Session Reformer Pilates',
@@ -607,13 +619,33 @@ class SearchController extends \BaseController {
 							  		'image'=>'http://b.fitn.in/global/fitmania/17_5.jpg',	
 									'location'=>'Bandra,Khar,Worli,Tardeo',
 							  		'discount'=>'18%','price'=>1800,'special_price'=>1500,'type'=>"service",'sold_out'=>0
-							  	),
+							  	),							  	
 								array(
 							  		'name'=>"Activ8 - Pilates - 1 Month - 12 Sessions",
 							  		'image'=>'http://b.fitn.in/global/fitmania/17_6.jpg',
 							  		'location'=>'Juhu',
 							  		'discount'=>'20%','price'=>8250,'special_price'=>6600,'type'=>"service",'sold_out'=>0
+							  	),
+
+							  	array(
+							  		'name'=>"Yasmin Karachiwala - 1 Session Reformer Pilates",
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_8.jpg',
+							  		'location'=>'Bandra',
+							  		'discount'=>'15%','price'=>2000,'special_price'=>1700,'type'=>"service",'sold_out'=>0
 							  	),	
+							  	array(
+							  		'name'=>"Radhika's Balanced Body - 1 Session Reformer Pilates",
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_9.jpg',
+							  		'location'=>'Vile Parle East',
+							  		'discount'=>'15%','price'=>3371,'special_price'=>2865,'type'=>"service",'sold_out'=>0
+							  	),	
+							 	array(
+							  		'name'=>'Activ8 - Pilates - 1 Month - 8 Sessions',
+							  		'image'=>'http://b.fitn.in/global/fitmania/17_1.jpg',	
+							  		'location'=>'Juhu',
+							  		'discount'=>'20%','price'=>6400,'special_price'=>5120,'type'=>"service",'sold_out'=>0
+							  	),
+
 							);
 
         return $deals_of_day;
