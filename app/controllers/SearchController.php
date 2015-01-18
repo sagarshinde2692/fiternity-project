@@ -579,73 +579,102 @@ class SearchController extends \BaseController {
 
 		$deals_of_day   = array(
 							  	array(
-							  		'name'=>"Radhika Karle - 1 Session Mat Pilates",
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_10.jpg',
-							  		'location'=>'Vile Parle East',
-							  		'discount'=>'99%','price'=>3371,'special_price'=>49,'type'=>"service",'sold_out'=>0
-							  	),								  								  	
-							  	array(
-							  		'name'=>"Namrata Purohit - 1 Session Reformer Pilates",
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_7.jpg',
-							  		'location'=>'Santacruz',
-							  		'discount'=>'99%','price'=>4000,'special_price'=>49,'type'=>"service",'sold_out'=>0
-							  	),	
-							   array(
-							  		'name'=>'Activ8 - Pilates - 1 Month - 8 Sessions',
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_11s.jpg',	
-							  		'location'=>'Juhu',
-							  		'discount'=>'99%','price'=>6400,'special_price'=>99,'type'=>"service",'sold_out'=>1
-							  	),
-							  	array(
-							  		'name'=>'The Pilates Studio - 1 Session Reformer Pilates',
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_2.jpg',	
-							  		'location'=>'Santacruz , Hughes Road',
-							  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
-							  	),
-							  	array(
-							  		'name'=>'Pilates by Sheetal Shah - 1 Session Reformer Pilates',
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_33.jpg',	
-									'location'=>'Worli',
-							  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
-							  	),			  		
-							  	array(
-							  		'name'=>"Toni's Power Play Pilates - 1 Session(Personal Training)",
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_4.jpg',	
-									'location'=>'Prabhadevi to Bandra',
-							  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_1.jpg',
+							  		'location'=>'Versova',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>'Kinetic Living - 4 Sessions',
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_5.jpg',	
-									'location'=>'Bandra,Khar,Worli,Tardeo',
-							  		'discount'=>'18%','price'=>1800,'special_price'=>1500,'type'=>"service",'sold_out'=>0
-							  	),							  	
-								array(
-							  		'name'=>"Activ8 - Pilates - 1 Month - 12 Sessions",
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_6.jpg',
-							  		'location'=>'Juhu',
-							  		'discount'=>'20%','price'=>8250,'special_price'=>6600,'type'=>"service",'sold_out'=>0
-							  	),
-
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_2.jpg',
+							  		'location'=>'Ghatkopar East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+							  	),								  								  								  	
 							  	array(
-							  		'name'=>"Yasmin Karachiwala - 1 Session Reformer Pilates",
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_8.jpg',
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_3.jpg',
+							  		'location'=>'Juhu',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_4.jpg',
+							  		'location'=>'Mumbai Central',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_5.jpg',
+							  		'location'=>'Santacruz West',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_6.jpg',
+							  		'location'=>'Chowpatty',
+							  		'discount'=>'98%','price'=>8000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_7.jpg',
 							  		'location'=>'Bandra',
-							  		'discount'=>'15%','price'=>2000,'special_price'=>1700,'type'=>"service",'sold_out'=>0
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Radhika's Balanced Body - 1 Session Reformer Pilates",
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_9.jpg',
-							  		'location'=>'Vile Parle East',
-							  		'discount'=>'15%','price'=>3371,'special_price'=>2865,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_8.jpg',
+							  		'location'=>'Malad East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),	
-							 	array(
-							  		'name'=>'Activ8 - Pilates - 1 Month - 8 Sessions',
-							  		'image'=>'http://b.fitn.in/global/fitmania/17_1.jpg',	
-							  		'location'=>'Juhu',
-							  		'discount'=>'20%','price'=>6400,'special_price'=>5120,'type'=>"service",'sold_out'=>0
-							  	),
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_9.jpg',
+							  		'location'=>'Prabhadevi',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_10.jpg',
+							  		'location'=>'Andheri East',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_11.jpg',
+							  		'location'=>'Chembur East',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
 
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_12.jpg',
+							  		'location'=>'Vile Parle East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_13.jpg',
+							  		'location'=>'Kandivali East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_14.jpg',
+							  		'location'=>'Mulund',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_15.jpg',
+							  		'location'=>'Versova',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_16.jpg',
+							  		'location'=>'Versova',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),							  								  								  								  								  								  								  								  								  								  								  								  								  	
 							);
 
         return $deals_of_day;
