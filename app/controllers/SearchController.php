@@ -566,7 +566,7 @@ class SearchController extends \BaseController {
 		$search_results 	=	es_curl_request($request);
 		$deals_of_day   	=	$this->get_deals_of_day();
 		$resp 				= 	array("deals_of_day" => $deals_of_day, 
-										"deals_today_communication" => "Pilates", 
+										"deals_today_communication" => "Power House", 
 										"deals_tomorrow_communication" => "Power House", 
 										"deals_coming_communication" => "Martial Arts, Yoga & More....", 
 										"search_results" => json_decode($search_results,true)
@@ -576,6 +576,7 @@ class SearchController extends \BaseController {
 	}
 
 	public function get_deals_of_day(){
+
 
 		$deals_of_day   = array(
 							  	array(
