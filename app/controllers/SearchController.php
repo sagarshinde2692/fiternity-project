@@ -610,9 +610,9 @@ class SearchController extends \BaseController {
 							  	),	
 							  	array(
 							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_6.jpg',
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_6s.jpg',
 							  		'location'=>'Chowpatty',
-							  		'discount'=>'98%','price'=>8000,'special_price'=>99,'type'=>"service",'sold_out'=>0
+							  		'discount'=>'98%','price'=>8000,'special_price'=>99,'type'=>"service",'sold_out'=>1
 							  	),	
 							  	array(
 							  		'name'=>"Powerhouse - 3 Months Gym Membership",
@@ -662,6 +662,12 @@ class SearchController extends \BaseController {
 							  		'image'=>'http://b.fitn.in/global/fitmania/18_14.jpg',
 							  		'location'=>'Mulund',
 							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_6.jpg',
+							  		'location'=>'Chowpatty',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
 							  		'name'=>"Powerhouse - 3 Months Gym Membership",
