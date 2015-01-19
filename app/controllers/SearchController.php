@@ -577,7 +577,6 @@ class SearchController extends \BaseController {
 
 	public function get_deals_of_day(){
 
-
 		$deals_of_day   = array(
 							  	array(
 							  		'name'=>"Powerhouse - 3 Months Gym Membership",
