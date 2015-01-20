@@ -828,7 +828,7 @@ class SearchController extends \BaseController {
 		$searchParams 			=	array();
 		$type 					= 	"finder";		 		
 		$filters 				= 	"";		 		
-		$globalkeyword 			=  	(Input::json()->get('keyword')) ? Input::json()->get('keyword') : "";
+		$globalkeyword 			=  	(Input::json()->get('keyword')) ? refine_keyword(Input::json()->get('keyword')) : "";
 		$from 					=  	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 					=  	(Input::json()->get('size')) ? Input::json()->get('size') : 5;		
 
@@ -839,6 +839,7 @@ class SearchController extends \BaseController {
 		$price_range 			=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
 
 
+		return $globalkeyword;exit;
 
 		//filters 
 		$category_filter 		=	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
