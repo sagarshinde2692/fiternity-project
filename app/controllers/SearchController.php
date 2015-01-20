@@ -565,6 +565,13 @@ class SearchController extends \BaseController {
 		
 		$search_results 	=	es_curl_request($request);
 		$deals_of_day   	=	$this->get_deals_of_day();
+
+		/*
+
+			today - fitness in bandra - khar
+			yoga in mumbai
+			dance , Martials Arts and more
+		*/
 		$resp 				= 	array("deals_of_day" => $deals_of_day, 
 										"deals_today_communication" => "Power House Gyms", 
 										"deals_tomorrow_communication" => "Fitness in bandra", 
@@ -577,103 +584,215 @@ class SearchController extends \BaseController {
 
 	public function get_deals_of_day(){
 
+		/*
+			$deals_of_day   = array(
+					  	array(
+					  		'name'=>"Gold's Gym - Buy 15 days & Get 15 days FREE(Gym + Unlimited Group X Classes)",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_8.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
+					  	),								  								  								  	
+					  	array(
+					  		'name'=>"F2 Fitness - 1 Month Unlimited Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_5.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'98%','price'=>6500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"JG's Fitness - Group X (Zumba, Spinning, Aerobics, Boot Camp) - 6 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_9.jpg',
+					  		'location'=>'Santacruz',
+					  		'discount'=>'78%','price'=>3000,'special_price'=>666,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"House of Wow - Masala Bhangra - 1 Month - 8 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_7.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'75%','price'=>4000,'special_price'=>999,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Zumba with Sucheta Pal - 12 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_12.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'97%','price'=>3500,'special_price'=>500,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Fighting Fit - 1 Month",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_15.jpg',
+					  		'location'=>'Bandra,Khar',
+					  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+					  	),	
+					  	array(
+					  		'name'=>"Mint - Beginners X Training - 6 Months + 6 Months FREE",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_1.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'38%','price'=>25000,'special_price'=>15499,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Reebok - 1 Month - 12 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_3.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'28%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_6.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'55%','price'=>1111,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Capoeira Mumbai Kids Classes - 1 Month ",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_14.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"The Pilates Studio - 1 Session Reformer Pilates",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_13.jpg',
+					  		'location'=>'Santacruz',
+					  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
+					  	),	
+
+					  	array(
+					  		'name'=>"Yogacara - 1 Month",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_10.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'10%','price'=>4200,'special_price'=>3780,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Reebok - 1 Month - Unlimited + Reebok Tshirt FREE",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_4.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'11%','price'=>4500,'special_price'=>3999,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Mint - Zumba - 1 Month + 1 Month FREE - 16 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_2.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'50%','price'=>5000,'special_price'=>2499,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Xtreme Fight Federation - 1 Session",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_11.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'66%','price'=>750,'special_price'=>250,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Gold's Gym - Buy 2 Weeks & Get 2 Weeks FREE for your friend (Gym + Unlimited Group X Classes)",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_16.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
+					  	),							  								  								  								  								  								  								  								  								  								  								  								  								  	
+					);
+
+			return $deals_of_day;
+
+		*/
+
+
 		$deals_of_day   = array(
 							  	array(
-							  		'name'=>"F2 Fitness - 1 Month Unlimited Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_5.jpg',
-							  		'location'=>'Khar',
-							  		'discount'=>'98%','price'=>6500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_1.jpg',
+							  		'location'=>'Versova',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Gold's Gym - Buy 15 days & Get 15 days FREE(Gym + Unlimited Group X Classes)",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_8.jpg',
-							  		'location'=>'Bandra',
-							  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_2.jpg',
+							  		'location'=>'Ghatkopar East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),								  								  								  	
 							  	array(
-							  		'name'=>"JG's Fitness - Group X (Zumba, Spinning, Aerobics, Boot Camp) - 6 Sessions",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_9.jpg',
-							  		'location'=>'Santacruz',
-							  		'discount'=>'78%','price'=>3000,'special_price'=>666,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_3.jpg',
+							  		'location'=>'Juhu',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"House of Wow - Masala Bhangra - 1 Month - 8 Sessions",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_7.jpg',
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_4.jpg',
+							  		'location'=>'Mumbai Central',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_5.jpg',
+							  		'location'=>'Santacruz West',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_6s.jpg',
+							  		'location'=>'Chowpatty',
+							  		'discount'=>'98%','price'=>8000,'special_price'=>99,'type'=>"service",'sold_out'=>1
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_7.jpg',
 							  		'location'=>'Bandra',
-							  		'discount'=>'75%','price'=>4000,'special_price'=>999,'type'=>"service",'sold_out'=>0
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Zumba with Sucheta Pal - 12 Sessions",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_12.jpg',
-							  		'location'=>'Bandra , Chowpatty',
-							  		'discount'=>'97%','price'=>3500,'special_price'=>500,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_8.jpg',
+							  		'location'=>'Malad East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Fighting Fit - 1 Month",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_15.jpg',
-							  		'location'=>'Bandra,Khar,Worli,Tardeo',
-							  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_9.jpg',
+							  		'location'=>'Prabhadevi',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Mint - Begineers X Training - 6 Months + 6 Months FREE",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_1.jpg',
-							  		'location'=>'Khar',
-							  		'discount'=>'38%','price'=>25000,'special_price'=>15499,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_10.jpg',
+							  		'location'=>'Andheri East',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Reebok - 1 Month - 12 Sessions",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_3.jpg',
-							  		'location'=>'Khar',
-							  		'discount'=>'28%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_6.jpg',
-							  		'location'=>'Bandra',
-							  		'discount'=>'55%','price'=>1111,'special_price'=>499,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Capoeira Mumbai Kids Classes - 1 Month ",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_14.jpg',
-							  		'location'=>'Khar',
-							  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"The Pilates Studio - 1 Session Reformer Pilates",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_13.jpg',
-							  		'location'=>'Santacruz , Hughes Road',
-							  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_11.jpg',
+							  		'location'=>'Chembur East',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 
 							  	array(
-							  		'name'=>"Yogacara - 1 Month",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_10.jpg',
-							  		'location'=>'Bandra',
-							  		'discount'=>'10%','price'=>4200,'special_price'=>3780,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_12.jpg',
+							  		'location'=>'Vile Parle East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Reebok - 1 Month - Unlimited + Reebok Tshirt FREE",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_4.jpg',
-							  		'location'=>'Khar',
-							  		'discount'=>'11%','price'=>4500,'special_price'=>3999,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_13.jpg',
+							  		'location'=>'Kandivali East',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Mint - Zumba - 1 Month + 1 Month FREE - 16 Sessions",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_2.jpg',
-							  		'location'=>'Khar',
-							  		'discount'=>'50%','price'=>5000,'special_price'=>2499,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_14.jpg',
+							  		'location'=>'Mulund',
+							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Xtreme Fight Federation - 1 Session",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_11.jpg',
-							  		'location'=>'Bandra, Andheri, Tardeo, Lokhandwala, Marine Drive',
-							  		'discount'=>'66%','price'=>750,'special_price'=>250,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_6.jpg',
+							  		'location'=>'Chowpatty',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),	
 							  	array(
-							  		'name'=>"Gold's Gym - Buy 2 Weeks & Get 2 Weeks FREE for your friend (Gym + Unlimited Group X Classes)",
-							  		'image'=>'http://b.fitn.in/global/fitmania/20_16.jpg',
-							  		'location'=>'Bandra',
-							  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_15.jpg',
+							  		'location'=>'Versova',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
+							  	),	
+							  	array(
+							  		'name'=>"Powerhouse - 3 Months Gym Membership",
+							  		'image'=>'http://b.fitn.in/global/fitmania/18_16.jpg',
+							  		'location'=>'Versova',
+							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
 							  	),							  								  								  								  								  								  								  								  								  								  								  								  								  	
 							);
 
@@ -814,6 +933,17 @@ class SearchController extends \BaseController {
 	}
 
 
+
+	/*
+	{
+	  "from": 0,
+	  "size": 25,
+	  "keyword":"golds gym",
+	  "category":"gyms,crossfit",
+	  "location" :"navi mumbai,kandivali east"
+	}
+	*/
+
 	public function getGlobalv2() {
 		//var_dump(Input::json()->all());
 		//var_dump(Input::json()->all());
@@ -884,8 +1014,6 @@ class SearchController extends \BaseController {
 		                "category" : { "terms" : { "field" : "category", "size": 10000} }
 		            }
 		        },
-
-
 		*/		        
 		$body = '
 		{
@@ -923,10 +1051,10 @@ class SearchController extends \BaseController {
 									"query": "'.$globalkeyword.'",
 									"fields": [
 									"finder.title^50",
-									"finder.category^20",
+									"finder.category^5",
 									"finder.categorytags^5",
-									"finder.location^20",
-									"finder.locationtags^5"
+									"finder.location^50",
+									"finder.locationtags^50"
 									]
 								}
 							}
@@ -940,7 +1068,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		return $body;exit;
+		//return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
