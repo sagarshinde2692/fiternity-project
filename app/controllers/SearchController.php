@@ -911,12 +911,12 @@ class SearchController extends \BaseController {
 						},
 						{
 							"script_score": {
-								"script": "(doc[\'finder.category\'].value == \'swimming\' ? -100 : 0)"
+								"script": "(doc[\'finder.category\'].value == \'swimming\' ? -90 : 0)"
 							}
 						},
 						{
 							"script_score": {
-								"script": "(doc[\'finder.category\'].value == \'sports\' ? -100 : 0)"
+								"script": "(doc[\'finder.category\'].value == \'sports\' ? -90 : 0)"
 							}
 						}
 					],
