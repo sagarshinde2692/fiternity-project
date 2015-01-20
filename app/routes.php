@@ -77,7 +77,7 @@ Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
 Route::post('/notify/{notifytype}','EmailSmsApiController@triggerNotify');
 Route::post('/email/requestcallback','EmailSmsApiController@RequestCallback');
-Route::post('/email/booktrial','EmailSmsApiController@BookTrail');
+Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
 Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
 Route::post('/email/finderlead','EmailSmsApiController@FinderLead');
 Route::post('/email/emailfinder','EmailSmsApiController@EmailSmsFinder');
