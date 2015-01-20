@@ -135,20 +135,24 @@ class EmailSmsApiController extends \BaseController {
 
 	public function extraBookTrial() {
 		date_default_timezone_set("Asia/Kolkata");
-
+		$data = array(
+			'capture_type' 			=>		'book_trial',
+			'name' 					=>		Input::json()->get('name'), 
+			'email' 				=>		Input::json()->get('email'), 
+			'phone' 				=>		Input::json()->get('phone'),
+			'finder' 				=>		implode(",",Input::json()->get('vendor'),
+			'location' 				=>		Input::json()->get('location'),
+			'service'				=>		Input::json()->get('service'),
+			'preferred_time'		=>		Input::json()->get('preferred_time'),
+			'preferred_day'			=>		Input::json()->get('preferred_day'),
+			'date' 					=>		date("h:i:sa")
+			);
 		$emaildata = array(
 			'email_template' 		=> 	'emails.finder.booktrial', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'vendor' => implode(",",Input::json()->get('vendor')),
-				'location' => Input::json()->get('location'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'					=> 	Config::get('mail.to_neha'),  
+			'email_template_data' 	=> 	$data, 
+			'to'					=> 	Config::get('mail.to_neha'), 
 			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
-			'email_subject' 		=> 	'Request For 2nd Book a Trail',
+			'email_subject' 		=> 	'Request For 2nd Book a Trial',
 			'send_bcc_status' 		=> 	1 
 			);
 		$this->sendEmail($emaildata);
@@ -158,17 +162,6 @@ class EmailSmsApiController extends \BaseController {
 			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to book a trial at '. implode(",",Input::json()->get('vendor')) .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
 			);
 		$this->sendSMS($smsdata);
-
-		// $data = array(
-		// 	'capture_type' => 'fivefitness_alternative',
-		// 	'name' => Input::json()->get('name'), 
-		// 	'email' => Input::json()->get('email'), 
-		// 	'phone' => Input::json()->get('phone'),
-		// 	'vendor' => implode(",",Input::json()->get('vendor')),
-		// 	'location' => Input::json()->get('location'),
-		// 	);
-
-		// $storecapture = Capture::create($data);
 
 		$resp = array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);                
