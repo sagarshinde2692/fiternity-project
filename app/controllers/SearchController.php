@@ -567,15 +567,15 @@ class SearchController extends \BaseController {
 		$deals_of_day   	=	$this->get_deals_of_day();
 
 		/*
-
 			today - fitness in bandra - khar
 			yoga in mumbai
 			dance , Martials Arts and more
 		*/
+			
 		$resp 				= 	array("deals_of_day" => $deals_of_day, 
-										"deals_today_communication" => "Power House Gyms", 
-										"deals_tomorrow_communication" => "Fitness in bandra", 
-										"deals_coming_communication" => "Martial Arts, Yoga & More....", 
+										"deals_today_communication" => "Fitness in Bandra - Khar", 
+										"deals_tomorrow_communication" => "Yoga in mumbai", 
+										"deals_coming_communication" => "Dance, Martial Arts, & More....", 
 										"search_results" => json_decode($search_results,true)
 									);
 		return Response::json($resp);
@@ -584,7 +584,7 @@ class SearchController extends \BaseController {
 
 	public function get_deals_of_day(){
 
-		/*
+		
 			$deals_of_day   = array(
 					  	array(
 					  		'name'=>"Gold's Gym - Buy 15 days & Get 15 days FREE(Gym + Unlimited Group X Classes)",
@@ -620,7 +620,7 @@ class SearchController extends \BaseController {
 					  		'name'=>"Fighting Fit - 1 Month",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_15.jpg',
 					  		'location'=>'Bandra,Khar',
-					  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>1
+					  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 					  	),	
 					  	array(
 					  		'name'=>"Mint - Beginners X Training - 6 Months + 6 Months FREE",
@@ -687,116 +687,6 @@ class SearchController extends \BaseController {
 
 			return $deals_of_day;
 
-		*/
-
-
-		$deals_of_day   = array(
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_1.jpg',
-							  		'location'=>'Versova',
-							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_2.jpg',
-							  		'location'=>'Ghatkopar East',
-							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
-							  	),								  								  								  	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_3.jpg',
-							  		'location'=>'Juhu',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_4.jpg',
-							  		'location'=>'Mumbai Central',
-							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_5.jpg',
-							  		'location'=>'Santacruz West',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_6s.jpg',
-							  		'location'=>'Chowpatty',
-							  		'discount'=>'98%','price'=>8000,'special_price'=>99,'type'=>"service",'sold_out'=>1
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_7.jpg',
-							  		'location'=>'Bandra',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_8.jpg',
-							  		'location'=>'Malad East',
-							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_9.jpg',
-							  		'location'=>'Prabhadevi',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_10.jpg',
-							  		'location'=>'Andheri East',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_11.jpg',
-							  		'location'=>'Chembur East',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_12.jpg',
-							  		'location'=>'Vile Parle East',
-							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_13.jpg',
-							  		'location'=>'Kandivali East',
-							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_14.jpg',
-							  		'location'=>'Mulund',
-							  		'discount'=>'50%','price'=>6000,'special_price'=>3000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_6.jpg',
-							  		'location'=>'Chowpatty',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_15.jpg',
-							  		'location'=>'Versova',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),	
-							  	array(
-							  		'name'=>"Powerhouse - 3 Months Gym Membership",
-							  		'image'=>'http://b.fitn.in/global/fitmania/18_16.jpg',
-							  		'location'=>'Versova',
-							  		'discount'=>'50%','price'=>8000,'special_price'=>4000,'type'=>"service",'sold_out'=>0
-							  	),							  								  								  								  								  								  								  								  								  								  								  								  								  	
-							);
-
-        return $deals_of_day;
 
 	}
 
