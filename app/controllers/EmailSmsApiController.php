@@ -140,7 +140,7 @@ class EmailSmsApiController extends \BaseController {
 			'name' 					=>		Input::json()->get('name'), 
 			'email' 				=>		Input::json()->get('email'), 
 			'phone' 				=>		Input::json()->get('phone'),
-			'finder' 				=>		implode(",",Input::json()->get('vendor'),
+			'finder' 				=>		Input::json()->get('finder'),
 			'location' 				=>		Input::json()->get('location'),
 			'service'				=>		Input::json()->get('service'),
 			'preferred_time'		=>		Input::json()->get('preferred_time'),
@@ -152,7 +152,7 @@ class EmailSmsApiController extends \BaseController {
 			'email_template_data' 	=> 	$data, 
 			'to'					=> 	Config::get('mail.to_neha'), 
 			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
-			'email_subject' 		=> 	'Request For 2nd Book a Trial',
+			'email_subject' 		=> 	'Request For 2nd Book a Trail',
 			'send_bcc_status' 		=> 	1 
 			);
 		$this->sendEmail($emaildata);
@@ -162,6 +162,17 @@ class EmailSmsApiController extends \BaseController {
 			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to book a trial at '. implode(",",Input::json()->get('vendor')) .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
 			);
 		$this->sendSMS($smsdata);
+
+		// $data = array(
+		// 	'capture_type' => 'fivefitness_alternative',
+		// 	'name' => Input::json()->get('name'), 
+		// 	'email' => Input::json()->get('email'), 
+		// 	'phone' => Input::json()->get('phone'),
+		// 	'vendor' => implode(",",Input::json()->get('vendor')),
+		// 	'location' => Input::json()->get('location'),
+		// 	);
+
+		// $storecapture = Capture::create($data);
 
 		$resp = array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);                
