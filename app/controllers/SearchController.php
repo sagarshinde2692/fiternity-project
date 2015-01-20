@@ -906,17 +906,17 @@ class SearchController extends \BaseController {
 					"functions": [
 						{
 							"script_score": {
-								"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 20)"
+								"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 10)"
 							}
 						},
 						{
 							"script_score": {
-								"script": "(doc[\'finder.category\'].value == \'swimming\' ? -10 : 0)"
+								"script": "(doc[\'finder.category\'].value == \'swimming\' ? -100 : 0)"
 							}
 						},
 						{
 							"script_score": {
-								"script": "(doc[\'finder.category\'].value == \'sports\' ? -10 : 0)"
+								"script": "(doc[\'finder.category\'].value == \'sports\' ? -100 : 0)"
 							}
 						}
 					],
