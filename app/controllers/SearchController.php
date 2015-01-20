@@ -904,11 +904,21 @@ class SearchController extends \BaseController {
 			"query": {
 				"function_score": {
 					"functions": [
-					{
-						"script_score": {
-							"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 0)"
+						{
+							"script_score": {
+								"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 20)"
+							}
+						},
+						{
+							"script_score": {
+								"script": "(doc[\'finder.category\'].value == \'swimming\' ? -10 : 0)"
+							}
+						},
+						{
+							"script_score": {
+								"script": "(doc[\'finder.category\'].value == \'sports\' ? -10 : 0)"
+							}
 						}
-					}
 					],
 					"query": {
 						"filtered": {
@@ -934,7 +944,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		//return $body;exit;
+		return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
