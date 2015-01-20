@@ -839,7 +839,7 @@ class SearchController extends \BaseController {
 		$price_range 			=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
 
 
-		return $globalkeyword;exit;
+		//return $globalkeyword;exit;
 
 		//filters 
 		$category_filter 		=	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
