@@ -24,8 +24,8 @@ class EmailSmsApiController extends \BaseController {
 
 		$email_template 		= 	$emaildata['email_template'];
 		$email_template_data 	= 	$emaildata['email_template_data'];
-
-		$reciver_name 			= 	(isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : "Team Fitternity";
+		//$reciver_name 			= 	(isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : "Team Fitternity";
+		$reciver_name 			= 	(isset($email_template_data['name'])) ? ucwords($email_template_data['name'])  : "Team Fitternity";
 		$to 					= 	$emaildata['to'];
 		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
 		$email_subject 			= 	ucfirst($emaildata['email_subject']);		
@@ -37,6 +37,8 @@ class EmailSmsApiController extends \BaseController {
 		// 		$message->to($email, $reciver_name)->subject($email_subject);
 		// 	});
 		// }
+
+		//return "$to";exit;
 
 		if($send_bcc_status == 1){
 			Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
