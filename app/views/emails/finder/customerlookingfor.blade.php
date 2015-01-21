@@ -14,10 +14,7 @@
                             <p style="font-size:16px;color:#464646;text-align:justify;">Hello,<br>There is a customer request not able to find what they're looking for.</p>
                             <br>
                             <table border="1" bordercolor="#2c3e50" align="center">
-                                <tr><td>User Name:</td><td>{{$name}}</td></tr>
-                                <tr><td>User Email:</td><td>{{$email}}</td></tr>
-                                <tr><td>User Phone:</td><td>{{$phone}}</td></tr>
-                                <tr><td>User Location:</td><td>{{$location}}</td></tr>
+                                <tr><td>Message:</td><td>{{$message}}</td></tr>
                                 <tr><td>Date:</td><td>{{ $date }}</td></tr>
                             </table> 
 
