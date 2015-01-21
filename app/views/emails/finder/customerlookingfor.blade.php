@@ -17,10 +17,7 @@
                                 <tr><td>Message:</td><td>{{$message}}</td></tr>
                                 <tr><td>Date:</td><td>{{ $date }}</td></tr>
                             </table> 
-
-                            <p style="font-size:16px;color:#464646;text-align:justify;">
-                                Thank you.                              
-                            </p>                        
+                            <p style="font-size:16px;color:#464646;text-align:justify;">Thank you.</p>                        
                         </td>
                     </tr>
                 </table>
