@@ -612,7 +612,7 @@ class SearchController extends \BaseController {
 					  	),	
 					  	array(
 					  		'name'=>"Zumba with Sucheta Pal - 12 Sessions",
-					  		'image'=>'http://b.fitn.in/global/fitmania/20_12.jpg',
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_12s.jpg',
 					  		'location'=>'Bandra',
 					  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
 					  	),	
@@ -652,7 +652,12 @@ class SearchController extends \BaseController {
 					  		'location'=>'Santacruz',
 					  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 					  	),	
-
+					  	array(
+					  		'name'=>"Zumba with Sucheta Pal - 12 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_12.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'58%','price'=>3500,'special_price'=>1999,'type'=>"service",'sold_out'=>0
+					  	),
 					  	array(
 					  		'name'=>"Yogacara - 1 Month",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_10.jpg',
