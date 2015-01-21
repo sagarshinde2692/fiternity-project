@@ -590,7 +590,7 @@ class SearchController extends \BaseController {
 					  		'name'=>"Gold's Gym - Buy 15 days & Get 15 days FREE(Gym + Unlimited Group X Classes)",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_8.jpg',
 					  		'location'=>'Bandra',
-					  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'55%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
 					  	),								  								  								  	
 					  	array(
 					  		'name'=>"F2 Fitness - 1 Month Unlimited Membership",
@@ -686,7 +686,7 @@ class SearchController extends \BaseController {
 					  		'name'=>"Gold's Gym - Buy 2 Weeks & Get 2 Weeks FREE for your friend (Gym + Unlimited Group X Classes)",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_16.jpg',
 					  		'location'=>'Bandra',
-					  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'55%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
 					  	),	
 					  	array(
 					  		'name'=>"F2 Fitness - 1 Month Unlimited Membership",
