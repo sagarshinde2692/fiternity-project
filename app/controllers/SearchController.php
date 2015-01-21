@@ -692,7 +692,7 @@ class SearchController extends \BaseController {
 					  		'name'=>"F2 Fitness - 1 Month Unlimited Membership",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_5.jpg',
 					  		'location'=>'Khar',
-					  		'discount'=>'70%','price'=>6500,'special_price'=>4550,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'30%','price'=>6500,'special_price'=>4550,'type'=>"service",'sold_out'=>0
 					  	),						  								  								  								  								  								  								  								  								  								  								  								  								  	
 					);
 
@@ -959,7 +959,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		//return $body;exit;
+		return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
