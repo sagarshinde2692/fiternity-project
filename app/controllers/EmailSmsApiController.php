@@ -455,7 +455,7 @@ class EmailSmsApiController extends \BaseController {
 			'email_template_data' 	=> 	$data, 
 			'to'					=> 	Config::get('mail.to_neha'), 
 			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_not_able_to_find'), 
-			'email_subject' 		=> 'Request for fitcard purchase',
+			'email_subject' 		=> "Customer request not able to find what they're looking for.",
 			'send_bcc_status' 		=> 	1
 			);
 		$this->sendEmail($emaildata);
