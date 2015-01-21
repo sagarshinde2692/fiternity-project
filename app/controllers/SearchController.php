@@ -944,8 +944,8 @@ class SearchController extends \BaseController {
 									"finder.title^25",
 									"finder.category^50",
 									"finder.categorytags^50",
-									"finder.location^50",
-									"finder.locationtags^50"
+									"finder.location^100",
+									"finder.locationtags^100"
 									]
 								}
 							}
