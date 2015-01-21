@@ -446,6 +446,7 @@ class EmailSmsApiController extends \BaseController {
 		public function not_able_to_find(){
 		date_default_timezone_set("Asia/Kolkata");
 		$data = array(
+				'message' => Input::json()->get('message'), 
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
