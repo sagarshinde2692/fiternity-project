@@ -594,9 +594,9 @@ class SearchController extends \BaseController {
 					  	),								  								  								  	
 					  	array(
 					  		'name'=>"F2 Fitness - 1 Month Unlimited Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/20_5.jpg',
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_5s.jpg',
 					  		'location'=>'Khar',
-					  		'discount'=>'98%','price'=>6500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'98%','price'=>6500,'special_price'=>99,'type'=>"service",'sold_out'=>1
 					  	),	
 					  	array(
 					  		'name'=>"JG's Fitness - Group X (Zumba, Spinning, Aerobics, Boot Camp) - 6 Sessions",
@@ -687,7 +687,13 @@ class SearchController extends \BaseController {
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_16.jpg',
 					  		'location'=>'Bandra',
 					  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
-					  	),							  								  								  								  								  								  								  								  								  								  								  								  								  	
+					  	),	
+					  	array(
+					  		'name'=>"F2 Fitness - 1 Month Unlimited Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/20_5.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'70%','price'=>6500,'special_price'=>4550,'type'=>"service",'sold_out'=>0
+					  	),						  								  								  								  								  								  								  								  								  								  								  								  								  	
 					);
 
 			return $deals_of_day;
