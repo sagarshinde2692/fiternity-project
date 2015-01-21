@@ -14,7 +14,7 @@
                             <p style="font-size:16px;color:#464646;text-align:justify;">Hello,<br>There is a customer request not able to find what they're looking for.</p>
                             <br>
                             <table border="1" bordercolor="#2c3e50" align="center">
-                                <tr><td>message:</td><td>{{$msg}}</td></tr>
+                                <tr><td>Message:</td><td>{{$msg}}</td></tr>
                                 <tr><td>Date:</td><td>{{ $date }}</td></tr>
                             </table> 
 
