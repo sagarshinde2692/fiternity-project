@@ -614,7 +614,7 @@ class SearchController extends \BaseController {
 					  		'name'=>"Zumba with Sucheta Pal - 12 Sessions",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_12s.jpg',
 					  		'location'=>'Bandra',
-					  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'97%','price'=>3500,'special_price'=>99,'type'=>"service",'sold_out'=>1
 					  	),	
 					  	array(
 					  		'name'=>"Fighting Fit - 1 Month",
