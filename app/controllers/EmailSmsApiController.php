@@ -455,11 +455,11 @@ class EmailSmsApiController extends \BaseController {
 				);
 
 		$emaildata = array(
-			'email_template' 		=> 	'emails.finder.fitcardbuy', 
+			'email_template' 		=> 	'emails.finder.customerlookingfor', 
 			'email_template_data' 	=> 	$data, 
 			'to'					=> 	'sanjay.id7@gmail.com', 
 			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_not_able_to_find'), 
-			'email_subject' 		=> 'Request for fitcard purchase',
+			'email_subject' 		=> "Customer request not able to find what they're looking for",
 			'send_bcc_status' 		=> 	1
 			);
 		$this->sendEmail($emaildata);
