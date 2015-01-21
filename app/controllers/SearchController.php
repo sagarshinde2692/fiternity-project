@@ -638,7 +638,7 @@ class SearchController extends \BaseController {
 					  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_6.jpg',
 					  		'location'=>'Bandra',
-					  		'discount'=>'55%','price'=>1111,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'84%','price'=>3000,'special_price'=>499,'type'=>"service",'sold_out'=>0
 					  	),	
 					  	array(
 					  		'name'=>"Capoeira Mumbai Kids Classes - 1 Month ",
