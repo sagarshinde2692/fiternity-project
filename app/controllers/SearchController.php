@@ -927,16 +927,6 @@ class SearchController extends \BaseController {
 							"script_score": {
 								"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 0)"
 							}
-						},
-						{
-							"script_score": {
-								"script": "(doc[\'finder.category\'].value == \'swimming\' ? -90 : 0)"
-							}
-						},
-						{
-							"script_score": {
-								"script": "(doc[\'finder.category\'].value == \'sports\' ? -90 : 0)"
-							}
 						}
 					],
 					"query": {
