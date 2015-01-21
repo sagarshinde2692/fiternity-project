@@ -99,6 +99,7 @@ Route::post('/landingpage/callback', 'EmailSmsApiController@landingpagecallback'
 Route::post('/landingpage/register', 'EmailSmsApiController@landingpageregister');
 Route::post('/offeravailed', 'EmailSmsApiController@offeravailed');
 Route::post('/fitcardbuy', 'EmailSmsApiController@fitcardbuy');
+Route::post('/not_able_to_find', 'EmailSmsApiController@not_able_to_find');
 
 
 
