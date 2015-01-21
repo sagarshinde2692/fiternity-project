@@ -48,8 +48,6 @@ class EmailSmsApiController extends \BaseController {
 				$message->to($to, $reciver_name)->subject($email_subject);
 			});			
 		}
-
-
 	}
 
 
@@ -443,14 +441,10 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 
-		public function not_able_to_find(){
+	public function not_able_to_find(){
 		date_default_timezone_set("Asia/Kolkata");
 		$data = array(
-				'message' => Input::json()->get('message'), 
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'location' => Input::json()->get('location'),
+				'msg' => Input::json()->get('msg'), 
 				'capture_type' => 'not_able_to_find',
 				'date' => date("h:i:sa")  
 				);
@@ -464,42 +458,13 @@ class EmailSmsApiController extends \BaseController {
 			'send_bcc_status' 		=> 	1
 			);
 		$this->sendEmail($emaildata);
-		$storecapture 	= Capture::create($data);
-		$resp 			= array('status' => 200,'message' => "Send Mail");
-		return Response::json($resp);
-
-	}
-
-
-/*
-
-	public function not_able_to_find(){
-		date_default_timezone_set("Asia/Kolkata");
-
-		$data = array(
-				'name' => "Team Fitternity", 
-				'message' => Input::json()->get('message'), 
-				'capture_type' => 'not_able_to_find',
-				'date' => date("h:i:sa")  
-				);
-
-		$emaildata = array(
-			'email_template' 		=> 	'emails.finder.customer_looking_for', 
-			'email_template_data' 	=> 	$data, 
-			'to'					=> 	'sanjay.id7@gmail.com', 
-			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_not_able_to_find'), 
-			'email_subject' 		=> "Customer request not able to find what they're looking for.",
-			'send_bcc_status' 		=> 	1
-			);
-		$this->sendEmail($emaildata);
 
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Send Mail");
+		
 		return Response::json($resp);
 
 	}
-
-*/
 
 
 }

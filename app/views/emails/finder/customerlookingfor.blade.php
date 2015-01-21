@@ -14,10 +14,13 @@
                             <p style="font-size:16px;color:#464646;text-align:justify;">Hello,<br>There is a customer request not able to find what they're looking for.</p>
                             <br>
                             <table border="1" bordercolor="#2c3e50" align="center">
-                                <tr><td>Message:</td><td>{{$message}}</td></tr>
+                                <tr><td>message:</td><td>{{$msg}}</td></tr>
                                 <tr><td>Date:</td><td>{{ $date }}</td></tr>
                             </table> 
-                            <p style="font-size:16px;color:#464646;text-align:justify;">Thank you.</p>                        
+
+                            <p style="font-size:16px;color:#464646;text-align:justify;">
+                                Thank you.                              
+                            </p>                        
                         </td>
                     </tr>
                 </table>
