@@ -599,7 +599,7 @@ class SearchController extends \BaseController {
 					  		'discount'=>'98%','price'=>6500,'special_price'=>99,'type'=>"service",'sold_out'=>1
 					  	),	
 					  	array(
-					  		'name'=>"JG's Fitness - Group X (Zumba, Spinning, Aerobics, Boot Camp) - 6 Sessions",
+					  		'name'=>"JG's Fitness - Group X (Zumba, Spinning, Aerobics, Boot Camp, Masala Bhangra) - 6 Sessions",
 					  		'image'=>'http://b.fitn.in/global/fitmania/20_9.jpg',
 					  		'location'=>'Santacruz',
 					  		'discount'=>'78%','price'=>3000,'special_price'=>666,'type'=>"service",'sold_out'=>0

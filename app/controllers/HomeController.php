@@ -13,20 +13,20 @@ class HomeController extends BaseController {
 
 		$categorytags = $locations = $popular_finders =	$recent_blogs =	array();						
 		
-		$finder_gym_slugs 		=		array('golds-gym-lower-parel', 
-											   'muscle-n-mind-colaba', 
+		$finder_gym_slugs 		=		array('beyond-fitness-borivali-west', 
 											   'your-fitness-club-mumbai-central', 
-											   'beyond-fitness-malabar-hill');
+											   'golds-gym-lower-parel', 
+											   '48-fitness-lokhandwala');
 
 		$finder_yoga_slugs 		=		array('nuage-hot-yoga-lokhandwala', 
-											   'anshuka-yoga', 
-											   'sunaina-rekhi', 
-											   'cosmic-fusion-santacruz-west');
+											   'samanta-duggal', 
+											   'cosmic-fusion-santacruz-west', 
+											   'yoga-hut-borivali-west');
 
 		$finder_zumba_slugs 	=		array('baile-de-salon', 
-											   'zenith-dance-academy-andheri-west', 
-											   'rahul-saxennas-dance-connection', 
-											   'the-soul-studio');
+											   'rudra-shala-malad-west', 
+											   'studio-balance-hughes-road', 
+											   'adil-dance-academy-versova');
 
 		$finder_slugs 			= 		array_merge($finder_gym_slugs,$finder_yoga_slugs,$finder_zumba_slugs);
 
