@@ -24,7 +24,7 @@ class EmailSmsApiController extends \BaseController {
 
 		$email_template 		= 	$emaildata['email_template'];
 		$email_template_data 	= 	$emaildata['email_template_data'];
-		$reciver_name 			= 	ucwords($email_template_data['name']);
+		$reciver_name 			= 	(isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : 'Team Fitternity';
 		$to 					= 	$emaildata['to'];
 		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
 		$email_subject 			= 	ucfirst($emaildata['email_subject']);		
@@ -443,7 +443,7 @@ class EmailSmsApiController extends \BaseController {
 
 	public function not_able_to_find(){
 		date_default_timezone_set("Asia/Kolkata");
-		$data = array(
+		$data = array(				
 				'msg' => Input::json()->get('msg'), 
 				'capture_type' => 'not_able_to_find',
 				'date' => date("h:i:sa")  
