@@ -959,7 +959,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		return $body;exit;
+		//return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
