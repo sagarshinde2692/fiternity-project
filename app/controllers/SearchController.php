@@ -942,8 +942,8 @@ class SearchController extends \BaseController {
 									"query": "'.$globalkeyword.'",
 									"fields": [
 									"finder.title^5",
-									"finder.search_category",
-									"finder.search_categorytags",
+									"finder.search_category^50",
+									"finder.search_categorytags^50",
 									"finder.search_location",
 									"finder.search_locationtags"
 									]
