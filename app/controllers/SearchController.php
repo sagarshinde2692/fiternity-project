@@ -915,7 +915,6 @@ class SearchController extends \BaseController {
 		                "category" : { "terms" : { "field" : "category", "size": 10000} }
 		            }
 		        },
-		*/		        
 		$body = '
 		{
 			"from": '.$from.',
@@ -942,10 +941,10 @@ class SearchController extends \BaseController {
 									"query": "'.$globalkeyword.'",
 									"fields": [
 									"finder.title^5",
-									"finder.search_category^50",
-									"finder.search_categorytags^50",
-									"finder.search_location^30",
-									"finder.search_locationtags^30"
+									"finder.search_category^10",
+									"finder.search_categorytags^10",
+									"finder.search_location^10",
+									"finder.search_locationtags^10"
 									]
 								}
 							}
@@ -954,6 +953,38 @@ class SearchController extends \BaseController {
 					},
 					"score_mode": "sum",
 					"boost_mode": "sum"
+				}
+			}
+		}';
+		*/		        
+
+		$body = '
+		{
+			"from": '.$from.',
+			"size": '.$size.',
+			"aggs" : {						        		        
+	            "resultset_categories": { "terms": {"field": "category","size": 10000 } },
+	            "resultset_locations": { "terms": {"field": "location","size": 10000 } },
+	            "resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
+	            "resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
+		    },
+			"query": {
+				"filtered": {
+					"query": {
+						"multi_match": {
+							"query": "'.$globalkeyword.'",
+							"fields": [
+								"finder.title^2",
+								"finder.slug^20",
+					            "finder.search_category^50",
+					            "finder.search_categorytags^20",
+					            "finder.search_location^5",
+					            "finder.search_locationtags^5",
+					            "finder.contact.address^1"
+							]
+						}
+					}
+					'.$filters.'
 				}
 			}
 		}';
