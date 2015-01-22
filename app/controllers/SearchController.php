@@ -941,11 +941,11 @@ class SearchController extends \BaseController {
 								"multi_match": {
 									"query": "'.$globalkeyword.'",
 									"fields": [
-									"finder.title^25",
+									"finder.title^100",
 									"finder.search_category^50",
-									"finder.search_categorytags^50",
-									"finder.search_location^100",
-									"finder.search_locationtags^100"
+									"finder.search_categorytags^10",
+									"finder.search_location^25",
+									"finder.search_locationtags^10"
 									]
 								}
 							}
@@ -959,7 +959,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		//return $body;exit;
+		return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
