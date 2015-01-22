@@ -942,10 +942,10 @@ class SearchController extends \BaseController {
 									"query": "'.$globalkeyword.'",
 									"fields": [
 									"finder.title^25",
-									"finder.category^50",
-									"finder.categorytags^50",
-									"finder.location^100",
-									"finder.locationtags^100"
+									"finder.search_category^50",
+									"finder.search_categorytags^50",
+									"finder.search_location^100",
+									"finder.search_locationtags^100"
 									]
 								}
 							}
