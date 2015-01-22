@@ -941,11 +941,11 @@ class SearchController extends \BaseController {
 								"multi_match": {
 									"query": "'.$globalkeyword.'",
 									"fields": [
-									"finder.title",
-									"finder.search_category^50",
-									"finder.search_categorytags^10",
-									"finder.search_location^50",
-									"finder.search_locationtags^10"
+									"finder.title^5",
+									"finder.search_category",
+									"finder.search_categorytags",
+									"finder.search_location",
+									"finder.search_locationtags"
 									]
 								}
 							}
