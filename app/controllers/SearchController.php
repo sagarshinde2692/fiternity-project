@@ -941,7 +941,7 @@ class SearchController extends \BaseController {
 								"multi_match": {
 									"query": "'.$globalkeyword.'",
 									"fields": [
-									"finder.title^20",
+									"finder.title",
 									"finder.search_category^50",
 									"finder.search_categorytags^10",
 									"finder.search_location^50",
