@@ -588,9 +588,9 @@ class SearchController extends \BaseController {
 			$deals_of_day   = array(
 					  	array(
 					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_1.jpg',
+					  		'image'=>'http://b.fitn.in/global/fitmania/23_1s.jpg',
 					  		'location'=>'Mumbai Central',
-					  		'discount'=>'88%','price'=>4134,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'88%','price'=>4134,'special_price'=>499,'type'=>"service",'sold_out'=>1
 					  	),	
 					  	array(
 					  		'name'=>"YFC - 1 Month Gym Membership",
@@ -639,6 +639,12 @@ class SearchController extends \BaseController {
 					  		'image'=>'http://b.fitn.in/global/fitmania/23_9.jpg',
 					  		'location'=>'Koperkhairane',
 					  		'discount'=>'78%','price'=>2244,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"YFC - 1 Month Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/23_1.jpg',
+					  		'location'=>'Mumbai Central',
+					  		'discount'=>'76%','price'=>4134,'special_price'=>999,'type'=>"service",'sold_out'=>0
 					  	),								  								  								  	
 					);
 
