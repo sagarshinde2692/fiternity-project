@@ -573,7 +573,7 @@ class SearchController extends \BaseController {
 		*/
 			
 		$resp 				= 	array("deals_of_day" => $deals_of_day, 
-										"deals_today_communication" => "Your Fitness Club (YFC) Gyms", 
+										"deals_today_communication" => "Fitness In Mumbai", 
 										"deals_tomorrow_communication" => "Fitness In Mumbai", 
 										"deals_coming_communication" => "Fitness Apparel, Health Drinks & Food & More....", 
 										"search_results" => json_decode($search_results,true)
