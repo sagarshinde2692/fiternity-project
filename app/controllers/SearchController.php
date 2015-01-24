@@ -583,76 +583,158 @@ class SearchController extends \BaseController {
 	}
 
 	public function get_deals_of_day(){
-
 		
 			$deals_of_day   = array(
 					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_1s.jpg',
-					  		'location'=>'Mumbai Central',
-					  		'discount'=>'88%','price'=>4134,'special_price'=>499,'type'=>"service",'sold_out'=>1
+					  		'name'=>"Mint - Begineers X Training - 3 Months + 3 Months FREE",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_1.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'45%','price'=>15500,'special_price'=>8900,'type'=>"service",'sold_out'=>0
 					  	),	
 					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_2.jpg',
+					  		'name'=>"Bodyholics & Reebok - Cardio Boxing - 1 Session",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_19.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'100%','price'=>300,'special_price'=>0,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Your Fitness Club - 1 Year Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_4.jpg',
 					  		'location'=>'Opera House',
-					  		'discount'=>'90%','price'=>5434,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  		'discount'=>'30%','price'=>23000,'special_price'=>16100,'type'=>"service",'sold_out'=>0
 					  	),	
 					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_3.jpg',
-					  		'location'=>'Sion',
-					  		'discount'=>'77%','price'=>2126,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  		'name'=>"The Pilates Studio - 1 Session Reformer Pilates",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_13.jpg',
+					  		'location'=>'Santacruz , Hughes Road',
+					  		'discount'=>'97%','price'=>1500,'special_price'=>49,'type'=>"service",'sold_out'=>0
 					  	),	
 					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_4.jpg',
-					  		'location'=>'Borivali West',
-					  		'discount'=>'78%','price'=>2244,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  		'name'=>"Gold's Gym - Buy 15 days & Get 15 days FREE(Gym + Unlimited Group X Classes)",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_8.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'75%','price'=>7500,'special_price'=>3499,'type'=>"service",'sold_out'=>0
 					  	),	
 					  	array(
+					  		'name'=>"Fitness First - 1 Week Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_16.jpg',
+					  		'location'=>'Oshiwara',
+					  		'discount'=>'99%','price'=>3500,'special_price'=>49,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Anytime Fitness - 1 Month Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_25.jpg',
+					  		'location'=>'Lokhandwala',
+					  		'discount'=>'63%','price'=>4000,'special_price'=>1499,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Beyond Fitness - 1 Year Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_21.jpg',
+					  		'location'=>'Malabar hill',
+					  		'discount'=>'50%','price'=>40000,'special_price'=>20000,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Muscle N Mind - 1 Year Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_12.jpg',
+					  		'location'=>'Colaba',
+					  		'discount'=>'40%','price'=>22000,'special_price'=>13200,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"Zumba with illumination - 12 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_23.jpg',
+					  		'location'=>'Andheri,Kandivali,Goregaon,Dahisar',
+					  		'discount'=>'72%','price'=>3500,'special_price'=>999,'type'=>"service",'sold_out'=>0
+					  	),	
+					  	array(
+					  		'name'=>"JG's Fitness - Group X (Zumba, Spinning, Aerobics, Boot Camp) - 6 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_9.jpg',
+					  		'location'=>'Santacruz',
+					  		'discount'=>'78%','price'=>3000,'special_price'=>666,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"Activ8 - Pilates - 1 Month - 12 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_22.jpg',
+					  		'location'=>'Juhu',
+					  		'discount'=>'20%','price'=>8250,'special_price'=>6600,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"4& Fitness - 1 Session Pass",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_18.jpg',
+					  		'location'=>'Lokhandwala',
+					  		'discount'=>'100%','price'=>1000,'special_price'=>0,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"Reebok Fitness Studio - 12 sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_3.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'30%','price'=>3500,'special_price'=>2499,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"The Soul Studio - 1 Month (All Dance Forms)",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_24.jpg',
+					  		'location'=>'Andheri West',
+					  		'discount'=>'80%','price'=>2500,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"Endurance Fitness - 1 Month Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_17.jpg',
+					  		'location'=>'Lokhandwala',
+					  		'discount'=>'43%','price'=>1111,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"Xtreme Fight Federation - 1 Session",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_11.jpg',
+					  		'location'=>'Bandra , Andheri , Tardeo , Lokhandwala , Marine Drive',
+					  		'discount'=>'66%','price'=>750,'special_price'=>250,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"House of Wow - Masala Bhangra - 1 Month - 8 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_7.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'75%','price'=>4000,'special_price'=>999,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"Integym - 1 Year Gym Membership",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_14.jpg',
+					  		'location'=>'Colaba',
+					  		'discount'=>'25%','price'=>18000,'special_price'=>13500,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
+					  		'name'=>"Mint - Zumba - 1 Month + 1 Month FREE - 16 Sessions",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_2.jpg',
+					  		'location'=>'Khar',
+					  		'discount'=>'50%','price'=>5000,'special_price'=>2499,'type'=>"service",'sold_out'=>0
+					  	),
+					  	array(
 					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_5.jpg',
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_6.jpg',
 					  		'location'=>'Kandivali East',
 					  		'discount'=>'78%','price'=>2244,'special_price'=>499,'type'=>"service",'sold_out'=>0
-					  	),	
+					  	),		
 					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_6.jpg',
-					  		'location'=>'Vasai',
-					  		'discount'=>'78%','price'=>2244,'special_price'=>499,'type'=>"service",'sold_out'=>0
-					  	),	
+					  		'name'=>"Zest 4 Life - Robusfit - 1 Week",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_15.jpg',
+					  		'location'=>'Andheri West',
+					  		'discount'=>'75%','price'=>2000,'special_price'=>499,'type'=>"service",'sold_out'=>0
+					  	),
 					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_7.jpg',
-					  		'location'=>'Thane',
-					  		'discount'=>'78%','price'=>2244,'special_price'=>499,'type'=>"service",'sold_out'=>0
-					  	),	
+					  		'name'=>"Fighting Fit - 1 Month",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_20.jpg',
+					  		'location'=>'Bandra,Khar',
+					  		'discount'=>'96%','price'=>2500,'special_price'=>99,'type'=>"service",'sold_out'=>0
+					  	),
 					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_8.jpg',
-					  		'location'=>'Kharghar',
-					  		'discount'=>'78%','price'=>2244,'special_price'=>499,'type'=>"service",'sold_out'=>0
-					  	),	
-					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_9.jpg',
-					  		'location'=>'Koperkhairane',
-					  		'discount'=>'78%','price'=>2244,'special_price'=>499,'type'=>"service",'sold_out'=>0
-					  	),	
-					  	array(
-					  		'name'=>"YFC - 1 Month Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/23_1.jpg',
-					  		'location'=>'Mumbai Central',
-					  		'discount'=>'76%','price'=>4134,'special_price'=>999,'type'=>"service",'sold_out'=>0
-					  	),								  								  								  	
+					  		'name'=>"Yogacara - 1 Month",
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_10.jpg',
+					  		'location'=>'Bandra',
+					  		'discount'=>'10%','price'=>4200,'special_price'=>3780,'type'=>"service",'sold_out'=>0
+					  	),					  								  								  	
 					);
 
 			return $deals_of_day;
 
 
 	}
-
 
 	public function getFitcardFinders(){
 

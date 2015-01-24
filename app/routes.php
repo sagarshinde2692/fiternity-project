@@ -56,15 +56,29 @@ Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 ##############################################################################
 
 
+
+##############################################################################
+/******************** ELASTICSEARH SECTION START HERE  *******************/
+Route::get('createindex/{index?}', array('as' => 'elasticsearch.createindex','uses' => 'ElasticsearchController@createIndex'));
+Route::get('managesetttings/', array('as' => 'elasticsearch.managesetttings','uses' => 'ElasticsearchController@manageSetttings'));
+Route::get('createtype/{type}', array('as' => 'elasticsearch.createtype','uses' => 'ElasticsearchController@createType'));
+Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','uses' => 'ElasticsearchController@checkMapping'));
+Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
+Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
+
+/******************** ELASTICSEARH SECTION END HERE  ********************/
+##############################################################################
+
+
+
+
 ##############################################################################
 /******************** SEARCH SECTION START HERE ********************/
 Route::post('/search', 'SearchController@getGlobal');
 Route::post('/search/finders', 'SearchController@getFinders');
 Route::post('/findersearch', 'SearchController@getFindersv2');
 Route::post('/findersearchv3', 'SearchController@getFindersv3');
-
 Route::post('/globalsearch', 'SearchController@getGlobalv2');
-
 
 Route::get('/categoryfinders', 'SearchController@categoryfinders');
 Route::post('/fitmaniafinders', 'SearchController@getFitmaniaFinders');

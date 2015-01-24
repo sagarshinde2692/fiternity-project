@@ -195,11 +195,14 @@ return array(
 
 	),
 
-	'cachetime' 					=> 10,
-	'perpage' 						=> 50,
-   	'elasticsearch_host' 			=> '54.179.134.14',
-    'elasticsearch_default_index' 	=> 'fitadmin',
-    'elasticsearch_port' 			=> 9200,
-
+	'cachetime' 					=> 	10,
+	'perpage' 						=> 	50,
+   
+	
+	'elasticsearch_port' 			=> 	9200,
+	//'elasticsearch_host' 			=> 	'54.179.134.14',
+	//'elasticsearch_default_index' 	=> 	'fitternity'
+	'elasticsearch_host' 			=> 	'ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com',
+	'elasticsearch_default_index' 	=> 	'fitternitytest'
     
 );
