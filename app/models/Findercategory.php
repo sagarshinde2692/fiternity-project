@@ -9,20 +9,13 @@
  */
 
 
-class Findercategory extends \Moloquent{
+class Findercategory extends \Basemodel{
 
 	protected $collection = "findercategories";
 
-	// Add your validation rules here
 	public static $rules = array(
 		'name' => 'required'
-		//'detail_rating' => 'required|array',
 		);
-
-	protected $guarded = array();
-	
-	// Don't forget to fill this array
-	//protected $fillable = [];
 
 	
 	public function finders(){
@@ -31,11 +24,10 @@ class Findercategory extends \Moloquent{
 	}
 
 
-	public function scopeActive ($query){
+	public function cities(){
 
-		return $query->where('status','=','1');
+		return $this->belongsToMany('City', null, 'findercategorys', 'cities');
 	}
-
 
 
 

@@ -8,24 +8,24 @@
  */
 
 
-class Location extends \Moloquent {
+class Location extends \Basemodel {
 
 	protected $collection = "locations";
 
-	// Add your validation rules here
 	public static $rules = [
 		'name' => 'required'
 	];
-
-	protected $guarded = array();
 
 	public function finders(){
 		
 		return $this->hasMany('Finder');
 	}
 
-	public function scopeActive ($query){
+	public function cities(){
 
-		return $query->where('status','=','1');
+		return $this->belongsToMany('City', null, 'locations', 'cities');
 	}
+
+
+	
 }

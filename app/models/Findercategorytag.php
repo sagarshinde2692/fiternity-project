@@ -8,14 +8,13 @@
  */
 
 
-class Findercategorytag extends \Basemodel {
+class Findercategorytag extends  \Basemodel{
 
 	protected $collection = "findercategorytags";
 
-	// Add your validation rules here
-	public static $rules = [
-							'name' => 'required'
-					];
+	public static $rules = array(
+		'name' => 'required'
+		);
 
 	public function offerings(){
 
@@ -24,8 +23,14 @@ class Findercategorytag extends \Basemodel {
 
 	public function finders(){
 
-		return $this->belongsToMany('Finder', null, 'finders', 'categorytags');
+		return $this->belongsToMany('Finder', null, 'categorytags', 'finders');
 	}
 
-	
+
+	public function cities(){
+
+		return $this->belongsToMany('City', null, 'categorytags', 'cities');
+	}
+
+
 }

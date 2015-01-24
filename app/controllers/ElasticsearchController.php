@@ -38,6 +38,17 @@ class ElasticsearchController extends \BaseController {
 		return es_curl_request($request);       
 	}
 
+	// Delete Index in elastic
+	public function deleteIndex($index = ''){
+		$url = ($index != '') ? $this->elasticsearch_url."$index/" : $this->elasticsearch_default_url;
+		$request = array(
+			'url' => $url,
+			'port' => $this->elasticsearch_port,
+			'method' => 'DELETE',
+			);
+		return es_curl_request($request);       
+	}
+
 
 	// manage settings in elastic
 	public function manageSetttings(){
@@ -52,30 +63,35 @@ class ElasticsearchController extends \BaseController {
 		echo es_curl_request($request);  
 
 		
-		// "edgengram_analyzer": {
-		// 	"type": "custom",
-		// 	"tokenizer": "standard",
-		// 	"filter": ["haystack_edgengram"]
-		// }	
-
 		$body =	'{
 			"analysis" : {
 				"analyzer":{
+					"simple_analyzer": {
+						"type": "custom",
+						"tokenizer": "standard",
+						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
+					},
 					"snowball_analyzer": {
 						"type": "custom",
 						"tokenizer": "standard",
-						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_snowball"]
+						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter","filter_snowball"]
 					},
 					"shingle_analyzer": {
 						"type": "custom",
 						"tokenizer": "standard",
-						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_shingle","filter_snowball"]
+						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_shingle","filter_worddelimiter","filter_snowball"]
+					},
+					"autocomplete_analyzer": {
+						"type": "custom",
+						"tokenizer": "standard",
+						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_edgengram","filter_worddelimiter","filter_snowball"]
 					}
 				},
 				"filter": {
 					"filter_stop": {
 						"type":       "stop",
-						"stopwords":  "_english_"
+						"stopwords":  "_english_",
+						"ignore_case" : true
 					},
 					"filter_shingle": {
 						"type": "shingle",
@@ -91,15 +107,18 @@ class ElasticsearchController extends \BaseController {
 						"type": "porter_stem",
 						"language": "English"
 					},
-					"haystack_ngram": {
+					"filter_ngram": {
 						"type": "nGram",
 						"min_gram": 3,
 						"max_gram": 15
 					},
-					"haystack_edgengram": {
+					"filter_edgengram": {
 						"type": "edgeNGram",
 						"min_gram": 2,
 						"max_gram": 15
+					},
+					"filter_worddelimiter": {
+						"type": "word_delimiter"
 					}
 				},
 				"tokenizer": {
@@ -145,28 +164,50 @@ class ElasticsearchController extends \BaseController {
 	// create mapping
 	public function createtype($type){
 
+		// "title" : {
+		// 	"type" : "string", 
+		// 	"index" : "not_analyzed",
+		// 	"fields": {
+		// 		"title_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" }
+		// 	}
+		// },	
+
 		switch (strtolower($type)) {
 			case "finder":
 			$typemapping = '{
 				"finder" :{
 					"_source" : {"enabled" : true },
 					"properties":{
+						"title" : {
+							"type" : "string", 
+							"index" : "not_analyzed"
+						},
+						"title_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+
 						"category" : {
 							"type" : "string", 
 							"index" : "not_analyzed"
 						},
+						"category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+
 						"location" : {
 							"type" : "string", 
 							"index" : "not_analyzed"
 						},
+						"location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+						
 						"categorytags" : {
 							"type" : "string", 
 							"index" : "not_analyzed"
 						},
+						"categorytags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+						
 						"locationtags" : {
 							"type" : "string", 
 							"index" : "not_analyzed"
 						},
+						"locationtags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+
 						"offerings" : {
 							"type" : "string", 
 							"index" : "not_analyzed"
@@ -186,8 +227,9 @@ class ElasticsearchController extends \BaseController {
 		}
 
 		$postfields_data = json_encode(json_decode($typemapping,true));
+		$url =  $this->elasticsearch_default_url;
 		$request = array(
-			'url' => $this->elasticsearch_url."$type/_mapping",
+			'url' => $url."$type/_mapping",
 			'port' => Config::get('elasticsearch.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => $postfields_data
@@ -195,7 +237,74 @@ class ElasticsearchController extends \BaseController {
 		return es_curl_request($request);
 	}
 
-	
+	 // get all documents from mongodb
+    public function mongo2elastic($type = 'finder'){
+        $itmes 		=	array();
+        $item   	=	array();
+        $postdata 	=	array();
+        $doctype 	=	strtolower($type);
+
+        //Manage the query base on type
+        switch ($doctype) {
+            case "finder":
+                $items = Finder::with(array('country'=>function($query){$query->select('name');}))
+                                ->with(array('city'=>function($query){$query->select('name');}))
+                                ->with(array('category'=>function($query){$query->select('name','meta');}))
+                                ->with(array('location'=>function($query){$query->select('name');}))
+                                ->with('categorytags')
+                                ->with('locationtags')
+                                ->with('offerings')
+                                ->with('facilities')
+                                ->active()
+                                ->orderBy('_id')
+                                ->take(10)
+                                ->get();
+            break;
+        }
+
+        //return Response::json($items);
+
+        //manipulating or adding custom fields based on type
+        foreach ($items as $item) {  
+            $data = $item->toArray();
+            //return Response::json($data);
+            switch ($doctype) {
+                case "finder":
+                $postdata = get_elastic_finder_document($data);
+                break;
+
+                case "findermembership":
+                $postdata = get_elastic_finder_document($data);
+                $postdata['membership_offers'] = array();
+                break;
+                
+            } //switch           
+
+            //return Response::json($postdata);exit;
+            $cityname = strtolower($postdata['city']);
+            if($cityname == 'mumbai'){
+                $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
+            }
+            //$response = $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
+            //echo $response
+
+        }//foreach
+    }
+
+    // push mongo document to elastic
+    public function pushdocument($type, $documentid, $postfields_data){
+        //echo $postfields_data->_id;exit;
+        //echo var_dump($postfields_data);exit;
+
+        $request = array(
+            'url' => $this->elasticsearch_default_url."$type/$documentid",
+            'port' => Config::get('elasticsearch.elasticsearch_port'),
+            'method' => 'PUT',
+            'postfields' => $postfields_data
+            );
+        echo "<br> $documentid    ---  ".es_curl_request($request);
+    }
+
 
 
 

@@ -8,25 +8,19 @@
  */
 
 
-class Locationtag extends \Moloquent {
+class Locationtag extends \Basemodel{
 
-	// Add your validation rules here
-	public static $rules = [
-		 'name' => 'required'
-	];
-
-	// Don't forget to fill this array
-	protected $fillable = [];
-
-	protected $guarded = array();
+	public static $rules = array(
+		'name' => 'required'
+		);
 
 	public function finders(){
 
-		return $this->belongsToMany('Finder', null, 'finders', 'locationtags');
+		return $this->belongsToMany('Finder', null, 'locationtags', 'finders');
 	}
 
-	public function scopeActive ($query){
+	public function cities(){
 
-		return $query->where('status','=','1');
+		return $this->belongsToMany('City', null, 'locationtags', 'cities');
 	}
 }
