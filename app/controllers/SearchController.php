@@ -629,7 +629,7 @@ class SearchController extends \BaseController {
 					  	),	
 					  	array(
 					  		'name'=>"Beyond Fitness - 1 Year Gym Membership",
-					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_21.jpg',
+					  		'image'=>'http://b.fitn.in/global/fitmania/onlineimageresize_com_21.png',
 					  		'location'=>'Malabar hill',
 					  		'discount'=>'50%','price'=>40000,'special_price'=>20000,'type'=>"service",'sold_out'=>0
 					  	),	
