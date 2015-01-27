@@ -72,14 +72,13 @@ Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic',
 
 
 
-
 ##############################################################################
 /******************** SEARCH SECTION START HERE ********************/
 Route::post('/search', 'SearchController@getGlobal');
 Route::post('/search/finders', 'SearchController@getFinders');
-Route::post('/findersearch', 'SearchController@getFindersv4');
 Route::post('/findersearchv3', 'SearchController@getFindersv3');
 Route::post('/globalsearch', 'SearchController@getGlobalv2');
+Route::post('/findersearch', 'SearchController@getFindersv4');
 
 Route::get('/categoryfinders', 'SearchController@categoryfinders');
 Route::post('/fitmaniafinders', 'SearchController@getFitmaniaFinders');

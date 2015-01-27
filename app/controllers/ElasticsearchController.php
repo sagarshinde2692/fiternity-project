@@ -257,7 +257,7 @@ class ElasticsearchController extends \BaseController {
                                 ->with('facilities')
                                 ->active()
                                 ->orderBy('_id')
-                                ->take(10)
+                                //->take(10)
                                 ->get();
             break;
         }
@@ -282,9 +282,9 @@ class ElasticsearchController extends \BaseController {
 
             //return Response::json($postdata);exit;
             $cityname = strtolower($postdata['city']);
-            if($cityname == 'mumbai'){
+            //if($cityname == 'mumbai'){
                 $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
-            }
+            //}
             //$response = $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
             //echo $response
 
