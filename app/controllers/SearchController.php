@@ -1069,20 +1069,20 @@ public function getGlobalv2() {
 		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
 		$city 				=	(Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';	
-		$city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;	
-
-		$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
-		$location 			=	(Input::json()->get('regions')) ? Input::json()->get('regions') : '';		
-		$offerings 			=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
-		$facilities 		=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
-		$price_range 		=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
+		$city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
+			
+		$category 				=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
+		$location 				=	(Input::json()->get('location')) ? Input::json()->get('location') : '';		
+		$offerings 				=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
+		$facilities 			=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
+		$price_range 			=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';			
 
 		//filters 
 		$city_filter 			= ($city != '') ? '{"terms" : {  "city": ["'.str_ireplace(',', '","', $city ).'"] }},'  : '';
 		$category_filter 		= ($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';		
 		$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
-		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
-		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
+		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
+		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
 		$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
 		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';	
 		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","',Input::json()->get('price_range')).'"] }},'  : '';	
@@ -1097,7 +1097,7 @@ public function getGlobalv2() {
 			$shouldfilter = '"should": ['.$should_filtervalue.'],';	
 		}
 		
-		
+
 		//used for offering, facilities and price range
 		if($city_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
 			$must_filtervalue = trim($city_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
