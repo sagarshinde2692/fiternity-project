@@ -1049,35 +1049,6 @@ public function getGlobalv2() {
 	}
 
 
-// 	{
-//   "from": 0,
-//   "size": 0,
-//   "aggs": {
-//     "all_categorys": {
-//       "global": {},
-//       "aggs": {
-//         "filter_category": {
-//           "filter": {
-//             "terms": {
-//               "city": [
-//                 "pune"
-//               ]
-//             }
-//           },
-//           "aggs": {
-//             "city_categories": {
-//               "terms": {
-//                 "field": "category",
-//                 "size": 10000
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
-
 
 // {
 //   "from": 0,
@@ -1120,13 +1091,12 @@ public function getGlobalv2() {
 		
 		$category_filter;
 
-
 		//used for location , category, 	
-		if($location_filter != '' || $category_filter != ''){			
-			//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
-			$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
+		if($location_filter != ''){			
+			$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
 			$shouldfilter = '"should": ['.$should_filtervalue.'],';	
 		}
+		
 		
 		//used for offering, facilities and price range
 		if($city_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
