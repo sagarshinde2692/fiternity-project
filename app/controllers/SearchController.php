@@ -870,13 +870,13 @@ public function getFitcardFinders(){
 
 
 
-	// {
-	//   "from": 0,
-	//   "size": 25,
-	//   "keyword":"golds gym",
-	//   "category":"gyms,crossfit",
-	//   "location" :"navi mumbai,kandivali east"
-	// }
+// {
+//   "from": 0,
+//   "size": 25,
+//   "keyword":"golds gym",
+//   "category":"gyms,crossfit",
+//   "location" :"navi mumbai,kandivali east"
+// }
 
 
 public function getGlobalv2() {
@@ -1078,6 +1078,15 @@ public function getGlobalv2() {
 //   }
 // }
 
+
+// {
+//   "from": 0,
+//   "size": 25,
+//   "city":"mumbai",
+//   "city_id":1,
+//   "category":"gyms,crossfit",
+//   "location" :"navi mumbai,kandivali east"
+// }
 	public function getFindersv4(){
 
 
@@ -1090,7 +1099,7 @@ public function getGlobalv2() {
 
 		$city 				=	(Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';	
 		$city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;	
-		
+
 		$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
 		$location 			=	(Input::json()->get('regions')) ? Input::json()->get('regions') : '';		
 		$offerings 			=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
