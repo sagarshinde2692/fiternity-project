@@ -94,7 +94,8 @@ class BlogsController extends \BaseController {
 						  'relatedfinders' 	=> $relatedfinders,
 						  'categorytags' 	=> $categorytags,
 						  'locations' 		=> $locations,
-						  'findercategory' 	=> $category
+						  'findercategory' 	=> $category,
+						  'blog_findercategoryid' => $findercategoryid
 						);
 			return $data;
 		}
