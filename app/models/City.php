@@ -32,7 +32,11 @@ class City extends \Basemodel {
 	}
 
 	public function finders(){
-		return $this->hasMany('Finder','country_id');
+		return $this->hasMany('Finder','city_id');
+	}
+
+	public function homepage(){
+		return $this->hasOnce('Homepage');
 	}
 
 }

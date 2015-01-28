@@ -245,16 +245,16 @@ class SearchController extends \BaseController {
 	  		$size 			=  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;						
 
 		//filters 
-	  		$filters = "";		 
-	  		$category_filter =  Input::json()->get('category');
-	  		$regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
-	  		$region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
-	  		$offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
-	  		$facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';		
-	  		
+  		$filters = "";		 
+  		$category_filter =  Input::json()->get('category');
+  		$regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
+  		$region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
+  		$offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
+  		$facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';		
+  		
 
-	  		$should_filtervalue = trim($regions_filter.$region_tags_filter,',');	
-	  		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
+  		$should_filtervalue = trim($regions_filter.$region_tags_filter,',');	
+  		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
 		$shouldfilter = '"should": ['.$should_filtervalue.'],';	//used for location 
 		$mustfilter = '"must": ['.$must_filtervalue.']';		//used for offering and facilities
 		$filtervalue = trim($shouldfilter.$mustfilter,',');	
