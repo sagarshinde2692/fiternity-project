@@ -51,9 +51,9 @@ return array(
 			'discount' => '67%','price'=>450,'special_price'=>149,'sold_out'=>0
 			),
 		array(
-			'name' => "Organic Food Hamper (Jiwa Nutra Multi-Grain Atta, Nourish Organic Honey Roasted Almond & Concious Food Masala Tea)",
+			'name' => "Organic Food Hamper",
 			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_22.jpg',
-			'location' => 'Jiwa Nutra Multi-Grain Atta, Nourish Organic Honey Roasted Almond & Concious Food Masala Tea',
+			'location' => 'Includes : Jiwa Nutra Multi-Grain Atta, Nourish Organic Honey Roasted Almond & Concious Food Masala Tea',
 			'discount' => '65%','price'=>500,'special_price'=>325,'sold_out'=>0
 			),
 		array(
