@@ -23,9 +23,9 @@ return array(
 			),	
 		array(
 			'name' => "RiteBite Max Protein - Pack of 6",
-			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_8.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_8s.jpg',
 			'location' => 'Choco Slim, Choco Fudge, Honey Lemon & Assorted',
-			'discount' => '100%','price'=>650,'special_price'=>0,'sold_out'=>0,
+			'discount' => '100%','price'=>650,'special_price'=>0,'sold_out'=>1,
 			'description' => "<p>Max Protein – a energy packed protein bar can be consumed as a meal replacement bar which offers multiple benefits in a single serving to fit perfectly into your busy lifestyle maintaining energy levels.</p><p>Max Protein Bar is formulated by nutrition expert to give an edge to perform at your best. Post exercise meal plays an important role in regaining your energy levels, recovering & rebuilding your muscles. Protein gives best results when consumed within 30 minutes after exercise, it helps rebuilt muscles tissues that are stressed during intense exercise. Max Protein Bar is loaded with 20g Protein, 5g Fiber, 21 Vitamins & Minerals, Electrolytes, Omega 3 , Amino Acid (L-Glutamine & more)</p><b>Size :</b> Pack of 6 Bars + 1 Work Out Bar Free<br><b>Flavours :</b> Choco slim, Choco Fudge, Honey Lemon & Assorted"
 			),
 		array(
@@ -33,16 +33,21 @@ return array(
 			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_1.jpg',
 			'location' => 'Almond Butter',
 			'discount' => '64%','price'=>550,'special_price'=>199,'sold_out'=>0,
-			'description' => "<p>Almond Butter is a great tasting and natural source of healthy fats. 100% Natural - no added fats, sugars or salt. Our Almond Butter is 100% natural, free of added fats, sugar or salt. Freshly roasted and ground, its absolutely fresh and such a versatile product as well as a healthy and yummy source of fat. Spread some Eat-A-Whey All Natural Almond Butter on a slice of bread, on pancakes, on your oats or just eat it straight off the spoon! We guarantee you can't stop once you've got a taste!</p><b>Size : </b> 250g<br><b>Flavour : </b> Natural (roasted)
-Vegetarian"
+			'description' => "<p>Almond Butter is a great tasting and natural source of healthy fats. 100% Natural - no added fats, sugars or salt. Our Almond Butter is 100% natural, free of added fats, sugar or salt. Freshly roasted and ground, its absolutely fresh and such a versatile product as well as a healthy and yummy source of fat. Spread some Eat-A-Whey All Natural Almond Butter on a slice of bread, on pancakes, on your oats or just eat it straight off the spoon! We guarantee you can't stop once you've got a taste!</p><b>Size : </b> 250g<br><b>Flavour : </b> Natural (roasted) Vegetarian"
 			),
-
 		array(
 			'name' => "The Green Snacks - Kale Chips",
 			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_6.jpg',
 			'location' => 'Thai Sweet Chilli, Sea Salt & Vinegar, Cheese Onion',
 			'discount' => '51%','price'=>200,'special_price'=>99,'sold_out'=>0,
 			'description' => "<p>Kale Chips, is made using fresh Kale leaves, which are a nutritional powerhouse, being extremely rich in B-vitamins, Iron, Calcium, Fibre, Proteins, Antioxidants etc. So it’s this nutritionally dense green leafy vegetable tossed in our completely natural hand-crafted dressings that make our chips the most delicious and healthy snack in the world! Also what’s truly unique about this snack, is the method of preparation - called Dehydration - which does not involve baking or frying or any other form of traditional cooking, but just air-drying, and is also the reason that all the nutrients remain intact and concentrated in the end product. And with No added sugar, No Preservative, No Additives, No MSG, No Flavoring substances and Absolutely Nothing Artificial, this is one Rawsome Treat you just have to try!!!</p><b>Size : </b>30g<br><b>Shelf Life : </b>1.5 Month<br><b>Flavours : </b>Thai Sweet Chilli, Cheese & Onion, Sea Salt & Vinegar"
+			),
+		array(
+			'name' => "RiteBite Max Protein - Pack of 6",
+			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_8.jpg',
+			'location' => 'Choco Slim, Choco Fudge, Honey Lemon & Assorted',
+			'discount' => '23%','price'=>650,'special_price'=>499,'sold_out'=>1,
+			'description' => "<p>Max Protein – a energy packed protein bar can be consumed as a meal replacement bar which offers multiple benefits in a single serving to fit perfectly into your busy lifestyle maintaining energy levels.</p><p>Max Protein Bar is formulated by nutrition expert to give an edge to perform at your best. Post exercise meal plays an important role in regaining your energy levels, recovering & rebuilding your muscles. Protein gives best results when consumed within 30 minutes after exercise, it helps rebuilt muscles tissues that are stressed during intense exercise. Max Protein Bar is loaded with 20g Protein, 5g Fiber, 21 Vitamins & Minerals, Electrolytes, Omega 3 , Amino Acid (L-Glutamine & more)</p><b>Size :</b> Pack of 6 Bars + 1 Work Out Bar Free<br><b>Flavours :</b> Choco slim, Choco Fudge, Honey Lemon & Assorted"
 			),
 		array(
 			'name' => "Jiwa Atta 1Kg",
