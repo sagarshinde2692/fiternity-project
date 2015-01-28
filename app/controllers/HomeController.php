@@ -65,11 +65,11 @@ class HomeController extends BaseController {
 	}
 
 
-
-	public function getHomePageDatav2(){   
+	public function getHomePageDatav2($city = 'mumbai'){   
 
 
 		$categorytags = $locations = $popular_finders =	$recent_blogs =	array();
+
 
 		return $homepage = Homepage::where('city_id', '=', 1)->get(array('gym_finders','yoga_finders','zumba_finders'))->first();						
 		
