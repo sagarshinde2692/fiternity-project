@@ -6,14 +6,14 @@ return array(
 	//service, product
 	'type' => 'product',
 	
-	'offers' => array(
-		array(
-			'name' => "Raw Pressery - Light Cleanse, One + One FREE",
-			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_9.jpg',
-			'location' => 'Trim, Run, Flush, Shield, Glow, Build',
-			'discount' => '50%','price'=>3000,'special_price'=>1500,'sold_out'=>0,
-			'description' => "<p>Take the first step towards a healthier you with the Light Cleanse. The deliciously healthy cleanse will detox you and recharge your health meters. Every day our bodies work overtime to release the toxins we accumulate through processed foods, alcohol, caffeine, stress and the environment we live in. A juice cleanse can be your first step towards a healthier lifestyle, as it replaces your solid food intake with delicious, cold-pressed juices. It not only cuts your craving for the bad and increases your craving for the good, but also enriches your body with nutrients. Consumed every 2.5 hours for a duration of 1, 2 or 3 days, these juices help make your health resolutions a reality.This package contains six bottles of 410ml juices to be consumed every 2.5 hours replacing solid-food intake for the day. Buy any Cleanse, and receive a free Cleanse e-voucher from RAW Pressery.</p>"
-			),	
+'offers' => array(
+array(
+	'name' => "Raw Pressery - Light Cleanse, One + One FREE",
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_9.jpg',
+	'location' => 'Trim, Run, Flush, Shield, Glow, Build',
+	'discount' => '50%','price'=>3000,'special_price'=>1500,'sold_out'=>0,
+	'description' => "<p>Take the first step towards a healthier you with the Light Cleanse. The deliciously healthy cleanse will detox you and recharge your health meters. Every day our bodies work overtime to release the toxins we accumulate through processed foods, alcohol, caffeine, stress and the environment we live in. A juice cleanse can be your first step towards a healthier lifestyle, as it replaces your solid food intake with delicious, cold-pressed juices. It not only cuts your craving for the bad and increases your craving for the good, but also enriches your body with nutrients. Consumed every 2.5 hours for a duration of 1, 2 or 3 days, these juices help make your health resolutions a reality.This package contains six bottles of 410ml juices to be consumed every 2.5 hours replacing solid-food intake for the day. Buy any Cleanse, and receive a free Cleanse e-voucher from RAW Pressery.</p>"
+	),	
 array(
 	'name' => "Raw Pressery - Deep Cleanse, One + One FREE",
 	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_10.jpg',
@@ -30,9 +30,9 @@ array(
 	),
 array(
 	'name' => "Eat A Whey - All Natural Almond",
-	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_1.jpg',
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_1s.jpg',
 	'location' => 'Almond Butter',
-	'discount' => '64%','price'=>550,'special_price'=>199,'sold_out'=>0,
+	'discount' => '64%','price'=>550,'special_price'=>199,'sold_out'=>1,
 	'description' => "<p>Almond Butter is a great tasting and natural source of healthy fats. 100% Natural - no added fats, sugars or salt. Our Almond Butter is 100% natural, free of added fats, sugar or salt. Freshly roasted and ground, its absolutely fresh and such a versatile product as well as a healthy and yummy source of fat. Spread some Eat-A-Whey All Natural Almond Butter on a slice of bread, on pancakes, on your oats or just eat it straight off the spoon! We guarantee you can't stop once you've got a taste!</p><b>Size : </b> 250g<br><b>Flavour : </b> Natural (roasted) Vegetarian"
 	),
 array(
@@ -48,6 +48,13 @@ array(
 	'location' => 'Choco Slim, Choco Fudge, Honey Lemon & Assorted',
 	'discount' => '23%','price'=>650,'special_price'=>499,'sold_out'=>0,
 	'description' => "<p>Max Protein – a energy packed protein bar can be consumed as a meal replacement bar which offers multiple benefits in a single serving to fit perfectly into your busy lifestyle maintaining energy levels.</p><p>Max Protein Bar is formulated by nutrition expert to give an edge to perform at your best. Post exercise meal plays an important role in regaining your energy levels, recovering & rebuilding your muscles. Protein gives best results when consumed within 30 minutes after exercise, it helps rebuilt muscles tissues that are stressed during intense exercise. Max Protein Bar is loaded with 20g Protein, 5g Fiber, 21 Vitamins & Minerals, Electrolytes, Omega 3 , Amino Acid (L-Glutamine & more)</p><b>Size :</b> Pack of 6 Bars + 1 Work Out Bar Free<br><b>Flavours :</b> Choco slim, Choco Fudge, Honey Lemon & Assorted"
+	),
+array(
+	'name' => "Eat A Whey - All Natural Almond",
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_1.jpg',
+	'location' => 'Almond Butter',
+	'discount' => '10%','price'=>550,'special_price'=>495,'sold_out'=>0,
+	'description' => "<p>Almond Butter is a great tasting and natural source of healthy fats. 100% Natural - no added fats, sugars or salt. Our Almond Butter is 100% natural, free of added fats, sugar or salt. Freshly roasted and ground, its absolutely fresh and such a versatile product as well as a healthy and yummy source of fat. Spread some Eat-A-Whey All Natural Almond Butter on a slice of bread, on pancakes, on your oats or just eat it straight off the spoon! We guarantee you can't stop once you've got a taste!</p><b>Size : </b> 250g<br><b>Flavour : </b> Natural (roasted) Vegetarian"
 	),
 array(
 	'name' => "Jiwa Atta 1Kg",
@@ -93,9 +100,9 @@ array(
 	),
 array(
 	'name' => "Eat A Whey - Chocolate Peanut Protein Brownies",
-	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_4.jpg',
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_4s.jpg',
 	'location' => 'Chocolate',
-	'discount' => '84%','price'=>1250,'special_price'=>199,'sold_out'=>0,
+	'discount' => '84%','price'=>1250,'special_price'=>199,'sold_out'=>1,
 	'description' => "<p>If Chocolate Protein Brownies weren't enough for you, we added some of our All Natural Peanut Butter to our mix and make way for our decadent Chocolate Protein PEANUT BUTTER Brownies! Chocolate-y, Peanut-y and Protein packed! that's exactly what Chocolate Peanut Butter Protein Brownies are - double source of healthy fats and protein from whey protein isolate. These brownies are 89 calories a piece with just 4.5g of carb, 2g of fiber and ONLY 1g of sugar.</p><b>Flavour : </b>Chocolate Peanut Butter<br><b>Size : </b>6 pcs<br><b>Vegetarian</b>"
 	),
 array(
@@ -119,7 +126,13 @@ array(
 	'discount' => '88%','price'=>75,'special_price'=>9,'sold_out'=>1,
 	'description' => " <p>A fresh perspective on healthy, tasty rotis. All the human body really needs to stay healthy is balanced nutrition. Our recipe contains foods that deliver a complete set of nutrients in exacting proportions, making Jiwa’s atta a better replacement to your regular, everyday atta.</p><br><b> Types : </b> Gluten Free, Diabetic Care Atta, MultiGrain, Fitness, slimming, Nutra Chakki atta"
 	),
-
+array(
+	'name' => "Eat A Whey - Chocolate Peanut Protein Brownies",
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_4.jpg',
+	'location' => 'Chocolate',
+	'discount' => '10%','price'=>1250,'special_price'=>1125,'sold_out'=>0,
+	'description' => "<p>If Chocolate Protein Brownies weren't enough for you, we added some of our All Natural Peanut Butter to our mix and make way for our decadent Chocolate Protein PEANUT BUTTER Brownies! Chocolate-y, Peanut-y and Protein packed! that's exactly what Chocolate Peanut Butter Protein Brownies are - double source of healthy fats and protein from whey protein isolate. These brownies are 89 calories a piece with just 4.5g of carb, 2g of fiber and ONLY 1g of sugar.</p><b>Flavour : </b>Chocolate Peanut Butter<br><b>Size : </b>6 pcs<br><b>Vegetarian</b>"
+	),
 array(
 	'name' => "Fofamlee Green Tea",
 	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_21.jpg',
