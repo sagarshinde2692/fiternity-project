@@ -37,9 +37,9 @@ array(
 	),
 array(
 	'name' => "The Green Snacks - Kale Chips",
-	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_6.jpg',
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_6s.jpg',
 	'location' => 'Thai Sweet Chilli, Sea Salt & Vinegar, Cheese Onion',
-	'discount' => '51%','price'=>200,'special_price'=>99,'sold_out'=>0,
+	'discount' => '51%','price'=>200,'special_price'=>99,'sold_out'=>1,
 	'description' => "<p>Kale Chips, is made using fresh Kale leaves, which are a nutritional powerhouse, being extremely rich in B-vitamins, Iron, Calcium, Fibre, Proteins, Antioxidants etc. So it’s this nutritionally dense green leafy vegetable tossed in our completely natural hand-crafted dressings that make our chips the most delicious and healthy snack in the world! Also what’s truly unique about this snack, is the method of preparation - called Dehydration - which does not involve baking or frying or any other form of traditional cooking, but just air-drying, and is also the reason that all the nutrients remain intact and concentrated in the end product. And with No added sugar, No Preservative, No Additives, No MSG, No Flavoring substances and Absolutely Nothing Artificial, this is one Rawsome Treat you just have to try!!!</p><b>Size : </b>30g<br><b>Shelf Life : </b>1.5 Month<br><b>Flavours : </b>Thai Sweet Chilli, Cheese & Onion, Sea Salt & Vinegar"
 	),
 array(
