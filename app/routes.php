@@ -51,7 +51,7 @@ Route::get('/blogs/{offset}/{limit}', 'BlogsController@getBlogs');
 Route::get('blogdetail/{slug}', array('as' => 'blogs.blogdetail','uses' => 'BlogsController@blogdetail'));
 Route::get('/blogs/{cat}', 'BlogsController@getCategoryBLogs');
 Route::get('/updateblogdate', 'BlogsController@updateblogdate');
-Route::post('/getblogrelatedfinder', 'SearchController@getblogRelatedFinder');
+Route::post('/getblogrelatedfinder', 'BlogsController@getblogRelatedFinder');
 
 
 
