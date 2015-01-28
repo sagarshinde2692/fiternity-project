@@ -46,7 +46,7 @@ return array(
 			'name' => "RiteBite Max Protein - Pack of 6",
 			'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_8.jpg',
 			'location' => 'Choco Slim, Choco Fudge, Honey Lemon & Assorted',
-			'discount' => '23%','price'=>650,'special_price'=>499,'sold_out'=>1,
+			'discount' => '23%','price'=>650,'special_price'=>499,'sold_out'=>0,
 			'description' => "<p>Max Protein – a energy packed protein bar can be consumed as a meal replacement bar which offers multiple benefits in a single serving to fit perfectly into your busy lifestyle maintaining energy levels.</p><p>Max Protein Bar is formulated by nutrition expert to give an edge to perform at your best. Post exercise meal plays an important role in regaining your energy levels, recovering & rebuilding your muscles. Protein gives best results when consumed within 30 minutes after exercise, it helps rebuilt muscles tissues that are stressed during intense exercise. Max Protein Bar is loaded with 20g Protein, 5g Fiber, 21 Vitamins & Minerals, Electrolytes, Omega 3 , Amino Acid (L-Glutamine & more)</p><b>Size :</b> Pack of 6 Bars + 1 Work Out Bar Free<br><b>Flavours :</b> Choco slim, Choco Fudge, Honey Lemon & Assorted"
 			),
 		array(
