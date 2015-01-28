@@ -148,13 +148,14 @@ class BlogsController extends \BaseController {
 
 			$city_id				= 	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;	
 			$blog_findercategoryid 	= 	(int) Input::json()->get('blog_findercategoryid');	
-					
+
 			$categorytags			= 	Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$relatedfinders 		=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->where('category_id','=',$blog_findercategoryid)
 											->where('finder_type', '=', 1)
+											->where('city_id', '=', $city_id)
 											->where('status', '=', '1')
 											->remember(Config::get('app.cachetime'))
 											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
