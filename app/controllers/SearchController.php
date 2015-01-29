@@ -874,7 +874,7 @@ class SearchController extends \BaseController {
 								"finder.categorytags_snow",
 								"finder.location_snow^5",
 								"finder.locationtags_snow"
-							]
+							],
 					        "like_text" :"'.$globalkeyword.'",
 					        "max_query_terms" : 12
 					    }
@@ -885,7 +885,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		//return $body;exit;
+		return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
