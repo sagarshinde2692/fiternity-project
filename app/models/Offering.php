@@ -8,7 +8,7 @@
  */
 
 
-class Offering extends \Moloquent {
+class Offering extends \Basemodel {
 
 	protected $collection = "offerings";
 
@@ -16,11 +16,6 @@ class Offering extends \Moloquent {
 	public static $rules = [
 	'name' => 'required'
 	];
-
-	protected $guarded = array();
-
-	// Don't forget to fill this array
-	//protected $fillable = [];
 
 	public function categorytag(){
 		

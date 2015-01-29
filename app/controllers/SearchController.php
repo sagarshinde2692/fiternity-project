@@ -1024,7 +1024,12 @@ class SearchController extends \BaseController {
 		
 		$search_results 	=	es_curl_request($request);
 
-		$finder_leftside = array('categorytag_offerings' => Findercategorytag::active()->with('offerings')->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
+		$finder_leftside = array(
+			'categorytag_offerings' => Findercategorytag::active()
+										->with('offerings')
+										->with('offerings')
+										->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
+			
 			'locations' => Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug')),
 			'price_range' => array(
 				array("slug" =>"one","name" => "less than 1000"),
@@ -1052,7 +1057,7 @@ class SearchController extends \BaseController {
 						'meta_keywords' => $meta_keywords,
 						'finder_leftside' => $finder_leftside,									
 						'search_results' => json_decode($search_results,true),
-						);
+			);
 
 		//return Response::json($search_results); exit;
 		return Response::json($resp);

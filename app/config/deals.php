@@ -52,9 +52,9 @@ return array(
 			),
 		array(
 			'name' => "Kunal Jessani's Dance Classes - 10 Zumba Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_8.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_8s.jpg',
 			'location' => 'Bandra',
-			'discount' => '87%','price'=>1600,'special_price'=>199,'sold_out'=>0
+			'discount' => '87%','price'=>1600,'special_price'=>199,'sold_out'=>1
 			),
 		array(
 			'name' => "CastleWalk The Studio - 8 Sessions (Masala Bhangra)",
@@ -122,6 +122,12 @@ return array(
 			'location' => 'Bandra, Ghatkopar',
 			'discount' => '72%','price'=>3500,'special_price'=>999,'sold_out'=>0
 			),
+		array(
+			'name' => "Kunal Jessani's Dance Classes - 10 Zumba Sessions",
+			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_8.jpg',
+			'location' => 'Bandra',
+			'discount' => '0%','price'=>1600,'special_price'=>1600,'sold_out'=>0
+			),		
 
 		),
 
