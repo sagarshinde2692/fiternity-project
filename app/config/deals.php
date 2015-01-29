@@ -8,11 +8,11 @@ return array(
 	
 'offers' => array(
 array(
-	'name' => "Eat A Whey - Chocolate Peanut Protein Brownies",
-	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_4s.jpg',
-	'location' => 'Chocolate',
-	'discount' => '84%','price'=>1250,'special_price'=>199,'sold_out'=>1,
-	'description' => "<p>If Chocolate Protein Brownies weren't enough for you, we added some of our All Natural Peanut Butter to our mix and make way for our decadent Chocolate Protein PEANUT BUTTER Brownies! Chocolate-y, Peanut-y and Protein packed! that's exactly what Chocolate Peanut Butter Protein Brownies are - double source of healthy fats and protein from whey protein isolate. These brownies are 89 calories a piece with just 4.5g of carb, 2g of fiber and ONLY 1g of sugar.</p><b>Flavour : </b>Chocolate Peanut Butter<br><b>Size : </b>6 pcs<br><b>Vegetarian</b>"
+	'name' => "Eat A Whey - Protein Peanut Butter",
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_2.jpg',
+	'location' => 'Vanilla, Chocolate',
+	'discount' => '67%','price'=>450,'special_price'=>149,'sold_out'=>0,
+	'description' => "<p>Plain, simple and delicious natural peanut butter with a protein twist! Peanuts are not only a great source of healthy fats but protein too. At Eat-A-Whey, we give you a double dose of protein by infusing our peanut butter with extra protein ! Spread some Eat-A-Whey Protein Peanut Butter on a slice of bread, on pancakes, on your oats or just eat it straight off the spoon! Putting this away isn't going to be easy. At all.</p><b>Flavour : </b>Vanilla, Chocolate<br><b>Vegetarian</b>"
 	),
 array(
 	'name' => "Raw Pressery - Light Cleanse, One + One FREE",
@@ -64,11 +64,11 @@ array(
 	'description' => " <p>A fresh perspective on healthy, tasty rotis. All the human body really needs to stay healthy is balanced nutrition. Our recipe contains foods that deliver a complete set of nutrients in exacting proportions, making Jiwa’s atta a better replacement to your regular, everyday atta.</p><br><b> Types : </b> Gluten Free, Diabetic Care Atta, MultiGrain, Fitness, slimming, Nutra Chakki atta"
 	),
 array(
-	'name' => "Eat A Whey - Protein Peanut Butter",
-	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_2.jpg',
-	'location' => 'Vanilla, Chocolate',
-	'discount' => '67%','price'=>450,'special_price'=>149,'sold_out'=>0,
-	'description' => "<p>Plain, simple and delicious natural peanut butter with a protein twist! Peanuts are not only a great source of healthy fats but protein too. At Eat-A-Whey, we give you a double dose of protein by infusing our peanut butter with extra protein ! Spread some Eat-A-Whey Protein Peanut Butter on a slice of bread, on pancakes, on your oats or just eat it straight off the spoon! Putting this away isn't going to be easy. At all.</p><b>Flavour : </b>Vanilla, Chocolate<br><b>Vegetarian</b>"
+	'name' => "Eat A Whey - Chocolate Peanut Protein Brownies",
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_4s.jpg',
+	'location' => 'Chocolate',
+	'discount' => '84%','price'=>1250,'special_price'=>199,'sold_out'=>1,
+	'description' => "<p>If Chocolate Protein Brownies weren't enough for you, we added some of our All Natural Peanut Butter to our mix and make way for our decadent Chocolate Protein PEANUT BUTTER Brownies! Chocolate-y, Peanut-y and Protein packed! that's exactly what Chocolate Peanut Butter Protein Brownies are - double source of healthy fats and protein from whey protein isolate. These brownies are 89 calories a piece with just 4.5g of carb, 2g of fiber and ONLY 1g of sugar.</p><b>Flavour : </b>Chocolate Peanut Butter<br><b>Size : </b>6 pcs<br><b>Vegetarian</b>"
 	),
 array(
 	'name' => "Organic Food Hamper",
