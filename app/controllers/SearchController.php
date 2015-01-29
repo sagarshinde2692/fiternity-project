@@ -858,7 +858,8 @@ class SearchController extends \BaseController {
 
 		$serachbody = $body;
 		$request = array(
-			'url' => "http://54.179.134.14:9200/fitadmin/finder/_search",
+			//'url' => "http://54.179.134.14:9200/fitadmin/finder/_search",
+			'url' => "http://ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com:9200/fitternitytest/finder/_search",
 			'port' => 9200,
 			'method' => 'POST',
 			'postfields' => $serachbody
