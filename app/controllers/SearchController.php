@@ -838,13 +838,13 @@ class SearchController extends \BaseController {
 						"multi_match": {
 							"query": "'.$globalkeyword.'",
 							"fields": [
-							"finder.title^2",
-							"finder.slug^20",
-							"finder.category_snow^10",
-							"finder.categorytags_snow^5",
-							"finder.location_snow^50",
-							"finder.locationtags_snow^20",
-							"finder.contact.address^1"
+							"finder.title_snow",
+							"finder.slug",
+							"finder.category_snow",
+							"finder.categorytags_snow",
+							"finder.location_snow",
+							"finder.locationtags_snow",
+							"finder.contact.address"
 							]
 						}
 					}
