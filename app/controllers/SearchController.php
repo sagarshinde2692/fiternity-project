@@ -822,6 +822,37 @@ class SearchController extends \BaseController {
 		// }';
 
 
+		// $body = '
+		// {
+		// 	"from": '.$from.',
+		// 	"size": '.$size.',
+		// 	"aggs" : {						        		        
+		// 		"resultset_categories": { "terms": {"field": "category","size": 10000 } },
+		// 		"resultset_locations": { "terms": {"field": "location","size": 10000 } },
+		// 		"resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
+		// 		"resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
+		// 	},
+		// 	"query": {
+		// 		"filtered": {
+		// 			"query": {
+		// 				"multi_match": {
+		// 					"query": "'.$globalkeyword.'",
+		// 					"fields": [
+		// 					"finder.title_snow",
+		// 					"finder.slug",
+		// 					"finder.category_snow^5",
+		// 					"finder.categorytags_snow",
+		// 					"finder.location_snow^5",
+		// 					"finder.locationtags_snow",
+		// 					"finder.contact.address"
+		// 					]
+		// 				}
+		// 			}
+		// 			'.$filters.'
+		// 		}
+		// 	}
+		// }';
+
 		$body = '
 		{
 			"from": '.$from.',
@@ -835,18 +866,18 @@ class SearchController extends \BaseController {
 			"query": {
 				"filtered": {
 					"query": {
-						"multi_match": {
-							"query": "'.$globalkeyword.'",
-							"fields": [
-							"finder.title_snow",
-							"finder.slug",
-							"finder.category_snow^5",
-							"finder.categorytags_snow",
-							"finder.location_snow^5",
-							"finder.locationtags_snow",
-							"finder.contact.address"
+						"fuzzy_like_this" : {
+					       	"fields": [
+								"finder.title_snow",
+								"finder.slug",
+								"finder.category_snow^5",
+								"finder.categorytags_snow",
+								"finder.location_snow^5",
+								"finder.locationtags_snow"
 							]
-						}
+					        "like_text" :"'.$globalkeyword.'",
+					        "max_query_terms" : 12
+					    }
 					}
 					'.$filters.'
 				}
