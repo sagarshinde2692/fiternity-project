@@ -9,16 +9,16 @@ return array(
 'offers' => array(
 array(
 	'name' => "Raw Pressery - Light Cleanse, One + One FREE",
-	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_9.jpg',
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_9s.jpg',
 	'location' => 'Trim, Run, Flush, Shield, Glow, Build',
-	'discount' => '50%','price'=>3000,'special_price'=>1500,'sold_out'=>0,
+	'discount' => '50%','price'=>3000,'special_price'=>1500,'sold_out'=>1,
 	'description' => "<p>Take the first step towards a healthier you with the Light Cleanse. The deliciously healthy cleanse will detox you and recharge your health meters. Every day our bodies work overtime to release the toxins we accumulate through processed foods, alcohol, caffeine, stress and the environment we live in. A juice cleanse can be your first step towards a healthier lifestyle, as it replaces your solid food intake with delicious, cold-pressed juices. It not only cuts your craving for the bad and increases your craving for the good, but also enriches your body with nutrients. Consumed every 2.5 hours for a duration of 1, 2 or 3 days, these juices help make your health resolutions a reality.This package contains six bottles of 410ml juices to be consumed every 2.5 hours replacing solid-food intake for the day. Buy any Cleanse, and receive a free Cleanse e-voucher from RAW Pressery.</p>"
 	),	
 array(
 	'name' => "Raw Pressery - Deep Cleanse, One + One FREE",
-	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_10.jpg',
+	'image' => 'http://b.fitn.in/global/fitmania/28/onlineimageresize_com_10s.jpg',
 	'location' => 'Trim, Love, Flush, Shield, Glow, Lean',
-	'discount' => '50%','price'=>3000,'special_price'=>1500,'sold_out'=>0,
+	'discount' => '50%','price'=>3000,'special_price'=>1500,'sold_out'=>1,
 	'description' => "<p>Take on a healthy challenge with the Deep Cleanse. The plant-based cleanse will leave you lean, mean and filled with green. Every day our bodies work overtime to release the toxins we accumulate through processed foods, alcohol, caffeine, stress and the environment we live in. A juice cleanse can be your first step towards a healthier lifestyle, as it replaces your solid food intake with delicious, cold-pressed juices. It not only cuts your craving for the bad and increases your craving for the good, but also enriches your body with nutrients. Consumed every 2.5 hours for a duration of 1, 2 or 3 days, these juices help make your health resolutions a reality.This package contains six bottles of 410ml juices to be consumed every 2.5 hours replacing solid-food intake for the day. Buy any Cleanse, and receive a free Cleanse e-voucher from RAW Pressery.</p>"
 	),	
 array(

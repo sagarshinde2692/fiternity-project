@@ -150,5 +150,5 @@ return array(
 	'bcc_emailds_fivefitness_refund'	 			=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 
 
-	'bcc_emailds_not_able_to_find' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_not_able_to_find' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com','dharatanna@fitternity.com'),
 );
