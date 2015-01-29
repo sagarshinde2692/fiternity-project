@@ -840,9 +840,9 @@ class SearchController extends \BaseController {
 							"fields": [
 							"finder.title_snow",
 							"finder.slug",
-							"finder.category_snow",
+							"finder.category_snow^5",
 							"finder.categorytags_snow",
-							"finder.location_snow",
+							"finder.location_snow^5",
 							"finder.locationtags_snow",
 							"finder.contact.address"
 							]
