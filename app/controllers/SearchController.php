@@ -840,10 +840,10 @@ class SearchController extends \BaseController {
 							"fields": [
 							"finder.title^2",
 							"finder.slug^20",
-							"finder.search_category^50",
-							"finder.search_categorytags^20",
-							"finder.search_location^5",
-							"finder.search_locationtags^5",
+							"finder.search_category^10",
+							"finder.search_categorytags^5",
+							"finder.search_location^50",
+							"finder.search_locationtags^20",
 							"finder.contact.address^1"
 							]
 						}
