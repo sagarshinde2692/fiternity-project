@@ -107,7 +107,7 @@ return array(
 		array(
 			'name' => "Zumba with Sukoon Rajani - 12 Sessions ",
 			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_17.jpg',
-			'location' => 'Bandra , Marine Drive',
+			'location' => 'Bandra ',
 			'discount' => '72%','price'=>3500,'special_price'=>999,'sold_out'=>0
 			),
 		array(

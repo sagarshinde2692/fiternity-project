@@ -721,6 +721,9 @@ class SearchController extends \BaseController {
 		$from 					=  	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 					=  	(Input::json()->get('size')) ? Input::json()->get('size') : 5;		
 
+		$city 					=	(Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';	
+		$city_id				=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
+
 		$category 				=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
 		$location 				=	(Input::json()->get('location')) ? Input::json()->get('location') : '';		
 		$offerings 				=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
@@ -731,6 +734,7 @@ class SearchController extends \BaseController {
 		//return $globalkeyword;exit;
 
 		//filters 
+		$city_filter 			= 	($city != '') ? '{"terms" : {  "city": ["'.str_ireplace(',', '","', $city ).'"] }},'  : '';
 		$category_filter 		=	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
 		$categorytags_filter 	=	($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
 		$location_filter 		=	($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
@@ -757,8 +761,8 @@ class SearchController extends \BaseController {
 		// }
 
 
-		if($category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
-			$must_filtervalue = trim($category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
+		if($city_filter != '' || $category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+			$must_filtervalue = trim($city_filter.$category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
 			$mustfilter = '"must": ['.$must_filtervalue.']';		
 		}
 
@@ -772,112 +776,33 @@ class SearchController extends \BaseController {
 
 		//return $filters;exit;
 
-		
-		// "all_categorys" : {
-		//             "global" : {}, 
-		//             "aggs" : { 
-		//                 "category" : { "terms" : { "field" : "category", "size": 10000} }
-		//             }
-		//         },
-		// $body = '
-		// {
-		// 	"from": '.$from.',
-		// 	"size": '.$size.',
-		// 	"aggs" : {						        		        
-	 //            "resultset_categories": { "terms": {"field": "category","size": 10000 } },
-	 //            "resultset_locations": { "terms": {"field": "location","size": 10000 } },
-	 //            "resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
-	 //            "resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
-		//     },
-		// 	"query": {
-		// 		"function_score": {
-		// 			"functions": [
-		// 				{
-		// 					"script_score": {
-		// 						"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 0)"
-		// 					}
-		// 				}
-		// 			],
-		// 			"query": {
-		// 				"filtered": {
-		// 					"query": {
-		// 						"multi_match": {
-		// 							"query": "'.$globalkeyword.'",
-		// 							"fields": [
-		// 							"finder.title^5",
-		// 							"finder.search_category^10",
-		// 							"finder.search_categorytags^10",
-		// 							"finder.search_location^10",
-		// 							"finder.search_locationtags^10"
-		// 							]
-		// 						}
-		// 					}
-		// 					'.$filters.'
-		// 				}
-		// 			},
-		// 			"score_mode": "sum",
-		// 			"boost_mode": "sum"
-		// 		}
-		// 	}
-		// }';
-
-
-		// $body = '
-		// {
-		// 	"from": '.$from.',
-		// 	"size": '.$size.',
-		// 	"aggs" : {						        		        
-		// 		"resultset_categories": { "terms": {"field": "category","size": 10000 } },
-		// 		"resultset_locations": { "terms": {"field": "location","size": 10000 } },
-		// 		"resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
-		// 		"resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
-		// 	},
-		// 	"query": {
-		// 		"filtered": {
-		// 			"query": {
-		// 				"multi_match": {
-		// 					"query": "'.$globalkeyword.'",
-		// 					"fields": [
-		// 					"finder.title_snow",
-		// 					"finder.slug",
-		// 					"finder.category_snow^5",
-		// 					"finder.categorytags_snow",
-		// 					"finder.location_snow^5",
-		// 					"finder.locationtags_snow",
-		// 					"finder.contact.address"
-		// 					]
-		// 				}
-		// 			}
-		// 			'.$filters.'
-		// 		}
-		// 	}
-		// }';
+		$aggsval	= '{
+			"resultset_categories": { "terms": {"field": "category","size": 10000 } },
+			"resultset_locations": { "terms": {"field": "location","size": 10000 } },
+			"resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
+			"resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }			
+		}';
 
 		$body = '
 		{
 			"from": '.$from.',
 			"size": '.$size.',
-			"aggs" : {						        		        
-				"resultset_categories": { "terms": {"field": "category","size": 10000 } },
-				"resultset_locations": { "terms": {"field": "location","size": 10000 } },
-				"resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
-				"resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
-			},
+			"aggs": '.$aggsval.',
 			"query": {
 				"filtered": {
 					"query": {
 						"fuzzy_like_this" : {
-					       	"fields": [
-								"finder.title_snow",
-								"finder.slug",
-								"finder.category_snow^5",
-								"finder.categorytags_snow",
-								"finder.location_snow^5",
-								"finder.locationtags_snow"
+							"fields": [
+							"finder.title_snow",
+							"finder.slug",
+							"finder.category_snow^5",
+							"finder.categorytags_snow",
+							"finder.location_snow^5",
+							"finder.locationtags_snow"
 							],
-					        "like_text" :"'.$globalkeyword.'",
-					        "max_query_terms" : 12
-					    }
+							"like_text" :"'.$globalkeyword.'",
+							"max_query_terms" : 12
+						}
 					}
 					'.$filters.'
 				}
@@ -885,7 +810,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		//return $body;exit;
+		return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
@@ -1058,9 +983,9 @@ class SearchController extends \BaseController {
 
 		$finder_leftside = array(
 			'categorytag_offerings' => Findercategorytag::active()
-										->with('offerings')
-										->with('offerings')
-										->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
+			->with('offerings')
+			->with('offerings')
+			->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
 			
 			'locations' => Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug')),
 			'price_range' => array(
@@ -1084,11 +1009,11 @@ class SearchController extends \BaseController {
 		} 
 
 		$resp  = 	array(
-						'meta_title' => $meta_title,
-						'meta_description' => $meta_description,
-						'meta_keywords' => $meta_keywords,
-						'finder_leftside' => $finder_leftside,									
-						'search_results' => json_decode($search_results,true),
+			'meta_title' => $meta_title,
+			'meta_description' => $meta_description,
+			'meta_keywords' => $meta_keywords,
+			'finder_leftside' => $finder_leftside,									
+			'search_results' => json_decode($search_results,true),
 			);
 
 		//return Response::json($search_results); exit;
