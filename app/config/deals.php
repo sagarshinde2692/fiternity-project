@@ -132,7 +132,7 @@ return array(
 			'name' => "Kunal Jessani's Dance Classes - 10 Zumba Sessions",
 			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_8.jpg',
 			'location' => 'Bandra',
-			'discount' => '0%','price'=>1600,'special_price'=>1600,'sold_out'=>0
+			'discount' => '15%','price'=>1600,'special_price'=>1360,'sold_out'=>0
 			),		
 
 		),
