@@ -9,9 +9,9 @@ return array(
 	'offers' => array(
 		array(
 			'name' => "Dance Beat Mumbai - 10 sessions (Zumba)",
-			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_1.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_1s.jpg',
 			'location' => 'Hughes Road',
-			'discount' => '97%','price'=>3200,'special_price'=>99,'sold_out'=>0
+			'discount' => '97%','price'=>3200,'special_price'=>99,'sold_out'=>1
 			),
 		array(
 			'name' => "Dance People - 8 Sessions (Zumba)",
@@ -43,6 +43,12 @@ return array(
 			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_6.jpg',
 			'location' => 'Malad West',
 			'discount' => '95%','price'=>2200,'special_price'=>99,'sold_out'=>0
+			),
+		array(
+			'name' => "Dance Beat Mumbai - 10 sessions (Zumba)",
+			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_1.jpg',
+			'location' => 'Hughes Road',
+			'discount' => '85%','price'=>3200,'special_price'=>499,'sold_out'=>0
 			),
 		array(
 			'name' => "Kunal Jessani's Dance Classes - 10 Dance Sessions",
