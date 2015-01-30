@@ -22,9 +22,10 @@ class FindersController extends \BaseController {
 	public function finderdetail($slug){
 		$data 	= array();
 		$tslug 	= (string) $slug;
-		$finder = Finder::with('category')
-						->with('city')
-						->with('location')
+		$finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						//->with(array('categorytags'=>function($query){$query->select('_id','name','slug');}))
 						->with('categorytags')
 						->with('locationtags')
 						->with('offerings')
