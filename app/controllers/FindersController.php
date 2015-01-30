@@ -23,6 +23,7 @@ class FindersController extends \BaseController {
 		$data 	= array();
 		$tslug 	= (string) $slug;
 		$finder = Finder::with('category')
+						->with('city')
 						->with('location')
 						->with('categorytags')
 						->with('locationtags')
