@@ -960,8 +960,7 @@ class SearchController extends \BaseController {
 			'facilities' => Facility::active()->orderBy('name')->get(array('name','_id','slug'))	
 			);
 
-		$resp 	= 	array('search_results' => json_decode($search_results,true), 
-			'finder_leftside' => $finder_leftside);
+		$resp 	= 	array('search_results' => json_decode($search_results,true), 'finder_leftside' => $finder_leftside);
 		
 		//return Response::json($search_results); exit;
 		return Response::json($resp);
