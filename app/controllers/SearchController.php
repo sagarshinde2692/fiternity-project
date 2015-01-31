@@ -633,8 +633,6 @@ class SearchController extends \BaseController {
 			},';
 		}
 
-
-
 		$body =	'{				
 			"from": '.$from.',
 			"size": '.$size.',
@@ -682,7 +680,8 @@ class SearchController extends \BaseController {
 
 		$serachbody = $body;
 		$request = array(
-			'url' => "http://54.179.134.14:9200/fitadmin/fitcardfinder/_search",
+			//'url' => "http://54.179.134.14:9200/fitadmin/fitcardfinder/_search",
+			'url' => $this->elasticsearch_url."fitmania/finder/_search",
 			'port' => 9200,
 			'method' => 'POST',
 			'postfields' => $serachbody
