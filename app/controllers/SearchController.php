@@ -845,8 +845,8 @@ class SearchController extends \BaseController {
 		$type 				= 	"finder";		    	
 		$filters 			=	"";	
 		$selectedfields 	= 	"";		
-		$from 				=	(Input::json()->get('from')) ? intval(Input::json()->get('from')) : 0;
-		$size 				=	(Input::json()->get('size')) ? intval(Input::json()->get('size')) : $this->limit;		
+		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
 		$city 				=	(Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';	
 		$city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
@@ -995,10 +995,10 @@ class SearchController extends \BaseController {
 		} 
 
 		$resp  = 	array(
-				//'meta_title' => $meta_title,
-				//'meta_description' => $meta_description,
-				//'meta_keywords' => $meta_keywords,
-				//'finder_leftside' => $finder_leftside,									
+				'meta_title' => $meta_title,
+				'meta_description' => $meta_description,
+				'meta_keywords' => $meta_keywords,
+				'finder_leftside' => $finder_leftside,									
 				'search_results' => json_decode($search_results,true),
 			);
 
