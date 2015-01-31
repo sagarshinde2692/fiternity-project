@@ -544,7 +544,7 @@ class SearchController extends \BaseController {
 
 		$serachbody = $body;
 		$request = array(
-			'url' => "http://54.179.134.14:9200/fitadmin/findermembership/_search",
+			'url' => $this->elasticsearch_url."fitmania/finder/_search",
 			'port' => 9200,
 			'method' => 'POST',
 			'postfields' => $serachbody
@@ -653,15 +653,11 @@ class SearchController extends \BaseController {
 			"query": {
 				"function_score": {
 					"functions": ['.$basecategory_score.'
-					<<<<<<< HEAD
-					
-					=======
 					{
 						"script_score": {
 							"script": "log(doc[\'popularity\'].value)"
 						}
 					},
-					>>>>>>> a2a9726cd65bc776f88e9ce6fdb1f03af3790ec0
 					{
 						"script_score": {
 							"script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)"
@@ -684,7 +680,7 @@ class SearchController extends \BaseController {
 
 		$serachbody = $body;
 		$request = array(
-			'url' => $this->elasticsearch_url."fitmania/finder/_search",
+			'url' => $this->elasticsearch_url."fitcard/finder/_search",
 			'port' => 9200,
 			'method' => 'POST',
 			'postfields' => $serachbody
@@ -1014,7 +1010,7 @@ class SearchController extends \BaseController {
 
 	public function categoryfinders(){
 		//echo "calling categoryfinders";exit;
-		
+
 		$finders = array();	
 		$categoryarr = array('gyms','yoga','pilates','dance','zumba','martial arts','kick boxing','cross functional training');
 		foreach ($categoryarr as $catitem) {  		
@@ -1041,14 +1037,14 @@ class SearchController extends \BaseController {
 			$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","',Input::json()->get('price_range')).'"] }},'  : '';	
 
 			$shouldfilter = $mustfilter = '';
-			
+
 			//used for location , category, 	
 			if($location_filter != ''){			
 				//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
 				$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
 				$shouldfilter = '"should": ['.$should_filtervalue.'],';	
 			}
-			
+
 			//used for offering, facilities and price range
 			if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
 				$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
@@ -1141,7 +1137,7 @@ class SearchController extends \BaseController {
 		$results =  Es::search($searchParams);
 		//printPretty($results);
 		return $results;
-		
+
 	}
 
 
