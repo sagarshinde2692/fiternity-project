@@ -27,13 +27,13 @@ return array(
 			),
 		array(
 			'name' => "Tego Towels",
-			'image' => 'http://b.fitn.in/global/fitmania/31/onlineimageresize_com_1s.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/31/onlineimageresize_com_5.jpg',
 			'product_url' => 'http://store.fitternity.com/deals-of-the-day?cat=1335',
 			'discount' => '40%','price'=>499,'special_price'=>249,'sold_out'=>0
 			),
 		array(
 			'name' => "Funatic Sippers",
-			'image' => 'http://b.fitn.in/global/fitmania/31/onlineimageresize_com_1s.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/31/onlineimageresize_com_1.jpg',
 			'product_url' => 'http://store.fitternity.com/deals-of-the-day?cat=1339',
 			'discount' => '80%','price'=>500,'special_price'=>99,'sold_out'=>0
 			),								
