@@ -560,7 +560,7 @@ class SearchController extends \BaseController {
 		$resp = array(
 			"deals_of_day" => Config::get('deals.offers'), 
 			"deals_type" => Config::get('deals.type'), 
-			"deals_today_communication" => "Dance In Mumbai", 
+			"deals_today_communication" => "Healthy Food & Drinks", 
 			"deals_tomorrow_communication" => "Dance In Mumbai", 
 			"deals_coming_communication" => "Fitness Apparel, Health Drinks & Food & More....", 
 			"search_results" => json_decode($search_results,true)
@@ -721,9 +721,6 @@ class SearchController extends \BaseController {
 		$from 					=  	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 					=  	(Input::json()->get('size')) ? Input::json()->get('size') : 5;		
 
-		$city 					=	(Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';	
-		$city_id				=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
-
 		$category 				=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
 		$location 				=	(Input::json()->get('location')) ? Input::json()->get('location') : '';		
 		$offerings 				=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
@@ -734,7 +731,6 @@ class SearchController extends \BaseController {
 		//return $globalkeyword;exit;
 
 		//filters 
-		$city_filter 			= 	($city != '') ? '{"terms" : {  "city": ["'.str_ireplace(',', '","', $city ).'"] }},'  : '';
 		$category_filter 		=	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
 		$categorytags_filter 	=	($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
 		$location_filter 		=	($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
@@ -761,8 +757,8 @@ class SearchController extends \BaseController {
 		// }
 
 
-		if($city_filter != '' || $category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
-			$must_filtervalue = trim($city_filter.$category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
+		if($category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+			$must_filtervalue = trim($category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
 			$mustfilter = '"must": ['.$must_filtervalue.']';		
 		}
 
@@ -776,32 +772,80 @@ class SearchController extends \BaseController {
 
 		//return $filters;exit;
 
-		$aggsval	= '{
-			"resultset_categories": { "terms": {"field": "category","size": 10000 } },
-			"resultset_locations": { "terms": {"field": "location","size": 10000 } },
-			"resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
-			"resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }			
-		}';
+		
+		// "all_categorys" : {
+		//             "global" : {}, 
+		//             "aggs" : { 
+		//                 "category" : { "terms" : { "field" : "category", "size": 10000} }
+		//             }
+		//         },
+		// $body = '
+		// {
+		// 	"from": '.$from.',
+		// 	"size": '.$size.',
+		// 	"aggs" : {						        		        
+	 //            "resultset_categories": { "terms": {"field": "category","size": 10000 } },
+	 //            "resultset_locations": { "terms": {"field": "location","size": 10000 } },
+	 //            "resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
+	 //            "resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
+		//     },
+		// 	"query": {
+		// 		"function_score": {
+		// 			"functions": [
+		// 				{
+		// 					"script_score": {
+		// 						"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 0)"
+		// 					}
+		// 				}
+		// 			],
+		// 			"query": {
+		// 				"filtered": {
+		// 					"query": {
+		// 						"multi_match": {
+		// 							"query": "'.$globalkeyword.'",
+		// 							"fields": [
+		// 							"finder.title^5",
+		// 							"finder.search_category^10",
+		// 							"finder.search_categorytags^10",
+		// 							"finder.search_location^10",
+		// 							"finder.search_locationtags^10"
+		// 							]
+		// 						}
+		// 					}
+		// 					'.$filters.'
+		// 				}
+		// 			},
+		// 			"score_mode": "sum",
+		// 			"boost_mode": "sum"
+		// 		}
+		// 	}
+		// }';
+
 
 		$body = '
 		{
 			"from": '.$from.',
 			"size": '.$size.',
-			"aggs": '.$aggsval.',
+			"aggs" : {						        		        
+				"resultset_categories": { "terms": {"field": "category","size": 10000 } },
+				"resultset_locations": { "terms": {"field": "location","size": 10000 } },
+				"resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
+				"resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
+			},
 			"query": {
 				"filtered": {
 					"query": {
-						"fuzzy_like_this" : {
+						"multi_match": {
+							"query": "'.$globalkeyword.'",
 							"fields": [
-							"finder.title_snow",
-							"finder.slug",
-							"finder.category_snow^5",
-							"finder.categorytags_snow",
-							"finder.location_snow^5",
-							"finder.locationtags_snow"
-							],
-							"like_text" :"'.$globalkeyword.'",
-							"max_query_terms" : 12
+							"finder.title^2",
+							"finder.slug^20",
+							"finder.search_category^50",
+							"finder.search_categorytags^20",
+							"finder.search_location^5",
+							"finder.search_locationtags^5",
+							"finder.contact.address^1"
+							]
 						}
 					}
 					'.$filters.'
@@ -814,8 +858,7 @@ class SearchController extends \BaseController {
 
 		$serachbody = $body;
 		$request = array(
-			//'url' => "http://54.179.134.14:9200/fitadmin/finder/_search",
-			'url' => "http://ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com:9200/fitternitytest/finder/_search",
+			'url' => "http://54.179.134.14:9200/fitadmin/finder/_search",
 			'port' => 9200,
 			'method' => 'POST',
 			'postfields' => $serachbody
@@ -981,12 +1024,7 @@ class SearchController extends \BaseController {
 		
 		$search_results 	=	es_curl_request($request);
 
-		$finder_leftside = array(
-			'categorytag_offerings' => Findercategorytag::active()
-			->with('offerings')
-			->with('offerings')
-			->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
-			
+		$finder_leftside = array('categorytag_offerings' => Findercategorytag::active()->with('offerings')->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
 			'locations' => Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug')),
 			'price_range' => array(
 				array("slug" =>"one","name" => "less than 1000"),
@@ -999,23 +1037,9 @@ class SearchController extends \BaseController {
 			'facilities' => Facility::active()->orderBy('name')->get(array('name','_id','slug'))	
 			);
 
-
-		$meta_title	= $meta_description = $meta_keywords = '';
-		if($category != ''){
-			$findercategory 	=  	Findercategory::where('slug', '=', url_slug(array($category)))->first(array('meta'));
-			$meta_title			= $findercategory['meta']['title'];
-			$meta_description	= $findercategory['meta']['description'];
-			$meta_keywords		= $findercategory['meta']['keywords'];
-		} 
-
-		$resp  = 	array(
-			'meta_title' => $meta_title,
-			'meta_description' => $meta_description,
-			'meta_keywords' => $meta_keywords,
-			'finder_leftside' => $finder_leftside,									
-			'search_results' => json_decode($search_results,true),
-			);
-
+		$resp 	= 	array('search_results' => json_decode($search_results,true), 
+			'finder_leftside' => $finder_leftside);
+		
 		//return Response::json($search_results); exit;
 		return Response::json($resp);
 		//echo $body; exit;

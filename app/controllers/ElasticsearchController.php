@@ -188,7 +188,7 @@ class ElasticsearchController extends \BaseController {
 		switch (strtolower($type)) {
 			case "fitternityfinder":
 			$typemapping 	=	$common_findermapping;
-			$typeurl 		=	$this->elasticsearch_default_index."finder/_mapping";	
+			$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
 			break;
 
 			case "fitmaniafinder":
@@ -223,19 +223,58 @@ class ElasticsearchController extends \BaseController {
         //Manage the query base on type
 		switch ($doctype) {
 			case "fitternityfinder":
-			$items = Finder::with(array('country'=>function($query){$query->select('name');}))
-			->with(array('city'=>function($query){$query->select('name');}))
-			->with(array('category'=>function($query){$query->select('name','meta');}))
-			->with(array('location'=>function($query){$query->select('name');}))
-			->with('categorytags')
-			->with('locationtags')
-			->with('offerings')
-			->with('facilities')
-			->active()
-			->orderBy('_id')
-                                //->take(10)
-			->get();
+				$items = Finder::with(array('country'=>function($query){$query->select('name');}))
+						->with(array('city'=>function($query){$query->select('name');}))
+						->with(array('category'=>function($query){$query->select('name','meta');}))
+						->with(array('location'=>function($query){$query->select('name');}))
+						->with('categorytags')
+						->with('locationtags')
+						->with('offerings')
+						->with('facilities')
+						->active()
+						->orderBy('_id')
+			            //->take(2)
+						->get();
 			break;
+
+			case "fitmaniafinder":
+
+                $finderids  = array(1257,1259,1260,1261,1233,1266,1262,1392,1604,1584,1582,1603,1607,1605,1583,1579,1580,1581,1602,1606,1029,1706,1554,1705,1032,1030,1033,1034,1035,171,570,1422,1421,1413,328,329,25,413,523,566,590,596,1873,625,78,752,941,1041,1296,1484,1667,905,1031,1850,1765,903,1639,983,1332,166,602,449,217,227,728,816,927,1069,1269,1330,1395,1495,1630,1650,1690,569,825,900,1431,1764,1823,61,987,1493,1783,1691,1784,1516,1493,1783,171,1080,1242,1587,224,984,1563,1646,1445,1424,616,223,1214,1688,1786,604,1676,147,341,417,55,827,1473,1480,1522,1642,1782,1664,571,731,620,1682,1677,424,1490,1389,613,1122,881,926,1704,968,138,1042,1693,633,1671,1435,1694,45,1695,1696,677,1327,1710,1441,1295,1835,721,1495);
+                $items      = Finder::with(array('country'=>function($query){$query->select('name');}))
+                                    ->with(array('city'=>function($query){$query->select('name');}))
+                                    ->with(array('category'=>function($query){$query->select('name','meta');}))
+                                    ->with(array('location'=>function($query){$query->select('name');}))
+                                    ->with('categorytags')
+                                    ->with('locationtags')
+                                    ->with('offerings')
+                                    ->with('facilities')
+                                    ->whereIn('_id',$finderids)
+                                    ->active()
+                                    ->orderBy('_id')
+                                    ->get();
+            break;
+
+            case "fitcardfinder":
+                $bandra_vileparle_finder_ids        =       array(579,878,590,1606,1580,752,566,131,1747,1813,1021,424,1451,905,1388,1630,728,1031,1495,816,902,1650,1424,1587,1080,224,984,1563,1242,223,1887,1751,1493,1783,1691,1516,1781,1784,827,147,417,1676,1885,569);
+                $andheri_borivalii_finder_ids       =       array(1579,1261,1705,401,561,1655,1513,1510,739,1514,570,1260,1261,40,1465,523,576,1332,166,1447,602,1428,1887,1786,604,1771,1257,1751,1523,1554,1209,439,625,1020,1522,1392,1667,1484,1041,1435,1694,1259,1413,45,449,1330,227,1697,1395,1511,1154,1873,1698,1691,1389,412,1642,1480,1676,417,1682,1069,1677,1445,1424,223,1214,1688,1080,1490,341);
+                $south_mumbai_finder_ids            =       array(718,329,1603,1605,1449,328,171,1296,1327,1422,1710,1441,1293,1295,903,1835,1639,983,1851,1764,1823,1493,1646,1242,1563,1783,1887,984,1612,827,417,1782,138,731,1,422,1122,1781,1029,1706,1233,569,1888);
+                $central_suburbs_finder_ids         =       array(1450,1602,413,1609,437,1501,927,1494,700,256,1030,170,417,1454,1581,1266);
+
+
+                $finderids                          =       array_unique(array_merge($bandra_vileparle_finder_ids,$andheri_borivalii_finder_ids,$south_mumbai_finder_ids,$central_suburbs_finder_ids));
+                $items                              =       Finder::with(array('country'=>function($query){$query->select('name');}))
+                                                                    ->with(array('city'=>function($query){$query->select('name');}))
+                                                                    ->with(array('category'=>function($query){$query->select('name','meta');}))
+                                                                    ->with(array('location'=>function($query){$query->select('name');}))
+                                                                    ->with('categorytags')
+                                                                    ->with('locationtags')
+                                                                    ->with('offerings')
+                                                                    ->with('facilities')
+                                                                    ->whereIn('_id',$finderids)
+                                                                    ->active()
+                                                                    ->orderBy('_id')
+                                                                    ->get();
+            break;
 		}
 
         //return Response::json($items);
@@ -246,8 +285,9 @@ class ElasticsearchController extends \BaseController {
             //return Response::json($data);
 			switch ($doctype) {
 				case "fitternityfinder":
-				$posturl 						=	$this->elasticsearch_url."fittternity/finder/".$data['_id'];	
+				$posturl 						=	$this->elasticsearch_url."fitternity/finder/".$data['_id'];	
 				$postdata 						= 	get_elastic_finder_document($data);
+				break;
 
 				case "fitmaniafinder":
 				$posturl 						=	$this->elasticsearch_url."fitmania/finder/".$data['_id'];	
@@ -274,6 +314,7 @@ class ElasticsearchController extends \BaseController {
 
     // push mongo document to elastic
     public function pushdocument($posturl, $postfields_data){
+    	//echo $posturl;exit;
         //echo $postfields_data->_id;exit;
         //echo var_dump($postfields_data);exit;
 
@@ -283,7 +324,7 @@ class ElasticsearchController extends \BaseController {
     		'method' => 'PUT',
     		'postfields' => $postfields_data
     		);
-    	echo "<br> $documentid    ---  ".es_curl_request($request);
+    	echo "<br>$posturl    ---  ".es_curl_request($request);
     }
 
 
