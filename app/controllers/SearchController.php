@@ -736,7 +736,7 @@ class SearchController extends \BaseController {
 		$shouldfilter = $mustfilter = '';
 
 		if($city_filter != '' || $category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
-			$must_filtervalue = trim($category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
+			$must_filtervalue = trim($city_filter.$category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
 			$mustfilter = '"must": ['.$must_filtervalue.']';		
 		}
 
