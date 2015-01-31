@@ -2,11 +2,21 @@
 
 class SearchController extends \BaseController {
 	protected $indice = "fitternity";
-	protected $facetssize = 10000;
-	protected $limit = 10000;
+	protected $facetssize 					=	10000;
+	protected $limit 						= 	10000;
+	protected $elasticsearch_host           =   "";
+	protected $elasticsearch_port           =   "";
+	protected $elasticsearch_default_index  =   "";
+	protected $elasticsearch_url            =   "";
+	protected $elasticsearch_default_url    =   "";
 
 	public function __construct() {
 		parent::__construct();	
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
+		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
+		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
+		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
+		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 	}
 
 	public function getGlobal() {
@@ -120,14 +130,6 @@ class SearchController extends \BaseController {
 		return $results;		
 	}
 
-	// {
-	//   "from": 0,
-	//   "size": 10,
-	//   "category": "gyms",
-	//   "regions": "grant road,churchgate",
-	//   "offerings":"spinning"
-	//  }
-
 
 	public function getFinders() {			
 		$searchParams = array();
@@ -220,13 +222,6 @@ class SearchController extends \BaseController {
 		
 	}
 
-	// {
-	//   "from": 0,
-	//   "size": 10,
-	//   "category": "gyms",
-	//   "regions": "grant road,churchgate",
-	//   "offerings":"spinning"
-	//  }
 
 	public function getFindersv2() {			
 		$searchParams 	= 	array();
@@ -710,9 +705,7 @@ class SearchController extends \BaseController {
 
 
 	public function getGlobalv2() {
-	//var_dump(Input::json()->all());
-	//var_dump(Input::json()->all());
-	//var_dump(Input::json()->get('category'));
+		//var_dump(Input::json()->all());
 
 		$searchParams 			=	array();
 		$type 					= 	"finder";		 		
@@ -741,22 +734,6 @@ class SearchController extends \BaseController {
 
 		$shouldfilter = $mustfilter = '';
 
-		//return $category_filter;exit;
-
-		// //used for location , category, 	
-		// if($category_filter != '' || $location_filter != ''){			
-		// 	$should_filtervalue = trim($category_filter.$location_filter,',');	
-		// 	//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
-		// 	$shouldfilter = '"should": ['.$should_filtervalue.'],';	
-		// }
-
-		// //used for offering, facilities and price range
-		// if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
-		// 	$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
-		// 	$mustfilter = '"must": ['.$must_filtervalue.']';		
-		// }
-
-
 		if($category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
 			$must_filtervalue = trim($category_filter.$location_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
 			$mustfilter = '"must": ['.$must_filtervalue.']';		
@@ -771,56 +748,6 @@ class SearchController extends \BaseController {
 		}
 
 		//return $filters;exit;
-
-		
-		// "all_categorys" : {
-		//             "global" : {}, 
-		//             "aggs" : { 
-		//                 "category" : { "terms" : { "field" : "category", "size": 10000} }
-		//             }
-		//         },
-		// $body = '
-		// {
-		// 	"from": '.$from.',
-		// 	"size": '.$size.',
-		// 	"aggs" : {						        		        
-	 //            "resultset_categories": { "terms": {"field": "category","size": 10000 } },
-	 //            "resultset_locations": { "terms": {"field": "location","size": 10000 } },
-	 //            "resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
-	 //            "resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }
-		//     },
-		// 	"query": {
-		// 		"function_score": {
-		// 			"functions": [
-		// 				{
-		// 					"script_score": {
-		// 						"script": "(doc[\'finder.finder_type\'].value > 0 ? 100 : 0)"
-		// 					}
-		// 				}
-		// 			],
-		// 			"query": {
-		// 				"filtered": {
-		// 					"query": {
-		// 						"multi_match": {
-		// 							"query": "'.$globalkeyword.'",
-		// 							"fields": [
-		// 							"finder.title^5",
-		// 							"finder.search_category^10",
-		// 							"finder.search_categorytags^10",
-		// 							"finder.search_location^10",
-		// 							"finder.search_locationtags^10"
-		// 							]
-		// 						}
-		// 					}
-		// 					'.$filters.'
-		// 				}
-		// 			},
-		// 			"score_mode": "sum",
-		// 			"boost_mode": "sum"
-		// 		}
-		// 	}
-		// }';
-
 
 		$body = '
 		{
@@ -853,12 +780,10 @@ class SearchController extends \BaseController {
 			}
 		}';
 
-
 		//return $body;exit;
-
 		$serachbody = $body;
 		$request = array(
-			'url' => "http://54.179.134.14:9200/fitadmin/finder/_search",
+			'url' => $this->elasticsearch_default_url."_search",
 			'port' => 9200,
 			'method' => 'POST',
 			'postfields' => $serachbody
@@ -877,7 +802,6 @@ class SearchController extends \BaseController {
 		return Response::json($resp);
 		
 	}
-
 
 
 // {
@@ -1012,11 +936,10 @@ class SearchController extends \BaseController {
 			}
 		}';
 
-
 		//echo $body; exit;
 		$serachbody = $body;
 		$request = array(
-			'url' => "http://ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com:9200/fitternitytest/finder/_search",
+			'url' => $this->elasticsearch_default_url."_search",
 			'port' => 9200,
 			'method' => 'POST',
 			'postfields' => $serachbody
