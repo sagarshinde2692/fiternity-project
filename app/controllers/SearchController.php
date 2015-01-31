@@ -555,9 +555,9 @@ class SearchController extends \BaseController {
 		$resp = array(
 			"deals_of_day" => Config::get('deals.offers'), 
 			"deals_type" => Config::get('deals.type'), 
-			"deals_today_communication" => "Dance In Mumbai", 
-			"deals_tomorrow_communication" => "Dance In Mumbai", 
-			"deals_coming_communication" => "Fitness Apparel, Health Drinks & Food & More....", 
+			"deals_today_communication" => "Fitness Apparels & Accesories", 
+			"deals_tomorrow_communication" => "Fitness Apparels & Accesories", 
+			"deals_coming_communication" => "Yoga in Mumbai & More....", 
 			"search_results" => json_decode($search_results,true)
 			);
 		return Response::json($resp);
