@@ -653,11 +653,7 @@ class SearchController extends \BaseController {
 			"query": {
 				"function_score": {
 					"functions": ['.$basecategory_score.'
-					{
-						"script_score": {
-							"script": "log(doc[\'popularity\'].value)"
-						}
-					},
+		
 					{
 						"script_score": {
 							"script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)"
@@ -935,6 +931,11 @@ class SearchController extends \BaseController {
 			
 		}';
 
+/*
+			{
+				"script_score": { "script": "log(doc[\'popularity\'].value)" }
+			},
+*/
 		$body =	'{				
 			"from": '.$from.',
 			"size": '.$size.',
@@ -942,9 +943,6 @@ class SearchController extends \BaseController {
 			"query": {
 				"function_score": {
 					"functions": ['.$basecategory_score.'
-					{
-						"script_score": { "script": "log(doc[\'popularity\'].value)" }
-					},
 					{
 						"script_score": { "script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)" }
 					}
