@@ -46,9 +46,9 @@ return array(
 			),
 		array(
 			'name' => "Dance Beat Mumbai - 10 sessions (Zumba)",
-			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_1.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_1s.jpg',
 			'location' => 'Hughes Road',
-			'discount' => '85%','price'=>3200,'special_price'=>499,'sold_out'=>0
+			'discount' => '85%','price'=>3200,'special_price'=>499,'sold_out'=>1
 			),
 		array(
 			'name' => "Kunal Jessani's Dance Classes - 10 Dance Sessions",
@@ -91,6 +91,12 @@ return array(
 			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_13.jpg',
 			'location' => 'Bandra',
 			'discount' => '75%','price'=>4000,'special_price'=>999,'sold_out'=>0
+			),
+		array(
+			'name' => "Dance Beat Mumbai - 10 sessions (Zumba)",
+			'image' => 'http://b.fitn.in/global/fitmania/29/onlineimageresize_com_1.jpg',
+			'location' => 'Hughes Road',
+			'discount' => '70%','price'=>3200,'special_price'=>999,'sold_out'=>0
 			),
 		array(
 			'name' => "House Of Wow - 8 Session (Urban)",

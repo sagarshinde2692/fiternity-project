@@ -51,9 +51,9 @@ class ElasticsearchController extends \BaseController {
 
 
 	// manage settings in elastic
-	public function manageSetttings(){
+	public function manageSetttings($index = ''){
 
-		$url = $this->elasticsearch_url."fitternitytest/_close";
+		$url 		= $this->elasticsearch_url."$index/_close";
 		$request = array(
 			'url' =>  $url,
 			'port' => $this->elasticsearch_port,
@@ -137,7 +137,7 @@ class ElasticsearchController extends \BaseController {
 			}
 		}';
 
-		$index 				= 'fitternitytest';
+		$index 				= $index;
 		$url 			 	= $this->elasticsearch_url."$index/_settings";
 		//$url 			 	= $this->elasticsearch_url."_settings/";	
 		$postfields_data 	= json_encode(json_decode($body,true));
@@ -151,7 +151,7 @@ class ElasticsearchController extends \BaseController {
 			);
 		echo es_curl_request($request); 
 
-		$url = $this->elasticsearch_url."fitternitytest/_open";
+		$url = $this->elasticsearch_url."$index/_open";
 		$request = array(
 			'url' =>  $url,
 			'port' => $this->elasticsearch_port,
@@ -164,72 +164,48 @@ class ElasticsearchController extends \BaseController {
 	// create mapping
 	public function createtype($type){
 
-		// "title" : {
-		// 	"type" : "string", 
-		// 	"index" : "not_analyzed",
-		// 	"fields": {
-		// 		"title_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" }
-		// 	}
-		// },	
+		$common_findermapping = '{
+			"finder" :{
+				"_source" : {"enabled" : true },
+				"properties":{
+					"title" : {"type" : "string", "index" : "not_analyzed"},
+					"title_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"category" : {"type" : "string","index" : "not_analyzed"},
+					"category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"location" : {"type" : "string", "index" : "not_analyzed"},
+					"location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"categorytags" : {"type" : "string","index" : "not_analyzed"},
+					"categorytags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"locationtags" : {"type" : "string","index" : "not_analyzed"},
+					"locationtags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"offerings" : {"type" : "string", "index" : "not_analyzed"},
+					"facilities" : {"type" : "string", "index" : "not_analyzed"},
+					"geolocation" : {"type" : "geo_point"}
+				}
+			}
+		}';
 
 		switch (strtolower($type)) {
-			case "finder":
-			$typemapping = '{
-				"finder" :{
-					"_source" : {"enabled" : true },
-					"properties":{
-						"title" : {
-							"type" : "string", 
-							"index" : "not_analyzed"
-						},
-						"title_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+			case "fitternityfinder":
+			$typemapping 	=	$common_findermapping;
+			$typeurl 		=	$this->elasticsearch_default_index."finder/_mapping";	
+			break;
 
-						"category" : {
-							"type" : "string", 
-							"index" : "not_analyzed"
-						},
-						"category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+			case "fitmaniafinder":
+			$typemapping 	=	$common_findermapping;
+			$typeurl 		=	$this->elasticsearch_url."fitmania/finder/_mapping";
+			break;
 
-						"location" : {
-							"type" : "string", 
-							"index" : "not_analyzed"
-						},
-						"location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-						
-						"categorytags" : {
-							"type" : "string", 
-							"index" : "not_analyzed"
-						},
-						"categorytags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-						
-						"locationtags" : {
-							"type" : "string", 
-							"index" : "not_analyzed"
-						},
-						"locationtags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-
-						"offerings" : {
-							"type" : "string", 
-							"index" : "not_analyzed"
-						},
-						"facilities" : {
-							"type" : "string", 
-							"index" : "not_analyzed"
-						},
-						"geolocation" : {
-							"type" : "geo_point"
-						}
-
-					}
-				}
-			}';
+			case "fitcardfinder":
+			$typemapping 	=	$common_findermapping;
+			$typeurl 		=	$this->elasticsearch_url."fitcard/finder/_mapping";	
 			break;
 		}
 
-		$postfields_data = json_encode(json_decode($typemapping,true));
-		$url =  $this->elasticsearch_default_url;
+		$postfields_data 	= 	json_encode(json_decode($typemapping,true));
+		$url 				=  	$this->elasticsearch_default_url;
 		$request = array(
-			'url' => $url."$type/_mapping",
+			'url' => $typeurl,
 			'port' => Config::get('elasticsearch.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => $postfields_data
@@ -238,52 +214,57 @@ class ElasticsearchController extends \BaseController {
 	}
 
 	 // get all documents from mongodb
-    public function mongo2elastic($type = 'finder'){
-        $itmes 		=	array();
-        $item   	=	array();
-        $postdata 	=	array();
-        $doctype 	=	strtolower($type);
+	public function mongo2elastic($type = 'fitternityfinder'){
+		$itmes 		=	array();
+		$item   	=	array();
+		$postdata 	=	array();
+		$doctype 	=	strtolower($type);
 
         //Manage the query base on type
-        switch ($doctype) {
-            case "finder":
-                $items = Finder::with(array('country'=>function($query){$query->select('name');}))
-                                ->with(array('city'=>function($query){$query->select('name');}))
-                                ->with(array('category'=>function($query){$query->select('name','meta');}))
-                                ->with(array('location'=>function($query){$query->select('name');}))
-                                ->with('categorytags')
-                                ->with('locationtags')
-                                ->with('offerings')
-                                ->with('facilities')
-                                ->active()
-                                ->orderBy('_id')
+		switch ($doctype) {
+			case "fitternityfinder":
+			$items = Finder::with(array('country'=>function($query){$query->select('name');}))
+			->with(array('city'=>function($query){$query->select('name');}))
+			->with(array('category'=>function($query){$query->select('name','meta');}))
+			->with(array('location'=>function($query){$query->select('name');}))
+			->with('categorytags')
+			->with('locationtags')
+			->with('offerings')
+			->with('facilities')
+			->active()
+			->orderBy('_id')
                                 //->take(10)
-                                ->get();
-            break;
-        }
+			->get();
+			break;
+		}
 
         //return Response::json($items);
 
         //manipulating or adding custom fields based on type
-        foreach ($items as $item) {  
-            $data = $item->toArray();
+		foreach ($items as $item) {  
+			$data = $item->toArray();
             //return Response::json($data);
-            switch ($doctype) {
-                case "finder":
-                $postdata = get_elastic_finder_document($data);
-                break;
+			switch ($doctype) {
+				case "fitternityfinder":
+				$posturl 						=	$this->elasticsearch_url."fittternity/finder/".$data['_id'];	
+				$postdata 						= 	get_elastic_finder_document($data);
 
-                case "findermembership":
-                $postdata = get_elastic_finder_document($data);
-                $postdata['membership_offers'] = array();
-                break;
-                
+				case "fitmaniafinder":
+				$posturl 						=	$this->elasticsearch_url."fitmania/finder/".$data['_id'];	
+				$postdata 						= 	get_elastic_finder_document($data);
+				$postdata['membership_offers'] 	= array();
+				break;
+				
+				case "fitcardfinder":
+				$posturl 						=	$this->elasticsearch_url."fitcard/finder/".$data['_id'];	
+				$postdata 						= 	get_elastic_finder_document($data);
+				break;
             } //switch           
 
             //return Response::json($postdata);exit;
-            $cityname = strtolower($postdata['city']);
+            //$cityname = strtolower($postdata['city']);
             //if($cityname == 'mumbai'){
-                $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
+            $this->pushdocument($posturl, json_encode($postdata));
             //}
             //$response = $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
             //echo $response
@@ -292,17 +273,17 @@ class ElasticsearchController extends \BaseController {
     }
 
     // push mongo document to elastic
-    public function pushdocument($type, $documentid, $postfields_data){
+    public function pushdocument($posturl, $postfields_data){
         //echo $postfields_data->_id;exit;
         //echo var_dump($postfields_data);exit;
 
-        $request = array(
-            'url' => $this->elasticsearch_default_url."$type/$documentid",
-            'port' => Config::get('elasticsearch.elasticsearch_port'),
-            'method' => 'PUT',
-            'postfields' => $postfields_data
-            );
-        echo "<br> $documentid    ---  ".es_curl_request($request);
+    	$request = array(
+    		'url' => $posturl,
+    		'port' => Config::get('elasticsearch.elasticsearch_port'),
+    		'method' => 'PUT',
+    		'postfields' => $postfields_data
+    		);
+    	echo "<br> $documentid    ---  ".es_curl_request($request);
     }
 
 
