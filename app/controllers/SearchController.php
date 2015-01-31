@@ -653,7 +653,11 @@ class SearchController extends \BaseController {
 			"query": {
 				"function_score": {
 					"functions": ['.$basecategory_score.'
-		
+					{
+						"script_score": {
+							"script": "log(doc[\'popularity\'].value)"
+						}
+					},
 					{
 						"script_score": {
 							"script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)"
@@ -931,11 +935,6 @@ class SearchController extends \BaseController {
 			
 		}';
 
-/*
-			{
-				"script_score": { "script": "log(doc[\'popularity\'].value)" }
-			},
-*/
 		$body =	'{				
 			"from": '.$from.',
 			"size": '.$size.',
@@ -943,6 +942,9 @@ class SearchController extends \BaseController {
 			"query": {
 				"function_score": {
 					"functions": ['.$basecategory_score.'
+					{
+						"script_score": { "script": "log(doc[\'popularity\'].value)" }
+					},
 					{
 						"script_score": { "script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)" }
 					}
@@ -993,10 +995,10 @@ class SearchController extends \BaseController {
 		} 
 
 		$resp  = 	array(
-				'meta_title' => $meta_title,
-				'meta_description' => $meta_description,
-				'meta_keywords' => $meta_keywords,
-				'finder_leftside' => $finder_leftside,									
+				//'meta_title' => $meta_title,
+				//'meta_description' => $meta_description,
+				//'meta_keywords' => $meta_keywords,
+				//'finder_leftside' => $finder_leftside,									
 				'search_results' => json_decode($search_results,true),
 			);
 
