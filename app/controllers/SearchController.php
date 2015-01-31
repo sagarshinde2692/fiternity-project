@@ -986,8 +986,22 @@ class SearchController extends \BaseController {
 			'facilities' => Facility::active()->orderBy('name')->get(array('name','_id','slug'))	
 			);
 
-		$resp 	= 	array('search_results' => json_decode($search_results,true), 'finder_leftside' => $finder_leftside);
-		
+		$meta_title	= $meta_description = $meta_keywords = '';
+		if($category != ''){
+			$findercategory 	=  	Findercategory::where('slug', '=', url_slug(array($category)))->first(array('meta'));
+			$meta_title			= $findercategory['meta']['title'];
+			$meta_description	= $findercategory['meta']['description'];
+			$meta_keywords		= $findercategory['meta']['keywords'];
+		} 
+
+		$resp  = 	array(
+			'meta_title' => $meta_title,
+			'meta_description' => $meta_description,
+			'meta_keywords' => $meta_keywords,
+			'finder_leftside' => $finder_leftside,									
+			'search_results' => json_decode($search_results,true),
+			);
+
 		//return Response::json($search_results); exit;
 		return Response::json($resp);
 		//echo $body; exit;
