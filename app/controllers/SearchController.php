@@ -995,11 +995,11 @@ class SearchController extends \BaseController {
 		} 
 
 		$resp  = 	array(
-			//'meta_title' => $meta_title,
-			//'meta_description' => $meta_description,
-			//'meta_keywords' => $meta_keywords,
-			//'finder_leftside' => $finder_leftside,									
-			'search_results' => json_decode($search_results,true),
+				'meta_title' => $meta_title,
+				'meta_description' => $meta_description,
+				'meta_keywords' => $meta_keywords,
+				'finder_leftside' => $finder_leftside,									
+				'search_results' => json_decode($search_results,true),
 			);
 
 		//return Response::json($search_results); exit;
