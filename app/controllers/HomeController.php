@@ -31,7 +31,7 @@ class HomeController extends BaseController {
 		$finder_slugs 			= 		array_merge($finder_gym_slugs,$finder_yoga_slugs,$finder_zumba_slugs);
 
 		$categorytags			= 		Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-		$locations				= 		Location::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+		$locations				= 		Location::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 
 		$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))

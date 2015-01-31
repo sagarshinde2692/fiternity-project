@@ -43,6 +43,7 @@ class Finder extends  \Basemodel {
 	
 	public function categorytags(){
 		return $this->belongsToMany('Findercategorytag', null, 'finders', 'categorytags');
+		//return $this->belongsToMany('Findercategorytag', null, 'finders', 'categorytags')->select("_id","name","offering_header","slug");
 	}
 
 	public function locationtags(){

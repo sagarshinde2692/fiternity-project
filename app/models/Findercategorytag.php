@@ -24,6 +24,7 @@ class Findercategorytag extends  \Basemodel{
 	public function finders(){
 
 		return $this->belongsToMany('Finder', null, 'categorytags', 'finders');
+		//return $this->belongsToMany('Finder', null, 'categorytags', 'finders')->select("_id","name","offering_header","slug");
 	}
 
 

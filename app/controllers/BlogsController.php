@@ -151,7 +151,7 @@ class BlogsController extends \BaseController {
 			$blog_findercategoryid 	= 	(int) Input::json()->get('blog_findercategoryid');	
 
 			$categorytags			= 	Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-			$locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 			$relatedfinders 		=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->where('category_id','=',$blog_findercategoryid)
