@@ -128,6 +128,8 @@ class EmailSmsApiController extends \BaseController {
 			);
 
 		$this->sendSMS($smsdata);
+		
+		$storecapture = Capture::create($data);
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);		
 	}
@@ -135,7 +137,7 @@ class EmailSmsApiController extends \BaseController {
 	public function extraBookTrial() {
 		date_default_timezone_set("Asia/Kolkata");
 		$data = array(
-			'capture_type' 			=>		'book_trial',
+			'capture_type' 			=>		'extrabook_trial',
 			'name' 					=>		Input::json()->get('name'), 
 			'email' 				=>		Input::json()->get('email'), 
 			'phone' 				=>		Input::json()->get('phone'),
@@ -163,6 +165,7 @@ class EmailSmsApiController extends \BaseController {
 		$this->sendSMS($smsdata);
 
 
+		$storecapture = Capture::create($data);
 		$resp = array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);                
 	}
