@@ -93,7 +93,7 @@ if (!function_exists('get_elastic_finder_document')) {
             'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
             'offerings'                     =>      array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))),
             'price_range'                   =>      (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
-            'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
+            'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 100,
             'special_offer_title'           =>      (isset($data['special_offer_title']) && $data['special_offer_title'] != '') ? $data['special_offer_title'] : "",
             'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",
             'status'                        =>      (isset($data['status']) && $data['status'] != '') ? $data['status'] : "",
