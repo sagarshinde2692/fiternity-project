@@ -16,7 +16,7 @@ return array(
 		array(
 			'name' => "Funatic Men's Apparel",
 			'image' => 'http://b.fitn.in/global/fitmania/31/onlineimageresize_com_3.png',
-			'product_url' => 'http://store.fitternity.com/deals-of-the-day?cat=1337',
+			'product_url' => 'http://store.fitternity.com/deals-of-the-day?cat=1336',
 			'discount' => '83%','price'=>599,'special_price'=>99,'sold_out'=>0
 			),
 		array(
