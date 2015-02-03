@@ -9,7 +9,7 @@ return array(
 	'offers' => array(
 		array(
 			'name' => "Masala Bhangra - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_wazza_1.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_1.jpg',
 			'location' => 'Bandra',
 			'discount' => '75%','price'=>4000,'special_price'=>999,'sold_out'=>0
 			),
