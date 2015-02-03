@@ -27,7 +27,7 @@ return array(
 			),
 		array(
 			'name' => "Amey Mehta's Contemporary Body Movement - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_4.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_7.jpg',
 			'location' => 'Bandra',
 			'discount' => '50%','price'=>3200,'special_price'=>1600,'sold_out'=>0
 			),
