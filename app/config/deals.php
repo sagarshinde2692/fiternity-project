@@ -33,25 +33,25 @@ return array(
 			),
 		array(
 			'name' => "Urban Hip Hop - 4 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_5.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_55.jpg',
 			'location' => 'Bandra',
 			'discount' => '33%','price'=>1200,'special_price'=>800,'sold_out'=>0
 			),	
 		array(
 			'name' => "Urban Hip Hop - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_6.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_55.jpg',
 			'location' => 'Bandra',
 			'discount' => '67%','price'=>3000,'special_price'=>999,'sold_out'=>0
 			),	
 		array(
 			'name' => "Salsa (Couples) - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_7.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_77.jpg',
 			'location' => 'Bandra',
 			'discount' => '20%','price'=>5000,'special_price'=>4000,'sold_out'=>0
 			),		
 		array(
 			'name' => "Ultimate Self Defence Workshop - 2 Days",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_8.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_88.jpg',
 			'location' => 'Bandra',
 			'discount' => '28%','price'=>700,'special_price'=>500,'sold_out'=>0
 			),											
