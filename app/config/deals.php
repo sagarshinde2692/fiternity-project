@@ -8,53 +8,47 @@ return array(
 	
 	'offers' => array(
 		array(
-			'name' => "Masala Bhangra - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_1.jpg',
-			'location' => 'Bandra',
-			'discount' => '75%','price'=>4000,'special_price'=>999,'sold_out'=>0
+			'name' => "Top Gear FG 1 month membership",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_1.jpg',
+			'location' => 'Juhu | Bandra',
+			'discount' => '80%','price'=>2500,'special_price'=>499,'sold_out'=>0
 			),
 		array(
-			'name' => "Zumba with Sukoon Rajani - 12 Sessions ",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_2.jpg',
-			'location' => 'Bandra',
-			'discount' => '72%','price'=>3500,'special_price'=>999,'sold_out'=>0
+			'name' => "Star Athletes United 1 month membership",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_2.jpg',
+			'location' => 'Juhu',
+			'discount' => '95%','price'=>2000,'special_price'=>99,'sold_out'=>0
 			),
 		array(
-			'name' => "Zumba with Sucheta Pal - 12 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_3.jpg',
-			'location' => 'Bandra',
-			'discount' => '43%','price'=>3500,'special_price'=>1999,'sold_out'=>0
-			),
-		array(
-			'name' => "Amey Mehta's Contemporary Body Movement - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_7.jpg',
-			'location' => 'Bandra',
-			'discount' => '50%','price'=>3200,'special_price'=>1600,'sold_out'=>0
+			'name' => "Run India Run 1 year membership ",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_3.jpg',
+			'location' => 'Ghatkopar (East) | Juhu | Matunga | Powai | Matunga | Powai | Mulund (West) | Ghatkopar (West) | Chembur (West)',
+			'discount' => '33%','price'=>15000,'special_price'=>9999,'sold_out'=>0
 			),
 		array(
 			'name' => "Urban Hip Hop - 4 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_55.jpg',
-			'location' => 'Bandra',
-			'discount' => '33%','price'=>1200,'special_price'=>800,'sold_out'=>0
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_4.jpg',
+			'location' => 'Juhu | Malad (West) | Kandivali (East) | Chembur | Nerul | Andheri (East) | Powai | Matunga | Borivili | Lokhandwala',
+			'discount' => '96%','price'=>2500,'special_price'=>99,'sold_out'=>0
+			),
+		array(
+			'name' => "Savio Dsouza",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_5.jpg',
+			'location' => 'Nariman Point | PDP Park',
+			'discount' => '33%','price'=>2500,'special_price'=>1500,'sold_out'=>0
 			),	
 		array(
-			'name' => "Urban Hip Hop - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_55.jpg',
-			'location' => 'Bandra',
-			'discount' => '67%','price'=>3000,'special_price'=>999,'sold_out'=>0
+			'name' => "Top Gear FG 3 month membership",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_6.jpg',
+			'location' => 'Juhu | Bandra',
+			'discount' => '67%','price'=>8000,'special_price'=>1999,'sold_out'=>0
 			),	
 		array(
-			'name' => "Salsa (Couples) - 8 Sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_77.jpg',
-			'location' => 'Bandra',
-			'discount' => '20%','price'=>5000,'special_price'=>4000,'sold_out'=>0
-			),		
-		array(
-			'name' => "Ultimate Self Defence Workshop - 2 Days",
-			'image' => 'http://b.fitn.in/global/fitmania/3/onlineimageresize_com_88.jpg',
-			'location' => 'Bandra',
-			'discount' => '28%','price'=>700,'special_price'=>500,'sold_out'=>0
-			),											
+			'name' => "Star Athletes United 3 month membership",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_7.jpg',
+			'location' => 'Juhu',
+			'discount' => '67%','price'=>5000,'special_price'=>2999,'sold_out'=>0
+			),	
 
 		),
 
