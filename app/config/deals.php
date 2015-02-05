@@ -26,13 +26,13 @@ return array(
 			'discount' => '33%','price'=>15000,'special_price'=>9999,'sold_out'=>0
 			),
 		array(
-			'name' => "Urban Hip Hop - 4 Sessions",
+			'name' => "Marathon Training - 8 Sessions",
 			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_4.jpg',
 			'location' => 'Juhu | Malad (West) | Kandivali (East) | Chembur | Nerul | Andheri (East) | Powai | Matunga | Borivili | Lokhandwala',
 			'discount' => '96%','price'=>2500,'special_price'=>99,'sold_out'=>0
 			),
 		array(
-			'name' => "Savio Dsouza",
+			'name' => "Savio Dsouza - 1 Month",
 			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_5.jpg',
 			'location' => 'Nariman Point | PDP Park',
 			'discount' => '33%','price'=>2500,'special_price'=>1500,'sold_out'=>0
