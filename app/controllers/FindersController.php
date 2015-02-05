@@ -178,4 +178,13 @@ class FindersController extends \BaseController {
 
 	}
 
+
+	public function getallfinder(){
+		$items = Finder::active()
+						->orderBy('_id')
+			            //->take(2)
+						->get(array('_id','slug','title'));
+		return Response::json($items);				
+	}
+
 }
