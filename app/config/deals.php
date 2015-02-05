@@ -14,11 +14,11 @@ return array(
 			'discount' => '80%','price'=>2500,'special_price'=>499,'sold_out'=>0
 			),
 		array(
-			'name' => "Star Athletes United 1 month membership",
-			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_2.jpg',
-			'location' => 'Juhu',
-			'discount' => '95%','price'=>2000,'special_price'=>99,'sold_out'=>0
-			),
+			'name' => "Be-Fit - 3 sessions of Marathon Training",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_8.jpg',
+			'location' => 'Juhu | Bandra | Shivaji Park | Mahalaxmi Racecourse',
+			'discount' => '90%','price'=>1000,'special_price'=>99,'sold_out'=>0
+			),	
 		array(
 			'name' => "Run India Run 1 year membership ",
 			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_3.jpg',
@@ -26,10 +26,16 @@ return array(
 			'discount' => '33%','price'=>15000,'special_price'=>9999,'sold_out'=>0
 			),
 		array(
-			'name' => "Marathon Training - 8 Sessions",
+			'name' => "Dumbelled Marathon Training - 8 Sessions",
 			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_4.jpg',
 			'location' => 'Juhu | Malad (West) | Kandivali (East) | Chembur | Nerul | Andheri (East) | Powai | Matunga | Borivili | Lokhandwala',
 			'discount' => '96%','price'=>2500,'special_price'=>99,'sold_out'=>0
+			),
+		array(
+			'name' => "Star Athletes United 1 month membership",
+			'image' => 'http://b.fitn.in/global/fitmania/4/onlineimageresize_com_2.jpg',
+			'location' => 'Juhu',
+			'discount' => '95%','price'=>2000,'special_price'=>99,'sold_out'=>0
 			),
 		array(
 			'name' => "Savio Dsouza - 1 Month",
