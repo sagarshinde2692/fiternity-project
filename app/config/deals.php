@@ -9,7 +9,7 @@ return array(
 	'offers' => array(
 		array(
 			'name' => "Yog Power - 1 Month",
-			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_1.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_1s.jpg',
 			'location' => 'Kandivali West, Kandivali East',
 			'discount' => '97%','price'=>3933,'special_price'=>99,'sold_out'=>1
 			),
