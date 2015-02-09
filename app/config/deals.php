@@ -11,7 +11,7 @@ return array(
 			'name' => "Yog Power - 1 Month",
 			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_1.jpg',
 			'location' => 'Kandivali West, Kandivali East',
-			'discount' => '97%','price'=>3933,'special_price'=>99,'sold_out'=>0
+			'discount' => '97%','price'=>3933,'special_price'=>99,'sold_out'=>1
 			),
 		array(
 			'name' => "Yoga 101 - 1 month, 8 sessions",
@@ -31,6 +31,12 @@ return array(
 			'location' => 'Santacruz East',
 			'discount' => '15%','price'=>1000,'special_price'=>850,'sold_out'=>0
 			),
+		array(
+			'name' => "Yog Power - 1 Month",
+			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_1.jpg',
+			'location' => 'Kandivali West, Kandivali East',
+			'discount' => '75%','price'=>3933,'special_price'=>999,'sold_out'=>0
+			),	
 		array(
 			'name' => "Sunaina Rekhi - 1 Session",
 			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_12.jpg',
