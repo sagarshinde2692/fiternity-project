@@ -15,9 +15,9 @@ return array(
 			),
 		array(
 			'name' => "Yoga 101 - 1 month, 8 sessions",
-			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_yo1.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_yo1s.jpg',
 			'location' => 'Versova',
-			'discount' => '96%','price'=>2800,'special_price'=>99,'sold_out'=>0
+			'discount' => '96%','price'=>2800,'special_price'=>99,'sold_out'=>1
 			),	
 		array(
 			'name' => "Vandana Full Circle - 1 Session",
@@ -152,7 +152,12 @@ return array(
 			'location' => 'Bandra, Carter Road',
 			'discount' => '15%','price'=>500,'special_price'=>425,'sold_out'=>0
 			),	
-
+		array(
+			'name' => "Yoga 101 - 1 month, 8 sessions",
+			'image' => 'http://b.fitn.in/global/fitmania/9/onlineimageresize_com_yo1.jpg',
+			'location' => 'Versova',
+			'discount' => '15%','price'=>2800,'special_price'=>2380,'sold_out'=>0
+			),	
 
 
 		),
