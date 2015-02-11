@@ -11,13 +11,22 @@
 class FindersController extends \BaseController {
 
 
-	protected $elasticsearch_url	=   "";
+	protected $facetssize 					=	10000;
+	protected $limit 						= 	10000;
+	protected $elasticsearch_host           =   "";
+	protected $elasticsearch_port           =   "";
+	protected $elasticsearch_default_index  =   "";
+	protected $elasticsearch_url            =   "";
+	protected $elasticsearch_default_url    =   "";
 
 	public function __construct() {
 		parent::__construct();	
-		$this->elasticsearch_url = "http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
+		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
+		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
+		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
+		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 	}
-
 
 	public function finderdetail($slug){
 		$data 	= array();
@@ -98,45 +107,15 @@ class FindersController extends \BaseController {
 		$tslug 		= 	(string) $slug;
 		$result 	= 	$this->finderdetail($tslug);		
 		$data 		= 	$result['finder']->toArray();
-		//print "<pre>"; print_r($data); exit;
-		$documentid = 	$data['_id'];
-
-		$postfields_data = array(
-			'_id' => $data['_id'],
-			'alias' => (isset($data['alias'])) ? $data['alias'] : '',
-			'average_rating' => (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
-			'category' => strtolower($data['category']['name']),
-			'category_metatitle' => $data['category']['meta']['title'],
-			'category_metadescription' => $data['category']['meta']['description'],
-			'categorytags' => array_map('strtolower',array_pluck($data['categorytags'],'name')),
-			'contact' => $data['contact'],
-			'coverimage' => $data['coverimage'],
-			'finder_type' => $data['finder_type'],
-			'fitternityno' => $data['fitternityno'],
-			'facilities' => array_map('strtolower',array_pluck($data['facilities'],'name')),
-			'logo' => $data['logo'],
-			'location' => strtolower($data['location']['name']),
-			'locationtags' => array_map('strtolower',array_pluck($data['locationtags'],'name')),
-			'geolocation' => array('lat' => $data['lat'],'lon' => $data['lon']),
-			'offerings' => array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))),
-			'price_range' => (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
-			'popularity' => (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
-			'slug' => $data['slug'],
-			'status' => $data['status'],
-			'title' => strtolower($data['title']),
-			'total_rating_count' => (isset($data['total_rating_count']) && $data['total_rating_count'] != '') ? $data['total_rating_count'] : 0,
-			'views' => (isset($data['views']) && $data['views'] != '') ? $data['views'] : 0
-
-			);
-		//print_r($postfields_data);
+		$postdata 	= 	get_elastic_finder_document($data);
 
 		$request = array(
-			'url' => $this->elasticsearch_url."finder/$documentid",
+			'url' => $this->elasticsearch_url."fitternity/finder/".$data['_id'],
 			'port' => Config::get('app.elasticsearch_port'),
 			'method' => 'PUT',
-			'postfields' => json_encode($postfields_data)
+			'postfields' => json_encode($postdata)
 			);
-						//echo es_curl_request($request);exit;
+		//echo es_curl_request($request);exit;
 		es_curl_request($request);
 	}
 
