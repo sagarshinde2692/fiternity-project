@@ -21,7 +21,7 @@ return array(
 			),	
 		array(
 			'name' => "Henna Punjabi - Outdoor Workout - 1 Session",
-			'image' => 'http://b.fitn.in/global/fitmania/12/onlineimageresize_com_henna punjabi.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/12/onlineimageresize_com_HennaPunjabi.jpg',
 			'location' => 'Bandra',
 			'discount' => '50%','price'=>400,'special_price'=>200,'sold_out'=>0
 			),
@@ -51,7 +51,7 @@ return array(
 			),	
 		array(
 			'name' => "House of Wow - BollyHop Workshop (Couple)",
-			'image' => 'http://b.fitn.in/global/fitmania/12/onlineimageresize_com_HOW 2.jpg',
+			'image' => 'http://b.fitn.in/global/fitmania/12/onlineimageresize_com_HOW2.jpg',
 			'location' => 'Bandra',
 			'discount' => '50%','price'=>900,'special_price'=>450,'sold_out'=>0
 			),	
