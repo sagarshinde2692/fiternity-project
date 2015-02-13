@@ -52,9 +52,10 @@ class FindersController extends \BaseController {
 																	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 																	->where('category_id','=',$findercategoryid)
 																	->where('location_id','=',$finderlocationid)
-																	->where('finder_type', '=', 1)
+																	//->where('finder_type', '=', 1)
 																	->where('_id','!=',$finderid)
 																	->where('status', '=', '1')
+																	->orderBy('finder_type', 'DESC')
 																	->remember(Config::get('app.cachetime'))
 																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
 																	->take(5)->toArray();	
@@ -63,9 +64,10 @@ class FindersController extends \BaseController {
 																	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 																	->where('category_id','!=',$findercategoryid)
 																	->where('location_id','=',$finderlocationid)
-																	->where('finder_type', '=', 1)
+																	//->where('finder_type', '=', 1)
 																	->where('_id','!=',$finderid)
 																	->where('status', '=', '1')
+																	->orderBy('finder_type', 'DESC')
 																	->remember(Config::get('app.cachetime'))
 																	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
 																	->take(5)->toArray();	
