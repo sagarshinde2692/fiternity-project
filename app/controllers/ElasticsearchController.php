@@ -239,7 +239,7 @@ class ElasticsearchController extends \BaseController {
 
 			case "fitmaniafinder":
 
-                $finderids  = array(1392,1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,1484,1650,718,1041,171,171,941,590,61,1490,1682,1494,900);
+                $finderids  = array(1392,1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,1484,1650,718,1041,171,171,941,590,61,1490,1682,1494,900,570);
                 $items      = Finder::with(array('country'=>function($query){$query->select('name');}))
                                     ->with(array('city'=>function($query){$query->select('name');}))
                                     ->with(array('category'=>function($query){$query->select('name','meta');}))
