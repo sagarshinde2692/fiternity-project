@@ -43,7 +43,6 @@ class Finder extends  \Basemodel {
 	
 	public function categorytags(){
 		return $this->belongsToMany('Findercategorytag', null, 'finders', 'categorytags');
-		//return $this->belongsToMany('Findercategorytag', null, 'finders', 'categorytags')->select("_id","name","offering_header","slug");
 	}
 
 	public function locationtags(){
@@ -56,6 +55,10 @@ class Finder extends  \Basemodel {
 		
 	public function facilities(){
 		return $this->belongsToMany('Facility', null, 'finders', 'facilities');
+	}
+
+	public function scheduleservices(){
+		return $this->hasMany('Schedulebooktrial');
 	}
 
 }
