@@ -110,6 +110,8 @@ if (!function_exists('get_elastic_finder_document')) {
 
 
 
+
+
 if (!function_exists('es_curl_request')) {
     function es_curl_request($params) {
 
