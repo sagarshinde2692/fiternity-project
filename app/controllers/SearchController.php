@@ -12,7 +12,7 @@ class SearchController extends \BaseController {
 
 	public function __construct() {
 		parent::__construct();	
-		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
@@ -869,8 +869,6 @@ class SearchController extends \BaseController {
 
 		$shouldfilter = $mustfilter = '';
 		
-		$category_filter;
-
 		//used for location , category, 	
 		if($location_filter != ''){			
 			$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
@@ -1008,6 +1006,93 @@ class SearchController extends \BaseController {
 	}
 
 
+
+/*
+
+{
+  "from": "0km",
+  "to": "5km",
+  "category":"gyms",
+  "lat":19.1128,
+  "lon" :72.8585
+}
+
+*/
+
+
+	public function geoLocationFinder(){
+
+		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$to 				=	(Input::json()->get('to')) ? Input::json()->get('to') : 10;	
+		$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
+		$lat 				=	(Input::json()->get('lat')) ? Input::json()->get('lat') : '';
+		$lon 				=	(Input::json()->get('lon')) ? Input::json()->get('lon') : '';
+		$distance 			=	(Input::json()->get('distance')) ? Input::json()->get('distance') : '';	
+
+
+		$getparams = '{
+			"query": {
+				"filtered" : {
+					"query" : {
+						"multi_match": {
+							"query": "'.$category.'",
+							"fields": ["category","categorytags"]
+						}
+					}
+				},
+				"filter" : {
+					"geo_distance_range" : {
+						"from" : "'.$from.'",
+						"to" : "'.$to.'",
+						"geolocation" : {
+							"lat" : '.$lat.',
+							"lon" : '.$lon.'
+						}
+					}
+				}
+			}
+		}';
+		
+		//return $getparams;
+		$params = json_decode($getparams,true);
+		//return var_dump($params);
+		$url = $this->elasticsearch_default_url."_search?" . http_build_query($params);
+
+		$request = array(
+			'url' => $url,
+			'port' => 9200,
+			'method' => 'GET'
+			);
+
+		//return $request;
+		$search_results 	= 	es_curl_request($request);
+		$response 			=	json_encode(json_decode($search_results,true)); 
+		return $response;
+
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	public function categoryfinders(){
 		//echo "calling categoryfinders";exit;
 
@@ -1139,7 +1224,5 @@ class SearchController extends \BaseController {
 		return $results;
 
 	}
-
-
 
 }

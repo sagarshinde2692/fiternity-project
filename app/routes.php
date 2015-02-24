@@ -83,6 +83,7 @@ Route::post('/search/finders', 'SearchController@getFinders');
 Route::post('/findersearchv3', 'SearchController@getFindersv3');
 Route::post('/globalsearch', 'SearchController@getGlobalv2');
 Route::post('/findersearch', 'SearchController@getFindersv4');
+Route::post('/geolocationfindersearch', 'SearchController@geoLocationFinder');
 
 Route::get('/categoryfinders', 'SearchController@categoryfinders');
 Route::post('/fitmaniafinders', 'SearchController@getFitmaniaFinders');

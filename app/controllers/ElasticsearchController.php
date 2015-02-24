@@ -180,7 +180,7 @@ class ElasticsearchController extends \BaseController {
 					"locationtags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
 					"offerings" : {"type" : "string", "index" : "not_analyzed"},
 					"facilities" : {"type" : "string", "index" : "not_analyzed"},
-					"geolocation" : {"type" : "geo_point"}
+					"geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10}
 				}
 			}
 		}';
@@ -189,6 +189,11 @@ class ElasticsearchController extends \BaseController {
 			case "fitternityfinder":
 			$typemapping 	=	$common_findermapping;
 			$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
+			break;
+
+			case "fittest":
+			$typemapping 	=	$common_findermapping;
+			$typeurl 		=	$this->elasticsearch_url."fittest/finder/_mapping"; 	
 			break;
 
 			case "fitmaniafinder":
@@ -223,6 +228,21 @@ class ElasticsearchController extends \BaseController {
         //Manage the query base on type
 		switch ($doctype) {
 			case "fitternityfinder":
+				$items = Finder::with(array('country'=>function($query){$query->select('name');}))
+						->with(array('city'=>function($query){$query->select('name');}))
+						->with(array('category'=>function($query){$query->select('name','meta');}))
+						->with(array('location'=>function($query){$query->select('name');}))
+						->with('categorytags')
+						->with('locationtags')
+						->with('offerings')
+						->with('facilities')
+						->active()
+						->orderBy('_id')
+			            //->take(2)
+						->get();
+			break;
+
+			case "fittestfinder":
 				$items = Finder::with(array('country'=>function($query){$query->select('name');}))
 						->with(array('city'=>function($query){$query->select('name');}))
 						->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -285,6 +305,11 @@ class ElasticsearchController extends \BaseController {
             //return Response::json($data);
 			switch ($doctype) {
 				case "fitternityfinder":
+				$posturl 						=	$this->elasticsearch_url."fitternity/finder/".$data['_id'];	
+				$postdata 						= 	get_elastic_finder_document($data);
+				break;
+
+				case "fittest":
 				$posturl 						=	$this->elasticsearch_url."fitternity/finder/".$data['_id'];	
 				$postdata 						= 	get_elastic_finder_document($data);
 				break;
