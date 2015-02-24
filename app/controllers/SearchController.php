@@ -1010,8 +1010,10 @@ class SearchController extends \BaseController {
 /*
 
 {
-  "from": "0km",
-  "to": "5km",
+  "from": 0,
+  "size": 25,	
+  "from_range": "0km",
+  "to_range": "1km",
   "category":"gyms",
   "lat":19.1128,
   "lon" :72.8585
@@ -1019,210 +1021,192 @@ class SearchController extends \BaseController {
 
 */
 
+public function geoLocationFinder(){
+	$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+	$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;	
+	$from_range 		=	(Input::json()->get('from_range')) ? Input::json()->get('from_range') : 0;
+	$to_range 			=	(Input::json()->get('to_range')) ? Input::json()->get('to_range') : 10;	
+	$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
+	$lat 				=	(Input::json()->get('lat')) ? Input::json()->get('lat') : '';
+	$lon 				=	(Input::json()->get('lon')) ? Input::json()->get('lon') : '';
 
-	public function geoLocationFinder(){
 
-		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
-		$to 				=	(Input::json()->get('to')) ? Input::json()->get('to') : 10;	
-		$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
-		$lat 				=	(Input::json()->get('lat')) ? Input::json()->get('lat') : '';
-		$lon 				=	(Input::json()->get('lon')) ? Input::json()->get('lon') : '';
-		$distance 			=	(Input::json()->get('distance')) ? Input::json()->get('distance') : '';	
-
-
-		$getparams = '{
-			"query": {
-				"filtered" : {
-					"query" : {
-						"multi_match": {
-							"query": "'.$category.'",
-							"fields": ["category","categorytags"]
-						}
+	$body = '{
+		"from": '.$from.',
+		"size": '.$size.',
+		"query": {
+			"filtered": {
+				"query": {
+					"multi_match": {
+						"query": "'.$category.'",
+						"fields": [
+						"category",
+						"categorytags"
+						]
 					}
 				},
-				"filter" : {
-					"geo_distance_range" : {
-						"from" : "'.$from.'",
-						"to" : "'.$to.'",
-						"geolocation" : {
+				"filter": {
+					"geo_distance_range": {
+						"from" : "'.$from_range.'",
+						"to" : "'.$to_range.'",
+						"geolocation": {
 							"lat" : '.$lat.',
 							"lon" : '.$lon.'
 						}
 					}
 				}
 			}
-		}';
-		
-		//return $getparams;
-		$params = json_decode($getparams,true);
-		//return var_dump($params);
-		$url = $this->elasticsearch_default_url."_search?" . http_build_query($params);
+		}
+	}';
 
-		$request = array(
-			'url' => $url,
-			'port' => 9200,
-			'method' => 'GET'
-			);
+	$serachbody = $body;
+	// return $body;
+	$request = array(
+		'url' => $this->elasticsearch_default_url."_search",
+		'port' => 9200,
+		'method' => 'POST',
+		'postfields' => $serachbody
+		);
 
-		//return $request;
-		$search_results 	= 	es_curl_request($request);
-		$response 			=	json_encode(json_decode($search_results,true)); 
-		return $response;
+	$search_results 	=	es_curl_request($request);
+	$response 			=	json_encode(json_decode($search_results,true)); 
+	return $response;
 
-	}
+}
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	public function categoryfinders(){
+public function categoryfinders(){
 		//echo "calling categoryfinders";exit;
 
-		$finders = array();	
-		$categoryarr = array('gyms','yoga','pilates','dance','zumba','martial arts','kick boxing','cross functional training');
-		foreach ($categoryarr as $catitem) {  		
-			$searchParams 		= 	array();
-			$type 				= 	"finder";		    	
-			$filters 			=	"";	
-			$selectedfields 	= 	"";		
-			$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
-			$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : 20;		
+	$finders = array();	
+	$categoryarr = array('gyms','yoga','pilates','dance','zumba','martial arts','kick boxing','cross functional training');
+	foreach ($categoryarr as $catitem) {  		
+		$searchParams 		= 	array();
+		$type 				= 	"finder";		    	
+		$filters 			=	"";	
+		$selectedfields 	= 	"";		
+		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : 20;		
 
-			$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : $catitem;		
-			$location 			=	(Input::json()->get('regions')) ? Input::json()->get('regions') : '';		
-			$offerings 			=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
-			$facilities 		=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
-			$price_range 		=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
+		$category 			=	(Input::json()->get('category')) ? Input::json()->get('category') : $catitem;		
+		$location 			=	(Input::json()->get('regions')) ? Input::json()->get('regions') : '';		
+		$offerings 			=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
+		$facilities 		=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
+		$price_range 		=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';		
 
 			//filters 
-			$category_filter 		= ($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
-			$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
-			$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
-			$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
-			$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
-			$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';	
-			$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","',Input::json()->get('price_range')).'"] }},'  : '';	
+		$category_filter 		= ($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';	
+		$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
+		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
+		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
+		$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
+		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';	
+		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","',Input::json()->get('price_range')).'"] }},'  : '';	
 
-			$shouldfilter = $mustfilter = '';
+		$shouldfilter = $mustfilter = '';
 
 			//used for location , category, 	
-			if($location_filter != ''){			
+		if($location_filter != ''){			
 				//$should_filtervalue = trim($category_filter.$categorytags_filter.$location_filter.$locationtags_filter,',');	
-				$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
-				$shouldfilter = '"should": ['.$should_filtervalue.'],';	
-			}
+			$should_filtervalue = trim($location_filter.$locationtags_filter,',');	
+			$shouldfilter = '"should": ['.$should_filtervalue.'],';	
+		}
 
 			//used for offering, facilities and price range
-			if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
-				$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
-				$mustfilter = '"must": ['.$must_filtervalue.']';		
-			}
+		if($offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
+			$must_filtervalue = trim($offerings_filter.$facilities_filter.$price_range_filter,',');	
+			$mustfilter = '"must": ['.$must_filtervalue.']';		
+		}
 
-			if($shouldfilter != '' || $mustfilter != ''){
-				$filtervalue = trim($shouldfilter.$mustfilter,',');	
-				$filters = ',"filter": { 
-					"bool" : {'.$filtervalue.'}
-				},"_cache" : true';
-			}
+		if($shouldfilter != '' || $mustfilter != ''){
+			$filtervalue = trim($shouldfilter.$mustfilter,',');	
+			$filters = ',"filter": { 
+				"bool" : {'.$filtervalue.'}
+			},"_cache" : true';
+		}
 
-			$selectedfields = '"fields": ["title","average_rating","category","categorytags","location","locationtags","finder_type","popularity"],';
+		$selectedfields = '"fields": ["title","average_rating","category","categorytags","location","locationtags","finder_type","popularity"],';
 
-			if($category == ''){
-				$query = '"match_all": {}';
-				$basecategory_score = '';		
-			}else{
-				$query = '"multi_match": {
-					"query": "'.$category.'",
-					"fields": [
-					"category",
-					"categorytags"
-					]
-				}';	
-				$basecategory_score	= '{
-					"script_score": {
-						"script": "(doc[\'category\'].value == \''.$category.'\' ? 10 : 0)"
-					}
-				},';
-			}
-
-			$body =	'{				
-				"from": '.$from.',
-				"size": '.$size.',
-				"query": {
-					"function_score": {
-						"functions": ['.$basecategory_score.'
-						{
-							"script_score": {
-								"script": "log(doc[\'popularity\'].value)"
-							}
-						},
-						{
-							"script_score": {
-								"script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)"
-							}
-						}
-						],
-						"query": {
-							"filtered": {
-								"query": {'
-								.$query.
-								'}'.$filters.'
-							}
-						},
-						"score_mode": "sum",
-						"boost_mode": "replace"
-					}
+		if($category == ''){
+			$query = '"match_all": {}';
+			$basecategory_score = '';		
+		}else{
+			$query = '"multi_match": {
+				"query": "'.$category.'",
+				"fields": [
+				"category",
+				"categorytags"
+				]
+			}';	
+			$basecategory_score	= '{
+				"script_score": {
+					"script": "(doc[\'category\'].value == \''.$category.'\' ? 10 : 0)"
 				}
-			}';
+			},';
+		}
 
-			echo $body; exit;
-			$serachbody = json_decode($body,true);
-			$searchParams['index'] = 'fitadmin';
-			$searchParams['type']  = $type;
-			$searchParams['body'] = $serachbody;
-			$rs = Es::search($searchParams);
-			$category_finder = array();
-			foreach ($rs['hits']['hits'] as $item) {  
-				array_push($category_finder,array_only($item['_source'], array('title', 'slug','coverimage')));
+		$body =	'{				
+			"from": '.$from.',
+			"size": '.$size.',
+			"query": {
+				"function_score": {
+					"functions": ['.$basecategory_score.'
+					{
+						"script_score": {
+							"script": "log(doc[\'popularity\'].value)"
+						}
+					},
+					{
+						"script_score": {
+							"script": "(doc[\'finder_type\'].value > 0 ? 20 : 0)"
+						}
+					}
+					],
+					"query": {
+						"filtered": {
+							"query": {'
+							.$query.
+							'}'.$filters.'
+						}
+					},
+					"score_mode": "sum",
+					"boost_mode": "replace"
+				}
 			}
-			$finders[$catitem] = $category_finder;
-		}	
+		}';
 
-		return $finders;
-
-	}
-
-	public function getFindersJsonData() {				
-		$searchParams = array();
-		$type = "finder";		       
-		$body = Input::json()->all();		
-		$searchParams['index'] = $this->indice;
+		echo $body; exit;
+		$serachbody = json_decode($body,true);
+		$searchParams['index'] = 'fitadmin';
 		$searchParams['type']  = $type;
-		$searchParams['size'] = $this->limit;
-		$searchParams['body'] = $body;
-		//printPretty($searchParams);exit;
-		$results =  Es::search($searchParams);
-		//printPretty($results);
-		return $results;
+		$searchParams['body'] = $serachbody;
+		$rs = Es::search($searchParams);
+		$category_finder = array();
+		foreach ($rs['hits']['hits'] as $item) {  
+			array_push($category_finder,array_only($item['_source'], array('title', 'slug','coverimage')));
+		}
+		$finders[$catitem] = $category_finder;
+	}	
 
-	}
+	return $finders;
+
+}
+
+public function getFindersJsonData() {				
+	$searchParams = array();
+	$type = "finder";		       
+	$body = Input::json()->all();		
+	$searchParams['index'] = $this->indice;
+	$searchParams['type']  = $type;
+	$searchParams['size'] = $this->limit;
+	$searchParams['body'] = $body;
+		//printPretty($searchParams);exit;
+	$results =  Es::search($searchParams);
+		//printPretty($results);
+	return $results;
+
+}
 
 }
