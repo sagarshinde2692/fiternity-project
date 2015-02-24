@@ -309,8 +309,8 @@ class ElasticsearchController extends \BaseController {
 				$postdata 						= 	get_elastic_finder_document($data);
 				break;
 
-				case "fittest":
-				$posturl 						=	$this->elasticsearch_url."fitternity/finder/".$data['_id'];	
+				case "fittestfinder":
+				$posturl 						=	$this->elasticsearch_url."fittest/finder/".$data['_id'];	
 				$postdata 						= 	get_elastic_finder_document($data);
 				break;
 
