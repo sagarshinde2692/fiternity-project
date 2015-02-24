@@ -1011,7 +1011,7 @@ class SearchController extends \BaseController {
 
 {
   "from": 0,
-  "size": 25,	
+  "size": 10,	
   "from_range": "0km",
   "to_range": "1km",
   "category":"gyms",
@@ -1056,11 +1056,30 @@ public function geoLocationFinder(){
 					}
 				}
 			}
-		}
+		},
+		"fields": ["_source"],
+		"script_fields": {
+			"distance": {
+				"lang": "groovy",
+				"params": {
+					"lat" : '.$lat.',
+					"lon" : '.$lon.'
+				},
+				"script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
+			}
+		},"sort": [
+    {
+      "_geo_distance": {
+        "geolocation": "'.$lat.', '.$lon.'",
+        "order": "asc",
+        "unit": "km"
+      }
+    }
+  ]
 	}';
 
 	$serachbody = $body;
-	// return $body;
+	//return $body;
 	$request = array(
 		'url' => $this->elasticsearch_default_url."_search",
 		'port' => 9200,
