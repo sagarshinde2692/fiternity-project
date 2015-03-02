@@ -200,7 +200,8 @@ return array(
    
 	
 	'elasticsearch_port' 			=> 	9200,
-	'elasticsearch_host' 			=> 	'54.179.134.14',
+	//'elasticsearch_host' 			=> 	'54.179.134.14',
+	'elasticsearch_host' 			=> 	'localhost',
 	//'elasticsearch_default_index' 	=> 	'fitternity'
 	//'elasticsearch_host' 			=> 	'ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com',
 	'elasticsearch_default_index' 	=> 	'fitternity'
