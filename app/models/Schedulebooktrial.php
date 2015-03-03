@@ -2,6 +2,8 @@
 
 class Schedulebooktrial extends \Basemodel {
 
+	protected $collection = "schedulebooktrials";
+
 	public static $rules = [
 		'name'    => 'required', 
 	];
