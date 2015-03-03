@@ -11,33 +11,89 @@
 class SchedulebooktrialsController extends \BaseController {
 
 
-
 	public function __construct() {
 		parent::__construct();	
 	}
 
+	/**
+	 * Display the specified blogcategorytag.
+	 *
+	 * @param  int  $finderid
+	 * @param  date  $date(dd-mm-yyyy)
+	 * @return Response
+	 */
+
 	public function getScheduleBookTrial($finderid,$date = null){
-		
-		$date = Carbon\Carbon::now();
-		return $date;
 
+		//$dobj = new DateTime;print_r($dobj);
+		$finderid 	= 	(int) $finderid;
+		$date 		=  	($date == null) ? Carbon\Carbon::now() : $date;
+		$timestamp 	= 	strtotime($date);
+		$weekday 	= 	strtolower(date( "l", $timestamp));
 
-		
-
-		/*
-			-	based on date get weekday
-			-	get services base on finderid and weekday
-			date
-			weekday
-			schedule_class[
-				{
-					service name, slots
-				}
-			]
-		*/
-		return "retrun ScheduleBookTrial for finder";
+		// echo "$date  --- $timestamp -- $weekday";
+		//finder sechedule trials
+		$items = Schedulebooktrial::where('finder_id', '=', $finderid)
+								->where('weekday', '=', $weekday)
+								->get(array('finder_id','weekday','name','slots'))->toArray();
+		$secheduletrials = array();
+		foreach ($items as $item) {
+			$trial = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' =>  $item['weekday']); 
+			$slots = array();
+			foreach ($item['slots'] as $slot) {
+				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
+												->where('service_name', '=', $item['name'])
+												->where('schedule_date', '=', new DateTime($date) )
+												->where('sechedule_slot', '=', $slot['slot_time'])
+												->count();
+				// var_dump($booktrialslotcnt);
+				$slot_status = ($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
+				array_set($slot, 'booked', $booktrialslotcnt);
+				array_set($slot, 'status', $slot_status);
+				//echo "<br>finderid : $finderid  --- schedule_date : $date servicename : $item[name] -- slot_time : $slot[slot_time] --  booktrialslotcnt : $booktrialslotcnt";
+				array_push($slots, $slot);
+			}
+			$trial['slots'] = $slots;
+			array_push($secheduletrials, $trial);
+		}						
+		return $secheduletrials;
 	}
 
+
+
+	public function bookTrial(){
+
+		//return $data	= Input::json()->all();
+		$booktrialdata = array(
+			'customer_id' 			=>		Input::json()->get('customer_id'), 
+			'customer_name' 		=>		Input::json()->get('customer_name'), 
+			'customer_email' 		=>		Input::json()->get('customer_email'), 
+			'customer_phone' 		=>		Input::json()->get('customer_phone'),
+			'finder_id' 			=>		Input::json()->get('finder_id'),
+			'service_name'			=>		Input::json()->get('service_name'),
+			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
+			'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
+			'going_status'			=>		1
+			);
+
+		//return $booktrialdata;
+		$booktrial = new Booktrial($booktrialdata);
+		$booktrial->_id = Booktrial::max('_id') + 1;
+		$booktrial->save();
+		$resp 				= 	array('status' => 200,'message' => "Book a Trial");
+		return Response::json($resp);	
+
+
+	}
+
+	public function getBookTrial($finderid,$date = null){
+		$finderid 	= 	(int) $finderid;
+		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
+								->where('service_name', '=', 'gyms' )
+								->where('schedule_date', '=', new DateTime($date) )
+								->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
+		return $items;
+	}
 
 
 }
