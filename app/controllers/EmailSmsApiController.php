@@ -40,7 +40,7 @@ class EmailSmsApiController extends \BaseController {
 		//return "$to";exit;
 
 		if($send_bcc_status == 1){
-			Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+			Mail::queue($email_template_data, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
 				$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
 			});			
 		}else{
@@ -99,6 +99,8 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function BookTrial() {
+
+		// return $data	= Input::json()->all();
 		date_default_timezone_set("Asia/Kolkata");
 		$data = array(
 			'capture_type' 			=>		'book_trial',

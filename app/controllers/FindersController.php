@@ -168,4 +168,10 @@ class FindersController extends \BaseController {
 		return Response::json($items);				
 	}
 
+	public function getScheduleBookTrial($finderid,$date = null){
+		return "retrun ScheduleBookTrial for finder";
+	}
+
+
+
 }
