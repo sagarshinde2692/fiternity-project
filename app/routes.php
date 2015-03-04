@@ -11,8 +11,33 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 /******************** DEBUG SECTION START HERE /********************/
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/test', function() { return "laravel 4.2 goes here....";});
+Route::get('/testemail', function() { 
+
+	$email_template = 'emails.testemail';
+	$email_template_data = array();
+	$email_message_data = array(
+		'to' => 'sanjay.id7@gmail.com',
+		'reciver_name' => 'sanjay sahu',
+		'bcc_emailids' => array('sanjay.fitternity@gmail.com','info@fitternity.com'),
+		'email_subject' => 'subject of test email',
+		);
+
+
+	Mail::queue($email_template_data, $email_template_data, function($message) use ($email_message_data){
+
+		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+				->bcc($email_message_data['bcc_emailids'])
+				->subject($email_message_data['email_subject']);
+
+	});
+
+});
+
+
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
+
+
 
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
