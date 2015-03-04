@@ -19,33 +19,19 @@ Route::get('/testemail', function() {
 	$email_message_data = array(
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
-		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
+		'bcc_emailids' => array('sanjay.fitternity@gmail.com','ut.mehrotra@gmail.com'),
 		'email_subject' => 'subject of test email',
 		);
 
-	echo "<br> *********  sending mail **********";
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject']);
+				->bcc($email_message_data['bcc_emailids'])
+				->subject($email_message_data['email_subject']);
 
 	});
-	echo "<br> *********   mail send **********";
 
-
-
-	echo "<br> *********  write a file start **********";
-	Queue::push('WriteFile', array('string' => 'Hello World '));
-
-	// Queue:push(function($job) use ($email_message_data){ 
-	// 	File::append(app_path().'queue.txt',"Mail send to - ".$email_message_data['to']." Email Bcc to - ".$email_message_data['bcc_emailids'].PHP_EOL);
-	// 	$job->delete();  
-	// });
-
-	echo "<br> *********   write a file end **********";
-
-
+	Queue::push('WriteFile', $email_message_data );
 
 
 });
@@ -56,11 +42,11 @@ class WriteFile {
 
     	$job_id = $job->getJobId(); // Get job id
     	
-		File::append(app_path().'/queue.txt',$data['string'].$job_id.PHP_EOL); //Add content to file
-		
-		$job->delete();  
-		
-	}
+    	File::append(app_path().'/queue.txt'," Mail send to - ".$email_message_data['to']." Email Bcc to - ".$email_message_data['bcc_emailids'].PHP_EOL);
+
+    	$job->delete();  
+
+    }
 
 }
 
