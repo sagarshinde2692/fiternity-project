@@ -13,45 +13,52 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/test', function() { return "laravel 4.2 goes here....";});
 Route::get('/testemail', function() { 
 
+	$email_template = 'emails.testemail';
+	$email_template_data = array();
+	$email_message_data = array(
+		'to' => 'sanjay.id7@gmail.com',
+		'reciver_name' => 'sanjay sahu',
+		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
+		'email_subject' => 'subject of test email',
+		);
 
-	return "laravel 4.2 goes here....";
+	echo "<br> *********  sending mail **********";
+	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 
-	// $email_template = 'emails.testemail';
-	// $email_template_data = array();
-	// $email_message_data = array(
-	// 	'to' => 'sanjay.id7@gmail.com',
-	// 	'reciver_name' => 'sanjay sahu',
-	// 	'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-	// 	'email_subject' => 'subject of test email',
-	// 	);
+		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+				->bcc($email_message_data['bcc_emailids'])
+				->subject($email_message_data['email_subject']);
 
-	// echo "<br> *********  sending mail **********";
-	// Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
-
-	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 			->bcc($email_message_data['bcc_emailids'])
-	// 			->subject($email_message_data['email_subject']);
-
-	// });
-	// echo "<br> *********   mail send **********";
+	});
+	echo "<br> *********   mail send **********";
 
 
 
-	// echo "<br> *********  write a file start **********";
+	echo "<br> *********  write a file start **********";
+	Queue::push('WriteFile', array($email_message_data));
+
 	// Queue:push(function($job) use ($email_message_data){ 
-
-	// 	File::append(app_path().'queue.txt',"Mail send to - ".$email_message_data['to']." Email Bcc to - "$email_message_data['bcc_emailids'].PHP_EOL);
-
+	// 	File::append(app_path().'queue.txt',"Mail send to - ".$email_message_data['to']." Email Bcc to - ".$email_message_data['bcc_emailids'].PHP_EOL);
 	// 	$job->delete();  
-
 	// });
-	// echo "<br> *********   write a file end **********";
+
+	echo "<br> *********   write a file end **********";
 
 
 
 
 });
 
+class WriteFile {
+
+    public function fire($job, $data){
+    	
+        File::append(app_path().'queue.txt',"Mail send to - ".$data['to']." Email Bcc to - ".$data['bcc_emailids'].PHP_EOL);
+
+		$job->delete();  
+    }
+
+}
 
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
