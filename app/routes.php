@@ -23,7 +23,7 @@ Route::get('/testemail', function() {
 		);
 
 	echo "<br> *********  sending mail **********";
-	Mail::queue($email_template_data, $email_template_data, function($message) use ($email_message_data){
+	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 				->bcc($email_message_data['bcc_emailids'])
