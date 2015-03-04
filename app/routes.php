@@ -18,7 +18,7 @@ Route::get('/testemail', function() {
 	$email_message_data = array(
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
-		'bcc_emailids' => array('sanjay.fitternity@gmail.com','info@fitternity.com'),
+		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
 		'email_subject' => 'subject of test email',
 		);
 
