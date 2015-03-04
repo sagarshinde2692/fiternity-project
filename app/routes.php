@@ -23,15 +23,13 @@ Route::get('/testemail', function() {
 		'email_subject' => 'subject of test email',
 		);
 
-	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+	// Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+	// 			->bcc($email_message_data['bcc_emailids'])
+	// 			->subject($email_message_data['email_subject']);
+	// });
 
-		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-				->bcc($email_message_data['bcc_emailids'])
-				->subject($email_message_data['email_subject']);
-
-	});
-
-	Queue::push('WriteFile', $email_message_data );
+	Queue::push('WriteFile', array('string' => 'Hello World '));
 
 
 });
@@ -42,11 +40,11 @@ class WriteFile {
 
     	$job_id = $job->getJobId(); // Get job id
     	
-    	File::append(app_path().'/queue.txt'," Mail send to - ".$data['to']." Email Bcc to - ".$data['bcc_emailids'].PHP_EOL);
-
-    	$job->delete();  
-
-    }
+		File::append(app_path().'/queue.txt',$data['string']."$job_id".PHP_EOL); //Add content to file
+		
+		$job->delete();  
+		
+	}
 
 }
 
