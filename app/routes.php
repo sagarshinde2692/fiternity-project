@@ -22,7 +22,7 @@ Route::get('/testemail', function() {
 		'email_subject' => 'subject of test email',
 		);
 
-
+	echo "sending mail";
 	Mail::queue($email_template_data, $email_template_data, function($message) use ($email_message_data){
 
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
@@ -30,6 +30,7 @@ Route::get('/testemail', function() {
 				->subject($email_message_data['email_subject']);
 
 	});
+	echo "mail send";
 
 });
 
