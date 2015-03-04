@@ -19,7 +19,7 @@ Route::get('/testemail', function() {
 	$email_message_data = array(
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
-		'bcc_emailids' => array('sanjay.fitternity@gmail.com','ut.mehrotra@gmail.com'),
+		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
 		'email_subject' => 'subject of test email',
 		);
 
@@ -42,7 +42,7 @@ class WriteFile {
 
     	$job_id = $job->getJobId(); // Get job id
     	
-    	File::append(app_path().'/queue.txt'," Mail send to - ".$email_message_data['to']." Email Bcc to - ".$email_message_data['bcc_emailids'].PHP_EOL);
+    	File::append(app_path().'/queue.txt'," Mail send to - ".$data['to']." Email Bcc to - ".$data['bcc_emailids'].PHP_EOL);
 
     	$job->delete();  
 
