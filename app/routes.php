@@ -17,10 +17,11 @@ Route::get('/testemail', function() {
 	$email_template = 'emails.testemail';
 	$email_template_data = array();
 	$email_message_data = array(
+		'string' => 'Hello World',
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
 		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-		'email_subject' => 'subject of test email',
+		'email_subject' => 'subject of test email'
 		);
 
 	// Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
@@ -29,7 +30,7 @@ Route::get('/testemail', function() {
 	// 			->subject($email_message_data['email_subject']);
 	// });
 
-	Queue::push('WriteFile', array('string' => 'Hello World '));
+	Queue::push('WriteFile', array('string' => $email_message_data));
 
 
 });
