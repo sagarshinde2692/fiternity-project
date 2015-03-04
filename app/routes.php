@@ -30,7 +30,7 @@ Route::get('/testemail', function() {
 	// 			->subject($email_message_data['email_subject']);
 	// });
 
-	Queue::push('WriteFile', $email_message_data);
+	Queue::push('WriteFile', array('string' => 'Hello World updated - '.time()));
 
 
 });
