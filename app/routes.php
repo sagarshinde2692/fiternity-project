@@ -26,8 +26,8 @@ Route::get('/testemail', function() {
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-				->bcc($email_message_data['bcc_emailids'])
-				->subject($email_message_data['email_subject']);
+		->bcc($email_message_data['bcc_emailids'])
+		->subject($email_message_data['email_subject']);
 
 	});
 	echo "<br> *********   mail send **********";
@@ -35,7 +35,7 @@ Route::get('/testemail', function() {
 
 
 	echo "<br> *********  write a file start **********";
-	Queue::push('WriteFile', array($email_message_data));
+	Queue::push('WriteFile', array('string' => 'Hello World '));
 
 	// Queue:push(function($job) use ($email_message_data){ 
 	// 	File::append(app_path().'queue.txt',"Mail send to - ".$email_message_data['to']." Email Bcc to - ".$email_message_data['bcc_emailids'].PHP_EOL);
@@ -51,12 +51,15 @@ Route::get('/testemail', function() {
 
 class WriteFile {
 
-    public function fire($job, $data){
-    	
-        File::append(app_path().'queue.txt',"Mail send to - ".$data['to']." Email Bcc to - ".$data['bcc_emailids'].PHP_EOL);
+	public function fire($job, $data){
 
+    	$job_id = $job->getJobId(); // Get job id
+    	
+		File::append('public/queue.txt',$data['string'].$job_id.PHP_EOL); //Add content to file
+		
 		$job->delete();  
-    }
+		
+	}
 
 }
 
