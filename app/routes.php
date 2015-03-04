@@ -30,7 +30,7 @@ Route::get('/testemail', function() {
 	// 			->subject($email_message_data['email_subject']);
 	// });
 
-	Queue::push('WriteFile', array('string' => $email_message_data));
+	Queue::push('WriteFile', $email_message_data);
 
 
 });
