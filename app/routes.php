@@ -32,6 +32,21 @@ Route::get('/testemail', function() {
 	});
 	echo "<br> *********   mail send **********";
 
+
+
+	echo "<br> *********  write a file start **********";
+	Queue:push(function($job) use ($email_message_data){ 
+
+		File::append(app_path().'queue.txt',"Mail send to - ".$email_message_data['to']." Email Bcc to - "$email_message_data['bcc_emailids'].PHP_EOL);
+
+		$job->delete();  
+
+	});
+	echo "<br> *********   write a file end **********";
+
+
+
+
 });
 
 
