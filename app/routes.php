@@ -30,7 +30,8 @@ Route::get('/testemail', function() {
 	// 			->subject($email_message_data['email_subject']);
 	// });
 
-	Queue::push('WriteFile', array('string' => 'Hello World updated - '.time()));
+	$text = 'string new one';
+	Queue::push('WriteFile', array('string' => $text));
 
 
 });
@@ -39,9 +40,9 @@ class WriteFile {
 
 	public function fire($job, $data){
 
-    	$job_id = $job->getJobId(); // Get job id
+    	$job_id = $job->getJobId(); 
     	
-		File::append(app_path().'/queue.txt',$data['string']."$job_id".PHP_EOL); //Add content to file
+		File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); 
 		
 		$job->delete();  
 		
