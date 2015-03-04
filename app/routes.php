@@ -17,7 +17,7 @@ Route::get('/testemail', function() {
 	$email_template = 'emails.testemail';
 	$email_template_data = array();
 	$email_message_data = array(
-		'string' => 'Hello World',
+		'string' => 'Hello World from array with time -- '.time(),
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
 		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
@@ -31,7 +31,7 @@ Route::get('/testemail', function() {
 	// });
 
 	$text = 'string new one';
-	Queue::push('WriteFile', array('string' => $text));
+	Queue::push('WriteFile', $email_message_data);
 
 
 });
