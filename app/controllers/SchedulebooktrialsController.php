@@ -93,13 +93,9 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktrial->_id = Booktrial::max('_id') + 1;
 		$booktrial->save();
 
-
 		//send instant notifiction to customer
-		$sndNotificaiton = $this->mailer->sendTo($booktrialdata);
-
-		var_dump($sndNotificaiton);
-
-		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
+		$sndNotificaiton	= 	$this->mailer->bookTrial($booktrialdata);
+		$resp 			 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);	
 	}
 

@@ -9,7 +9,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 	public function bookTrial ($data){
-
+		
 		$email_template = 'emails.testemail';
 		$template_data 	= $data;
 		$message_data 	= array(
