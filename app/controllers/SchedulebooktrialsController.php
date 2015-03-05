@@ -37,18 +37,18 @@ class SchedulebooktrialsController extends \BaseController {
 		// echo "$date  --- $timestamp -- $weekday";
 		//finder sechedule trials
 		$items = Schedulebooktrial::where('finder_id', '=', $finderid)
-								->where('weekday', '=', $weekday)
-								->get(array('finder_id','weekday','name','slots'))->toArray();
+		->where('weekday', '=', $weekday)
+		->get(array('finder_id','weekday','name','slots'))->toArray();
 		$secheduletrials = array();
 		foreach ($items as $item) {
 			$trial = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' =>  $item['weekday']); 
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-												->where('service_name', '=', $item['name'])
-												->where('schedule_date', '=', new DateTime($date) )
-												->where('sechedule_slot', '=', $slot['slot_time'])
-												->count();
+				->where('service_name', '=', $item['name'])
+				->where('schedule_date', '=', new DateTime($date) )
+				->where('sechedule_slot', '=', $slot['slot_time'])
+				->count();
 				// var_dump($booktrialslotcnt);
 				$slot_status = ($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
 				array_set($slot, 'booked', $booktrialslotcnt);
@@ -80,7 +80,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
 			'customer_email' 		=>		Input::json()->get('customer_email'), 
 			'customer_phone' 		=>		Input::json()->get('customer_phone'),
-			'finder_name' 			=>		'test finder name',
+			'finder_name' 			=>		'Send Instant Notiication To Customer'.time(),
 			'finder_id' 			=>		Input::json()->get('finder_id'),
 			'service_name'			=>		Input::json()->get('service_name'),
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
@@ -94,18 +94,53 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktrial->_id = Booktrial::max('_id') + 1;
 		$booktrial->save();
 
-		//send instant notifiction to customer
-		$sndNotificaiton	= 	$this->mailer->bookTrial($booktrialdata);
-		$resp 			 	= 	array('status' => 200,'message' => "Book a Trial");
+		//Send Instant Notiication To Customer
+		$sndNotificaiton  = 	$this->mailer->bookTrial($booktrialdata);
+		
+		//Send Reminder Notiication Before 12 Hour To Customer
+		$booktrialdata2 = array(
+			'customer_id' 			=>		Input::json()->get('customer_id'), 
+			'customer_name' 		=>		Input::json()->get('customer_name'), 
+			'customer_email' 		=>		Input::json()->get('customer_email'), 
+			'customer_phone' 		=>		Input::json()->get('customer_phone'),
+			'finder_name' 			=>		'test finder name Send Reminder Notiication Before 12 Hour To Customer'.time(),
+			'finder_id' 			=>		Input::json()->get('finder_id'),
+			'service_name'			=>		Input::json()->get('service_name'),
+			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
+			'schedule_date_time'	=>		Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time),
+			'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
+			'going_status'			=>		1
+			);
+		$date = Carbon::now()->addMinutes(1);
+		Queue::later($date, 'CustomerMailer@bookTrial', $booktrialdata2);
+
+		//Send Reminder Notiication Before 1 Hour To Customer
+		$booktrialdata1 = array(
+			'customer_id' 			=>		Input::json()->get('customer_id'), 
+			'customer_name' 		=>		Input::json()->get('customer_name'), 
+			'customer_email' 		=>		Input::json()->get('customer_email'), 
+			'customer_phone' 		=>		Input::json()->get('customer_phone'),
+			'finder_name' 			=>		'test finder name Send Reminder Notiication Before 1 Hour To Customer'.time(),
+			'finder_id' 			=>		Input::json()->get('finder_id'),
+			'service_name'			=>		Input::json()->get('service_name'),
+			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
+			'schedule_date_time'	=>		Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time),
+			'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
+			'going_status'			=>		1
+			);
+		$date = Carbon::now()->addMinutes(2);
+		Queue::later($date, 'CustomerMailer@bookTrial', $booktrialdata1);
+
+		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);	
 	}
 
 	public function getBookTrial($finderid,$date = null){
 		$finderid 	= 	(int) $finderid;
 		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
-								->where('service_name', '=', 'gyms' )
-								->where('schedule_date', '=', new DateTime($date) )
-								->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
+		->where('service_name', '=', 'gyms' )
+		->where('schedule_date', '=', new DateTime($date) )
+		->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
 		return $items;
 	}
 
