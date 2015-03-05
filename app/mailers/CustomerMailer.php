@@ -22,8 +22,22 @@ Class CustomerMailer extends Mailer {
 		return $this->sendTo($email_template, $template_data, $message_data);
 	}
 
+	public function bookTrialReminder ($delay, $data){
 
-	
+		$email_template = 'emails.testemail';
+		$template_data 	= $data;
+		$message_data 	= array(
+			'string' => 'Hello World from array with time -- '.time(),
+			'user_email' => 	$data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
+			'email_subject' => 'subject of test email'
+			);
+		return $this->sendToWithDelay($delay, $email_template, $template_data, $message_data);
+	}
+
+
+
 
 	public function cancelBookTrial(){
 

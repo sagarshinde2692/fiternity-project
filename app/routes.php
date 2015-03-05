@@ -24,25 +24,33 @@ Route::get('/testdate', function() {
 });
 Route::get('/testemail', function() { 
 
-	//echo app_path();
-	$email_template = 'emails.testemail';
+	echo 'inside testemail'.app_path();
+	$email_template = 'emails.testemail1';
 	$email_template_data = array();
 	$email_message_data = array(
 		'string' => 'Hello World from array with time -- '.time(),
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
 		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-		'email_subject' => 'subject of test email'
+		'email_subject' => 'test email'
 		);
 
-	// Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+				->bcc($email_message_data['bcc_emailids'])
+				->subject('send email instant');
+	});
+
+
+	// //$delaytime = Carbon::now()->addMinutes(2);
+	// Mail::later(120, $email_template, $email_template_data, function($message) use ($email_message_data){
 	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 	// 			->bcc($email_message_data['bcc_emailids'])
-	// 			->subject($email_message_data['email_subject']);
+	// 			->subject('send email delay by 1 min ');
 	// });
 
-	$text = 'string new one';
-	Queue::push('WriteFile', $email_message_data);
+	// $text = 'string new one';
+	// Queue::push('WriteFile', $email_message_data);
 
 
 });
