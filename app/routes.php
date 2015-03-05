@@ -16,15 +16,13 @@ Route::get('/testdate', function() {
 	$actualdate =  Carbon\Carbon::createFromFormat('d-m-Y g:i:s A', $isodate);
 	return "$actualdate";
 	return  date( "Y-m-d H:i:s", strtotime("2015-03-10T13:00:00.000Z"));
-
 	//convert iso date to php datetime
-
 	return "laravel 4.2 goes here....";
 
 });
+
 Route::get('/testemail', function() { 
 
-	echo 'inside testemail'.app_path();
 	$email_template = 'emails.testemail1';
 	$email_template_data = array();
 	$email_message_data = array(
@@ -32,22 +30,22 @@ Route::get('/testemail', function() {
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
 		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-		'email_subject' => 'test email'
+		'email_subject' => 'test email at ' .time()
 		);
 
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 				->bcc($email_message_data['bcc_emailids'])
-				->subject('send email instant');
+				->subject($email_message_data['email_subject'].' send email instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 
-	// //$delaytime = Carbon::now()->addMinutes(2);
-	// Mail::later(120, $email_template, $email_template_data, function($message) use ($email_message_data){
-	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 			->bcc($email_message_data['bcc_emailids'])
-	// 			->subject('send email delay by 1 min ');
-	// });
+	echo $delaytime = Carbon::now()->addMinutes(1);
+	Mail::later($delaytime, $email_template, $email_template_data, function($message) use ($email_message_data){
+		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+				->bcc($email_message_data['bcc_emailids'])
+				->subject($email_message_data['email_subject'].' send email delay by 1 min -- '.date( "Y-m-d H:i:s", time()));
+	});
 
 	// $text = 'string new one';
 	// Queue::push('WriteFile', $email_message_data);

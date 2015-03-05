@@ -30,25 +30,25 @@ class SchedulebooktrialsController extends \BaseController {
 
 		//$dobj = new DateTime;print_r($dobj);
 		$finderid 	= 	(int) $finderid;
-		$date 		=  	($date == null) ? Carbon\Carbon::now() : $date;
+		$date 		=  	($date == null) ? Carbon::now() : $date;
 		$timestamp 	= 	strtotime($date);
 		$weekday 	= 	strtolower(date( "l", $timestamp));
 
 		// echo "$date  --- $timestamp -- $weekday";
 		//finder sechedule trials
 		$items = Schedulebooktrial::where('finder_id', '=', $finderid)
-		->where('weekday', '=', $weekday)
-		->get(array('finder_id','weekday','name','slots'))->toArray();
+									->where('weekday', '=', $weekday)
+									->get(array('finder_id','weekday','name','slots'))->toArray();
 		$secheduletrials = array();
 		foreach ($items as $item) {
 			$trial = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' =>  $item['weekday']); 
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-				->where('service_name', '=', $item['name'])
-				->where('schedule_date', '=', new DateTime($date) )
-				->where('sechedule_slot', '=', $slot['slot_time'])
-				->count();
+											->where('service_name', '=', $item['name'])
+											->where('schedule_date', '=', new DateTime($date) )
+											->where('sechedule_slot', '=', $slot['slot_time'])
+											->count();
 				// var_dump($booktrialslotcnt);
 				$slot_status = ($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
 				array_set($slot, 'booked', $booktrialslotcnt);
@@ -67,24 +67,25 @@ class SchedulebooktrialsController extends \BaseController {
 	public function bookTrial(){
 		
 		//return $data	= Input::json()->all();
-		$slot_times 			=	explode('-',Input::json()->get('sechedule_slot'));
-		$schedule_date_time 	=	strtoupper(Input::json()->get('schedule_date')." ".head($slot_times));
+		$slot_times 						=	explode('-',Input::json()->get('sechedule_slot'));
+		$schedule_date_time 				=	strtoupper(Input::json()->get('schedule_date')." ".head($slot_times));
+		$instantDateTime 					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time);
+		$delayReminderTimeBefore1Min 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(1);
+		$delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
+		$delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
 
-		// $date 					=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time);
-		// $reminder_date1 		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
-		// $reminder_date2 		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
-		// return "$date  --   $reminder_date1   --  $reminder_date2";
+		// return "instant : $instantDateTime Before1Min : $delayReminderTimeBefore1Min Before1Hour : $delayReminderTimeBefore1Hour Before12Hour : $delayReminderTimeBefore12Hour";
 		
 		$booktrialdata = array(
 			'customer_id' 			=>		Input::json()->get('customer_id'), 
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
 			'customer_email' 		=>		Input::json()->get('customer_email'), 
 			'customer_phone' 		=>		Input::json()->get('customer_phone'),
-			'finder_name' 			=>		'From Local Send Instant Notiication To Customer ##### '.time(),
+			'finder_name' 			=>		'From Local Send Instant Notiication To Customer ',
 			'finder_id' 			=>		Input::json()->get('finder_id'),
 			'service_name'			=>		Input::json()->get('service_name'),
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
-			'schedule_date_time'	=>		Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time),
+			'schedule_date_time'	=>		Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time),
 			'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
 			'going_status'			=>		1
 			);
@@ -95,44 +96,17 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktrial->save();
 
 		//Send Instant Notiication To Customer
-		$sndInstantNotificaiton  = 	$this->mailer->bookTrial($booktrialdata);
+		$sndInstantNotificaiton  				= 	$this->mailer->bookTrial($booktrialdata);
+
+		//Send Reminder Notiication Before 1 Min To Customer
+		$sndReminderNotificaitonBefore1Min  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Min);
+		
+		//Send Reminder Notiication Before 1 Hour To Customer
+		$sndReminderNotificaitonBefore1Hour  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Hour);
 
 		//Send Reminder Notiication Before 12 Hour To Customer
-		$sndReminderNotificaiton1  = 	$this->mailer->bookTrialReminder($booktrialdata);
+		$sndReminderNotificaitonBefore12Hour  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore12Hour);
 
-		
-		// $booktrialdata2 = array(
-		// 	'customer_id' 			=>		Input::json()->get('customer_id'), 
-		// 	'customer_name' 		=>		Input::json()->get('customer_name'), 
-		// 	'customer_email' 		=>		Input::json()->get('customer_email'), 
-		// 	'customer_phone' 		=>		Input::json()->get('customer_phone'),
-		// 	'finder_name' 			=>		'From Local Send Reminder Notiication Before 12 Hour To Customer ---- '.time(),
-		// 	'finder_id' 			=>		Input::json()->get('finder_id'),
-		// 	'service_name'			=>		Input::json()->get('service_name'),
-		// 	'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
-		// 	'schedule_date_time'	=>		Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time),
-		// 	'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
-		// 	'going_status'			=>		1
-		// 	);
-		// $date = Carbon::now()->addMinutes(1);
-		// Queue::later($date, 'Mailer@bookTrial', $booktrialdata2);
-
-		// //Send Reminder Notiication Before 1 Hour To Customer
-		// $booktrialdata1 = array(
-		// 	'customer_id' 			=>		Input::json()->get('customer_id'), 
-		// 	'customer_name' 		=>		Input::json()->get('customer_name'), 
-		// 	'customer_email' 		=>		Input::json()->get('customer_email'), 
-		// 	'customer_phone' 		=>		Input::json()->get('customer_phone'),
-		// 	'finder_name' 			=>		'From Local Send Reminder Notiication Before 1 Hour To Customer **** '.time(),
-		// 	'finder_id' 			=>		Input::json()->get('finder_id'),
-		// 	'service_name'			=>		Input::json()->get('service_name'),
-		// 	'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
-		// 	'schedule_date_time'	=>		Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time),
-		// 	'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
-		// 	'going_status'			=>		1
-		// 	);
-		// $date = Carbon::now()->addMinutes(2);
-		// Queue::later($date, 'Mailer@bookTrial', $booktrialdata1);
 
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);	

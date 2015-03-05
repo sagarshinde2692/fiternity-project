@@ -3,22 +3,36 @@ use Mail;
 
 abstract Class Mailer {
 
-	public function sendTo($email_template, $template_data = [], $message_data = [] ){
+	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
 
-		Mail::queue($email_template, $template_data, function($message) use ($message_data){
+		if($delay == null){
 
-			$message->to($message_data['user_email'], $message_data['user_name'])
-			->bcc($message_data['bcc_emailids'])
-			->subject($message_data['email_subject']);
+			Mail::queue($email_template, $template_data, function($message) use ($message_data){
 
-		});
+				$message->to($message_data['user_email'], $message_data['user_name'])
+				->bcc($message_data['bcc_emailids'])
+				->subject($message_data['email_subject']);
+
+			});
+			
+		}else{
+
+			Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
+
+				$message->to($message_data['user_email'], $message_data['user_name'])
+				->bcc($message_data['bcc_emailids'])
+				->subject($message_data['email_subject']);
+
+			});
+			
+		}
 
 	}
 
 	public function sendToWithDelay($delay, $email_template, $template_data = [], $message_data = [] ){
 
-		$delayInSeconds =  $this->getSeconds($delay);
-		Mail::later($delayInSeconds, $email_template, $template_data, function($message) use ($message_data){
+		//$delayInSeconds =  $this->getSeconds($delay);
+		Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
 
 			$message->to($message_data['user_email'], $message_data['user_name'])
 			->bcc($message_data['bcc_emailids'])
