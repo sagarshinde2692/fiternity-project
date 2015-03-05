@@ -6,7 +6,7 @@
 		Hello,
 		<br> <br>
 
-		This is a test email {{ time() }}.
+		This is a test email customer mailer class.
 		<br> <br>
 
 		Thank you.		

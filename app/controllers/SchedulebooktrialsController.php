@@ -95,7 +95,9 @@ class SchedulebooktrialsController extends \BaseController {
 
 
 		//send instant notifiction to customer
-		$this->mailer->sendTo($booktrialdata);
+		$sndNotificaiton = $this->mailer->sendTo($booktrialdata);
+
+		var_dump($sndNotificaiton);
 
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);	
