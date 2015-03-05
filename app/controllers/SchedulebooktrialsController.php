@@ -80,6 +80,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
 			'customer_email' 		=>		Input::json()->get('customer_email'), 
 			'customer_phone' 		=>		Input::json()->get('customer_phone'),
+			'finder_name' 			=>		'test finder name',
 			'finder_id' 			=>		Input::json()->get('finder_id'),
 			'service_name'			=>		Input::json()->get('service_name'),
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
