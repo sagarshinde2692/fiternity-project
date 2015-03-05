@@ -80,7 +80,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
 			'customer_email' 		=>		Input::json()->get('customer_email'), 
 			'customer_phone' 		=>		Input::json()->get('customer_phone'),
-			'finder_name' 			=>		'Send Instant Notiication To Customer'.time(),
+			'finder_name' 			=>		'From Local Send Instant Notiication To Customer ##### '.time(),
 			'finder_id' 			=>		Input::json()->get('finder_id'),
 			'service_name'			=>		Input::json()->get('service_name'),
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
@@ -103,7 +103,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
 			'customer_email' 		=>		Input::json()->get('customer_email'), 
 			'customer_phone' 		=>		Input::json()->get('customer_phone'),
-			'finder_name' 			=>		'test finder name Send Reminder Notiication Before 12 Hour To Customer'.time(),
+			'finder_name' 			=>		'From Local Send Reminder Notiication Before 12 Hour To Customer ---- '.time(),
 			'finder_id' 			=>		Input::json()->get('finder_id'),
 			'service_name'			=>		Input::json()->get('service_name'),
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
@@ -112,7 +112,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'going_status'			=>		1
 			);
 		$date = Carbon::now()->addMinutes(1);
-		Queue::later($date, 'CustomerMailer@bookTrial', $booktrialdata2);
+		Queue::later($date, 'Mailer@bookTrial', $booktrialdata2);
 
 		//Send Reminder Notiication Before 1 Hour To Customer
 		$booktrialdata1 = array(
@@ -120,7 +120,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
 			'customer_email' 		=>		Input::json()->get('customer_email'), 
 			'customer_phone' 		=>		Input::json()->get('customer_phone'),
-			'finder_name' 			=>		'test finder name Send Reminder Notiication Before 1 Hour To Customer'.time(),
+			'finder_name' 			=>		'From Local Send Reminder Notiication Before 1 Hour To Customer **** '.time(),
 			'finder_id' 			=>		Input::json()->get('finder_id'),
 			'service_name'			=>		Input::json()->get('service_name'),
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
@@ -129,7 +129,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'going_status'			=>		1
 			);
 		$date = Carbon::now()->addMinutes(2);
-		Queue::later($date, 'CustomerMailer@bookTrial', $booktrialdata1);
+		Queue::later($date, 'Mailer@bookTrial', $booktrialdata1);
 
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);	
