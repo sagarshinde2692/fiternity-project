@@ -7,12 +7,15 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+use Acme\Mailers\CustomerMailer as Mailer;
 
 class SchedulebooktrialsController extends \BaseController {
 
+	protected $mailer;
 
-	public function __construct() {
-		parent::__construct();	
+	public function __construct(Mailer $mailer) {
+		//parent::__construct();	
+		$this->mailer = $mailer;
 	}
 
 	/**
@@ -62,8 +65,16 @@ class SchedulebooktrialsController extends \BaseController {
 
 
 	public function bookTrial(){
-
+		
 		//return $data	= Input::json()->all();
+		$slot_times 			=	explode('-',Input::json()->get('sechedule_slot'));
+		$schedule_date_time 	=	strtoupper(Input::json()->get('schedule_date')." ".head($slot_times));
+
+		// $date 					=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time);
+		// $reminder_date1 		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
+		// $reminder_date2 		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
+		// return "$date  --   $reminder_date1   --  $reminder_date2";
+		
 		$booktrialdata = array(
 			'customer_id' 			=>		Input::json()->get('customer_id'), 
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
@@ -72,6 +83,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'finder_id' 			=>		Input::json()->get('finder_id'),
 			'service_name'			=>		Input::json()->get('service_name'),
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime(Input::json()->get('schedule_date'))),
+			'schedule_date_time'	=>		Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time),
 			'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
 			'going_status'			=>		1
 			);
@@ -80,10 +92,13 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktrial = new Booktrial($booktrialdata);
 		$booktrial->_id = Booktrial::max('_id') + 1;
 		$booktrial->save();
-		$resp 				= 	array('status' => 200,'message' => "Book a Trial");
+
+
+		//send instant notifiction to customer
+		$this->mailer->sendTo($booktrialdata);
+
+		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);	
-
-
 	}
 
 	public function getBookTrial($finderid,$date = null){

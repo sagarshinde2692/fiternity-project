@@ -48,7 +48,6 @@ return array(
 	'connections' => array(
 
 		'mongodb' => array(
-
 		    'driver'   => 'mongodb',
 		    //'host'     => 'localhost',
 		    'host'     => 'fitn.in',

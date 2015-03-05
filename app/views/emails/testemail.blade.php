@@ -6,7 +6,7 @@
 		Hello,
 		<br> <br>
 
-		This is a test email.
+		This is a test email {{ time() }}.
 		<br> <br>
 
 		Thank you.		

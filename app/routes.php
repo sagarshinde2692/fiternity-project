@@ -10,7 +10,18 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 Route::get('/', function() { return "laravel 4.2 goes here....";});
-Route::get('/test', function() { return "laravel 4.2 goes here....";});
+Route::get('/testdate', function() { 
+
+	$isodate = '2015-03-10T13:00:00.000Z';
+	$actualdate =  Carbon\Carbon::createFromFormat('d-m-Y g:i:s A', $isodate);
+	return "$actualdate";
+	return  date( "Y-m-d H:i:s", strtotime("2015-03-10T13:00:00.000Z"));
+
+	//convert iso date to php datetime
+
+	return "laravel 4.2 goes here....";
+
+});
 Route::get('/testemail', function() { 
 
 	//echo app_path();
@@ -40,8 +51,8 @@ class WriteFile {
 
 	public function fire($job, $data){
 
-    	$job_id = $job->getJobId(); 
-    	
+		$job_id = $job->getJobId(); 
+
 		File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); 
 		
 		$job->delete();  
@@ -98,7 +109,6 @@ Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'Sched
 
 
 
-
 ##############################################################################
 /******************** BLOGS SECTION START HERE ********************/
 Route::get('/blogs/{offset}/{limit}', 'BlogsController@getBlogs');
@@ -106,8 +116,6 @@ Route::get('blogdetail/{slug}', array('as' => 'blogs.blogdetail','uses' => 'Blog
 Route::get('/blogs/{cat}', 'BlogsController@getCategoryBLogs');
 Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 Route::post('/getblogrelatedfinder', 'BlogsController@getblogRelatedFinder');
-
-
 
 /******************** BLOGS SECTION END HERE ********************/
 ##############################################################################
@@ -172,7 +180,6 @@ Route::post('/landingpage/register', 'EmailSmsApiController@landingpageregister'
 Route::post('/offeravailed', 'EmailSmsApiController@offeravailed');
 Route::post('/fitcardbuy', 'EmailSmsApiController@fitcardbuy');
 Route::post('/not_able_to_find', 'EmailSmsApiController@not_able_to_find');
-
 
 
 

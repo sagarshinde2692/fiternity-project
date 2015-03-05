@@ -26,7 +26,7 @@ return array(
 	|
 	*/
 
-	'url' => 'http://api.fitternity.com',
+	'url' => 'http://a1.fitternity.com',
 
 	/*
 	|--------------------------------------------------------------------------
