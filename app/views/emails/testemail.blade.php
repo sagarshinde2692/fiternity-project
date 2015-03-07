@@ -8,8 +8,8 @@
 		<tr><td>Customer Phone:	{{$customer_phone}}</td></tr>
 		<tr><td>Finder Name:	{{$finder_name}}</td></tr>
 		<tr><td>Service Name:	{{$service_name}}</td></tr>
-		<tr><td>schedule date:	{{$schedule_date}}</td></tr>
-		<tr><td>sechedule slot:	{{$sechedule_slot}}</td></tr>				
+		<tr><td>Schedule date:	{{$schedule_date}}</td></tr>
+		<tr><td>Sechedule slot:	{{$sechedule_slot}}</td></tr>				
 		<tr><td>Thank you.,</td></tr>
 	</table>
 </body>

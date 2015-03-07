@@ -122,7 +122,7 @@ return array(
 	|
 	*/
 
-	'pretend' => false,
+	'pretend' => true,
 
 	//'cc_emailids' => array('sanjay.id7@gmail.com','neha@fitternity.com','jayamvora@fitternity.com','info@fitternity.com'),
 	//'cc_emailids' => array('sanjay.id7@gmail.com','info@fitternity.com'),
@@ -151,4 +151,8 @@ return array(
 
 
 	'bcc_emailds_not_able_to_find' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com','dharatanna@fitternity.com','jayamvora@fitternity.com'),
+
+
+	'bcc_emailds_autobook_trial' 					=> 	array('sanjay.fitternity@gmail.com'),
+
 );

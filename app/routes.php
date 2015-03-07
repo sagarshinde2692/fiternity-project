@@ -6,7 +6,6 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 });
 
 
-
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 Route::get('/', function() { return "laravel 4.2 goes here....";});
@@ -35,8 +34,8 @@ Route::get('/testemail', function() {
 
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' send email instant -- '.date( "Y-m-d H:i:s", time()));
+			->bcc($email_message_data['bcc_emailids'])
+			->subject($email_message_data['email_subject'].' send email instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 
@@ -46,9 +45,6 @@ Route::get('/testemail', function() {
 		->bcc($email_message_data['bcc_emailids'])
 		->subject($email_message_data['email_subject'].' send email delay by 1 min -- '.date( "Y-m-d H:i:s", time()));
 	});
-
-	// $text = 'string new one';
-	// Queue::push('WriteFile', $email_message_data);
 
 
 });
