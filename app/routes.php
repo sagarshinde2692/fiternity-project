@@ -54,9 +54,9 @@ Route::get('/testemail', function() {
 });
 
 Route::get('/testpushqueue', function() { 
-	Queue::push('WriteFile', array( 'string' => 'testpushqueue instantly -- '.time()));
-	Queue::later(Carbon::now()->addMinutes(1),'WriteFile', array( 'string' => 'testpushqueue delay by 1 min time -- '.time()));
-	Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'testpushqueue delay by 2 min time -- '.time()));
+	Queue::push('WriteFile', array( 'string' => 'new testpushqueue instantly -- '.time()));
+	Queue::later(Carbon::now()->addMinutes(1),'WriteFile', array( 'string' => 'new testpushqueue delay by 1 min time -- '.time()));
+	Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'new testpushqueue delay by 2 min time -- '.time()));
 	return "successfully test push queue with dealy job as well....";
 });
 
