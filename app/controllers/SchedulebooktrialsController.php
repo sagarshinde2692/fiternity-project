@@ -44,10 +44,10 @@ class SchedulebooktrialsController extends \BaseController {
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-									->where('service_name', '=', $item['name'])
-									->where('schedule_date', '=', new DateTime($date) )
-									->where('sechedule_slot', '=', $slot['slot_time'])
-									->count();
+				->where('service_name', '=', $item['name'])
+				->where('schedule_date', '=', new DateTime($date) )
+				->where('sechedule_slot', '=', $slot['slot_time'])
+				->count();
 				// var_dump($booktrialslotcnt);
 
 				$slot_status 		= 	($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
@@ -106,22 +106,24 @@ class SchedulebooktrialsController extends \BaseController {
 		//return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
 		$booktrial->_id = Booktrial::max('_id') + 1;
-		$booktrial->save();
+		$trialbooked = $booktrial->save();
 
-		//Send Instant Notiication To Customer
-		$sndInstantNotificaiton  				= 	$this->mailer->bookTrial($booktrialdata);
+		if($trialbooked){
+			//Send Instant Notiication To Customer
+			$sndInstantNotificaiton  				= 	$this->mailer->bookTrial($booktrialdata);
 
-		//Send Reminder Notiication Before 1 Min To Customer
-		$sndReminderNotificaitonBefore1Min  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Min);
-		
-		//Send Reminder Notiication Before 1 Hour To Customer
-		if($oneHourDiff >= 1){
-			$sndReminderNotificaitonBefore1Hour  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Hour);
-		}
+			//Send Reminder Notiication Before 1 Min To Customer
+			$sndReminderNotificaitonBefore1Min  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Min);
 
-		//Send Reminder Notiication Before 12 Hour To Customer
-		if($oneHourDiff >= 12){
-			$sndReminderNotificaitonBefore12Hour  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore12Hour);
+			//Send Reminder Notiication Before 1 Hour To Customer
+			if($oneHourDiff >= 1){
+				$sndReminderNotificaitonBefore1Hour  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Hour);
+			}
+
+			//Send Reminder Notiication Before 12 Hour To Customer
+			if($oneHourDiff >= 12){
+				$sndReminderNotificaitonBefore12Hour  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore12Hour);
+			}
 		}
 
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
