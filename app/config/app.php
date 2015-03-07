@@ -126,6 +126,8 @@ return array(
 		'Jenssegers\Mongodb\MongodbServiceProvider',
 		'Shift31\LaravelElasticsearch\LaravelElasticsearchServiceProvider',	
 		'Hugofirth\Mailchimp\MailchimpServiceProvider',	
+		'Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider',
+
 	),
 
 	/*
@@ -195,6 +197,7 @@ return array(
 		'View'              => 'Illuminate\Support\Facades\View',
 		'Moloquent'       	=> 'Jenssegers\Mongodb\Model',
 		'MailchimpWrapper'  => 'Hugofirth\Mailchimp\Facades\MailchimpWrapper',
+		'PushNotification' 	=> 'Davibennun\LaravelPushNotification\Facades\PushNotification',
 
 	),
 

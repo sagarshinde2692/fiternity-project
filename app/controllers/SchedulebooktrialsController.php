@@ -44,10 +44,10 @@ class SchedulebooktrialsController extends \BaseController {
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-				->where('service_name', '=', $item['name'])
-				->where('schedule_date', '=', new DateTime($date) )
-				->where('sechedule_slot', '=', $slot['slot_time'])
-				->count();
+											->where('service_name', '=', $item['name'])
+											->where('schedule_date', '=', new DateTime($date) )
+											->where('sechedule_slot', '=', $slot['slot_time'])
+											->count();
 				// var_dump($booktrialslotcnt);
 
 				$slot_status 		= 	($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
@@ -88,6 +88,7 @@ class SchedulebooktrialsController extends \BaseController {
 		//echo "<br>currentDateTime : $currentDateTime, <br>scheduleDateTime : $scheduleDateTime, <br>Before1Min : $delayReminderTimeBefore1Min, <br>Before1Hour : $delayReminderTimeBefore1Hour, <br>Before12Hour : $delayReminderTimeBefore12Hour <br>";
 		//return  "oneHourDiff  -- $oneHourDiff   ,  twelveHourDiff  -- $twelveHourDiff";
 		
+		$booktrialid = Booktrial::max('_id') + 1;
 		$booktrialdata = array(
 			'customer_id' 			=>		Input::json()->get('customer_id'), 
 			'customer_name' 		=>		Input::json()->get('customer_name'), 
@@ -100,12 +101,13 @@ class SchedulebooktrialsController extends \BaseController {
 			'schedule_date'			=>		date('Y-m-d 00:00:00', strtotime($slot_date)),
 			'schedule_date_time'	=>		Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->toDateTimeString(),
 			'sechedule_slot'		=>		Input::json()->get('sechedule_slot'),
-			'going_status'			=>		1
+			'going_status'			=>		1,
+			'code'					=>		$booktrialid.str_random(8)
 			);
 
 		//return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
-		$booktrial->_id = Booktrial::max('_id') + 1;
+		$booktrial->_id = $booktrialid;
 		$trialbooked = $booktrial->save();
 
 		if($trialbooked){

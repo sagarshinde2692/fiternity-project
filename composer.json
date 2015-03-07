@@ -9,7 +9,8 @@
 		"jenssegers/mongodb": "*",
 		"shift31/laravel-elasticsearch": "1.0.*@dev",
 		"hugofirth/mailchimp": "2.0.*",
-		"iron-io/iron_mq": "dev-master"
+		"iron-io/iron_mq": "dev-master",
+		"davibennun/laravel-push-notification": "dev-master"
 	},
 	"autoload": {
 		"classmap": [
