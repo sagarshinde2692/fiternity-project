@@ -37,18 +37,18 @@ class SchedulebooktrialsController extends \BaseController {
 		// echo "$date  --- $timestamp -- $weekday";
 		//finder sechedule trials
 		$items = Schedulebooktrial::where('finder_id', '=', $finderid)
-									->where('weekday', '=', $weekday)
-									->get(array('finder_id','weekday','name','slots'))->toArray();
+		->where('weekday', '=', $weekday)
+		->get(array('finder_id','weekday','name','slots'))->toArray();
 		$secheduletrials = array();
 		foreach ($items as $item) {
 			$trial = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' =>  $item['weekday']); 
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-											->where('service_name', '=', $item['name'])
-											->where('schedule_date', '=', new DateTime($date) )
-											->where('sechedule_slot', '=', $slot['slot_time'])
-											->count();
+				->where('service_name', '=', $item['name'])
+				->where('schedule_date', '=', new DateTime($date) )
+				->where('sechedule_slot', '=', $slot['slot_time'])
+				->count();
 				// var_dump($booktrialslotcnt);
 				$slot_status = ($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
 				array_set($slot, 'booked', $booktrialslotcnt);
@@ -74,7 +74,10 @@ class SchedulebooktrialsController extends \BaseController {
 		$delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
 		$delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
 
-		// return "instant : $instantDateTime Before1Min : $delayReminderTimeBefore1Min Before1Hour : $delayReminderTimeBefore1Hour Before12Hour : $delayReminderTimeBefore12Hour";
+		// return "instant : $instantDateTime,
+		// Before1Min : $delayReminderTimeBefore1Min,
+		// Before1Hour : $delayReminderTimeBefore1Hour,
+		// Before12Hour : $delayReminderTimeBefore12Hour";
 		
 		$booktrialdata = array(
 			'customer_id' 			=>		Input::json()->get('customer_id'), 
@@ -106,7 +109,6 @@ class SchedulebooktrialsController extends \BaseController {
 
 		//Send Reminder Notiication Before 12 Hour To Customer
 		$sndReminderNotificaitonBefore12Hour  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore12Hour);
-
 
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);	

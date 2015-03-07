@@ -1,4 +1,5 @@
 <?PHP namespace Acme\Mailers;
+
 use Mail;
 
 abstract Class Mailer {

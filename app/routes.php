@@ -35,22 +35,29 @@ Route::get('/testemail', function() {
 
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-				->bcc($email_message_data['bcc_emailids'])
-				->subject($email_message_data['email_subject'].' send email instant -- '.date( "Y-m-d H:i:s", time()));
+		->bcc($email_message_data['bcc_emailids'])
+		->subject($email_message_data['email_subject'].' send email instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 
 	echo $delaytime = Carbon::now()->addMinutes(1);
 	Mail::later($delaytime, $email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-				->bcc($email_message_data['bcc_emailids'])
-				->subject($email_message_data['email_subject'].' send email delay by 1 min -- '.date( "Y-m-d H:i:s", time()));
+		->bcc($email_message_data['bcc_emailids'])
+		->subject($email_message_data['email_subject'].' send email delay by 1 min -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 	// $text = 'string new one';
 	// Queue::push('WriteFile', $email_message_data);
 
 
+});
+
+Route::get('/testpushqueue', function() { 
+	Queue::push('WriteFile', array( 'string' => 'testpushqueue instantly -- '.time()));
+	Queue::later(Carbon::now()->addMinutes(1),'WriteFile', array( 'string' => 'testpushqueue delay by 1 min time -- '.time()));
+	Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'testpushqueue delay by 2 min time -- '.time()));
+	return "successfully test push queue with dealy job as well....";
 });
 
 class WriteFile {
