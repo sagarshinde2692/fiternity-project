@@ -11,10 +11,13 @@ Class CustomerMailer extends Mailer {
 
 	public function bookTrial ($data){
 
-		$email_template = 	'emails.customer.autobooktrial';
-		$template_data 	= 	$data;
-		$emails 		= 	($data['finder_email'] != '') ? array(Config::get('mail.bcc_emailds_autobook_trial'),'finder_emails' => explode(',', $data['finder_email'])) : Config::get('mail.bcc_emailds_autobook_trial');
-		$bcc_emailids 	= 	array_flatten($emails);
+		$email_template = 'emails.customer.autobooktrial';
+		$template_data 	= $data;
+		if($data['finder_email'] != ''){
+			$bcc_emailids 	=  	array_merge(Config::get('mail.bcc_emailds_autobook_trial'), explode(',', $data['finder_email']));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		} 
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],

@@ -133,9 +133,9 @@ class SchedulebooktrialsController extends \BaseController {
 	public function getBookTrial($finderid,$date = null){
 		$finderid 	= 	(int) $finderid;
 		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
-		->where('service_name', '=', 'gyms' )
-		->where('schedule_date', '=', new DateTime($date) )
-		->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
+								->where('service_name', '=', 'gyms' )
+								->where('schedule_date', '=', new DateTime($date) )
+								->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
 		return $items;
 	}
 
