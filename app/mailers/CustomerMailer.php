@@ -1,4 +1,4 @@
-<?PHP namespace Acme\Mailers;
+<?PHP namespace App\Mailers;
 
 use Config,Mail;
 
@@ -13,8 +13,8 @@ Class CustomerMailer extends Mailer {
 
 		$email_template = 'emails.customer.autobooktrial';
 		$template_data 	= $data;
-		if($data['finder_email'] != ''){
-			$bcc_emailids 	=  	array_merge(Config::get('mail.bcc_emailds_autobook_trial'), explode(',', $data['finder_email']));
+		if($data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(Config::get('mail.bcc_emailds_autobook_trial'), explode(',', $data['finder_vcc_email']));
 		}else{
 			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
 		} 

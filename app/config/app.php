@@ -13,7 +13,7 @@ return array(
 	|
 	*/
 
-	'debug' => false,
+	'debug' => true,
 	
 	/*
 	|--------------------------------------------------------------------------
@@ -127,7 +127,8 @@ return array(
 		'Shift31\LaravelElasticsearch\LaravelElasticsearchServiceProvider',	
 		'Hugofirth\Mailchimp\MailchimpServiceProvider',	
 		'Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider',
-
+		'Indatus\Dispatcher\ServiceProvider',
+		'Aloha\Twilio\TwilioServiceProvider',
 	),
 
 	/*
@@ -198,6 +199,7 @@ return array(
 		'Moloquent'       	=> 'Jenssegers\Mongodb\Model',
 		'MailchimpWrapper'  => 'Hugofirth\Mailchimp\Facades\MailchimpWrapper',
 		'PushNotification' 	=> 'Davibennun\LaravelPushNotification\Facades\PushNotification',
+		'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 
 	),
 

@@ -20,7 +20,17 @@ Route::get('/testdate', function() {
 
 });
 
+Route::get('/testtwilio', function() { 
+
+	return Twilio::message('+919773348762', 'Pink Customer Elephants and Happy Rainbows');
+});
+
+
 Route::get('/testemail', function() { 
+
+	$finder = Finder::where('_id','=',1)->first(array('title','contact','lat','lon','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no'));
+
+	return $finder;
 
 	$email_template = 'emails.testemail1';
 	$email_template_data = array();
@@ -29,13 +39,13 @@ Route::get('/testemail', function() {
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
 		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-		'email_subject' => 'test email at ' .time()
+		'email_subject' => 'Testemail 4m local ' .time()
 		);
 
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 			->bcc($email_message_data['bcc_emailids'])
-			->subject($email_message_data['email_subject'].' send email instant -- '.date( "Y-m-d H:i:s", time()));
+			->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 
@@ -50,6 +60,7 @@ Route::get('/testemail', function() {
 });
 
 Route::get('/testpushqueue', function() { 
+	/* Queue:push(function($job) use ($data){ $data['string']; $job->delete();  }); */
 	Queue::push('WriteFile', array( 'string' => 'new testpushqueue instantly -- '.time()));
 	Queue::later(Carbon::now()->addMinutes(1),'WriteFile', array( 'string' => 'new testpushqueue delay by 1 min time -- '.time()));
 	Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'new testpushqueue delay by 2 min time -- '.time()));

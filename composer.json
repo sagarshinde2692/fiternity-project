@@ -10,7 +10,9 @@
 		"shift31/laravel-elasticsearch": "1.0.*@dev",
 		"hugofirth/mailchimp": "2.0.*",
 		"iron-io/iron_mq": "1.*",
-		"davibennun/laravel-push-notification": "dev-master"
+		"indatus/dispatcher": "1.4.*@dev",
+		"davibennun/laravel-push-notification": "dev-master",
+		"aloha/twilio": "1.*"
 	},
 	"autoload": {
 		"classmap": [
@@ -20,7 +22,8 @@
 			"app/database/migrations",
 			"app/database/seeds",
 			"app/tests/TestCase.php",
-			"app/mailers"
+			"app/mailers",
+			"app/sms"
 		]
 	},
 	"scripts": {

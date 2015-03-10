@@ -1,4 +1,4 @@
-<?PHP namespace Acme\Mailers;
+<?PHP namespace App\Mailers;
 
 use Mail;
 
@@ -36,8 +36,8 @@ abstract Class Mailer {
 		Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
 
 			$message->to($message_data['user_email'], $message_data['user_name'])
-			->bcc($message_data['bcc_emailids'])
-			->subject($message_data['email_subject']);
+					->bcc($message_data['bcc_emailids'])
+					->subject($message_data['email_subject']);
 
 		});
 

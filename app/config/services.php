@@ -1,7 +1,6 @@
 <?php
 
 return array(
-
 	/*
 	|--------------------------------------------------------------------------
 	| Third Party Services
@@ -17,15 +16,17 @@ return array(
 	'mailgun' => array(
 		'domain' => '',
 		'secret' => '',
-	),
+		),
 
 	'mandrill' => array(
 		'secret' => '',
-	),
+		),
 
 	'stripe' => array(
 		'model'  => 'User',
 		'secret' => '',
-	),
+		),
 
-);
+
+
+	);

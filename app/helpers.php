@@ -44,7 +44,7 @@ if (!function_exists('url_slug')) {
  */
 if (!function_exists('refine_keyword')) {
     function refine_keyword($keyword) {
-        
+
         //$stopWords = array('i','a','about','an','and','are','as','at','be','by','com','de','en','for','from','how','in','is','it','la','of','on','or','that','the','this','to','was','what','when','where','who','will','with','und','the','www');
         $stopwords      =       array('i','a','about','an','and','are','as','at','be','by','com','de','en','for','from','how','in','is','it','la','of','on','or','that','the','this','to','was','what','when','where','who','will','with','und','the','www');        
         $pattern        =       '/[0-9\W]/';        // Replace all non-word chars with comma
@@ -53,11 +53,11 @@ if (!function_exists('refine_keyword')) {
         foreach (explode(",",$string) as $term) {
             if (!in_array($term, $stopwords)) {
               $keywords[] = $term;
-            }
-          };
+          }
+      };
 
-        return implode(" ", $keywords);
-    }
+      return implode(" ", $keywords);
+  }
 }
 
 
@@ -79,7 +79,7 @@ if (!function_exists('get_elastic_finder_document')) {
             // 'category_metatitle'            =>      (isset($data['category']['meta']['title']) && $data['category']['meta']['title'] != '') ? strtolower($data['category']['meta']['title']) : "", 
             // 'category_metadescription'      =>      (isset($data['category']['meta']['description']) && $data['category']['meta']['description'] != '') ? strtolower($data['category']['meta']['description']) : "", 
             'categorytags'                  =>      array_map('strtolower',array_pluck($data['categorytags'],'name')),
-            'categorytags_snow'            =>      array_map('strtolower',array_pluck($data['categorytags'],'name')),
+            'categorytags_snow'             =>      array_map('strtolower',array_pluck($data['categorytags'],'name')),
             'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',
             'coverimage'                    =>      (isset($data['coverimage'])) ? $data['coverimage'] : '',
             'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
@@ -104,8 +104,8 @@ if (!function_exists('get_elastic_finder_document')) {
             'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
             'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
             );
-        return $postfields_data;
-    }
+return $postfields_data;
+}
 }
 
 
@@ -134,7 +134,6 @@ if (!function_exists('es_curl_request')) {
         return $response = curl_exec($ci);        
     }
 }
-
 
 
 //return date in mysql format
