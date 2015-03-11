@@ -10,11 +10,11 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 /******************** DEBUG SECTION START HERE /********************/
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/testdate', function() { 
-
-	$isodate = '2015-03-10T13:00:00.000Z';
-	$actualdate =  Carbon\Carbon::createFromFormat('d-m-Y g:i:s A', $isodate);
-	return "$actualdate";
+	return Finder::findOrFail(1)->toArray();
 	return  date( "Y-m-d H:i:s", strtotime("2015-03-10T13:00:00.000Z"));
+	$isodate = '2015-03-10T13:00:00.000Z';
+	$actualdate =  \Carbon\Carbon::createFromFormat('d-m-Y g:i:s A', $isodate);
+	return "$actualdate";
 	//convert iso date to php datetime
 	return "laravel 4.2 goes here ....";
 
@@ -34,6 +34,29 @@ Route::get('/testtwilio', function() {
 
 Route::get('/testemail', function() { 
 
+	$email_template = 'emails.test';
+	$email_template_data = array();
+	$email_message_data = array(
+		'string' => 'Hello World from array with time -- '.time(),
+		'to' => 'sanjay.id7@gmail.com',
+		'reciver_name' => 'sanjay sahu',
+		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
+		'email_subject' => 'Testemail with queue using ngrok from local ' .time()
+		);
+
+	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+					$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+							->bcc($email_message_data['bcc_emailids'])
+							->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+	});
+
+	return "email send succuess";
+
+});
+
+
+Route::get('/testpushemail', function() { 
+
 	$finder = Finder::where('_id','=',1)->first(array('title','contact','lat','lon','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no'));
 
 	return $finder;
@@ -50,8 +73,8 @@ Route::get('/testemail', function() {
 
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-			->bcc($email_message_data['bcc_emailids'])
-			->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+		->bcc($email_message_data['bcc_emailids'])
+		->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 

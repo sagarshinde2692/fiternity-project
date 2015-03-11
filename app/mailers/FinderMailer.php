@@ -2,7 +2,7 @@
 
 use Config,Mail;
 
-Class CustomerMailer extends Mailer {
+Class FinderMailer extends Mailer {
 
 	public function welcome(){
 		//$email_template, $template_data = [], $message_data = [] ;
@@ -12,13 +12,17 @@ Class CustomerMailer extends Mailer {
 	public function bookTrial ($data){
 
 		// $email_template = 'emails.test';
-		$email_template = 	'emails.customer.autobooktrial';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$email_template = 'emails.finder.autobooktrial';
+		$template_data 	= $data;
+		if($data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		} 
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
-			'user_name' => $data['customer_name'],
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' => 'Fitternity',
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Request For Book a Trial'
 			);
@@ -28,7 +32,7 @@ Class CustomerMailer extends Mailer {
 
 	public function bookTrialReminder ($data, $delay){
 
-		$email_template = 'emails.customer.autobooktrial_reminder';
+		$email_template = 'emails.finder.autobooktrial_reminder';
 		$template_data 	= $data;
 		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
 		$bcc_emailids 	= 	array_flatten($emails);

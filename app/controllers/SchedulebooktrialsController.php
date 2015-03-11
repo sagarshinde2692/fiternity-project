@@ -7,19 +7,22 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
-use App\Mailers\CustomerMailer as Mailer;
+use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Sms\FinderSms as FinderSms;
 
 class SchedulebooktrialsController extends \BaseController {
 
-	protected $mailer;
+	protected $customermailer;
+	protected $findermailer;
 	protected $customersms;
 	protected $findersms;
 
-	public function __construct(Mailer $mailer, CustomerSms $customersms, FinderSms $findersms) {
+	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms) {
 		//parent::__construct();	
-		$this->mailer			=	$mailer;
+		$this->customermailer	=	$customermailer;
+		$this->findermailer		=	$findermailer;
 		$this->customersms 		=	$customersms;
 		$this->findersms 		=	$findersms;
 	}
@@ -95,14 +98,19 @@ class SchedulebooktrialsController extends \BaseController {
 		//return  "oneHourDiff  -- $oneHourDiff   ,  twelveHourDiff  -- $twelveHourDiff";
 		
 		$booktrialid 						=	Booktrial::max('_id') + 1;
+		// $booktrialid 						=	1;
 		// $customer_id 						=	Input::json()->get('customer_id'); 
 		// $customer_name 						=	Input::json()->get('customer_name'); 
 		// $customer_email 					=	Input::json()->get('customer_email'); 
 		// $customer_phone 					=	Input::json()->get('customer_phone');
 		
 		$finderid 							= 	(int) Input::json()->get('finder_id');
-		$finder 							= 	Finder::findOrFail(1)->toArray();
-		$finder_name						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->where('_id','=',$finderid)
+														->first()->toArray();
+		//return var_dump($finder)	;									
+		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
+		$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
 		$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 		$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 		$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
@@ -112,6 +120,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 		$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
 
+		$device_id							= 	(isset(Input::json()->get('device_id')) && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 
 		$booktrialdata = array(
 			'customer_id' 					=>		Input::json()->get('customer_id'), 
@@ -121,6 +130,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			'finder_id' 					=>		$finderid,
 			'finder_name' 					=>		$finder_name,
+			'finder_location' 				=>		$finder_location,
 			'finder_address' 				=>		$finder_address,
 			'finder_lat'		 			=>		$finder_lat,
 			'finder_lon'		 			=>		$finder_lon,
@@ -134,27 +144,29 @@ class SchedulebooktrialsController extends \BaseController {
 			'schedule_date_time'			=>		Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->toDateTimeString(),
 			'sechedule_slot'				=>		Input::json()->get('sechedule_slot'),
 			'going_status'					=>		1,
-			'code'							=>		$booktrialid.str_random(8)
+			'code'							=>		$booktrialid.str_random(8),
+			'device_id'						=>		$device_id,
+			'booktrial_type'				=>		'auto'	
 			);
 
 		//return $booktrialdata;
-		$booktrial = new Booktrial($booktrialdata);
-		$booktrial->_id = $booktrialid;
-		$trialbooked = $booktrial->save();
+		// $booktrial = new Booktrial($booktrialdata);
+		// $booktrial->_id = $booktrialid;
+		// $trialbooked = $booktrial->save();
 
-		if($trialbooked){
+		if($trialbooked = true){
 
 			//Send Instant (Email) To Customer & Finder
-			$sndInstantEmailCustomerFinder	= 	$this->mailer->bookTrial($booktrialdata);
-
-			// $sndInstantSmsNotificaitonCustomer			=	$this->customersms->bookTrial($booktrialdata);
-			// $sndInstantSmsNotificaitonFinder			=	$this->findersms->bookTrial($booktrialdata);
+			$sndInstantEmailCustomer	= 	$this->customermailer->bookTrial($booktrialdata);
+			$sndInstantEmailFinder		= 	$this->findermailer->bookTrial($booktrialdata);
+			//$sndInstantSmsCustomer		=	$this->customersms->bookTrial($booktrialdata);
+			//$sndInstantSmsFinder		=	$this->findersms->bookTrial($booktrialdata);
 
 
 
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
-			// $sndReminderEmailNotificaitonBefore1MinCustomer  	= 	$this->mailer->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndReminderEmailNotificaitonBefore1MinCustomer  	= 	$this->customermailer->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
 			// $sndReminderSmsNotificaitonCustomer					=	$this->customersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
 			// $sndReminderSmsNotificaitonFinder					=	$this->findersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
 
@@ -163,7 +175,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			if($oneHourDiff >= 12){
 				//Send Reminder Notiication (Email) Before 12 Hour To To Customer & Finder
-				//$sndReminderEmailNotificaitonBefore12HourCustomer  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore12Hour);
+				//$sndReminderEmailNotificaitonBefore12HourCustomer  	= 	$this->customermailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore12Hour);
 
 				//Send Reminder Notiication (SMS) To Customer & Finder need to write 
 				//send sms to customer Viva twilio
@@ -176,7 +188,7 @@ class SchedulebooktrialsController extends \BaseController {
 			if($oneHourDiff >= 1){
 
 				//Send Reminder Notiication (Email) Before 1 Hour To Customer & Finder
-				//$sndReminderEmailNotificaitonBefore1HourCustomer  	= 	$this->mailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Hour);
+				//$sndReminderEmailNotificaitonBefore1HourCustomer  	= 	$this->customermailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Hour);
 
 				//Send Reminder Notiication (SMS) To Customer & Finder need to write 
 				//send sms to customer

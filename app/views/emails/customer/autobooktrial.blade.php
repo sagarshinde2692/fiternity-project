@@ -1,36 +1,29 @@
 <html>
 <body>
 	
-	<div>
-		<p style="font-size:16px;color:#464646;text-align:justify;"> Hey, {{	$customer_name	}}</p> 
-		<p> Thank you for booking a workout session / trial at {{ $finder_name }},  Andheri (West) through Fitternity.com. Your session is CONFIRMED. Here are the details. </p>
-		<table border="1" bordercolor="#2c3e50" align="center">
-			<tr><td>Name of the fitness service provider: </td><td>{{	$finder_name	}}</td></tr>
-			<tr><td>Date: </td><td>{{ $schedule_date }}</td></tr>
-			<tr><td>Time: </td><td>{{ $sechedule_slot }}</td></tr>
-			<tr><td>Workout form (if any):	</td><td>{{	$service_name	}}</td></tr>
+	<div style="text-align:left;">
+		<p style="font-size:16px;color:#464646;text-align:justify;"> Hey, {{ ucwords($customer_name) }}</p> 
+		<p> Thank you for booking a workout session / trial at {{ ucwords($finder_name) }},  {{ ucwords($finder_location) }} through Fitternity.com. Your session is CONFIRMED. Here are the details. </p>
+		<table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
+			<tr><td>Name of the fitness service provider: </td><td>{{ ucwords($finder_name) }}</td></tr>
+			<tr><td>Date: </td><td>{{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}</td></tr>
+			<tr><td>Time: </td><td>{{ date(' g\.i A', strtotime($schedule_date_time) ) }}</td></tr>
+			<tr><td>Workout form (if any):	</td><td>{{	ucwords($service_name)	}}</td></tr>
 			<tr><td>Workout type: </td><td> Trial </td></tr>
-			<tr><td>Subscription Code: </td><td> (please flash this code at the service provider location) </td></tr>
-			<tr><td>Session booked for:		</td><td>{{	$customer_name	}}</td></tr>
-
-			<tr><td>Customer Email:		</td><td>{{	$customer_email	}}</td></tr>
-			<tr><td>Customer Phone:		</td><td>{{	$customer_phone	}}</td></tr>
+			<tr><td>Subscription Code: </td><td> {{ $code }}(please flash this code at the service provider location) </td></tr>
+			<tr><td>Session booked for:		</td><td>{{	ucwords($customer_name)	}}</td></tr>
 		</table> 
 
-		<!--table border="1" bordercolor="#2c3e50" align="center">
-			<tr><td>How to get there?</td></tr>
-			<tr><td>Date: </td><td>{{ $schedule_date }}</td></tr>
-			<tr><td>Time: </td><td>{{ $sechedule_slot }}</td></tr>
-			<tr><td>Workout form (if any):	</td><td>{{	$service_name	}}</td></tr>
-			<tr><td>Workout type: </td><td> Trial </td></tr>
-			<tr><td>Subscription Code: </td><td> (please flash this code at the service provider location) </td></tr>
-			<tr><td>Session booked for:		</td><td>{{	$customer_name	}}</td></tr>
+		<p><b>How to get there?</b></p>
+		<table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
+			<tr><td>Address: </td><td>{{ ucwords($finder_address) }}</td></tr>
+			<tr><td>Contact Person: </td><td>{{ ucwords($finder_poc_for_customer_name) }}</td></tr>
+			<tr><td>Contact No: </td><td>{{ $finder_poc_for_customer_no }}</td></tr>
+		</table>
 
-			<tr><td>Customer Email:		</td><td>{{	$customer_email	}}</td></tr>
-			<tr><td>Customer Phone:		</td><td>{{	$customer_phone	}}</td></tr>
-		</table>-- >
-
-		<p></p>
+		<p>If you need to change the time or day of the session just reply to this mail or call us on +91 92222 21131.</p>
+		<p>We shall be sending you a reminder message to ensure you don't miss out on the workout. We hope you have a great session. </p>
+		<p>Regards<br>TEAM FITTERNITY</p>
 	</div>
 
 
