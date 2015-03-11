@@ -11,6 +11,7 @@ Class CustomerMailer extends Mailer {
 
 	public function bookTrial ($data){
 
+		// $email_template = 'emails.test';
 		$email_template = 'emails.customer.autobooktrial';
 		$template_data 	= $data;
 		if($data['finder_vcc_email'] != ''){
@@ -23,7 +24,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Request For Book a Trial'
+			'email_subject' => 'Request For Book a Trial from local updated'
 			);
 		return $this->sendTo($email_template, $template_data, $message_data);
 	}

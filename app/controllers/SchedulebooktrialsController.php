@@ -77,8 +77,6 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function bookTrial(){
 
-		//return Finder::findOrFail(1)->toArray();
-		
 		//return $data	= Input::json()->all();
 		//its helpful to send any kind for dateformat date time as srting or iso formate timezond
 		$slot_times 						=	explode('-',Input::json()->get('sechedule_slot'));
@@ -97,10 +95,10 @@ class SchedulebooktrialsController extends \BaseController {
 		//return  "oneHourDiff  -- $oneHourDiff   ,  twelveHourDiff  -- $twelveHourDiff";
 		
 		$booktrialid 						=	Booktrial::max('_id') + 1;
-		$customer_id 						=	Input::json()->get('customer_id'); 
-		$customer_name 						=	Input::json()->get('customer_name'); 
-		$customer_email 					=	Input::json()->get('customer_email'); 
-		$customer_phone 					=	Input::json()->get('customer_phone');
+		// $customer_id 						=	Input::json()->get('customer_id'); 
+		// $customer_name 						=	Input::json()->get('customer_name'); 
+		// $customer_email 					=	Input::json()->get('customer_email'); 
+		// $customer_phone 					=	Input::json()->get('customer_phone');
 		
 		$finderid 							= 	(int) Input::json()->get('finder_id');
 		$finder 							= 	Finder::findOrFail(1)->toArray();
@@ -146,18 +144,19 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($trialbooked){
 
-			//Send Instant Notiication (Email) To Customer & Finder
-			$sndInstantEmailNotificaitonCustomerFinder	= 	$this->mailer->bookTrial($booktrialdata);
-			$sndInstantSmsNotificaitonCustomer			=	$this->customersms->bookTrial($booktrialdata);
-			$sndInstantSmsNotificaitonFinder			=	$this->findersms->bookTrial($booktrialdata);
+			//Send Instant (Email) To Customer & Finder
+			$sndInstantEmailCustomerFinder	= 	$this->mailer->bookTrial($booktrialdata);
+
+			// $sndInstantSmsNotificaitonCustomer			=	$this->customersms->bookTrial($booktrialdata);
+			// $sndInstantSmsNotificaitonFinder			=	$this->findersms->bookTrial($booktrialdata);
 
 
 
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
-			$sndReminderEmailNotificaitonBefore1MinCustomer  	= 	$this->mailer->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
-			$sndReminderSmsNotificaitonCustomer					=	$this->customersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
-			$sndReminderSmsNotificaitonFinder					=	$this->findersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndReminderEmailNotificaitonBefore1MinCustomer  	= 	$this->mailer->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndReminderSmsNotificaitonCustomer					=	$this->customersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndReminderSmsNotificaitonFinder					=	$this->findersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
 
 			//#############  TESTING FOR 1 MIN END ##############
 
@@ -171,8 +170,6 @@ class SchedulebooktrialsController extends \BaseController {
 				//send sms to finder Viva Curl APi
 
 				//Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'new testpushqueue delay by 2 min time -- '.time()));
-
-
 				
 			}
 

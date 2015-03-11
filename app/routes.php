@@ -16,7 +16,13 @@ Route::get('/testdate', function() {
 	return "$actualdate";
 	return  date( "Y-m-d H:i:s", strtotime("2015-03-10T13:00:00.000Z"));
 	//convert iso date to php datetime
-	return "laravel 4.2 goes here....";
+	return "laravel 4.2 goes here ....";
+
+});
+
+Route::get('/testpushnotification', function() { 
+
+	PushNotification::app('appNameAndroid')->to('APA91bG_gkVGxr6atdmGbMGGHWLP82U2o91HjU-UKu27gtEFy1a-9TVXYg7gVr0Q_DLEPEtpE-0z6K5f2nuL9i_SPeRySLy0Typtt7ZjQRi4yHc49R5EQg44gAGuovNpP76UbC8wuIL8VCjgNVXD2UEXmwnVFvQJDw')->send('Hello World, i`m a push message');
 
 });
 
