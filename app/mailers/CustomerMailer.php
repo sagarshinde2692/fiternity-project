@@ -42,6 +42,22 @@ Class CustomerMailer extends Mailer {
 	}
 
 
+	public function manualBookTrial ($data){
+
+		// $email_template = 'emails.test';
+		$email_template = 	'emails.customer.manualbooktrial';
+		$template_data 	= 	$data;
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Request For Book a Trial'
+			);
+
+		return $this->sendTo($email_template, $template_data, $message_data);
+	}
 
 
 	public function cancelBookTrial(){

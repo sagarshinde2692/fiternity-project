@@ -22,7 +22,7 @@ Class FinderMailer extends Mailer {
 
 		$message_data 	= array(
 			'user_email' => Config::get('mail.to_mailus'),
-			'user_name' => 'Fitternity',
+			'user_name' =>  $data['finder_poc_for_customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Request For Book a Trial'
 			);

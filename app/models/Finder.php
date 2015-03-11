@@ -13,11 +13,15 @@ class Finder extends  \Basemodel {
 	
 	// Add your validation rules here
 	public static $rules = [
-		'title' => 'required',
-		'lat' => 'required',
-		'lon' => 'required',
-		'finder_logo' => 'mimes:jpeg,png|image|max:2000',
-		'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
+	'title' => 'required',
+	'lat' => 'required',
+	'lon' => 'required',
+	'country_id' => 'required',
+	'city_id' => 'required',
+	'location_id' => 'required',
+	'category_id' => 'required',
+	'finder_logo' => 'mimes:jpeg,png|image|max:2000',
+	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
 	];
 
 
@@ -52,13 +56,17 @@ class Finder extends  \Basemodel {
 	public function offerings(){
 		return $this->belongsToMany('Offering', null, 'finders', 'offerings');
 	}
-		
+	
 	public function facilities(){
 		return $this->belongsToMany('Facility', null, 'finders', 'facilities');
 	}
 
 	public function scheduleservices(){
 		return $this->hasMany('Schedulebooktrial');
+	}
+
+	public function booktrials(){
+		return $this->hasMany('Booktrial','booktrial_id');
 	}
 
 }

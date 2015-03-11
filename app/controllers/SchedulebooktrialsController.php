@@ -77,6 +77,19 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 
+	public function getBookTrial($finderid,$date = null){
+		$finderid 	= 	(int) $finderid;
+		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
+		->where('service_name', '=', 'gyms' )
+		->where('schedule_date', '=', new DateTime($date) )
+		->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
+		return $items;
+	}
+
+	/**
+	 * Book Scheduled Book A Trial.
+	 *
+	 */
 
 	public function bookTrial(){
 
@@ -114,13 +127,14 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 		$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 		$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+		$city_id 							=	(int) $finder['city_id'];
 
 		$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
 		$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 		$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 		$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
 
-		$device_id							= 	(isset(Input::json()->get('device_id')) && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+		$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 
 		$booktrialdata = array(
 			'customer_id' 					=>		Input::json()->get('customer_id'), 
@@ -134,6 +148,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'finder_address' 				=>		$finder_address,
 			'finder_lat'		 			=>		$finder_lat,
 			'finder_lon'		 			=>		$finder_lon,
+			'city_id'						=>		$city_id,
 			'finder_vcc_email' 				=>		$finder_vcc_email,
 			'finder_vcc_mobile' 			=>		$finder_vcc_mobile,
 			'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
@@ -150,9 +165,9 @@ class SchedulebooktrialsController extends \BaseController {
 			);
 
 		//return $booktrialdata;
-		// $booktrial = new Booktrial($booktrialdata);
-		// $booktrial->_id = $booktrialid;
-		// $trialbooked = $booktrial->save();
+		$booktrial = new Booktrial($booktrialdata);
+		$booktrial->_id = $booktrialid;
+		$trialbooked = $booktrial->save();
 
 		if($trialbooked = true){
 
@@ -207,13 +222,181 @@ class SchedulebooktrialsController extends \BaseController {
 		return Response::json($resp);	
 	}
 
-	public function getBookTrial($finderid,$date = null){
-		$finderid 	= 	(int) $finderid;
-		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
-		->where('service_name', '=', 'gyms' )
-		->where('schedule_date', '=', new DateTime($date) )
-		->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
-		return $items;
+
+	public function sendSMS($smsdata){
+
+		$to = $smsdata['send_to'];
+		$message = $smsdata['message_body'];
+		$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $live_url);
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		$response = curl_exec($ch);
+		curl_close($ch);
+	}
+
+	public function sendEmail($emaildata){
+
+
+		$email_template 		= 	$emaildata['email_template'];
+		$email_template_data 	= 	$emaildata['email_template_data'];
+		$reciver_name 			= 	(isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : 'Team Fitternity';
+		$to 					= 	$emaildata['to'];
+		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
+		$email_subject 			= 	ucfirst($emaildata['email_subject']);		
+		$send_bcc_status 		= 	$emaildata['send_bcc_status'];
+		
+		if($send_bcc_status == 1){
+			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+				$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
+			});			
+		}else{
+			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+				$message->to($to, $reciver_name)->subject($email_subject);
+			});			
+		}
+	}
+
+	/**
+	 * Booked Manual Book A Trial.
+	 *
+	 */
+
+	public function manualBookTrial() {
+
+		// return $data	= Input::json()->all();
+
+		$booktrialid 				=	Booktrial::max('_id') + 1;
+		$finder_id 					= 	(int) Input::json()->get('finder_id');
+		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? (int) Input::json()->get('customer_id') : "";
+		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+		$city_id 					=	(int) Input::json()->get('city_id');
+		$booktrialdata = array(
+			'finder_id' 			=>		$finder_id,
+			'finder_name' 			=>		Input::json()->get('finder'),
+			'city_id'				=>		$city_id, 
+
+			'customer_id' 			=>		$customer_id, 
+			'customer_name' 		=>		Input::json()->get('name'), 
+			'customer_email' 		=>		Input::json()->get('email'), 
+			'customer_phone' 		=>		Input::json()->get('phone'),
+			'preferred_location'	=>		Input::json()->get('location'),
+			'preferred_service'		=>		Input::json()->get('service'),
+			'preferred_day'			=>		Input::json()->get('preferred_day'),
+			'preferred_time'		=>		Input::json()->get('preferred_time'),
+			'device_id'				=>		$device_id,
+			'booktrial_type'		=>		'manual'
+			);
+
+
+
+		$emaildata = array(
+			'email_template' 		=> 	'emails.customer.manualbooktrial', 
+			'email_template_data' 	=> 	$booktrialdata, 
+			'to'					=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
+			'email_subject' 		=> 	'Request For Manual Book a Trial',
+			'send_bcc_status' 		=> 	1 
+			);
+		$this->sendEmail($emaildata);
+
+		$smsdata = array(
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to manual book a trial at '. Input::json()->get('finder') .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
+			);
+
+		$this->sendSMS($smsdata);
+		
+		$booktrial = new Booktrial($booktrialdata);
+		$booktrial->_id = $booktrialid;
+		$trialbooked = $booktrial->save();
+		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
+		return Response::json($resp);		
+	}
+
+	public function extraBookTrial() {
+		$data = array(
+			'capture_type' 			=>		'extrabook_trial',
+			'name' 					=>		Input::json()->get('name'), 
+			'email' 				=>		Input::json()->get('email'), 
+			'phone' 				=>		Input::json()->get('phone'),
+			'finder' 				=>		implode(",",Input::json()->get('vendor')),
+			'location' 				=>		Input::json()->get('location'),
+			'service'				=>		Input::json()->get('service'),
+			'preferred_time'		=>		Input::json()->get('preferred_time'),
+			'preferred_day'			=>		Input::json()->get('preferred_day'),
+			'date' 					=>		date("h:i:sa")
+			);
+		$emaildata = array(
+			'email_template' 		=> 	'emails.finder.booktrial', 
+			'email_template_data' 	=> 	$data, 
+			'to'					=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
+			'email_subject' 		=> 	'Request For 2nd Book a Trial',
+			'send_bcc_status' 		=> 	1 
+			);
+		$this->sendEmail($emaildata);
+
+		$smsdata = array(
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to book a trial at '. implode(",",Input::json()->get('vendor')) .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
+			);
+		$this->sendSMS($smsdata);
+
+
+		$storecapture = Capture::create($data);
+		$resp = array('status' => 200,'message' => "Book a Trial");
+		return Response::json($resp);          
+
+		// return $data	= Input::json()->all();
+
+		$booktrialid 				=	Booktrial::max('_id') + 1;
+		$finder_id 					= 	(int) Input::json()->get('finder_id');
+		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? (int) Input::json()->get('customer_id') : "";
+		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+		$city_id 					=	(int) Input::json()->get('city_id');
+		$booktrialdata = array(
+			'finder_id' 			=>		$finder_id,
+			'finder_name' 			=>		Input::json()->get('finder'),
+			'city_id'				=>		$city_id, 
+
+			'customer_id' 			=>		$customer_id, 
+			'customer_name' 		=>		Input::json()->get('name'), 
+			'customer_email' 		=>		Input::json()->get('email'), 
+			'customer_phone' 		=>		Input::json()->get('phone'),
+			'preferred_location'	=>		Input::json()->get('location'),
+			'preferred_service'		=>		Input::json()->get('service'),
+			'preferred_day'			=>		Input::json()->get('preferred_day'),
+			'preferred_time'		=>		Input::json()->get('preferred_time'),
+			'device_id'				=>		$device_id,
+			'booktrial_type'		=>		'manual'
+			);
+
+
+
+		$emaildata = array(
+			'email_template' 		=> 	'emails.customer.manualbooktrial', 
+			'email_template_data' 	=> 	$booktrialdata, 
+			'to'					=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
+			'email_subject' 		=> 	'Request For Manual Book a Trial',
+			'send_bcc_status' 		=> 	1 
+			);
+		$this->sendEmail($emaildata);
+
+		$smsdata = array(
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to manual book a trial at '. Input::json()->get('finder') .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
+			);
+
+		$this->sendSMS($smsdata);
+		
+		$booktrial = new Booktrial($booktrialdata);
+		$booktrial->_id = $booktrialid;
+		$trialbooked = $booktrial->save();
+		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
+		return Response::json($resp);	      
 	}
 
 

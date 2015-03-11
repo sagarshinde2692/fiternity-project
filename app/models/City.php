@@ -35,6 +35,10 @@ class City extends \Basemodel {
 		return $this->hasMany('Finder','city_id');
 	}
 
+	public function booktrials(){
+		return $this->hasMany('Booktrial','booktrial_id');
+	}
+
 	public function homepage(){
 		return $this->hasOnce('Homepage');
 	}
