@@ -26,9 +26,40 @@ Class CustomerMailer extends Mailer {
 		return $this->sendTo($email_template, $template_data, $message_data);
 	}
 
-	public function bookTrialReminder ($data, $delay){
 
-		$email_template = 'emails.customer.autobooktrial_reminder';
+	//used for testing purpose
+	public function bookTrialReminderBefore1Min ($data, $delay){
+
+		$email_template = 	'emails.customer.booktrialreminderbefore12hour';
+		$template_data 	= 	$data;
+		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array_flatten($emails);
+		$message_data 	= 	array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Reminder Book a Trial'
+			);
+		// return $this->sendTo($email_template, $template_data, $message_data, $delay);
+		$this->sendTo($email_template, $template_data, $message_data);
+
+		$email_template = 	'emails.customer.booktrialreminderafter2hour';
+		$template_data 	= 	$data;
+		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array_flatten($emails);
+		$message_data 	= 	array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Post Reminder Book a Trial'
+			);
+		return $this->sendTo($email_template, $template_data, $message_data);
+	}
+
+
+	public function bookTrialReminderBefore12Hour ($data, $delay){
+
+		$email_template = 'emails.customer.booktrialreminderbefore12hour';
 		$template_data 	= $data;
 		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
 		$bcc_emailids 	= 	array_flatten($emails);
@@ -36,11 +67,26 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Reminder Mail: Request For Book a Trial'
+			'email_subject' => 'Reminder For Book a Trial'
 			);
 		return $this->sendTo($email_template, $template_data, $message_data, $delay);
 	}
 
+
+	public function bookTrialReminderAfter2Hour ($data, $delay){
+
+		$email_template = 'emails.customer.booktrialreminderafter2hour';
+		$template_data 	= $data;
+		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array_flatten($emails);
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Post Trial '
+			);
+		return $this->sendTo($email_template, $template_data, $message_data, $delay);
+	}
 
 	public function manualBookTrial ($data){
 

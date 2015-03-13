@@ -45,9 +45,9 @@ class SchedulebooktrialsController extends \BaseController {
 		$weekday 				= 	strtolower(date( "l", $timestamp));
 
 		// echo "$date  --- $timestamp -- $weekday";exit;
-		//finder sechedule trials
+		//finder schedule trials
 		$items = Schedulebooktrial::where('finder_id', '=', $finderid)->where('weekday', '=', $weekday)->get(array('finder_id','weekday','name','slots'))->toArray();
-		$secheduletrials = array();
+		$scheduletrials = array();
 		foreach ($items as $item) {
 			$trial = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' =>  $item['weekday']); 
 			$slots = array();
@@ -55,7 +55,7 @@ class SchedulebooktrialsController extends \BaseController {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
 											->where('service_name', '=', $item['name'])
 											->where('schedule_date', '=', new DateTime($date) )
-											->where('sechedule_slot', '=', $slot['slot_time'])
+											->where('schedule_slot', '=', $slot['slot_time'])
 											->count();
 				// var_dump($booktrialslotcnt);
 
@@ -71,9 +71,9 @@ class SchedulebooktrialsController extends \BaseController {
 				array_push($slots, $slot);
 			}
 			$trial['slots'] = $slots;
-			array_push($secheduletrials, $trial);
+			array_push($scheduletrials, $trial);
 		}						
-		return $secheduletrials;
+		return $scheduletrials;
 	}
 
 
@@ -82,7 +82,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
 		->where('service_name', '=', 'gyms' )
 		->where('schedule_date', '=', new DateTime($date) )
-		->get(array('customer_name','service_name','finder_id','schedule_date','sechedule_slot'));
+		->get(array('customer_name','service_name','finder_id','schedule_date','schedule_slot'));
 		return $items;
 	}
 
@@ -95,15 +95,17 @@ class SchedulebooktrialsController extends \BaseController {
 
 		//return $data	= Input::json()->all();
 		//its helpful to send any kind for dateformat date time as srting or iso formate timezond
-		$slot_times 						=	explode('-',Input::json()->get('sechedule_slot'));
-		$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date'))); 
-		$schedule_date_time 				=	strtoupper($slot_date ." ".head($slot_times));
-
+		$slot_times 						=	explode('-',Input::json()->get('schedule_slot'));
+		$schedule_slot_start_time 			=	$slot_times[0];
+		$schedule_slot_end_time 			=	$slot_times[1];
+		$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
+		$schedule_date_time 				=	strtoupper($slot_date ." ".$schedule_slot_start_time);
 		$currentDateTime 					=	Carbon::now();
-		$scheduleDateTime 					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(1);
+		$scheduleDateTime 					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time);
 		$delayReminderTimeBefore1Min 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(1);
 		$delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
 		$delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
+		$delayReminderTimeAfter2Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->addMinutes(60 * 2);
 		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
 		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false);  
 
@@ -111,18 +113,13 @@ class SchedulebooktrialsController extends \BaseController {
 		//return  "oneHourDiff  -- $oneHourDiff   ,  twelveHourDiff  -- $twelveHourDiff";
 		
 		$booktrialid 						=	Booktrial::max('_id') + 1;
-		// $booktrialid 						=	1;
-		// $customer_id 						=	Input::json()->get('customer_id'); 
-		// $customer_name 						=	Input::json()->get('customer_name'); 
-		// $customer_email 					=	Input::json()->get('customer_email'); 
-		// $customer_phone 					=	Input::json()->get('customer_phone');
-		
 		$finderid 							= 	(int) Input::json()->get('finder_id');
 		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))
 														->where('_id','=',$finderid)
 														->first()->toArray();
 		//return var_dump($finder)	;									
 		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
+		$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
 		$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
 		$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 		$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
@@ -144,6 +141,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			'finder_id' 					=>		$finderid,
 			'finder_name' 					=>		$finder_name,
+			'finder_slug' 					=>		$finder_slug,
 			'finder_location' 				=>		$finder_location,
 			'finder_address' 				=>		$finder_address,
 			'finder_lat'		 			=>		$finder_lat,
@@ -157,7 +155,9 @@ class SchedulebooktrialsController extends \BaseController {
 			'service_name'					=>		Input::json()->get('service_name'),
 			'schedule_date'					=>		date('Y-m-d 00:00:00', strtotime($slot_date)),
 			'schedule_date_time'			=>		Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->toDateTimeString(),
-			'sechedule_slot'				=>		Input::json()->get('sechedule_slot'),
+			'schedule_slot_start_time'		=>		$schedule_slot_start_time,
+			'schedule_slot_end_time'		=>		$schedule_slot_end_time,
+			'schedule_slot'					=>		Input::json()->get('schedule_slot'),
 			'going_status'					=>		1,
 			'code'							=>		$booktrialid.str_random(8),
 			'device_id'						=>		$device_id,
@@ -172,48 +172,33 @@ class SchedulebooktrialsController extends \BaseController {
 		if($trialbooked = true){
 
 			//Send Instant (Email) To Customer & Finder
-			$sndInstantEmailCustomer	= 	$this->customermailer->bookTrial($booktrialdata);
-			$sndInstantEmailFinder		= 	$this->findermailer->bookTrial($booktrialdata);
-			//$sndInstantSmsCustomer		=	$this->customersms->bookTrial($booktrialdata);
-			//$sndInstantSmsFinder		=	$this->findersms->bookTrial($booktrialdata);
-
-
+			$sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
+			$sndInstantSmsCustomer			=	$this->customersms->bookTrial($booktrialdata);
+			
+			$sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
+			$sndInstantSmsFinder			=	$this->findersms->bookTrial($booktrialdata);
 
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
-			// $sndReminderEmailNotificaitonBefore1MinCustomer  	= 	$this->customermailer->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
-			// $sndReminderSmsNotificaitonCustomer					=	$this->customersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
-			// $sndReminderSmsNotificaitonFinder					=	$this->findersms->bookTrialReminder($booktrialdata, $delayReminderTimeBefore1Min);
+			$sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			$sndBefore1MinSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 
 			//#############  TESTING FOR 1 MIN END ##############
 
-
-			if($oneHourDiff >= 12){
-				//Send Reminder Notiication (Email) Before 12 Hour To To Customer & Finder
-				//$sndReminderEmailNotificaitonBefore12HourCustomer  	= 	$this->customermailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore12Hour);
-
-				//Send Reminder Notiication (SMS) To Customer & Finder need to write 
-				//send sms to customer Viva twilio
-				//send sms to finder Viva Curl APi
-
-				//Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'new testpushqueue delay by 2 min time -- '.time()));
-				
+			if($twelveHourDiff >= 12){
+				//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
+				$sndBefore12HourEmailCustomer	= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore12Hour);
+				$sndBefore12HourSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore12Hour);
 			}
 
 			if($oneHourDiff >= 1){
-
-				//Send Reminder Notiication (Email) Before 1 Hour To Customer & Finder
-				//$sndReminderEmailNotificaitonBefore1HourCustomer  	= 	$this->customermailer->bookTrialReminder($booktrialdata,$delayReminderTimeBefore1Hour);
-
-				//Send Reminder Notiication (SMS) To Customer & Finder need to write 
-				//send sms to customer
-				//send sms to finder
-
+				//Send Reminder Notiication (Sms) Before 1 Hour To Customer
+				$sndBefore1HourSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Hour);
 			}
 
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
-
+			$sndAfter2HourEmailCustomer	= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeAfter2Hour);
 
 
 		}
@@ -269,7 +254,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		$booktrialid 				=	Booktrial::max('_id') + 1;
 		$finder_id 					= 	(int) Input::json()->get('finder_id');
-		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? (int) Input::json()->get('customer_id') : "";
+		$customer_id				= 	Input::json()->get('customer_id');
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$city_id 					=	(int) Input::json()->get('city_id');
 		$booktrialdata = array(
@@ -353,7 +338,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		$booktrialid 				=	Booktrial::max('_id') + 1;
 		$finder_id 					= 	(int) Input::json()->get('finder_id');
-		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? (int) Input::json()->get('customer_id') : "";
+		$customer_id				= 	Input::json()->get('customer_id');
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$city_id 					=	(int) Input::json()->get('city_id');
 		$booktrialdata = array(

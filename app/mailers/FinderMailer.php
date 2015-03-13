@@ -30,7 +30,8 @@ Class FinderMailer extends Mailer {
 		return $this->sendTo($email_template, $template_data, $message_data);
 	}
 
-	public function bookTrialReminder ($data, $delay){
+	//currently not using reminder
+	public function bookTrialReminderBefore12Hour ($data, $delay){
 
 		$email_template = 'emails.finder.autobooktrial_reminder';
 		$template_data 	= $data;
