@@ -11,7 +11,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/testdate', function() { 
 
-	echo HTML::entities('<h1>Title example</h1>')
+	echo strip_tags('<h1>Title example</h1>');
 	exit;
 	$isodate = '2015-03-10T13:00:00.000Z';
 	$actualdate =  \Carbon\Carbon::now();

@@ -18,7 +18,6 @@
 		<table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
 			<tr><td>Address: </td><td>{{ ucwords($finder_address) }}</td></tr>
 			<tr><td>Contact Person: </td><td>{{ ucwords($finder_poc_for_customer_name) }}</td></tr>
-			<tr><td>Contact No: </td><td>{{ $finder_poc_for_customer_no }}</td></tr>
 		</table>
 
 		<p>If you need to change the time or day of the session just reply to this mail or call us on +91 92222 21131.</p>
