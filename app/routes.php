@@ -10,11 +10,11 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 /******************** DEBUG SECTION START HERE /********************/
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/testdate', function() { 
-	return Finder::findOrFail(1)->toArray();
-	return  date( "Y-m-d H:i:s", strtotime("2015-03-10T13:00:00.000Z"));
 	$isodate = '2015-03-10T13:00:00.000Z';
 	$actualdate =  \Carbon\Carbon::createFromFormat('d-m-Y g:i:s A', $isodate);
 	return "$actualdate";
+	return Finder::findOrFail(1)->toArray();
+	return  date( "Y-m-d H:i:s", strtotime("2015-03-10T13:00:00.000Z"));
 	//convert iso date to php datetime
 	return "laravel 4.2 goes here ....";
 
