@@ -14,7 +14,7 @@
             <tr><td>Subscription Code: </td><td> {{ $code }}(please flash this code at the service provider location) </td></tr>
             <tr><td>Workout type: </td><td> Trial </td></tr>
             <tr><td>Workout form :  </td><td>{{ ucwords($service_name)  }}</td></tr>
-            <tr><td>Contact person name (provided to the customer): </td><td>{{ ucwords($customer_name) }}</td></tr>
+            <tr><td>Contact person name (provided to the customer): </td><td>{{ ucwords($finder_poc_for_customer_name) }}</td></tr>
         </table> 
 
         <p>If this session cannot be managed / fulfilled at your end - please let us know at the earliest. You can reply to this mail or call us on +91 92222 21131. <br></p>
