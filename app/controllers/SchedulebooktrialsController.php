@@ -38,7 +38,7 @@ class SchedulebooktrialsController extends \BaseController {
 	public function getScheduleBookTrial($finderid,$date = null){
 
 		//$dobj = new DateTime;print_r($dobj);
-		$currentDateTime 		=	Carbon::now();
+		$currentDateTime 		=	Carbon\Carbon::now();
 		$finderid 				= 	(int) $finderid;
 		$date 					=  	($date == null) ? Carbon::now() : $date;
 		$timestamp 				= 	strtotime($date);
@@ -100,12 +100,12 @@ class SchedulebooktrialsController extends \BaseController {
 		$schedule_slot_end_time 			=	$slot_times[1];
 		$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
 		$schedule_date_time 				=	strtoupper($slot_date ." ".$schedule_slot_start_time);
-		$currentDateTime 					=	Carbon::now();
-		$scheduleDateTime 					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time);
-		$delayReminderTimeBefore1Min 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(1);
-		$delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
-		$delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
-		$delayReminderTimeAfter2Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->addMinutes(60 * 2);
+		$currentDateTime 					=	Carbon\Carbon::now();
+		$scheduleDateTime 					=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time);
+		$delayReminderTimeBefore1Min 		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(1);
+		$delayReminderTimeBefore1Hour 		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
+		$delayReminderTimeBefore12Hour		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
+		$delayReminderTimeAfter2Hour		=	Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->addMinutes(60 * 2);
 		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
 		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false);  
 
@@ -154,7 +154,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			'service_name'					=>		Input::json()->get('service_name'),
 			'schedule_date'					=>		date('Y-m-d 00:00:00', strtotime($slot_date)),
-			'schedule_date_time'			=>		Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->toDateTimeString(),
+			'schedule_date_time'			=>		Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->toDateTimeString(),
 			'schedule_slot_start_time'		=>		$schedule_slot_start_time,
 			'schedule_slot_end_time'		=>		$schedule_slot_end_time,
 			'schedule_slot'					=>		Input::json()->get('schedule_slot'),
