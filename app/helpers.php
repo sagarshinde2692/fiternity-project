@@ -60,6 +60,20 @@ if (!function_exists('refine_keyword')) {
   }
 }
 
+/**
+ * Remove Stopwords
+ * @param str $str
+ * @return str
+ */
+if (!function_exists('clean_slug')) {
+    function clean_slug($slug) {
+
+
+
+        return ucwords(str_replace("-","",$slug)));
+  }
+}
+
 
 
 

@@ -42,7 +42,8 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		//$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_name']).", ".ucwords($data['finder_address']).", ".ucwords($data['finder_location']).". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to ".  {{ link_to('http://www.fitternity.com/'.$finder_slug, ucwords($finder_name) ) }} .". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
+		
+		$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$finder_slug.". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
 		
 		return $this->sendTo($to, $message, $delay);
 	}
