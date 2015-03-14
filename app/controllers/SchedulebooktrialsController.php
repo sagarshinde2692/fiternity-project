@@ -116,9 +116,7 @@ class SchedulebooktrialsController extends \BaseController {
 		
 		$booktrialid 						=	Booktrial::max('_id') + 1;
 		$finderid 							= 	(int) Input::json()->get('finder_id');
-		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))
-														->where('_id','=',$finderid)
-														->first()->toArray();
+		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id','=',$finderid)->first()->toArray();
 		//return var_dump($finder)	;									
 		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 		$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
@@ -176,7 +174,7 @@ class SchedulebooktrialsController extends \BaseController {
 			//Send Instant (Email) To Customer & Finder
 			$sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
 			$sndInstantSmsCustomer			=	$this->customersms->bookTrial($booktrialdata);
-			
+
 			$sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
 			$sndInstantSmsFinder			=	$this->findersms->bookTrial($booktrialdata);
 

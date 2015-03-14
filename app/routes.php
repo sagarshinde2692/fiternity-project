@@ -73,9 +73,9 @@ Route::get('/testpushemail', function() {
 		'bcc_emailids' => array(),
 		'email_subject' => 'Testemail 4m local ' .time()
 		);
-	$delaytime = Carbon::now()->addMinutes(1);
-	var_dump($delaytime);
-	exit;
+	// $delaytime = Carbon::now()->addMinutes(1);
+	// var_dump($delaytime);
+	// exit;
 	
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
