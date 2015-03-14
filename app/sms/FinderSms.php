@@ -16,7 +16,7 @@ Class FinderSms extends VersionNextSms{
 	}
 
 	//currently not using reminder
-	public function bookTrialReminder ($data, $delay){
+	public function bookTrialReminder ($datshow_location_flaga, $delay){
 
 		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
 		$message 	=	"reminder finder test sms";

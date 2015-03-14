@@ -5,7 +5,7 @@
         <p style="font-size:16px;color:#464646;text-align:justify;"> Hi, {{ ucwords($finder_poc_for_customer_name) }}</p> 
         <p>Greetings from Fitternity.com</p>
 
-        <p> We have received a booking for workout session / trial for {{ ucwords($finder_name) }} @if ($value->finder_type == 1) ,  {{ ucwords($finder_location) }} @endif . Here are the details. </p>
+        <p> We have received a booking for workout session / trial for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif . Here are the details. </p>
 
         <table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
             <tr><td>Name of the customer: </td><td>{{ ucwords($customer_name) }}</td></tr>

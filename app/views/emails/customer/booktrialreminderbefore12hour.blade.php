@@ -3,7 +3,7 @@
 	
 	<div style="text-align:left;">
 		<p style="font-size:16px;color:#464646;text-align:justify;"> Hey, {{ ucwords($customer_name) }}</p> 
-		<p> This is regarding the workout session / trial booked on Fitternity for {{ ucwords($finder_name) }}@if ($value->finder_type == 1) ,  {{ ucwords($finder_location) }} @endif on 
+		<p> This is regarding the workout session / trial booked on Fitternity for {{ ucwords($finder_name) }}@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif on 
 			{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }} <br></p>
 
 			<p>Incase if you have queries, would like to reschedule or cancel your session - please call us on +91 92222 21131 or reply to this mail.<br></p>

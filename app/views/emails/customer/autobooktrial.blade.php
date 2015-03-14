@@ -3,7 +3,7 @@
 	
 	<div style="text-align:left;">
 		<p style="font-size:16px;color:#464646;text-align:justify;"> Hey, {{ ucwords($customer_name) }}</p> 
-		<p> Thank you for booking a workout session / trial at {{ ucwords($finder_name) }} @if ($value->finder_type == 1) ,  {{ ucwords($finder_location) }} @endif through Fitternity.com. Your session is CONFIRMED. Here are the details. </p>
+		<p> Thank you for booking a workout session / trial at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif through Fitternity.com. Your session is CONFIRMED. Here are the details. </p>
 		<table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
 			<tr><td>Name of the fitness service provider: </td><td>{{ ucwords($finder_name) }}</td></tr>
 			<tr><td>Date: </td><td>{{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time) )  }}</td></tr>
