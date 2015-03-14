@@ -73,7 +73,7 @@ Route::get('/testpushemail', function() {
 		'bcc_emailids' => array(),
 		'email_subject' => 'Testemail 4m local ' .time()
 		);
-	// $delaytime = Carbon::now()->addMinutes(1);
+	$delaytime = Carbon::now()->addMinutes(1);
 	// var_dump($delaytime);
 	// exit;
 	
