@@ -119,7 +119,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 		
 		// return $finder['locationtags'];		
-		echo  count($finder['locationtags']);		
+		// echo  count($finder['locationtags']);		
 		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 		$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
 		$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -127,7 +127,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 		$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 		$city_id 							=	(int) $finder['city_id'];
-		$show_location_flag 				=   (count($finder['locationtags']) > 2) ? '0' : '1';
+		$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 
 		$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
 		$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
@@ -170,7 +170,7 @@ class SchedulebooktrialsController extends \BaseController {
 			);
 
 
-		return $booktrialdata;
+		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
 		$booktrial->_id = $booktrialid;
 		$trialbooked = $booktrial->save();
