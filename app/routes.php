@@ -60,9 +60,10 @@ Route::get('/testemail', function() {
 
 Route::get('/testpushemail', function() { 
 
-	// $finder = Finder::where('_id','=',1)->first(array('title','contact','lat','lon','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no'));
 
-	// return $finder;
+	$finder = Finder::with('locationtags')->where('_id','=',1)->first();
+
+	return $finder;
 
 	$email_template = 'emails.testemail1';
 	$email_template_data = array();

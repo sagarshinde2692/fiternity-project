@@ -68,9 +68,8 @@ if (!function_exists('refine_keyword')) {
 if (!function_exists('clean_slug')) {
     function clean_slug($slug) {
 
-
-
-        return ucwords(str_replace("-"," ",$slug));
+        // return ucwords(str_replace("-"," ",$slug));
+        return '';
   }
 }
 

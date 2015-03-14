@@ -116,8 +116,10 @@ class SchedulebooktrialsController extends \BaseController {
 		
 		$booktrialid 						=	Booktrial::max('_id') + 1;
 		$finderid 							= 	(int) Input::json()->get('finder_id');
-		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id','=',$finderid)->first()->toArray();
-		//return var_dump($finder)	;									
+		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+		
+		// return $finder['locationtags'];		
+		// return count($finder['locationtags']);		
 		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 		$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
 		$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -125,6 +127,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 		$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 		$city_id 							=	(int) $finder['city_id'];
+		$show_location_flag 				=   (count($finder['locationtags']) > 2) ? false : true;
 
 		$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
 		$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
@@ -132,6 +135,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
 
 		$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+
 
 		$booktrialdata = array(
 			'customer_id' 					=>		Input::json()->get('customer_id'), 
@@ -151,6 +155,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'finder_vcc_mobile' 			=>		$finder_vcc_mobile,
 			'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
 			'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
+			'show_location_flag'			=> 		$show_location_flag,
 
 			'service_name'					=>		Input::json()->get('service_name'),
 			'schedule_date'					=>		date('Y-m-d 00:00:00', strtotime($slot_date)),
