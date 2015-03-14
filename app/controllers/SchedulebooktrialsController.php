@@ -109,8 +109,10 @@ class SchedulebooktrialsController extends \BaseController {
 		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
 		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false);  
 
-		//echo "<br>currentDateTime : $currentDateTime, <br>scheduleDateTime : $scheduleDateTime, <br>Before1Min : $delayReminderTimeBefore1Min, <br>Before1Hour : $delayReminderTimeBefore1Hour, <br>Before12Hour : $delayReminderTimeBefore12Hour <br>";
-		//return  "oneHourDiff  -- $oneHourDiff   ,  twelveHourDiff  -- $twelveHourDiff";
+		var_dump($delayReminderTimeBefore1Hour);
+		echo "<br>currentDateTime : $currentDateTime, <br>scheduleDateTime : $scheduleDateTime, <br>Before1Min : $delayReminderTimeBefore1Min, <br>Before1Hour : $delayReminderTimeBefore1Hour, <br>Before12Hour : $delayReminderTimeBefore12Hour <br>";
+		return  "oneHourDiff  -- $oneHourDiff   ,  twelveHourDiff  -- $twelveHourDiff";
+		exit;
 		
 		$booktrialid 						=	Booktrial::max('_id') + 1;
 		$finderid 							= 	(int) Input::json()->get('finder_id');
@@ -187,18 +189,18 @@ class SchedulebooktrialsController extends \BaseController {
 
 			if($twelveHourDiff >= 12){
 				//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-				$sndBefore12HourEmailCustomer	= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore12Hour);
-				$sndBefore12HourSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore12Hour);
+				$sndBefore12HourEmailCustomer	= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				$sndBefore12HourSmsCustomer		=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 			}
 
 			if($oneHourDiff >= 1){
 				//Send Reminder Notiication (Sms) Before 1 Hour To Customer
-				$sndBefore1HourSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Hour);
+				$sndBefore1HourSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 			}
 
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
-			$sndAfter2HourEmailCustomer	= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeAfter2Hour);
+			$sndAfter2HourEmailCustomer	= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 
 
 		}

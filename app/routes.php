@@ -60,9 +60,9 @@ Route::get('/testemail', function() {
 
 Route::get('/testpushemail', function() { 
 
-	$finder = Finder::where('_id','=',1)->first(array('title','contact','lat','lon','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no'));
+	// $finder = Finder::where('_id','=',1)->first(array('title','contact','lat','lon','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no'));
 
-	return $finder;
+	// return $finder;
 
 	$email_template = 'emails.testemail1';
 	$email_template_data = array();
@@ -70,10 +70,13 @@ Route::get('/testpushemail', function() {
 		'string' => 'Hello World from array with time -- '.time(),
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
-		'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
+		'bcc_emailids' => array(),
 		'email_subject' => 'Testemail 4m local ' .time()
 		);
-
+	$delaytime = Carbon::now()->addMinutes(1);
+	var_dump($delaytime);
+	exit;
+	
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
@@ -81,7 +84,6 @@ Route::get('/testpushemail', function() {
 	});
 
 
-	echo $delaytime = Carbon::now()->addMinutes(1);
 	Mail::later($delaytime, $email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
