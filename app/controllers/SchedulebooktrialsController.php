@@ -164,6 +164,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'booktrial_type'				=>		'auto'	
 			);
 
+
 		//return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
 		$booktrial->_id = $booktrialid;
