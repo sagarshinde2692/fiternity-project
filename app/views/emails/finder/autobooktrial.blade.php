@@ -9,7 +9,7 @@
 
         <table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
             <tr><td>Name of the customer: </td><td>{{ ucwords($customer_name) }}</td></tr>
-            <tr><td>Date: </td><td>{{ date(' jSF\, Y \(l\) ', strtotime($schedule_date_time) )  }}</td></tr>
+            <tr><td>Date: </td><td>{{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time) )  }}</td></tr>
             <tr><td>Time: </td><td>{{ date(' g\.i A', strtotime($schedule_date_time) ) }}</td></tr>
             <tr><td>Subscription Code: </td><td> {{ $code }}(this code will be shared by the customer to avail the session) </td></tr>
             <tr><td>Workout type: </td><td> Trial </td></tr>
