@@ -329,7 +329,7 @@ class ElasticsearchController extends \BaseController {
             //return Response::json($postdata);exit;
             //$cityname = strtolower($postdata['city']);
             //if($cityname == 'mumbai'){
-           echo  $response = $this->pushdocument($posturl, json_encode($postdata));
+           	echo  $response = $this->pushdocument($posturl, json_encode($postdata));
             //}
             //$response = $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
             //echo $response
