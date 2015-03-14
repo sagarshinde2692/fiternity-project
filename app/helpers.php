@@ -70,7 +70,7 @@ if (!function_exists('clean_slug')) {
 
 
 
-        return ucwords(str_replace("-","",$slug)));
+        return ucwords(str_replace("-"," ",$slug));
   }
 }
 
