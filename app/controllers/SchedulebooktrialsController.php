@@ -98,14 +98,16 @@ class SchedulebooktrialsController extends \BaseController {
 		$slot_times 						=	explode('-',Input::json()->get('schedule_slot'));
 		$schedule_slot_start_time 			=	$slot_times[0];
 		$schedule_slot_end_time 			=	$slot_times[1];
+		$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
 		$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
-		$schedule_date_time 				=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+		$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
 		$currentDateTime 					=	\Carbon\Carbon::now();
-		$scheduleDateTime 					=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time);
-		$delayReminderTimeBefore1Min 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(1);
-		$delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60);
-		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->subMinutes(60 * 12);
-		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->addMinutes(60 * 2);
+		$scheduleDateTime 					=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
+		$delayReminderTimeBefore1Min 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
+		$delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
+		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
+		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
 		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
 		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false);  
 
@@ -119,7 +121,13 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 		
 		// return $finder['locationtags'];		
-		// echo  count($finder['locationtags']);		
+		// echo  count($finder['locationtags']);
+
+		$customer_id 						=	Input::json()->get('customer_id'); 
+		$customer_name 						=	Input::json()->get('customer_name'); 
+		$customer_email 					=	Input::json()->get('customer_email'); 
+		$customer_phone 					=	Input::json()->get('customer_phone');	
+
 		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 		$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
 		$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -134,14 +142,20 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 		$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
 
+
+		$service_name						=	strtolower(Input::json()->get('service_name'));
+		$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
+		$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+
+		$code								=	$booktrialid.str_random(8);
 		$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 
 
 		$booktrialdata = array(
-			'customer_id' 					=>		Input::json()->get('customer_id'), 
-			'customer_name' 				=>		Input::json()->get('customer_name'), 
-			'customer_email' 				=>		Input::json()->get('customer_email'), 
-			'customer_phone' 				=>		Input::json()->get('customer_phone'),
+			'customer_id' 					=>		$customer_id, 
+			'customer_name' 				=>		$customer_name, 
+			'customer_email' 				=>		$customer_email, 
+			'customer_phone' 				=>		$customer_phone,
 
 			'finder_id' 					=>		$finderid,
 			'finder_name' 					=>		$finder_name,
@@ -157,17 +171,17 @@ class SchedulebooktrialsController extends \BaseController {
 			'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
 			'show_location_flag'			=> 		$show_location_flag,
 
-			'service_name'					=>		Input::json()->get('service_name'),
-			'schedule_date'					=>		date('Y-m-d 00:00:00', strtotime($slot_date)),
-			'schedule_date_time'			=>		\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_time)->toDateTimeString(),
+			'service_name'					=>		$service_name,
 			'schedule_slot_start_time'		=>		$schedule_slot_start_time,
 			'schedule_slot_end_time'		=>		$schedule_slot_end_time,
-			'schedule_slot'					=>		Input::json()->get('schedule_slot'),
+			'schedule_date'					=>		$schedule_date,
+			'schedule_date_time'			=>		$schedule_date_time,
+			'schedule_slot'					=>		$schedule_slot,
 			'going_status'					=>		1,
-			'code'							=>		$booktrialid.str_random(8),
+			'code'							=>		$code,
 			'device_id'						=>		$device_id,
 			'booktrial_type'				=>		'auto'	
-			);
+		);
 
 
 		// return $booktrialdata;
@@ -257,137 +271,108 @@ class SchedulebooktrialsController extends \BaseController {
 	public function manualBookTrial() {
 
 		// return $data	= Input::json()->all();
-
 		$booktrialid 				=	Booktrial::max('_id') + 1;
 		$finder_id 					= 	(int) Input::json()->get('finder_id');
-		$customer_id				= 	Input::json()->get('customer_id');
-		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$city_id 					=	(int) Input::json()->get('city_id');
+		$finder_name 				=	Input::json()->get('finder_name');
+
+		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? Input::json()->get('customer_id') : "";
+		$customer_name				= 	(Input::has('customer_name') && Input::json()->get('customer_name') != '') ? Input::json()->get('customer_name') : "";
+		$customer_email				= 	(Input::has('customer_email') && Input::json()->get('customer_email') != '') ? Input::json()->get('customer_email') : "";
+		$customer_phone				= 	(Input::has('customer_phone') && Input::json()->get('customer_phone') != '') ? Input::json()->get('customer_phone') : "";
+
+		$preferred_location			= 	(Input::has('preferred_location') && Input::json()->get('preferred_location') != '') ? Input::json()->get('preferred_location') : "";
+		$preferred_service			= 	(Input::has('preferred_service') && Input::json()->get('preferred_service') != '') ? Input::json()->get('preferred_service') : "";
+		$preferred_day				= 	(Input::has('preferred_day') && Input::json()->get('preferred_day') != '') ? Input::json()->get('preferred_day') : "";
+		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
+		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+		
 		$booktrialdata = array(
 			'finder_id' 			=>		$finder_id,
-			'finder_name' 			=>		Input::json()->get('finder'),
 			'city_id'				=>		$city_id, 
+			'finder_name' 			=>		$finder_name,
 
 			'customer_id' 			=>		$customer_id, 
-			'customer_name' 		=>		Input::json()->get('name'), 
-			'customer_email' 		=>		Input::json()->get('email'), 
-			'customer_phone' 		=>		Input::json()->get('phone'),
-			'preferred_location'	=>		Input::json()->get('location'),
-			'preferred_service'		=>		Input::json()->get('service'),
-			'preferred_day'			=>		Input::json()->get('preferred_day'),
-			'preferred_time'		=>		Input::json()->get('preferred_time'),
+			'customer_name' 		=>		$customer_name, 
+			'customer_email' 		=>		$customer_email, 
+			'customer_phone' 		=>		$customer_phone,
+
+			'preferred_location'	=>		$preferred_location,
+			'preferred_service'		=>		$preferred_service,
+			'preferred_day'			=>		$preferred_day,
+			'preferred_time'		=>		$preferred_time,
 			'device_id'				=>		$device_id,
 			'booktrial_type'		=>		'manual'
 			);
 
-
-
-		$emaildata = array(
-			'email_template' 		=> 	'emails.customer.manualbooktrial', 
-			'email_template_data' 	=> 	$booktrialdata, 
-			'to'					=> 	Config::get('mail.to_neha'), 
-			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
-			'email_subject' 		=> 	'Request For Manual Book a Trial',
-			'send_bcc_status' 		=> 	1 
-			);
-		$this->sendEmail($emaildata);
-
-		$smsdata = array(
-			'send_to' => Input::json()->get('phone'),
-			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to manual book a trial at '. Input::json()->get('finder') .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
-			);
-
-		$this->sendSMS($smsdata);
-		
+		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
 		$booktrial->_id = $booktrialid;
 		$trialbooked = $booktrial->save();
+
+		if($trialbooked){
+			$sndInstantEmailCustomer		= 	$this->customermailer->manualBookTrial($booktrialdata);
+			$sndInstantSmsCustomer			=	$this->customersms->manualBookTrial($booktrialdata);
+		}
+
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);		
 	}
 
-	public function extraBookTrial() {
-		$data = array(
-			'capture_type' 			=>		'extrabook_trial',
-			'name' 					=>		Input::json()->get('name'), 
-			'email' 				=>		Input::json()->get('email'), 
-			'phone' 				=>		Input::json()->get('phone'),
-			'finder' 				=>		implode(",",Input::json()->get('vendor')),
-			'location' 				=>		Input::json()->get('location'),
-			'service'				=>		Input::json()->get('service'),
-			'preferred_time'		=>		Input::json()->get('preferred_time'),
-			'preferred_day'			=>		Input::json()->get('preferred_day'),
-			'date' 					=>		date("h:i:sa")
-			);
-		$emaildata = array(
-			'email_template' 		=> 	'emails.finder.booktrial', 
-			'email_template_data' 	=> 	$data, 
-			'to'					=> 	Config::get('mail.to_neha'), 
-			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
-			'email_subject' 		=> 	'Request For 2nd Book a Trial',
-			'send_bcc_status' 		=> 	1 
-			);
-		$this->sendEmail($emaildata);
-
-		$smsdata = array(
-			'send_to' => Input::json()->get('phone'),
-			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to book a trial at '. implode(",",Input::json()->get('vendor')) .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
-			);
-		$this->sendSMS($smsdata);
-
-
-		$storecapture = Capture::create($data);
-		$resp = array('status' => 200,'message' => "Book a Trial");
-		return Response::json($resp);          
+	public function manual2ndBookTrial() {
 
 		// return $data	= Input::json()->all();
-
-		$booktrialid 				=	Booktrial::max('_id') + 1;
-		$finder_id 					= 	(int) Input::json()->get('finder_id');
-		$customer_id				= 	Input::json()->get('customer_id');
-		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+		$finder_ids 				= 	Input::json()->get('finder_ids');
+		$finder_names 				=	Input::json()->get('finder_names');
 		$city_id 					=	(int) Input::json()->get('city_id');
-		$booktrialdata = array(
-			'finder_id' 			=>		$finder_id,
-			'finder_name' 			=>		Input::json()->get('finder'),
-			'city_id'				=>		$city_id, 
 
-			'customer_id' 			=>		$customer_id, 
-			'customer_name' 		=>		Input::json()->get('name'), 
-			'customer_email' 		=>		Input::json()->get('email'), 
-			'customer_phone' 		=>		Input::json()->get('phone'),
-			'preferred_location'	=>		Input::json()->get('location'),
-			'preferred_service'		=>		Input::json()->get('service'),
-			'preferred_day'			=>		Input::json()->get('preferred_day'),
-			'preferred_time'		=>		Input::json()->get('preferred_time'),
-			'device_id'				=>		$device_id,
-			'booktrial_type'		=>		'manual'
-			);
+		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? Input::json()->get('customer_id') : "";
+		$customer_name				= 	(Input::has('customer_name') && Input::json()->get('customer_name') != '') ? Input::json()->get('customer_name') : "";
+		$customer_email				= 	(Input::has('customer_email') && Input::json()->get('customer_email') != '') ? Input::json()->get('customer_email') : "";
+		$customer_phone				= 	(Input::has('customer_phone') && Input::json()->get('customer_phone') != '') ? Input::json()->get('customer_phone') : "";
 
-
-
-		$emaildata = array(
-			'email_template' 		=> 	'emails.customer.manualbooktrial', 
-			'email_template_data' 	=> 	$booktrialdata, 
-			'to'					=> 	Config::get('mail.to_neha'), 
-			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'), 
-			'email_subject' 		=> 	'Request For Manual Book a Trial',
-			'send_bcc_status' 		=> 	1 
-			);
-		$this->sendEmail($emaildata);
-
-		$smsdata = array(
-			'send_to' => Input::json()->get('phone'),
-			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for the request to manual book a trial at '. Input::json()->get('finder') .'. We will call you shortly to arrange a time. Regards - Team Fitternity'
-			);
-
-		$this->sendSMS($smsdata);
+		$preferred_location			= 	(Input::has('preferred_location') && Input::json()->get('preferred_location') != '') ? Input::json()->get('preferred_location') : "";
+		$preferred_service			= 	(Input::has('preferred_service') && Input::json()->get('preferred_service') != '') ? Input::json()->get('preferred_service') : "";
+		$preferred_day				= 	(Input::has('preferred_day') && Input::json()->get('preferred_day') != '') ? Input::json()->get('preferred_day') : "";
+		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
+		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		
-		$booktrial = new Booktrial($booktrialdata);
-		$booktrial->_id = $booktrialid;
-		$trialbooked = $booktrial->save();
-		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
-		return Response::json($resp);	      
+		$booktrialdata = array(
+				'finder_ids' 			=>		implode(", ",$finder_ids),
+				'city_id'				=>		$city_id, 
+				'finder_names' 			=>		implode(", ",$finder_names),
+
+				'customer_id' 			=>		$customer_id, 
+				'customer_name' 		=>		$customer_name, 
+				'customer_email' 		=>		$customer_email, 
+				'customer_phone' 		=>		$customer_phone,
+
+				'preferred_location'	=>		$preferred_location,
+				'preferred_service'		=>		$preferred_service,
+				'preferred_day'			=>		$preferred_day,
+				'preferred_time'		=>		$preferred_time,
+				'device_id'				=>		$device_id,
+				'booktrial_type'		=>		'2ndmanual'
+				);
+
+		foreach ($finder_ids as $key => $finder_id) {
+
+			$insertdata		= 	array_except($booktrialdata, array('finder_ids','finder_names')); ;
+			array_set($insertdata, 'finder_id', intval($finder_id));
+			array_set($insertdata, 'finder_name', $finder_names[$key]);
+			// return $insertdata;
+			
+			$booktrialid	=	Booktrial::max('_id') + 1;
+			$booktrial 		= new Booktrial($insertdata);
+			$booktrial->_id = $booktrialid;
+			$trialbooked = $booktrial->save();
+		}
+		
+		$sndInstantEmailCustomer	= 	$this->customermailer->manual2ndBookTrial($booktrialdata);
+		$sndInstantSmsCustomer		=	$this->customersms->manual2ndBookTrial($booktrialdata);
+		$resp 						= 	array('status' => 200,'message' => "Second Book a Trial");
+		return Response::json($resp);          
+
 	}
 
 
