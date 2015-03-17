@@ -116,6 +116,12 @@ class WriteFile {
 
 }
 
+Route::get('sendemailtofinder', function() { 
+	
+	return $data = Booktrial::get()->groupBy('finder_id')->toArray();
+});
+
+
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
 
