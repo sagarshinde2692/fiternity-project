@@ -188,7 +188,6 @@ class SchedulebooktrialsController extends \BaseController {
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 
 
-
 			$booktrialdata = array(
 				'customer_id' 					=>		$customer_id, 
 				'customer_name' 				=>		$customer_name, 
@@ -271,47 +270,54 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 
-	public function sendSMS($smsdata){
-
-		$to = $smsdata['send_to'];
-		$message = $smsdata['message_body'];
-		$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $live_url);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec($ch);
-		curl_close($ch);
-	}
-
-	public function sendEmail($emaildata){
-
-
-		$email_template 		= 	$emaildata['email_template'];
-		$email_template_data 	= 	$emaildata['email_template_data'];
-		$reciver_name 			= 	(isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : 'Team Fitternity';
-		$to 					= 	$emaildata['to'];
-		$bcc_emailids 			= 	$emaildata['bcc_emailds'];
-		$email_subject 			= 	ucfirst($emaildata['email_subject']);		
-		$send_bcc_status 		= 	$emaildata['send_bcc_status'];
-		
-		if($send_bcc_status == 1){
-			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
-				$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
-			});			
-		}else{
-			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
-				$message->to($to, $reciver_name)->subject($email_subject);
-			});			
-		}
-	}
-
 	/**
 	 * Booked Manual Book A Trial.
 	 *
 	 */
 
 	public function manualBookTrial() {
+
+
+		// print_r(Input::json()->all());
+		if(Input::json()->get('customer_id') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_id");
+		}
+
+		if(Input::json()->get('customer_name') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_name");
+		}
+
+		if(Input::json()->get('customer_email') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_email");
+		}
+
+		if(Input::json()->get('customer_phone') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_phone");
+		}
+
+		if(Input::json()->get('finder_id') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_id");
+		}
+
+		if(Input::json()->get('finder_name') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_name");
+		}
+
+		if(Input::json()->get('city_id') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - city_id");
+		}
+
+		if(Input::json()->get('preferred_location') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_location");
+		}
+
+		if(Input::json()->get('preferred_day') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_day");
+		}
+
+		if(Input::json()->get('preferred_time') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_time");
+		}
 
 		// return $data	= Input::json()->all();
 		$booktrialid 				=	Booktrial::max('_id') + 1;
@@ -363,6 +369,46 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 	public function manual2ndBookTrial() {
+
+		if(Input::json()->get('customer_id') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_id");
+		}
+
+		if(Input::json()->get('customer_name') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_name");
+		}
+
+		if(Input::json()->get('customer_email') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_email");
+		}
+
+		if(Input::json()->get('customer_phone') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_phone");
+		}
+
+		if(Input::json()->get('finder_ids') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_ids");
+		}
+
+		if(Input::json()->get('finder_names') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_names");
+		}
+
+		if(Input::json()->get('city_id') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - city_id");
+		}
+
+		if(Input::json()->get('preferred_location') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_location");
+		}
+
+		if(Input::json()->get('preferred_day') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_day");
+		}
+
+		if(Input::json()->get('preferred_time') == ''){
+			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_time");
+		}
 
 		// return $data	= Input::json()->all();
 		$finder_ids 				= 	Input::json()->get('finder_ids');
