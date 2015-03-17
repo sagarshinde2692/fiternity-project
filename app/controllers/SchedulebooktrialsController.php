@@ -97,35 +97,35 @@ class SchedulebooktrialsController extends \BaseController {
 
 		// print_r(Input::json()->all());
 		if(Input::json()->get('customer_id') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_id");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
 		}
 
 		if(Input::json()->get('customer_name') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_name");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
 		}
 
 		if(Input::json()->get('customer_email') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_email");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
 		if(Input::json()->get('customer_phone') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_phone");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
 
 		if(Input::json()->get('finder_id') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_id");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
 		}
 
 		if(Input::json()->get('service_name') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - service_name");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
 		}
 
 		if(Input::json()->get('schedule_date') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - schedule_date");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - schedule_date");
 		}
 
 		if(Input::json()->get('schedule_slot') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - schedule_slot");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - schedule_slot");
 		}
 
 		try {
@@ -278,46 +278,46 @@ class SchedulebooktrialsController extends \BaseController {
 	public function manualBookTrial() {
 
 
-		// print_r(Input::json()->all());
-		if(Input::json()->get('customer_id') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_id");
-		}
+		// // print_r(Input::json()->all());
+		// if(empty(Input::json()->get('customer_id'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
+		// }
 
-		if(Input::json()->get('customer_name') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_name");
-		}
+		// if(empty(Input::json()->get('customer_name'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
+		// }
 
-		if(Input::json()->get('customer_email') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_email");
-		}
+		// if(empty(Input::json()->get('customer_email'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+		// }
 
-		if(Input::json()->get('customer_phone') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_phone");
-		}
+		// if(empty(Input::json()->get('customer_phone'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
+		// }
 
-		if(Input::json()->get('finder_id') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_id");
-		}
+		// if(empty(Input::json()->get('finder_id'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
+		// }
 
-		if(Input::json()->get('finder_name') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_name");
-		}
+		// if(empty(Input::json()->get('finder_name'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_name");
+		// }
 
-		if(Input::json()->get('city_id') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - city_id");
-		}
+		// if(empty(Input::json()->get('city_id'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
+		// }
 
-		if(Input::json()->get('preferred_location') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_location");
-		}
+		// if(empty(Input::json()->get('preferred_location'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_location");
+		// }
 
-		if(Input::json()->get('preferred_day') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_day");
-		}
+		// if(empty(Input::json()->get('preferred_day'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_day");
+		// }
 
-		if(Input::json()->get('preferred_time') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_time");
-		}
+		// if(empty(Input::json()->get('preferred_time'))){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_time");
+		// }
 
 		// return $data	= Input::json()->all();
 		$booktrialid 				=	Booktrial::max('_id') + 1;
@@ -370,45 +370,45 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function manual2ndBookTrial() {
 
-		if(Input::json()->get('customer_id') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_id");
-		}
+		// if(Input::json()->get('customer_id') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
+		// }
 
-		if(Input::json()->get('customer_name') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_name");
-		}
+		// if(Input::json()->get('customer_name') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
+		// }
 
-		if(Input::json()->get('customer_email') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_email");
-		}
+		// if(Input::json()->get('customer_email') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+		// }
 
-		if(Input::json()->get('customer_phone') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - customer_phone");
-		}
+		// if(Input::json()->get('customer_phone') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
+		// }
 
-		if(Input::json()->get('finder_ids') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_ids");
-		}
+		// if(Input::json()->get('finder_ids') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_ids");
+		// }
 
-		if(Input::json()->get('finder_names') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - finder_names");
-		}
+		// if(Input::json()->get('finder_names') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_names");
+		// }
 
-		if(Input::json()->get('city_id') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - city_id");
-		}
+		// if(Input::json()->get('city_id') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
+		// }
 
-		if(Input::json()->get('preferred_location') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_location");
-		}
+		// if(Input::json()->get('preferred_location') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_location");
+		// }
 
-		if(Input::json()->get('preferred_day') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_day");
-		}
+		// if(Input::json()->get('preferred_day') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_day");
+		// }
 
-		if(Input::json()->get('preferred_time') == ''){
-			return $resp 	= 	array('status' => 500,'missing' => "Data Missing - preferred_time");
-		}
+		// if(Input::json()->get('preferred_time') == ''){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_time");
+		// }
 
 		// return $data	= Input::json()->all();
 		$finder_ids 				= 	Input::json()->get('finder_ids');
