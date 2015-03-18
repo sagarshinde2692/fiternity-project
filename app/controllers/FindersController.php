@@ -184,8 +184,20 @@ class FindersController extends \BaseController {
 		foreach ($finders as $finderid => $trials) {
 			$finder = 	Finder::where('_id','=',intval($finderid))->first();
 			if($finder->finder_vcc_email != ""){
-				echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
+				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
 				// echo "<pre>";print_r($trials);
+
+				$scheduledata = array();
+				foreach ($trials as $key => $value) {
+					$trial = array('customer_name' => $value->customer_name, 
+									'schedule_date' => $value->schedule_date, 
+									'schedule_slot' => $value->schedule_slot, 
+									'code' => $value->code, 
+									'service_name' => $value->service_name,
+									'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
+									);
+					array_push($scheduledata, $trial);
+				}
 				$scheduledata = array('user_name'					=> 'sanjay sahu',
 									'user_email'					=> 'sanjay.id7@gmail',
 									'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,

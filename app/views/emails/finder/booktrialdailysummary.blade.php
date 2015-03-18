@@ -19,12 +19,12 @@
 
             @foreach($scheduletrials as $key => $value)
             <tr>
-                <td>{{ ucwords($value->customer_name) }} </td>
-                <td>{{ $value->schedule_date }} </td>
-                <td>{{ $value->schedule_slot }} </td>
-                <td>{{ $value->code }}</td>
-                <td>{{ ucwords($value->service_name) }}</td>
-                <td>{{ ucwords($value->finder_poc_for_customer_name) }}</td>
+                <td>{{ ucwords($value['customer_name']) }} </td>
+                <td>{{ $value['schedule_date'] }} </td>
+                <td>{{ $value['schedule_slot'] }} </td>
+                <td>{{ $value['code'] }}</td>
+                <td>{{ ucwords($value['service_name']) }}</td>
+                <td>{{ ucwords($value['finder_poc_for_customer_name']) }}</td>
             </tr>
             @endforeach
         </table> 
