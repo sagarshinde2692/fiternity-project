@@ -351,6 +351,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'preferred_day'			=>		$preferred_day,
 			'preferred_time'		=>		$preferred_time,
 			'device_id'				=>		$device_id,
+			'going_status'			=>		0,
 			'booktrial_type'		=>		'manual'
 			);
 
@@ -441,6 +442,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'preferred_day'			=>		$preferred_day,
 				'preferred_time'		=>		$preferred_time,
 				'device_id'				=>		$device_id,
+				'going_status'			=>		0,
 				'booktrial_type'		=>		'2ndmanual'
 				);
 

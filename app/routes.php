@@ -48,9 +48,9 @@ Route::get('/testemail', function() {
 		);
 
 	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
-					$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-							->bcc($email_message_data['bcc_emailids'])
-							->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+		->bcc($email_message_data['bcc_emailids'])
+		->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 	return "email send succuess";
@@ -117,8 +117,21 @@ class WriteFile {
 }
 
 Route::get('sendemailtofinder', function() { 
-	
-	return $data = Booktrial::get()->groupBy('finder_id')->toArray();
+
+	// return $currentDateTime = new DateTime('16-03-2015');
+	// echo $currentDateTime 		=	Carbon::now()->addDays(1);
+
+	// echo new DateTime('+1 day');
+
+	$tommorowDateTime = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
+	$finders = Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
+
+	foreach ($finders as $finderid => $trials) {
+		echo "<br><br> finderid  ---- ".$finderid;
+		// $findertirals  = $trials->toArray();
+		print_r($trials);
+		echo "<br><br>************************";
+	}
 });
 
 
@@ -154,6 +167,8 @@ Route::post('updatefinderrating/', array('as' => 'finders.updatefinderrating','u
 Route::get('getfinderleftside/', array('as' => 'finders.getfinderleftside','uses' => 'FindersController@getfinderleftside'));
 //Route::get('getallfinders/', array('as' => 'finders.getallfinders','uses' => 'FindersController@getallfinders'));
 Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton','uses' => 'FindersController@updatefinderlocaiton'));
+
+Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################

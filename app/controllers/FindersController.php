@@ -7,6 +7,7 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+use App\Mailers\FinderMailer as FinderMailer;
 
 class FindersController extends \BaseController {
 
@@ -19,13 +20,16 @@ class FindersController extends \BaseController {
 	protected $elasticsearch_url            =   "";
 	protected $elasticsearch_default_url    =   "";
 
-	public function __construct() {
+	protected $findermailer;
+
+	public function __construct(FinderMailer $findermailer) {
 		parent::__construct();	
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
+		$this->findermailer						=	$findermailer;
 	}
 
 	public function finderdetail($slug){
@@ -170,6 +174,31 @@ class FindersController extends \BaseController {
 
 	public function getScheduleBookTrial($finderid,$date = null){
 		return "retrun ScheduleBookTrial for finder";
+	}
+
+	public function sendbooktrialdaliysummary(){
+
+		$tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
+		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
+
+		foreach ($finders as $finderid => $trials) {
+			$finder = 	Finder::where('_id','=',intval($finderid))->first();
+			if($finder->finder_vcc_email != ""){
+				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
+				// echo "<pre>";print_r($trials);
+				$scheduledata = array('user_name'					=> 'sanjay sahu',
+									'user_email'					=> 'sanjay.id7@gmail',
+									'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
+									'finder_vcc_email'				=> $finder->finder_vcc_email,	
+									'scheduletrials' 				=> $trials
+								);
+				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
+			}	  
+		}
+
+		$resp 	= 	array('status' => 200,'message' => "Email Send");
+		return Response::json($resp);	
+
 	}
 
 
