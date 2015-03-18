@@ -192,7 +192,7 @@ class FindersController extends \BaseController {
 									'finder_vcc_email'				=> $finder->finder_vcc_email,	
 									'scheduletrials' 				=> $trials
 								);
-				//$this->findermailer->sendBookTrialDaliySummary($scheduledata);
+				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}
 
