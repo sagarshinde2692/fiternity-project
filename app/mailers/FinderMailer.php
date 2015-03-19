@@ -24,7 +24,7 @@ Class FinderMailer extends Mailer {
 			'user_email' => Config::get('mail.to_mailus'),
 			'user_name' =>  $data['finder_poc_for_customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Request For Book a Trial'
+			'email_subject' => 'Session request from customer '.ucwords($data['customer_name']).' has been confirmed | Fitternity'
 			);
 
 		return $this->sendTo($email_template, $template_data, $message_data);
@@ -66,19 +66,6 @@ Class FinderMailer extends Mailer {
 
 
 	public function cancelBookTrial(){
-
-	}
-
-	public function updateBookTrial(){
-
-	}
-
-
-	public function requestForCallback(){
-
-	}
-
-	public function buyMembership($email_template, $template_data = [], $message_data = [] ){
 
 	}
 

@@ -198,7 +198,7 @@ class FindersController extends \BaseController {
 						);
 					array_push($scheduledata, $trial);
 				}
-				$scheduledata = array('user_name'					=> 'sanjay sahu',
+				$scheduledata = array('user_name'	=> 'sanjay sahu',
 					'user_email'					=> 'sanjay.id7@gmail',
 					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
 					'finder_vcc_email'				=> $finder->finder_vcc_email,	

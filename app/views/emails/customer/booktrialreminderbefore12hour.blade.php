@@ -142,7 +142,7 @@
           <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; color:#666; text-align:left;line-height: 18px; padding:5px 5px;" st-content="fulltext-paragraph">
             <p style="padding-top:13px">Hey {{ ucwords($customer_name) }}, <br>
             <p style="padding-top:13px"> This is regarding the workout session / trial booked on Fitternity for {{ ucwords($finder_name) }}@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif on 
-			{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }}</p>
+      {{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }} </p>
 
  <p style="padding-top:13px">Incase if you have queries, would like to reschedule or cancel your session - please call us on +91 92222 21131 or reply to this mail. </p>
 
@@ -218,7 +218,7 @@ We will reach out to you post your session and help you with the membership or p
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{	ucwords($customer_name)	}}</td>
+                     {{ ucwords($customer_name) }}</td>
                       </tr>
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -305,7 +305,7 @@ We will reach out to you post your session and help you with the membership or p
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{	ucwords($service_name)	}}</td>
+                     {{ ucwords($service_name)  }}</td>
                       </tr> 
                        <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -329,7 +329,7 @@ We will reach out to you post your session and help you with the membership or p
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{	ucwords($code)	}} (please flash this code at the service provider location)
+                     {{ $code }} (please flash this code at the service provider location)
 </td>
                       </tr>
                   
@@ -493,8 +493,13 @@ We will reach out to you post your session and help you with the membership or p
 <tr>
   <td width="100%" height="20"></td>
 </tr>
-<!-- end of spacing -->
+ <tr>
+                      <td bgcolor="#FFFFFF" height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
+                      Regards<br />
+TEAM FITTERNITY
 
+                       </td>
+                      </tr>
 
 </tbody>
 </table>

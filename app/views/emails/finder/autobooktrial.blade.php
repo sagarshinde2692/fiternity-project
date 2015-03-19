@@ -140,10 +140,10 @@
           
         <tr>
           <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-            <p style="padding-top:10px">Hi {{ ucwords($finder_poc_for_customer_name) }}, 
+            <p style="padding-top:10px">Hi, 
             <p style="padding-top:10px"> Greetings from Fitternity.com
 
-We have received a booking for workout session / trial for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif     
+We have received a booking for workout session / trial for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif .     
               <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
               
           </td>

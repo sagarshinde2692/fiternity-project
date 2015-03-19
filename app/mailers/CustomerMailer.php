@@ -20,7 +20,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Request For Book a Trial'
+			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
 			);
 
 		return $this->sendTo($email_template, $template_data, $message_data);
@@ -67,7 +67,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Reminder For Book a Trial'
+			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity.com'
 			);
 		return $this->sendTo($email_template, $template_data, $message_data, $delay);
 	}
@@ -83,7 +83,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Post Trial '
+			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity.com'
 			);
 		return $this->sendTo($email_template, $template_data, $message_data, $delay);
 	}
@@ -126,20 +126,6 @@ Class CustomerMailer extends Mailer {
 	public function cancelBookTrial(){
 
 	}
-
-	public function updateBookTrial(){
-
-	}
-
-
-	public function requestForCallback(){
-
-	}
-
-	public function buyMembership($email_template, $template_data = [], $message_data = [] ){
-
-	}
-
 
 
 
