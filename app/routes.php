@@ -148,6 +148,17 @@ Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 Route::get('/yfc_finders', 'HomeController@yfc_finders');
 
 
+
+
+##############################################################################
+/******************** CUSTOMERS SECTION START HERE ***********************/
+Route::get('/autobooktrials/{customerid}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
+
+
+/******************** CUSTOMERS SECTION END HERE ********************/
+##############################################################################
+
+
 ##############################################################################
 /******************** USERS SECTION START HERE ***********************/
 Route::get('/experts', 'UsersController@getExperts');
