@@ -135,6 +135,10 @@ Route::get('sendemailtofinder', function() {
 });
 
 
+
+Route::get('migrateratecards/', array('as' => 'finders.migrateratecards','uses' => 'FindersController@migrateratecards'));
+
+
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
 
@@ -146,7 +150,6 @@ Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 Route::get('/yfc_finders', 'HomeController@yfc_finders');
-
 
 
 
