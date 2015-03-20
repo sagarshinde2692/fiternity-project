@@ -96,8 +96,8 @@ Class CustomerMailer extends Mailer {
 		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
 
 		$message_data 	= array(
-			//'user_email' => Config::get('mail.to_neha'),
-			'user_email' => 'ut.mehrotra@gmail.com',
+			'user_email' => Config::get('mail.to_neha'),
+			// 'user_email' => 'ut.mehrotra@gmail.com',
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Request For Manual Book a Trial'
@@ -114,8 +114,8 @@ Class CustomerMailer extends Mailer {
 		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
 
 		$message_data 	= array(
-			// 'user_email' => Config::get('mail.to_neha'),
-			'user_email' => 'ut.mehrotra@gmail.com',
+			'user_email' => Config::get('mail.to_neha'),
+			// 'user_email' => 'ut.mehrotra@gmail.com',
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Request For Manual Second Book a Trial'

@@ -117,7 +117,7 @@ Class CustomerSms extends VersionNextSms{
 	public function manualBookTrial ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to manual book a trial at ".ucwords($data['finder_name']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
+		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to book a trial at ".ucwords($data['finder_name']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
 
 		return $this->sendTo($to, $message);
 	}
@@ -126,7 +126,7 @@ Class CustomerSms extends VersionNextSms{
 	public function manual2ndBookTrial ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to manual book a trial at ".ucwords($data['finder_names']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
+		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to book a trial at ".ucwords($data['finder_names']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
 
 		return $this->sendTo($to, $message);
 	}
