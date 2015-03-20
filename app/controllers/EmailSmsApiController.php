@@ -72,6 +72,14 @@ class EmailSmsApiController extends \BaseController {
 	public function RequestCallback() {
 		date_default_timezone_set("Asia/Kolkata");
 
+		$vendor = Input::json()->get('vendor');
+
+		if($vendor != ''){
+			$subject = 'Request A Callback '.$vendor;
+		}else{
+			$subject = 'Request A Callback'.;
+		}
+
 		$data = array(
 				'vendor' => Input::json()->get('vendor'), 
 				'name' => Input::json()->get('name'), 
@@ -85,7 +93,7 @@ class EmailSmsApiController extends \BaseController {
 			'email_template_data' => $data, 
 			'to'				=> 	Config::get('mail.to_neha'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
-			'email_subject' 	=> 'Request A Callback',
+			'email_subject' 	=> $subject,
 			'send_bcc_status' 	=> 1
 			);
 
