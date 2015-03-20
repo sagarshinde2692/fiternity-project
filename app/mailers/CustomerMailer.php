@@ -67,7 +67,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity.com'
+			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity'
 			);
 		return $this->sendTo($email_template, $template_data, $message_data, $delay);
 	}
@@ -83,7 +83,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity.com'
+			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity'
 			);
 		return $this->sendTo($email_template, $template_data, $message_data, $delay);
 	}
