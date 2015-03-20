@@ -46,6 +46,13 @@ Class CustomerSms extends VersionNextSms{
 		$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_name']).", ".ucwords($data['finder_address']).", ".ucwords($data['finder_location']).". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
 		
 		// return $this->sendTo($to, $message, $delay);
+		$this->sendTo($to, $message);
+
+		//testing for bookTrialReminderAfter2Hour template
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+		$message 	=	"Hope you had a good session. We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
+		
+		//return $this->sendTo($to, $message, $delay);
 		return $this->sendTo($to, $message);
 	}
 

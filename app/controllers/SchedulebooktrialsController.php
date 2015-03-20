@@ -258,9 +258,9 @@ class SchedulebooktrialsController extends \BaseController {
 			if($twelveHourDiff >= 12){
 				//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 				$sndBefore12HourEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-				$sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				// $sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				$email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-				$sms_messageids['before12hour'] 	= 	$sndBefore12HourSmsCustomer;
+				// $sms_messageids['before12hour'] 	= 	$sndBefore12HourSmsCustomer;
 
 			}
 
