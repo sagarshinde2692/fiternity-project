@@ -60,10 +60,8 @@ Route::get('/testemail', function() {
 
 Route::get('/testpushemail', function() { 
 
-
-	$finder = Finder::with('locationtags')->where('_id','=',1)->first();
-
-	return $finder;
+	// $finder = Finder::with('locationtags')->where('_id','=',1)->first();
+	// return $finder;
 
 	$email_template = 'emails.testemail1';
 	$email_template_data = array();
@@ -74,23 +72,48 @@ Route::get('/testpushemail', function() {
 		'bcc_emailids' => array(),
 		'email_subject' => 'Testemail 4m local ' .time()
 		);
-	$delaytime = Carbon::now()->addMinutes(1);
+	$delaytime1 = Carbon::now()->addMinutes(1);
+	$delaytime2 = Carbon::now()->addMinutes(2);
 	// var_dump($delaytime);
 	// exit;
 	
-	Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+	$messageid1 =  Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+		->subject($email_message_data['email_subject'].' new send email from instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 
-	Mail::later($delaytime, $email_template, $email_template_data, function($message) use ($email_message_data){
+	$messageid2 = Mail::later(Carbon::now()->addMinutes(5), $email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' send email delay by 1 min -- '.date( "Y-m-d H:i:s", time()));
+		->subject($email_message_data['email_subject'].' new send email delay by 5 min -- '.date( "Y-m-d H:i:s", time()));
 	});
 
+	$messageid3 = Mail::later(Carbon::now()->addMinutes(10), $email_template, $email_template_data, function($message) use ($email_message_data){
+		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+		->bcc($email_message_data['bcc_emailids'])
+		->subject($email_message_data['email_subject'].' new send email delay by 10 min -- '.date( "Y-m-d H:i:s", time()));
+	});
+
+
+	echo "messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
+
+	//  echo $deleteid = Queue::deleteMessage('app',$messageid2);
+
+	// echo "<br>http://mq-aws-us-east-1.iron.io/projects/549a5af560c8e60009000030/queues/app/messages/$messageid2";
+	// $curl = curl_init();
+	// curl_setopt($curl, CURLOPT_URL, 'http://testcURL.com');
+
+	// $url =$this->__url.$path;
+	//    $ch = curl_init();
+	//    curl_setopt($ch, CURLOPT_URL,$url);
+	//    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+	//    $result = curl_exec($ch);
+	//    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	//    curl_close($ch);
+
+	// echo "deleteid - $deleteid";
 
 });
 

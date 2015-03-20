@@ -8,23 +8,27 @@ abstract Class Mailer {
 
 		if($delay == null){
 
-			Mail::queue($email_template, $template_data, function($message) use ($message_data){
+			$messageid = Mail::queue($email_template, $template_data, function($message) use ($message_data){
 
-				$message->to($message_data['user_email'], $message_data['user_name'])
-						->bcc($message_data['bcc_emailids'])
-						->subject($message_data['email_subject']);
+							$message->to($message_data['user_email'], $message_data['user_name'])
+							->bcc($message_data['bcc_emailids'])
+							->subject($message_data['email_subject']);
 
-			});
+						});
+
+			return $messageid;
 			
 		}else{
 
-			Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
+			$messageid = Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
 
 				$message->to($message_data['user_email'], $message_data['user_name'])
-						->bcc($message_data['bcc_emailids'])
-						->subject($message_data['email_subject']);
+				->bcc($message_data['bcc_emailids'])
+				->subject($message_data['email_subject']);
 
 			});
+
+			return $messageid;
 			
 		}
 
@@ -36,8 +40,8 @@ abstract Class Mailer {
 		Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
 
 			$message->to($message_data['user_email'], $message_data['user_name'])
-					->bcc($message_data['bcc_emailids'])
-					->subject($message_data['email_subject']);
+			->bcc($message_data['bcc_emailids'])
+			->subject($message_data['email_subject']);
 
 		});
 

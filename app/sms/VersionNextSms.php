@@ -10,7 +10,7 @@ abstract Class VersionNextSms {
 
 		if($delay == null){
 
-            Queue::push(function($job) use ($to, $message){ 
+            $messageid = Queue::push(function($job) use ($to, $message){ 
 
                 $job_id = $job->getJobId(); 
 
@@ -30,9 +30,11 @@ abstract Class VersionNextSms {
                 $job->delete();  
             });
 
+            return $messageid;
+
         }else{
 
-            Queue::later($delay, function($job) use ($to, $message){ 
+            $messageid = Queue::later($delay, function($job) use ($to, $message){ 
 
                 $job_id = $job->getJobId();
                 
@@ -53,6 +55,7 @@ abstract Class VersionNextSms {
                 $job->delete();  
 
             });
+            return $messageid;
         }
 
     }
