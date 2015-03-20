@@ -71,16 +71,18 @@ class EmailSmsApiController extends \BaseController {
 
 	public function RequestCallback() {
 		date_default_timezone_set("Asia/Kolkata");
-		$emaildata = array(
-			'email_template' => 'emails.callback', 
-			'email_template_data' => $data = array(
+
+		$data = array(
 				'vendor' => Input::json()->get('vendor'), 
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
 				'phone' => Input::json()->get('phone'),
 				'preferred_time' => Input::json()->get('preferred_time'),
 				'date' => date("h:i:sa")        
-				), 
+				);
+		$emaildata = array(
+			'email_template' => 'emails.callback', 
+			'email_template_data' => $data, 
 			'to'				=> 	Config::get('mail.to_neha'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
 			'email_subject' 	=> 'Request A Callback',
@@ -94,6 +96,8 @@ class EmailSmsApiController extends \BaseController {
 			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
 			);
 		$this->sendSMS($smsdata);
+
+		$storecapture = Capture::create($data);
 
 		$resp = array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
