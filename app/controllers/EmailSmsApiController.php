@@ -77,7 +77,7 @@ class EmailSmsApiController extends \BaseController {
 		if($vendor != ''){
 			$subject = 'Request A Callback '.$vendor;
 		}else{
-			$subject = 'Request A Callback'.;
+			$subject = 'Request A Callback';
 		}
 
 		$data = array(
