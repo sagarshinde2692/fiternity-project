@@ -141,7 +141,7 @@
         <tr>
           <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
             <p>Hey {{ ucwords($customer_name) }}, <br>
-            <p style="padding-top:8px"> Thank you for booking a workout session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif through Fitternity.com. Your session is CONFIRMED.   </p>  
+            <p style="padding-top:8px"> Basis our request - we have re-scheduled your session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.   </p>  
               <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
               
           </td>
@@ -203,7 +203,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($customer_name) }}</td>
+                     {{	ucwords($customer_name)	}}</td>
                       </tr>
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -290,7 +290,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($service_name)  }}</td>
+                     {{	ucwords($service_name)	}}</td>
                       </tr> 
                        <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -298,6 +298,7 @@
                      
                        </td>
                       </tr>
+                     
                      
                        <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -441,6 +442,18 @@
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                      {{ ucwords($finder_poc_for_customer_name) }}</td>
                       </tr>
+              <!-- <tr>
+                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                     <p style="font-weight:light">Directions:   
+                     
+                       </td>
+                      </tr>
+                     
+                     
+                     <tr>
+                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                     View on Google Map</td>
+                      </tr> -->
                
 
                                  <tr>
@@ -463,7 +476,7 @@
 </tr>
 <tr>
           <td bgcolor="#FFFFFF" style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-            <p>If you need to change the time or day of the session just reply to this mail or call us on +91 92222 21131.</p>
+            
 
             <p style="padding-top:8px"> We shall be sending you a reminder message to ensure you don't miss out on the workout. We hope you have a great session  </p>  
               <p style="padding-top:10px; font-size:15px;">Regards<br />

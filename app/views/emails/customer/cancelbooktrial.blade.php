@@ -140,8 +140,9 @@
           
         <tr>
           <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-            <p>Hey {{ ucwords($customer_name) }}, <br>
-            <p style="padding-top:8px"> Thank you for booking a workout session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif through Fitternity.com. Your session is CONFIRMED.   </p>  
+            <p>Hey {{  ucwords($customer_name) }}, <br>
+            <p style="padding-top:8px"> Basis our request - we have cancelled the following session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.  If you would like to book another session, {{ link_to('http://www.fitternity.com/', Click Here ) }} here or call us on +91 9222221131 for assistance:
+ </p>  
               <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
               
           </td>
@@ -203,7 +204,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($customer_name) }}</td>
+                     {{	ucwords($customer_name)	}}</td>
                       </tr>
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -290,15 +291,13 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($service_name)  }}</td>
+                     {{	ucwords($service_name)	}}</td>
                       </tr> 
-                       <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Workout type: 
-                     
-                       </td>
+                      
+                     <tr>
+                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                     Trial</td>
                       </tr>
-                     
                        <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                      <p style="font-weight:light">  Subscription Code:  
@@ -350,122 +349,12 @@
      <tr>
       <td align="center">
        <table bgcolor="#fff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-        <tr>
-                      <td height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
-                       How do I get there?
-                       </td>
-                      </tr>
-                       <tr>
-  <td style="background-color:#999" width="100%" height="5"></td>
-</tr>
-        <tbody>
-          <!-- Title -->
-          
-         
-        <tr>
-          <td>
-           <table bgcolor="#f3f3f3" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-            <tbody>
-                         <tr>
-              <td>
-               <!-- col 1 -->
-               <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                <tbody>
-                
-                <tr>
-                  <td>
-                   <!-- start of text content table -->  
-                   <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
-                    <tbody>
-                     <!-- Spacing -->
-                   <tr>
-                <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-              </tr>
-                    <!-- Spacing -->
-                    <!-- title2 -->
-                   
-                   <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">Address:   
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($finder_address) }}
-</td>
-                      </tr>
-                  
-                      
-                      <tr>
-  <td width="100%" height="10"></td>
-</tr>
-
-                                 
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-              <!-- end of text content table -->
-            </tbody>
-          </table>
-          <!-- spacing -->
-          
-        <!-- end of spacing -->
-        <!-- col 2 -->
-        <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-          <tbody>
-           <!-- image 2 -->
-           
-          <!-- end of image2 -->
-          <tr>
-            <td>
-             <!-- start of text content table -->  
-             <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
-              <tbody>
-               <!-- Spacing -->
-               <tr>
-                <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-              </tr>
-            <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">Contact Person :    
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($finder_poc_for_customer_name) }}</td>
-                      </tr>
-               
-
-                                 <tr>
-  <td width="100%" height="20"></td>
-</tr>
-              </tbody>
-            </table>
-          </td>
-        </tr>
-        <!-- end of text content table -->
-      </tbody>
-    </table>
-    <!-- end of col 2 -->
-    <!-- spacing --><!-- end of spacing -->
-  <!-- col 3 -->
-  
-
-<tr>
-  <td width="100%" height="20"></td>
-</tr>
+        
 <tr>
           <td bgcolor="#FFFFFF" style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-            <p>If you need to change the time or day of the session just reply to this mail or call us on +91 92222 21131.</p>
+            
 
-            <p style="padding-top:8px"> We shall be sending you a reminder message to ensure you don't miss out on the workout. We hope you have a great session  </p>  
+              
               <p style="padding-top:10px; font-size:15px;">Regards<br />
 TEAM FITTERNITY
 </p>
@@ -473,7 +362,7 @@ TEAM FITTERNITY
           </td>
        </tr>
 
-</tbody>
+
 </table>
 </td>
 </tr>

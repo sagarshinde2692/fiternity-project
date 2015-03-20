@@ -250,8 +250,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
-			$sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
-			$sndBefore1MinSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndBefore1MinSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 
 			//#############  TESTING FOR 1 MIN END ##############
 
@@ -267,13 +267,17 @@ class SchedulebooktrialsController extends \BaseController {
 			if($oneHourDiff >= 1){
 				//Send Reminder Notiication (Sms) Before 1 Hour To Customer
 				$sndBefore1HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+				$sndBefore1HourSmsFinder			=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 				$sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsCustomer;
+				$sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
 			}
 
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
 			$sndAfter2HourEmailCustomer				= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+			$sndAfter2HourSmsCustomer				= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			$email_messageids['after2hour'] 		= 	$sndAfter2HourEmailCustomer;
+			$sms_messageids['after2hour'] 			= 	$sndAfter2HourSmsCustomer;
 
 
 			//update queue ids for booktiral

@@ -141,7 +141,7 @@
         <tr>
           <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; color:#666; text-align:left;line-height: 18px; padding:5px 5px;" st-content="fulltext-paragraph">
             <p style="padding-top:13px">Hey {{ ucwords($customer_name) }}, <br>
-            <p style="padding-top:13px"> This is regarding the workout session / trial booked on Fitternity for {{ ucwords($finder_name) }}@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif on 
+            <p style="padding-top:13px"> This is regarding the workout session booked on Fitternity for {{ ucwords($finder_name) }}@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif on 
       {{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }} </p>
 
  <p style="padding-top:13px">Incase if you have queries, would like to reschedule or cancel your session - please call us on +91 92222 21131 or reply to this mail. </p>
@@ -297,7 +297,7 @@ We will reach out to you post your session and help you with the membership or p
               <!-- title2 -->
                <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Workout form (if any): 
+                     <p style="font-weight:light">  Workout form : 
                      
                        </td>
                       </tr>
@@ -314,11 +314,6 @@ We will reach out to you post your session and help you with the membership or p
                        </td>
                       </tr>
                      
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     Trial</td>
-                      </tr>
                        <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                      <p style="font-weight:light">  Subscription Code:  

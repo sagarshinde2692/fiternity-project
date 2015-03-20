@@ -143,7 +143,7 @@
             <p style="padding-top:10px">Hi, 
             <p style="padding-top:10px"> Greetings from Fitternity.com
 
-We have received a booking for workout session / trial for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif .     
+We have received a booking for workout session for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif .     
               <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
               
           </td>
@@ -282,7 +282,7 @@ We have received a booking for workout session / trial for {{ ucwords($finder_na
               <!-- title2 -->
                <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Workout form (if any): 
+                     <p style="font-weight:light">  Workout form : 
                      
                        </td>
                       </tr>
@@ -292,25 +292,13 @@ We have received a booking for workout session / trial for {{ ucwords($finder_na
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                      {{ ucwords($service_name)  }}</td>
                       </tr> 
-                       <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Workout type: 
                      
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     Trial</td>
-                      </tr>
                        <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                      <p style="font-weight:light">  Subscription Code:  
                      
                        </td>
                       </tr>
-                     
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
