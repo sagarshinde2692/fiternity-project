@@ -38,7 +38,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Reminder Book a Trial'
+			'email_subject' => 'bookTrialReminderBefore12Hour Reminder Book a Trial'
 			);
 		// return $this->sendTo($email_template, $template_data, $message_data, $delay);
 		$this->sendTo($email_template, $template_data, $message_data);
@@ -51,7 +51,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Post Reminder Book a Trial'
+			'email_subject' => 'bookTrialReminderAfter2Hour Reminder Book a Trial'
 			);
 		return $this->sendTo($email_template, $template_data, $message_data);
 	}
