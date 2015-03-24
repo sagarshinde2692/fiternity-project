@@ -130,6 +130,7 @@ return array(
 		'Indatus\Dispatcher\ServiceProvider',
 		'Aloha\Twilio\TwilioServiceProvider',
 		'Hernandev\HipchatLaravel\HipchatLaravelServiceProvider',
+		'Aws\Laravel\AwsServiceProvider',
 	),
 
 	/*
@@ -202,6 +203,7 @@ return array(
 		'PushNotification' 	=> 'Davibennun\LaravelPushNotification\Facades\PushNotification',
 		'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
+		'AWS' 				=> 'Aws\Laravel\AwsFacade',
 
 	),
 
