@@ -129,6 +129,7 @@ return array(
 		'Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider',
 		'Indatus\Dispatcher\ServiceProvider',
 		'Aloha\Twilio\TwilioServiceProvider',
+		'Hernandev\HipchatLaravel\HipchatLaravelServiceProvider',
 	),
 
 	/*
@@ -200,6 +201,7 @@ return array(
 		'MailchimpWrapper'  => 'Hugofirth\Mailchimp\Facades\MailchimpWrapper',
 		'PushNotification' 	=> 'Davibennun\LaravelPushNotification\Facades\PushNotification',
 		'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
+		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 
 	),
 

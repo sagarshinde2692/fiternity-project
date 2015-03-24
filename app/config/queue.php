@@ -15,7 +15,8 @@ return array(
 	|
 	*/
 
-	'default' => 'iron',
+	//'default' => 'iron',
+	'default' => 'sqs',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -43,10 +44,10 @@ return array(
 
 		'sqs' => array(
 			'driver' => 'sqs',
-			'key'    => 'your-public-key',
-			'secret' => 'your-secret-key',
-			'queue'  => 'your-queue-url',
-			'region' => 'us-east-1',
+			'key'    => 'AKIAIPJP4UXP4VLZCP2Q',
+			'secret' => 'sycPW2SZeao7IBCfWljFjKV6jGs/Aa68jaeRVwtd',
+			'queue'  => 'https://sqs.ap-southeast-1.amazonaws.com/246537648714/FitQ',
+			'region' => 'ap-southeast-1',
 		),
 
 		'iron' => array(

@@ -69,7 +69,7 @@ Route::get('/testpushemail', function() {
 		'string' => 'Hello World from array with time -- '.time(),
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
-		'bcc_emailids' => array(),
+		'bcc_emailids' => array('chaithanyapadi@fitternity.com'),
 		'email_subject' => 'Testemail 4m local ' .time()
 		);
 	$delaytime1 = Carbon::now()->addMinutes(1);
@@ -84,29 +84,24 @@ Route::get('/testpushemail', function() {
 	});
 
 
-	$messageid2 = Mail::later(Carbon::now()->addMinutes(1), $email_template, $email_template_data, function($message) use ($email_message_data){
+	$messageid2 = Mail::later(Carbon::now()->addMinutes(5), $email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' new send email delay by 1 min -- '.date( "Y-m-d H:i:s", time()));
+		->subject($email_message_data['email_subject'].' new send email delay by 5 min -- '.date( "Y-m-d H:i:s", time()));
 	});
 
-	$messageid3 = Mail::later(Carbon::now()->addMinutes(2), $email_template, $email_template_data, function($message) use ($email_message_data){
+	$messageid3 = Mail::later(Carbon::now()->addMinutes(10), $email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' new send email delay by 2 min -- '.date( "Y-m-d H:i:s", time()));
+		->subject($email_message_data['email_subject'].' new send email delay by 10 min -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 	Queue::pop($messageid2);
-	echo date('h:i:s') . "<br>";
 	echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
-
 	// sleep(60 * 5);
-
-
-	echo date('h:i:s') . "<br>";
 	echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
 
-	// echo $deleteid = Queue::deleteMessage('app',$messageid2);
+	echo $deleteid = Queue::deleteMessage('app',$messageid2);
 
 	// echo "<br>http://mq-aws-us-east-1.iron.io/projects/549a5af560c8e60009000030/queues/app/messages/$messageid2";
 	// $curl = curl_init();
