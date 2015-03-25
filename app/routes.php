@@ -74,7 +74,7 @@ Route::get('/testpushemail', function() {
 		'reciver_name' => 'sanjay sahu',
 		'bcc_emailids' => array('chaithanyapadi@fitternity.com'),
 		'bcc_emailids' => array(),
-		'email_subject' => 'Testemail 4m local ' .time()
+		'email_subject' => 'Testemail using loop ' .time()
 		);
 	// var_dump($delaytime);
 	// exit;
@@ -83,7 +83,7 @@ Route::get('/testpushemail', function() {
 		$id =  Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 			$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 			->bcc($email_message_data['bcc_emailids'])
-			->subject($email_message_data['email_subject'].' from instant -- '.date( "Y-m-d H:i:s", time()));
+			->subject($email_message_data['email_subject'].' $i from instant -- '.date( "Y-m-d H:i:s", time()));
 		});
 
 		echo "<br> $i ------   id -- $id <br>";
