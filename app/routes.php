@@ -71,7 +71,7 @@ class WriteClass {
 			->bcc($email_message_data['bcc_emailids'])
 			->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
 		});
-		// $job->delete();  
+		$job->delete();  
 	return $job_id;	
 	}
 
