@@ -56,7 +56,7 @@ return array(
 			'token'   => 'tsFrArQmL8VS8Cx-5PDg3gij19Y',
 			'project' => '549a5af560c8e60009000030',
 			'queue'   => 'app',
-			'encrypt' => true,
+			'encrypt' => false,
 		),
 
 		'redis' => array(
