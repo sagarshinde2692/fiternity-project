@@ -37,10 +37,13 @@ Route::get('/testtwilio', function() {
 
 Route::get('/testemail', function() { 
 
-
 	// return "email send succuess";
-	Queue::push('WriteClass', array( 'string' => 'new testpushqueue instantlysdkhakdh -- '.time()),'abc');
+	$m1 = Queue::push('WriteClass', array( 'string' => 'new testpushqueue instantlysdkhakdh -- '.time()),'abc');
 
+	$m2 = Queue::later(Carbon::now()->addMinutes(3),'WriteClass', array( 'string' => 'new testpushqueue delay by 3 min time -- '.time()),'abc');
+	$m3 = Queue::later(Carbon::now()->addMinutes(5),'WriteClass', array( 'string' => 'new testpushqueue delay by 5 min time -- '.time()),'abc');
+
+	echo "$m1 -- $m2 -- $m3";
 });
 
 
@@ -60,7 +63,7 @@ class WriteClass {
 			'to' => 'sanjay.id7@gmail.com',
 			'reciver_name' => 'sanjay sahu',
 			'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-			'email_subject' => 'Testemail with queue using ngrok from local ' .time()
+			'email_subject' => $data['string'].' -- Testemail with queue using ngrok from local ' .time()
 			);
 
 		Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
@@ -73,18 +76,6 @@ class WriteClass {
 	}
 
 }
-
-
-
-
-
-
-
-
-
-// 
-
-
 
 
 
