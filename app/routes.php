@@ -44,6 +44,7 @@ Route::get('/testemail', function() {
 	$m3 = Queue::later(Carbon::now()->addMinutes(5),'WriteClass', array( 'string' => 'new testpushqueue delay by 5 min time -- '.time()),'abc');
 
 	echo "$m1 -- $m2 -- $m3";
+	$deleteid = Queue::deleteMessage('abc',$m2);
 });
 
 
