@@ -37,24 +37,9 @@ Route::get('/testtwilio', function() {
 
 Route::get('/testemail', function() { 
 
-	// $email_template = 'emails.test';
-	// $email_template_data = array();
-	// $email_message_data = array(
-	// 	'string' => 'Hello World from array with time -- '.time(),
-	// 	'to' => 'sanjay.id7@gmail.com',
-	// 	'reciver_name' => 'sanjay sahu',
-	// 	'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-	// 	'email_subject' => 'Testemail with queue using ngrok from local ' .time()
-	// 	);
-
-	// Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
-	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 	->bcc($email_message_data['bcc_emailids'])
-	// 	->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
-	// });
 
 	// return "email send succuess";
-	Queue::push('WriteClass', array( 'string' => 'new testpushqueue instantly -- '.time()));
+	Queue::push('WriteClass', array( 'string' => 'new testpushqueue instantlysdkhakdh -- '.time()),'abc');
 
 });
 
@@ -67,10 +52,24 @@ class WriteClass {
 
 		$job_id = $job->getJobId(); 
 
-		File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); 
-		
-		$job->delete();  
-		
+		// File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); 
+		$email_template = 'emails.test';
+		$email_template_data = array();
+		$email_message_data = array(
+			'string' => 'Hello World from array with time -- '.time(),
+			'to' => 'sanjay.id7@gmail.com',
+			'reciver_name' => 'sanjay sahu',
+			'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
+			'email_subject' => 'Testemail with queue using ngrok from local ' .time()
+			);
+
+		Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
+			$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+			->bcc($email_message_data['bcc_emailids'])
+			->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+		});
+		// $job->delete();  
+	return $job_id;	
 	}
 
 }
