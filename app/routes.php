@@ -58,7 +58,7 @@ Route::get('/testemail', function() {
 });
 
 
-Route::get('/testpushemail', function() { 
+// Route::get('/testpushemail', function() { 
 
 	// $finder = Finder::with('locationtags')->where('_id','=',1)->first();
 	// return $finder;
@@ -70,38 +70,55 @@ Route::get('/testpushemail', function() {
 		'to' => 'sanjay.id7@gmail.com',
 		'reciver_name' => 'sanjay sahu',
 		'bcc_emailids' => array('chaithanyapadi@fitternity.com'),
-		'email_subject' => 'Testemail 4m local ' .time()
+		'bcc_emailids' => array(),
+		'email_subject' => 'Testemail 4m local using redis with deleteReserved' .time()
 		);
-	$delaytime1 = Carbon::now()->addMinutes(1);
-	$delaytime2 = Carbon::now()->addMinutes(2);
 	// var_dump($delaytime);
 	// exit;
 	
 	$messageid1 =  Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' new send email from instant -- '.date( "Y-m-d H:i:s", time()));
+		->subject($email_message_data['email_subject'].' from instant -- '.date( "Y-m-d H:i:s", time()));
 	});
 
+	// return var_dump($messageid1);
 
 	$messageid2 = Mail::later(Carbon::now()->addMinutes(5), $email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' new send email delay by 5 min -- '.date( "Y-m-d H:i:s", time()));
+		->subject($email_message_data['email_subject'].' delay by 1 min -- '.date( "Y-m-d H:i:s", time()));
 	});
 
 	$messageid3 = Mail::later(Carbon::now()->addMinutes(10), $email_template, $email_template_data, function($message) use ($email_message_data){
 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
 		->bcc($email_message_data['bcc_emailids'])
-		->subject($email_message_data['email_subject'].' new send email delay by 10 min -- '.date( "Y-m-d H:i:s", time()));
+		->subject($email_message_data['email_subject'].' delay by 2 min -- '.date( "Y-m-d H:i:s", time()));
 	});
 
-	Queue::pop($messageid2);
 	echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
-	// sleep(60 * 5);
-	echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
+	// // sleep(60 * 5);
+	// echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
+	// echo $deleteid = Queue::deleteMessage('app',$messageid2);
 
-	echo $deleteid = Queue::deleteMessage('app',$messageid2);
+	// echo $deleteid = Queue::deleteReserved('default',$messageid1);
+
+	
+
+	// $sqs = App::make('aws')->get('sqs');
+	// try {
+	// 	$parm =		array(
+	// 	    // QueueUrl is required
+	// 		'QueueUrl' => 'https://sqs.ap-southeast-1.amazonaws.com/246537648714/FitQ'.$messageid2,
+	// 	    // ReceiptHandle is required
+	// 		'ReceiptHandle' => $messageid2,
+	// 		);
+	// 	$response = $sqs->deleteMessage($parm);
+	// 	echo "The message was deleted successfully.";
+	// } catch(Exception $e){
+	// 	echo "The message could not be deleted. The error message from Amazon is:";
+	// 	echo "<br/><br/><i>".$e->getMessage()."</i>";
+	// }
 
 	// echo "<br>http://mq-aws-us-east-1.iron.io/projects/549a5af560c8e60009000030/queues/app/messages/$messageid2";
 	// $curl = curl_init();
@@ -117,6 +134,14 @@ Route::get('/testpushemail', function() {
 
 	// echo "deleteid - $deleteid";
 
+});
+
+
+Route::get('/testhipchat', function() { 
+	HipChat::setRoom('Teamfitternity');
+	HipChat::sendMessage('My Message to room Teamfitternity', 'green');
+	// HipChat::sendMessage('My Message', 'red', true);
+	return "successfully test hipchat ....";
 });
 
 Route::get('/testpushqueue', function() { 

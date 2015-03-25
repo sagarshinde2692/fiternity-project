@@ -9,7 +9,7 @@ return array(
     | Required API Token from HipChat
     |
     */
-    'api_token' => 'insert_your_api_token',
+    'api_token' => '48c7abb3094da0820bf5c53c41dc8a',
 
 
     /*
@@ -20,7 +20,7 @@ return array(
     | Choose a name you want to be displayed on HipChat
     |
     */
-    'app_name' => 'Your App Name',
+    'app_name' => 'Fitternity',
 
 
     /*
