@@ -27,9 +27,10 @@ abstract Class Mailer {
 
 			$messageid = Queue::push(function($job) use ($email_template, $template_data, $message_data, $delay){ 
 
-				$job_id = $job->getJobId(); 
-
-				Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
+				$job_id 	= 	$job->getJobId(); 
+				$seconds 	= 	$this->getSeconds($delay);
+				
+				Mail::later($seconds, $email_template, $template_data, function($message) use ($message_data){
 					$message->to($message_data['user_email'], $message_data['user_name'])
 					->bcc($message_data['bcc_emailids'])
 					->subject($message_data['email_subject']);
@@ -47,8 +48,6 @@ abstract Class Mailer {
 
 
 	/*
-
-
 	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
 
 		if($delay == null){
@@ -81,18 +80,6 @@ abstract Class Mailer {
 
 	*/
 
-	public function sendToWithDelay($delay, $email_template, $template_data = [], $message_data = [] ){
-
-		//$delayInSeconds =  $this->getSeconds($delay);
-		Mail::later($delay, $email_template, $template_data, function($message) use ($message_data){
-
-			$message->to($message_data['user_email'], $message_data['user_name'])
-			->bcc($message_data['bcc_emailids'])
-			->subject($message_data['email_subject']);
-
-		});
-
-	}
 
 	/**
 	 * Calculate the number of seconds with the given delay.

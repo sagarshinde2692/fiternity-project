@@ -238,7 +238,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  = $customer_sms_messageids  = $finer_sms_messageids  = array();
 
 			//Send Instant (Email) To Customer & Finder
-			return $sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
+			$sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
 			// $sndInstantSmsCustomer			=	$this->customersms->bookTrial($booktrialdata);
 
 			// $sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
@@ -259,6 +259,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			// if($twelveHourDiff >= 12){
+				var_dump($delayReminderTimeBefore12Hour);
+				return $sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata);
 				return $sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 				// $sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
