@@ -12,7 +12,7 @@ Class CustomerMailer extends Mailer {
 	public function bookTrial ($data){
 
 		// $email_template = 'emails.test';
-		$email_template = 	'emails.customer.autobooktrial';
+		$email_template = 	'emails.customer.booktrialreminderbefore12hour';
 		$template_data 	= 	$data;
 		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
 
