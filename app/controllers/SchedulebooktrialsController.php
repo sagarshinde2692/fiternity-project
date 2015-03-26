@@ -262,7 +262,6 @@ class SchedulebooktrialsController extends \BaseController {
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 				// $sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				// $sms_messageids['before12hour'] 	= 	$sndBefore12HourSmsCustomer;
-
 			}
 
 			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
@@ -272,7 +271,6 @@ class SchedulebooktrialsController extends \BaseController {
 				$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
 				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
 			}
-
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
 			$sndAfter2HourEmailCustomer					= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
