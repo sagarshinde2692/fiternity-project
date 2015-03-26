@@ -36,13 +36,10 @@ Route::get('/testtwilio', function() {
 
 
 Route::get('/testemail', function() { 
-
 	// return "email send succuess";
 	$m1 = Queue::push('WriteClass', array( 'string' => 'new delete function form local -- '.time()),'pullapp');
-
 	$m2 = Queue::later(Carbon::now()->addMinutes(3),'WriteClass', array( 'string' => 'new delete function 3 min time -- '.time()),'pullapp');
 	$m3 = Queue::later(Carbon::now()->addMinutes(5),'WriteClass', array( 'string' => 'new delete function 5 min time -- '.time()),'pullapp');
-
 	echo "$m1 -- $m2 -- $m3";
 	// 	$url ='https://mq-aws-us-east-1.iron.io/1/projects/549a5af560c8e60009000030/queues/pullapp/messages/'.$m2.'?oauth=tsFrArQmL8VS8Cx-5PDg3gij19Y';
 	//    $ch = curl_init();
@@ -51,12 +48,8 @@ Route::get('/testemail', function() {
 	//    $result = curl_exec($ch);
 	//    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	//    curl_close($ch);
-
 	$deleteid = Queue::deleteMessage('pullapp',$m2);
 });
-
-
-// 
 
 class WriteClass {
 
@@ -88,15 +81,7 @@ class WriteClass {
 
 
 
-
-
 Route::get('/testpushemail', function() { 
-
-	// $var = Queue::getIron();
-	// return echo "<pre>";print_r($var);
-
-	// $finder = Finder::with('locationtags')->where('_id','=',1)->first();
-	// return $finder;
 
 	$email_template = 'emails.testemail1';
 	$email_template_data = array();
@@ -108,18 +93,6 @@ Route::get('/testpushemail', function() {
 		'bcc_emailids' => array(),
 		'email_subject' => 'Testemail using loop ' .time()
 		);
-	// var_dump($delaytime);
-	// exit;
-	
-	for ($i=0; $i < 100; $i++) { 
-		$id =  Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
-			$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-			->bcc($email_message_data['bcc_emailids'])
-			->subject($email_message_data['email_subject'].' $i from instant -- '.date( "Y-m-d H:i:s", time()));
-		});
-
-		echo "<br> $i ------   id -- $id <br>";
-	}
 
 	// $messageid1 =  Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 	// 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
@@ -140,55 +113,12 @@ Route::get('/testpushemail', function() {
 	// 	->subject($email_message_data['email_subject'].' delay by 10 min -- '.date( "Y-m-d H:i:s", time()));
 	// });
 
-	// $messageid4 = Mail::later(Carbon::now()->addMinutes(15), $email_template, $email_template_data, function($message) use ($email_message_data){
-	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 	->bcc($email_message_data['bcc_emailids'])
-	// 	->subject($email_message_data['email_subject'].' delay by 15 min -- '.date( "Y-m-d H:i:s", time()));
-	// });
-
-	// $messageid5 = Mail::later(Carbon::now()->addMinutes(25), $email_template, $email_template_data, function($message) use ($email_message_data){
-	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 	->bcc($email_message_data['bcc_emailids'])
-	// 	->subject($email_message_data['email_subject'].' delay by 25 min -- '.date( "Y-m-d H:i:s", time()));
-	// });
-
 	// echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3<br>messageid4  -- $messageid4 <br>messageid5 -- $messageid5";
 	// // sleep(60 * 5);
 	// echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
 	// echo $deleteid = Queue::deleteMessage('app',$messageid2);
 
 	// echo $deleteid = Queue::deleteReserved('default',$messageid1);
-
-	
-
-	// $sqs = App::make('aws')->get('sqs');
-	// try {
-	// 	$parm =		array(
-	// 	    // QueueUrl is required
-	// 		'QueueUrl' => 'https://sqs.ap-southeast-1.amazonaws.com/246537648714/FitQ'.$messageid2,
-	// 	    // ReceiptHandle is required
-	// 		'ReceiptHandle' => $messageid2,
-	// 		);
-	// 	$response = $sqs->deleteMessage($parm);
-	// 	echo "The message was deleted successfully.";
-	// } catch(Exception $e){
-	// 	echo "The message could not be deleted. The error message from Amazon is:";
-	// 	echo "<br/><br/><i>".$e->getMessage()."</i>";
-	// }
-
-	// echo "<br>http://mq-aws-us-east-1.iron.io/projects/549a5af560c8e60009000030/queues/app/messages/$messageid2";
-	// $curl = curl_init();
-	// curl_setopt($curl, CURLOPT_URL, 'http://testcURL.com');
-
-		// $url ='https://mq-aws-us-east-1.iron.io/1/projects/549a5af560c8e60009000030/queues/abc/messages/6130196106124097492?oath=tsFrArQmL8VS8Cx-5PDg3gij19Y';
-	 //   $ch = curl_init();
-	 //   curl_setopt($ch, CURLOPT_URL,$url);
-	 //   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-	 //   $result = curl_exec($ch);
-	 //   $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	 //   curl_close($ch);
-
-	// echo "deleteid - $deleteid";
 
 });
 

@@ -1,8 +1,52 @@
 <?PHP namespace App\Mailers;
 
-use Mail;
+use Mail, Queue;
 
 abstract Class Mailer {
+
+	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
+
+		if($delay == null){
+
+			$messageid = Queue::push(function($job) use ($email_template, $template_data, $message_data){ 
+
+				$job_id = $job->getJobId(); 
+
+				Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
+					$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+					->bcc($email_message_data['bcc_emailids'])
+					->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+				});
+
+				$job->delete();  
+			}, 'pullapp');
+
+			return $messageid;
+			
+		}else{
+
+			$messageid = Queue::push(function($job) use ($email_template, $template_data, $message_data, $delay){ 
+
+				$job_id = $job->getJobId(); 
+
+				Mail::later($delay, $email_template, $email_template_data, function($message) use ($email_message_data){
+					$message->to($email_message_data['to'], $email_message_data['reciver_name'])
+					->bcc($email_message_data['bcc_emailids'])
+					->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+				});
+
+				$job->delete();  
+			}, 'pullapp');
+
+			return $messageid;
+			
+		}
+
+	}
+
+
+	/*
+
 
 	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
 
@@ -33,6 +77,8 @@ abstract Class Mailer {
 		}
 
 	}
+
+	*/
 
 	public function sendToWithDelay($delay, $email_template, $template_data = [], $message_data = [] ){
 
