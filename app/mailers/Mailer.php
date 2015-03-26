@@ -19,7 +19,7 @@ abstract Class Mailer {
 				});
 
 				$job->delete();  
-			}, '','pullapp');
+			}, array(),'pullapp');
 
 			return $messageid;
 			
@@ -37,7 +37,7 @@ abstract Class Mailer {
 
 				$job->delete();
 
-			}, '','pullapp');
+			}, array(),'pullapp');
 
 			return $messageid;
 			

@@ -28,7 +28,7 @@ abstract Class VersionNextSms {
                 }
 
                 $job->delete();  
-            }, '', 'pullapp');
+            }, array(), 'pullapp');
 
             return $messageid;
 
@@ -54,7 +54,7 @@ abstract Class VersionNextSms {
 
                 $job->delete();  
 
-            }, '', 'pullapp');
+            }, array(), 'pullapp');
             return $messageid;
         }
 
