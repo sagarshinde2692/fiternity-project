@@ -238,7 +238,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  = $customer_sms_messageids  = $finer_sms_messageids  = array();
 
 			//Send Instant (Email) To Customer & Finder
-			// $sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
+			$sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
 			// $sndInstantSmsCustomer			=	$this->customersms->bookTrial($booktrialdata);
 
 			// $sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
