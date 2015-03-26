@@ -12,10 +12,10 @@ abstract Class Mailer {
 
 				$job_id = $job->getJobId(); 
 
-				Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
-					$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-					->bcc($email_message_data['bcc_emailids'])
-					->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+				Mail::send($email_template, $template_data, function($message) use ($email_message_data){
+					$message->to($message_data['user_email'], $message_data['user_name'])
+					->bcc($message_data['bcc_emailids'])
+					->subject($message_data['email_subject']);
 				});
 
 				$job->delete();  
@@ -30,9 +30,9 @@ abstract Class Mailer {
 				$job_id = $job->getJobId(); 
 
 				Mail::later($delay, $email_template, $email_template_data, function($message) use ($email_message_data){
-					$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-					->bcc($email_message_data['bcc_emailids'])
-					->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
+					$message->to($message_data['user_email'], $message_data['user_name'])
+					->bcc($message_data['bcc_emailids'])
+					->subject($message_data['email_subject']);
 				});
 
 				$job->delete();  
