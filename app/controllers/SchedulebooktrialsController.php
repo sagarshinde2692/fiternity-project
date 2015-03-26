@@ -244,10 +244,10 @@ class SchedulebooktrialsController extends \BaseController {
 			// $sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
 			// $sndInstantSmsFinder			=	$this->findersms->bookTrial($booktrialdata);
 
-			$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
-			$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
-			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
-			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
+			// $customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
+			// $customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+			// $finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
+			// $finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 
 			return "$sndInstantEmailCustomer --- $sndInstantSmsCustomer   ----   ";
