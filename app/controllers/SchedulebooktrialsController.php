@@ -238,11 +238,11 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  = $customer_sms_messageids  = $finer_sms_messageids  = array();
 
 			//Send Instant (Email) To Customer & Finder
-			return $sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
+			$sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
 			$sndInstantSmsCustomer			=	$this->customersms->bookTrial($booktrialdata);
 
-			$sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
-			$sndInstantSmsFinder			=	$this->findersms->bookTrial($booktrialdata);
+			// $sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
+			// $sndInstantSmsFinder			=	$this->findersms->bookTrial($booktrialdata);
 
 			$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
 			$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
@@ -250,6 +250,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 
+			return "$sndInstantEmailCustomer --- $sndInstantSmsCustomer   ----   ";
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
 			// $sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
