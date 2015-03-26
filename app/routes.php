@@ -38,13 +38,21 @@ Route::get('/testtwilio', function() {
 Route::get('/testemail', function() { 
 
 	// return "email send succuess";
-	$m1 = Queue::push('WriteClass', array( 'string' => 'new testpushqueue instantlysdkhakdh -- '.time()),'abc');
+	$m1 = Queue::push('WriteClass', array( 'string' => 'new delete function form local -- '.time()),'pullapp');
 
-	$m2 = Queue::later(Carbon::now()->addMinutes(3),'WriteClass', array( 'string' => 'new testpushqueue delay by 3 min time -- '.time()),'abc');
-	$m3 = Queue::later(Carbon::now()->addMinutes(5),'WriteClass', array( 'string' => 'new testpushqueue delay by 5 min time -- '.time()),'abc');
+	$m2 = Queue::later(Carbon::now()->addMinutes(3),'WriteClass', array( 'string' => 'new delete function 3 min time -- '.time()),'pullapp');
+	$m3 = Queue::later(Carbon::now()->addMinutes(5),'WriteClass', array( 'string' => 'new delete function 5 min time -- '.time()),'pullapp');
 
 	echo "$m1 -- $m2 -- $m3";
-	$deleteid = Queue::deleteMessage('abc',$m2);
+	// 	$url ='https://mq-aws-us-east-1.iron.io/1/projects/549a5af560c8e60009000030/queues/pullapp/messages/'.$m2.'?oauth=tsFrArQmL8VS8Cx-5PDg3gij19Y';
+	//    $ch = curl_init();
+	//    curl_setopt($ch, CURLOPT_URL,$url);
+	//    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+	//    $result = curl_exec($ch);
+	//    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	//    curl_close($ch);
+
+	$deleteid = Queue::deleteMessage('pullapp',$m2);
 });
 
 
@@ -172,13 +180,13 @@ Route::get('/testpushemail', function() {
 	// $curl = curl_init();
 	// curl_setopt($curl, CURLOPT_URL, 'http://testcURL.com');
 
-	// $url =$this->__url.$path;
-	//    $ch = curl_init();
-	//    curl_setopt($ch, CURLOPT_URL,$url);
-	//    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-	//    $result = curl_exec($ch);
-	//    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	//    curl_close($ch);
+		// $url ='https://mq-aws-us-east-1.iron.io/1/projects/549a5af560c8e60009000030/queues/abc/messages/6130196106124097492?oath=tsFrArQmL8VS8Cx-5PDg3gij19Y';
+	 //   $ch = curl_init();
+	 //   curl_setopt($ch, CURLOPT_URL,$url);
+	 //   curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+	 //   $result = curl_exec($ch);
+	 //   $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	 //   curl_close($ch);
 
 	// echo "deleteid - $deleteid";
 
