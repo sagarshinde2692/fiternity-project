@@ -59,7 +59,8 @@ Class CustomerMailer extends Mailer {
 
 	public function bookTrialReminderBefore12Hour ($data, $delay){
 
-		$email_template = 'emails.customer.booktrialreminderbefore12hour';
+		// $email_template = 'emails.customer.booktrialreminderbefore12hour';
+		$email_template = 	'emails.customer.autobooktrial';
 		$template_data 	= $data;
 		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
 		$bcc_emailids 	= 	array_flatten($emails);
