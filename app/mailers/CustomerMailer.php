@@ -30,30 +30,29 @@ Class CustomerMailer extends Mailer {
 	//used for testing purpose
 	public function bookTrialReminderBefore1Min ($data, $delay){
 
-		$email_template = 	'emails.customer.booktrialreminderbefore12hour';
-		$template_data 	= 	$data;
+		$email_template = 'emails.customer.booktrialreminderbefore12hour';
+		$template_data 	= $data;
 		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
 		$bcc_emailids 	= 	array_flatten($emails);
-		$message_data 	= 	array(
+		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'bookTrialReminderBefore12Hour Reminder Book a Trial'
+			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity'
 			);
-		// return $this->sendTo($email_template, $template_data, $message_data, $delay);
-		$this->sendTo($email_template, $template_data, $message_data);
+		$this->sendTo($email_template, $template_data, $message_data, $delay);
 
-		$email_template = 	'emails.customer.booktrialreminderafter2hour';
-		$template_data 	= 	$data;
+		$email_template = 'emails.customer.booktrialreminderafter2hour';
+		$template_data 	= $data;
 		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
 		$bcc_emailids 	= 	array_flatten($emails);
-		$message_data 	= 	array(
+		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'bookTrialReminderAfter2Hour Reminder Book a Trial'
+			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity'
 			);
-		return $this->sendTo($email_template, $template_data, $message_data);
+		return $this->sendTo($email_template, $template_data, $message_data, $delay);
 	}
 
 
