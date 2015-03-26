@@ -9,6 +9,32 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 Route::get('/', function() { return "laravel 4.2 goes here....";});
+
+Route::get('/testcountrysms', function() { 
+
+	$user 			=	"chaitu87"; //your username
+	$password 		=	"564789123"; //your password
+	$mobilenumbers 	=	"919773348762"; //enter Mobile numbers comma seperated
+	$message  		=	"test messgae from SMSCountry"; //enter Your Message
+	$senderid 		=	"FTRNTY"; //Your senderid
+	$messagetype 	=	"N"; //Type Of Your Message
+	$DReports 		=	"Y"; //Delivery Reports
+	$url 			=	"http://www.smscountry.com/SMSCwebservice_Bulk.aspx";
+	$message 		=	urlencode($message);
+	$ch 			=	curl_init();
+	$ret 			=	curl_setopt($ch, CURLOPT_URL,$url);
+	curl_setopt ($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+	curl_setopt ($ch, CURLOPT_POSTFIELDS,"User=$user&passwd=$password&mobilenumber=$mobilenumbers&message=$message&sid=$senderid&mtype=$messagetype&DR=$DReports");
+	$ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	//If you are behind proxy then please uncomment below line and provide your proxy ip with port.
+	// $ret = curl_setopt($ch, CURLOPT_PROXY, "PROXY IP ADDRESS:PORT");
+	return $curlresponse = curl_exec($ch); 
+
+});
+
+
 Route::get('/testdate', function() { 
 
 	return Carbon::now()->addMinutes(1)->timestamp;
@@ -76,7 +102,7 @@ class WriteClass {
 			->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
 		});
 		$job->delete();  
-	return $job_id;	
+		return $job_id;	
 	}
 
 }
