@@ -238,42 +238,40 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  = $customer_sms_messageids  = $finer_sms_messageids  = array();
 
 			//Send Instant (Email) To Customer & Finder
-			// $sndInstantEmailCustomer		= 	$this->customermailer->bookTrial($booktrialdata);
-			// $sndInstantSmsCustomer			=	$this->customersms->bookTrial($booktrialdata);
+			$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
+			$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
+			$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
+			$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
 
-			// $sndInstantEmailFinder			= 	$this->findermailer->bookTrial($booktrialdata);
-			// $sndInstantSmsFinder			=	$this->findersms->bookTrial($booktrialdata);
-
-			// $customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
-			// $customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
-			// $finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
-			// $finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
+			$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
+			$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
+			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 			// return "$sndInstantEmailCustomer --- $sndInstantSmsCustomer   ----  $sndInstantEmailFinder   --- $sndInstantSmsFinder ";
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
-			// $sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			return $sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 			// $sndBefore1MinSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 
 			//#############  TESTING FOR 1 MIN END ##############
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-			// if($twelveHourDiff >= 12){
-				return $sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, Carbon::now());
+			if($twelveHourDiff >= 12){
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 				// $sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				// $sms_messageids['before12hour'] 	= 	$sndBefore12HourSmsCustomer;
 
-			// }
+			}
 
 			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
-			// if($oneHourDiff >= 1){
+			if($oneHourDiff >= 1){
 				$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 				$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 				$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
 				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
-			// }
+			}
 
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
