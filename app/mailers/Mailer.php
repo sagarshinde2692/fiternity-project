@@ -12,7 +12,7 @@ abstract Class Mailer {
 
 				$job_id = $job->getJobId(); 
 
-				Mail::send($email_template, $template_data, function($message) use ($email_message_data){
+				Mail::send($email_template, $template_data, function($message) use ($message_data){
 					$message->to($message_data['user_email'], $message_data['user_name'])
 					->bcc($message_data['bcc_emailids'])
 					->subject($message_data['email_subject']);
@@ -29,7 +29,7 @@ abstract Class Mailer {
 
 				$job_id = $job->getJobId(); 
 
-				Mail::later($delay, $email_template, $email_template_data, function($message) use ($email_message_data){
+				Mail::later($delay, $email_template, $email_template_data, function($message) use ($message_data){
 					$message->to($message_data['user_email'], $message_data['user_name'])
 					->bcc($message_data['bcc_emailids'])
 					->subject($message_data['email_subject']);
