@@ -29,8 +29,8 @@ abstract Class Mailer {
 
 				$job_id 	= 	$job->getJobId(); 
 				$seconds 	= 	$this->getSeconds($delay);
-				
-				Mail::later($seconds, $email_template, $template_data, function($message) use ($message_data){
+
+				Mail::later(0, $email_template, $template_data, function($message) use ($message_data){
 					$message->to($message_data['user_email'], $message_data['user_name'])
 					->bcc($message_data['bcc_emailids'])
 					->subject($message_data['email_subject']);

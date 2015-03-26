@@ -34,7 +34,8 @@ abstract Class VersionNextSms {
 
         }else{
 
-            $messageid = Queue::later($delay, function($job) use ($to, $message){ 
+            $seconds    =   $this->getSeconds($delay);
+            $messageid  =   Queue::later($seconds, function($job) use ($to, $message){ 
 
                 $job_id = $job->getJobId();
                 
@@ -58,6 +59,30 @@ abstract Class VersionNextSms {
             return $messageid;
         }
 
+    }
+
+
+    /**
+     * Calculate the number of seconds with the given delay.
+     *
+     * @param  \DateTime|int  $delay
+     * @return int
+     */
+    protected function getSeconds($delay){
+        
+        if ($delay instanceof DateTime){
+            return max(0, $delay->getTimestamp() - $this->getTime());
+        }
+        return (int) $delay;
+    }
+
+    /**
+     * Get the current UNIX timestamp.
+     *
+     * @return int
+     */
+    public function getTime(){
+        return time();
     }
 
 
