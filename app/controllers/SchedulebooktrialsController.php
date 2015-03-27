@@ -329,17 +329,17 @@ class SchedulebooktrialsController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
 		}
 
-		if(empty($data['preferred_location'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_location");
-		}
+		// if(empty($data['preferred_location'])){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_location");
+		// }
 
-		if(empty($data['preferred_day'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_day");
-		}
+		// if(empty($data['preferred_day'])){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_day");
+		// }
 
-		if(empty($data['preferred_time'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_time");
-		}
+		// if(empty($data['preferred_time'])){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_time");
+		// }
 
 		// exit;
 
@@ -427,17 +427,17 @@ class SchedulebooktrialsController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
 		}
 
-		if(empty($data['preferred_location'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_location");
-		}
+		// if(empty($data['preferred_location'])){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_location");
+		// }
 
-		if(empty($data['preferred_day'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_day");
-		}
+		// if(empty($data['preferred_day'])){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_day");
+		// }
 
-		if(empty($data['preferred_time'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_time");
-		}
+		// if(empty($data['preferred_time'])){
+		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_time");
+		// }
 
 
 		// return $data	= Input::json()->all();
