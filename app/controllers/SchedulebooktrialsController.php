@@ -21,6 +21,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms) {
 		//parent::__construct();	
+		date_default_timezone_set("Asia/Kolkata");
 		$this->customermailer	=	$customermailer;
 		$this->findermailer		=	$findermailer;
 		$this->customersms 		=	$customersms;

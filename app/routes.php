@@ -37,7 +37,7 @@ Route::get('/testcountrysms', function() {
 
 Route::get('/testdate', function() { 
 
-	return Carbon::now()->addMinutes(1)->timestamp;
+	return Carbon::now();
 
 	echo strip_tags('<h1>Title example</h1>');
 	exit;
