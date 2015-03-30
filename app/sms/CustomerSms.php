@@ -2,7 +2,7 @@
 
 use Config;
 
-Class CustomerSms extends VersionNextSms{
+Class CustomerSms extends CountrySms{
 
 	public function bookTrial ($data){
 

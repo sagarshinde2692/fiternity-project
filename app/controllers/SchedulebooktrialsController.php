@@ -231,6 +231,9 @@ class SchedulebooktrialsController extends \BaseController {
 				'booktrial_type'				=>		'auto'	
 			);
 
+			return $this->customersms->bookTrial($booktrialdata);
+
+			exit;
 
 			// return $booktrialdata;
 			$booktrial = new Booktrial($booktrialdata);

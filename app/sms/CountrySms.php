@@ -12,19 +12,30 @@ abstract Class CountrySms {
 
             $messageid = Queue::push(function($job) use ($to, $message){ 
 
-                $job_id = $job->getJobId(); 
+                $job_id         =   $job->getJobId(); 
 
-                $msg = strip_tags($message);
+                $user           =   "chaitu87"; //your username
+                $password       =   "564789123"; //your password
+                $senderid       =   "FTRNTY"; //Your senderid
+                $messagetype    =   "N"; //Type Of Your Message
+                $DReports       =   "Y"; //Delivery Reports
+                $url            =   "http://www.smscountry.com/SMSCwebservice_Bulk.aspx";
+                $message        =   urlencode(trim(strip_tags($message)));
 
                 foreach ($to as $number) {
-                    // echo $number;
-                    $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
-                    $ci = curl_init();
-                    curl_setopt($ci, CURLOPT_URL, $sms_url);
-                    curl_setopt($ci, CURLOPT_HEADER, 0);
-                    curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-                    $response = curl_exec($ci);
-                    curl_close($ci);
+                    // // echo $number;
+                    // $mobilenumbers  =   "919773348762"; //enter Mobile numbers comma seperated
+                    $mobilenumbers  =   urlencode(trim($number));
+                    $ch             =   curl_init();
+                    $ret            =   curl_setopt($ch, CURLOPT_URL,$url);
+                    curl_setopt ($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+                    curl_setopt ($ch, CURLOPT_POSTFIELDS,"User=$user&passwd=$password&mobilenumber=$mobilenumbers&message=$message&sid=$senderid&mtype=$messagetype&DR=$DReports");
+                    $ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    $curlresponse = curl_exec($ch); 
+                    curl_close($ch);
+
                 }
 
                 $job->delete();  
@@ -37,20 +48,29 @@ abstract Class CountrySms {
             $seconds    =   $this->getSeconds($delay);
             $messageid  =   Queue::later($seconds, function($job) use ($to, $message){ 
 
-                $job_id = $job->getJobId();
+                $job_id         =   $job->getJobId();
                 
-                $msg = strip_tags($message); 
+                $user           =   "chaitu87"; //your username
+                $password       =   "564789123"; //your password
+                $senderid       =   "FTRNTY"; //Your senderid
+                $messagetype    =   "N"; //Type Of Your Message
+                $DReports       =   "Y"; //Delivery Reports
+                $url            =   "http://www.smscountry.com/SMSCwebservice_Bulk.aspx";
+                $message        =   urlencode(trim(strip_tags($message)));
 
                 foreach ($to as $number) {
-
-                    $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
-                    $ci = curl_init();
-                    curl_setopt($ci, CURLOPT_URL, $sms_url);
-                    curl_setopt($ci, CURLOPT_HEADER, 0);
-                    curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-                    $response = curl_exec($ci);
-                    curl_close($ci);
-
+                    // // echo $number;
+                    // $mobilenumbers  =   "919773348762"; //enter Mobile numbers comma seperated
+                    $mobilenumbers  =   urlencode(trim($number));
+                    $ch             =   curl_init();
+                    $ret            =   curl_setopt($ch, CURLOPT_URL,$url);
+                    curl_setopt ($ch, CURLOPT_POST, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+                    curl_setopt ($ch, CURLOPT_POSTFIELDS,"User=$user&passwd=$password&mobilenumber=$mobilenumbers&message=$message&sid=$senderid&mtype=$messagetype&DR=$DReports");
+                    $ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    $curlresponse = curl_exec($ch); 
+                    curl_close($ch);
                 }
 
                 $job->delete();  
