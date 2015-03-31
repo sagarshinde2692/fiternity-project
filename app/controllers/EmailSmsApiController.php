@@ -81,6 +81,7 @@ class EmailSmsApiController extends \BaseController {
 		}
 
 		$data = array(
+				'capture_type' 	=>		'request_callback',	
 				'vendor' => Input::json()->get('vendor'), 
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
