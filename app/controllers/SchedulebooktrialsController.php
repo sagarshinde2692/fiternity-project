@@ -197,9 +197,11 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$code								=	$booktrialid.str_random(8);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
-
+			$premium_session 					=	(Input::has('premium_session') && Input::json()->get('premium_session') != '') ? Input::json()->get('premium_session') : "";
 
 			$booktrialdata = array(
+				'premium_session' 				=>		$premium_session, 
+
 				'customer_id' 					=>		$customer_id, 
 				'customer_name' 				=>		$customer_name, 
 				'customer_email' 				=>		$customer_email, 
@@ -370,8 +372,11 @@ class SchedulebooktrialsController extends \BaseController {
 		$preferred_day				= 	(Input::has('preferred_day') && Input::json()->get('preferred_day') != '') ? Input::json()->get('preferred_day') : "";
 		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+		$premium_session 			=	(Input::has('premium_session') && Input::json()->get('premium_session') != '') ? Input::json()->get('premium_session') : "";
 		
 		$booktrialdata = array(
+			'premium_session' 		=>		$premium_session,
+
 			'finder_id' 			=>		$finder_id,
 			'city_id'				=>		$city_id, 
 			'finder_name' 			=>		$finder_name,
@@ -466,8 +471,10 @@ class SchedulebooktrialsController extends \BaseController {
 		$preferred_day				= 	(Input::has('preferred_day') && Input::json()->get('preferred_day') != '') ? Input::json()->get('preferred_day') : "";
 		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+		$premium_session 			=	(Input::has('premium_session') && Input::json()->get('premium_session') != '') ? Input::json()->get('premium_session') : "";
 		
 		$booktrialdata = array(
+				'premium_session' 		=>		$premium_session,	
 				'finder_ids' 			=>		implode(", ",$finder_ids),
 				'city_id'				=>		$city_id, 
 				'finder_names' 			=>		implode(", ",$finder_names),
