@@ -50,11 +50,15 @@ Class FinderMailer extends Mailer {
 
 		$email_template = 'emails.finder.booktrialdailysummary';
 		$template_data 	= $data;
-		$emails 		=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
-		$bcc_emailids 	= 	array_flatten($emails);
+		if($data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		} 
+
 		$message_data 	= array(
-			'user_email' => $data['user_email'],
-			'user_name' => $data['user_name'],
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' =>  $data['finder_poc_for_customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Daily report on customers who have booked sessions for tomorrow'
 			);
