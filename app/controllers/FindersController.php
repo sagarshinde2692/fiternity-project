@@ -182,7 +182,7 @@ class FindersController extends \BaseController {
 		foreach ($finders as $finderid => $trials) {
 			$finder = 	Finder::where('_id','=',intval($finderid))->first();
 			if($finder->finder_vcc_email != ""){
-				echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
+				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
 				// echo "<pre>";print_r($trials); 
 
 				$trialdata = array();
@@ -202,9 +202,8 @@ class FindersController extends \BaseController {
 					'finder_vcc_email'				=> $finder->finder_vcc_email,	
 					'scheduletrials' 				=> $trialdata
 					);
-				echo "<pre>";print_r($scheduledata); 
-				return $this->findermailer->sendBookTrialDaliySummary($scheduledata);
-				dd('dead');
+				// echo "<pre>";print_r($scheduledata); 
+				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}
 
