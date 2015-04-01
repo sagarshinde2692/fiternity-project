@@ -185,7 +185,7 @@ class FindersController extends \BaseController {
 				echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
 				echo "<pre>";print_r($trials); 
 
-				$scheduledata = array();
+				$trialdata = array();
 				foreach ($trials as $key => $value) {
 					$trial = array('customer_name' => $value->customer_name, 
 						'schedule_date' => $value->schedule_date, 
@@ -194,15 +194,15 @@ class FindersController extends \BaseController {
 						'service_name' => $value->service_name,
 						'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
 						);
-					array_push($scheduledata, $trial);
+					array_push($trialdata, $trial);
 				}
 				$scheduledata = array('user_name'	=> 'sanjay sahu',
 					'user_email'					=> 'sanjay.id7@gmail',
 					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
 					'finder_vcc_email'				=> $finder->finder_vcc_email,	
-					'scheduletrials' 				=> $trials
+					'scheduletrials' 				=> $trialdata
 					);
-				echo "<pre>";print_r($trials); 
+				echo "<pre>";print_r($scheduledata); 
 				// $this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}
