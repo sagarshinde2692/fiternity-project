@@ -36,45 +36,43 @@ class FindersController extends \BaseController {
 		$data 	= array();
 		$tslug 	= (string) $slug;
 		$finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-		->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-						//->with(array('categorytags'=>function($query){$query->select('_id','name','slug');}))
-		->with('categorytags')
-		->with('locationtags')
-		->with('offerings')
-		->with('facilities')
-		->where('slug','=',$tslug)
-						//->remember(Config::get('app.cachetime'))
-		->first();
+						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						->with('categorytags')
+						->with('locationtags')
+						->with('offerings')
+						->with('facilities')
+						->where('slug','=',$tslug)
+						->first();
 		if($finder){
 			$finderdata 		=	$finder->toArray();
 			$finderid 			= (int) $finderdata['_id'];
 			$findercategoryid 	= (int) $finderdata['category_id'];
 			$finderlocationid 	= (int) $finderdata['location_id'];	
 			
-			$nearby_same_category 				= 			Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->where('category_id','=',$findercategoryid)
-			->where('location_id','=',$finderlocationid)
-																	//->where('finder_type', '=', 1)
-			->where('_id','!=',$finderid)
-			->where('status', '=', '1')
-			->orderBy('finder_type', 'DESC')
-			->remember(Config::get('app.cachetime'))
-			->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
-			->take(5)->toArray();	
+			$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->where('category_id','=',$findercategoryid)
+												->where('location_id','=',$finderlocationid)
+																										//->where('finder_type', '=', 1)
+												->where('_id','!=',$finderid)
+												->where('status', '=', '1')
+												->orderBy('finder_type', 'DESC')
+												->remember(Config::get('app.cachetime'))
+												->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+												->take(5)->toArray();	
 
-			$nearby_other_category 				= 			Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->where('category_id','!=',$findercategoryid)
-			->where('location_id','=',$finderlocationid)
-																	//->where('finder_type', '=', 1)
-			->where('_id','!=',$finderid)
-			->where('status', '=', '1')
-			->orderBy('finder_type', 'DESC')
-			->remember(Config::get('app.cachetime'))
-			->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
-			->take(5)->toArray();	
+			$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->where('category_id','!=',$findercategoryid)
+												->where('location_id','=',$finderlocationid)
+												//->where('finder_type', '=', 1)
+												->where('_id','!=',$finderid)
+												->where('status', '=', '1')
+												->orderBy('finder_type', 'DESC')
+												->remember(Config::get('app.cachetime'))
+												->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+												->take(5)->toArray();	
 
 			$data['finder'] 						= 		$finder;
 			$data['statusfinder'] 					= 		200;
@@ -147,9 +145,9 @@ class FindersController extends \BaseController {
 	public function updatefinderlocaiton (){
 
 		$items = Finder::active()
-		->orderBy('_id')
-		->whereIn('location_id',array(14))
-		->get(array('_id','location_id'));
+						->orderBy('_id')
+						->whereIn('location_id',array(14))
+						->get(array('_id','location_id'));
 							//exit;				
 		$finderdata = array();
 		foreach ($items as $item) {  
@@ -219,7 +217,6 @@ class FindersController extends \BaseController {
 		//Ratecard::truncate();
 		Ratecard::truncate();
 		//exit;
-
 		// $items = Finder::with('category')->with('location')->active()->orderBy('_id')->take(2)->get();
 		$items = Finder::with('category')->with('location')->active()->orderBy('_id')->get();
 		$finderdata = array();
@@ -248,7 +245,7 @@ class FindersController extends \BaseController {
 					array_set($ratedata, 'price', intval($value['price']));
 					array_set($ratedata, 'special_price', intval($value['special_price']));
 					array_set($ratedata, 'product_url', $value['product_url']);
-					 array_set($ratedata, 'order',  (isset($value['order']) && $value['order'] != '') ? intval($value['order']) : 0);
+					array_set($ratedata, 'order',  (isset($value['order']) && $value['order'] != '') ? intval($value['order']) : 0);
 
 					array_set($ratedata, 'findercategory_id', $findercategory_id );
 					array_set($ratedata, 'location_id', $location_id );
@@ -264,14 +261,9 @@ class FindersController extends \BaseController {
 					$ratecard 	= new Ratecard($ratedata);
 					$ratecard->_id = $insertedid;
 					$ratecard->save();
-
 				}
-				
 			}
-
-
 		}
-
 
 	}
 
