@@ -203,7 +203,7 @@ class FindersController extends \BaseController {
 					'scheduletrials' 				=> $trialdata
 					);
 				echo "<pre>";print_r($scheduledata); 
-				// $this->findermailer->sendBookTrialDaliySummary($scheduledata);
+				return $this->findermailer->sendBookTrialDaliySummary($scheduledata);
 				dd('dead');
 			}	  
 		}
