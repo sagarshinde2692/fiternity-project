@@ -177,7 +177,7 @@ class FindersController extends \BaseController {
 	public function sendbooktrialdaliysummary(){
 
 		$tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
-		return $finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
+		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
 		
 		foreach ($finders as $finderid => $trials) {
 			$finder = 	Finder::where('_id','=',intval($finderid))->first();
@@ -202,7 +202,7 @@ class FindersController extends \BaseController {
 					'finder_vcc_email'				=> $finder->finder_vcc_email,	
 					'scheduletrials' 				=> $trials
 					);
-				// echo "<pre>";print_r($trials); 
+				echo "<pre>";print_r($trials); 
 				// $this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}
