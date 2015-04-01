@@ -188,7 +188,7 @@ class FindersController extends \BaseController {
 				$trialdata = array();
 				foreach ($trials as $key => $value) {
 					$trial = array('customer_name' => $value->customer_name, 
-						'schedule_date' => $value->schedule_date, 
+						'schedule_date' => $value->schedule_date->date, 
 						'schedule_slot' => $value->schedule_slot, 
 						'code' => $value->code, 
 						'service_name' => $value->service_name,
