@@ -204,6 +204,7 @@ class FindersController extends \BaseController {
 					);
 				echo "<pre>";print_r($scheduledata); 
 				// $this->findermailer->sendBookTrialDaliySummary($scheduledata);
+				dd('dead');
 			}	  
 		}
 
