@@ -183,7 +183,7 @@ class FindersController extends \BaseController {
 			$finder = 	Finder::where('_id','=',intval($finderid))->first();
 			if($finder->finder_vcc_email != ""){
 				echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
-				echo "<pre>";print_r($trials); 
+				// echo "<pre>";print_r($trials); 
 
 				$trialdata = array();
 				foreach ($trials as $key => $value) {
