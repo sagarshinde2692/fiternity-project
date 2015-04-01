@@ -208,7 +208,7 @@ class FindersController extends \BaseController {
 			}	  
 		}
 
-		exit;
+		// exit;
 
 		$resp 	= 	array('status' => 200,'message' => "Email Send");
 		return Response::json($resp);	
