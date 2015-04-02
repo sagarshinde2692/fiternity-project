@@ -237,7 +237,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
 			// return $this->customersms->bookTrial($booktrialdata);
-			return $booktrialdata;
+			// return $booktrialdata;
 			$booktrial = new Booktrial($booktrialdata);
 			$booktrial->_id = $booktrialid;
 			$trialbooked = $booktrial->save();
