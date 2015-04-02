@@ -214,7 +214,7 @@ class HomeController extends BaseController {
 	public function getcollecitonnames($city = 'mumbai'){
 		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 		$city_id		= 	(int) $citydata['_id'];	
-		$collections 	= 	Findercollection::active()->where('city_id', '=', $city_id)->orderBy('ordering')->get(array('name', 'slug', 'ordering' ));	
+		$collections 	= 	Findercollection::active()->where('city_id', '=', $city_id)->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 
 		if(count($collections) < 1){
 			$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'No collections yet :)');
