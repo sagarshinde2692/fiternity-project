@@ -201,6 +201,7 @@ Route::get('sendemailtofinder', function() {
 
 
 Route::get('migrateratecards/', array('as' => 'finders.migrateratecards','uses' => 'FindersController@migrateratecards'));
+Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' => 'FindersController@updatepopularity'));
 
 
 /******************** DEBUG SECTION END HERE ********************/
