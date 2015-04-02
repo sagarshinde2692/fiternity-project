@@ -283,9 +283,50 @@ class FindersController extends \BaseController {
 			print_pretty($response);
 		}
 
+		//personal trainers
+		$items = Finder::active()->where('category_id',41)->get();
+		$finderdata = array();
+		foreach ($items as $item) {  
+			$data 	= $item->toArray();
+			array_set($finderdata, 'popularity', 2500);
+			$finder = Finder::findOrFail($data['_id']);
+			$response = $finder->update($finderdata);
+			print_pretty($response);
+		}
 
+		//dietitians and nutritionists
+		$items = Finder::active()->where('category_id',25)->get();
+		$finderdata = array();
+		foreach ($items as $item) {  
+			$data 	= $item->toArray();
+			array_set($finderdata, 'popularity', 2000);
+			$finder = Finder::findOrFail($data['_id']);
+			$response = $finder->update($finderdata);
+			print_pretty($response);
+		}
 
-		
+		//physiotherapists
+		$items = Finder::active()->where('category_id',26)->get();
+		$finderdata = array();
+		foreach ($items as $item) {  
+			$data 	= $item->toArray();
+			array_set($finderdata, 'popularity', 1500);
+			$finder = Finder::findOrFail($data['_id']);
+			$response = $finder->update($finderdata);
+			print_pretty($response);
+		}		
+
+		//sports
+		$items = Finder::active()->where('category_id',40)->get();
+		$finderdata = array();
+		foreach ($items as $item) {  
+			$data 	= $item->toArray();
+			array_set($finderdata, 'popularity', 1000);
+			$finder = Finder::findOrFail($data['_id']);
+			$response = $finder->update($finderdata);
+			print_pretty($response);
+		}
+
 
 	}
 
