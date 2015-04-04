@@ -47,10 +47,11 @@ class SchedulebooktrialsController extends \BaseController {
 
 		// echo "$date  --- $timestamp -- $weekday";exit;
 		//finder schedule trials
-		$items = Schedulebooktrial::where('finder_id', '=', $finderid)->where('weekday', '=', $weekday)->get(array('finder_id','weekday','name','slots'))->toArray();
+		$items = Schedulebooktrial::where('finder_id', '=', $finderid)->where('weekday', '=', $weekday)->get()->toArray();
 		$scheduletrials = array();
 		foreach ($items as $item) {
-			$trial = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' =>  $item['weekday']); 
+			$price = (isset($item['price'])) ? $item['price'] : 0;
+			$trial = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'price' => $price, 'weekday' =>  $item['weekday']); 
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
