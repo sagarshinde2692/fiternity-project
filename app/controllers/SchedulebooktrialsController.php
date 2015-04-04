@@ -232,6 +232,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'code'							=>		$code,
 				'device_id'						=>		$device_id,
 				'booktrial_type'				=>		'auto',
+				'booktrial_actions'				=>		'call to set up trial',
 				'source'						=>		'website'	
 			);
 
@@ -394,8 +395,10 @@ class SchedulebooktrialsController extends \BaseController {
 			'device_id'				=>		$device_id,
 			'going_status'			=>		0,
 			'going_status_txt'		=>		'not fixed',
-			'booktrial_type'		=>		'manual'
-			);
+			'booktrial_type'		=>		'manual',
+			'booktrial_actions'		=>		'call to confirm trial',
+			'source'				=>		'website'	
+		);
 
 		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
@@ -492,7 +495,9 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_id'				=>		$device_id,
 				'going_status'			=>		0,
 				'going_status_txt'		=>		'not fixed',
-				'booktrial_type'		=>		'2ndmanual'
+				'booktrial_type'		=>		'2ndmanual',
+				'booktrial_actions'		=>		'call to confirm trial',
+				'source'				=>		'website'
 				);
 
 		foreach ($finder_ids as $key => $finder_id) {

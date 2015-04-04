@@ -1094,8 +1094,6 @@ public function geoLocationFinder(){
 }
 
 
-
-
 public function categoryfinders(){
 		//echo "calling categoryfinders";exit;
 

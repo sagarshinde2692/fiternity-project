@@ -155,5 +155,6 @@ return array(
 
 	// 'bcc_emailds_autobook_trial' 					=> 	array('sanjay.fitternity@gmail.com'),
 	'bcc_emailds_autobook_trial' 					=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+	'bcc_emailds_finderdailsummary' 				=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
 
 );

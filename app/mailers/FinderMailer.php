@@ -51,9 +51,9 @@ Class FinderMailer extends Mailer {
 		$email_template = 'emails.finder.booktrialdailysummary';
 		$template_data 	= $data;
 		if($data['finder_vcc_email'] != ''){
-			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_finderdailsummary'));
 		}else{
-			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_finderdailsummary');
 		} 
 
 		$message_data 	= array(
