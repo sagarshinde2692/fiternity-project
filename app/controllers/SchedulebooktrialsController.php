@@ -232,7 +232,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'code'							=>		$code,
 				'device_id'						=>		$device_id,
 				'booktrial_type'				=>		'auto',
-				'booktrial_actions'				=>		'call to set up trial',
+				'booktrial_actions'				=>		'call to confirm trial',
 				'source'						=>		'website'	
 			);
 
@@ -396,7 +396,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'going_status'			=>		0,
 			'going_status_txt'		=>		'not fixed',
 			'booktrial_type'		=>		'manual',
-			'booktrial_actions'		=>		'call to confirm trial',
+			'booktrial_actions'		=>		'call to set up trial',
 			'source'				=>		'website'	
 		);
 
@@ -496,7 +496,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'going_status'			=>		0,
 				'going_status_txt'		=>		'not fixed',
 				'booktrial_type'		=>		'2ndmanual',
-				'booktrial_actions'		=>		'call to confirm trial',
+				'booktrial_actions'		=>		'call to set up trial',
 				'source'				=>		'website'
 				);
 
