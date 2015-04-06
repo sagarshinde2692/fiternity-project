@@ -88,6 +88,26 @@ class FindersController extends \BaseController {
 		}		
 	}
 
+	// public function ratecards($finderid){
+
+	// 	$finderid 	=  	(int) $finderid;
+	// 	$ratecard 	= 	Ratecard::where('finder_id', '=', $finderid)->where('going_status', '=', 1)->orderBy('_id', 'desc')->get($selectfields)->toArray();
+	// 	$resp 		= 	array('status' => 200,'ratecard' => $ratecard);
+	// 	return Response::json($resp);
+	// }
+
+	public function ratecarddetail($id){
+		$id 		=  	(int) $id;
+		$ratecard 	= 	Ratecard::find($id);
+
+		if($ratecard){
+			$resp 	= 	array('status' => 200,'ratecard' => $ratecard);
+		}else{
+			$resp 	= 	array('status' => 200,'message' => 'No Ratecard exist :)');
+		}
+		return Response::json($resp);
+	}
+
 
 	public function getfinderleftside(){
 		$data = array('categorytag_offerings' => Findercategorytag::active()->with('offerings')->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
