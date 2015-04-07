@@ -36,7 +36,7 @@ class CustomerController extends \BaseController {
 
 		$selectfields 	=	array('finder', 'finder_id','finder_name','finder_slug','service_name','schedule_date','schedule_slot_start_time','schedule_slot_end_time','code');
 		$trial 			=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-									  ->where('_id', '=', intval($trialid) )->where('going_status', '=', 1)->firstOrFail($selectfields);
+									  ->where('_id', '=', intval($trialid) )->where('going_status', '=', 1)->first($selectfields);
 
 		if($trial){
 			$resp 	= 	array('status' => 200, 'trial' => $trial, 'message' => 'No trial Exist :)');
