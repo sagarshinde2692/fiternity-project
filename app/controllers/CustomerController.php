@@ -30,6 +30,23 @@ class CustomerController extends \BaseController {
 		return Response::json($resp);
 	}
 
+
+	// Get Particular Tiral of Customer
+	public function getAutoBookTrial($trialid){
+
+		$selectfields 	=	array('finder', 'finder_id','finder_name','finder_slug','service_name','schedule_date','schedule_slot_start_time','schedule_slot_end_time','code');
+		$trial 			=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+									  ->where('_id', '=', $trialid)->where('going_status', '=', 1)->get($selectfields)->toArray();
+
+		if($trial){
+			$resp 	= 	array('status' => 200, 'trial' => $trial, 'message' => 'No trial Exist :)');
+			return Response::json($resp);
+		}
+
+		$resp 	= 	array('status' => 200, 'trial' => $trial, 'message' => 'Particular Tiral of Customer');
+		return Response::json($resp);
+	}
+
 	
 	
 }

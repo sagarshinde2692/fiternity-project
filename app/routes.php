@@ -228,6 +228,7 @@ Route::get('/getcollecitonfinders/{slug}', 'HomeController@getcollecitonfinders'
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
 Route::get('/autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
+Route::get('/autobooktrial/{trialid}',  array('as' => 'customer.autobooktrial','uses' => 'CustomerController@getAutoBookTrial'));
 
 
 /******************** CUSTOMERS SECTION END HERE ********************/
