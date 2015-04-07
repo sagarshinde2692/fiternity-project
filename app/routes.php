@@ -14,8 +14,9 @@ Route::get('/testcountrysms', function() {
 
 	$user 			=	"chaitu87"; //your username
 	$password 		=	"564789123"; //your password
-	$mobilenumbers 	=	"919004483103"; //enter Mobile numbers comma seperated
-	$message  		=	"test messgae from SMSCountry"; //enter Your Message
+	// $mobilenumbers 	=	"919004483103"; //enter Mobile numbers comma seperated
+	$mobilenumbers 	=	"919730401839"; //enter Mobile numbers comma seperated
+	$message  		=	"Hey Primi. Your workout session is confirmed for December 2, 2015 (Tuesday), 5.00 PM for Zumba at Fitness First, Andheri (West). Thank you for using Fitternity.com. For any queries call us on +91 92222 21131 or reply to this message."; //enter Your Message
 	$senderid 		=	"FTRNTY"; //Your senderid
 	$messagetype 	=	"N"; //Type Of Your Message
 	$DReports 		=	"Y"; //Delivery Reports
