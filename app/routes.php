@@ -14,7 +14,7 @@ Route::get('/testcountrysms', function() {
 
 	$user 			=	"chaitu87"; //your username
 	$password 		=	"564789123"; //your password
-	$mobilenumbers 	=	"919773348762"; //enter Mobile numbers comma seperated
+	$mobilenumbers 	=	"919004483103"; //enter Mobile numbers comma seperated
 	$message  		=	"test messgae from SMSCountry"; //enter Your Message
 	$senderid 		=	"FTRNTY"; //Your senderid
 	$messagetype 	=	"N"; //Type Of Your Message
@@ -226,7 +226,7 @@ Route::get('/getcollecitonfinders/{slug}', 'HomeController@getcollecitonfinders'
 
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
-Route::get('/autobooktrials/{customerid}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
+Route::get('/autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
 
 
 /******************** CUSTOMERS SECTION END HERE ********************/
