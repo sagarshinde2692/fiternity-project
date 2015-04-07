@@ -38,7 +38,7 @@ class CustomerController extends \BaseController {
 		$trial 			=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 									  ->where('_id', '=', intval($trialid) )->where('going_status', '=', 1)->first($selectfields);
 
-		if($trial){
+		if(!$trial){
 			$resp 	= 	array('status' => 200, 'trial' => $trial, 'message' => 'No trial Exist :)');
 			return Response::json($resp);
 		}
