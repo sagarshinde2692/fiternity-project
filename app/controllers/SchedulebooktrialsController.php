@@ -302,7 +302,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$trialbooked 	= 	$booktrial->update($queueddata);
 		}
 
-		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
+		$resp 	= 	array('status' => 200, 'trialdata' => $trialbooked, 'message' => "Book a Trial");
 		return Response::json($resp);	
 	}
 
