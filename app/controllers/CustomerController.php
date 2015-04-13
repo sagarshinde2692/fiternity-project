@@ -54,8 +54,8 @@ class CustomerController extends \BaseController {
 		// Log::info(Input::all());
 
 		File::append(app_path().'/queue.txt', " **********************************************************************************************************************************".PHP_EOL); 
-		File::append(app_path().'/queue.txt', Input::all().PHP_EOL); 
-		
+		File::append(app_path().'/queue.txt', var_dump(Input::all()).PHP_EOL); 
+
 		return Input::all();
 	}
 
