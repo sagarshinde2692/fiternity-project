@@ -15,7 +15,7 @@ Route::get('/testcountrysms', function() {
 	$user 			=	"chaitu87"; //your username
 	$password 		=	"564789123"; //your password
 	// $mobilenumbers 	=	"919004483103"; //enter Mobile numbers comma seperated
-	$mobilenumbers 	=	"919730401839"; //enter Mobile numbers comma seperated
+	$mobilenumbers 	=	"919773348762"; //enter Mobile numbers comma seperated
 	$message  		=	"Hey Primi. Your workout session is confirmed for December 2, 2015 (Tuesday), 5.00 PM for Zumba at Fitness First, Andheri (West). Thank you for using Fitternity.com. For any queries call us on +91 92222 21131 or reply to this message."; //enter Your Message
 	$senderid 		=	"FTRNTY"; //Your senderid
 	$messagetype 	=	"N"; //Type Of Your Message
@@ -109,9 +109,6 @@ class WriteClass {
 }
 
 
-
-
-
 Route::get('/testpushemail', function() { 
 
 	$email_template = 'emails.testemail1';
@@ -183,33 +180,14 @@ class WriteFile {
 
 }
 
-Route::get('sendemailtofinder', function() { 
-
-	// return $currentDateTime = new DateTime('16-03-2015');
-	// echo $currentDateTime 		=	Carbon::now()->addDays(1);
-
-	// echo new DateTime('+1 day');
-
-	$tommorowDateTime = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
-	$finders = Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
-
-	foreach ($finders as $finderid => $trials) {
-		echo "<br><br> finderid  ---- ".$finderid;
-		// $findertirals  = $trials->toArray();
-		print_r($trials);
-		echo "<br><br>************************";
-	}
-});
-
-
-
 Route::get('migrateratecards/', array('as' => 'finders.migrateratecards','uses' => 'FindersController@migrateratecards'));
 Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' => 'FindersController@updatepopularity'));
 
 
+
+
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
-
 
 
 Route::get('/home', 'HomeController@getHomePageData');
@@ -224,11 +202,11 @@ Route::get('/getcollecitonfinders/{slug}', 'HomeController@getcollecitonfinders'
 
 
 
-
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
 Route::get('/autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
 Route::get('/autobooktrial/{trialid}',  array('as' => 'customer.autobooktrial','uses' => 'CustomerController@getAutoBookTrial'));
+Route::post('capturepayment',  array('as' => 'customer.capturepayment','uses' => 'CustomerController@capturePayment'));
 
 
 /******************** CUSTOMERS SECTION END HERE ********************/

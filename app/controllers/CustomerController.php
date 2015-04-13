@@ -47,6 +47,13 @@ class CustomerController extends \BaseController {
 		return Response::json($resp);
 	}
 
+
+	//capturePayment for book schedule 
+	public function capturePayment(){
+
+		return Input::all();
+	}
+
 	
 	
 }
