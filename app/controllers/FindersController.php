@@ -158,6 +158,10 @@ class FindersController extends \BaseController {
 		array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
 		if($finder->update($finderdata)){
 			$this->pushfinder2elastic($finderslug); 
+
+			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count);
+			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
+			return Response::json($resp);
 		}
 
 	}
