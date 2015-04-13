@@ -51,21 +51,22 @@ class CustomerController extends \BaseController {
 	//capturePayment for book schedule 
 	public function capturePayment(){
 
-		// File::append(app_path().'/queue.txt', " **********************************************************************************************************************************".PHP_EOL); 
+		// File::append(app_path().'/queue.txt', " ****************************************************".PHP_EOL); 
 		// File::append(app_path().'/queue.txt', json_encode(Input::all()).PHP_EOL); 
+
 		$data					=	Input::all();
 		$orderid 				=	Booktrialorder::max('_id') + 1;
 		$booktrialorder 		= 	new Booktrialorder($data);
 		$booktrialorder->_id 	= 	$orderid;
 		$order   				= 	$booktrialorder->save();
 
-		if(Input::get('status') == 'success'){
-			$resp 	= 	array('status' => 200, 'order' => $order, 'message' => 'Transaction Successful :)');
-			return Response::json($resp);
-		}
+		// if(Input::get('status') == 'success'){
+		// 	$resp 	= 	array('status' => 200, 'order' => $order, "message" => "Transaction Successful :)");
+		// 	return Response::json($resp);
+		// }
 
-		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => 'Transaction Failed :)');
-		return Response::json($resp);
+		// $resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction Failed :)");
+		// return Response::json($resp);
 
 	
 	
