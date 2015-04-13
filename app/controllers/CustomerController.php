@@ -50,8 +50,11 @@ class CustomerController extends \BaseController {
 
 	//capturePayment for book schedule 
 	public function capturePayment(){
-		Log::info('**********************************************************************************************************************************');
-		Log::info(Input::all());
+		// Log::info('**********************************************************************************************************************************');
+		// Log::info(Input::all());
+
+		File::append(app_path().'/queue.txt', " **********************************************************************************************************************************".PHP_EOL); 
+		File::append(app_path().'/queue.txt', Input::all().PHP_EOL); 
 		return Input::all();
 	}
 
