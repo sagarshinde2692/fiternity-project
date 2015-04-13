@@ -59,7 +59,7 @@ class CustomerController extends \BaseController {
 		$booktrialorder->_id 	= 	$orderid;
 		$order   				= 	$booktrialorder->save();
 
-		if(Input::get('status')){
+		if(Input::get('status') == 'success'){
 			$resp 	= 	array('status' => 200, 'order' => $order, 'message' => 'Transaction Successful :)');
 			return Response::json($resp);
 		}
