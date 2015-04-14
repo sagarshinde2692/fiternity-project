@@ -50,30 +50,86 @@ class FindersController extends \BaseController {
 			$finderid 			= (int) $finderdata['_id'];
 			$findercategoryid 	= (int) $finderdata['category_id'];
 			$finderlocationid 	= (int) $finderdata['location_id'];	
-			
-			$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-													->where('category_id','=',$findercategoryid)
-													->where('location_id','=',$finderlocationid)
-																																				//->where('finder_type', '=', 1)
-													->where('_id','!=',$finderid)
-													->where('status', '=', '1')
-													->orderBy('finder_type', 'DESC')
-													->remember(Config::get('app.cachetime'))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
-													->take(5)->toArray();	
 
-			$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-													->where('category_id','!=',$findercategoryid)
-													->where('location_id','=',$finderlocationid)
-																						//->where('finder_type', '=', 1)
-													->where('_id','!=',$finderid)
-													->where('status', '=', '1')
-													->orderBy('finder_type', 'DESC')
-													->remember(Config::get('app.cachetime'))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
-													->take(5)->toArray();	
+			//if category is helath tifins or ditesion
+
+
+			if($findercategoryid == 25 || $findercategoryid == 42){
+
+				// $nearby_same_categoryfinders 	= 	Finder::active()->where('_id','!=',$finderid)->where('category_id','=',$findercategoryid)->orWhere(function($query) use($findercategoryid){
+				// 								        		$query->WhereIn('categorytags', array($findercategoryid));
+				// 								    		})->get(array('_id' ))->toArray();
+
+				// return Finder::active()->where('_id','!=',$finderid)->whereIn('categorytags', array(4))
+				// 					->orWhere( function($query){
+				// 						$query->where('category_id','=', 25);
+				// 					})
+				// 					->get(array('_id' ))->toArray();
+
+
+				// return Finder::active()->where('category_id','=', 42)->get(array('_id' ))->toArray();
+
+				// $nearby_same_categoryfinders 	= 	Finder::active()->where('category_id','=', 8)
+				// 						            	->orWhere(function($query){
+				// 						                	// $query->where('category_id','=', 8);
+				// 						                	$query->whereIn('categorytags', array( 8 ));
+				// 						            })
+				// 						            ->get(array('_id' ))->toArray();
+
+
+				// return $nearby_same_categoryfinder_randomids 	= 	array_pluck($nearby_same_categoryfinders, '_id');
+				// return $nearby_same_categoryfinder_randomids; 
+
+
+				$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->where('_id','!=',$finderid)
+														->where('category_id','=',$findercategoryid)
+														->where('status', '=', '1')
+														->remember(Config::get('app.cachetime'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->take(5)->toArray();
+
+				if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; } 
+
+				$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->where('_id','!=',$finderid)
+														->where('category_id','=',$other_categoryid)
+														->where('status', '=', '1')
+														->remember(Config::get('app.cachetime'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->take(5)->toArray();														
+
+
+			}else{
+
+				$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->where('category_id','=',$findercategoryid)
+														->where('location_id','=',$finderlocationid)
+														->where('_id','!=',$finderid)
+														->where('status', '=', '1')
+														->orderBy('finder_type', 'DESC')
+														->remember(Config::get('app.cachetime'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->take(5)->toArray();	
+
+				$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->where('category_id','!=',$findercategoryid)
+														->where('location_id','=',$finderlocationid)
+														->where('_id','!=',$finderid)
+														->where('status', '=', '1')
+														->orderBy('finder_type', 'DESC')
+														->remember(Config::get('app.cachetime'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->take(5)->toArray();					
+			}
+
+			
+
+
 
 			$data['finder'] 						= 		$finder;
 			$data['statusfinder'] 					= 		200;
