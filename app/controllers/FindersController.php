@@ -86,6 +86,7 @@ class FindersController extends \BaseController {
 														->where('_id','!=',$finderid)
 														->where('category_id','=',$findercategoryid)
 														->where('status', '=', '1')
+														->orderBy('popularity', 'DESC')
 														->remember(Config::get('app.cachetime'))
 														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
 														->take(5)->toArray();
@@ -97,6 +98,7 @@ class FindersController extends \BaseController {
 														->where('_id','!=',$finderid)
 														->where('category_id','=',$other_categoryid)
 														->where('status', '=', '1')
+														->orderBy('popularity', 'DESC')
 														->remember(Config::get('app.cachetime'))
 														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
 														->take(5)->toArray();														
