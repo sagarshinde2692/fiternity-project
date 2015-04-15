@@ -20,8 +20,7 @@ class CustomerController extends \BaseController {
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 										->where('customer_email', '=', $customeremail)
-										->where('going_status', '=', 1)
-										->orWhere('going_status', '=', 2)
+										->whereIn('booktrial_type', array('auto'))
 										->orderBy('_id', 'desc')
 										->get($selectfields)->toArray();
 
@@ -30,16 +29,17 @@ class CustomerController extends \BaseController {
 			return Response::json($resp);
 		}
 
-		$currentDateTime 	=	\Carbon\Carbon::now();
-		$customertrials 	= 	array();
+		$customertrials  = 	$trial = array();
+		$currentDateTime =	\Carbon\Carbon::now();
 		foreach ($trials as $trial){
-			$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($slot['schedule_date_time']));
+			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-			array_set($trial, 'passed', $slot_datetime_pass_status); 
+			array_set($trial, 'passed', $slot_datetime_pass_status);
+			// return $trial; 
 			array_push($customertrials, $trial);
 		}
 
-		$resp 	= 	array('status' => 200,'trials' => $trials,'message' => 'List of scheduled trials');
+		$resp 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
 		return Response::json($resp);
 	}
 
