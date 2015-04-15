@@ -17,13 +17,26 @@ class CustomerController extends \BaseController {
     // Listing Schedule Tirals for Customer
 	public function getAutoBookTrials($customeremail){
 
-		$selectfields 	=	array('finder', 'finder_id','finder_name','finder_slug','service_name','schedule_date','schedule_slot_start_time','schedule_slot_end_time','code');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-										->where('customer_email', '=', $customeremail)->where('going_status', '=', 1)->orderBy('_id', 'desc')->get($selectfields)->toArray();
+										->where('customer_email', '=', $customeremail)
+										->where('going_status', '=', 1)
+										->orWhere('going_status', '=', 2)
+										->orderBy('_id', 'desc')
+										->get($selectfields)->toArray();
 
 		if(count($trials) < 1){
 			$resp 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
 			return Response::json($resp);
+		}
+
+		$currentDateTime 	=	\Carbon\Carbon::now();
+		$customertrials 	= 	array();
+		foreach ($trials as $trial){
+			$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($slot['schedule_date_time']));
+			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+			array_set($trial, 'passed', $slot_datetime_pass_status); 
+			array_push($customertrials, $trial);
 		}
 
 		$resp 	= 	array('status' => 200,'trials' => $trials,'message' => 'List of scheduled trials');

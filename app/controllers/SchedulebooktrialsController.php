@@ -66,7 +66,7 @@ class SchedulebooktrialsController extends \BaseController {
 				array_set($slot, 'status', $slot_status);
 
 				$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']))->subMinutes(1);
-				// $oneHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
+				// $oneHourDiffInMin 			= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
 				$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
 				array_set($slot, 'passed', $slot_datetime_pass_status); 
 
