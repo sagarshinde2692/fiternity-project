@@ -74,11 +74,11 @@ class CustomerController extends \BaseController {
 		$order   				= 	$booktrialorder->save();
 
 		if(Input::get('status') == 'success'){
-			$resp 	= 	array('status' => 200, 'order' => $order, "message" => "Transaction Successful :)");
+			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 			return Response::json($resp);
 		}
 
-		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction Failed :)");
+		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
 		return Response::json($resp);
 
 	}
