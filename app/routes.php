@@ -129,23 +129,6 @@ Route::get('/testpushemail', function() {
 	// 	});
 	// return var_dump($messageid1);
 
-	// $messageid2 = Mail::later(Carbon::now()->addMinutes(5), $email_template, $email_template_data, function($message) use ($email_message_data){
-	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 	->bcc($email_message_data['bcc_emailids'])
-	// 	->subject($email_message_data['email_subject'].' delay by 5 min -- '.date( "Y-m-d H:i:s", time()));
-	// });
-
-	// $messageid3 = Mail::later(Carbon::now()->addMinutes(10), $email_template, $email_template_data, function($message) use ($email_message_data){
-	// 	$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 	->bcc($email_message_data['bcc_emailids'])
-	// 	->subject($email_message_data['email_subject'].' delay by 10 min -- '.date( "Y-m-d H:i:s", time()));
-	// });
-
-	// echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3<br>messageid4  -- $messageid4 <br>messageid5 -- $messageid5";
-	// // sleep(60 * 5);
-	// echo "<br>messageid1 -- $messageid1 <br>messageid2 -- $messageid2 <br>messageid3 -- $messageid3";
-	// echo $deleteid = Queue::deleteMessage('app',$messageid2);
-
 	// echo $deleteid = Queue::deleteReserved('default',$messageid1);
 
 });

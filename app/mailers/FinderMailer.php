@@ -60,7 +60,7 @@ Class FinderMailer extends Mailer {
 			'user_email' => Config::get('mail.to_mailus'),
 			'user_name' =>  $data['finder_poc_for_customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Daily report on customers who have booked sessions for tomorrow'
+			'email_subject' => 'Daily report on customers who have booked sessions for tomorrow with '.ucwords($data['finder_name']) 
 			);
 		// echo "<pre>";print_r($data);exit;
 		return $this->sendTo($email_template, $template_data, $message_data);

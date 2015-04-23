@@ -140,7 +140,7 @@ img[class="image-banner"]{width: 280px!important;height:68px!important;}
 
                 <tr>
                   <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-                    <p style="padding-top:10px">Hi, </p>
+                    <p style="padding-top:10px">Hi , </p>
                     <p style="padding-top:10px">Greetings from Fitternity.com</p>
                     <p style="padding-top:10px">Daily report on customers who have booked sessions for tomorrow.
 
