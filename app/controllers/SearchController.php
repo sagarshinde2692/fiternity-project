@@ -848,24 +848,24 @@ class SearchController extends \BaseController {
 		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
-		$city 				=	(Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';	
+		$city 				=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
 		$city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
 
-		$category 				=	(Input::json()->get('category')) ? Input::json()->get('category') : '';		
-		$location 				=	(Input::json()->get('location')) ? Input::json()->get('location') : '';		
-		$offerings 				=	(Input::json()->get('offerings')) ? Input::json()->get('offerings') : '';		
-		$facilities 			=	(Input::json()->get('facilities')) ? Input::json()->get('facilities') : '';		
-		$price_range 			=	(Input::json()->get('price_range')) ? Input::json()->get('price_range') : '';			
+		$category 				=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : '';		
+		$location 				=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : '';		
+		$offerings 				=	(Input::json()->get('offerings')) ? strtolower(Input::json()->get('offerings')) : '';		
+		$facilities 			=	(Input::json()->get('facilities')) ? strtolower(Input::json()->get('facilities')) : '';		
+		$price_range 			=	(Input::json()->get('price_range')) ? strtolower(Input::json()->get('price_range')) : '';			
 
 		//filters 
 		$city_filter 			= ($city != '') ? '{"terms" : {  "city": ["'.str_ireplace(',', '","', $city ).'"] }},'  : '';
-		$category_filter 		= ($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';		
-		$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","',Input::json()->get('category')).'"] }},'  : '';
-		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
-		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('location')).'"] }},'  : '';	
-		$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
-		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';	
-		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","',Input::json()->get('price_range')).'"] }},'  : '';	
+		$category_filter 		= ($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"] }},'  : '';		
+		$categorytags_filter 	= ($category != '') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"] }},'  : '';
+		$location_filter 		= ($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('location'))).'"] }},'  : '';	
+		$locationtags_filter 	= ($location != '') ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('location'))).'"] }},'  : '';	
+		$offerings_filter 		= ($offerings != '') ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('offerings'))).'"] }},'  : '';
+		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('facilities'))).'"] }},'  : '';	
+		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('price_range'))).'"] }},'  : '';	
 
 		$shouldfilter = $mustfilter = '';
 		
