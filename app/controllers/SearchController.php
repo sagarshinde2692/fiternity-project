@@ -848,7 +848,7 @@ class SearchController extends \BaseController {
 		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
-		$city 				=	(Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';	
+		$city 				=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
 		$city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
 
 		$category 				=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : '';		
