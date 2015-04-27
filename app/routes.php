@@ -167,7 +167,38 @@ Route::get('migrateratecards/', array('as' => 'finders.migrateratecards','uses' 
 Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' => 'FindersController@updatepopularity'));
 
 
+Route::get('/findercsv', function() { 
 
+	$headers = [
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=mumbaifinders.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
+	];
+
+
+	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						->where('city_id', 1)
+						->take(2)
+						->orderBy('id', 'desc')
+						->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
+
+	// return $finders;
+	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, TYPE \n";
+
+	foreach ($finders as $key => $value) {
+
+		$output .= "$value->_id, $value->title, $value->slug, ".$value->category->name.", ".$value->location->name .", $value->finder_type\n";
+	}
+
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
+
+});
 
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
