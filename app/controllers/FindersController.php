@@ -274,7 +274,7 @@ class FindersController extends \BaseController {
 				}
 				$scheduledata = array('user_name'	=> 'sanjay sahu',
 					'user_email'					=> 'sanjay.id7@gmail',
-					'finder_name'					=> $finder->name,
+					'finder_name'					=> $finder->title,
 					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
 					'finder_vcc_email'				=> $finder->finder_vcc_email,	
 					'scheduletrials' 				=> $trialdata
@@ -284,7 +284,7 @@ class FindersController extends \BaseController {
 			}	  
 		}
 
-		return $resp 	= 	array('status' => 200,'message' => "Email Send");
+		$resp 	= 	array('status' => 200,'message' => "Email Send");
 		return Response::json($resp);	
 
 	}
