@@ -55,10 +55,10 @@ class FindersController extends \BaseController {
 		array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 		array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
 
-		return $finder;		
+		// return $finder;		
 
 		if($finder){
-			$finderdata 		=	$finder->toArray();
+			$finderdata 		=	$finder;
 			$finderid 			= (int) $finderdata['_id'];
 			$findercategoryid 	= (int) $finderdata['category_id'];
 			$finderlocationid 	= (int) $finderdata['location_id'];	
