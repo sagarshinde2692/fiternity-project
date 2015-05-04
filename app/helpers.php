@@ -211,4 +211,28 @@ if (!function_exists('sort_by_order')) {
         return $a['order'] - $b['order'];
     }
 }
+
+
+if (!function_exists('pluck')) {
+
+    function pluck ($array, $property = array()){
+
+        $returnArr = array();
+
+        foreach ($array as $key => $value) {
+
+            foreach ($property as $k => $val) {
+
+                $returnArr[$key][$val] = array_get( $array[$key] , $val );
+
+            }
+
+        }            
+
+        return $returnArr;
+
+    }
+}
+
+
 ?>

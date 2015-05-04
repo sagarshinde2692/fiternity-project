@@ -33,9 +33,10 @@ class FindersController extends \BaseController {
 	}
 
 	public function finderdetail($slug){
-		$data 	= array();
+
+		$data 	=  array();
 		$tslug 	= (string) $slug;
-		$finder = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+		$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 						->with('categorytags')
@@ -44,7 +45,18 @@ class FindersController extends \BaseController {
 						->with('facilities')
 						->with('servicerates')
 						->where('slug','=',$tslug)
-						->first();
+						->first()->toArray();
+
+		// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
+		$finder 		= 	array_except($finderarr, array('categorytags','locationtags','offerings','facilities')); 
+		// array_set($finder, 'categorytags', array_map('strtolower',array_pluck($finderarr['categorytags'],'name' )));
+		array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
+		array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
+		array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
+		array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
+
+		return $finder;		
+
 		if($finder){
 			$finderdata 		=	$finder->toArray();
 			$finderid 			= (int) $finderdata['_id'];
