@@ -44,6 +44,7 @@ class FindersController extends \BaseController {
 						->with('offerings')
 						->with('facilities')
 						->with('servicerates')
+						->with('services')
 						->where('slug','=',$tslug)
 						->first()->toArray();
 

@@ -36,6 +36,23 @@ Route::get('/testcountrysms', function() {
 });
 
 
+
+Route::get('/updatefinder', function() { 
+
+	$items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
+		//exit;				
+	$finderdata = array();
+	foreach ($items as $item) {  
+		$data 	= $item->toArray();
+			//print_pretty($data);
+		array_set($finderdata, 'status', '0');
+		$finder = Finder::findOrFail($data['_id']);
+		$response = $finder->update($finderdata);
+		print_pretty($response);
+	}
+});
+
+
 Route::get('/testdate', function() { 
 
 	return Carbon::now();
@@ -180,12 +197,12 @@ Route::get('/findercsv', function() {
 
 
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-						->where('city_id', 1)
-						->take(2)
-						->orderBy('id', 'desc')
-						->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
+	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->where('city_id', 1)
+	->take(2)
+	->orderBy('id', 'desc')
+	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, TYPE \n";
@@ -251,6 +268,8 @@ Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton'
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 
+
+
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -263,6 +282,8 @@ Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'Sched
 Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
 Route::post('manual2ndbooktrial', array('as' => 'finders.storemanual2ndbooktrial','uses' => 'SchedulebooktrialsController@manual2ndBookTrial'));
 
+Route::get('gettrialschedule/{finderid}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
+Route::get('getworkoutsessionschedule/{finderid}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 
 
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/

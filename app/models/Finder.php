@@ -73,4 +73,7 @@ class Finder extends  \Basemodel {
 		return $this->hasMany('Ratecard','finder_id');
 	}
 
+	public function services(){
+		return $this->hasMany('Service','finder_id');
+	}
 }
