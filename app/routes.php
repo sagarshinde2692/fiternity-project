@@ -36,6 +36,12 @@ Route::get('/testcountrysms', function() {
 });
 
 
+Route::get('/users', function() { 
+
+	$user = User::count();
+	
+	return $user;
+});
 
 Route::get('/updatefinder', function() { 
 
@@ -197,12 +203,12 @@ Route::get('/findercsv', function() {
 
 
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->where('city_id', 1)
-	->take(2)
-	->orderBy('id', 'desc')
-	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
+										->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+										->where('city_id', 1)
+										->take(2)
+										->orderBy('id', 'desc')
+										->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, TYPE \n";
@@ -282,8 +288,8 @@ Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'Sched
 Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
 Route::post('manual2ndbooktrial', array('as' => 'finders.storemanual2ndbooktrial','uses' => 'SchedulebooktrialsController@manual2ndBookTrial'));
 
-Route::get('gettrialschedule/{finderid}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
-Route::get('getworkoutsessionschedule/{finderid}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
+Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
+Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 
 
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/
