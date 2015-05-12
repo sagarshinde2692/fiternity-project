@@ -231,8 +231,12 @@ Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
+
 Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 Route::get('/yfc_finders', 'HomeController@yfc_finders');
+
+Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
+
 Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 

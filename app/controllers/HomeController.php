@@ -211,6 +211,7 @@ class HomeController extends BaseController {
 	}
 
 
+
 	public function getcollecitonnames($city = 'mumbai'){
 		
 		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
@@ -233,6 +234,8 @@ class HomeController extends BaseController {
 
 	}
 
+
+
 	public function getcollecitonfinders($city, $slug){
 
 		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
@@ -253,6 +256,22 @@ class HomeController extends BaseController {
 		$data 				= 	array('status' => 200,'collection' => $collection,'collection_finders' => $collection_finders);
 		
 		return Response::json($data);	
+	}
+
+
+	public function fitcardfinders(){
+
+		$fitcardids = array_unique(array(16641214,1587,147,217,417,579,596,752,825,827,878,905,1021,1031,1376,1388,1451,1493,1495,1516,1630,1650,1765,1783,1965,2211,2736,1473,741,984,1496,2810,1752,2818,1346,1668,2755,2833,3109,1751,624,393,1692,2865,1770,677,902,1243,1623,1766,224,2808,232,566,
+										881,900,1563,968,1704,1885,351,424,599,571,816,1588,1080,131,1606,1813,1673,,1732,590,1242,1431,1607,1452,1747,400,613,616,633,975,987,1309,1604,1676,1750,2207,341,1784,1656,1642,1621,575,877));
+		
+		$finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+										->whereIn('_id', $fitcardids)
+										->remember(Config::get('app.cachetime'))
+										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','contact'))
+										->toArray();
+
+		return Response::json($finders);										
 	}
 
 
