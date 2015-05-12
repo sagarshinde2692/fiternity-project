@@ -101,8 +101,7 @@ class HomeController extends BaseController {
 											->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 											->take(4)->toArray();		
 
-		$homedata 				= 	array(			
-										'categorytags' => $categorytags,
+		$homedata 				= 	array('categorytags' => $categorytags,
 										'locations' => $locations,
 										'popular_finders' => $popular_finders,       
 										'recent_blogs' => $recent_blogs,
@@ -267,9 +266,10 @@ class HomeController extends BaseController {
 		
 		$finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+										->with('facilities')
 										->whereIn('_id', $fitcardids)
 										->remember(Config::get('app.cachetime'))
-										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','contact'))
+										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','facilities','facilities','photos'))
 										->toArray();
 
 		return Response::json($finders);										
