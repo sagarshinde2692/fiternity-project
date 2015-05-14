@@ -8,7 +8,7 @@
 					<tr>
 						<td>
 							<p style="font-size:16px;color:#464646;text-align:justify;">
-								Hello,<br> There is a request for Callback.
+								 Review given on vendor page.
 							</p>
 							<br>
 							<table border="1" bordercolor="#2c3e50" align="center">

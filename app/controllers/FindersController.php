@@ -246,11 +246,12 @@ class FindersController extends \BaseController {
 				'to' => Config::get('mail.to_neha'), 
 				'reciver_name' => 'Fitternity',
 				'bcc_emailids' => Config::get('mail.bcc_emailds_review'), 
-				'email_subject' => 'Review for - ' .ucwords($finderslug)
+				'email_subject' => 'Review given for - ' .ucwords($finderslug)
 				);
 
-			$email = Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+			$email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
 					$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+					// $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
 			});
 
 			// if($email){
