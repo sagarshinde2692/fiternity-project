@@ -240,7 +240,7 @@ class FindersController extends \BaseController {
 			//sending email
 			$email_template = 'emails.review';
 			
-			$email_template_data = array( 'vendor' 	=>	ucwords($finder->slug) ,  'date' 	=>	date("h:i:sa") );
+			$email_template_data = array( 'vendor' 	=>	ucwords($finderslug) ,  'date' 	=>	date("h:i:sa") );
 			
 			$email_message_data = array(
 				'to' => Config::get('mail.to_neha'), 
