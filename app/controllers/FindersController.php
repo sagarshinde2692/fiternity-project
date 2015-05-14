@@ -202,7 +202,7 @@ class FindersController extends \BaseController {
 
 		$tslug 		= 	(string) $slug;
 		$result 	= 	$this->finderdetail($tslug);		
-		$data 		= 	$result['finder']->toArray();
+		$data 		= 	$result['finder'];
 		$postdata 	= 	get_elastic_finder_document($data);
 
 		$request = array(
@@ -249,10 +249,13 @@ class FindersController extends \BaseController {
 				'email_subject' => 'Review for - ' .ucwords($finderslug)
 				);
 
-			Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
+			$email = Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
 					$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
 			});
 
+			// if($email){
+			// 	echo "send";
+			// }
 			//sending response
 			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count);
 			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
