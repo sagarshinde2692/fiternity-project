@@ -266,10 +266,9 @@ class HomeController extends BaseController {
 		
 		$finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-										->with('facilities')
 										->whereIn('_id', $fitcardids)
 										->remember(Config::get('app.cachetime'))
-										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','facilities','facilities','photos'))
+										->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','contact'))
 										->toArray();
 
 		return Response::json($finders);										

@@ -1068,14 +1068,14 @@ public function geoLocationFinder(){
 				"script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
 			}
 		},"sort": [
-    {
-      "_geo_distance": {
-        "geolocation": "'.$lat.', '.$lon.'",
-        "order": "asc",
-        "unit": "km"
-      }
-    }
-  ]
+		    {
+		      "_geo_distance": {
+		        "geolocation": "'.$lat.', '.$lon.'",
+		        "order": "asc",
+		        "unit": "km"
+		      }
+		    }
+		  ]
 	}';
 
 	$serachbody = $body;
