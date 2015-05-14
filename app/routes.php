@@ -36,11 +36,19 @@ Route::get('/testcountrysms', function() {
 });
 
 
-Route::get('/users', function() { 
+Route::get('/updateextra', function() { 
 
-	$user = User::count();
-	
-	return $user;
+	$items = Finder::active()->get();
+	$finderdata = array();
+
+	foreach ($items as $item) {  
+		$finderdata = $item->toArray();
+		array_set($finderdata, 'extratab_contents', array() );
+		$finder = Finder::findOrFail($finderdata['_id']);
+		$response = $finder->update($finderdata);
+
+	}
+
 });
 
 Route::get('/updatefinder', function() { 
@@ -203,12 +211,12 @@ Route::get('/findercsv', function() {
 
 
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-										->where('city_id', 1)
-										->take(2)
-										->orderBy('id', 'desc')
-										->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
+	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->where('city_id', 1)
+	->take(2)
+	->orderBy('id', 'desc')
+	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, TYPE \n";
