@@ -249,7 +249,7 @@ class FindersController extends \BaseController {
 				'email_subject' => 'Review for - ' .ucwords($finderslug)
 				);
 
-			Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+			Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
 					$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
 			});
 
