@@ -223,17 +223,44 @@ class FindersController extends \BaseController {
 		$average_rating =  round(floatval(Input::json()->get('average_rating')),1);
 
 		$finderdata = array();
+		
 		$finder = Finder::findOrFail($finderid);
+		
 		$finderslug = $finder->slug;
+		
 		array_set($finderdata, 'average_rating', round($average_rating,1));
+		
 		array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
+
 		if($finder->update($finderdata)){
+			
+			//updating elastic search	
 			$this->pushfinder2elastic($finderslug); 
 
+			//sending email
+			$email_template = 'emails.review';
+			
+			$email_template_data = array( 'vendor' 	=>	ucwords($finder->slug) ,  'date' 	=>	date("h:i:sa") );
+			
+			$email_message_data = array(
+				'to' => Config::get('mail.to_neha'), 
+				'reciver_name' => 'Fitternity',
+				'bcc_emailids' => Config::get('mail.bcc_emailds_review'), 
+				'email_subject' => 'Review for - ' .ucwords($finderslug)
+				);
+
+			Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
+					$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+			});
+
+			//sending response
 			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count);
 			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
+			
 			return Response::json($resp);
 		}
+
+
 
 	}
 
