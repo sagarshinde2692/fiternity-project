@@ -365,6 +365,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'customer_name' 				=>		$customer_name, 
 				'customer_email' 				=>		$customer_email, 
 				'customer_phone' 				=>		$customer_phone,
+				'fitcard_user'					=>		$fitcard_user,
 
 				'finder_id' 					=>		$finderid,
 				'finder_name' 					=>		$finder_name,
