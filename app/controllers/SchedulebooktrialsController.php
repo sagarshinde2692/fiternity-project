@@ -332,7 +332,8 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_id 						=	Input::json()->get('customer_id'); 
 			$customer_name 						=	Input::json()->get('customer_name'); 
 			$customer_email 					=	Input::json()->get('customer_email'); 
-			$customer_phone 					=	Input::json()->get('customer_phone');	
+			$customer_phone 					=	Input::json()->get('customer_phone');
+			$fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
