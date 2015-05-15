@@ -1,21 +1,35 @@
 <?php
 
 class SearchController extends \BaseController {
+
 	protected $indice = "fitternity";
+	
 	protected $facetssize 					=	10000;
+	
 	protected $limit 						= 	10000;
+	
 	protected $elasticsearch_host           =   "";
+	
 	protected $elasticsearch_port           =   "";
+	
 	protected $elasticsearch_default_index  =   "";
+	
 	protected $elasticsearch_url            =   "";
+	
 	protected $elasticsearch_default_url    =   "";
 
 	public function __construct() {
+		
 		parent::__construct();	
+		
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
+		
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
+		
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
+		
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
+		
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 	}
 
@@ -804,7 +818,7 @@ class SearchController extends \BaseController {
 		}';
 
 
-		//return $body;exit;
+		// return $body;exit;
 
 		$serachbody = $body;
 		$request = array(
