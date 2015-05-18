@@ -85,7 +85,9 @@ Route::get('/testdate', function() {
 
 Route::get('/testpushnotification', function() { 
 
-	PushNotification::app('appNameAndroid')->to('APA91bG_gkVGxr6atdmGbMGGHWLP82U2o91HjU-UKu27gtEFy1a-9TVXYg7gVr0Q_DLEPEtpE-0z6K5f2nuL9i_SPeRySLy0Typtt7ZjQRi4yHc49R5EQg44gAGuovNpP76UbC8wuIL8VCjgNVXD2UEXmwnVFvQJDw')->send('Hello World, i`m a push message');
+	PushNotification::app('appNameAndroid')
+					->to('APA91bG_gkVGxr6atdmGbMGGHWLP82U2o91HjU-UKu27gtEFy1a-9TVXYg7gVr0Q_DLEPEtpE-0z6K5f2nuL9i_SPeRySLy0Typtt7ZjQRi4yHc49R5EQg44gAGuovNpP76UbC8wuIL8VCjgNVXD2UEXmwnVFvQJDw')
+					->send('Hello World, i`m a push message');
 
 });
 
@@ -211,12 +213,12 @@ Route::get('/findercsv', function() {
 
 
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->where('city_id', 1)
-	->take(2)
-	->orderBy('id', 'desc')
-	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
+								->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+								->where('city_id', 1)
+								->take(2)
+								->orderBy('id', 'desc')
+								->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, TYPE \n";
