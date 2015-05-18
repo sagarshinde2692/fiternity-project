@@ -355,7 +355,6 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
 
-
 			$service_name						=	strtolower(Input::json()->get('service_name'));
 			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
 			$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
@@ -365,6 +364,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 
 			$booktrialdata = array(
+				'booktrialid'					=>		$booktrialid,
 				'premium_session' 				=>		$premium_session, 
 
 				'customer_id' 					=>		$customer_id, 
@@ -402,7 +402,6 @@ class SchedulebooktrialsController extends \BaseController {
 				'source'						=>		'website'	
 				);
 
-
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
 			$booktrial = new Booktrial($booktrialdata);
@@ -418,7 +417,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
-					//Send Instant (Email) To Customer & Finder
+			//Send Instant (Email) To Customer & Finder
 			$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
 			$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
 			$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
@@ -434,7 +433,8 @@ class SchedulebooktrialsController extends \BaseController {
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
 			// $sndBefore1MinEmailCustomer			= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 			// $sndBefore1MinSmsCustomer			=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
-			$sndBefore1MinNotificationCustomer		=	$this->customernotification->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndBefore1MinNotificationCustomer		=	$this->customernotification->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+
 
 			//#############  TESTING FOR 1 MIN END ##############
 
@@ -480,9 +480,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$trialbooked 	= 	$booktrial->update($queueddata);
 		}
 
-			$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-			return Response::json($resp,200);	
-		}
+		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+		return Response::json($resp,200);	
+	}
 
 
 	/**

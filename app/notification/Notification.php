@@ -2,21 +2,23 @@
 
 use Queue;
 
+use PushNotification;
+
 abstract Class Notification {
 
-	public function sendTo($to, $message, $delay = null, $type = 'generic'){
+	public function sendTo($to, $message, $delay = null, $title = "Fitternity", $booktrialid, $type = "generic", $slug){
 
-        // return $to;
+        // return "$to, $message, $delay, $title , $booktrialid, $type , $slug";
 
 		if($delay == null){
 
-            $messageid = Queue::push(function($job) use ($to, $message, $type){ 
+            $messageid = Queue::push(function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
 
                 $job_id = $job->getJobId(); 
 
                 $msg = strip_tags($message);
 
-                PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => "Fitternity", 'type' => $type));
+                PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
 
                 $job->delete();  
 
@@ -28,13 +30,13 @@ abstract Class Notification {
 
             $seconds    =   $this->getSeconds($delay);
 
-            $messageid  =   Queue::later($seconds, function($job) use ($to, $message, $type){ 
+            $messageid  =   Queue::later($seconds, function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
 
                 $job_id = $job->getJobId();
                 
                 $msg = strip_tags($message); 
 
-                PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => "Fitternity", 'type' => $type ));
+                PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
 
                 $job->delete();  
 
