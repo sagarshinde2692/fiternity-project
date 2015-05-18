@@ -432,8 +432,9 @@ class SchedulebooktrialsController extends \BaseController {
 			// return "$sndInstantEmailCustomer --- $sndInstantSmsCustomer   ----  $sndInstantEmailFinder   --- $sndInstantSmsFinder ";
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
-			// $sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
-			// $sndBefore1MinSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndBefore1MinEmailCustomer			= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			// $sndBefore1MinSmsCustomer			=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+			$sndBefore1MinNotificationCustomer		=	$this->customernotification->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 
 			//#############  TESTING FOR 1 MIN END ##############
 
@@ -447,13 +448,10 @@ class SchedulebooktrialsController extends \BaseController {
 
 			if($device_id != ''){
 				if($fiveHourDiffInMin >= (5 * 60)){
-
 					$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
 					$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 				}
-				
 			}
-
 
 			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
 			if($oneHourDiffInMin >= 60){

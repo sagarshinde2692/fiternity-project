@@ -85,9 +85,18 @@ Route::get('/testdate', function() {
 
 Route::get('/testpushnotification', function() { 
 
-	PushNotification::app('appNameAndroid')
-					->to('APA91bG_gkVGxr6atdmGbMGGHWLP82U2o91HjU-UKu27gtEFy1a-9TVXYg7gVr0Q_DLEPEtpE-0z6K5f2nuL9i_SPeRySLy0Typtt7ZjQRi4yHc49R5EQg44gAGuovNpP76UbC8wuIL8VCjgNVXD2UEXmwnVFvQJDw')
-					->send('Hello World, i`m a push message');
+	// PushNotification::app('appNameAndroid')
+	// 				->to('APA91bG_gkVGxr6atdmGbMGGHWLP82U2o91HjU-UKu27gtEFy1a-9TVXYg7gVr0Q_DLEPEtpE-0z6K5f2nuL9i_SPeRySLy0Typtt7ZjQRi4yHc49R5EQg44gAGuovNpP76UbC8wuIL8VCjgNVXD2UEXmwnVFvQJDw')
+	// 				->send('Hello World, i`m a push message');
+
+	$response = PushNotification::app('appNameAndroid')
+					->to('APA91bF5pPDQbftrS4SppKxrgZWsBUhHrtCkjdfwZXXrazVD9c-qvGvo8MejFGnZ3iHrhOoKyMQKeX3yHrtY_N4xC0ZHVYfHFmgHdaxw_WWOKP5YTdUdDv0Enr-1CBO2q411M33YKiHYl6PJB5z12W3WNbu2Pphz8A')
+					->send('This is a simple message, takes use to homepage',array( 
+						'title' => "Fitternity",
+						'type' => "generic"
+						));	
+	return Response::json($response,200);	
+
 
 });
 

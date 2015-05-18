@@ -4,22 +4,22 @@ use Queue;
 
 abstract Class Notification {
 
-	public function sendTo($to, $message, $delay = null ){
+	public function sendTo($to, $message, $delay = null, $type = 'generic'){
 
         // return $to;
 
 		if($delay == null){
 
-            $messageid = Queue::push(function($job) use ($to, $message){ 
+            $messageid = Queue::push(function($job) use ($to, $message, $type){ 
 
                 $job_id = $job->getJobId(); 
 
                 $msg = strip_tags($message);
 
-                PushNotification::app('appNameAndroid')->to($to)->send($msg);
+                PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => "Fitternity", 'type' => $type));
 
                 $job->delete();  
-                
+
             }, array(), 'pullapp');
 
             return $messageid;
@@ -28,17 +28,18 @@ abstract Class Notification {
 
             $seconds    =   $this->getSeconds($delay);
 
-            $messageid  =   Queue::later($seconds, function($job) use ($to, $message){ 
+            $messageid  =   Queue::later($seconds, function($job) use ($to, $message, $type){ 
 
                 $job_id = $job->getJobId();
                 
                 $msg = strip_tags($message); 
 
-                PushNotification::app('appNameAndroid')->to($to)->send($msg);
+                PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => "Fitternity", 'type' => $type ));
 
                 $job->delete();  
 
             }, array(), 'pullapp');
+            
             return $messageid;
         }
 
