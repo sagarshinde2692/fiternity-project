@@ -1,6 +1,6 @@
 <?php
 
-class SearchController extends \BaseController {
+class SearchServicesController extends \BaseController {
 
 	protected $indice = "fitternity";
 
@@ -44,7 +44,7 @@ class SearchController extends \BaseController {
 //   "category":"gyms,crossfit",
 //   "location" :"navi mumbai,kandivali east"
 // }
-	public function getFindersv4(){
+	public function asdfasd(){
 
 
 		$searchParams 		= 	array();
