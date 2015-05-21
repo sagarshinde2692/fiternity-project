@@ -44,8 +44,7 @@ class SearchServicesController extends \BaseController {
 //   "category":"gyms,crossfit",
 //   "location" :"navi mumbai,kandivali east"
 // }
-	public function asdfasd(){
-
+	public function getWorkSession(){
 
 		$searchParams 		= 	array();
 		$type 				= 	"finder";		    	

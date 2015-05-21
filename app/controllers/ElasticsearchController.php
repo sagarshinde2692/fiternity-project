@@ -185,10 +185,40 @@ class ElasticsearchController extends \BaseController {
 			}
 		}';
 
+
+		$serivcesmapping = '{
+			"service" :{
+				"_source" : {"enabled" : true },
+				"properties":{
+					"name" : {"type" : "string", "index" : "not_analyzed"},
+					"name_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"category" : {"type" : "string","index" : "not_analyzed"},
+					"category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"subcategory" : {"type" : "string","index" : "not_analyzed"},
+					"subcategory_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"location" : {"type" : "string", "index" : "not_analyzed"},
+					"location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"session_type" : {"type" : "string","index" : "not_analyzed"},
+					"workout_intensity" : {"type" : "string","index" : "not_analyzed"},
+					"workout_tags" : {"type" : "string", "index" : "not_analyzed"},
+					"city" : {"type" : "string","index" : "not_analyzed"},
+					"geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10}
+				}
+			}
+		}';
+
+
+
+
 		switch (strtolower($type)) {
 			case "fitternityfinder":
 			$typemapping 	=	$common_findermapping;
 			$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
+			break;
+
+			case "fitternityservice":
+			$typemapping 	=	$serivcesmapping;
+			$typeurl 		=	$this->elasticsearch_url."fitternity/service/_mapping"; 	
 			break;
 
 			case "fittest":
@@ -208,18 +238,22 @@ class ElasticsearchController extends \BaseController {
 		}
 
 		$postfields_data 	= 	json_encode(json_decode($typemapping,true));
-		$url 				=  	$this->elasticsearch_default_url;
+		// $url 				=  	$this->elasticsearch_default_url;
+
 		$request = array(
 			'url' => $typeurl,
 			'port' => Config::get('elasticsearch.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => $postfields_data
 			);
+
 		return es_curl_request($request);
+
 	}
 
 	 // get all documents from mongodb
 	public function mongo2elastic($type = 'fitternityfinder'){
+
 		$itmes 		=	array();
 		$item   	=	array();
 		$postdata 	=	array();
