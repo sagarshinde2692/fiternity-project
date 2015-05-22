@@ -106,7 +106,84 @@ if (!function_exists('get_elastic_finder_document')) {
             'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
             'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
             );
-        
+
+        return $postfields_data;
+
+    }
+}
+
+
+
+if (!function_exists('get_elastic_service_document')) {
+
+    function get_elastic_service_document($servicedata = array()) {
+
+        $data  = $servicedata;
+
+        $ratecards = $slots =  array();
+
+        if(!empty($servicedata['workoutsessionschedules'])){
+
+            $items = $servicedata['workoutsessionschedules'];
+
+            foreach ($items as $key => $value) {
+
+                if(!empty($items[$key]['slots'])){
+
+                    foreach ($items[$key]['slots'] as $k => $val) {
+
+                        if($value['weekday'] != '' && $val['start_time'] != '' && $val['start_time_24_hour_format'] != '' && $val['price'] != ''){
+
+                            $newslot = ['start_time' => $val['start_time'], 'start_time_24_hour_format' => floatval(number_format($val['start_time_24_hour_format'],2)), 'price' => intval($val['price']) , 'weekday' => $value['weekday']];
+
+                            array_push($slots, $newslot);
+
+                        }
+                    }
+                }
+            }
+        }
+
+
+        if(!empty($servicedata['ratecards'])){
+
+            foreach ($servicedata['ratecards'] as $key => $value) {
+
+                if(isset($value['type']) && isset($value['duration']) && isset($value['price']) ){
+
+                    array_push($ratecards, array('type' => $value['type'], 'special_price' => intval($value['special_price']), 'price' => intval($value['price']), 'duration' => $value['duration']));
+
+                }
+            }
+        }
+
+
+        $postfields_data = array(
+            '_id'                           =>      $data['_id'],
+            
+            'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
+            'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
+            'subcategory'                   =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "", 
+            'subcategory_snow'              =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "", 
+            
+            'geolocation'                   =>      (isset($data['lat']) && $data['lon'] != '')  ? array('lat' => $data['lat'],'lon' => $data['lon']) : '',
+            'location'                      =>      (isset($data['finder']['location']['name']) && $data['finder']['location']['name'] != '') ? strtolower($data['finder']['location']['name']) : "", 
+            'location_snow'                 =>      (isset($data['finder']['location']['name']) && $data['finder']['location']['name'] != '') ? strtolower($data['finder']['location']['name']) : "", 
+            'city'                          =>      (isset($data['finder']['city']['name']) && $data['finder']['city']['name'] != '') ? strtolower($data['finder']['city']['name']) : "", 
+            'country'                       =>      (isset($data['finder']['country']['name']) && $data['finder']['country']['name'] != '') ? strtolower($data['finder']['country']['name']) : "", 
+            'name'                          =>      (isset($data['name']) && $data['name'] != '') ? strtolower($data['name']) : "",
+            'name_snow'                     =>      (isset($data['name']) && $data['name'] != '') ? strtolower($data['name']) : "",
+            'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",
+            
+            'workout_intensity'             =>      (isset($data['workout_intensity']) && $data['workout_intensity'] != '') ? strtolower($data['workout_intensity']) : "",
+            'workout_tags'                  =>      (isset($data['workout_tags']) && !empty($data['workout_tags'])) ? array_map('strtolower',$data['workout_tags']) : "",
+            'workout_tags_snow'             =>      (isset($data['workout_tags']) && !empty($data['workout_tags'])) ? array_map('strtolower',$data['workout_tags']) : "",
+
+            'workoutsessionschedules'       =>      $slots,
+            'ratecards'                     =>      $ratecards
+
+            );
+
         return $postfields_data;
 
     }

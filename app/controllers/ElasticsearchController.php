@@ -202,7 +202,24 @@ class ElasticsearchController extends \BaseController {
 					"workout_intensity" : {"type" : "string","index" : "not_analyzed"},
 					"workout_tags" : {"type" : "string", "index" : "not_analyzed"},
 					"city" : {"type" : "string","index" : "not_analyzed"},
-					"geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10}
+					"geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
+					"ratecards": {
+		                "properties": {
+							"duration" : {"type" : "string", "index" : "not_analyzed"},
+							"price" : {"type" : "integer", "index" : "not_analyzed"},
+							"special_price" : {"type" : "integer", "index" : "not_analyzed"}
+		                },
+		                "type": "nested"
+		            },
+		            "workoutsessionschedules": {
+		                "properties": {
+							"weekday" : {"type" : "string", "index" : "not_analyzed"},
+							"start_time" : {"type" : "string", "index" : "not_analyzed"},
+							"start_time_24_hour_format" : {"type" : "float", "index" : "not_analyzed"},
+							"price" : {"type" : "integer", "index" : "not_analyzed"}
+		                },
+		                "type": "nested"
+		            }
 				}
 			}
 		}';
@@ -263,17 +280,23 @@ class ElasticsearchController extends \BaseController {
 		switch ($doctype) {
 			case "fitternityfinder":
 				$items = Finder::with(array('country'=>function($query){$query->select('name');}))
-						->with(array('city'=>function($query){$query->select('name');}))
-						->with(array('category'=>function($query){$query->select('name','meta');}))
-						->with(array('location'=>function($query){$query->select('name');}))
-						->with('categorytags')
-						->with('locationtags')
-						->with('offerings')
-						->with('facilities')
-						->active()
-						->orderBy('_id')
-			            // ->take(2)
-						->get();
+							->with(array('city'=>function($query){$query->select('name');}))
+							->with(array('category'=>function($query){$query->select('name','meta');}))
+							->with(array('location'=>function($query){$query->select('name');}))
+							->with('categorytags')
+							->with('locationtags')
+							->with('offerings')
+							->with('facilities')
+							->active()
+							->orderBy('_id')
+				            // ->take(2)
+							->get();
+			break;
+
+
+			case "fitternityservice":
+				// $items = Service::with('category')->with('subcategory')->active()->where("_id",177)->latest()->get();
+				$items = Service::with('category')->with('subcategory')->active()->latest()->get();
 			break;
 
 			case "fittestfinder":
@@ -286,7 +309,7 @@ class ElasticsearchController extends \BaseController {
 						->with('offerings')
 						->with('facilities')
 						->active()
-						->orderBy('_id')
+						->orderBy('_id','desc')
 			            //->take(2)
 						->get();
 			break;
@@ -331,7 +354,7 @@ class ElasticsearchController extends \BaseController {
             break;
 		}
 
-        //return Response::json($items);
+        // return Response::json($items);
 
         //manipulating or adding custom fields based on type
 		foreach ($items as $item) {  
@@ -341,6 +364,19 @@ class ElasticsearchController extends \BaseController {
 				case "fitternityfinder":
 				$posturl 						=	$this->elasticsearch_url."fitternity/finder/".$data['_id'];	
 				$postdata 						= 	get_elastic_finder_document($data);
+				break;
+
+				case "fitternityservice":
+				$finder 						= 	Finder::with(array('country'=>function($query){$query->select('name');}))
+                                                                    ->with(array('city'=>function($query){$query->select('name');}))
+                                                                    ->with(array('location'=>function($query){$query->select('name');}))
+                                                                    ->where('_id', intval($data['finder_id']) )
+                                                                    ->get(array('_id', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location'))->first();
+				array_set($data, 'finder', $finder);
+            	// return Response::json($data);
+
+				$posturl 						=	$this->elasticsearch_url."fitternity/service/".$data['_id'];	
+				$postdata 						= 	get_elastic_service_document($data);
 				break;
 
 				case "fittestfinder":
@@ -360,13 +396,15 @@ class ElasticsearchController extends \BaseController {
 				break;
             } //switch           
 
-            //return Response::json($postdata);exit;
+            // return Response::json($postdata);exit;
             //$cityname = strtolower($postdata['city']);
             //if($cityname == 'mumbai'){
-           	echo  $response = $this->pushdocument($posturl, json_encode($postdata));
+           	// echo  $response = $this->pushdocument($posturl, json_encode($postdata));
             //}
             //$response = $this->pushdocument($doctype, $data['_id'], json_encode($postdata));
             //echo $response
+
+           	$response = $this->pushdocument($posturl, json_encode($postdata));
 
         }//foreach
     }
@@ -377,13 +415,10 @@ class ElasticsearchController extends \BaseController {
         //echo $postfields_data->_id;exit;
         //echo var_dump($postfields_data);exit;
 
-    	$request = array(
-    		'url' => $posturl,
-    		'port' => Config::get('elasticsearch.elasticsearch_port'),
-    		'method' => 'PUT',
-    		'postfields' => $postfields_data
-    		);
+    	$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+
     	echo "<br>$posturl    ---  ".es_curl_request($request);
+
     }
 
 
