@@ -149,12 +149,25 @@ if (!function_exists('get_elastic_service_document')) {
 
             foreach ($servicedata['ratecards'] as $key => $value) {
 
-                if(isset($value['type']) && isset($value['duration']) && isset($value['price']) ){
+                if(isset($value['type']) && $value['type'] == 'membership' && isset($value['duration']) && isset($value['price']) ){
 
                     array_push($ratecards, array('type' => $value['type'], 'special_price' => intval($value['special_price']), 'price' => intval($value['price']), 'duration' => $value['duration']));
 
                 }
             }
+        }
+
+        if(isset($data['lat']) && $data['lat'] != '' && isset($data['lon']) && $data['lon'] != ''){
+
+            $geolocation = array('lat' => $data['lat'],'lon' => $data['lon']);
+
+        }elseif(isset($data['finder']['lat']) && $data['finder']['lat'] != '' && isset($data['finder']['lon']) && $data['finder']['lon'] != ''){
+            
+            $geolocation = array('lat' => $data['finder']['lat'], 'lon' => $data['finder']['lon']);
+        
+        }else{
+
+            $geolocation = '';
         }
 
 
@@ -165,12 +178,13 @@ if (!function_exists('get_elastic_service_document')) {
             'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
             'subcategory'                   =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "", 
             'subcategory_snow'              =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "", 
-            
-            'geolocation'                   =>      (isset($data['lat']) && $data['lon'] != '')  ? array('lat' => $data['lat'],'lon' => $data['lon']) : '',
+
+            'geolocation'                   =>      $geolocation,
             'location'                      =>      (isset($data['finder']['location']['name']) && $data['finder']['location']['name'] != '') ? strtolower($data['finder']['location']['name']) : "", 
             'location_snow'                 =>      (isset($data['finder']['location']['name']) && $data['finder']['location']['name'] != '') ? strtolower($data['finder']['location']['name']) : "", 
             'city'                          =>      (isset($data['finder']['city']['name']) && $data['finder']['city']['name'] != '') ? strtolower($data['finder']['city']['name']) : "", 
             'country'                       =>      (isset($data['finder']['country']['name']) && $data['finder']['country']['name'] != '') ? strtolower($data['finder']['country']['name']) : "", 
+            
             'name'                          =>      (isset($data['name']) && $data['name'] != '') ? strtolower($data['name']) : "",
             'name_snow'                     =>      (isset($data['name']) && $data['name'] != '') ? strtolower($data['name']) : "",
             'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",
