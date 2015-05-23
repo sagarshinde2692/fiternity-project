@@ -167,6 +167,7 @@ class CustomerController extends \BaseController {
 			'customer_name'		=>		Input::json()->get('customer_name'),
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
+			'customer_identity'	=>		Input::json()->get('customer_identity'),
 			'fitcardno'			=>		intval($orderid.rand(0000, 9999)),
 			'type'				=>		'fitcardbuy',
 			'payment_mode'		=>		'cod',
@@ -203,12 +204,17 @@ class CustomerController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
 
+		if(empty($data['customer_identity'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
+		}
+
 		$orderid 			=	Order::max('_id') + 1;
 
 		$data = array(
 			'customer_name'		=>		Input::json()->get('customer_name'),
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
+			'customer_identity'	=>		Input::json()->get('customer_identity'),
 			'fitcardno'			=>		intval($orderid.rand(0000, 9999)),
 			'type'				=>		'fitcardbuy',
 			'payment_mode'		=>		'paymentgateway',
