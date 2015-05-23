@@ -26,10 +26,10 @@ class CustomerController extends \BaseController {
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-									->where('customer_email', '=', $customeremail)
-									->whereIn('booktrial_type', array('auto'))
-									->orderBy('_id', 'desc')
-									->get($selectfields)->toArray();
+		->where('customer_email', '=', $customeremail)
+		->whereIn('booktrial_type', array('auto'))
+		->orderBy('_id', 'desc')
+		->get($selectfields)->toArray();
 
 		if(count($trials) < 1){
 
@@ -63,11 +63,11 @@ class CustomerController extends \BaseController {
 
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-										->where('customer_email', '=', $customeremail)
-										->where('fitcard_user', 1)
-										->whereIn('booktrial_type', array('auto'))
-										->orderBy('_id', 'desc')
-										->get($selectfields)->toArray();
+		->where('customer_email', '=', $customeremail)
+		->where('fitcard_user', 1)
+		->whereIn('booktrial_type', array('auto'))
+		->orderBy('_id', 'desc')
+		->get($selectfields)->toArray();
 
 		if(count($trials) < 1){
 
@@ -147,6 +147,14 @@ class CustomerController extends \BaseController {
 
 		if(empty($data['customer_email'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+		}
+
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+		} 
+		
+		if(empty($data['customer_identity'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
 		}
 
 		if(empty($data['customer_phone'])){
