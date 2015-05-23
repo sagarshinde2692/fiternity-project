@@ -130,6 +130,42 @@ Class CustomerMailer extends Mailer {
 	}
 
 
+	public function fitcardCodWelcomeMail ($data){
+
+		// $email_template = 'emails.test';
+		$email_template = 	'emails.customer.fitcardcodwelcomemail';
+		$template_data 	= 	$data;
+		$bcc_emailids 	= 	array();
+		
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Acknowledgement Mail (for COD – automated – triggered on lead magnet submit)'
+			);
+
+		return $this->sendTo($email_template, $template_data, $message_data);
+	}
+
+
+	public function fitcardPaymentGateWelcomeMail ($data){
+
+		$email_template = 	'emails.customer.fitcardpaymentgatewaywelcomemail';
+		$template_data 	= 	$data;
+		$bcc_emailids 	= 	array();
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Welcome Mail (for PG – Automated – triggered on payment success)'
+			);
+
+		return $this->sendTo($email_template, $template_data, $message_data);
+	}
+
+
+
 
 
 

@@ -269,6 +269,11 @@ Route::get('/fitcardautobooktrials/{customeremail}',  array('as' => 'customer.fi
 Route::get('/autobooktrial/{trialid}',  array('as' => 'customer.autobooktrial','uses' => 'CustomerController@getAutoBookTrial'));
 Route::post('capturepayment',  array('as' => 'customer.capturepayment','uses' => 'CustomerController@capturePayment'));
 
+Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardtmporder','uses' => 'CustomerController@generateFitCardTmpOrder'));
+Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
+
+
+
 
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
