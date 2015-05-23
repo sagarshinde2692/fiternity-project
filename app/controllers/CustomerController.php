@@ -168,7 +168,7 @@ class CustomerController extends \BaseController {
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
 			'customer_identity'	=>		Input::json()->get('customer_identity'),
-			'fitcardno'			=>		intval((10000 + intval($orderid)) - 9000)),
+			'fitcardno'			=>		intval((10000 + intval($orderid)) - 9000),
 			'type'				=>		'fitcardbuy',
 			'payment_mode'		=>		'cod',
 			'status'			=>		'0'	
@@ -215,7 +215,7 @@ class CustomerController extends \BaseController {
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
 			'customer_identity'	=>		Input::json()->get('customer_identity'),
-			'fitcardno'			=>		intval((10000 + intval($orderid)) - 9000)),
+			'fitcardno'			=>		intval((10000 + intval($orderid)) - 9000),
 			'type'				=>		'fitcardbuy',
 			'payment_mode'		=>		'paymentgateway',
 			'status'			=>		'0'	
