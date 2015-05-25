@@ -138,7 +138,7 @@
 													<td width="100%" style="font-family:Arial, Helvetica, sans-serif; font-size: 13px; text-align:left;line-height: 20px; padding:5px 10px;" st-content="fulltext-paragraph">
 														
 														<p style="padding-top:10px; font-weight:bold;">
-															Hi <a style=" text-decoration:none; color:#000000" href="#">{{  ucwords($customer_name) }}!</a></p>      
+															Hi <a style=" text-decoration:none; color:#000000" href="#">{{  ucwords($customer_name) }} !</a></p>      
 															<p style="padding-top:10px; ">We have received your payment towards the FitCard.</p>
 															<p style="padding-top:10px; padding-bottom:15px; line-height:20px; font-weight:lighter">Thank you for getting the FitCard! We are very excited to welcome to you to the
 

@@ -168,7 +168,7 @@ class CustomerController extends \BaseController {
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
 			'customer_identity'	=>		Input::json()->get('customer_identity'),
-			'fitcardno'			=>		intval((10000 + intval($orderid)) - 9000),
+			'fitcardno'			=>		intval((10000 + intval($orderid)) - 10000),
 			'type'				=>		'fitcardbuy',
 			'payment_mode'		=>		'cod',
 			'status'			=>		'0'	
@@ -178,8 +178,25 @@ class CustomerController extends \BaseController {
 		$order->_id 		= 	$orderid;
 		$orderstatus   		= 	$order->save();
 
+
+		
+		$email_template = 	'emails.customer.fitcardcodwelcomemail';
+		$template_data 	= 	$order->toArray();
+		$bcc_emailids 	= 	array('ut.mehrotra@gmail.com');
+		
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Acknowledgement Mail (for COD – automated – triggered on lead magnet submit)'
+			);
+
+		Mail::queue($email_template, $template_data, function($message) use ($message_data){
+			$message->to($message_data['user_email'], $message_data['user_name'])->bcc($message_data['bcc_emailids'])->subject($message_data['email_subject']);
+		});
+
 		//send welcome email to cod customer
-		$sndWelcomeMail	= 	$this->customermailer->fitcardCodWelcomeMail($order->toArray());
+		// return $sndWelcomeMail	= 	$this->customermailer->fitcardCodWelcomeMail($order->toArray());
 
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Order Successful :)");
 
@@ -215,7 +232,7 @@ class CustomerController extends \BaseController {
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
 			'customer_identity'	=>		Input::json()->get('customer_identity'),
-			'fitcardno'			=>		intval((10000 + intval($orderid)) - 9000),
+			'fitcardno'			=>		intval((10000 + intval($orderid)) - 10000),
 			'type'				=>		'fitcardbuy',
 			'payment_mode'		=>		'paymentgateway',
 			'status'			=>		'0'	
