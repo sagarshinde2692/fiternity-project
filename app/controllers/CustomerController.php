@@ -180,23 +180,23 @@ class CustomerController extends \BaseController {
 
 
 		
-		$email_template = 	'emails.customer.fitcardcodwelcomemail';
-		$template_data 	= 	$order->toArray();
-		$bcc_emailids 	= 	array('ut.mehrotra@gmail.com');
+		// $email_template = 	'emails.customer.fitcardcodwelcomemail';
+		// $template_data 	= 	$order->toArray();
+		// $bcc_emailids 	= 	array('ut.mehrotra@gmail.com');
 		
-		$message_data 	= array(
-			'user_email' => $data['customer_email'],
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Acknowledgement Mail (for COD – automated – triggered on lead magnet submit)'
-			);
+		// $message_data 	= array(
+		// 	'user_email' => $data['customer_email'],
+		// 	'user_name' => $data['customer_name'],
+		// 	'bcc_emailids' => $bcc_emailids,
+		// 	'email_subject' => 'Acknowledgement Mail (for COD – automated – triggered on lead magnet submit)'
+		// 	);
 
-		Mail::queue($email_template, $template_data, function($message) use ($message_data){
-			$message->to($message_data['user_email'], $message_data['user_name'])->bcc($message_data['bcc_emailids'])->subject($message_data['email_subject']);
-		});
+		// Mail::queue($email_template, $template_data, function($message) use ($message_data){
+		// 	$message->to($message_data['user_email'], $message_data['user_name'])->bcc($message_data['bcc_emailids'])->subject($message_data['email_subject']);
+		// });
 
 		//send welcome email to cod customer
-		// return $sndWelcomeMail	= 	$this->customermailer->fitcardCodWelcomeMail($order->toArray());
+		return $sndWelcomeMail	= 	$this->customermailer->fitcardCodWelcomeMail($order->toArray());
 
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Order Successful :)");
 

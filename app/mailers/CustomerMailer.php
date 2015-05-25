@@ -134,7 +134,7 @@ Class CustomerMailer extends Mailer {
 
 		// $email_template = 'emails.test';
 		$email_template = 	'emails.customer.fitcardcodwelcomemail';
-		$template_data 	= 	$data;
+		return $template_data 	= 	$data;
 		$bcc_emailids 	= 	array('ut.mehrotra@gmail.com');
 		
 		$message_data 	= array(
