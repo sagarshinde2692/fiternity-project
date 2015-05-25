@@ -132,7 +132,9 @@ return array(
 
 	'to_neha'										=> 	'neha@fitternity.com',
 	'to_mailus' 									=> 	'mailus@fitternity.com',
+	'bcc_emailds_mailus' 							=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 
+	
 	'bcc_emailds_review' 							=> 	array('sanjay.id7@gmail.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
 
 	'bcc_emailds_request_callback' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),

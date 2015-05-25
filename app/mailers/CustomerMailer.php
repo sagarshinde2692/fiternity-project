@@ -135,7 +135,7 @@ Class CustomerMailer extends Mailer {
 		// $email_template = 'emails.test';
 		$email_template = 	'emails.customer.fitcardcodwelcomemail';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	array('ut.mehrotra@gmail.com');
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
 		
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
@@ -153,7 +153,7 @@ Class CustomerMailer extends Mailer {
 		// return $data; exit;
 		$email_template = 	'emails.customer.fitcardpaymentgatewaywelcomemail';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	array('ut.mehrotra@gmail.com');
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
