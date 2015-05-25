@@ -830,6 +830,10 @@ class SearchController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
+
+		// return $search_results;exit;
+		
+
 		
 		if($category_filter != '' || $location_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
 			$firsttime_query_execution = 0;

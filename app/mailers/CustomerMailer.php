@@ -150,6 +150,7 @@ Class CustomerMailer extends Mailer {
 
 	public function fitcardPaymentGateWelcomeMail ($data){
 
+		// return $data; exit;
 		$email_template = 	'emails.customer.fitcardpaymentgatewaywelcomemail';
 		$template_data 	= 	$data;
 		$bcc_emailids 	= 	array();
