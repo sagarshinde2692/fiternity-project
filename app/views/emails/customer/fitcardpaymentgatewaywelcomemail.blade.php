@@ -142,7 +142,7 @@
 
 														<p style="padding-top:10px; font-weight:bold;">
 															Hi <a style=" text-decoration:none; color:#000000" href="#">{{ ucwords($customer_name) }} !</a></p>      
-															<p style="padding-top:10px; ">Thank you for getting the FitCard! We are very excited to welcome to you to the clan.</p>
+															<p style="padding-top:10px; ">Thank you for getting the FitCard! We are very excited to welcome you to the clan.</p>
 															<p style="padding-top:10px; padding-bottom:15px; line-height:20px; font-weight:lighter">You now have access to variety of fitness options between Andheri to Bandra. 
 
 																Mix up your workout and choose from gym, yoga, swimming, crossfit, zumba, 
@@ -153,16 +153,16 @@
 																<p style="padding-top:10px; ">Your Fitcard number is – <span style="color:#f9a91e; font-weight:bold;">{{ $fitcardno }}</p>
 																<p style="padding-top:10px; ">To book sessions and access your schedule you need to go to the dashboard: 
 
-																	<a style="text-decoration:none; color:#f9a91e;" href="http://www.fitternity.com/fitcard/dashboard">www.fitternity.com/fitcard/dashboard</a></p>
+																	<a style="text-decoration:none; color:#f9a91e;" href="http://www.fitternity.com/fitcard-dashboard">www.fitternity.com/fitcard-dashboard</a></p>
 																	<p style="padding-top:10px; padding-bottom:10px; ">
 																		@if($customer_identity == 'facebook')
 																		You have accessed your Fitternity account through Facebook. Kindly use the same mode to log into your Dashboard. 
 																		@else
-																		You have accessed your Fitternity account through email. Your username is <a style="text-decoration:none; color:#f9a91e;" href="#"> {{ ucwords($customer_email) }}</a>. Kindly use the same mode to log into your Dashboard.
+																		You have accessed your Fitternity account through email. Your username is <a style="text-decoration:none; color:#f9a91e;" href="#"> {{ $customer_email }}</a>. Kindly use the same mode to log into your Dashboard.
 																		@endif	
 																	</p>
 																	<hr />
-																	<p style="padding-top:10px; ">Please read the detailed list of FAQ <a style="text-decoration:none; color:#f9a91e;" href="#">here.</a></p>
+																	<!-- <p style="padding-top:10px; ">Please read the detailed list of FAQ <a style="text-decoration:none; color:#f9a91e;" href="#">here.</a></p> -->
 																	<p style="padding-top:10px; ">Be fit. Be Happy!</p>
 																	<p style="padding-top:5px; padding-bottom:15px; line-height:20px; font-weight:lighter">Cheers,<br />
 
