@@ -148,6 +148,9 @@ Class CustomerMailer extends Mailer {
 
 		$this->sendTo($email_template_customer, $template_data, $message_data);
 		
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_name', 'Fitternity');
+		
 		return $this->sendTo($email_template_mailus, $template_data, $message_data);
 	}
 
@@ -168,6 +171,9 @@ Class CustomerMailer extends Mailer {
 			);
 
 		$this->sendTo($email_template_customer, $template_data, $message_data);
+
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_name', 'Fitternity');
 
 		return $this->sendTo($email_template_mailus, $template_data, $message_data);
 	}
