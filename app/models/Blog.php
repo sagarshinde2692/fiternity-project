@@ -21,7 +21,7 @@ class Blog extends \Basemodel {
 	}
 
 	public function categorytags(){
-		return $this->belongsToMany('Blogcategorytag', null, 'finders', 'categorytags');
+		return $this->belongsToMany('Blogcategorytag', null, 'blogs', 'categorytags');
 	}
 
 	public function author(){

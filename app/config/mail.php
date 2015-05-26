@@ -132,6 +132,7 @@ return array(
 
 	'to_neha'										=> 	'neha@fitternity.com',
 	'to_mailus' 									=> 	'mailus@fitternity.com',
+	'bcc_emailds_sanjay' 							=> 	array('sanjay.id7@gmail.com'),
 	'bcc_emailds_mailus' 							=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 
 	

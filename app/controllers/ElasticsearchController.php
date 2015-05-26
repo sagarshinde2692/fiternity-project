@@ -301,17 +301,17 @@ class ElasticsearchController extends \BaseController {
 
 			case "fittestfinder":
 				$items = Finder::with(array('country'=>function($query){$query->select('name');}))
-						->with(array('city'=>function($query){$query->select('name');}))
-						->with(array('category'=>function($query){$query->select('name','meta');}))
-						->with(array('location'=>function($query){$query->select('name');}))
-						->with('categorytags')
-						->with('locationtags')
-						->with('offerings')
-						->with('facilities')
-						->active()
-						->orderBy('_id','desc')
-			            //->take(2)
-						->get();
+								->with(array('city'=>function($query){$query->select('name');}))
+								->with(array('category'=>function($query){$query->select('name','meta');}))
+								->with(array('location'=>function($query){$query->select('name');}))
+								->with('categorytags')
+								->with('locationtags')
+								->with('offerings')
+								->with('facilities')
+								->active()
+								->orderBy('_id','desc')
+					            //->take(2)
+								->get();
 			break;
 
 			case "fitmaniafinder":

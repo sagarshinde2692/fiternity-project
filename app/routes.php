@@ -210,7 +210,6 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 
 
 Route::get('/findercsv', function() { 
-
 	$headers = [
 	'Content-type'        => 'application/csv',   
 	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
@@ -219,8 +218,6 @@ Route::get('/findercsv', function() {
 	'Expires'             => '0',   
 	'Pragma'              => 'public'
 	];
-
-
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 								->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
@@ -367,6 +364,9 @@ Route::post('/geolocationfindersearch', 'SearchController@geoLocationFinder');
 Route::get('/categoryfinders', 'SearchController@categoryfinders');
 Route::post('/fitmaniafinders', 'SearchController@getFitmaniaFinders');
 Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
+
+Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsession');
+Route::post('/ratcardsearch', 'SearchServicesController@getRatecard');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 

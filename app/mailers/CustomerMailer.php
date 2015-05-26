@@ -133,18 +133,22 @@ Class CustomerMailer extends Mailer {
 	public function fitcardCodWelcomeMail ($data){
 
 		// $email_template = 'emails.test';
-		$email_template = 	'emails.customer.fitcardcodwelcomemail';
+		$email_template_customer = 	'emails.customer.fitcardcodwelcomemail';
+		$email_template_mailus = 	'emails.customer.fitcardcodwelcomemail_mailus';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
 		
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Acknowledgement Mail (for COD – automated – triggered on lead magnet submit)'
+			'email_subject' => 'Acknowledgement email - Regarding your purchase request for FitCard'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+
+		$this->sendTo($email_template_customer, $template_data, $message_data);
+		
+		return $this->sendTo($email_template_mailus, $template_data, $message_data);
 	}
 
 
@@ -152,17 +156,20 @@ Class CustomerMailer extends Mailer {
 
 		// return $data; exit;
 		$email_template = 	'emails.customer.fitcardpaymentgatewaywelcomemail';
+		$email_template_mailus = 	'emails.customer.fitcardpaymentgatewaywelcomemail_mailus';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Welcome Mail (for PG – Automated – triggered on payment success)'
+			'email_subject' => 'Welcome mail - Welcome to the FitCard clan!'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		$this->sendTo($email_template_customer, $template_data, $message_data);
+
+		return $this->sendTo($email_template_mailus, $template_data, $message_data);
 	}
 
 

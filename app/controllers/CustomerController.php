@@ -161,12 +161,17 @@ class CustomerController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
 
+		if(empty($data['customer_location'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
+		}
+
 		$orderid 			=	Order::max('_id') + 1;
 
 		$data = array(
 			'customer_name'		=>		Input::json()->get('customer_name'),
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
+			'customer_location'	=>		Input::json()->get('customer_location'),
 			'customer_identity'	=>		Input::json()->get('customer_identity'),
 			'fitcardno'			=>		intval((10000 + intval($orderid)) - 10000),
 			'type'				=>		'fitcardbuy',
@@ -208,12 +213,17 @@ class CustomerController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
 		}
 
+		if(empty($data['customer_location'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
+		}
+
 		$orderid 			=	Order::max('_id') + 1;
 
 		$data = array(
 			'customer_name'		=>		Input::json()->get('customer_name'),
 			'customer_phone'	=>		Input::json()->get('customer_phone'),
 			'customer_email'	=>		Input::json()->get('customer_email'),
+			'customer_location'	=>		Input::json()->get('customer_location'),
 			'customer_identity'	=>		Input::json()->get('customer_identity'),
 			'fitcardno'			=>		intval((10000 + intval($orderid)) - 10000),
 			'type'				=>		'fitcardbuy',
