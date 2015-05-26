@@ -252,6 +252,7 @@ Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 Route::get('/yfc_finders', 'HomeController@yfc_finders');
 
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
+Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 
 Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
