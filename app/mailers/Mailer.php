@@ -13,27 +13,19 @@ abstract Class Mailer {
 				$job_id = $job->getJobId(); 
 				try {
 
-					if(!empty($message_data['bcc_emailids'])){
-						Mail::send($email_template, $template_data, function($message) use ($message_data){
-							$message->to($message_data['user_email'], $message_data['user_name'])
-							->bcc($message_data['bcc_emailids'])
-							->subject($message_data['email_subject']);
-						});
-					}else{
-						Mail::send($email_template, $template_data, function($message) use ($message_data){
-							$message->to($message_data['user_email'], $message_data['user_name'])
-							->subject($message_data['email_subject']);
-						});
-					}
+					Mail::send($email_template, $template_data, function($message) use ($message_data){
+						$message->to($message_data['user_email'], $message_data['user_name'])
+						->bcc($message_data['bcc_emailids'])
+						->subject($message_data['email_subject']);
+					});
+
+				}catch(Swift_RfcComplianceException $exception){
+					
+					Log::error($exception);
 				}
 
-			}catch(Swift_RfcComplianceException $exception){
-
-				Log::error($exception);
-			}
-
-			$job->delete();  
-		}, array(),'pullapp');
+				$job->delete();  
+			}, array(),'pullapp');
 
 			return $messageid;
 			
@@ -45,20 +37,12 @@ abstract Class Mailer {
 				$job_id =	$job->getJobId(); 
 
 				try {
-					
-					if(!empty($message_data['bcc_emailids'])){
-						Mail::send($email_template, $template_data, function($message) use ($message_data){
-							$message->to($message_data['user_email'], $message_data['user_name'])
-							->bcc($message_data['bcc_emailids'])
-							->subject($message_data['email_subject']);
-						});
-					}else{
-						Mail::send($email_template, $template_data, function($message) use ($message_data){
-							$message->to($message_data['user_email'], $message_data['user_name'])
-							->subject($message_data['email_subject']);
-						});
-					}
 
+					Mail::send($email_template, $template_data, function($message) use ($message_data){
+						$message->to($message_data['user_email'], $message_data['user_name'])
+						->bcc($message_data['bcc_emailids'])
+						->subject($message_data['email_subject']);
+					});
 
 				}catch(Swift_RfcComplianceException $exception){
 					

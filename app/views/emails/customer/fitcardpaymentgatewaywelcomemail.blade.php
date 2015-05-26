@@ -90,17 +90,17 @@
 <body>
 	<div class="block">
 		<!-- start of header -->
-		<table width="100%" bgcolor="#fff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
+		<table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
 			<tbody>
 				<tr>
-					<td align="center"><table width="580" height="80" bgcolor="#f6f6f6" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" hlitebg="edit" shadow="edit">
+					<td align="center"><table width="580" height="80" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" hlitebg="edit" shadow="edit">
 						<tbody>
 							<tr>
 								<td><!-- logo -->
 
 									<!-- End of logo -->
 									<!-- menu -->
-									<table width="50%" cellpadding="0" cellspacing="0" border="0" align="left" class="devicewidth">
+									<table width="100%" cellpadding="0" cellspacing="0" border="0" align="left" class="devicewidth">
 										<tbody>
 											<tr>
 												<td width="100%"  align="left" class="menu" style="padding: 10px 10px;" st-content="menu"><a href="http://www.fitternity.com/fitcard" target="_blank"><div class="imgpop"><img src="http://email.fitternity.com/137/fitCard.png" alt="" border="0"></div></a></td>
@@ -125,120 +125,124 @@
 	</div>
 	<div class="block"><!-- Start Editor's Note -->
 		<!-- start textbox-with-title -->
-		<table width="100%" bgcolor="#fff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
+		<table width="100%" bgcolor="#f6f6f6" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
 			<tbody>
 				<tr>
 					<td align="center">
-						<table style=" background:url(http://email.fitternity.com/137/bg2.png); background-repeat:no-repeat" width="580" height="315" cellpadding="0" cellspacing="0" border="0" bordercolor="#f9a91e" align="center" class="devicewidth" modulebg="edit">
+						<table style=" background:url(http://email.fitternity.com/137/bg2a.png); background-repeat:no-repeat" width="580" height="315" cellpadding="0" cellspacing="0" border="0" bordercolor="#f9a91e" align="center" class="devicewidth" modulebg="edit">
 							<tbody>
 
 								<tr>
 									<td>
 										<table width="60%" align="left" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
 											<tbody>
-
 												<tr>
 													<td width="100%" style="font-family:Arial, Helvetica, sans-serif; font-size: 13px; text-align:left;line-height: 20px; padding:5px 10px;" st-content="fulltext-paragraph">
 
 														<p style="padding-top:10px; font-weight:bold;">
-															Hi <a style=" text-decoration:none; color:#000000" href="#">{{ ucwords($customer_name) }} !</a></p>      
-															<p style="padding-top:10px; ">Thank you for getting the FitCard! We are very excited to welcome you to the clan.</p>
-															<p style="padding-top:10px; padding-bottom:15px; line-height:20px; font-weight:lighter">You now have access to variety of fitness options between Andheri to Bandra. 
+															Hi <a style=" text-decoration:none; color:#000000" href="#">{{ ucwords($customer_name) }} !!</a></p>      
+															<p style="padding-top:10px; ">Thank you for getting the FitCard! We are very excited to welcome to you to the 
 
-																Mix up your workout and choose from gym, yoga, swimming, crossfit, zumba, 
+																clan.</p>
+																<p style="padding-top:10px; padding-bottom:15px; line-height:20px; font-weight:lighter">You now have access to variety of fitness options between Andheri to Bandra. 
+																	Mix up your workout and choose from gym, yoga, swimming, crossfit, zumba, 
+																	pilates, mixed martial arts, dance, TRX training, functional training and more!</p>
+																	<hr/>
 
-																pilates, mixed martial arts, dance, TRX training, functional training and more!</p>
-																<hr/>
+																	<p style="padding-top:10px; ">Your Fitcard number is – <span style="color:#f9a91e; font-weight:bold;">{{ $fitcardno }}</p>
+																	<p style="padding-top:10px; ">To book sessions and access your schedule you need to go to the dashboard: 
 
-																<p style="padding-top:10px; ">Your Fitcard number is – <span style="color:#f9a91e; font-weight:bold;">{{ $fitcardno }}</p>
-																<p style="padding-top:10px; ">To book sessions and access your schedule you need to go to the dashboard: 
+																		<a style="text-decoration:none; color:#f9a91e;" href="http://www.fitternity.com/fitcard-dashboard">www.fitternity.com/fitcard-dashboard</a></p>
+																		<p style="padding-top:10px; padding-bottom:10px; ">
+																			@if($customer_identity == 'facebook')
+																			You have accessed your Fitternity account through Facebook. Kindly use the same mode to log into your Dashboard. 
+																			@else
+																			You have accessed your Fitternity account through email. Your username is <a style="text-decoration:none; color:#f9a91e;" href="#"> {{ $customer_email }}</a>. Kindly use the same mode to log into your Dashboard.
+																			@endif	
+																		</p>
 
-																	<a style="text-decoration:none; color:#f9a91e;" href="http://www.fitternity.com/fitcard-dashboard">www.fitternity.com/fitcard-dashboard</a></p>
-																	<p style="padding-top:10px; padding-bottom:10px; ">
-																		@if($customer_identity == 'facebook')
-																		You have accessed your Fitternity account through Facebook. Kindly use the same mode to log into your Dashboard. 
-																		@else
-																		You have accessed your Fitternity account through email. Your username is <a style="text-decoration:none; color:#f9a91e;" href="#"> {{ $customer_email }}</a>. Kindly use the same mode to log into your Dashboard.
-																		@endif	
-																	</p>
-																	<hr />
-																	<!-- <p style="padding-top:10px; ">Please read the detailed list of FAQ <a style="text-decoration:none; color:#f9a91e;" href="#">here.</a></p> -->
-																	<p style="padding-top:10px; ">Be fit. Be Happy!</p>
-																	<p style="padding-top:5px; padding-bottom:15px; line-height:20px; font-weight:lighter">Cheers,<br />
+																		<hr />
 
-																		Team Fitternity</p>
-																	</td>
-																</tr>
+																		<!-- <p style="padding-top:10px; ">Please read the detailed list of FAQ <a style="text-decoration:none; color:#f9a91e;" href="#">here.</a></p> -->
+																		
+																		<p style="padding-top:10px; ">Be fit. Be Happy!</p>
 
-																<!-- Spacing -->
-															</tbody>
-														</table>
-													</td>
-												</tr>
-											</tbody>
-										</table>
-									</td>
-								</tr>
-							</tbody>
-						</table>
-					</div>
+																		<p style="padding-top:5px; padding-bottom:15px; line-height:20px; font-weight:lighter">Cheers,<br />
+
+																			Team Fitternity</p>
+																		</td>
+																	</tr>
 
 
+																	<!-- Spacing -->
+																</tbody>
+															</table>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 
 
 
 
-					<div class="block">
-						<!-- Start of preheader -->
-						<table width="100%" bgcolor="#ffffff" cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
-							<tbody>
-								<tr>
-									<td align="center"><table width="580" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
-										<tbody>
-											<tr style="background-color:#f6f6f6;">
-												<td width="160"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
-												<td align="center" style="color:#222222; font-family:Arial, sans serif; font-size:13px;" width="200">Call -          022 6122 2222</td>
-												<td width="197" style="text-align:right"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
-											</tr>
-										</tbody>
-									</table></td>
-								</tr>
-							</tbody>
-						</table>
-						<!-- End of preheader -->
-					</div>
-					<div class="block"> 
-						<table width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
-							<tbody>
-								<tr>
-									<td align="center">
-										<table bgcolor="#ffffff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+
+
+						<div class="block">
+							<!-- Start of preheader -->
+							<table width="100%" bgcolor="#d9d9d9" cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
+								<tbody>
+									<tr>
+										<td align="center"><table width="580" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
 											<tbody>
-												<!-- Title -->
-
-												<tr>
-													<td width="100%" height="15"></td>
+												<tr style="background-color:#d9d9d9;">
+													<td width="33%"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
+													<td align="center" style="color:#222222; font-family:Arial, sans serif; font-size:13px;" width="200">Call -          02261222222</td>
+													<td width="33%" style="text-align:left"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
 												</tr>
-
-
-												<!-- end of text content table -->
 											</tbody>
-										</table>
+										</table></td>
+									</tr>
+								</tbody>
+							</table>
+							<!-- End of preheader -->
+						</div>
+						<div class="block"> 
+							<table width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
+								<tbody>
+									<tr>
+										<td align="center">
+											<table bgcolor="#ffffff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+												<tbody>
+													<!-- Title -->
+
+													<tr>
+														<td width="100%" height="15"></td>
+													</tr>
 
 
-									</tbody>
-								</table>
-							</td>
-						</tr>
-						<!-- end of text content table -->
-					</tbody>
-				</table>
+													<!-- end of text content table -->
+												</tbody>
+											</table>
+
+
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<!-- end of text content table -->
+						</tbody>
+					</table>
 
 
 
 
-			</tbody>
-		</table>
+				</tbody>
+			</table>
 
-	</div>
-</body></html>
+		</div>
+	</body></html>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acknowledgement Mail (for COD – automated – triggered on lead magnet submit)</title>
+<title>Acknowledgement</title>
 <style type="text/css">
  /* Client-specific Styles */
  #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
@@ -90,21 +90,21 @@
 <body>
   <div class="block">
    <!-- start of header -->
-   <table width="100%" bgcolor="#fff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
+   <table width="100%"  cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
     <tbody>
      <tr>
-      <td align="center"><table width="580" height="80" bgcolor="#f6f6f6" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" hlitebg="edit" shadow="edit">
+      <td align="center"><table width="580" height="80"  cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" hlitebg="edit" shadow="edit">
         <tbody>
           <tr>
             <td><!-- logo -->
               
               <!-- End of logo -->
               <!-- menu -->
-              <table width="50%" cellpadding="0" cellspacing="0" border="0" align="left" class="devicewidth">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
                 <tbody>
                   <tr>
-                    <td width="100%"  align="left" class="menu" style="padding: 10px 10px;" st-content="menu"><a href="http://www.fitternity.com/fitcard" target="_blank"><div class="imgpop"><img src="http://email.fitternity.com/137/fitCard.png" alt="" border="0"></div></a></td>
-                    <td width="20"></td>
+                    <td width="100%"  align="left" class="menu" style="padding: 10px 10px;" st-content="menu"><a href="http://www.fitternity.com/fitcard" target="_blank"><div class="imgpop"><img src="http://email.fitternity.com/137/fCard.png" alt="" border="0"></div></a></td>
+                   
                   </tr>
                   
                 </tbody>
@@ -125,11 +125,11 @@
 </div>
 <div class="block"><!-- Start Editor's Note -->
  <!-- start textbox-with-title -->
- <table width="100%" bgcolor="#fff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
+ <table width="100%" bgcolor="#f6f6f6" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
   <tbody>
    <tr>
     <td align="center">
-     <table style=" background: url(http://email.fitternity.com/137/bg1.png); background-repeat:no-repeat" width="580" height="315" cellpadding="0" cellspacing="0" border="0" bordercolor="#f9a91e" align="center" class="devicewidth" modulebg="edit">
+     <table style=" background: url(http://email.fitternity.com/137/bg1a.png); background-repeat:no-repeat" width="580" height="315" cellpadding="0" cellspacing="0" border="0" bordercolor="#f9a91e" align="center" class="devicewidth" modulebg="edit">
       <tbody>
       
       <tr>
@@ -179,15 +179,15 @@ Team Fitternity</p>
 
 <div class="block">
  <!-- Start of preheader -->
- <table width="100%" bgcolor="#ffffff" cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
+ <table width="100%" bgcolor="#d9d9d9" cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
   <tbody>
    <tr>
     <td align="center"><table width="580" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
       <tbody>
-        <tr style="background-color:#f6f6f6;">
-          <td width="160"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
-          <td align="center" style="color:#222222; font-family:Arial, sans serif; font-size:13px;" width="200">Call -          022 6122 2222</td>
-          <td width="197" style="text-align:right"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
+        <tr style="background-color:#d9d9d9;">
+          <td width="33%"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
+          <td align="center" style="color:#222222; font-family:Arial, sans serif; font-size:13px;" width="200">Call-02261222222</td>
+          <td width="33%" style="text-align:left"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
         </tr>
       </tbody>
     </table></td>
