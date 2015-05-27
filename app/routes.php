@@ -366,8 +366,8 @@ Route::get('/categoryfinders', 'SearchController@categoryfinders');
 Route::post('/fitmaniafinders', 'SearchController@getFitmaniaFinders');
 Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
 
-Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsession');
-Route::post('/ratcardsearch', 'SearchServicesController@getRatecard');
+Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
+Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 

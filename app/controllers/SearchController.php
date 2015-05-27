@@ -786,7 +786,7 @@ class SearchController extends \BaseController {
 
 		$aggsval	= '{
 			"resultset_categories": { "terms": {"field": "category","size": 10000 } },
-			"resultset_locations": { "terms": {"field": "location","size": 10000 } },
+			"resultset_locations": { "terms": {"field": "locationtags","size": 10000 } },
 			"resultset_offerings": { "terms": {"field": "offerings","size": 10000 } },
 			"resultset_facilities": { "terms": {"field": "facilities","size": 10000 } }			
 		}';
