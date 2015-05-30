@@ -103,24 +103,26 @@ class FindersController extends \BaseController {
 
 				$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('_id','!=',$finderid)
 														->where('category_id','=',$findercategoryid)
 														->where('status', '=', '1')
 														->orderBy('popularity', 'DESC')
 														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 														->take(5)->toArray();
 
 				if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; } 
 
 				$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('_id','!=',$finderid)
 														->where('category_id','=',$other_categoryid)
 														->where('status', '=', '1')
 														->orderBy('popularity', 'DESC')
 														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 														->take(5)->toArray();														
 
 
@@ -128,24 +130,26 @@ class FindersController extends \BaseController {
 
 				$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('category_id','=',$findercategoryid)
 														->where('location_id','=',$finderlocationid)
 														->where('_id','!=',$finderid)
 														->where('status', '=', '1')
 														->orderBy('finder_type', 'DESC')
 														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 														->take(5)->toArray();	
 
 				$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('category_id','!=',$findercategoryid)
 														->where('location_id','=',$finderlocationid)
 														->where('_id','!=',$finderid)
 														->where('status', '=', '1')
 														->orderBy('finder_type', 'DESC')
 														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','logo','coverimage'))
+														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 														->take(5)->toArray();					
 			}
 
