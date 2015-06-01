@@ -102,9 +102,10 @@ class ServiceController extends \BaseController {
 	}
 
 
-	private function transform($item){
+	private function transform($service){
 
-		if(!is_array($item)){ $item = $item->toArray(); }
+		// return $item->finder->city->name;
+		$item  =  (!is_array($service)) ? $service->toArray() : $service;
 
 		$data = [
 		'name' => $item['name'],
@@ -123,7 +124,9 @@ class ServiceController extends \BaseController {
 		'workoutsessionschedules' => $item['workoutsessionschedules'],
 		'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
 		'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
-		'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug')) 
+		'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug')),
+		'city' => $service->finder->city->name,
+		'location' => $service->finder->location->name
 		];
 
 		if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
@@ -134,7 +137,7 @@ class ServiceController extends \BaseController {
 
 				$trainerdata = $servicetrainer->toArray();
 
-				$data['trainer'] = array_only($trainerdata, array('_id', 'name', 'slug'));
+				$data['trainer'] = array_only($trainerdata, array('_id', 'name', 'bio', 'trainer_pic'));
 			}
 			
 		}
