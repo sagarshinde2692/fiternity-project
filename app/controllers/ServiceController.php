@@ -140,6 +140,9 @@ class ServiceController extends \BaseController {
 				$data['trainer'] = array_only($trainerdata, array('_id', 'name', 'bio', 'trainer_pic'));
 			}
 			
+		}else{
+
+			$data['trainer'] = NULL;
 		}
 
 		return $data;
