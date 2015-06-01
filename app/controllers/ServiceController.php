@@ -83,8 +83,7 @@ class ServiceController extends \BaseController {
 
 	public function serviceDetail($serviceid){
 
-		$id = (int) $serviceid;
-		$service = Service::with('category')->with('subcategory')->with('finder')->remember(Config::get('app.cachetime'))->findOrFail($id);
+		$service = Service::with('category')->with('subcategory')->with('finder')->where('_id', (int) $serviceid)->first();
 
 		// return $service;
 
