@@ -13,7 +13,10 @@ class Service extends \Basemodel{
 	protected $collection = "services";
 
 	public static $rules = array(
-		'name' => 'required'
+		'name' => 'required',
+		'servicecategory_id' => 'required',
+		'servicesubcategory_id' => 'required'
+
 		);
 
 	public function category(){

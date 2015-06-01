@@ -51,6 +51,8 @@ Route::get('/updateextra', function() {
 
 });
 
+
+
 Route::get('/updatefinder', function() { 
 
 	$items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
@@ -206,7 +208,9 @@ class WriteFile {
 }
 
 Route::get('migrateratecards/', array('as' => 'finders.migrateratecards','uses' => 'FindersController@migrateratecards'));
+
 Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' => 'FindersController@updatepopularity'));
+
 
 
 Route::get('/findercsv', function() { 
@@ -370,6 +374,22 @@ Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsession
 Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
+
+
+
+
+##############################################################################
+/******************** SERVICE SECTION START HERE ********************/
+
+Route::get('updateserviceslug/', array('as' => 'service.updateserviceslug','uses' => 'ServiceController@updateSlug'));
+Route::get('servicedetail/{id}', array('as' => 'service.servicedetail','uses' => 'ServiceController@serviceDetail'));
+
+
+
+/******************** SERVICE SECTION END HERE ********************/
+##############################################################################
+
+
 
 
 ##############################################################################
