@@ -143,6 +143,7 @@ class ServiceController extends \BaseController {
 		}else{
 
 			$data['trainer'] = NULL;
+			
 		}
 
 		return $data;
