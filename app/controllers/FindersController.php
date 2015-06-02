@@ -37,40 +37,53 @@ class FindersController extends \BaseController {
 
 		$data 	=  array();
 		$tslug 	= (string) $slug;
-		$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-						->with('categorytags')
-						->with('locationtags')
-						->with('offerings')
-						->with('facilities')
-						->with('servicerates')
-						->with('services')
-						->where('slug','=',$tslug)
-						->first();
 
-		if($finderarr){
-			
-			$finderarr = $finderarr->toArray();
-			// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
-			$finder 		= 	array_except($finderarr, array('categorytags','locationtags','offerings','facilities')); 
-			array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
-			array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
-			array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
-			array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
+		$redis_finder = $this->redis->exists("finder_".$tslug);
+		$redis_finder_nearby_same = $this->redis->exists("finder_nearby_same_".$tslug);
+		$redis_finder_nearby_other = $this->redis->exists("finder_nearby_other_".$tslug);
 
+		if(!$redis_finder){
+			$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+							->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->with('categorytags')
+							->with('locationtags')
+							->with('offerings')
+							->with('facilities')
+							->with('servicerates')
+							->with('services')
+							->where('slug','=',$tslug)
+							->first();
+
+			if($finderarr){
+				
+				$finderarr = $finderarr->toArray();
+				// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
+				$finder 		= 	array_except($finderarr, array('categorytags','locationtags','offerings','facilities')); 
+				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
+				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
+				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
+				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
+				$this->redis->set('finder_'.$tslug, json_encode($finder));
+				$finder = json_decode($this->redis->get('finder_'.$tslug));
+
+			}else{
+				
+				$finder = null;
+			}
 		}else{
-			
-			$finder = null;
+			$finder = json_decode($this->redis->get('finder_'.$tslug));
 		}
 
 		// return $finder;		
 
 		if($finder){
+			
 			$finderdata 		=	$finder;
-			$finderid 			= (int) $finderdata['_id'];
-			$findercategoryid 	= (int) $finderdata['category_id'];
-			$finderlocationid 	= (int) $finderdata['location_id'];	
+			//echo"<pre>";print_r($finderdata->category_id);exit;
+			$finderid 			= (int) $finderdata->_id;
+			$findercategoryid 	= (int) $finderdata->category_id;
+			$finderlocationid 	= (int) $finderdata->location_id;	
 
 			//if category is helath tifins or ditesion
 
@@ -100,8 +113,8 @@ class FindersController extends \BaseController {
 				// return $nearby_same_categoryfinder_randomids 	= 	array_pluck($nearby_same_categoryfinders, '_id');
 				// return $nearby_same_categoryfinder_randomids; 
 
-
-				$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+				if(!$redis_finder_nearby_same){
+					$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('_id','!=',$finderid)
@@ -111,10 +124,13 @@ class FindersController extends \BaseController {
 														->remember(Config::get('app.cachetime'))
 														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 														->take(5)->toArray();
+					$this->redis->set("finder_nearby_same_".$tslug, json_encode($nearby_same_category));
+				}
 
 				if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; } 
 
-				$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+				if(!$redis_finder_nearby_other){
+					$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('_id','!=',$finderid)
@@ -123,12 +139,15 @@ class FindersController extends \BaseController {
 														->orderBy('popularity', 'DESC')
 														->remember(Config::get('app.cachetime'))
 														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-														->take(5)->toArray();														
+														->take(5)->toArray();
+					$this->redis->set("finder_nearby_other_".$tslug, json_encode($nearby_other_category));
+				}													
 
 
 			}else{
 
-				$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+				if(!$redis_finder_nearby_same){
+					$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('category_id','=',$findercategoryid)
@@ -138,9 +157,12 @@ class FindersController extends \BaseController {
 														->orderBy('finder_type', 'DESC')
 														->remember(Config::get('app.cachetime'))
 														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-														->take(5)->toArray();	
+														->take(5)->toArray();
+					$this->redis->set("finder_nearby_same_".$tslug, json_encode($nearby_same_category));
+				}	
 
-				$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+				if(!$redis_finder_nearby_other){
+					$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 														->where('category_id','!=',$findercategoryid)
@@ -150,14 +172,16 @@ class FindersController extends \BaseController {
 														->orderBy('finder_type', 'DESC')
 														->remember(Config::get('app.cachetime'))
 														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-														->take(5)->toArray();					
+														->take(5)->toArray();
+					$this->redis->set("finder_nearby_other_".$tslug, json_encode($nearby_other_category));
+				}					
 			}
 
 
-			$data['finder'] 						= 		$finder;
+			$data['finder'] 						= 		json_decode($this->redis->get('finder_'.$tslug));
 			$data['statusfinder'] 					= 		200;
-			$data['nearby_same_category'] 			= 		$nearby_same_category;
-			$data['nearby_other_category'] 			= 		$nearby_other_category;
+			$data['nearby_same_category'] 			= 		json_decode($this->redis->get('finder_nearby_same_'.$tslug));
+			$data['nearby_other_category'] 			= 		json_decode($this->redis->get('finder_nearby_other_'.$tslug));
 			return $data;
 		}else{
 			$updatefindersulg 		= Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();

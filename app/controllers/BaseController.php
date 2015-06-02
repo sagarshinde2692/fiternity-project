@@ -3,6 +3,7 @@
 class BaseController extends Controller {
 
 	protected $perpage;
+	protected $redis;
 
     /**
      * @constructor
@@ -11,6 +12,7 @@ class BaseController extends Controller {
 
      	//echo "call in base";
      	//$this->perpage =  Config::get('app.perpage');
+     	$this->redis = Redis::connection();
     }
 
 

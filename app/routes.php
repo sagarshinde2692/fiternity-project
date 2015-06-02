@@ -410,3 +410,5 @@ Route::post('/queue/push', function(){
 });
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
+
+Route::get('/hesh', 'HeshController@test');
