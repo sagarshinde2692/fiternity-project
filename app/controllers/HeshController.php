@@ -4,13 +4,30 @@ class HeshController extends \BaseController {
 
 	public function test(){	
 
-		$redis = Redis::connection();
-		$redis->set('name', json_encode(array('ssadf'=>'asddfasdf','asdf'=>'asdfasdf')));
+		$spams = Cache::tags('adfadf')->has('adfadfspam');
+		/*$bans = [
+		   [
+		       'ip' => 'test ip',
+		       'reason' => "spam: test reason",
+		   ],
+		   [
+		       'ip' => 'test ip2 ',
+		       'reason' => "spam: test reason 2",
+		   ]
 
-		$name = $redis->get('name');
+		];
 
-		$values = $redis->lrange('names', 5, 10);
+		Cache::tags('bans')->put('spam', $bans, 100);*/
 
-		echo"<pre>";print_r($name);exit;
+		//$spams = Cache::tags('bans')->get('spam');
+		//echo"<pre>";print_r($spams);exit;
+
+		if($spams)
+			echo "not empty";
+		else
+			echo "empty";
+		/*foreach ($spams as $spam) {
+		    echo $spam['ip'].' '.$spam['reason']."<br />";
+		}*/
 	}
 }
