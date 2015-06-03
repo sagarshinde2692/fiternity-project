@@ -72,9 +72,6 @@ Route::get('/updatefinder', function() {
 Route::get('/testdate', function() { 
 
 	return Carbon::now();
-
-	echo strip_tags('<h1>Title example</h1>');
-	exit;
 	$isodate = '2015-03-10T13:00:00.000Z';
 	$actualdate =  \Carbon\Carbon::now();
 	return \Carbon\Carbon::now();
@@ -280,6 +277,22 @@ Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment'
 
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
+
+
+
+##############################################################################
+/******************** ORDERS SECTION START HERE ***********************/
+
+Route::post('generatecodorder',  array('as' => 'customer.generatecodorder','uses' => 'OrderController@generateCodOrder'));
+Route::post('generatetmporder',  array('as' => 'customer.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+Route::post('captureorderstatus',  array('as' => 'customer.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
+
+
+/******************** ORDERS SECTION END HERE ********************/
+##############################################################################
+
+
+
 
 
 ##############################################################################
