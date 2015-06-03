@@ -62,6 +62,7 @@ class CustomerController extends \BaseController {
 	public function getFitcardAutoBookTrials($customeremail){
 
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
+		
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 							->where('customer_email', '=', $customeremail)
 							->where('fitcard_user', 1)

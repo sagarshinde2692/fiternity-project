@@ -108,25 +108,25 @@ class ServiceController extends \BaseController {
 		$item  =  (!is_array($service)) ? $service->toArray() : $service;
 
 		$data = [
-		'name' => $item['name'],
-		'slug' => $item['slug'],
-		'created_at' => $item['created_at'],
-		'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
-		'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
-		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
-		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
-		'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
-		'short_description' => $item['short_description'],
-		'what_i_should_carry' => $item['what_i_should_carry'],
-		'what_i_should_expect' => $item['what_i_should_expect'],
-		'ratecards' => $item['ratecards'],
-		'trialschedules' => $item['trialschedules'],
-		'workoutsessionschedules' => $item['workoutsessionschedules'],
-		'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
-		'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
-		'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug')),
-		'city' => $service->finder->city->name,
-		'location' => $service->finder->location->name
+			'name' => $item['name'],
+			'slug' => $item['slug'],
+			'created_at' => $item['created_at'],
+			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
+			'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
+			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+			'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
+			'short_description' => $item['short_description'],
+			'what_i_should_carry' => $item['what_i_should_carry'],
+			'what_i_should_expect' => $item['what_i_should_expect'],
+			'ratecards' => $item['ratecards'],
+			'trialschedules' => $item['trialschedules'],
+			'workoutsessionschedules' => $item['workoutsessionschedules'],
+			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
+			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
+			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug')),
+			'city' => $service->finder->city->name,
+			'location' => $service->finder->location->name
 		];
 
 		if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
