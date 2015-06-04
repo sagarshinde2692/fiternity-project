@@ -85,6 +85,10 @@ class OrderController extends \BaseController {
 		if(empty($data['service_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
 		}
+		
+		if(empty($data['service_duration'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
+		}
 
 		if(empty($data['type'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
@@ -188,6 +192,10 @@ class OrderController extends \BaseController {
 
 		if(empty($data['service_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
+		}
+
+		if(empty($data['service_duration'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
 		}
 
 		if(empty($data['type'])){
