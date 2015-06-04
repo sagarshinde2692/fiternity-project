@@ -187,7 +187,7 @@ Class CustomerMailer extends Mailer {
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
 		$subject 					= 	'';
 
-		if($data['type'] == 'memberships')){
+		if($data['type'] == 'memberships'){
 			$subject  = 'Fitternity - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
 		}
 
@@ -217,7 +217,7 @@ Class CustomerMailer extends Mailer {
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
 		$subject 					= 	'';
 		
-		if($data['type'] == 'memberships')){
+		if($data['type'] == 'memberships'){
 			$subject  = 'Fitternity - Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
 		}
 

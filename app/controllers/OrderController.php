@@ -96,10 +96,9 @@ class OrderController extends \BaseController {
 
 
 		//Validation base on order type
+		if($data['type'] == 'memberships'){
 
-		if($data['type'] == 'memberships')){
-
-			if(empty($data['service_duration'])){
+			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
 			}
 
@@ -147,29 +146,25 @@ class OrderController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
-		if(empty($data['customer_phone'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
-		}
-
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+		} 
+		
 		if(empty($data['customer_identity'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
+		}
+
+		if(empty($data['customer_phone'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
 
 		if(empty($data['customer_source'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_source");
 		}
-
+		
 		if(empty($data['customer_location'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
 		}
-
-		if(empty($data['type'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
-		}
-
-		if (!in_array($data['type'], $this->ordertypes)) {
-			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
-		}	
 
 		if(empty($data['city_id'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
@@ -177,6 +172,14 @@ class OrderController extends \BaseController {
 
 		if(empty($data['finder_id'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
+		}
+
+		if(empty($data['finder_name'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_name");
+		}	
+
+		if(empty($data['finder_address'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_address");
 		}	
 
 		if(empty($data['service_id'])){
@@ -186,6 +189,15 @@ class OrderController extends \BaseController {
 		if(empty($data['service_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
 		}
+
+		if(empty($data['type'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
+		}
+
+		if (!in_array($data['type'], $this->ordertypes)) {
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
+		}
+
 
 		$orderid 			=	Order::max('_id') + 1;
 
