@@ -102,6 +102,7 @@ class ServiceController extends \BaseController {
 	}
 
 
+
 	private function transform($service){
 
 		// return $item->finder->city->name;
@@ -146,7 +147,7 @@ class ServiceController extends \BaseController {
 			
 		}
 
-		return $data;
+		return Response::json($data, 200);
 
 	}
 

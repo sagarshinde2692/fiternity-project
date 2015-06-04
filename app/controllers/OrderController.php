@@ -47,6 +47,10 @@ class OrderController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
 
+		if(empty($data['customer_source'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_source");
+		}
+		
 		if(empty($data['customer_location'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
 		}
@@ -103,6 +107,10 @@ class OrderController extends \BaseController {
 
 		if(empty($data['customer_identity'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
+		}
+
+		if(empty($data['customer_source'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_source");
 		}
 
 		if(empty($data['customer_location'])){
