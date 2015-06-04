@@ -15,8 +15,9 @@ class BlogsController extends \BaseController {
     }
 
     // Limiting to something
-	public function getBlogs($offset = 0,$limit = 10){	
-		$blog_list = Cache::tags('blog_list')->has($offset.'_'.$limit);
+	public function getBlogs($offset = 0,$limit = 10, $cache = true){
+
+		$blog_list = $cache ? Cache::tags('blog_list')->has($offset.'_'.$limit) : false;
 
 		if(!$blog_list){
 			$offset =  	(int) $offset;	
@@ -38,17 +39,12 @@ class BlogsController extends \BaseController {
 		return Cache::tags('blog_list')->get($offset.'_'.$limit);
 	}
 
-	public function blogdetail($slug){
+	public function blogdetail($slug, $cache = true){
+
 		$data = array();
 		$tslug = (string) $slug;
 
-		$blog_detail = Cache::tags('blog_detail')->has($tslug);
-		$blog_detail_related = Cache::tags('blog_detail_related')->has($tslug);
-		$blog_detail_recent = Cache::tags('blog_detail_recent')->has($tslug);
-		$blog_detail_related_finders = Cache::tags('blog_detail_related_finders')->has($tslug);
-		$blog_detail_category_tags = Cache::tags('blog_detail_category_tags')->has($tslug);
-		$blog_detail_locations = Cache::tags('blog_detail_locations')->has($tslug);
-		$blog_detail_category = Cache::tags('blog_detail_category')->has($tslug);
+		$blog_detail = $cache ? Cache::tags('blog_detail')->has($tslug) : false;
 
 		if(!$blog_detail){
 			$blog = Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
@@ -58,22 +54,13 @@ class BlogsController extends \BaseController {
 							->where('slug','=',$tslug)
 							->remember(Config::get('app.cachetime'))
 							->firstOrFail();
-							//->get();
-
-			Cache::tags('blog_detail')->forever($tslug,$blog);
-		}else{
-			$blog = Cache::tags('blog_detail')->get($tslug);
-		}
-
-		//return $blog;
 					
-		if($blog){
+			if($blog){
 
-			$blogid 			= (int) $blog['_id'];	
-			$blogcategoryid 	= (int) $blog['category_id'];	
-			$findercategoryid 	= (int) $blog['finder_category_id'];
+				$blogid 			= (int) $blog['_id'];	
+				$blogcategoryid 	= (int) $blog['category_id'];	
+				$findercategoryid 	= (int) $blog['finder_category_id'];
 
-			if(!$blog_detail_related){
 				$relatedblogs 	= 	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 										->with('categorytags')
 										->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
@@ -86,10 +73,7 @@ class BlogsController extends \BaseController {
 										->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 										->take(4)->toArray();
 
-				Cache::tags('blog_detail_related')->forever($tslug,$relatedblogs);
-			}
-
-			if(!$blog_detail_recent){
+			
 				$recentblogs 	= 	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 										->with('categorytags')
 										->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
@@ -101,10 +85,7 @@ class BlogsController extends \BaseController {
 										->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 										->take(5)->toArray();
 
-				Cache::tags('blog_detail_recent')->forever($tslug,$recentblogs);
-			}
-
-			if(!$blog_detail_related_finders){
+			
 				$relatedfinders 	=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->where('category_id','=',$findercategoryid)
@@ -114,48 +95,38 @@ class BlogsController extends \BaseController {
 											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 											->take(4)->toArray();
 
-				Cache::tags('blog_detail_related_finders')->forever($tslug,$relatedfinders);
-			}			
-
-			if(!$blog_detail_category_tags){
 				$categorytags	= 	Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 
-				Cache::tags('blog_detail_category_tags')->forever($tslug,$categorytags);
-			}
-
-			if(!$blog_detail_locations){
+			
 				$locations			= 	Location::active()->whereIn('cities',array(1))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 
-				Cache::tags('blog_detail_locations')->forever($tslug,$locations);
-			}
-
-			if(!$blog_detail_category){
+			
 				$category 	=	Findercategory::where('_id',$findercategoryid)
 													->remember(Config::get('app.cachetime'))
 													->first(array('name','slug'));
 
-				Cache::tags('blog_detail_category')->forever($tslug,$category);
-			}
-
-			$data = array(
-						'blog' 			=> Cache::tags('blog_detail')->get($tslug),
-						'related' 		=> Cache::tags('blog_detail_related')->get($tslug),
-						'popular' 		=> Cache::tags('blog_detail_recent')->get($tslug),
-						'relatedfinders' 	=> Cache::tags('blog_detail_related_finders')->get($tslug),
-						'categorytags' 	=> Cache::tags('blog_detail_category_tags')->get($tslug),
-						'locations' 		=> Cache::tags('blog_detail_locations')->get($tslug),
-						'findercategory' 	=> Cache::tags('blog_detail_category')->get($tslug),
+				$data = array(
+						'blog' 			=> $blog,
+						'related' 		=> $relatedblogs,
+						'popular' 		=> $recentblogs,
+						'relatedfinders' 	=> $relatedfinders,
+						'categorytags' 	=> $categorytags,
+						'locations' 		=> $locations,
+						'findercategory' 	=> $category,
 						'blog_findercategoryid' => $findercategoryid
 					);
 
-			return Response::json($data);
+				Cache::tags('blog_detail')->put($tslug,$data,Config::get('cache.cache_time'));
+				
+			}
 		}
 
+		return Response::json(Cache::tags('blog_detail')->get($tslug));
 	}
 
-	public function getCategoryBlogs($cat){		
+	public function getCategoryBlogs($cat,$cache = true){		
 
-		$blog_by_category_list = Cache::tags('blog_by_category_list')->has($cat);
+		$blog_by_category_list = $cache ? Cache::tags('blog_by_category_list')->has($cat) : false;
 
 		if(!$blog_by_category_list){
 			$blogcategory		=  Blogcategory::where('slug','=',$cat)->firstOrFail();

@@ -42,8 +42,6 @@ class FindersController extends \BaseController {
 		$tslug 	= (string) $slug;
 
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
-		$finder_detail_nearby_same_category = $cache ? Cache::tags('finder_detail_nearby_same_category')->has($tslug) : false;
-		$finder_detail_nearby_other_category = $cache ? Cache::tags('finder_detail_nearby_other_category')->has($tslug) : false;
 
 		if(!$finder_detail){
 			
@@ -68,119 +66,96 @@ class FindersController extends \BaseController {
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
-
-				Cache::tags('finder_detail')->forever($tslug,$finder);
 			
 			}else{
 				
 				$finder = null;
 			}
-		}else{
-			$finder = Cache::tags('finder_detail')->get($tslug);
-		}
-
-		// return $finder;	
-
-		//echo"<pre>";print_r($finder);exit;	
-
-		if($finder){
+	
+			if($finder){
 			
-			$finderdata 		=	$finder;
-			//echo"<pre>";print_r($finderdata->category_id);exit;
-			$finderid 			= (int) $finderdata['_id'];
-			$findercategoryid 	= (int) $finderdata['category_id'];
-			$finderlocationid 	= (int) $finderdata['location_id'];	
+				$finderdata 		=	$finder;
+				$finderid 			= (int) $finderdata['_id'];
+				$findercategoryid 	= (int) $finderdata['category_id'];
+				$finderlocationid 	= (int) $finderdata['location_id'];	
 
-			//if category is helath tifins or ditesion
+				//if category is helath tifins or ditesion
 
-			if($findercategoryid == 25 || $findercategoryid == 42){ 
+				if($findercategoryid == 25 || $findercategoryid == 42){ 
 
-				if(!$finder_detail_nearby_same_category){
-					
 					$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-														->where('_id','!=',$finderid)
-														->where('category_id','=',$findercategoryid)
-														->where('status', '=', '1')
-														->orderBy('popularity', 'DESC')
-														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-														->take(5)->toArray();
-													
-					Cache::tags('finder_detail_nearby_same_category')->forever($tslug,$nearby_same_category);
-				}
+													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+													->where('_id','!=',$finderid)
+													->where('category_id','=',$findercategoryid)
+													->where('status', '=', '1')
+													->orderBy('popularity', 'DESC')
+													->remember(Config::get('app.cachetime'))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+													->take(5)->toArray();
 
-				if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; } 
+					if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; } 
 
-				if(!$finder_detail_nearby_other_category){
+					$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+													->where('_id','!=',$finderid)
+													->where('category_id','=',$other_categoryid)
+													->where('status', '=', '1')
+													->orderBy('popularity', 'DESC')
+													->remember(Config::get('app.cachetime'))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+													->take(5)->toArray();
+
+				}else{
+
+					$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+													->where('category_id','=',$findercategoryid)
+													->where('location_id','=',$finderlocationid)
+													->where('_id','!=',$finderid)
+													->where('status', '=', '1')
+													->orderBy('finder_type', 'DESC')
+													->remember(Config::get('app.cachetime'))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+													->take(5)->toArray();
+
 					
 					$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-														->where('_id','!=',$finderid)
-														->where('category_id','=',$other_categoryid)
-														->where('status', '=', '1')
-														->orderBy('popularity', 'DESC')
-														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-														->take(5)->toArray();
-								
-					Cache::tags('finder_detail_nearby_other_category')->forever($tslug,$nearby_other_category);
-				}												
+													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+													->where('category_id','!=',$findercategoryid)
+													->where('location_id','=',$finderlocationid)
+													->where('_id','!=',$finderid)
+													->where('status', '=', '1')
+													->orderBy('finder_type', 'DESC')
+													->remember(Config::get('app.cachetime'))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+													->take(5)->toArray();
+				}
+				
+				$data['statusfinder'] 					= 		200;
+				$data['finder'] 						= 		$finder;
+				$data['nearby_same_category'] 			= 		$nearby_same_category;
+				$data['nearby_other_category'] 			= 		$nearby_other_category;
 
+				Cache::tags('finder_detail')->put($tslug,$data,Config::get('cache.cache_time'));
 
+				return Response::json(Cache::tags('finder_detail')->get($tslug));
+		
 			}else{
 
-				if(!$finder_detail_nearby_same_category){
-					
-					$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-														->where('category_id','=',$findercategoryid)
-														->where('location_id','=',$finderlocationid)
-														->where('_id','!=',$finderid)
-														->where('status', '=', '1')
-														->orderBy('finder_type', 'DESC')
-														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-														->take(5)->toArray();
-							
-					Cache::tags('finder_detail_nearby_same_category')->forever($tslug,$nearby_same_category);
-				}
-
-				if(!$finder_detail_nearby_other_category){
-					
-					$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-														->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-														->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-														->where('category_id','!=',$findercategoryid)
-														->where('location_id','=',$finderlocationid)
-														->where('_id','!=',$finderid)
-														->where('status', '=', '1')
-														->orderBy('finder_type', 'DESC')
-														->remember(Config::get('app.cachetime'))
-														->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-														->take(5)->toArray();
-
-					Cache::tags('finder_detail_nearby_other_category')->forever($tslug,$nearby_other_category);
-				}					
-			}
-			
-			$data['statusfinder'] 					= 		200;
-			$data['finder'] 						= 		Cache::tags('finder_detail')->get($tslug);
-			$data['nearby_same_category'] 			= 		Cache::tags('finder_detail_nearby_same_category')->get($tslug);
-			$data['nearby_other_category'] 			= 		Cache::tags('finder_detail_nearby_other_category')->get($tslug);
-
-			return Response::json($data);
-		
+				$updatefindersulg 		= Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
+				$data['finder'] 		= $updatefindersulg->newslug;
+				$data['statusfinder'] 	= 404;			
+				
+				return Response::json($data);
+			}	
 		}else{
-			$updatefindersulg 		= Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
-			$data['finder'] 		= $updatefindersulg->newslug;
-			$data['statusfinder'] 	= 404;			
-			
-			return Response::json($data);
-		}		
+
+			return Response::json(Cache::tags('finder_detail')->get($tslug));
+		}	
 	}
 
 	// public function ratecards($finderid){
