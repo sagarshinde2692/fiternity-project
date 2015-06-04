@@ -414,4 +414,4 @@ Route::post('/queue/push', function(){
 /*Cache Api*/
 Route::get('/flushtag/{tag}', 'CacheApiController@flushTag');
 Route::get('/flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
-Route::get('/flush', 'CacheApiController@flush');
+Route::get('/flushall', 'CacheApiController@flushAll');

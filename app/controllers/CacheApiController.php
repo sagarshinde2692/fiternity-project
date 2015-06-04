@@ -30,11 +30,12 @@ class CacheApiController extends BaseController {
 		return Response::json($responce);										
 	}
 
-	public function flush(){
-	
-		Cache::flush();
-		$responce = array('status'=>200);
+	public function flushAll(){
 		
+		Cache::flush();
+
+		$responce = array('status'=>200);
+
 		return Response::json($responce);										
 	}
 
