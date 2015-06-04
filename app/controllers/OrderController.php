@@ -8,15 +8,22 @@
  */
 
 use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Sms\CustomerSms as CustomerSms;
+
 
 
 class OrderController extends \BaseController {
 
 	protected $customermailer;
 
-	public function __construct(CustomerMailer $customermailer) {
+	protected $customersms;
 
-		$this->customermailer	=	$customermailer;
+
+	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms) {
+
+		$this->customermailer		=	$customermailer;
+
+		$this->customersms 			=	$customersms;
 
 		$this->ordertypes 		= 	array('memberships');
 
@@ -28,7 +35,7 @@ class OrderController extends \BaseController {
 		$data				=	Input::json()->all();
 
 		if(empty($data['customer_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Mmessageissing - customer_name");
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
 		}
 
 		if(empty($data['customer_email'])){
@@ -55,20 +62,20 @@ class OrderController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
 		}
 
-		if(empty($data['type'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
-		}
-
-		if (!in_array($data['type'], $this->ordertypes)) {
-			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
-		}
-
 		if(empty($data['city_id'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
 		}	
 
 		if(empty($data['finder_id'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
+		}
+
+		if(empty($data['finder_name'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_name");
+		}	
+
+		if(empty($data['finder_address'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_address");
 		}	
 
 		if(empty($data['service_id'])){
@@ -78,6 +85,27 @@ class OrderController extends \BaseController {
 		if(empty($data['service_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
 		}
+
+		if(empty($data['type'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
+		}
+
+		if (!in_array($data['type'], $this->ordertypes)) {
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
+		}
+
+
+		//Validation base on order type
+
+		if($data['type'] == 'memberships')){
+
+			if(empty($data['service_duration'])){
+				return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
+			}
+
+		}
+
+
 
 
 		$orderid 			=	Order::max('_id') + 1;
@@ -94,10 +122,11 @@ class OrderController extends \BaseController {
 
 		$orderstatus   		= 	$order->save();
 
-
 		//SEND COD EMAIL TO CUSTOMER
+		$sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
 
-		$sndCodDEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
+		//SEND COD SMS TO CUSTOMER
+		$sndCodSms	= 	$this->customersms->sendCodOrderSms($order->toArray());
 
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Order Successful :)");
 
@@ -195,7 +224,10 @@ class OrderController extends \BaseController {
 			$orderdata 	=	$order->update($data);
 
 			//send welcome email to payment gateway customer
-			$sndWelcomeMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+			$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+
+			//SEND COD SMS TO CUSTOMER
+			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 

@@ -181,23 +181,28 @@ Class CustomerMailer extends Mailer {
 
 	public function sendCodOrderMail ($data){
 
-		$email_template_customer = 	'emails.order.cod_'.strtolower($data['type']);
-		$email_template_mailus = 	'emails.order.cod_'.strtolower($data['type']).'_mailus';
+		$email_template_customer 	= 	'emails.order.cod_'.strtolower($data['type']);
+		$email_template_mailus 		= 	'emails.order.cod_'.strtolower($data['type']).'_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
+		$subject 					= 	'';
 
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
-		
+		if($data['type'] == 'memberships')){
+			$subject  = 'Fitternity - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
+		}
+
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Acknowledgement email - Regarding your purchase request for '.ucwords($data['type'])
+			'email_subject' => $subject
 			);
 
 
-		return $this->sendTo($email_template_customer, $template_data, $message_data);
+		$this->sendTo($email_template_customer, $template_data, $message_data);
 		
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 		
 		return $this->sendTo($email_template_mailus, $template_data, $message_data);
@@ -206,21 +211,27 @@ Class CustomerMailer extends Mailer {
 
 	public function sendPgOrderMail ($data){
 
-		$email_template_customer = 	'emails.order.pg_'.strtolower($data['type']);
-		$email_template_mailus = 	'emails.order.pg_'.strtolower($data['type']).'_mailus';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
+		$email_template_customer 	= 	'emails.order.pg_'.strtolower($data['type']);
+		$email_template_mailus 		= 	'emails.order.pg_'.strtolower($data['type']).'_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
+		$subject 					= 	'';
+		
+		if($data['type'] == 'memberships')){
+			$subject  = 'Fitternity - Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
+		}
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Welcome mail - Welcome to the FitCard clan!'
+			'email_subject' => $subject
 			);
 
-		return $this->sendTo($email_template_customer, $template_data, $message_data);
+		$this->sendTo($email_template_customer, $template_data, $message_data);
 
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
 		return $this->sendTo($email_template_mailus, $template_data, $message_data);

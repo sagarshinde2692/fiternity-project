@@ -44,7 +44,7 @@ Route::get('/capturedata', function() {
 	foreach ($items as $item) {  
 		$data = $item->toArray();
 		$capture = Capture::findOrFail($data['_id']);
-		$response = $capture->update($data);
+		echo $response = $capture->update($data);
 
 	}
 

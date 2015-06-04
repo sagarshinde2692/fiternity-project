@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Acknowledgement</title>
+<title>Acknowledgement mail for service request (for COD)</title>
 <style type="text/css">
  /* Client-specific Styles */
  #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
@@ -87,10 +87,10 @@
 
 
 </head>
-<body>
-  <div class="block">
+<body style="background-image:url(http://email.fitternity.com/140/gplaypattern.png)" >
+  <div class="block" style="background-color:#222222">
    <!-- start of header -->
-   <table width="100%"  cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
+   <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
     <tbody>
      <tr>
       <td align="center"><table width="580" height="80"  cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" hlitebg="edit" shadow="edit">
@@ -100,10 +100,10 @@
               
               <!-- End of logo -->
               <!-- menu -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
                 <tbody>
                   <tr>
-                    <td width="100%"  align="left" class="menu" style="padding: 10px 10px;" st-content="menu"><a href="http://www.fitternity.com/fitcard" target="_blank"><div class="imgpop"><img src="http://email.fitternity.com/137/fCard.png" alt="" border="0"></div></a></td>
+                    <td width="100%"  align="left" class="menu" st-content="menu"><a href="http://www.fitternity.com" target="_blank"><div class="imgpop"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></div></a></td>
                    
                   </tr>
                   
@@ -123,43 +123,66 @@
   <!-- end of header -->
 
 </div>
+<div class="block" style="background-color:#f9a91e"> 
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
+    <tbody>
+     <tr>
+      <td align="center">
+       <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" >
+        <tbody>
+          <!-- Title -->
+          
+      <tr>
+                      <td width="100%" height="3px" bgcolor="#f9a91e"></td>
+                    </tr>
+         
+              <!-- end of text content table -->
+            </tbody>
+          </table>
+         
+        
+              </tbody>
+            </table>
+
+
+</div>
 <div class="block"><!-- Start Editor's Note -->
  <!-- start textbox-with-title -->
- <table width="100%" bgcolor="#f6f6f6" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
+ <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
   <tbody>
    <tr>
     <td align="center">
-     <table style=" background: url(http://email.fitternity.com/137/bg1a.png); background-repeat:no-repeat" width="580" height="315" cellpadding="0" cellspacing="0" border="0" bordercolor="#f9a91e" align="center" class="devicewidth" modulebg="edit">
+     <table width="580px" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
       <tbody>
       
       <tr>
         <td>
-         <table width="60%" align="left" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+         <table width="100%" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
           <tbody>
           
         <tr>
-          <td width="100%" style="font-family:Arial, Helvetica, sans-serif; font-size: 13px; text-align:left;line-height: 30px; padding:5px 10px;" st-content="fulltext-paragraph">
+          <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:left;line-height: 35px; padding:5px 10px;" st-content="fulltext-paragraph">
              
 
               
                
-         <p style="padding-top:10px; font-weight:bold;">
-Hi <a style=" text-decoration:none; color:#000000" href="#">{{ ucwords($customer_name) }}!</a></p>      
-              <p style="padding-top:10px">Thank you for requesting the FitCard!</p>
-              <p style="padding-top:5px; padding-bottom:15px; line-height:20px; font-weight:lighter">Our team will reach out to you to get the cash pick up details. Once the cash has 
+         <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
+Hi {{  ucwords($customer_name) }}!</span></p>      
+                
+             
+              <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e">Thank you for requesting purchase of {{  ucwords($service_name) }} - {{ ucwords($service_duration) }} at {{  ucwords($finder_name) }}. 
 
-been collected, you will receive a mail with details on how to access your 
+<p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">Our team will reach out to you to get the cash pick up details. Once the cash has been collected, you will receive a purchase confirmation.</p>
 
-dashboard and start using the FitCard.</p>
- <p style="padding-top:5px; padding-bottom:15px; line-height:20px; font-weight:lighter">We are very excited that you are going to be part of the FitCard clan!</p>
- <p style="padding-top:5px; padding-bottom:15px; line-height:20px; font-weight:lighter">Cheers,
 
-Team Fitternity</p>
+<p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
+ 
+ <p style="padding-top:15px; padding-bottom:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Cheers, <br />Team Fitternity</p>
           </td>
        </tr>
-      
-       
-      <!-- Spacing -->
+     <tr>
+                      <td width="100%"><hr /></td>
+                    </tr>
     </tbody>
   </table>
 </td>
@@ -179,15 +202,24 @@ Team Fitternity</p>
 
 <div class="block">
  <!-- Start of preheader -->
- <table width="100%" bgcolor="#d9d9d9" cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
+ <table width="100%"  cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
   <tbody>
+ 
    <tr>
-    <td align="center"><table width="580" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
+    <td align="center"><table width="580" cellspacing="0" align="center" class="devicewidth">
       <tbody>
-        <tr style="background-color:#d9d9d9;">
-          <td width="33%"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
-          <td align="center" style="color:#222222; font-family:Arial, sans serif; font-size:13px;" width="200">Call-02261222222</td>
-          <td width="33%" style="text-align:left"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
+       
+        <tr>
+          
+          <td align="center" style="color:#808080; font-family:Arial, sans serif; font-size:15px; font-weight:500; line-height:25px; padding-bottom:10px;" width="100%">Connect with us on</td>
+          
+        </tr>
+      </tbody>
+      <tbody>
+        <tr>
+          
+         
+          <td width="100%" style="text-align:center; padding-bottom:10px;"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="35" height="33" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="35" height="35" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/pinterest.png" width="35" height="35" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="35" height="35" alt="Instagram" title="Instagram" border="0"></a></td>
         </tr>
       </tbody>
     </table></td>
@@ -196,38 +228,5 @@ Team Fitternity</p>
 </table>
 <!-- End of preheader -->
 </div>
-<div class="block"> 
-  <table width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
-    <tbody>
-     <tr>
-      <td align="center">
-       <table bgcolor="#ffffff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-        <tbody>
-          <!-- Title -->
-          
-       <tr>
-                      <td width="100%" height="15"></td>
-                    </tr>
-                  
-         
-              <!-- end of text content table -->
-            </tbody>
-          </table>
-         
-        
-              </tbody>
-            </table>
-          </td>
-        </tr>
-        <!-- end of text content table -->
-      </tbody>
-    </table>
-   
 
-
-
-</tbody>
-</table>
-
-</div>
 </body></html>
