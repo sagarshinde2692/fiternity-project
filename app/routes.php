@@ -36,16 +36,15 @@ Route::get('/testcountrysms', function() {
 });
 
 
-Route::get('/updateextra', function() { 
+Route::get('/capturedata', function() { 
 
-	$items = Finder::active()->get();
-	$finderdata = array();
+	$items = Capture::get();
+	$data = array();
 
 	foreach ($items as $item) {  
-		$finderdata = $item->toArray();
-		array_set($finderdata, 'extratab_contents', array() );
-		$finder = Finder::findOrFail($finderdata['_id']);
-		$response = $finder->update($finderdata);
+		$data = $item->toArray();
+		$capture = Capture::findOrFail($data['_id']);
+		$response = $capture->update($data);
 
 	}
 
