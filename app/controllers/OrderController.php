@@ -61,7 +61,24 @@ class OrderController extends \BaseController {
 
 		if (!in_array($data['type'], $this->ordertypes)) {
 			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
+		}
+
+		if(empty($data['city_id'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
 		}	
+
+		if(empty($data['finder_id'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
+		}	
+
+		if(empty($data['service_id'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_id");
+		}
+
+		if(empty($data['service_name'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
+		}
+
 
 		$orderid 			=	Order::max('_id') + 1;
 
@@ -124,6 +141,22 @@ class OrderController extends \BaseController {
 		if (!in_array($data['type'], $this->ordertypes)) {
 			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
 		}	
+
+		if(empty($data['city_id'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
+		}	
+
+		if(empty($data['finder_id'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
+		}	
+
+		if(empty($data['service_id'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_id");
+		}
+
+		if(empty($data['service_name'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
+		}
 
 		$orderid 			=	Order::max('_id') + 1;
 
