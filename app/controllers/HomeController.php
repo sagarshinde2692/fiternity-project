@@ -69,7 +69,7 @@ class HomeController extends BaseController {
 
 		$home_by_city = $cache ? Cache::tags('home_by_city')->has($city) : false;
 
-		{
+		if(!$home_by_city){
 			$categorytags = $locations = $popular_finders =	$recent_blogs =	array();
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 			$city_name 		= 	$citydata['name'];
@@ -114,7 +114,7 @@ class HomeController extends BaseController {
 
 			Cache::tags('home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
 		}
-		
+
 		return Response::json(Cache::tags('home_by_city')->get($city));
 	}
 
@@ -220,9 +220,9 @@ class HomeController extends BaseController {
 
 	public function getcollecitonnames($city = 'mumbai', $cache = true){
 
-		$collection_by_city = $cache ? Cache::tags('collection_by_city')->has($city) : false;
+		$collection_by_city_list = $cache ? Cache::tags('collection_by_city_list')->has($city) : false;
 
-		if(!$collection_by_city){
+		if(!$collection_by_city_list){
 		
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 			
@@ -234,27 +234,27 @@ class HomeController extends BaseController {
 			
 				$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'No collections yet :)');
 
-				Cache::tags('collection_by_city')->put($city,$resp,Config::get('cache.cache_time'));
+				Cache::tags('collection_by_city_list')->put($city,$resp,Config::get('cache.cache_time'));
 
-				return Response::json(Cache::tags('collection_by_city')->get($city));
+				return Response::json(Cache::tags('collection_by_city_list')->get($city));
 			
 			}
 
 			$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'List of collections names');
 
-			Cache::tags('collection_by_city')->put($city,$resp,Config::get('cache.cache_time'));
+			Cache::tags('collection_by_city_list')->put($city,$resp,Config::get('cache.cache_time'));
 		}
 		
-		return Response::json(Cache::tags('collection_by_city')->get($city));			
+		return Response::json(Cache::tags('collection_by_city_list')->get($city));			
 
 	}
 
 
 	public function getcollecitonfinders($city, $slug, $cache = true){
 
-		$finder_by_collection = $cache ? Cache::tags('finder_by_collection')->has($city."_".$slug) : false;
+		$finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
 
-		if(!$finder_by_collection){
+		if(!$finder_by_collection_list){
 
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 
@@ -292,10 +292,10 @@ class HomeController extends BaseController {
 
 			$data 	= 	array('status' => 200,'collection' => $collection,'collection_finders' => $finders);
 
-			Cache::tags('finder_by_collection')->put($city."_".$slug,$data,Config::get('cache.cache_time'));
+			Cache::tags('finder_by_collection_list')->put($city."_".$slug,$data,Config::get('cache.cache_time'));
 		}
 		
-		return Response::json(Cache::tags('finder_by_collection')->get($city."_".$slug));	
+		return Response::json(Cache::tags('finder_by_collection_list')->get($city."_".$slug));	
 	}
 
 

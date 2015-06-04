@@ -1,0 +1,41 @@
+<?php
+
+class CacheApiController extends BaseController {
+
+	public function __construct() {
+     	parent::__construct();	
+    }
+
+	public function flushTag($tag = false){
+
+		if($tag){
+			Cache::tags($tags)->flush();
+			$responce = array('status'=>200);
+		}else{
+			$responce = array('status'=>400,'message'=>'error');
+		}
+		
+		return Response::json($responce);										
+	}
+
+	public function flushTagKey($tag = false,$key = false){
+
+		if($tag && $key){
+			Cache::tags($tags)->forget($key);
+			$responce = array('status'=>200);
+		}else{
+			$responce = array('status'=>400,'message'=>'error');
+		}
+		
+		return Response::json($responce);										
+	}
+
+	public function flush(){
+	
+		Cache::flush();
+		$responce = array('status'=>200);
+		
+		return Response::json($responce);										
+	}
+
+}																																																																																																																																																																																																																																																																										
