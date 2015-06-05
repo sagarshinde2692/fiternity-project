@@ -29,6 +29,7 @@ class OrderController extends \BaseController {
 
 	}
 
+
 	//create cod order for customer
 	public function generateCodOrder(){
 
@@ -98,7 +99,6 @@ class OrderController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
 		}
 
-
 		//Validation base on order type
 		if($data['type'] == 'memberships'){
 
@@ -107,9 +107,6 @@ class OrderController extends \BaseController {
 			}
 
 		}
-
-
-
 
 		$orderid 			=	Order::max('_id') + 1;
 
@@ -130,12 +127,14 @@ class OrderController extends \BaseController {
 
 		//SEND COD SMS TO CUSTOMER
 		$sndCodSms	= 	$this->customersms->sendCodOrderSms($order->toArray());
+		// print_pretty($sndCodSms); exit;
 
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Order Successful :)");
 
 		return Response::json($resp);
 
 	}
+
 
 	//generate fitcard temp order
 	public function generateTmpOrder(){
@@ -226,6 +225,7 @@ class OrderController extends \BaseController {
 		return Response::json($resp);
 
 	}
+
 
 
 	//capture order status for customer

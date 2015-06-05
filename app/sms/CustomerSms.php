@@ -134,6 +134,7 @@ Class CustomerSms extends VersionNextSms{
 
 	public function sendCodOrderSms ($data){
 
+
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". We will get in touch with you shortly to help you get started. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity";
