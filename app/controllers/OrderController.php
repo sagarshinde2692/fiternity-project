@@ -25,7 +25,7 @@ class OrderController extends \BaseController {
 
 		$this->customersms 			=	$customersms;
 
-		$this->ordertypes 		= 	array('memberships');
+		$this->ordertypes 		= 	array('memberships','booktrials');
 
 	}
 
@@ -100,7 +100,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
-		if($data['type'] == 'memberships'){
+		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
 
 			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
@@ -210,7 +210,7 @@ class OrderController extends \BaseController {
 
 
 		//Validation base on order type
-		if($data['type'] == 'memberships'){
+		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
 
 			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
