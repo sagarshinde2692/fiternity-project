@@ -488,7 +488,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
 	/**
-	 * Book Scheduled Book A Trial.
+	 * Book Scheduled Book A Trial with payment.
 	 *
 	 */
 
