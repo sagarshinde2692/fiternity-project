@@ -136,10 +136,17 @@ class OrderController extends \BaseController {
 	}
 
 
-	//generate fitcard temp order
+	/**
+	 * Generate Temp Order
+	 * 
+	 *	Service Duration can be (trial, workout session, months, session, etc).
+	 */
+
 	public function generateTmpOrder(){
 
 		$data			=	Input::json()->all();
+
+		// must add customer id after hull if its guest user keep one guest user 
 
 		if(empty($data['customer_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
@@ -193,16 +200,22 @@ class OrderController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
 		}
 
-		if(empty($data['service_duration'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
-		}
-
 		if(empty($data['type'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
 		}
 
 		if (!in_array($data['type'], $this->ordertypes)) {
 			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
+		}
+
+
+		//Validation base on order type
+		if($data['type'] == 'memberships'){
+
+			if( empty($data['service_duration']) ){
+				return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
+			}
+
 		}
 
 
@@ -233,7 +246,15 @@ class OrderController extends \BaseController {
 
 		$data		=	Input::json()->all();
 
-		$orderid 	=	(int) Input::json()->get('orderid');
+		if(empty($data['order_id'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - order_id");
+		}
+
+		if(empty($data['status'])){
+			return $resp 	= 	array('status' => 500,'message' => "Data Missing - status");
+		}
+
+		$orderid 	=	(int) Input::json()->get('order_id');
 
 		$order 		= 	Order::findOrFail($orderid);
 
