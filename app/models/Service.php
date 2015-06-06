@@ -19,6 +19,27 @@ class Service extends \Basemodel{
 
 		);
 
+	protected $appends = array('active_weekdays');
+
+
+	public function getActiveWeekdaysAttribute(){
+
+		$activedays 		= 	array();
+		$trialschedules  	=	$this->trialschedules;
+
+		foreach ($trialschedules as $key => $schedule) {
+			if(!empty($schedule['slots'])){
+				array_push($activedays, $schedule['weekday']);
+			}
+		}
+
+		// $activedays 		= pluck( $this->trialschedules , array('weekday') );
+
+		return $activedays;
+
+	}
+
+
 	public function category(){
 
 		return $this->belongsTo('Servicecategory','servicecategory_id');
