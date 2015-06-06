@@ -302,10 +302,16 @@ class FindersController extends \BaseController {
 		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
 
 		foreach ($finders as $finderid => $trials) {
-			$finder = 	Finder::where('_id','=',intval($finderid))->first();
+			$finder = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
+
+			$finderarr = $finder->toArray();
 			if($finder->finder_vcc_email != ""){
 				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
 				// echo "<pre>";print_r($trials); 
+
+				$finder_name_new					= 	(isset($finderarr['title']) && $finderarr['title'] != '') ? $finderarr['title'] : "";
+				$finder_location_new				=	(isset($finderarr['location']['name']) && $finderarr['location']['name'] != '') ? $finderarr['location']['name'] : "";
+				$finder_name_base_locationtags 		= 	(count($finderarr['locationtags']) > 1) ? $finder_name_new : $finder_name_new." ".$finder_location_new;
 
 				$trialdata = array();
 				foreach ($trials as $key => $value) {
@@ -321,11 +327,12 @@ class FindersController extends \BaseController {
 				$scheduledata = array('user_name'	=> 'sanjay sahu',
 					'user_email'					=> 'sanjay.id7@gmail',
 					'finder_name'					=> $finder->title,
+					'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
 					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
 					'finder_vcc_email'				=> $finder->finder_vcc_email,	
 					'scheduletrials' 				=> $trialdata
 					);
-				// echo "<pre>";print_r($scheduledata); 
+				// echo "<pre>";print_r($scheduledata); exit;
 				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}

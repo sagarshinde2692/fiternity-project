@@ -18,13 +18,13 @@ class Findercategorytag extends  \Basemodel{
 
 	public function offerings(){
 
-		return $this->hasMany('Offering','categorytag_id','_id');
+		return $this->hasMany('Offering','categorytag_id','_id')->select("categorytag_id","name","slug","status");
 	}
 
 	public function finders(){
 
 		return $this->belongsToMany('Finder', null, 'categorytags', 'finders');
-		//return $this->belongsToMany('Finder', null, 'categorytags', 'finders')->select("_id","name","offering_header","slug");
+		// return $this->belongsToMany('Finder', null, 'categorytags', 'finders')->select("_id","name","offering_header","slug");
 	}
 
 

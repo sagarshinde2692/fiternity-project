@@ -36,20 +36,30 @@ Route::get('/testcountrysms', function() {
 });
 
 
-Route::get('/updateextra', function() { 
+Route::get('/capturedata', function() { 
 
-	$items = Finder::active()->get();
-	$finderdata = array();
+	// $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim(977348762)) . "&source=fitter&message=" . urlencode('hi');
+	// $ci = curl_init();
+	// curl_setopt($ci, CURLOPT_URL, $sms_url);
+	// curl_setopt($ci, CURLOPT_HEADER, 0);
+	// curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
+	// $response = curl_exec($ci);
+	// curl_close($ci);
+	// exit;
+
+	$items = Capture::get();
+	$data = array();
 
 	foreach ($items as $item) {  
-		$finderdata = $item->toArray();
-		array_set($finderdata, 'extratab_contents', array() );
-		$finder = Finder::findOrFail($finderdata['_id']);
-		$response = $finder->update($finderdata);
+		$data = $item->toArray();
+		$capture = Capture::findOrFail($data['_id']);
+		echo $response = $capture->update($data);
 
 	}
 
 });
+
+
 
 Route::get('/updatefinder', function() { 
 
@@ -70,9 +80,6 @@ Route::get('/updatefinder', function() {
 Route::get('/testdate', function() { 
 
 	return Carbon::now();
-
-	echo strip_tags('<h1>Title example</h1>');
-	exit;
 	$isodate = '2015-03-10T13:00:00.000Z';
 	$actualdate =  \Carbon\Carbon::now();
 	return \Carbon\Carbon::now();
@@ -206,7 +213,9 @@ class WriteFile {
 }
 
 Route::get('migrateratecards/', array('as' => 'finders.migrateratecards','uses' => 'FindersController@migrateratecards'));
+
 Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' => 'FindersController@updatepopularity'));
+
 
 
 Route::get('/findercsv', function() { 
@@ -271,11 +280,28 @@ Route::post('generatefitcardcodorder',  array('as' => 'customer.generatefitcardc
 Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardtmporder','uses' => 'CustomerController@generateFitCardTmpOrder'));
 Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
+Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrial'));
 
 
 
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
+
+
+
+##############################################################################
+/******************** ORDERS SECTION START HERE ***********************/
+
+Route::post('generatecodorder',  array('as' => 'customer.generatecodorder','uses' => 'OrderController@generateCodOrder'));
+Route::post('generatetmporder',  array('as' => 'customer.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+Route::post('captureorderstatus',  array('as' => 'customer.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
+
+
+/******************** ORDERS SECTION END HERE ********************/
+##############################################################################
+
+
+
 
 
 ##############################################################################
@@ -370,6 +396,22 @@ Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsession
 Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
+
+
+
+
+##############################################################################
+/******************** SERVICE SECTION START HERE ********************/
+
+Route::get('updateserviceslug/', array('as' => 'service.updateserviceslug','uses' => 'ServiceController@updateSlug'));
+Route::get('servicedetail/{id}', array('as' => 'service.servicedetail','uses' => 'ServiceController@serviceDetail'));
+
+
+
+/******************** SERVICE SECTION END HERE ********************/
+##############################################################################
+
+
 
 
 ##############################################################################

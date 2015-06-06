@@ -6,7 +6,7 @@ abstract Class VersionNextSms {
 
 	public function sendTo($to, $message, $delay = null ){
 
-        // return $to;
+        // return $to;exit;
 
 		if($delay == null){
 

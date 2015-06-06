@@ -132,10 +132,26 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
+	public function sendCodOrderSms ($data){
 
 
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". We will get in touch with you shortly to help you get started. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity";
+
+		return $this->sendTo($to, $message);
+	}
 
 
-	
+	public function sendPgOrderSms ($data){
+
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+		
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity";
+
+		return $this->sendTo($to, $message);
+	}
+
+
 
 }
