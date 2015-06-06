@@ -452,3 +452,8 @@ Route::post('/queue/push', function(){
 });
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
+
+/*Cache Api*/
+Route::get('/flushtag/{tag}', 'CacheApiController@flushTag');
+Route::get('/flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
+Route::get('/flushall', 'CacheApiController@flushAll');

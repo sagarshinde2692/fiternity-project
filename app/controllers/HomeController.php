@@ -65,50 +65,57 @@ class HomeController extends BaseController {
 	}
 
 
-	public function getHomePageDatav2($city = 'mumbai'){   
+	public function getHomePageDatav2($city = 'mumbai',$cache = true){   
 
-		$categorytags = $locations = $popular_finders =	$recent_blogs =	array();
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-		$city_name 		= 	$citydata['name'];
-		$city_id		= 	(int) $citydata['_id'];	
+		$home_by_city = $cache ? Cache::tags('home_by_city')->has($city) : false;
 
-		$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-		$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+		if(!$home_by_city){
+			$categorytags = $locations = $popular_finders =	$recent_blogs =	array();
+			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			$city_name 		= 	$citydata['name'];
+			$city_id		= 	(int) $citydata['_id'];	
 
-		$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get(array('gym_finders','yoga_finders','zumba_finders'))->first();						
-		$str_finder_ids 		= 		$homepage['gym_finders'].",".$homepage['yoga_finders'].",".$homepage['zumba_finders'];
-		$finder_ids 			= 		array_map('intval', explode(",",$str_finder_ids));
-		//return Response::json($finder_ids);
-		$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-												->whereIn('_id', $finder_ids)
+			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+
+			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get(array('gym_finders','yoga_finders','zumba_finders'))->first();						
+			$str_finder_ids 		= 		$homepage['gym_finders'].",".$homepage['yoga_finders'].",".$homepage['zumba_finders'];
+			$finder_ids 			= 		array_map('intval', explode(",",$str_finder_ids));
+			//return Response::json($finder_ids);
+			$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+													->whereIn('_id', $finder_ids)
+													->remember(Config::get('app.cachetime'))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+													->groupBy('category.name')
+													->toArray();
+
+			array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
+			array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
+			array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
+
+			$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with('categorytags')
+												->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+												->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+												->where('status', '=', '1')
+												->orderBy('_id', 'desc')
 												->remember(Config::get('app.cachetime'))
-												->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
-												->groupBy('category.name')
-												->toArray();
+												->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+												->take(4)->toArray();		
 
-		array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
-		array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
-		array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
+			$homedata 				= 	array('categorytags' => $categorytags,
+											'locations' => $locations,
+											'popular_finders' => $popular_finders,       
+											'recent_blogs' => $recent_blogs,
+											'city_name' => $city_name,
+											'city_id' => $city_id
+										);
 
-		$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-											->with('categorytags')
-											->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
-											->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-											->where('status', '=', '1')
-											->orderBy('_id', 'desc')
-											->remember(Config::get('app.cachetime'))
-											->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
-											->take(4)->toArray();		
+			Cache::tags('home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+		}
 
-		$homedata 				= 	array('categorytags' => $categorytags,
-										'locations' => $locations,
-										'popular_finders' => $popular_finders,       
-										'recent_blogs' => $recent_blogs,
-										'city_name' => $city_name,
-										'city_id' => $city_id
-									);
-		return Response::json($homedata);
+		return Response::json(Cache::tags('home_by_city')->get($city));
 	}
 
 	public function zumbadiscover(){
@@ -211,68 +218,84 @@ class HomeController extends BaseController {
 
 
 
-	public function getcollecitonnames($city = 'mumbai'){
-		
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-		
-		$city_id		= 	(int) $citydata['_id'];	
-		
-		$collections 	= 	Findercollection::active()->where('city_id', '=', $city_id)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+	public function getcollecitonnames($city = 'mumbai', $cache = true){
 
-		if(count($collections) < 1){
+		$collection_by_city_list = $cache ? Cache::tags('collection_by_city_list')->has($city) : false;
+
+		if(!$collection_by_city_list){
 		
-			$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'No collections yet :)');
-		
-			return Response::json($resp);
-		
+			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			
+			$city_id		= 	(int) $citydata['_id'];	
+			
+			$collections 	= 	Findercollection::active()->where('city_id', '=', $city_id)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+
+			if(count($collections) < 1){
+			
+				$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'No collections yet :)');
+
+				Cache::tags('collection_by_city_list')->put($city,$resp,Config::get('cache.cache_time'));
+
+				return Response::json(Cache::tags('collection_by_city_list')->get($city));
+			
+			}
+
+			$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'List of collections names');
+
+			Cache::tags('collection_by_city_list')->put($city,$resp,Config::get('cache.cache_time'));
 		}
-
-		$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'List of collections names');
 		
-		return Response::json($resp);			
+		return Response::json(Cache::tags('collection_by_city_list')->get($city));			
 
 	}
 
 
-	public function getcollecitonfinders($city, $slug){
+	public function getcollecitonfinders($city, $slug, $cache = true){
 
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
 
-		$city_id		= 	(int) $citydata['_id'];	
+		if(!$finder_by_collection_list){
 
-		$collection 		= 	Findercollection::where('slug', '=', trim($slug))->where('city_id', '=', $city_id)->first(array());
+			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+
+			$city_id		= 	(int) $citydata['_id'];	
+
+			$collection 		= 	Findercollection::where('slug', '=', trim($slug))->where('city_id', '=', $city_id)->first(array());
+			
+			$finder_ids 		= 	array_map('intval', explode(",", $collection['finder_ids']));
+
+			$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+													->whereIn('_id', $finder_ids)
+													->remember(Config::get('app.cachetime'))
+													// ->orderByRaw(DB::raw("FIELD(_id, $collection[finder_ids])"))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+													->toArray();
+
+			$finders = array();
+
+			// return $finder_ids;
+
+			// echo $collection['finder_ids']."<br>";1395,881,1490,968,1765,613,1682,424,1493,1,1704,1928
+			
+			foreach ($finder_ids as $key => $finderid) {
+			
+				$array = head(array_where($collection_finders, function($key, $value) use ($finderid){
+
+					    	if($value['_id'] == $finderid){ return $value; }
+
+						}));
+				array_push($finders, $array);
+			}		
+
+			// return $finders; exit;			
+
+			$data 	= 	array('status' => 200,'collection' => $collection,'collection_finders' => $finders);
+
+			Cache::tags('finder_by_collection_list')->put($city."_".$slug,$data,Config::get('cache.cache_time'));
+		}
 		
-		$finder_ids 		= 	array_map('intval', explode(",", $collection['finder_ids']));
-
-		$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-												->whereIn('_id', $finder_ids)
-												->remember(Config::get('app.cachetime'))
-												// ->orderByRaw(DB::raw("FIELD(_id, $collection[finder_ids])"))
-												->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
-												->toArray();
-
-		$finders = array();
-
-		// return $finder_ids;
-
-		// echo $collection['finder_ids']."<br>";1395,881,1490,968,1765,613,1682,424,1493,1,1704,1928
-		
-		foreach ($finder_ids as $key => $finderid) {
-		
-			$array = head(array_where($collection_finders, function($key, $value) use ($finderid){
-
-				    	if($value['_id'] == $finderid){ return $value; }
-
-					}));
-			array_push($finders, $array);
-		}		
-
-		// return $finders; exit;			
-
-		$data 	= 	array('status' => 200,'collection' => $collection,'collection_finders' => $finders);
-		
-		return Response::json($data);	
+		return Response::json(Cache::tags('finder_by_collection_list')->get($city."_".$slug));	
 	}
 
 
