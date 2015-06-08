@@ -327,8 +327,8 @@ Route::get('getfinderleftside/', array('as' => 'finders.getfinderleftside','uses
 Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton','uses' => 'FindersController@updatefinderlocaiton'));
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
-
-
+Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
+Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -358,6 +358,8 @@ Route::get('blogdetail/{slug}', array('as' => 'blogs.blogdetail','uses' => 'Blog
 Route::get('/blogs/{cat}', 'BlogsController@getCategoryBLogs');
 Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 Route::post('/getblogrelatedfinder', 'BlogsController@getblogRelatedFinder');
+Route::post('addcomment', array('as' => 'blogs.addcomment','uses' => 'BlogsController@addComment'));
+Route::get('getblogcomment/{slug}', array('as' => 'blogs.getblogcomment','uses' => 'BlogsController@getBlogComment'));
 
 /******************** BLOGS SECTION END HERE ********************/
 ##############################################################################

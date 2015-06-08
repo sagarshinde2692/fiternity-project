@@ -36,7 +36,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 
 		$data 	=  array();
 		$tslug 	= (string) $slug;
@@ -54,6 +54,7 @@ class FindersController extends \BaseController {
 							->with('facilities')
 							->with('servicerates')
 							->with('services')
+							->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1');}))
 							->where('slug','=',$tslug)
 							->first();
 
@@ -473,5 +474,67 @@ class FindersController extends \BaseController {
 
 	}
 
+	public function addReview(){
+
+		$inserted_id = Review::max('_id') + 1;
+        $validator = Validator::make($data = Input::json()->all(), Review::$rules);
+
+     	if ($validator->fails()) {
+            $response = array('status' => 404,'message' =>$validator->errors());
+        }else{
+        	$customer = Customer::findOrFail((int)$data['customer_id']);
+	        $data['customer'] = array('name'=>$customer['name'],'email'=>$customer['email'],'profile_image'=>$customer['profile_image']);
+
+	        $reviewdata = $data;
+
+	        $review = new Review($reviewdata);
+	        $review->_id = $insertedid;
+	        $review->finder_id = (int)$data['finder_id'];
+	        $review->customer_id = (int)$data['customer_id'];
+	        $review->rating = (int)$data['rating'];
+	        $review->detail_rating = $data['detail_rating'];
+	        $review->description = $data['description'];
+	        $review->save();
+
+	        $response = array('status' => 200);
+        } 
+
+        return Response::json($response);  
+	}
+
+	public function getFinderReview($slug,$cache = false){
+		$data = array();
+		$tslug = (string) $slug;
+
+		$review_by_finder_list = $cache ? Cache::tags('review_by_finder_list')->has($tslug) : false;
+
+		if(!$review_by_finder_list){
+
+			$finder_by_slug= Finder::where('slug','=',$tslug)->firstOrFail();
+
+			if(!empty($finder_by_slug)){
+
+				$finder_id 	= (int) $finder_by_slug['_id'];
+
+				$reviews = Review::where('status', '!=', '1')
+							->where('finder_id','=',$finder_id)
+							->orderBy('_id', 'desc')
+							->get(array('_id','finder_id','customer_id','customer','rating','detail_rating','description','updated_at','created_at'));
+
+				$data = array('status' => 200,'data'=>$reviews);
+
+				Cache::tags('review_by_finder_list')->put($slug,$data,Config::get('app.cachetime'));
+				$response = $data;
+
+			}else{
+				$response = array('status' => 200,'message'=>'no reviews');
+			}
+		}else{
+
+			$response = Cache::tags('review_by_finder_list')->get($tslug);
+		}
+
+		return Response::json($response);
+	}
 
 }

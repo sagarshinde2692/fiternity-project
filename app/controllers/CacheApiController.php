@@ -9,7 +9,7 @@ class CacheApiController extends BaseController {
 	public function flushTag($tag = false){
 
 		if($tag){
-			Cache::tags($tags)->flush();
+			Cache::tags($tag)->flush();
 			$responce = array('status'=>200);
 		}else{
 			$responce = array('status'=>400,'message'=>'error');
@@ -21,7 +21,7 @@ class CacheApiController extends BaseController {
 	public function flushTagKey($tag = false,$key = false){
 
 		if($tag && $key){
-			Cache::tags($tags)->forget($key);
+			Cache::tags($tag)->forget($key);
 			$responce = array('status'=>200);
 		}else{
 			$responce = array('status'=>400,'message'=>'error');
