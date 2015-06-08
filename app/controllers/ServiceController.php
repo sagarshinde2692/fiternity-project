@@ -105,8 +105,9 @@ class ServiceController extends \BaseController {
 
 	private function transform($service){
 
-		// return $item->finder->city->name;
 		$item  =  (!is_array($service)) ? $service->toArray() : $service;
+		// return $item;
+
 
 		$data = [
 			'name' => $item['name'],
@@ -130,6 +131,9 @@ class ServiceController extends \BaseController {
 			'location' => $service->finder->location->name
 		];
 
+		// return $data;
+
+
 		if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
 
 			$servicetrainer = Servicetrainer::remember(Config::get('app.cachetime'))->findOrFail( intval($item['trainer_id']) );
@@ -140,6 +144,8 @@ class ServiceController extends \BaseController {
 
 				$data['trainer'] = array_only($trainerdata, array('_id', 'name', 'bio', 'trainer_pic'));
 			}
+
+			// return $data;
 			
 		}else{
 
@@ -147,7 +153,7 @@ class ServiceController extends \BaseController {
 			
 		}
 
-		return Response::json($data, 200);
+		return $data;
 
 	}
 

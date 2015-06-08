@@ -36,74 +36,74 @@ class OrderController extends \BaseController {
 		$data				=	Input::json()->all();
 
 		if(empty($data['customer_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
 		}
 
 		if(empty($data['customer_email'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_email");
 		}
 
 		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+			return $resp 	= 	array('status' => 404,'message' => "Invalid Email Id");
 		} 
 		
 		if(empty($data['customer_identity'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
 		}
 
 		if(empty($data['customer_phone'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
 		}
 
 		if(empty($data['customer_source'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_source");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_source");
 		}
 		
 		if(empty($data['customer_location'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
 		}
 
 		if(empty($data['city_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
 		}	
 
 		if(empty($data['finder_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
 		}
 
 		if(empty($data['finder_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_name");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_name");
 		}	
 
 		if(empty($data['finder_address'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_address");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_address");
 		}	
 
 		if(empty($data['service_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_id");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
 		}
 
 		if(empty($data['service_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
 		}
 		
 		if(empty($data['service_duration'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 		}
 
 		if(empty($data['type'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing Order Type - type");
 		}
 
 		if (!in_array($data['type'], $this->ordertypes)) {
-			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
+			return $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
 		}
 
 		//Validation base on order type
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
 
 			if( empty($data['service_duration']) ){
-				return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
+				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 			}
 
 		}
@@ -149,63 +149,63 @@ class OrderController extends \BaseController {
 		// must add customer id after hull if its guest user keep one guest user 
 
 		if(empty($data['customer_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
 		}
 
 		if(empty($data['customer_email'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_email");
 		}
 
 		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+			return $resp 	= 	array('status' => 404,'message' => "Invalid Email Id");
 		} 
 		
 		if(empty($data['customer_identity'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
 		}
 
 		if(empty($data['customer_phone'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
 		}
 
 		if(empty($data['customer_source'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_source");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_source");
 		}
 		
 		if(empty($data['customer_location'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
 		}
 
 		if(empty($data['city_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
 		}	
 
 		if(empty($data['finder_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
 		}
 
 		if(empty($data['finder_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_name");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_name");
 		}	
 
 		if(empty($data['finder_address'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_address");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_address");
 		}	
 
 		if(empty($data['service_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_id");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
 		}
 
 		if(empty($data['service_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
 		}
 
 		if(empty($data['type'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing Order Type - type");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing Order Type - type");
 		}
 
 		if (!in_array($data['type'], $this->ordertypes)) {
-			return $resp 	= 	array('status' => 500,'message' => "Invalid Order Type");
+			return $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
 		}
 
 
@@ -213,7 +213,7 @@ class OrderController extends \BaseController {
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
 
 			if( empty($data['service_duration']) ){
-				return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_duration");
+				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 			}
 
 		}
@@ -247,11 +247,11 @@ class OrderController extends \BaseController {
 		$data		=	Input::json()->all();
 
 		if(empty($data['order_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - order_id");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
 		}
 
 		if(empty($data['status'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - status");
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
 		}
 
 		$orderid 	=	(int) Input::json()->get('order_id');
