@@ -59,10 +59,10 @@ class SchedulebooktrialsController extends \BaseController {
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-											->where('service_name', '=', $item['name'])
-											->where('schedule_date', '=', new DateTime($date) )
-											->where('schedule_slot', '=', $slot['slot_time'])
-											->count();
+				->where('service_name', '=', $item['name'])
+				->where('schedule_date', '=', new DateTime($date) )
+				->where('schedule_slot', '=', $slot['slot_time'])
+				->count();
 				// var_dump($booktrialslotcnt);
 
 				$slot_status 		= 	($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
@@ -82,7 +82,6 @@ class SchedulebooktrialsController extends \BaseController {
 		}						
 		return $scheduletrials;
 	}
-
 
 
 	/**
@@ -159,10 +158,9 @@ class SchedulebooktrialsController extends \BaseController {
 			}
 
 		}
-		
+
 		return $scheduleservices;
 	}
-
 
 
 	/**
@@ -241,12 +239,104 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 
+
+	/**
+	 * Display the ServiceSchedule.
+	 *
+	 * @param  int  $serviceid
+	 * @param  date $date(dd-mm-yyyy)
+	 * @param  int  $noofdays
+	 * @return Response
+	 */
+
+	public function getServiceSchedule($serviceid, $date = null, $noofdays = null){
+
+		// $dobj = new DateTime;print_r($dobj);exit;
+		$currentDateTime 	=	\Carbon\Carbon::now();
+		
+		$item 				=	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules'))->toArray();
+
+		$finderid 			= 	intval($item['finder_id']);
+
+		$noofdays 			=  	($noofdays == null) ? 1 : $noofdays;
+
+		$serviceschedules 	= 	array();
+
+		for ($j = 0; $j < $noofdays; $j++) {
+
+			$dt 			=	Carbon::createFromFormat('Y-m-d', date("Y-m-d", strtotime($date)) )->addDays(intval($j))->format('Y-m-d'); 
+
+			$timestamp 		= 	strtotime($dt);
+
+			$weekday 		= 	strtolower(date( "l", $timestamp));
+			// echo "$dt -- $weekday <br>";
+
+			$weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
+
+				if($value['weekday'] == $weekday){
+					return $value;
+				}
+
+			}));
+
+			// print_pretty($weekdayslots);
+
+			// sslots exists
+			if(count($weekdayslots['slots']) > 0){
+
+				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday); 
+
+				$slots = array();
+
+				foreach ($weekdayslots['slots'] as $slot) {
+
+					$totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
+
+					$goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
+
+					// $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();								
+
+					$slot_status 		= 	($slot['limit'] > $goingcnt) ? "available" : "full";
+
+					array_set($slot, 'totalbookcnt', $totalbookcnt);
+
+					array_set($slot, 'goingcnt', $goingcnt);
+
+					// array_set($slot, 'cancelcnt', $cancelcnt);
+
+					array_set($slot, 'status', $slot_status);
+
+					$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
+					
+					// $scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
+					// $scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
+
+					$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+
+					array_set($slot, 'passed', $slot_datetime_pass_status); 
+
+					array_push($slots, $slot);
+				}
+
+				$service['slots'] = $slots;
+
+				array_push($serviceschedules, $service);
+
+			}
+
+		}
+
+		return $serviceschedules;
+
+
+	}
+
 	public function getBookTrial($finderid,$date = null){
 		$finderid 	= 	(int) $finderid;
 		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
-									->where('service_name', '=', 'gyms' )
-									->where('schedule_date', '=', new DateTime($date) )
-									->get(array('customer_name','service_name','finder_id','schedule_date','schedule_slot'));
+		->where('service_name', '=', 'gyms' )
+		->where('schedule_date', '=', new DateTime($date) )
+		->get(array('customer_name','service_name','finder_id','schedule_date','schedule_slot'));
 		return $items;
 	}
 
@@ -404,29 +494,29 @@ class SchedulebooktrialsController extends \BaseController {
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
-			$booktrial = new Booktrial($booktrialdata);
-			$booktrial->_id = $booktrialid;
-			$trialbooked = $booktrial->save();
+$booktrial = new Booktrial($booktrialdata);
+$booktrial->_id = $booktrialid;
+$trialbooked = $booktrial->save();
 
-		} catch(ValidationException $e){
+} catch(ValidationException $e){
 
-			return array('status' => 500,'message' => $e->getMessage());
-		}
+	return array('status' => 500,'message' => $e->getMessage());
+}
 
-		if($trialbooked = true){
+if($trialbooked = true){
 
-			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
+	$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
 			//Send Instant (Email) To Customer & Finder
-			$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
-			$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
-			$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
-			$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
+	$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
+	$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
+	$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
+	$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
 
-			$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
-			$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
-			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
-			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
+	$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
+	$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+	$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
+	$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 			// return "$sndInstantEmailCustomer --- $sndInstantSmsCustomer   ----  $sndInstantEmailFinder   --- $sndInstantSmsFinder ";
 			//#############  TESTING FOR 1 MIN START ##############
@@ -439,50 +529,50 @@ class SchedulebooktrialsController extends \BaseController {
 			//#############  TESTING FOR 1 MIN END ##############
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-			if($twelveHourDiffInMin >= (12 * 60)){
-				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+	if($twelveHourDiffInMin >= (12 * 60)){
+		$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+		$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 				// $sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				// $sms_messageids['before12hour'] 	= 	$sndBefore12HourSmsCustomer;
-			}
+	}
 
-			if($device_id != ''){
-				if($fiveHourDiffInMin >= (5 * 60)){
-					$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
-					$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
-				}
-			}
+	if($device_id != ''){
+		if($fiveHourDiffInMin >= (5 * 60)){
+			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
+		}
+	}
 
 			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
-			if($oneHourDiffInMin >= 60){
-				$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-				$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-				$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
-				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
-			}
+	if($oneHourDiffInMin >= 60){
+		$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+		$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+		$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
+		$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
+	}
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
-			$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
-			$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
-			$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
+	$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+	$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+	$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+	$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
+	$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
+	$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
 
 			//update queue ids for booktiral
-			$booktrial 		= 	Booktrial::findOrFail($booktrialid);
-			$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
-									  'customer_smsqueuedids' => $customer_sms_messageids,
-									  'customer_notificationqueuedids' => $customer_notification_messageids,
-									  'finder_emailqueuedids' => $finder_email_messageids, 
-									  'finder_smsqueuedids' => $finer_sms_messageids
-								);
-			$trialbooked 	= 	$booktrial->update($queueddata);
-		}
+	$booktrial 		= 	Booktrial::findOrFail($booktrialid);
+	$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
+		'customer_smsqueuedids' => $customer_sms_messageids,
+		'customer_notificationqueuedids' => $customer_notification_messageids,
+		'finder_emailqueuedids' => $finder_email_messageids, 
+		'finder_smsqueuedids' => $finer_sms_messageids
+		);
+	$trialbooked 	= 	$booktrial->update($queueddata);
+}
 
-		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-		return Response::json($resp,200);	
-	}
+$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+return Response::json($resp,200);	
+}
 
 
 
@@ -646,50 +736,50 @@ class SchedulebooktrialsController extends \BaseController {
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
-			$booktrial = new Booktrial($booktrialdata);
-			$booktrial->_id = $booktrialid;
-			$trialbooked = $booktrial->save();
+$booktrial = new Booktrial($booktrialdata);
+$booktrial->_id = $booktrialid;
+$trialbooked = $booktrial->save();
 
-		} catch(ValidationException $e){
+} catch(ValidationException $e){
 
 			// If booktrial query fail updates error message
 
-			$orderid 	=	(int) Input::json()->get('order_id');
+	$orderid 	=	(int) Input::json()->get('order_id');
 
-			$order 		= 	Order::findOrFail($orderid);
+	$order 		= 	Order::findOrFail($orderid);
 
-			array_set($data, 'message', $e->getMessage());
+	array_set($data, 'message', $e->getMessage());
 
-			$orderdata 	=	$order->update($data);
+	$orderdata 	=	$order->update($data);
 
-			return array('status' => 500,'message' => $e->getMessage());
-		}
+	return array('status' => 500,'message' => $e->getMessage());
+}
 
-		if($trialbooked = true){
+if($trialbooked = true){
 
-			$orderid 	=	(int) Input::json()->get('order_id');
+	$orderid 	=	(int) Input::json()->get('order_id');
 
-			$order 		= 	Order::findOrFail($orderid);
+	$order 		= 	Order::findOrFail($orderid);
 
-			array_set($data, 'status', '1');
+	array_set($data, 'status', '1');
 
-			array_set($data, 'booktrial_id', intval($booktrialid));
+	array_set($data, 'booktrial_id', intval($booktrialid));
 
-			$orderdata 	=	$order->update($data);
+	$orderdata 	=	$order->update($data);
 
 
-			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
+	$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
 			//Send Instant (Email) To Customer & Finder
-			$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
-			$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
-			$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
-			$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
+	$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
+	$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
+	$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
+	$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
 
-			$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
-			$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
-			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
-			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
+	$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
+	$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+	$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
+	$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 			// return "$sndInstantEmailCustomer --- $sndInstantSmsCustomer   ----  $sndInstantEmailFinder   --- $sndInstantSmsFinder ";
 			//#############  TESTING FOR 1 MIN START ##############
@@ -702,50 +792,50 @@ class SchedulebooktrialsController extends \BaseController {
 			//#############  TESTING FOR 1 MIN END ##############
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-			if($twelveHourDiffInMin >= (12 * 60)){
-				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+	if($twelveHourDiffInMin >= (12 * 60)){
+		$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+		$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 				// $sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				// $sms_messageids['before12hour'] 	= 	$sndBefore12HourSmsCustomer;
-			}
+	}
 
-			if($device_id != ''){
-				if($fiveHourDiffInMin >= (5 * 60)){
-					$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
-					$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
-				}
-			}
+	if($device_id != ''){
+		if($fiveHourDiffInMin >= (5 * 60)){
+			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
+		}
+	}
 
 			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
-			if($oneHourDiffInMin >= 60){
-				$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-				$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-				$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
-				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
-			}
+	if($oneHourDiffInMin >= 60){
+		$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+		$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+		$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
+		$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
+	}
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
-			$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
-			$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
-			$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
+	$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+	$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+	$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+	$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
+	$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
+	$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
 
 			//update queue ids for booktiral
-			$booktrial 		= 	Booktrial::findOrFail($booktrialid);
-			$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
-									  'customer_smsqueuedids' => $customer_sms_messageids,
-									  'customer_notificationqueuedids' => $customer_notification_messageids,
-									  'finder_emailqueuedids' => $finder_email_messageids, 
-									  'finder_smsqueuedids' => $finer_sms_messageids
-								);
-			$trialbooked 	= 	$booktrial->update($queueddata);
-		}
+	$booktrial 		= 	Booktrial::findOrFail($booktrialid);
+	$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
+		'customer_smsqueuedids' => $customer_sms_messageids,
+		'customer_notificationqueuedids' => $customer_notification_messageids,
+		'finder_emailqueuedids' => $finder_email_messageids, 
+		'finder_smsqueuedids' => $finer_sms_messageids
+		);
+	$trialbooked 	= 	$booktrial->update($queueddata);
+}
 
-		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-		return Response::json($resp,200);	
-	}
+$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+return Response::json($resp,200);	
+}
 
 
 	/**
