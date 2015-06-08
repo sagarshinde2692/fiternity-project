@@ -284,7 +284,7 @@ class SchedulebooktrialsController extends \BaseController {
 			// sslots exists
 			if(count($weekdayslots['slots']) > 0){
 
-				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday); 
+				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday, 'month' => date( "M", $timestamp), 'day' => date( "d", $timestamp)); 
 
 				$slots = array();
 
