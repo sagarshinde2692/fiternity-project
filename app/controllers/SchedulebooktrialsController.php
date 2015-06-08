@@ -282,11 +282,9 @@ class SchedulebooktrialsController extends \BaseController {
 			// print_pretty($weekdayslots);
 
 			// sslots exists
+			$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday, 'month' => date( "M", $timestamp), 'day' => date( "d", $timestamp)); 
+			$slots = array();
 			if(count($weekdayslots['slots']) > 0){
-
-				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday, 'month' => date( "M", $timestamp), 'day' => date( "d", $timestamp)); 
-
-				$slots = array();
 
 				foreach ($weekdayslots['slots'] as $slot) {
 
@@ -317,17 +315,15 @@ class SchedulebooktrialsController extends \BaseController {
 
 					array_push($slots, $slot);
 				}
-
-				$service['slots'] = $slots;
-
-				array_push($serviceschedules, $service);
-
 			}
+
+			$service['slots'] = $slots;
+			
+			array_push($serviceschedules, $service);
 
 		}
 
 		return $serviceschedules;
-
 
 	}
 
