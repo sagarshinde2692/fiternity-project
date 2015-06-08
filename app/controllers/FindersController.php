@@ -39,7 +39,7 @@ class FindersController extends \BaseController {
 	public function finderdetail($slug, $cache = true){
 
 		$data 	=  array();
-		$tslug 	= (string) $slug;
+		$tslug 	= (string) strtolower($slug);
 
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
 

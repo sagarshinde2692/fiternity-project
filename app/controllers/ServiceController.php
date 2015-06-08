@@ -108,7 +108,6 @@ class ServiceController extends \BaseController {
 		$item  =  (!is_array($service)) ? $service->toArray() : $service;
 		// return $item;
 
-
 		$data = [
 			'name' => $item['name'],
 			'slug' => $item['slug'],
@@ -126,13 +125,12 @@ class ServiceController extends \BaseController {
 			'workoutsessionschedules' => $item['workoutsessionschedules'],
 			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
-			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug')),
+			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage')),
 			'city' => $service->finder->city->name,
 			'location' => $service->finder->location->name
 		];
 
 		// return $data;
-
 
 		if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
 
