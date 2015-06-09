@@ -105,30 +105,34 @@ class ServiceController extends \BaseController {
 
 	private function transform($service){
 
-		$item  =  (!is_array($service)) ? $service->toArray() : $service;
+		$item  	   	=  	(!is_array($service)) ? $service->toArray() : $service;
+		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->where('_id', (int) $service['finder_id'])
+							->first();
 		// return $item;
 
-		$data = [
-			'name' => $item['name'],
-			'slug' => $item['slug'],
-			'created_at' => $item['created_at'],
+		$data = array(
+			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+			// 'slug' => $item['slug'],
+			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
 			'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
 			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 			'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
-			'short_description' => $item['short_description'],
-			'what_i_should_carry' => $item['what_i_should_carry'],
-			'what_i_should_expect' => $item['what_i_should_expect'],
-			'ratecards' => $item['ratecards'],
-			'trialschedules' => $item['trialschedules'],
-			'workoutsessionschedules' => $item['workoutsessionschedules'],
+			'short_description' => (isset($item['short_description']) && $item['short_description'] != '') ? $item['short_description'] : "", 
+			'what_i_should_carry' => (isset($item['what_i_should_carry']) && $item['what_i_should_carry'] != '') ? $item['what_i_should_carry'] : "", 
+			'what_i_should_expect' => (isset($item['what_i_should_expect']) && $item['what_i_should_expect'] != '') ? $item['what_i_should_expect'] : "", 
+			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
+			'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
+			'workoutsessionschedules' => (isset($item['workoutsessionschedules']) && !empty($item['workoutsessionschedules'])) ? $item['workoutsessionschedules'] : "",
 			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage')),
-			'city' => $service->finder->city->name,
-			'location' => $service->finder->location->name
-		];
+			'city' => (isset($finderarr->city->name) && $finderarr->city->name != '') ? strtolower($finderarr->city->name) : "",
+			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : ""
+		);
 
 		// return $data;
 
