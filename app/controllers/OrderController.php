@@ -284,5 +284,32 @@ class OrderController extends \BaseController {
 	}
 
 
+	public function captureFailOrders(){
+
+		$data		=	Input::json()->all();
+
+		if(empty($data['order_id'])){
+
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
+		}
+
+		if(empty($data['status'])){
+
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
+		}
+
+		$orderid 	=	(int) Input::json()->get('order_id');
+
+		$order 		= 	Order::findOrFail($orderid);
+
+		$orderdata 	=	$order->update($data);
+
+		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+
+		return Response::json($resp);
+
+	}
+
+
 
 }

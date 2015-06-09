@@ -292,9 +292,10 @@ Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
 
-Route::post('generatecodorder',  array('as' => 'customer.generatecodorder','uses' => 'OrderController@generateCodOrder'));
-Route::post('generatetmporder',  array('as' => 'customer.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
-Route::post('captureorderstatus',  array('as' => 'customer.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
+Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
+Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
+Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
 
 /******************** ORDERS SECTION END HERE ********************/
