@@ -36,6 +36,30 @@ Route::get('/testcountrysms', function() {
 });
 
 
+Route::get('/testsms', function() { 
+
+	$number = '9773348762';
+
+	$msg 	= 'test msg';
+
+	$sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+	
+	$ci = curl_init();
+
+	curl_setopt($ci, CURLOPT_URL, $sms_url);
+
+	curl_setopt($ci, CURLOPT_HEADER, 0);
+
+	curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
+
+	$response = curl_exec($ci);
+
+	curl_close($ci);
+
+	return $response;
+
+});
+
 Route::get('/capturedata', function() { 
 
 	// $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim(977348762)) . "&source=fitter&message=" . urlencode('hi');
@@ -97,11 +121,11 @@ Route::get('/testpushnotification', function() {
 	// 				->send('Hello World, i`m a push message');
 
 	$response = PushNotification::app('appNameAndroid')
-					->to('APA91bF5pPDQbftrS4SppKxrgZWsBUhHrtCkjdfwZXXrazVD9c-qvGvo8MejFGnZ3iHrhOoKyMQKeX3yHrtY_N4xC0ZHVYfHFmgHdaxw_WWOKP5YTdUdDv0Enr-1CBO2q411M33YKiHYl6PJB5z12W3WNbu2Pphz8A')
-					->send('This is a simple message, takes use to homepage',array( 
-						'title' => "Fitternity",
-						'type' => "generic"
-						));	
+	->to('APA91bF5pPDQbftrS4SppKxrgZWsBUhHrtCkjdfwZXXrazVD9c-qvGvo8MejFGnZ3iHrhOoKyMQKeX3yHrtY_N4xC0ZHVYfHFmgHdaxw_WWOKP5YTdUdDv0Enr-1CBO2q411M33YKiHYl6PJB5z12W3WNbu2Pphz8A')
+	->send('This is a simple message, takes use to homepage',array( 
+		'title' => "Fitternity",
+		'type' => "generic"
+		));	
 	return Response::json($response,200);	
 
 
@@ -228,12 +252,12 @@ Route::get('/findercsv', function() {
 	'Pragma'              => 'public'
 	];
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-								->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-								->where('city_id', 1)
-								->take(2)
-								->orderBy('id', 'desc')
-								->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
+	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->where('city_id', 1)
+	->take(2)
+	->orderBy('id', 'desc')
+	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, TYPE \n";
