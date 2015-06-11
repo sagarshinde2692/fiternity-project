@@ -287,6 +287,7 @@ Route::post('customerresetpassword', array('as' => 'customer.customerresetpasswo
 
 Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
+	Route::get('customerlogout', array('as' => 'customer.validatetokencustomerlogout','uses' => 'CustomerController@customerlogout'));
 });
 
 

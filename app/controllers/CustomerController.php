@@ -476,5 +476,18 @@ class CustomerController extends \BaseController {
         }
 
         return Response::json($response);
-	}	
+	}
+
+	public function customerLogout(){
+
+		$jwt_token = Request::header('Authorization');
+		$jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+		$expiry_time_minutes = (int)round(($decoded->exp - time())/60);
+
+		Cache::tags('blacklist_customer_token')->put($jwt_token,$decoded->customer->email,$expiry_time_minutes);
+
+		return Response::json(array('status' => 200,'message' => 'logged out'));
+	}
 }

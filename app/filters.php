@@ -100,6 +100,9 @@ Route::filter('validatetoken',function()
         $jwt_alg = Config::get('app.jwt.alg');
     
         try{
+        	if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
+        		return Response::json(array('status' => 404,'error_message' => 'User logged out'));
+        	}
             $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
         }catch(DomainException $e){
             return Response::json(array('status' => 404,'error_message' => 'Token incorrect'));
