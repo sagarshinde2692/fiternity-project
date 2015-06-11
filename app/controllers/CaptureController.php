@@ -68,7 +68,7 @@ zumba_trials
 				'created_at' => date('Y-m-d H:i:s')
 			);
 
-		$yet_to_connect_arr = array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy', )
+		$yet_to_connect_arr = array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy');
 
 		// if(in_array(Input::json()->get('capture_type'), $yet_to_connect_arr)){
 
