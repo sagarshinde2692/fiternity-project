@@ -136,30 +136,30 @@ return array(
 	'bcc_emailds_mailus' 							=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 
 	
-	'bcc_emailds_review' 							=> 	array('sanjay.id7@gmail.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
+	'bcc_emailds_review' 							=> 	array('pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
 
-	'bcc_emailds_request_callback' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
-	'bcc_emailds_book_trial' 						=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
-	'bcc_emailds_fitcardbuy' 						=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
-	'bcc_emailds_register_me' 						=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+	'bcc_emailds_request_callback' 					=> 	array('info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_book_trial' 						=> 	array('info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_fitcardbuy' 						=> 	array('info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_register_me' 						=> 	array('mailus@fitternity.com'),
 
 
 
-	'bcc_emailds_request_callback_landing_page' 	=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
-	'bcc_emailds_book_trial_landing_page' 			=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_request_callback_landing_page' 	=> 	array('info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_book_trial_landing_page' 			=> 	array('info@fitternity.com','mailus@fitternity.com'),
 	
-	'bcc_emailds_finder_lead_pop'					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
-	'bcc_emailds_finder_offer_pop'					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_finder_lead_pop'					=> 	array('info@fitternity.com','mailus@fitternity.com'),
+	'bcc_emailds_finder_offer_pop'					=> 	array('info@fitternity.com','mailus@fitternity.com'),
 
-	'bcc_emailds_fivefitness_alternative' 			=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
-	'bcc_emailds_fivefitness_refund'	 			=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+	'bcc_emailds_fivefitness_alternative' 			=> 	array('mailus@fitternity.com'),
+	'bcc_emailds_fivefitness_refund'	 			=> 	array('mailus@fitternity.com'),
 
 
-	'bcc_emailds_not_able_to_find' 					=> 	array('sanjay.id7@gmail.com','info@fitternity.com','mailus@fitternity.com','dharatanna@fitternity.com','jayamvora@fitternity.com'),
+	'bcc_emailds_not_able_to_find' 					=> 	array('info@fitternity.com','mailus@fitternity.com','dharatanna@fitternity.com','jayamvora@fitternity.com'),
 
 
 	// 'bcc_emailds_autobook_trial' 					=> 	array('sanjay.fitternity@gmail.com'),
-	'bcc_emailds_autobook_trial' 					=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
-	'bcc_emailds_finderdailsummary' 				=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
+	'bcc_emailds_autobook_trial' 					=> 	array('mailus@fitternity.com'),
+	'bcc_emailds_finderdailsummary' 				=> 	array('mailus@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
 
 );
