@@ -15,7 +15,7 @@ abstract Class Mailer {
 
 					Mail::send($email_template, $template_data, function($message) use ($message_data){
 						$message->to($message_data['user_email'], $message_data['user_name'])
-						->bcc($message_data['bcc_emailids'])
+						->cc($message_data['bcc_emailids'])
 						->subject($message_data['email_subject']);
 					});
 
@@ -40,7 +40,7 @@ abstract Class Mailer {
 
 					Mail::send($email_template, $template_data, function($message) use ($message_data){
 						$message->to($message_data['user_email'], $message_data['user_name'])
-						->bcc($message_data['bcc_emailids'])
+						->cc($message_data['bcc_emailids'])
 						->subject($message_data['email_subject']);
 					});
 
