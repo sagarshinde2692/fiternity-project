@@ -88,3 +88,30 @@ Route::filter('csrf', function()
 		throw new Illuminate\Session\TokenMismatchException;
 	}
 });
+
+Route::filter('validatetoken',function()
+{
+	$data = Request::header('Authorization');
+
+    if(isset($data) && !empty($data)){
+
+        $jwt_token  = $data;
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+    
+        try{
+            $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        }catch(DomainException $e){
+            return Response::json(array('status' => 404,'error_message' => 'Token incorrect'));
+        }catch(ExpiredException $e){
+            return Response::json(array('status' => 404,'error_message' => 'Token expired'));
+        }catch(SignatureInvalidException $e){
+            return Response::json(array('status' => 404,'error_message' => 'Signature verification failed'));
+        }catch(Exception $e){
+            return Response::json(array('status' => 404,'error_message' => 'Token incorrect'));
+        }
+
+    }else{
+        return Response::json(array('status' => 404,'error_message' => 'Empty token or token should be string'));
+    }
+});

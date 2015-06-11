@@ -305,7 +305,7 @@ class CustomerController extends \BaseController {
 	}
 
 
-	public function login(){
+	public function customerLogin(){
 
 		$data = Input::json()->all();
 
@@ -444,7 +444,7 @@ class CustomerController extends \BaseController {
 
 	public function validateToken(){
 
-		return Response::json(validate_token());
+		return Response::json(array('status' => 200,'message' => 'token is correct'));
 	}
 
 	public function resetPassword(){

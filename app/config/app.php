@@ -224,7 +224,7 @@ return array(
 		'jti' => base64_encode(mcrypt_create_iv(32)), //unique jwt id
 		'iat' => time(), // time when token is created
 		'nbf' => time()+10, // time when token can be used from
-		'exp' => time()+360, // time when token gets expired
+		'exp' => time()+86400, // time when token gets expired (1 day)
 		'alg' => 'HS256',
 	),
     
