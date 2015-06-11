@@ -218,5 +218,14 @@ return array(
 	//'elasticsearch_host' 			=> 	'ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com',
 	'elasticsearch_default_index' 	=> 	'fitternity',
 	'elasticsearch_default_type' 	=> 	'finder',
+
+	'jwt' => array(
+		'key' => 'fitternity', //secret key to encode token
+		'jti' => base64_encode(mcrypt_create_iv(32)), //unique jwt id
+		'iat' => time(), // time when token is created
+		'nbf' => time()+10, // time when token can be used from
+		'exp' => time()+360, // time when token gets expired
+		'alg' => 'HS256',
+	),
     
 );

@@ -274,7 +274,207 @@ class CustomerController extends \BaseController {
 		return Response::json($resp);
 
 	}
-	
 
-	
+	public function register(){
+
+		$inserted_id = Customer::max('_id') + 1;
+        $validator = Validator::make($data = Input::json()->all(), Customer::$rules);
+
+     	if ($validator->fails()) {
+            $response = array('status' => 404,'error_message' =>$validator->errors());
+        }else{
+        	
+        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+        	$account_link[$data['identity']] = 1;
+
+	        $customer = new Customer();
+	        $customer->_id = $inserted_id;
+	        $customer->name = ucwords($data['name']) ;
+	        $customer->email = $data['email'];
+	        $customer->password = md5($data['password']);
+	        $customer->contact_no = $data['contact_no'];
+	        $customer->identity = $data['identity'];
+	        $customer->account_link = $account_link;
+	        $customer->status = "1";
+	        $customer->save();
+
+	        $response = array('status' => 200);
+        } 
+
+        return Response::json($response);  
+	}
+
+
+	public function login(){
+
+		$data = Input::json()->all();
+
+		if(isset($data['identity']) && !empty($data['identity'])){
+
+			if($data['identity'] == 'email')
+			{
+				return Response::json($this->emailLogin($data));
+			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
+				return Response::json($this->socialLogin($data));
+			}else{
+				return Response::json(array('status' => 404,'error_message' => array('identity' => 'The identity is incorrect')));
+			}
+
+	    }else{
+
+	    	return Response::json(array('status' => 404,'error_message' => array('identity' => 'The identity field is required')));
+	    }
+	}
+
+	public function emailLogin($data){
+
+		$rules = [
+				    'email' => 'required|email',
+				    'password' => 'required'
+				];
+
+		$validator = Validator::make($data = Input::json()->all(),$rules);
+
+		if($validator->fails()) {
+			return array('status' => 404,'error_message' =>$validator->errors());  
+        }
+
+		$customer = Customer::where('email','=',$data['email'])->where('password','=',md5($data['password']))->first();
+
+		if(empty($customer)){
+			return array('status' => 404,'error_message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
+		}
+
+		if($customer['account_link'][$data['identity']] != 1)
+		{
+			$customer = $this->updateAccountLink($customer,$data['identity']);
+		}
+
+		return $this->createToken($customer);
+	}
+
+	public function socialLogin($data){
+		$rules = [
+			    'email' => 'required|email'
+			];
+
+		$validator = Validator::make($data = Input::json()->all(),$rules);
+
+		if($validator->fails()) {
+			return array('status' => 404,'error_message' =>$validator->errors());  
+        }
+
+        $customer = Customer::where('email','=',$data['email'])->first();
+
+		if(empty($customer)){
+			$socialRegister = $this->socialRegister($data);
+			if($socialRegister['status'] == 404)
+			{
+				return $socialRegister;
+			}else{
+				$customer = $socialRegister['customer'];
+			}
+		}
+
+		if($customer['account_link'][$data['identity']] != 1)
+		{
+			$customer = $this->updateAccountLink($customer,$data['identity']);
+		} 
+
+		return $this->createToken($customer);
+	}
+
+	public function socialRegister($data){
+
+		$rules = [
+			    'email' => 'required|email',
+			    'name' => 'required',
+			    'identity' => 'required',
+			];
+
+		$inserted_id = Customer::max('_id') + 1;
+        $validator = Validator::make($data, $rules);
+
+		if ($validator->fails()) {
+            $response = array('status' => 404,'error_message' =>$validator->errors());
+        }else{
+        	
+        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+        	$account_link[$data['identity']] = 1;
+
+	        $customer = new Customer();
+	        $customer->_id = $inserted_id;
+	        $customer->name = ucwords($data['name']) ;
+	        $customer->email = $data['email'];
+	        $customer->identity = $data['identity'];
+	        $customer->account_link = $account_link;
+	        $customer->status = "1";
+	        $customer->save();
+
+	        $response = array('status' => 200,'customer'=>$customer);
+        }
+
+        return $response;
+	}
+
+	public function updateAccountLink($customer,$identity){
+
+		$account_link['account_link'] = $customer['account_link'];
+		$account_link['account_link'][$identity] = 1;
+		$customer->update($account_link);
+
+		return $customer;
+	}
+
+	public function createToken($customer){
+		$jwt_claim = array(
+				"jti" => Config::get('app.jwt.jti'),
+			    "iat" => Config::get('app.jwt.iat'),
+			    "nbf" => Config::get('app.jwt.nbf'),
+			    "exp" => Config::get('app.jwt.exp'),
+			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
+			);
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
+
+		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+
+        return array('status' => 200,'message' => 'successfull login', 'token' => $token);
+	}
+
+	public function validateToken(){
+
+		return Response::json(validate_token());
+	}
+
+	public function resetPassword(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			    'email' => 'required|email|max:255',
+	    		'password' => 'required|min:8|max:20|confirmed',
+	    		'password_confirmation' => 'required|min:8|max:20',
+			];
+
+        $validator = Validator::make($data, $rules);
+
+		if ($validator->fails()) {
+            $response = array('status' => 404,'error_message' =>$validator->errors());
+        }else{
+        	
+        	$customer = Customer::where('email','=',$data['email'])->first();
+        	
+        	if(empty($customer)){
+				return array('status' => 404,'error_message' => array('email' => 'Incorrect email'));
+			}
+
+			$password['password'] = md5($data['password']);
+			$customer->update($password);
+
+	        $response = array('status' => 200,'message' => 'password reset successfull');
+        }
+
+        return Response::json($response);
+	}	
 }

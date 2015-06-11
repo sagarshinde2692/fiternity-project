@@ -14,11 +14,11 @@ class Customer extends  \Basemodel {
 	// Add your validation rules here
 	public static $rules = [
 	    'name' => 'required|min:10|max:255',
-	    'email' => 'required|email|unique|max:255',
-	    'profile_image' => 'required',
-	    'identity' => 'required',
-	    'verified' => 'required',
-	    'description' => 'required'
+	    'email' => 'required|email|unique:customers|max:255',
+	    'password' => 'required|min:8|max:20|confirmed|alpha_num',
+	    'password_confirmation' => 'required|min:8|max:20|alpha_num',
+	    'contact_no' => 'required|size:10',
+	    'identity' => 'required'
 	];
 
 	public function review(){

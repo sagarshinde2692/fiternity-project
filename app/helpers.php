@@ -325,5 +325,36 @@ if (!function_exists('pluck')) {
     }
 }
 
+//validate_token
+if (!function_exists('validate_token')) {
+    function validate_token() {
+
+        $data = Request::header('Authorization');
+
+        if(isset($data) && !empty($data)){
+
+            $jwt_token  = $data;
+            $jwt_key = Config::get('app.jwt.key');
+            $jwt_alg = Config::get('app.jwt.alg');
+        
+            try{
+                $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+                return array('status'=>200);
+            }catch(DomainException $e){
+                return array('status' => 404,'error_message' => 'Token incorrect');
+            }catch(ExpiredException $e){
+                return array('status' => 404,'error_message' => 'Token expired');
+            }catch(SignatureInvalidException $e){
+                return array('status' => 404,'error_message' => 'Signature verification failed');
+            }catch(Exception $e){
+                return array('status' => 404,'error_message' => 'Token incorrect');
+            }
+
+        }else{
+            return array('status' => 404,'error_message' => 'Empty token or token should be string');
+        }
+    }
+}
+
 
 ?>

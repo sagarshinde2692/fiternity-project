@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ae3573fc31e764d32645f2da14fda5e6",
+    "hash": "4a043dba2641bcefe7def248c3be3ccd",
     "packages": [
         {
             "name": "aloha/twilio",
@@ -176,12 +176,12 @@
             "version": "1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/mtdowling/ClassPreloader.git",
+                "url": "https://github.com/ClassPreloader/ClassPreloader.git",
                 "reference": "2c9f3bcbab329570c57339895bd11b5dd3b00877"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mtdowling/ClassPreloader/zipball/2c9f3bcbab329570c57339895bd11b5dd3b00877",
+                "url": "https://api.github.com/repos/ClassPreloader/ClassPreloader/zipball/2c9f3bcbab329570c57339895bd11b5dd3b00877",
                 "reference": "2c9f3bcbab329570c57339895bd11b5dd3b00877",
                 "shasum": ""
             },
@@ -479,6 +479,50 @@
             "time": "2015-02-17 15:50:31"
         },
         {
+            "name": "firebase/php-jwt",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/firebase/php-jwt.git",
+                "reference": "fb219727e199dd80a72d5274ebb5c8b24d58dd9b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/firebase/php-jwt/zipball/fb219727e199dd80a72d5274ebb5c8b24d58dd9b",
+                "reference": "fb219727e199dd80a72d5274ebb5c8b24d58dd9b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "Authentication/",
+                    "Exceptions/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Neuman Vong",
+                    "email": "neuman+pear@twilio.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Anant Narayanan",
+                    "email": "anant@php.net",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple library to encode and decode JSON Web Tokens (JWT) in PHP. Should conform to the current spec.",
+            "homepage": "https://github.com/firebase/php-jwt",
+            "time": "2015-05-20 19:16:04"
+        },
+        {
             "name": "guzzle/guzzle",
             "version": "v3.9.3",
             "source": {
@@ -710,7 +754,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Indatus/dispatcher/zipball/069c3af4a430fde0500a420d06ab3b79f5145e55",
+                "url": "https://api.github.com/repos/Indatus/dispatcher/zipball/e406351ba302217c49310647f8fd0213399872e8",
                 "reference": "069c3af4a430fde0500a420d06ab3b79f5145e55",
                 "shasum": ""
             },
@@ -2799,12 +2843,12 @@
             "target-dir": "Zend/Escaper",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/Component_ZendEscaper.git",
+                "url": "https://github.com/zendframework/zend-escaper.git",
                 "reference": "b3ca10e16ef875f836d46f08045349e39589766c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendEscaper/zipball/b3ca10e16ef875f836d46f08045349e39589766c",
+                "url": "https://api.github.com/repos/zendframework/zend-escaper/zipball/5f8b2723389d64e961afe2406a1a1d67cfe9bb6c",
                 "reference": "b3ca10e16ef875f836d46f08045349e39589766c",
                 "shasum": ""
             },
@@ -2840,12 +2884,12 @@
             "target-dir": "Zend/Http",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/Component_ZendHttp.git",
+                "url": "https://github.com/zendframework/zend-http.git",
                 "reference": "35f52485d4170ebcdac1f00cb24a1b0856214c2f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendHttp/zipball/35f52485d4170ebcdac1f00cb24a1b0856214c2f",
+                "url": "https://api.github.com/repos/zendframework/zend-http/zipball/5606a5f5f7c6ea50494c81fd544d30eaaee54512",
                 "reference": "35f52485d4170ebcdac1f00cb24a1b0856214c2f",
                 "shasum": ""
             },
@@ -2886,12 +2930,12 @@
             "target-dir": "Zend/Json",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/Component_ZendJson.git",
+                "url": "https://github.com/zendframework/zend-json.git",
                 "reference": "af8a9c422bdfcd6e0a8db9f030331e9cead2c3a1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendJson/zipball/af8a9c422bdfcd6e0a8db9f030331e9cead2c3a1",
+                "url": "https://api.github.com/repos/zendframework/zend-json/zipball/ad97f8df77d038a0e4790f1389d536e7818ec0ce",
                 "reference": "af8a9c422bdfcd6e0a8db9f030331e9cead2c3a1",
                 "shasum": ""
             },
@@ -2938,12 +2982,12 @@
             "target-dir": "Zend/Loader",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/Component_ZendLoader.git",
+                "url": "https://github.com/zendframework/zend-loader.git",
                 "reference": "fcca80907c35f0827f992b7a58adbbff4baf728e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendLoader/zipball/fcca80907c35f0827f992b7a58adbbff4baf728e",
+                "url": "https://api.github.com/repos/zendframework/zend-loader/zipball/a7175231a8b056c120aaa21339f7c2d68201e10e",
                 "reference": "fcca80907c35f0827f992b7a58adbbff4baf728e",
                 "shasum": ""
             },
@@ -2979,12 +3023,12 @@
             "target-dir": "Zend/Stdlib",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/Component_ZendStdlib.git",
+                "url": "https://github.com/zendframework/zend-stdlib.git",
                 "reference": "3f6e2416183d4879a983680e1165f14164b262f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendStdlib/zipball/3f6e2416183d4879a983680e1165f14164b262f4",
+                "url": "https://api.github.com/repos/zendframework/zend-stdlib/zipball/2acb22aaf926f5a1934c6622d596f0b14872c3cd",
                 "reference": "3f6e2416183d4879a983680e1165f14164b262f4",
                 "shasum": ""
             },
@@ -3032,12 +3076,12 @@
             "target-dir": "Zend/Uri",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/Component_ZendUri.git",
+                "url": "https://github.com/zendframework/zend-uri.git",
                 "reference": "6dd5ee4b2543c785aa4e06643aaddf9c46f69039"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendUri/zipball/6dd5ee4b2543c785aa4e06643aaddf9c46f69039",
+                "url": "https://api.github.com/repos/zendframework/zend-uri/zipball/f4ae36c06b1425dc5c044f95b044f14454c76eb7",
                 "reference": "6dd5ee4b2543c785aa4e06643aaddf9c46f69039",
                 "shasum": ""
             },
@@ -3076,12 +3120,12 @@
             "target-dir": "Zend/Validator",
             "source": {
                 "type": "git",
-                "url": "https://github.com/zendframework/Component_ZendValidator.git",
+                "url": "https://github.com/zendframework/zend-validator.git",
                 "reference": "53ceee562ce689a6a610c7bb0bc8157c7ec63a45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/Component_ZendValidator/zipball/53ceee562ce689a6a610c7bb0bc8157c7ec63a45",
+                "url": "https://api.github.com/repos/zendframework/zend-validator/zipball/c8f46ae5503a3d09c55b2808a39cf9d3c967e1ee",
                 "reference": "53ceee562ce689a6a610c7bb0bc8157c7ec63a45",
                 "shasum": ""
             },

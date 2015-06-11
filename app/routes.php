@@ -281,7 +281,10 @@ Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardt
 Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
 Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrial'));
-
+Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
+Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@login'));
+Route::post('customerresetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
+Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
 
 
 /******************** CUSTOMERS SECTION END HERE ********************/
