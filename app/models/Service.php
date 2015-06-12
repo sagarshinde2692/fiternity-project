@@ -40,6 +40,24 @@ class Service extends \Basemodel{
 	}
 
 
+	public function getWorkoutSessionsActiveWeekdaysAttribute(){
+
+		$activedays 		= 	array();
+		$schedules  	=	$this->workoutsessionschedules;
+
+		foreach ($schedules as $key => $schedule) {
+			if(!empty($schedule['slots'])){
+				array_push($activedays, $schedule['weekday']);
+			}
+		}
+
+		// $activedays 		= pluck( $this->schedules , array('weekday') );
+
+		return $activedays;
+
+	}
+
+
 	public function category(){
 
 		return $this->belongsTo('Servicecategory','servicecategory_id');
