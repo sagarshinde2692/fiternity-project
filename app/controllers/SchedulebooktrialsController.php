@@ -59,10 +59,10 @@ class SchedulebooktrialsController extends \BaseController {
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-				->where('service_name', '=', $item['name'])
-				->where('schedule_date', '=', new DateTime($date) )
-				->where('schedule_slot', '=', $slot['slot_time'])
-				->count();
+											->where('service_name', '=', $item['name'])
+											->where('schedule_date', '=', new DateTime($date) )
+											->where('schedule_slot', '=', $slot['slot_time'])
+											->count();
 				// var_dump($booktrialslotcnt);
 
 				$slot_status 		= 	($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
@@ -102,7 +102,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$timestamp 				= 	strtotime($date);
 		$weekday 				= 	strtolower(date( "l", $timestamp));
 
-		$items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id','trialschedules'))->toArray();
+		$items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
 
 		$scheduleservices = array();
 
@@ -182,7 +182,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$timestamp 				= 	strtotime($date);
 		$weekday 				= 	strtolower(date( "l", $timestamp));
 
-		$items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id','workoutsessionschedules', 'trialschedules'))->toArray();
+		$items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
 
 		$scheduleservices = array();
 
@@ -259,7 +259,7 @@ class SchedulebooktrialsController extends \BaseController {
 		// $dobj = new DateTime;print_r($dobj);exit;
 		$currentDateTime 	=	\Carbon\Carbon::now();
 		
-		$item 				=	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules'))->toArray();
+		$item 				=	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
 
 		$finderid 			= 	intval($item['finder_id']);
 
@@ -335,9 +335,9 @@ class SchedulebooktrialsController extends \BaseController {
 	public function getBookTrial($finderid,$date = null){
 		$finderid 	= 	(int) $finderid;
 		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
-		->where('service_name', '=', 'gyms' )
-		->where('schedule_date', '=', new DateTime($date) )
-		->get(array('customer_name','service_name','finder_id','schedule_date','schedule_slot'));
+								->where('service_name', '=', 'gyms' )
+								->where('schedule_date', '=', new DateTime($date) )
+								->get(array('customer_name','service_name','finder_id','schedule_date','schedule_slot'));
 		return $items;
 	}
 

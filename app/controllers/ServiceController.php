@@ -113,8 +113,8 @@ class ServiceController extends \BaseController {
 		// return $finderarr;
 
 		$data = array(
-			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 			'_id' => $item['_id'],
+			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
 			'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
