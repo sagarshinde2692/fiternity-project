@@ -402,74 +402,27 @@ class FindersController extends \BaseController {
 
 	public function updatepopularity (){
 
-		return "true";
-
-		//healthy tiffins
-		$items = Finder::active()->where('category_id', 42)->get();
+		//set popularity 10000 for following category
+		$items = Finder::active()->where('finder_type', 0)->whereIn('category_id', array(5,11,14,32,35,6,12,8,7))->get();
 		$finderdata = array();
 		foreach ($items as $item) {  
 			$data 	= $item->toArray();
-			array_set($finderdata, 'popularity', 100);
+			array_set($finderdata, 'popularity', 10000);
 			$finder = Finder::findOrFail($data['_id']);
 			$response = $finder->update($finderdata);
 			print_pretty($response);
 		}
 
-		// //marathon training
-		// $items = Finder::active()->where('category_id',36)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 100);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
-		// //personal trainers
-		// $items = Finder::active()->where('category_id',41)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 2500);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
-		// //dietitians and nutritionists
-		// $items = Finder::active()->where('category_id',25)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 2000);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
-		// //physiotherapists
-		// $items = Finder::active()->where('category_id',26)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 1500);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }		
-
-		// //sports
-		// $items = Finder::active()->where('category_id',40)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 1000);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
+		//set popularity 4000 for following category
+		$items = Finder::active()->where('finder_type', 0)->whereIn('category_id', array(36,41,25,42,26,40))->get();
+		$finderdata = array();
+		foreach ($items as $item) {  
+			$data 	= $item->toArray();
+			array_set($finderdata, 'popularity', 4000);
+			$finder = Finder::findOrFail($data['_id']);
+			$response = $finder->update($finderdata);
+			print_pretty($response);
+		}
 
 	}
 
