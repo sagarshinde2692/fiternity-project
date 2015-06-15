@@ -263,13 +263,13 @@ Route::get('/findercsv', function() {
 								->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
 
 	// return $finders;
-	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
+	$output = "ID, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
 
 	foreach ($finders as $key => $value) {
 
 		$type = ($value->finder_type == '0') ? 'Free' : 'Paid';
 
-		$output .= "$value->_id, $value->title, $value->slug, ".$value->category->name.", ".$value->location->name.", ".$value->popularity .", $type\n";
+		$output .= "$value->_id, $value->slug, ".$value->category->name.", ".$value->location->name.", ".$value->popularity .", $type\n";
 	}
 
 	
