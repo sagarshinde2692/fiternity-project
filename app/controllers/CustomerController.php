@@ -451,6 +451,13 @@ class CustomerController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		$jwt_token  = Request::header('Authorization');
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		$data['email'] = $decoded->customer->email;
+
 		$rules = [
 			    'email' => 'required|email|max:255',
 	    		'password' => 'required|min:8|max:20|confirmed',
