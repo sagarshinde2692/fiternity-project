@@ -269,7 +269,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		for ($j = 0; $j < $noofdays; $j++) {
 
-			$dt 			=	Carbon::createFromFormat('d-m-Y', date("Y-m-d", strtotime($date)) )->addDays(intval($j))->format('Y-m-d'); 
+			$dt 			=	Carbon::createFromFormat('Y-m-d', date("Y-m-d", strtotime($date)) )->addDays(intval($j))->format('d-m-Y'); 
 
 			$timestamp 		= 	strtotime($dt);
 
