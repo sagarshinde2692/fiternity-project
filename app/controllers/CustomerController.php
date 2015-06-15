@@ -478,6 +478,106 @@ class CustomerController extends \BaseController {
         return Response::json($response);
 	}
 
+	public function createPasswordToken($customer){
+		$password_claim = array(
+				"jti" => Config::get('app.forgot_password.jti'),
+			    "iat" => Config::get('app.forgot_password.iat'),
+			    "exp" => Config::get('app.forgot_password.exp'),
+			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
+			);
+		$password_key = Config::get('app.forgot_password.key');
+		$password_alg = Config::get('app.forgot_password.alg');
+
+		$token = JWT::encode($password_claim,$password_key,$password_alg);
+
+        return $token;
+	}
+
+	public function forgotPasswordEmail(){
+
+		$data = Input::json()->all();
+
+		if(isset($data['email']) && !empty($data['email'])){
+			$customer = Customer::where('email','=',$data['email'])->first();
+			if(!empty($customer)){
+
+				$token = $this->createPasswordToken($customer);
+
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'token'=>$token);
+
+				$this->customermailer->forgotPassword($customer_data);
+
+				return Response::json(array('status' => 200,'message' => 'token successfull created and mail send', 'token' => $token));
+			}else{
+				return Response::json(array('status' => 404,'error_message' => 'Customer not found'));
+			}
+		}else{
+			return Response::json(array('status' => 404,'error_message' => 'Empty email'));
+		}
+
+	}
+
+	public function forgotPassword(){
+
+		$data = Input::json()->all();
+
+		if(isset($data['password_token']) && !empty($data['password_token'])){
+
+			$password_token = $data['password_token'];
+	        $password_key = Config::get('app.forgot_password.key');
+	        $password_alg = Config::get('app.forgot_password.alg');
+	    
+	        try{
+	        	if(Cache::tags('blacklist_forgot_password_token')->has($password_token)){
+	        		return Response::json(array('status' => 404,'error_message' => 'Token expired'));
+	        	}
+
+	            $decoded = JWT::decode($password_token, $password_key,array($password_alg));
+
+	            if(!empty($decoded)){
+	            	$rules = [
+					    'email' => 'required|email|max:255',
+			    		'password' => 'required|min:8|max:20|confirmed',
+			    		'password_confirmation' => 'required|min:8|max:20',
+					];
+
+	            	$data['email'] = $decoded->customer->email;
+
+	            	$validator = Validator::make($data, $rules);
+
+	            	if ($validator->fails()) {
+			           return Response::json(array('status' => 404,'error_message' =>$validator->errors()));
+			        }else{
+			        	$password['password'] = md5($data['password']);
+
+			        	$customer = Customer::where('email','=',$data['email'])->first();
+						$customer->update($password);
+
+						$expiry_time_minutes = (int)round(($decoded->exp - time())/60);
+
+						Cache::tags('blacklist_forgot_password_token')->put($password_token,$decoded->customer->email,$expiry_time_minutes);
+
+				        return $this->createToken($customer);
+			        }
+	            }else{
+	            	return Response::json(array('status' => 404,'error_message' => 'Token incorrect'));
+	            }
+
+	        }catch(DomainException $e){
+	            return Response::json(array('status' => 404,'error_message' => 'Token incorrect'));
+	        }catch(ExpiredException $e){
+	            return Response::json(array('status' => 404,'error_message' => 'Token expired'));
+	        }catch(SignatureInvalidException $e){
+	            return Response::json(array('status' => 404,'error_message' => 'Signature verification failed'));
+	        }catch(Exception $e){
+	            return Response::json(array('status' => 404,'error_message' => 'Token incorrect'));
+	        }
+
+	    }else{
+	        return Response::json(array('status' => 404,'error_message' => 'Empty token or token should be string'));
+	    }
+	}
+
 	public function customerLogout(){
 
 		$jwt_token = Request::header('Authorization');
