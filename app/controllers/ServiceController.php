@@ -127,7 +127,7 @@ class ServiceController extends \BaseController {
 			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
 			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
-			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id')),
+			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'contact')),
 			'city' => (isset($finderarr->city->name) && $finderarr->city->name != '') ? strtolower($finderarr->city->name) : "",
 			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : "",
 			'active_weekdays' => (isset($item['active_weekdays']) && $item['active_weekdays'] != '') ? array_map('strtolower',$item['active_weekdays']) : "",
