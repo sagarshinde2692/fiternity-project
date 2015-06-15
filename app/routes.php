@@ -243,28 +243,33 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 
 
 Route::get('/findercsv', function() { 
+
 	$headers = [
-	'Content-type'        => 'application/csv',   
-	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-	'Content-type'        => 'text/csv',   
-	'Content-Disposition' => 'attachment; filename=mumbaifinders.csv',   
-	'Expires'             => '0',   
-	'Pragma'              => 'public'
+		'Content-type'        => 'application/csv',   
+		'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+		'Content-type'        => 'text/csv',   
+		'Content-Disposition' => 'attachment; filename=freefinders.csv',   
+		'Expires'             => '0',   
+		'Pragma'              => 'public'
 	];
+
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->where('city_id', 1)
-	->take(2)
-	->orderBy('id', 'desc')
-	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'finder_type'));
+								->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+								->where('finder_type', 0)
+								->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
+								// ->take(2)
+								->orderBy('id', 'desc')
+								->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
 
 	// return $finders;
-	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, TYPE \n";
+	$output = "ID, NAME, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
 
 	foreach ($finders as $key => $value) {
 
-		$output .= "$value->_id, $value->title, $value->slug, ".$value->category->name.", ".$value->location->name .", $value->finder_type\n";
+		$type = ($value->finder_type == '0') ? 'Free' : 'Paid';
+
+		$output .= "$value->_id, $value->title, $value->slug, ".$value->category->name.", ".$value->location->name.", ".$value->popularity .", $type\n";
 	}
 
 	

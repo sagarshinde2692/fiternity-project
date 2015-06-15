@@ -114,7 +114,7 @@ class ServiceController extends \BaseController {
 
 		$data = array(
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
-			// 'slug' => $item['slug'],
+			'_id' => $item['_id'],
 			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
 			'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
