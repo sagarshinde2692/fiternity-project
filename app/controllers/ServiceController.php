@@ -85,7 +85,7 @@ class ServiceController extends \BaseController {
 
 		$service = Service::with('category')->with('subcategory')->with('finder')->where('_id', (int) $serviceid)->first();
 
-		// return $service;
+		return $service;
 
 		if(!$service){
 
@@ -129,7 +129,10 @@ class ServiceController extends \BaseController {
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage')),
 			'city' => (isset($finderarr->city->name) && $finderarr->city->name != '') ? strtolower($finderarr->city->name) : "",
-			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : ""
+			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : "",
+			'active_weekdays' => (isset($item['active_weekdays']) && $item['active_weekdays'] != '') ? strtolower($item['active_weekdays']) : "",
+			'workoutsession_active_weekdays' => (isset($item['workoutsession_active_weekdays']) && $item['workoutsession_active_weekdays'] != '') ? strtolower($item['workoutsession_active_weekdays']) : ""
+
 			// 'workoutsessionschedules' => (isset($item['workoutsessionschedules']) && !empty($item['workoutsessionschedules'])) ? $item['workoutsessionschedules'] : "",
 			// 'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 		);

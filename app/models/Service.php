@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-	protected $appends = array('active_weekdays');
+	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays');
 
 
 	public function getActiveWeekdaysAttribute(){
@@ -39,10 +39,9 @@ class Service extends \Basemodel{
 
 	}
 
+	public function getWorkoutsessionActiveWeekdaysAttribute(){
 
-	public function getWorkoutSessionsActiveWeekdaysAttribute(){
-
-		$activedays 		= 	array();
+		$activedays 	= 	array();
 		$schedules  	=	$this->workoutsessionschedules;
 
 		foreach ($schedules as $key => $schedule) {
