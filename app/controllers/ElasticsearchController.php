@@ -362,6 +362,7 @@ class ElasticsearchController extends \BaseController {
 				case "fitternityfinder":
 				$posturl 						=	$this->elasticsearch_url."fitternity/finder/".$data['_id'];	
 				$postdata 						= 	get_elastic_finder_document($data);
+				if(empty($postdata)) continue; 
 				break;
 
 				case "fitternityservice":
