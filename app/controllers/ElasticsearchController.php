@@ -225,8 +225,6 @@ class ElasticsearchController extends \BaseController {
 		}';
 
 
-
-
 		switch (strtolower($type)) {
 			case "fitternityfinder":
 			$typemapping 	=	$common_findermapping;
@@ -289,7 +287,7 @@ class ElasticsearchController extends \BaseController {
 							->with('facilities')
 							->active()
 							->orderBy('_id')
-				            // ->take(2)
+				            ->take(2)
 							->get();
 			break;
 
