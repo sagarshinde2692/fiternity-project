@@ -101,20 +101,20 @@ Route::filter('validatetoken',function()
     
         try{
         	if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
-        		return Response::json(array('status' => 400,'error_message' => 'User logged out'));
+        		return Response::json(array('status' => 400,'message' => 'User logged out'),400);
         	}
             $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
         }catch(DomainException $e){
-            return Response::json(array('status' => 400,'error_message' => 'Token incorrect'));
+            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
         }catch(ExpiredException $e){
-            return Response::json(array('status' => 400,'error_message' => 'Token expired'));
+            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
         }catch(SignatureInvalidException $e){
-            return Response::json(array('status' => 400,'error_message' => 'Signature verification failed'));
+            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
         }catch(Exception $e){
-            return Response::json(array('status' => 400,'error_message' => 'Token incorrect'));
+            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
         }
 
     }else{
-        return Response::json(array('status' => 400,'error_message' => 'Empty token or token should be string'));
+        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
     }
 });
