@@ -291,7 +291,6 @@ class ElasticsearchController extends \BaseController {
 							->get();
 			break;
 
-
 			case "fitternityservice":
 				// $items = Service::with('category')->with('subcategory')->active()->where("_id",177)->latest()->get();
 				$items = Service::with('category')->with('subcategory')->active()->latest()->get();
