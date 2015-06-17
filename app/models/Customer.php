@@ -15,8 +15,8 @@ class Customer extends  \Basemodel {
 	public static $rules = [
 	    'name' => 'required|min:10|max:255',
 	    'email' => 'required|email|unique:customers|max:255',
-	    'password' => 'required|min:8|max:20|confirmed|alpha_num',
-	    'password_confirmation' => 'required|min:8|max:20|alpha_num',
+	    'password' => 'required|min:8|max:20|confirmed',
+	    'password_confirmation' => 'required|min:8|max:20',
 	    'contact_no' => 'required|size:10',
 	    'identity' => 'required'
 	];

@@ -281,7 +281,7 @@ class CustomerController extends \BaseController {
         $validator = Validator::make($data = Input::json()->all(), Customer::$rules);
 
      	if ($validator->fails()) {
-            $response = array('status' => 400,'error_message' =>$validator->errors());
+            return Response::json(array('status' => 400,'message' =>$validator->errors()),400);
         }else{
         	
         	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
@@ -298,7 +298,7 @@ class CustomerController extends \BaseController {
 	        $customer->status = "1";
 	        $customer->save();
 
-	        $response = array('status' => 200);
+	        return Response::json(array('status' => 200,'message'=>'sucessfully register'),200);
         } 
 
         return Response::json($response);  
@@ -313,16 +313,18 @@ class CustomerController extends \BaseController {
 
 			if($data['identity'] == 'email')
 			{
-				return Response::json($this->emailLogin($data));
+				$response = $this->emailLogin($data);
+				return Response::json($response,$response['status']);
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
-				return Response::json($this->socialLogin($data));
+				$response = $this->socialLogin($data);
+				return Response::json($response,$response['status']);
 			}else{
-				return Response::json(array('status' => 400,'error_message' => array('identity' => 'The identity is incorrect')));
+				return Response::json(array('status' => 400,'message' => array('identity' => 'The identity is incorrect')),400);
 			}
 
 	    }else{
 
-	    	return Response::json(array('status' => 400,'error_message' => array('identity' => 'The identity field is required')));
+	    	return Response::json(array('status' => 400,'message' => array('identity' => 'The identity field is required')),400);
 	    }
 	}
 
@@ -336,13 +338,13 @@ class CustomerController extends \BaseController {
 		$validator = Validator::make($data = Input::json()->all(),$rules);
 
 		if($validator->fails()) {
-			return array('status' => 400,'error_message' =>$validator->errors());  
+			return array('status' => 400,'message' =>$validator->errors());  
         }
 
 		$customer = Customer::where('email','=',$data['email'])->where('password','=',md5($data['password']))->first();
 
 		if(empty($customer)){
-			return array('status' => 400,'error_message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
+			return array('status' => 400,'message' => 'Incorrect email and password');
 		}
 
 		if($customer['account_link'][$data['identity']] != 1)
@@ -361,7 +363,7 @@ class CustomerController extends \BaseController {
 		$validator = Validator::make($data = Input::json()->all(),$rules);
 
 		if($validator->fails()) {
-			return array('status' => 400,'error_message' =>$validator->errors());  
+			return array('status' => 400,'message' =>$validator->errors());  
         }
 
         $customer = Customer::where('email','=',$data['email'])->first();
@@ -396,7 +398,7 @@ class CustomerController extends \BaseController {
         $validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
-            $response = array('status' => 400,'error_message' =>$validator->errors());
+            $response = array('status' => 400,'message' =>$validator->errors());
         }else{
         	
         	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
@@ -467,13 +469,13 @@ class CustomerController extends \BaseController {
         $validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
-            $response = array('status' => 400,'error_message' =>$validator->errors());
+            $response = array('status' => 400,'message' =>$validator->errors());
         }else{
         	
         	$customer = Customer::where('email','=',$data['email'])->first();
         	
         	if(empty($customer)){
-				return array('status' => 400,'error_message' => array('email' => 'Incorrect email'));
+				return array('status' => 400,'message' => array('email' => 'Incorrect email'));
 			}
 
 			$password['password'] = md5($data['password']);
@@ -516,10 +518,10 @@ class CustomerController extends \BaseController {
 
 				return Response::json(array('status' => 200,'message' => 'token successfull created and mail send', 'token' => $token));
 			}else{
-				return Response::json(array('status' => 400,'error_message' => 'Customer not found'));
+				return Response::json(array('status' => 400,'message' => 'Customer not found'));
 			}
 		}else{
-			return Response::json(array('status' => 400,'error_message' => 'Empty email'));
+			return Response::json(array('status' => 400,'message' => 'Empty email'));
 		}
 
 	}
@@ -536,7 +538,7 @@ class CustomerController extends \BaseController {
 	    
 	        try{
 	        	if(Cache::tags('blacklist_forgot_password_token')->has($password_token)){
-	        		return Response::json(array('status' => 400,'error_message' => 'Token expired'));
+	        		return Response::json(array('status' => 400,'message' => 'Token expired'));
 	        	}
 
 	            $decoded = JWT::decode($password_token, $password_key,array($password_alg));
@@ -553,7 +555,7 @@ class CustomerController extends \BaseController {
 	            	$validator = Validator::make($data, $rules);
 
 	            	if ($validator->fails()) {
-			           return Response::json(array('status' => 400,'error_message' =>$validator->errors()));
+			           return Response::json(array('status' => 400,'message' =>$validator->errors()));
 			        }else{
 			        	$password['password'] = md5($data['password']);
 
@@ -567,21 +569,21 @@ class CustomerController extends \BaseController {
 				        return $this->createToken($customer);
 			        }
 	            }else{
-	            	return Response::json(array('status' => 400,'error_message' => 'Token incorrect'));
+	            	return Response::json(array('status' => 400,'message' => 'Token incorrect'));
 	            }
 
 	        }catch(DomainException $e){
-	            return Response::json(array('status' => 400,'error_message' => 'Token incorrect'));
+	            return Response::json(array('status' => 400,'message' => 'Token incorrect'));
 	        }catch(ExpiredException $e){
-	            return Response::json(array('status' => 400,'error_message' => 'Token expired'));
+	            return Response::json(array('status' => 400,'message' => 'Token expired'));
 	        }catch(SignatureInvalidException $e){
-	            return Response::json(array('status' => 400,'error_message' => 'Signature verification failed'));
+	            return Response::json(array('status' => 400,'message' => 'Signature verification failed'));
 	        }catch(Exception $e){
-	            return Response::json(array('status' => 400,'error_message' => 'Token incorrect'));
+	            return Response::json(array('status' => 400,'message' => 'Token incorrect'));
 	        }
 
 	    }else{
-	        return Response::json(array('status' => 400,'error_message' => 'Empty token or token should be string'));
+	        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'));
 	    }
 	}
 
