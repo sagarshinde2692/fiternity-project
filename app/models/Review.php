@@ -16,6 +16,7 @@ class Review extends  \Basemodel {
 	    'finder_id' => 'required|integer|numeric',
 	    'customer_id' => 'required|integer|numeric',
 	    'rating' => 'required|integer|numeric',
+	    'detail_rating' => 'required',
 	    'description' => 'required'
 	];
 

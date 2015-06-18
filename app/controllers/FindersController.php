@@ -46,17 +46,17 @@ class FindersController extends \BaseController {
 		if(!$finder_detail){
 			
 			$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-							->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-							->with('categorytags')
-							->with('locationtags')
-							->with('offerings')
-							->with('facilities')
-							->with('servicerates')
-							->with('services')
-							->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1');}))
-							->where('slug','=',$tslug)
-							->first();
+			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->with('categorytags')
+			->with('locationtags')
+			->with('offerings')
+			->with('facilities')
+			->with('servicerates')
+			->with('services')
+			->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1');}))
+			->where('slug','=',$tslug)
+			->first();
 
 			if($finderarr){
 				
@@ -67,14 +67,14 @@ class FindersController extends \BaseController {
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
-			
+
 			}else{
 				
 				$finder = null;
 			}
-	
+
 			if($finder){
-			
+
 				$finderdata 		=	$finder;
 				$finderid 			= (int) $finderdata['_id'];
 				$findercategoryid 	= (int) $finderdata['category_id'];
@@ -85,55 +85,55 @@ class FindersController extends \BaseController {
 				if($findercategoryid == 25 || $findercategoryid == 42){ 
 
 					$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-													->where('_id','!=',$finderid)
-													->where('category_id','=',$findercategoryid)
-													->where('status', '=', '1')
-													->orderBy('popularity', 'DESC')
-													->remember(Config::get('app.cachetime'))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-													->take(5)->toArray();
+					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+					->where('_id','!=',$finderid)
+					->where('category_id','=',$findercategoryid)
+					->where('status', '=', '1')
+					->orderBy('popularity', 'DESC')
+					->remember(Config::get('app.cachetime'))
+					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->take(5)->toArray();
 
 					if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; } 
 
 					$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-													->where('_id','!=',$finderid)
-													->where('category_id','=',$other_categoryid)
-													->where('status', '=', '1')
-													->orderBy('popularity', 'DESC')
-													->remember(Config::get('app.cachetime'))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-													->take(5)->toArray();
+					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+					->where('_id','!=',$finderid)
+					->where('category_id','=',$other_categoryid)
+					->where('status', '=', '1')
+					->orderBy('popularity', 'DESC')
+					->remember(Config::get('app.cachetime'))
+					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->take(5)->toArray();
 
 				}else{
 
 					$nearby_same_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-													->where('category_id','=',$findercategoryid)
-													->where('location_id','=',$finderlocationid)
-													->where('_id','!=',$finderid)
-													->where('status', '=', '1')
-													->orderBy('finder_type', 'DESC')
-													->remember(Config::get('app.cachetime'))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-													->take(5)->toArray();
+					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+					->where('category_id','=',$findercategoryid)
+					->where('location_id','=',$finderlocationid)
+					->where('_id','!=',$finderid)
+					->where('status', '=', '1')
+					->orderBy('finder_type', 'DESC')
+					->remember(Config::get('app.cachetime'))
+					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->take(5)->toArray();
 
 					
 					$nearby_other_category 		= 	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-													->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-													->where('category_id','!=',$findercategoryid)
-													->where('location_id','=',$finderlocationid)
-													->where('_id','!=',$finderid)
-													->where('status', '=', '1')
-													->orderBy('finder_type', 'DESC')
-													->remember(Config::get('app.cachetime'))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-													->take(5)->toArray();
+					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+					->where('category_id','!=',$findercategoryid)
+					->where('location_id','=',$finderlocationid)
+					->where('_id','!=',$finderid)
+					->where('status', '=', '1')
+					->orderBy('finder_type', 'DESC')
+					->remember(Config::get('app.cachetime'))
+					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->take(5)->toArray();
 				}
 				
 				$data['statusfinder'] 					= 		200;
@@ -144,7 +144,7 @@ class FindersController extends \BaseController {
 				Cache::tags('finder_detail')->put($tslug,$data,Config::get('cache.cache_time'));
 
 				return Response::json(Cache::tags('finder_detail')->get($tslug));
-		
+
 			}else{
 
 				$updatefindersulg 		= Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
@@ -221,56 +221,37 @@ class FindersController extends \BaseController {
 		$finderid = (int) Input::json()->get('finderid');
 		$total_rating_count = round(floatval(Input::json()->get('total_rating_count')),1);
 		$average_rating =  round(floatval(Input::json()->get('average_rating')),1);
-
 		$finderdata = array();
-		
 		$finder = Finder::findOrFail($finderid);
-		
 		$finderslug = $finder->slug;
 
-		//cache set
-
-		
 		array_set($finderdata, 'average_rating', round($average_rating,1));
-		
 		array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
 
 		if($finder->update($finderdata)){
-			
 			//updating elastic search	
 			$this->pushfinder2elastic($finderslug); 
-
 			//sending email
 			$email_template = 'emails.review';
-			
 			$email_template_data = array( 'vendor' 	=>	ucwords($finderslug) ,  'date' 	=>	date("h:i:sa") );
-			
 			$email_message_data = array(
 				'to' => Config::get('mail.to_neha'), 
 				'reciver_name' => 'Fitternity',
 				'bcc_emailids' => Config::get('mail.bcc_emailds_review'), 
 				'email_subject' => 'Review given for - ' .ucwords($finderslug)
 				);
-
 			$email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
-					$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+				$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
 					// $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
 			});
 
-			// if($email){
-			// 	echo "send";
-			// }
 			//sending response
 			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count);
 			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
 			
 			return Response::json($resp);
 		}
-
-
-
 	}
-
 
 	public function updatefinderlocaiton (){
 
@@ -340,7 +321,6 @@ class FindersController extends \BaseController {
 
 		$resp 	= 	array('status' => 200,'message' => "Email Send");
 		return Response::json($resp);	
-
 	}
 
 
@@ -404,7 +384,6 @@ class FindersController extends \BaseController {
 	public function updatepopularity (){
 
 		return "true";
-
 		//healthy tiffins
 		$items = Finder::active()->where('category_id', 42)->get();
 		$finderdata = array();
@@ -416,90 +395,102 @@ class FindersController extends \BaseController {
 			print_pretty($response);
 		}
 
-		// //marathon training
-		// $items = Finder::active()->where('category_id',36)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 100);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
-		// //personal trainers
-		// $items = Finder::active()->where('category_id',41)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 2500);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
-		// //dietitians and nutritionists
-		// $items = Finder::active()->where('category_id',25)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 2000);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
-		// //physiotherapists
-		// $items = Finder::active()->where('category_id',26)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 1500);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }		
-
-		// //sports
-		// $items = Finder::active()->where('category_id',40)->get();
-		// $finderdata = array();
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	array_set($finderdata, 'popularity', 1000);
-		// 	$finder = Finder::findOrFail($data['_id']);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
-		// }
-
-
 	}
 
 	public function addReview(){
+		// return Input::json()->all();
+		$validator = Validator::make($data = Input::json()->all(), Review::$rules);
+		if ($validator->fails()) {
+			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
+			return Response::json($response, 400); 
+		}
 
 		$inserted_id = Review::max('_id') + 1;
-        $validator = Validator::make($data = Input::json()->all(), Review::$rules);
 
-     	if ($validator->fails()) {
-            $response = array('status' => 404,'message' =>$validator->errors());
-        }else{
-        	$customer = Customer::findOrFail((int)$data['customer_id']);
-	        $data['customer'] = array('name'=>$customer['name'],'email'=>$customer['email'],'profile_image'=>$customer['profile_image']);
+		$reviewdata = [
+		'finder_id' => intval($data['finder_id']),
+		'customer_id' => intval($data['customer_id']),
+		'rating' => intval($data['rating']),
+		'detail_rating' => array_map('intval',$data['detail_rating']),
+		'description' => $data['description']
+		];
 
-	        $reviewdata = $data;
+		$review = new Review($reviewdata);
+		$review->_id = $inserted_id;
+		$reviewobject = $review->save();
+		return $updatefinder = $this->updateFinderRatingV1($review);
+		$response = array('status' => 200, 'message' => 'Review Created Successfully.', 'errors' => $validator->errors());
 
-	        $review = new Review($reviewdata);
-	        $review->_id = $insertedid;
-	        $review->finder_id = (int)$data['finder_id'];
-	        $review->customer_id = (int)$data['customer_id'];
-	        $review->rating = (int)$data['rating'];
-	        $review->detail_rating = $data['detail_rating'];
-	        $review->description = $data['description'];
-	        $review->save();
+		return Response::json($response, 200);  
+	}
 
-	        $response = array('status' => 200);
-        } 
+	public function updateFinderRatingV1 ($review){
 
-        return Response::json($response);  
+		$data 					=	$review;
+		$total_rating_count 	=	round(floatval(Input::json()->get('total_rating_count')),1);
+		$average_rating 		=	round(floatval(Input::json()->get('average_rating')),1);
+		
+		$finderdata 			=	array();
+		$finderid 				=	(int) $data['finder_id'];
+		$finder 				=	Finder::findOrFail($finderid);
+		$finderslug 			=	$finder->slug;
+		$total_rating_count 	=	Review::where('finder_id', $finderid)->count();
+		$average_rating 		=	Review::where('finder_id', $finderid)->avg('rating');
+
+		// array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
+		// array_set($finderdata, 'average_rating', round($average_rating,1));
+		array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
+		array_set($finderdata, 'average_rating', round($average_rating,1));
+
+		//Detail rating summary count
+		if(isset($finder->detail_rating_summary_average) && !empty($finder->detail_rating_summary_average)){
+			if(isset($finder->detail_rating_summary_count) && !empty($finder->detail_rating_summary_count)){
+				for($i = 0; $i < 5; $i++) {
+					if($data['detail_rating'][$i] > 0){
+						$sum_detail_rating = (int) (intval($finder->detail_rating_summary_average[$i]) * intval($finder->detail_rating_summary_count));
+						$finder->detail_rating_summary_average[$i] = intval(($sum_detail_rating + $data['detail_rating'][$i])/($finder->detail_rating_summary_count[$i]+1));
+						$finder->detail_rating_summary_count[$i] = (int) $finder->detail_rating_summary_count[$i]+1;
+					}
+				}
+			}
+		}else{
+			for($i = 0; $i < 5; $i++) {
+				$finder->detail_rating_summary_average[$i] =  ($data['detail_rating'][$i] > 0) ? $data['detail_rating'][$i] : 0;
+				$finder->detail_rating_summary_count[$i] = ($data['detail_rating'][$i] > 0) ? 1 : 0;
+			}
+		}
+
+		//Detail rating summary avg
+
+		array_set($finderdata, 'detail_rating_summary_average', $finder->detail_rating_summary_average);
+		array_set($finderdata, 'detail_rating_summary_count', $finder->detail_rating_summary_count);
+		return $finderdata;
+
+		return $finder->update($finderdata);
+
+		if($finder->update($finderdata)){
+			//updating elastic search	
+			$this->pushfinder2elastic($finderslug); 
+			//sending email
+			$email_template = 'emails.review';
+			$email_template_data = array( 'vendor' 	=>	ucwords($finderslug) ,  'date' 	=>	date("h:i:sa") );
+			$email_message_data = array(
+				'to' => Config::get('mail.to_neha'), 
+				'reciver_name' => 'Fitternity',
+				'bcc_emailids' => Config::get('mail.bcc_emailds_review'), 
+				'email_subject' => 'Review given for - ' .ucwords($finderslug)
+				);
+			$email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
+				$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+					// $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+			});
+
+			//sending response
+			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count);
+			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
+			
+			return Response::json($resp);
+		}
 	}
 
 	public function getFinderReview($slug,$cache = false){
@@ -517,9 +508,9 @@ class FindersController extends \BaseController {
 				$finder_id 	= (int) $finder_by_slug['_id'];
 
 				$reviews = Review::where('status', '!=', '1')
-							->where('finder_id','=',$finder_id)
-							->orderBy('_id', 'desc')
-							->get(array('_id','finder_id','customer_id','customer','rating','detail_rating','description','updated_at','created_at'));
+				->where('finder_id','=',$finder_id)
+				->orderBy('_id', 'desc')
+				->get(array('_id','finder_id','customer_id','customer','rating','detail_rating','description','updated_at','created_at'));
 
 				$data = array('status' => 200,'data'=>$reviews);
 
@@ -536,5 +527,7 @@ class FindersController extends \BaseController {
 
 		return Response::json($response);
 	}
+
+	
 
 }
