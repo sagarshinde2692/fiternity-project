@@ -71,7 +71,6 @@ if (!function_exists('get_elastic_finder_document')) {
         $postfields_data = array(
             '_id'                           =>      $data['_id'],
             'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
-            'average_rating'                =>      (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
             'membership_discount'           =>      "",
             'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
             'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
@@ -100,7 +99,10 @@ if (!function_exists('get_elastic_finder_document')) {
             'status'                        =>      (isset($data['status']) && $data['status'] != '') ? $data['status'] : "",
             'title'                         =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
             'title_snow'                    =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
+            'average_rating'                =>      (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
             'total_rating_count'            =>      (isset($data['total_rating_count']) && $data['total_rating_count'] != '') ? $data['total_rating_count'] : 0,
+            'detail_rating_summary_average' =>      (isset($data['detail_rating_summary_average']) && !empty($data['detail_rating_summary_average'])) ? array_map('intval',$data['detail_rating_summary_average']) : '',
+            'detail_rating_summary_count'   =>      (isset($data['detail_rating_summary_count']) && !empty($data['detail_rating_summary_count'])) ? array_map('intval',$data['detail_rating_summary_count']) : '',
             'views'                         =>      (isset($data['views']) && $data['views'] != '') ? $data['views'] : 0,
             'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
             'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",

@@ -445,28 +445,32 @@ class FindersController extends \BaseController {
 		//Detail rating summary count
 		if(isset($finder->detail_rating_summary_average) && !empty($finder->detail_rating_summary_average)){
 			if(isset($finder->detail_rating_summary_count) && !empty($finder->detail_rating_summary_count)){
+				$detail_rating_summary_average = $finder->detail_rating_summary_average;
+				$detail_rating_summary_count = $finder->detail_rating_summary_count;
 				for($i = 0; $i < 5; $i++) {
 					if($data['detail_rating'][$i] > 0){
-						$sum_detail_rating = (int) (intval($finder->detail_rating_summary_average[$i]) * intval($finder->detail_rating_summary_count));
-						$finder->detail_rating_summary_average[$i] = intval(($sum_detail_rating + $data['detail_rating'][$i])/($finder->detail_rating_summary_count[$i]+1));
-						$finder->detail_rating_summary_count[$i] = (int) $finder->detail_rating_summary_count[$i]+1;
+						$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i]));
+						$detail_rating_summary_average[$i] = ($sum_detail_rating + $data['detail_rating'][$i])/($detail_rating_summary_count[$i]+1);
+						$detail_rating_summary_count[$i] = (int) $detail_rating_summary_count[$i]+1;
 					}
 				}
 			}
 		}else{
+			$detail_rating_summary_average = [0,0,0,0,0];
+			$detail_rating_summary_count = [0,0,0,0,0];
 			for($i = 0; $i < 5; $i++) {
-				$finder->detail_rating_summary_average[$i] =  ($data['detail_rating'][$i] > 0) ? $data['detail_rating'][$i] : 0;
-				$finder->detail_rating_summary_count[$i] = ($data['detail_rating'][$i] > 0) ? 1 : 0;
+				$detail_rating_summary_average[$i] =  ($data['detail_rating'][$i] > 0) ? $data['detail_rating'][$i] : 0;
+				$detail_rating_summary_count[$i] = ($data['detail_rating'][$i] > 0) ? 1 : 0;
 			}
 		}
+		array_set($finderdata, 'detail_rating_summary_average', $detail_rating_summary_average);
+		array_set($finderdata, 'detail_rating_summary_count', $detail_rating_summary_count);
 
 		//Detail rating summary avg
-
-		array_set($finderdata, 'detail_rating_summary_average', $finder->detail_rating_summary_average);
-		array_set($finderdata, 'detail_rating_summary_count', $finder->detail_rating_summary_count);
-		return $finderdata;
-
-		return $finder->update($finderdata);
+		
+		// return $finderdata;
+		// $success = $finder->update($finderdata);
+		// return $finder;
 
 		if($finder->update($finderdata)){
 			//updating elastic search	
@@ -486,7 +490,7 @@ class FindersController extends \BaseController {
 			});
 
 			//sending response
-			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count);
+			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count);
 			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
 			
 			return Response::json($resp);
