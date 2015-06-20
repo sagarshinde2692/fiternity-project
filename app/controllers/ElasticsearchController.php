@@ -287,8 +287,9 @@ class ElasticsearchController extends \BaseController {
 							->with('facilities')
 							->active()
 							->orderBy('_id')
-				            // ->take(3000)->skip(1000)
-				            ->take(3000)
+				            // ->take(3000)
+				            // ->take(3000)->skip(0)
+				            ->take(3000)->skip(3000)
 							->get();
 			break;
 

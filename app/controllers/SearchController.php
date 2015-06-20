@@ -858,7 +858,6 @@ class SearchController extends \BaseController {
 // }
 	public function getFindersv4(){
 
-
 		$searchParams 		= 	array();
 		$type 				= 	"finder";		    	
 		$filters 			=	"";	

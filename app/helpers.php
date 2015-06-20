@@ -62,9 +62,6 @@ if (!function_exists('refine_keyword')) {
 }
 
 
-
-
-
 if (!function_exists('get_elastic_finder_document')) {
     function get_elastic_finder_document($finderdata = array()) {
 
