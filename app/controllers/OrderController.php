@@ -17,7 +17,7 @@ class OrderController extends \BaseController {
 
 
 	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms) {
-		
+
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
 		$this->ordertypes 		= 	array('memberships','booktrials');
@@ -183,6 +183,10 @@ class OrderController extends \BaseController {
 
 		if(empty($data['service_name'])){
 			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
+		}
+
+		if(empty($data['amount'])){
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - amount");
 		}
 
 		if(empty($data['type'])){
