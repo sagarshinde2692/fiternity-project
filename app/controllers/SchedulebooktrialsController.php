@@ -589,40 +589,40 @@ return Response::json($resp,200);
 
 		$data = Input::json()->all();
 
-		if(empty($data['customer_id'])){
+		if($data['customer_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
 		}
 
-		if(empty($data['customer_name'])){
+		if($data['customer_name'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
 		}
 
-		if(empty($data['customer_email'])){
+		if($data['customer_email'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
-		if(empty($data['customer_phone'])){
+		if($data['customer_phone'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
 
-		if(empty($data['finder_id'])){
+		if($data['finder_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
 		}
 
-		if(empty($data['service_name'])){
+		if($data['service_name'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
 		}
 
-		if(empty($data['schedule_date'])){
+		if($data['schedule_date'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - schedule_date");
 		}
 
-		if(empty($data['schedule_slot'])){
+		if($data['schedule_slot'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - schedule_slot");
 		}
 
 
-		if(empty($data['order_id'])){
+		if($data['order_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - order_id");
 		}
 
