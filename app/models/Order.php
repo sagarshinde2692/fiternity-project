@@ -10,11 +10,6 @@ class Order extends \Basemodel {
 		$this->attributes['city_id'] = intval($value);
 	}
 
-	public function setServiceIdAttribute($value){
-		
-		$this->attributes['service_id'] = intval($value);
-	}
-
 	public function setCustomerIdAttribute($value){
 		
 		$this->attributes['customer_id'] = intval($value);
