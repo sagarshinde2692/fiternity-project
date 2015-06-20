@@ -47,7 +47,8 @@ if (!function_exists('refine_keyword')) {
 
         //$stopWords = array('i','a','about','an','and','are','as','at','be','by','com','de','en','for','from','how','in','is','it','la','of','on','or','that','the','this','to','was','what','when','where','who','will','with','und','the','www');
         $stopwords      =       array('i','a','about','an','and','are','as','at','be','by','com','de','en','for','from','how','in','is','it','la','of','on','or','that','the','this','to','was','what','when','where','who','will','with','und','the','www');        
-        $pattern        =       '/[0-9\W]/';        // Replace all non-word chars with comma
+        // $pattern        =       '/[0-9\W]/';        // Replace all non-word chars with comma
+        $pattern        =       '/[\W]/';        // Replace all non-word chars with comma
         $string         =       preg_replace($pattern, ',', trim(strtolower($keyword)));
 
         foreach (explode(",",$string) as $term) {
