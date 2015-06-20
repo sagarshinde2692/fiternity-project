@@ -10,23 +10,17 @@
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
 
-
-
 class OrderController extends \BaseController {
 
 	protected $customermailer;
-
 	protected $customersms;
 
 
 	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms) {
-
+		
 		$this->customermailer		=	$customermailer;
-
 		$this->customersms 			=	$customersms;
-
 		$this->ordertypes 		= 	array('memberships','booktrials');
-
 	}
 
 
@@ -101,25 +95,17 @@ class OrderController extends \BaseController {
 
 		//Validation base on order type
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
-
 			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 			}
-
 		}
 
 		$orderid 			=	Order::max('_id') + 1;
-
 		$data 				= 	Input::json()->all();
-
 		array_set($data, 'status', '0');
-
 		array_set($data, 'payment_mode', 'cod');
-
 		$order 				= 	new Order($data);
-
 		$order->_id 		= 	$orderid;
-
 		$orderstatus   		= 	$order->save();
 
 		//SEND COD EMAIL TO CUSTOMER
@@ -145,7 +131,6 @@ class OrderController extends \BaseController {
 	public function generateTmpOrder(){
 
 		$data			=	Input::json()->all();
-
 		// must add customer id after hull if its guest user keep one guest user 
 
 		if(empty($data['customer_name'])){
@@ -208,33 +193,21 @@ class OrderController extends \BaseController {
 			return $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
 		}
 
-
 		//Validation base on order type
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
-
 			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 			}
-
 		}
 
-
 		$orderid 			=	Order::max('_id') + 1;
-
 		$data 				= 	Input::json()->all();
-
 		array_set($data, 'status', '0');
-
 		array_set($data, 'payment_mode', 'paymentgateway');
-
 		$order 				= 	new Order($data);
-
 		$order->_id 		= 	$orderid;
-
 		$orderstatus   		= 	$order->save();
-
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp order :)");
-
 		return Response::json($resp);
 
 	}
@@ -245,7 +218,6 @@ class OrderController extends \BaseController {
 	public function captureOrderStatus(){
 
 		$data		=	Input::json()->all();
-
 		if(empty($data['order_id'])){
 			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
 		}
@@ -253,61 +225,39 @@ class OrderController extends \BaseController {
 		if(empty($data['status'])){
 			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
 		}
-
 		$orderid 	=	(int) Input::json()->get('order_id');
-
 		$order 		= 	Order::findOrFail($orderid);
-
 		if(Input::json()->get('status') == 'success'){
-
 			array_set($data, 'status', '1');
-
 			$orderdata 	=	$order->update($data);
-
 			//send welcome email to payment gateway customer
 			$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
-
 			//SEND COD SMS TO CUSTOMER
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
-
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
-
 			return Response::json($resp);
 		}
 
 		$orderdata 		=	$order->update($data);
-
 		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
-
 		return Response::json($resp);
-
 	}
 
 
 	public function captureFailOrders(){
 
 		$data		=	Input::json()->all();
-
 		if(empty($data['order_id'])){
-
 			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
 		}
-
 		if(empty($data['status'])){
-
 			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
 		}
-
 		$orderid 	=	(int) Input::json()->get('order_id');
-
 		$order 		= 	Order::findOrFail($orderid);
-
 		$orderdata 	=	$order->update($data);
-
 		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
-
 		return Response::json($resp);
-
 	}
 
 

@@ -289,7 +289,7 @@ class ElasticsearchController extends \BaseController {
 							->orderBy('_id')
 				            // ->take(3000)
 				            // ->take(3000)->skip(0)
-				            ->take(3000)->skip(3000)
+				            // ->take(3000)->skip(3000)
 							->get();
 			break;
 
