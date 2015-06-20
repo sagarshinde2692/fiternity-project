@@ -589,40 +589,39 @@ return Response::json($resp,200);
 
 		$data = Input::json()->all();
 
-		if($data['customer_id'] == ''){
+		if(!isset($data['customer_id']) || $data['customer_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
 		}
 
-		if($data['customer_name'] == ''){
+		if(!isset($data['customer_name']) || $data['customer_name'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
 		}
 
-		if($data['customer_email'] == ''){
+		if(!isset($data['customer_email']) || $data['customer_email'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
-		if($data['customer_phone'] == ''){
+		if(!isset($data['customer_phone']) || $data['customer_phone'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
 
-		if($data['finder_id'] == ''){
+		if(!isset($data['finder_id']) || $data['finder_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - finder_id");
 		}
 
-		if($data['service_name'] == ''){
+		if(!isset($data['service_name']) || $data['service_name'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - service_name");
 		}
 
-		if($data['schedule_date'] == ''){
+		if(!isset($data['schedule_date']) || $data['schedule_date'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - schedule_date");
 		}
 
-		if($data['schedule_slot'] == ''){
+		if(!isset($data['schedule_slot']) || $data['schedule_slot'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - schedule_slot");
 		}
 
-
-		if($data['order_id'] == ''){
+		if(!isset($data['order_id']) || $data['order_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - order_id");
 		}
 
