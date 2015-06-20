@@ -587,7 +587,7 @@ return Response::json($resp,200);
 
 		// send error message if any thing is missing	
 
-		$data = Input::json()->all();
+		return $data = Input::json()->all();
 
 		if(!isset($data['customer_id']) || $data['customer_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
