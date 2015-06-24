@@ -274,7 +274,337 @@ class CustomerController extends \BaseController {
 		return Response::json($resp);
 
 	}
-	
 
-	
+	public function register(){
+
+		$inserted_id = Customer::max('_id') + 1;
+        $validator = Validator::make($data = Input::json()->all(), Customer::$rules);
+
+     	if ($validator->fails()) {
+            return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+        }else{
+        	
+        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+        	$account_link[$data['identity']] = 1;
+
+	        $customer = new Customer();
+	        $customer->_id = $inserted_id;
+	        $customer->name = ucwords($data['name']) ;
+	        $customer->email = $data['email'];
+	        $customer->password = md5($data['password']);
+	        $customer->contact_no = $data['contact_no'];
+	        $customer->identity = $data['identity'];
+	        $customer->account_link = $account_link;
+	        $customer->status = "1";
+	        $customer->save();
+
+	        return Response::json(array('status' => 200,'message'=>'successfull login'),200);
+        }
+	}
+
+
+	public function customerLogin(){
+
+		$data = Input::json()->all();
+
+		if(isset($data['identity']) && !empty($data['identity'])){
+
+			if($data['identity'] == 'email')
+			{
+				$responce = $this->emailLogin($data);
+				return Response::json($responce,$responce['status']);
+			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
+				$responce = $this->socialLogin($data);
+				return Response::json($responce,$responce['status']);
+			}else{
+				return Response::json(array('status' => 400,'message' => array('identity' => 'The identity is incorrect')),400);
+			}
+
+	    }else{
+
+	    	return Response::json(array('status' => 400,'message' => array('identity' => 'The identity field is required')),400);
+	    }
+	}
+
+	public function emailLogin($data){
+
+		$rules = [
+				    'email' => 'required|email',
+				    'password' => 'required'
+				];
+
+		$validator = Validator::make($data = Input::json()->all(),$rules);
+
+		if($validator->fails()) {
+			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+        }
+
+		$customer = Customer::where('email','=',$data['email'])->where('password','=',md5($data['password']))->first();
+
+		if(empty($customer)){
+			return array('status' => 400,'message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
+		}
+
+		if($customer['account_link'][$data['identity']] != 1)
+		{
+			$customer = $this->updateAccountLink($customer,$data['identity']);
+		}
+
+		return $this->createToken($customer);
+	}
+
+	public function socialLogin($data){
+		$rules = [
+			    'email' => 'required|email'
+			];
+
+		$validator = Validator::make($data = Input::json()->all(),$rules);
+
+		if($validator->fails()) {
+			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+        }
+
+        $customer = Customer::where('email','=',$data['email'])->first();
+
+		if(empty($customer)){
+			$socialRegister = $this->socialRegister($data);
+			if($socialRegister['status'] == 400)
+			{
+				return $socialRegister;
+			}else{
+				$customer = $socialRegister['customer'];
+			}
+		}
+
+		if($customer['account_link'][$data['identity']] != 1)
+		{
+			$customer = $this->updateAccountLink($customer,$data['identity']);
+		} 
+
+		return $this->createToken($customer);
+	}
+
+	public function socialRegister($data){
+
+		$rules = [
+			    'email' => 'required|email',
+			    'name' => 'required',
+			    'identity' => 'required',
+			];
+
+		$inserted_id = Customer::max('_id') + 1;
+        $validator = Validator::make($data, $rules);
+
+		if ($validator->fails()) {
+            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+        }else{
+        	
+        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+        	$account_link[$data['identity']] = 1;
+
+	        $customer = new Customer();
+	        $customer->_id = $inserted_id;
+	        $customer->name = ucwords($data['name']) ;
+	        $customer->email = $data['email'];
+	        $customer->identity = $data['identity'];
+	        $customer->account_link = $account_link;
+	        $customer->status = "1";
+	        $customer->save();
+
+	        $response = array('status' => 200,'customer'=>$customer);
+        }
+
+        return $response;
+	}
+
+	public function updateAccountLink($customer,$identity){
+
+		$account_link['account_link'] = $customer['account_link'];
+		$account_link['account_link'][$identity] = 1;
+		$customer->update($account_link);
+
+		return $customer;
+	}
+
+	public function createToken($customer){
+		$jwt_claim = array(
+				"jti" => Config::get('app.jwt.jti'),
+			    "iat" => Config::get('app.jwt.iat'),
+			    "nbf" => Config::get('app.jwt.nbf'),
+			    "exp" => Config::get('app.jwt.exp'),
+			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
+			);
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
+
+		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+
+        return array('status' => 200,'message' => 'successfull login', 'token' => $token);
+	}
+
+	public function validateToken(){
+
+		return Response::json(array('status' => 200,'message' => 'token is correct'),200);
+	}
+
+	public function resetPassword(){
+
+		$data = Input::json()->all();
+
+		$jwt_token  = Request::header('Authorization');
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		$data['email'] = $decoded->customer->email;
+
+		$rules = [
+			    'email' => 'required|email|max:255',
+	    		'password' => 'required|min:8|max:20|confirmed',
+	    		'password_confirmation' => 'required|min:8|max:20',
+			];
+
+        $validator = Validator::make($data, $rules);
+
+		if ($validator->fails()) {
+            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+        }else{
+        	
+        	$customer = Customer::where('email','=',$data['email'])->first();
+        	
+        	if(empty($customer)){
+				return array('status' => 400,'message' => array('email' => 'Incorrect email'));
+			}
+
+			$password['password'] = md5($data['password']);
+			$customer->update($password);
+
+	        $response = array('status' => 200,'message' => 'password reset successfull');
+        }
+
+        return Response::json($response,$responce['status']);
+	}
+
+	public function createPasswordToken($customer){
+		$password_claim = array(
+				"jti" => Config::get('app.forgot_password.jti'),
+			    "iat" => Config::get('app.forgot_password.iat'),
+			    "exp" => Config::get('app.forgot_password.exp'),
+			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
+			);
+		$password_key = Config::get('app.forgot_password.key');
+		$password_alg = Config::get('app.forgot_password.alg');
+
+		$token = JWT::encode($password_claim,$password_key,$password_alg);
+
+        return $token;
+	}
+
+	public function forgotPasswordEmail(){
+
+		$data = Input::json()->all();
+
+		if(isset($data['email']) && !empty($data['email'])){
+			$customer = Customer::where('email','=',$data['email'])->first();
+			if(!empty($customer)){
+
+				$token = $this->createPasswordToken($customer);
+
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'token'=>$token);
+
+				$this->customermailer->forgotPassword($customer_data);
+
+				return Response::json(array('status' => 200,'message' => 'token successfull created and mail send', 'token' => $token),200);
+			}else{
+				return Response::json(array('status' => 400,'message' => 'Customer not found'),400);
+			}
+		}else{
+			return Response::json(array('status' => 400,'message' => 'Empty email'),400);
+		}
+
+	}
+
+	public function forgotPassword(){
+
+		$data = Input::json()->all();
+
+		if(isset($data['password_token']) && !empty($data['password_token'])){
+
+			$password_token = $data['password_token'];
+	        $password_key = Config::get('app.forgot_password.key');
+	        $password_alg = Config::get('app.forgot_password.alg');
+	    
+	        try{
+	        	if(Cache::tags('blacklist_forgot_password_token')->has($password_token)){
+	        		return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+	        	}
+
+	            $decoded = JWT::decode($password_token, $password_key,array($password_alg));
+
+	            if(!empty($decoded)){
+	            	$rules = [
+					    'email' => 'required|email|max:255',
+			    		'password' => 'required|min:8|max:20|confirmed',
+			    		'password_confirmation' => 'required|min:8|max:20',
+					];
+
+	            	$data['email'] = $decoded->customer->email;
+
+	            	$validator = Validator::make($data, $rules);
+
+	            	if ($validator->fails()) {
+			           return Response::json(array('status' => 400,'message' =>$this->errorMessage($validator->errors())),400);
+			        }else{
+			        	$password['password'] = md5($data['password']);
+
+			        	$customer = Customer::where('email','=',$data['email'])->first();
+						$customer->update($password);
+
+						$expiry_time_minutes = (int)round(($decoded->exp - time())/60);
+
+						Cache::tags('blacklist_forgot_password_token')->put($password_token,$decoded->customer->email,$expiry_time_minutes);
+
+				        return $this->createToken($customer);
+			        }
+	            }else{
+	            	return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+	            }
+
+	        }catch(DomainException $e){
+	            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+	        }catch(ExpiredException $e){
+	            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+	        }catch(SignatureInvalidException $e){
+	            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+	        }catch(Exception $e){
+	            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+	        }
+
+	    }else{
+	        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
+	    }
+	}
+
+	public function customerLogout(){
+
+		$jwt_token = Request::header('Authorization');
+		$jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+		$expiry_time_minutes = (int)round(($decoded->exp - time())/60);
+
+		Cache::tags('blacklist_customer_token')->put($jwt_token,$decoded->customer->email,$expiry_time_minutes);
+
+		return Response::json(array('status' => 200,'message' => 'logged out'),200);
+	}
+
+	public function errorMessage($errors){
+
+		$errors = json_decode(json_encode($errors));
+		$message = array();
+		foreach ($errors as $key => $value) {
+			$message[$key] = $value[0];
+		}
+		return $message;
+	}
 }

@@ -39,7 +39,7 @@ class BlogsController extends \BaseController {
 		return Cache::tags('blog_list')->get($offset.'_'.$limit);
 	}
 
-	public function blogdetail($slug, $cache = true){
+	public function blogdetail($slug, $cache = false){
 
 		$data = array();
 		$tslug = (string) $slug;
@@ -51,6 +51,7 @@ class BlogsController extends \BaseController {
 							->with('categorytags')
 							->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 							->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+							->with(array('comments'=>function($query){$query->select('*')->where('status','=','1');}))
 							->where('slug','=',$tslug)
 							->remember(Config::get('app.cachetime'))
 							->firstOrFail();
@@ -197,6 +198,66 @@ class BlogsController extends \BaseController {
 						);
 			return $data;
 
+	}
+
+	public function addComment(){
+
+		$inserted_id = Comment::max('_id') + 1;
+        $validator = Validator::make($data = Input::json()->all(), Comment::$rules);
+
+        if ($validator->fails()) {
+            $response = array('status' => 404,'message' =>$validator->errors());
+        }else{
+        	$customer = Customer::findOrFail((int)$data['customer_id']);
+	        $data['customer'] = array('name'=>$customer['name'],'email'=>$customer['email'],'profile_image'=>$customer['profile_image']);
+
+	        $commentdata = $data;
+	        
+	        $comment = new Comment($commentdata);
+	        $comment->_id = $inserted_id;
+	        $comment->blog_id = (int)$data['blog_id'];
+	        $comment->customer_id = (int)$data['customer_id'];
+	        $comment->description = $data['description'];
+	        $comment->save();
+
+	        $response = array('status' => 200);
+        } 
+
+        return Response::json($response);  
+	}
+
+	public function getBlogComment($slug,$cache = true){
+		$data = array();
+		$tslug = (string) $slug;
+
+		$comment_by_blog_list = $cache ? Cache::tags('comment_by_blog_list')->has($tslug) : false;
+
+		if(!$comment_by_blog_list){
+
+			$blog_by_slug= Blog::where('slug','=',$tslug)->firstOrFail();
+
+			if(!empty($blog_by_slug)){
+
+				$blog_id 	= (int) $blog_by_slug['_id'];
+				$comments = Comment::where('status', '=', '1')
+							->where('blog_id','=',$blog_id)
+							->orderBy('_id', 'desc')
+							->get(array('_id','blog_id','customer_id','customer','description','updated_at','created_at'));
+
+				$data = array('status' => 200,'data'=>$comments);
+
+				Cache::tags('comment_by_blog_list')->put($slug,$data,Config::get('app.cachetime'));
+				$response = $data;
+
+			}else{
+				$response = array('status' => 200,'message'=>'no comments');
+			}
+		}else{
+
+			$response = Cache::tags('comment_by_blog_list')->get($tslug);
+		}
+
+		return Response::json($response);
 	}
 	
 }
