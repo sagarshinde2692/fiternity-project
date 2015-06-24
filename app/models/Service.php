@@ -32,11 +32,8 @@ class Service extends \Basemodel{
 				array_push($activedays, $schedule['weekday']);
 			}
 		}
-
 		// $activedays 		= pluck( $this->trialschedules , array('weekday') );
-
 		return $activedays;
-
 	}
 
 	public function getWorkoutsessionActiveWeekdaysAttribute(){
@@ -49,31 +46,23 @@ class Service extends \Basemodel{
 				array_push($activedays, $schedule['weekday']);
 			}
 		}
-
 		// $activedays 		= pluck( $this->schedules , array('weekday') );
-
 		return $activedays;
-
 	}
 
-
 	public function category(){
-
 		return $this->belongsTo('Servicecategory','servicecategory_id');
 	}		
 
 	public function subcategory(){
-
 		return $this->belongsTo('Servicecategory','servicesubcategory_id');
 	}
 
 	public function finder(){
-		
 		return $this->belongsTo('Finder');
 	}
 
 	public function trainer(){
-
 		return $this->belongsTo('Servicetrainer','trainer_id');
 	}	
 
