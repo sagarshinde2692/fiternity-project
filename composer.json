@@ -26,6 +26,7 @@
 			"app/tests/TestCase.php",
 			"app/mailers",
 			"app/sms",
+			"app/notification",
 			"app/notification"
 		]
 	},

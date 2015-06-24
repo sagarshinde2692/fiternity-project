@@ -403,7 +403,7 @@ class FindersController extends \BaseController {
 	public function updatepopularity (){
 
 		// set popularity 10000 for following category
-		$items = Finder::active()->where('finder_type', 0)->whereIn('category_id', array(5,11,14,32,35,6,12,8,7))->get();
+		$items = Finder::active()->where('finder_type', 0)->whereIn('city_id', array(2,3,4))->whereIn('category_id', array(5,11,14,32,35,6,12,8,7))->get();
 		$finderdata = array();
 		foreach ($items as $item) {  
 			$data 	= $item->toArray();
@@ -414,7 +414,7 @@ class FindersController extends \BaseController {
 		}
 
 		// set popularity 4000 for following category
-		$items = Finder::active()->where('finder_type', 0)->whereIn('category_id', array(36,41,25,42,26,40))->get();
+		$items = Finder::active()->where('finder_type', 0)->whereIn('city_id', array(2,3,4))->whereIn('category_id', array(36,41,25,42,26,40))->get();
 		$finderdata = array();
 		foreach ($items as $item) {  
 			$data 	= $item->toArray();
