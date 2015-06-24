@@ -277,30 +277,66 @@ class CustomerController extends \BaseController {
 
 	public function register(){
 
+		$data = Input::json()->all();
 		$inserted_id = Customer::max('_id') + 1;
-        $validator = Validator::make($data = Input::json()->all(), Customer::$rules);
+		$rules = [
+		    'name' => 'required|min:10|max:255',
+		    'email' => 'required|email|max:255',
+		    'password' => 'required|min:8|max:20|confirmed',
+		    'password_confirmation' => 'required|min:8|max:20',
+		    'contact_no' => 'required|size:10',
+		    'identity' => 'required'
+		];
+        $validator = Validator::make($data,$rules);
 
      	if ($validator->fails()) {
             return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
         }else{
-        	
-        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-        	$account_link[$data['identity']] = 1;
 
-	        $customer = new Customer();
-	        $customer->_id = $inserted_id;
-	        $customer->name = ucwords($data['name']) ;
-	        $customer->email = $data['email'];
-	        $customer->password = md5($data['password']);
-	        $customer->contact_no = $data['contact_no'];
-	        $customer->identity = $data['identity'];
-	        $customer->account_link = $account_link;
-	        $customer->status = "1";
-	        $customer->save();
+        	$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email'))->first();
+			
+			if(empty($customer)){
+				$new_validator = Validator::make($data, Customer::$rules);
+				if ($new_validator->fails()) {
+		            return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+		        }else{
+		        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+        			$account_link[$data['identity']] = 1;
+		        	$customer = new Customer();
+		        	$customer->_id = $inserted_id;
+			        $customer->name = ucwords($data['name']) ;
+			        $customer->email = $data['email'];
+			        $customer->password = md5($data['password']);
+			        $customer->contact_no = $data['contact_no'];
+			        $customer->identity = $data['identity'];
+			        $customer->account_link = $account_link;
+			        $customer->status = "1";
+			        $customer->save();
 
-	        return Response::json(array('status' => 200,'message'=>'successfull login'),200);
+        			return Response::json($this->createToken($customer),200);
+		        }	
+	        }else{
+
+	        	$account_link['account_link'] = $customer['account_link'];
+				$account_link['account_link'][$data['identity']] = 1;
+				$customer->name = ucwords($data['name']) ;
+		        $customer->email = $data['email'];
+		        $customer->password = md5($data['password']);
+		        $customer->contact_no = $data['contact_no'];
+		        $customer->account_link = $account_link;
+		        $customer->status = "1";
+				$customer->update();
+
+				return Response::json($this->createToken($customer),200);
+	        }
+
+	        $account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+    		$account_link[$data['identity']] = 1;
+    		
         }
 	}
+
+
 
 
 	public function customerLogin(){
@@ -583,6 +619,80 @@ class CustomerController extends \BaseController {
 	    }else{
 	        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
 	    }
+	}
+
+	public function forgotPasswordEmailApp(){
+
+		$data = Input::json()->all();
+
+		if(isset($data['email']) && !empty($data['email'])){
+			$customer = Customer::where('email','=',$data['email'])->first();
+			if(!empty($customer)){
+
+				$otp = $this->createOtp($customer['email']);
+
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'otp'=>$otp);
+
+				$this->customermailer->forgotPasswordApp($customer_data);
+
+				return Response::json(array('status' => 200,'message' => 'OTP successfull created and mail send'),200);
+			}else{
+				return Response::json(array('status' => 400,'message' => 'Customer not found'),400);
+			}
+		}else{
+			return Response::json(array('status' => 400,'message' => 'Empty email'),400);
+		}
+
+	}
+
+	public function createOtp($email){
+		$length = 4
+		$characters = '0123456789';
+		$expiry_time_minutes = 60*24;
+	    $charactersLength = strlen($characters);
+	    $randomString = '';
+	    for ($i = 0; $i < $length; $i++) {
+	        $randomString .= $characters[rand(0, $charactersLength - 1)];
+	    }
+
+	    if(Cache::tags('app_customer_otp')->has($randomString)){
+	    	$randomString = $this->createOtp($customer['email']);
+	    }
+	    else{
+	    	Cache::tags('app_customer_otp')->put($randomString,$email,$expiry_time_minutes);
+	    }
+
+	    return $randomString;
+	}
+
+	public function validateOtp(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+		    'email' => 'required|email|max:255',
+    		'otp' => 'required'
+		];
+
+		$validator = Validator::make($data, $rules);
+
+		if ($validator->fails()) {
+            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+        }else{
+        	if(Cache::tags('app_customer_otp')->has($data['otp'])){
+        		if(Cache::tags('app_customer_otp')->get($data['otp']) == $data['email']){
+        			$customer = Customer::where('email','=',$data['email'])->first();
+        			$token = $this->createPasswordToken($customer);
+        			$response = array('status' => 200,'token'=>$token,'message' =>'OTP verified successfull');
+        		}else{
+        			$response = array('status' => 400,'message' =>'OTP expired');
+        		}
+        	}else{
+        		$response = array('status' => 400,'message' =>'OTP expired');
+        	}
+        }
+
+	    return Response::json($response,$response['status']);
 	}
 
 	public function customerLogout(){
