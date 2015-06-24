@@ -332,7 +332,6 @@ class CustomerController extends \BaseController {
 
 	        $account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
     		$account_link[$data['identity']] = 1;
-    		
         }
 	}
 
