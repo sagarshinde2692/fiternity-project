@@ -428,6 +428,7 @@ class FindersController extends \BaseController {
 			$updatefinder = $this->updateFinderRatingV1($reviewdata);
 			$response = array('status' => 200, 'message' => 'Review Created Successfully.');
 		}
+		
 		return Response::json($response, 200);  
 	}
 
