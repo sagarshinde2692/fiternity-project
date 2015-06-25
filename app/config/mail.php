@@ -163,4 +163,5 @@ return array(
 	'bcc_emailds_finderdailsummary' 				=> 	array('mailus@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
 	'bcc_forgot_password' 							=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com','mjmjadhav@gmail.com'),
 	'bcc_forgot_password_app' 						=> 	array('ut.mehrotra@gmail.com','mailus@fitternity.com'),
+	'bcc_register' 				=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
 );

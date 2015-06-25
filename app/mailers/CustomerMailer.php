@@ -269,7 +269,20 @@ Class CustomerMailer extends Mailer {
 		return $this->sendTo($email_template, $template_data, $message_data);
 	}
 
+	public function register($data){
 
+		$email_template = 	'emails.customer.register';
+		$template_data 	= 	$data;
+		$bcc_emailids 	= 	Config::get('mail.bcc_register');
 
+		$message_data 	= array(
+			'user_email' => $data['email'],
+			'user_name' => $data['name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Welcome to Fitternity'
+		);
+
+		return $this->sendTo($email_template, $template_data, $message_data);
+	}
 
 }
