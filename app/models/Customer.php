@@ -10,6 +10,7 @@
 class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
+	protected $dates = array('last_visited');
 	
 	// Add your validation rules here
 	public static $rules = [
