@@ -293,7 +293,7 @@ class CustomerController extends \BaseController {
             return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
         }else{
 
-        	$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email'))->first();
+        	$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
 				$new_validator = Validator::make($data, Customer::$rules);
@@ -313,6 +313,9 @@ class CustomerController extends \BaseController {
 			        $customer->status = "1";
 			        $customer->save();
 
+			        $customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+					$this->customermailer->register($customer_data);
+
         			return Response::json($this->createToken($customer),200);
 		        }	
 	        }else{
@@ -326,6 +329,9 @@ class CustomerController extends \BaseController {
 		        $customer->account_link = $account_link;
 		        $customer->status = "1";
 				$customer->update();
+
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+				$this->customermailer->register($customer_data);
 
 				return Response::json($this->createToken($customer),200);
 	        }
@@ -374,16 +380,27 @@ class CustomerController extends \BaseController {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
         }
 
-		$customer = Customer::where('email','=',$data['email'])->where('password','=',md5($data['password']))->first();
-
-		if(empty($customer)){
-			return array('status' => 400,'message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
-		}
+        $customer = Customer::where('email','=',$data['email'])->where('status','=','1')->first();
+       	if(empty($customer)){
+       		return array('status' => 400,'message' => 'Customer is inactive');
+       	}else{
+       		if(isset($customer['hull_id']) && $customer['ishulluser'] == 1){
+       			$customer->password = md5($data['password']);
+       			$customer->ishulluser = 0;
+       		}else{
+       			if($customer['password'] != md5($data['password'])){
+       				return array('status' => 400,'message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
+       			}
+       		}
+       	}
 
 		if($customer['account_link'][$data['identity']] != 1)
 		{
-			$customer = $this->updateAccountLink($customer,$data['identity']);
+			$customer->account_link[$data['identity']] = 1;
 		}
+
+		$customer->last_visited = Carbon::now();
+       	$customer->update();
 
 		return $this->createToken($customer);
 	}
@@ -408,13 +425,19 @@ class CustomerController extends \BaseController {
 				return $socialRegister;
 			}else{
 				$customer = $socialRegister['customer'];
+
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+				$this->customermailer->register($customer_data);
 			}
 		}
 
 		if($customer['account_link'][$data['identity']] != 1)
 		{
-			$customer = $this->updateAccountLink($customer,$data['identity']);
-		} 
+			$customer->account_link[$data['identity']] = 1;
+		}
+
+		$customer->last_visited = Carbon::now();
+       	$customer->update();
 
 		return $this->createToken($customer);
 	}
@@ -645,7 +668,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function createOtp($email){
-		$length = 4
+		$length = 4;
 		$characters = '0123456789';
 		$expiry_time_minutes = 60*24;
 	    $charactersLength = strlen($characters);
