@@ -15,7 +15,7 @@
 		"aloha/twilio": "1.*",
 		"hernandev/hipchat-laravel": "1.0.*",
 		"aws/aws-sdk-php-laravel": "1.*",
-		"firebase/php-jwt": "^2.1"
+		"firebase/php-jwt": "2.1"
 	},
 	"autoload": {
 		"classmap": [

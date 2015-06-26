@@ -271,7 +271,6 @@ class FindersController extends \BaseController {
 
 
 	public function getallfinder(){
-		
 		//->take(2)
 		$items = Finder::active()->orderBy('_id')->get(array('_id','slug','title'));
 		return Response::json($items);				
@@ -380,7 +379,6 @@ class FindersController extends \BaseController {
 
 	}
 
-
 	public function updatepopularity (){
 
 		// set popularity 10000 for following category
@@ -406,6 +404,7 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	
 	public function addReview(){
 		// return Input::json()->all();
 		$validator = Validator::make($data = Input::json()->all(), Review::$rules);
@@ -413,8 +412,6 @@ class FindersController extends \BaseController {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
 			return Response::json($response, 400); 
 		}
-
-		$inserted_id = Review::max('_id') + 1;
 
 		$reviewdata = [
 		'finder_id' => intval($data['finder_id']),
@@ -424,16 +421,27 @@ class FindersController extends \BaseController {
 		'description' => $data['description']
 		];
 
-		$review = new Review($reviewdata);
-		$review->_id = $inserted_id;
-		$reviewobject = $review->save();
-		return $updatefinder = $this->updateFinderRatingV1($review);
-		$response = array('status' => 200, 'message' => 'Review Created Successfully.', 'errors' => $validator->errors());
+		//if exist then update
+		$oldreview = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
 
+		if($oldreview){
+			$updatefinder = $this->updateFinderRatingV1($reviewdata,$oldreview);
+			$oldreviewobj = Review::findOrFail(intval($oldreview->_id));
+			$oldreviewobj->update($reviewdata);
+			$response = array('status' => 200, 'message' => 'Review Updated Successfully.');
+		}else{
+			$inserted_id = Review::max('_id') + 1;
+			$review = new Review($reviewdata);
+			$review->_id = $inserted_id;
+			$reviewobject = $review->save();
+			$updatefinder = $this->updateFinderRatingV1($reviewdata);
+			$response = array('status' => 200, 'message' => 'Review Created Successfully.');
+		}
+		
 		return Response::json($response, 200);  
 	}
 
-	public function updateFinderRatingV1 ($review){
+	public function updateFinderRatingV1 ($review, $oldreview = NULL ){
 
 		$data 					=	$review;
 		$total_rating_count 	=	round(floatval(Input::json()->get('total_rating_count')),1);
@@ -445,21 +453,26 @@ class FindersController extends \BaseController {
 		$total_rating_count 	=	Review::where('finder_id', $finderid)->count();
 		$average_rating 		=	Review::where('finder_id', $finderid)->avg('rating');
 
-		// array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
-		// array_set($finderdata, 'average_rating', round($average_rating,1));
 		array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
 		array_set($finderdata, 'average_rating', round($average_rating,1));
 
-		//Detail rating summary count
+		//Detail rating summary count && Detail rating summary avg
 		if(isset($finder->detail_rating_summary_average) && !empty($finder->detail_rating_summary_average)){
 			if(isset($finder->detail_rating_summary_count) && !empty($finder->detail_rating_summary_count)){
 				$detail_rating_summary_average = $finder->detail_rating_summary_average;
 				$detail_rating_summary_count = $finder->detail_rating_summary_count;
-				for($i = 0; $i < 5; $i++) {
-					if($data['detail_rating'][$i] > 0){
-						$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i]));
-						$detail_rating_summary_average[$i] = ($sum_detail_rating + $data['detail_rating'][$i])/($detail_rating_summary_count[$i]+1);
-						$detail_rating_summary_count[$i] = (int) $detail_rating_summary_count[$i]+1;
+				if($oldreview != NULL){
+					for($i = 0; $i < 5; $i++) {
+						if($data['detail_rating'][$i] > 0){
+							$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i]));
+							$detail_rating_summary_average[$i] = ($sum_detail_rating + $data['detail_rating'][$i])/($detail_rating_summary_count[$i]+1);
+							$detail_rating_summary_count[$i] = (int) $detail_rating_summary_count[$i]+1;
+						}
+					}
+				}else{
+					for($i = 0; $i < 5; $i++) {
+						$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i])) - $olddata['detail_rating'][i];
+						$detail_rating_summary_average[$i] = ($sum_detail_rating + $data['detail_rating'][$i])/($detail_rating_summary_count[$i]);
 					}
 				}
 			}
@@ -473,12 +486,10 @@ class FindersController extends \BaseController {
 		}
 		array_set($finderdata, 'detail_rating_summary_average', $detail_rating_summary_average);
 		array_set($finderdata, 'detail_rating_summary_count', $detail_rating_summary_count);
-
-		//Detail rating summary avg
 		
 		// return $finderdata;
-		// $success = $finder->update($finderdata);
-		// return $finder;
+		$success = $finder->update($finderdata);
+		return $finder;
 
 		if($finder->update($finderdata)){
 			//updating elastic search	

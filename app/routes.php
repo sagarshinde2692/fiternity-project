@@ -79,7 +79,6 @@ Route::get('/capturedata', function() {
 
 	$items = Capture::get();
 	$data = array();
-
 	foreach ($items as $item) {  
 		$data = $item->toArray();
 		$capture = Capture::findOrFail($data['_id']);
