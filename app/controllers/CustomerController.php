@@ -486,7 +486,6 @@ class CustomerController extends \BaseController {
 
 	public function createToken($customer){
 		$jwt_claim = array(
-				"jti" => Config::get('app.jwt.jti'),
 			    "iat" => Config::get('app.jwt.iat'),
 			    "nbf" => Config::get('app.jwt.nbf'),
 			    "exp" => Config::get('app.jwt.exp'),
@@ -545,7 +544,6 @@ class CustomerController extends \BaseController {
 
 	public function createPasswordToken($customer){
 		$password_claim = array(
-				"jti" => Config::get('app.forgot_password.jti'),
 			    "iat" => Config::get('app.forgot_password.iat'),
 			    "exp" => Config::get('app.forgot_password.exp'),
 			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])

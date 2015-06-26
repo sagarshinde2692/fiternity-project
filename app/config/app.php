@@ -221,7 +221,6 @@ return array(
 
 	'jwt' => array(
 		'key' => 'fitternity', //secret key to encode token
-		'jti' => base64_encode(mcrypt_create_iv(32)), //unique jwt id
 		'iat' => time(), // time when token is created
 		'nbf' => time()+10, // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)
@@ -230,7 +229,6 @@ return array(
 
 	'forgot_password' => array(
 		'key' => 'fitternity', //secret key to encode token
-		'jti' => base64_encode(mcrypt_create_iv(32)), //unique jwt id
 		'iat' => time(), // time when token is created
 		'exp' => time()+86400, // time when token gets expired (1 day)
 		'alg' => 'HS256',
