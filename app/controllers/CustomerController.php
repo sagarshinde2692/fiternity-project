@@ -8,15 +8,18 @@
  */
 
 use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Mailers\CustomerSms as CustomerSms;
 
 
 class CustomerController extends \BaseController {
 
 	protected $customermailer;
+	protected $customersms;
 
-	public function __construct(CustomerMailer $customermailer) {
+	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms) {
 
 		$this->customermailer	=	$customermailer;
+		$this->customersms	=	$customersms;
 
 	}
 
@@ -677,7 +680,12 @@ class CustomerController extends \BaseController {
 
 				$this->customermailer->forgotPasswordApp($customer_data);
 
-				return Response::json(array('status' => 200,'message' => 'OTP successfull created and mail send'),200);
+				if(isset($customer['contact_no']) && !empty($customer['contact_no'])){
+					$customer_data = array('name'=>ucwords($customer['name']),'contact_no'=>$customer['contact_no'],'otp'=>$otp);
+					$this->customersms->forgotPasswordApp($customer_data);
+				}
+
+				return Response::json(array('status' => 200,'message' => 'OTP successfull created and mail send','otp'=> $otp),200);
 			}else{
 				return Response::json(array('status' => 400,'message' => 'Customer not found'),400);
 			}
