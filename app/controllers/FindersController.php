@@ -575,6 +575,25 @@ class FindersController extends \BaseController {
 		return Response::json($response);
 	}
 
-	
+	/**
+	 * Return the specified reivew.
+	 *
+	 * @param  int  	$reivewid
+	 * @param  string  	$slug
+	 * @return Response
+	 */
 
+	public function detailReview($reivewid){
+
+		$review = Review::with('finder')->where('_id', (int) $reivewid)->first();
+		if(!$review){
+			$resp 	= 	array('status' => 400, 'review' => [], 'message' => 'No review Exist :)');
+			return Response::json($resp, 400);
+		}
+
+		$resp 	= 	array('status' => 200, 'review' => $review, 'message' => 'Particular Service Info');
+		return Response::json($resp, 200);
+	}
+
+	
 }
