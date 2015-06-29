@@ -495,11 +495,15 @@ class CustomerController extends \BaseController {
 	}
 
 	public function createToken($customer){
+
+		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+		$location = (isset($customer['location'])) ? $customer['location'] : "";
+
 		$jwt_claim = array(
 			    "iat" => Config::get('app.jwt.iat'),
 			    "nbf" => Config::get('app.jwt.nbf'),
 			    "exp" => Config::get('app.jwt.exp'),
-			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'])
+			    "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],'extra'=>array('mob'=>$mob,'location'=>$location))
 			);
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
