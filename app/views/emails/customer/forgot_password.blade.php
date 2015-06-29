@@ -94,7 +94,7 @@ Hello {{$name}},</span></p>
 
 <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">Click on the link below to reset your password using our secure server:</p>
 
-<p style="padding-top:5px;line-height:20px;font-weight:lighter;color:#5f5e5e"><a href="fitternity.com/forgot/{{$name}}" style="text-decoration:none"><span style="color:#ec8601;font-weight:400">Reset your password</span></a></p>
+<p style="padding-top:5px;line-height:20px;font-weight:lighter;color:#5f5e5e"><a href="fitternity.com/forgot/{{$token}}" style="text-decoration:none"><span style="color:#ec8601;font-weight:400">Reset your password</span></a></p>
 
 <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">If you did not request to have your password reset you can safely ignore this email.</p>
 
