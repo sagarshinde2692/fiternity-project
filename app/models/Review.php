@@ -20,12 +20,21 @@ class Review extends  \Basemodel {
 	    'description' => 'required'
 	];
 
-	public function finders(){
+	protected $appends = array('customer');
+
+	public function getCustomerAttribute(){
+		$customer = Customer::where('_id',$this->customer_id)->first(array('name','picture','email','contact_no' ));
+		return $customer;
+	}
+
+	public function finder(){
 		return $this->belongsTo('Finder');
 	}
 
-	public function customers(){
+	public function customer(){
 		return $this->belongsTo('Customer');
 	}
+
+
 
 }

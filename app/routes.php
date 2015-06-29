@@ -372,6 +372,7 @@ Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton'
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
+Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 
 /******************** FINDERS SECTION END HERE ********************/

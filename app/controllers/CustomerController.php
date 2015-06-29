@@ -308,7 +308,9 @@ class CustomerController extends \BaseController {
 			        $customer->email = $data['email'];
 			        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 			        $customer->password = md5($data['password']);
-			        $customer->contact_no = $data['contact_no'];
+			        if(isset($customer['contact_no'])){
+			        	$customer->contact_no = $data['contact_no'];
+			        }
 			        $customer->identity = $data['identity'];
 			        $customer->account_link = $account_link;
 			        $customer->status = "1";
@@ -327,7 +329,9 @@ class CustomerController extends \BaseController {
 		        $customer->email = $data['email'];
 		        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 		        $customer->password = md5($data['password']);
-		        $customer->contact_no = $data['contact_no'];
+		        if(isset($customer['contact_no'])){
+		        	$customer->contact_no = $data['contact_no'];
+		        }
 		        $customer->account_link = $account_link;
 		        $customer->status = "1";
 				$customer->update();
@@ -396,9 +400,11 @@ class CustomerController extends \BaseController {
        		}
        	}
 
-		if($customer['account_link'][$data['identity']] != 1)
+       	if($customer['account_link'][$data['identity']] != 1)
 		{
-			$customer->account_link[$data['identity']] = 1;
+			$account_link = $customer['account_link'];
+			$account_link[$data['identity']] = 1;
+			$customer->account_link = $account_link;
 		}
 
 		$customer->last_visited = Carbon::now();
@@ -428,17 +434,29 @@ class CustomerController extends \BaseController {
 			}else{
 				$customer = $socialRegister['customer'];
 
-				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+				if(isset($customer['password'])){
+					$password = $customer['password'];
+				}else{
+					$password = "No Password";
+				}
+
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$password);
+				
 				$this->customermailer->register($customer_data);
 			}
 		}
 
 		if($customer['account_link'][$data['identity']] != 1)
 		{
-			$customer->account_link[$data['identity']] = 1;
+			$account_link = $customer['account_link'];
+			$account_link[$data['identity']] = 1;
+			$customer->account_link = $account_link;
 		}
 
-		$cusotmer->facebook_id = ($data['identity'] == 'facebook') ? $data['facebook_id'] : "";
+		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
+        	$cusotmer->facebook_id = $data['facebook_id'];
+        }
+
 		$customer->last_visited = Carbon::now();
        	$customer->update();
 
@@ -467,10 +485,14 @@ class CustomerController extends \BaseController {
 	        $customer->_id = $inserted_id;
 	        $customer->name = ucwords($data['name']) ;
 	        $customer->email = $data['email'];
-	        $customer->picture = $data['picture'];
+	        $customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
 	        $customer->identity = $data['identity'];
 	        $customer->account_link = $account_link;
-	        $cusotmer->facebook_id = ($data['identity'] == 'facebook') ? $data['facebook_id'] : "";
+
+	        if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
+	        	$cusotmer->facebook_id = $data['facebook_id'];
+	        }
+
 	        $customer->status = "1";
 	        $customer->save();
 
@@ -481,11 +503,15 @@ class CustomerController extends \BaseController {
 	}
 
 	public function createToken($customer){
+
+		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+		$location = (isset($customer['location'])) ? $customer['location'] : "";
+
 		$jwt_claim = array(
 			    "iat" => Config::get('app.jwt.iat'),
 			    "nbf" => Config::get('app.jwt.nbf'),
 			    "exp" => Config::get('app.jwt.exp'),
-			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'])
+			    "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],'extra'=>array('mob'=>$mob,'location'=>$location))
 			);
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');

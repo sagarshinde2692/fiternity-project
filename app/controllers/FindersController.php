@@ -54,7 +54,7 @@ class FindersController extends \BaseController {
 			->with('facilities')
 			->with('servicerates')
 			->with('services')
-			->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1');}))
+			->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 			->where('slug','=',$tslug)
 			->first();
 
@@ -418,8 +418,13 @@ class FindersController extends \BaseController {
 		'customer_id' => intval($data['customer_id']),
 		'rating' => intval($data['rating']),
 		'detail_rating' => array_map('intval',$data['detail_rating']),
-		'description' => $data['description']
+		'description' => $data['description'],
+		'status' => '1'
 		];
+
+		$finderobj = Finder::where('_id', intval($data['finder_id']))->first();
+		$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
+        clear_cache($cacheurl);
 
 		//if exist then update
 		$oldreview = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
@@ -571,6 +576,46 @@ class FindersController extends \BaseController {
 		return Response::json($response);
 	}
 
-	
+
+	/**
+	 * Return the specified reivew.
+	 *
+	 * @param  int  	$reivewid
+	 * @param  string  	$slug
+	 * @return Response
+	 */
+
+	public function detailReview($reivewid){
+
+		$review = Review::with('finder')->where('_id', (int) $reivewid)->first();
+
+		if(!$review){
+			$resp 	= 	array('status' => 400, 'review' => [], 'message' => 'No review Exist :)');
+			return Response::json($resp, 400);
+		}
+
+		$reviewdata = $this->transform($review);
+		$resp 	= 	array('status' => 200, 'review' => $reviewdata, 'message' => 'Particular Review Info');
+		return Response::json($resp, 200);
+	}
+
+
+	private function transform($review){
+
+		$item  =  (!is_array($review)) ? $review->toArray() : $review;
+		$data = [
+			'finder_id' => $item['finder_id'],
+			'customer_id' => $item['customer_id'],
+			'rating' => $item['rating'],
+			'detail_rating' => $item['detail_rating'],
+			'description' => $item['description'],
+			'created_at' => $item['created_at'],
+			'updated_at' => $item['updated_at'],
+			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
+		];
+
+		return $data;
+	}
+
 
 }

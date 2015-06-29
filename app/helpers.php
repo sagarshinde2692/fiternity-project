@@ -15,6 +15,26 @@ if (!function_exists('print_pretty')) {
     }
 }
 
+
+
+/**
+ * Clear Cache
+ * @param str $str
+ * @return str
+ */
+if (!function_exists('clear_cache')) {
+    function clear_cache($url) {
+
+  
+        $finalurl = Config::get('app.apiurl').strtolower($url);
+
+        $request = array( 'url' => $finalurl, 'method' => 'GET' );
+
+        return es_curl_request($request);
+    }
+}
+
+
 /**
  * URL Slug
  * @param str $str
