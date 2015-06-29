@@ -611,6 +611,7 @@ class FindersController extends \BaseController {
 			'description' => $item['description'],
 			'created_at' => $item['created_at'],
 			'updated_at' => $item['updated_at'],
+			'customer' => $item['customer'],
 			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
 		];
 
