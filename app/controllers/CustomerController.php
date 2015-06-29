@@ -400,7 +400,7 @@ class CustomerController extends \BaseController {
        		}
        	}
 
-		if($customer['account_link'][$data['identity']] != 1)
+		if(!isset($customer['account_link'][$data['identity']]) || $customer['account_link'][$data['identity']] != 1)
 		{
 			$customer->account_link[$data['identity']] = 1;
 		}
@@ -444,10 +444,9 @@ class CustomerController extends \BaseController {
 			}
 		}
 
-		if($customer['account_link'][$data['identity']] != 1)
+		if(!isset($customer['account_link'][$data['identity']]) || $customer['account_link'][$data['identity']] != 1)
 		{
-			$account_link[$data['identity']] = 1;
-			$customer->account_link = $account_link;
+			$customer->account_link[$data['identity']] = 1;
 		}
 
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
