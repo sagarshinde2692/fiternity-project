@@ -575,6 +575,7 @@ class FindersController extends \BaseController {
 		return Response::json($response);
 	}
 
+
 	/**
 	 * Return the specified reivew.
 	 *
