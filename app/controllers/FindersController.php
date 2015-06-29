@@ -443,17 +443,17 @@ class FindersController extends \BaseController {
 		$finder 				=	Finder::findOrFail($finderid);
 		$finderslug 			=	$finder->slug;
 		$total_rating_count 	=	Review::where('finder_id', $finderid)->count();
-		$average_rating 		=	Review::where('finder_id', $finderid)->avg('rating');
+		$sum_rating 		=	Review::where('finder_id', $finderid)->sum('rating');
 
 		array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
-		array_set($finderdata, 'average_rating', round($average_rating,1));
+		array_set($finderdata, 'average_rating', ($sum_rating/$total_rating_count));
 
 		//Detail rating summary count && Detail rating summary avg
 		if(isset($finder->detail_rating_summary_average) && !empty($finder->detail_rating_summary_average)){
 			if(isset($finder->detail_rating_summary_count) && !empty($finder->detail_rating_summary_count)){
 				$detail_rating_summary_average = $finder->detail_rating_summary_average;
 				$detail_rating_summary_count = $finder->detail_rating_summary_count;
-				if($oldreview != NULL){
+				if($oldreview == NULL){
 					for($i = 0; $i < 5; $i++) {
 						if($data['detail_rating'][$i] > 0){
 							$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i]));
@@ -461,10 +461,31 @@ class FindersController extends \BaseController {
 							$detail_rating_summary_count[$i] = (int) $detail_rating_summary_count[$i]+1;
 						}
 					}
+
 				}else{
 					for($i = 0; $i < 5; $i++) {
-						$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i])) - $olddata['detail_rating'][i];
-						$detail_rating_summary_average[$i] = ($sum_detail_rating + $data['detail_rating'][$i])/($detail_rating_summary_count[$i]);
+						if($oldreview['detail_rating'][$i] == 0 && $data['detail_rating'][$i] > 0){
+							$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i])) - $oldreview['detail_rating'][$i];
+							$detail_rating_summary_average[$i] = ($sum_detail_rating + $data['detail_rating'][$i])/($detail_rating_summary_count[$i]+1);
+							$detail_rating_summary_count[$i] = (int) $detail_rating_summary_count[$i]+1;
+						}
+						else if($data['detail_rating'][$i] == 0 && $oldreview['detail_rating'][$i] > 0){
+							$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i])) - $oldreview['detail_rating'][$i];
+							if($detail_rating_summary_count[$i] > 1){
+								$detail_rating_summary_average[$i] = ($sum_detail_rating)/($detail_rating_summary_count[$i]-1);
+							}
+							else{
+								$detail_rating_summary_average[$i] = 0;	
+							}
+							$detail_rating_summary_count[$i] = (int) $detail_rating_summary_count[$i]-1;
+						}
+						else if($data['detail_rating'][$i] == 0 && $oldreview['detail_rating'][$i] == 0){
+
+						}
+						else{
+							$sum_detail_rating = floatval(floatval($finder->detail_rating_summary_average[$i]) * floatval($finder->detail_rating_summary_count[$i])) - $oldreview['detail_rating'][$i];
+							$detail_rating_summary_average[$i] = ($sum_detail_rating + $data['detail_rating'][$i])/($detail_rating_summary_count[$i]);
+						}
 					}
 				}
 			}
