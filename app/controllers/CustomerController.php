@@ -308,7 +308,7 @@ class CustomerController extends \BaseController {
 			        $customer->email = $data['email'];
 			        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 			        $customer->password = md5($data['password']);
-			        if(isset($customer['password'])){
+			        if(isset($customer['contact_no'])){
 			        	$customer->contact_no = $data['contact_no'];
 			        }
 			        $customer->identity = $data['identity'];
@@ -329,7 +329,7 @@ class CustomerController extends \BaseController {
 		        $customer->email = $data['email'];
 		        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 		        $customer->password = md5($data['password']);
-		        if(isset($customer['password'])){
+		        if(isset($customer['contact_no'])){
 		        	$customer->contact_no = $data['contact_no'];
 		        }
 		        $customer->account_link = $account_link;
