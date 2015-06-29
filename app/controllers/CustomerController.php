@@ -8,7 +8,7 @@
  */
 
 use App\Mailers\CustomerMailer as CustomerMailer;
-use App\Mailers\CustomerSms as CustomerSms;
+use App\Sms\CustomerSms as CustomerSms;
 
 
 class CustomerController extends \BaseController {
