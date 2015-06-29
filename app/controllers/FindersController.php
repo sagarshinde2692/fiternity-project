@@ -418,7 +418,8 @@ class FindersController extends \BaseController {
 		'customer_id' => intval($data['customer_id']),
 		'rating' => intval($data['rating']),
 		'detail_rating' => array_map('intval',$data['detail_rating']),
-		'description' => $data['description']
+		'description' => $data['description'],
+		'status' => '1'
 		];
 
 		$finderobj = Finder::where('_id', intval($data['finder_id']))->first();
@@ -592,9 +593,28 @@ class FindersController extends \BaseController {
 			return Response::json($resp, 400);
 		}
 
-		$resp 	= 	array('status' => 200, 'review' => $review, 'message' => 'Particular Service Info');
+		$reviewdata = $this->transform($review);
+		$resp 	= 	array('status' => 200, 'review' => $reviewdata, 'message' => 'Particular Review Info');
 		return Response::json($resp, 200);
 	}
 
-	
+
+
+	private function transform($review){
+
+		$item  =  (!is_array($review)) ? $review->toArray() : $review;
+		$data = [
+			'finder_id' => $item['finder_id'],
+			'customer_id' => $item['customer_id'],
+			'rating' => $item['rating'],
+			'detail_rating' => $item['detail_rating'],
+			'description' => $item['description'],
+			'created_at' => $item['created_at'],
+			'updated_at' => $item['updated_at'],
+			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
+		];
+
+		return $data;
+	}
+
 }
