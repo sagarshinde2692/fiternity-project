@@ -54,7 +54,7 @@ class FindersController extends \BaseController {
 			->with('facilities')
 			->with('servicerates')
 			->with('services')
-			->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1');}))
+			->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 			->where('slug','=',$tslug)
 			->first();
 
@@ -593,7 +593,6 @@ class FindersController extends \BaseController {
 	}
 
 
-
 	private function transform($review){
 
 		$item  =  (!is_array($review)) ? $review->toArray() : $review;
@@ -605,11 +604,12 @@ class FindersController extends \BaseController {
 			'description' => $item['description'],
 			'created_at' => $item['created_at'],
 			'updated_at' => $item['updated_at'],
+			'customer' => $item['customer'],
 			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
 		];
 
 		return $data;
 	}
-	
+
 
 }
