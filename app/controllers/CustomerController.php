@@ -400,9 +400,11 @@ class CustomerController extends \BaseController {
        		}
        	}
 
-		if(!isset($customer['account_link'][$data['identity']]) || $customer['account_link'][$data['identity']] != 1)
+       	if($customer['account_link'][$data['identity']] != 1)
 		{
-			$customer->account_link[$data['identity']] = 1;
+			$account_link = $customer['account_link'];
+			$account_link[$data['identity']] = 1;
+			$customer->account_link = $account_link;
 		}
 
 		$customer->last_visited = Carbon::now();
@@ -444,14 +446,17 @@ class CustomerController extends \BaseController {
 			}
 		}
 
-		if(!isset($customer['account_link'][$data['identity']]) || $customer['account_link'][$data['identity']] != 1)
+		if($customer['account_link'][$data['identity']] != 1)
 		{
-			$customer->account_link[$data['identity']] = 1;
+			$account_link = $customer['account_link'];
+			$account_link[$data['identity']] = 1;
+			$customer->account_link = $account_link;
 		}
 
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
         	$cusotmer->facebook_id = $data['facebook_id'];
         }
+
 		$customer->last_visited = Carbon::now();
        	$customer->update();
 
