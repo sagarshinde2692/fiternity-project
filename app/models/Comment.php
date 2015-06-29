@@ -18,11 +18,11 @@ class Comment extends  \Basemodel {
 	    'description' => 'required'
 	];
 
-	public function blog(){
+	public function blogs(){
 		return $this->belongsTo('Blog');
 	}
 
-	public function customer(){
+	public function customers(){
 		return $this->belongsTo('Customer');
 	}
 
