@@ -22,12 +22,12 @@ class Customer extends  \Basemodel {
 	    'identity' => 'required'
 	];
 
-	public function review(){
+	public function reviews(){
 
 		return $this->hasMany('Customer', 'customer_id');
 	}
 
-	public function comment(){
+	public function comments(){
 		
 		return $this->hasMany('Customer', 'customer_id');
 	}

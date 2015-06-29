@@ -20,11 +20,11 @@ class Review extends  \Basemodel {
 	    'description' => 'required'
 	];
 
-	public function finder(){
+	public function finders(){
 		return $this->belongsTo('Finder');
 	}
 
-	public function customer(){
+	public function customers(){
 		return $this->belongsTo('Customer');
 	}
 
