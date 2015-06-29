@@ -610,5 +610,4 @@ class FindersController extends \BaseController {
 		return $data;
 	}
 
-	
 }
