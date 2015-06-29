@@ -280,11 +280,11 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 		$inserted_id = Customer::max('_id') + 1;
 		$rules = [
-		    'name' => 'required|min:10|max:255',
+		    'name' => 'required|max:255',
 		    'email' => 'required|email|max:255',
-		    'password' => 'required|min:8|max:20|confirmed',
-		    'password_confirmation' => 'required|min:8|max:20',
-		    'contact_no' => 'required|size:10',
+		    'password' => 'required|min:6|max:20|confirmed',
+		    'password_confirmation' => 'required|min:6|max:20',
+		    'contact_no' => 'size:10',
 		    'identity' => 'required'
 		];
         $validator = Validator::make($data,$rules);
@@ -306,6 +306,7 @@ class CustomerController extends \BaseController {
 		        	$customer->_id = $inserted_id;
 			        $customer->name = ucwords($data['name']) ;
 			        $customer->email = $data['email'];
+			        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 			        $customer->password = md5($data['password']);
 			        $customer->contact_no = $data['contact_no'];
 			        $customer->identity = $data['identity'];
@@ -324,6 +325,7 @@ class CustomerController extends \BaseController {
 				$account_link['account_link'][$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
 		        $customer->email = $data['email'];
+		        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 		        $customer->password = md5($data['password']);
 		        $customer->contact_no = $data['contact_no'];
 		        $customer->account_link = $account_link;
@@ -436,6 +438,7 @@ class CustomerController extends \BaseController {
 			$customer->account_link[$data['identity']] = 1;
 		}
 
+		$cusotmer->facebook_id = ($data['identity'] == 'facebook') ? $data['facebook_id'] : "";
 		$customer->last_visited = Carbon::now();
        	$customer->update();
 
@@ -464,8 +467,10 @@ class CustomerController extends \BaseController {
 	        $customer->_id = $inserted_id;
 	        $customer->name = ucwords($data['name']) ;
 	        $customer->email = $data['email'];
+	        $customer->picture = $data['picture'];
 	        $customer->identity = $data['identity'];
 	        $customer->account_link = $account_link;
+	        $cusotmer->facebook_id = ($data['identity'] == 'facebook') ? $data['facebook_id'] : "";
 	        $customer->status = "1";
 	        $customer->save();
 
@@ -489,7 +494,7 @@ class CustomerController extends \BaseController {
 			    "iat" => Config::get('app.jwt.iat'),
 			    "nbf" => Config::get('app.jwt.nbf'),
 			    "exp" => Config::get('app.jwt.exp'),
-			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
+			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'])
 			);
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
