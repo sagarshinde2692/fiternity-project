@@ -442,7 +442,8 @@ class CustomerController extends \BaseController {
 
 		if($customer['account_link'][$data['identity']] != 1)
 		{
-			$customer->account_link[$data['identity']] = 1;
+			$account_link[$data['identity']] = 1;
+			$customer->account_link = $account_link;
 		}
 
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
