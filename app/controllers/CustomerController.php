@@ -428,7 +428,14 @@ class CustomerController extends \BaseController {
 			}else{
 				$customer = $socialRegister['customer'];
 
-				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+				if(isset($customer['password'])){
+					$password = $customer['password'];
+				}else{
+					$password = "No Password";
+				}
+
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$password);
+				
 				$this->customermailer->register($customer_data);
 			}
 		}
@@ -438,7 +445,9 @@ class CustomerController extends \BaseController {
 			$customer->account_link[$data['identity']] = 1;
 		}
 
-		$cusotmer->facebook_id = ($data['identity'] == 'facebook') ? $data['facebook_id'] : "";
+		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
+        	$cusotmer->facebook_id = $data['facebook_id'];
+        }
 		$customer->last_visited = Carbon::now();
        	$customer->update();
 
@@ -467,10 +476,14 @@ class CustomerController extends \BaseController {
 	        $customer->_id = $inserted_id;
 	        $customer->name = ucwords($data['name']) ;
 	        $customer->email = $data['email'];
-	        $customer->picture = $data['picture'];
+	        $customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
 	        $customer->identity = $data['identity'];
 	        $customer->account_link = $account_link;
-	        $cusotmer->facebook_id = ($data['identity'] == 'facebook') ? $data['facebook_id'] : "";
+
+	        if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
+	        	$cusotmer->facebook_id = $data['facebook_id'];
+	        }
+
 	        $customer->status = "1";
 	        $customer->save();
 
