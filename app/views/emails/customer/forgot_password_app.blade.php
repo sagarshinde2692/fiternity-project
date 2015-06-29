@@ -91,15 +91,12 @@
 Hello {{$name}},</span></p>      
                 
              
-              <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">The One Time Password (OTP) required for resetting your password is {{otp}}.</p>
+              <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">The authorisation code required for resetting your password is {{otp}}.</p>
 
 
 <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">If you didn&#39;t request this, you can safely ignore this email.</p>
 
-<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">Your password won&#39;t change until you use the One Time Password (OTP).</p>
-
-
-<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">You&#39;re receiving this because you registered to <span>Fitternity</span></p>
+<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">Your password won&#39;t change until you use the authorisation code.</p>
  
  <p style="padding-top:25px;padding-bottom:25px;line-height:20px;font-weight:lighter;color:#5f5e5e">Regards, <br>Team Fitternity</p>
           </td>

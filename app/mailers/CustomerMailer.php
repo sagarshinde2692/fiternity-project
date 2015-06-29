@@ -247,7 +247,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['email'],
 			'user_name' => $data['name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Reset password instructions'
+			'email_subject' => 'Your Password Reset Request for Fitternity'
 		);
 
 		return $this->sendTo($email_template, $template_data, $message_data);
@@ -263,7 +263,7 @@ Class CustomerMailer extends Mailer {
 			'user_email' => $data['email'],
 			'user_name' => $data['name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Reset password instructions'
+			'email_subject' => 'Your Password Reset Request for Fitternity'
 		);
 
 		return $this->sendTo($email_template, $template_data, $message_data);

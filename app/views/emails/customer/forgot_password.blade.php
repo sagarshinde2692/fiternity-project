@@ -87,21 +87,20 @@
 
 			  
 			   
-		 <p style="padding-top:30px;font-weight:bold;color:#5f5e5e;font-size:20px"><span style="color:#5f5e5e;font-weight:400">
+<p style="padding-top:30px;font-weight:bold;color:#5f5e5e;font-size:20px"><span style="color:#5f5e5e;font-weight:400">
 Hello {{$name}},</span></p>      
-				
-			 
-			  <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">Someone has requested a link to change your password. You can do this through the link below.</p>
+						 
+<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">We received a request to reset the password associated with this e-mail address. If you made this request, please follow the instructions below.</p>
 
-<p style="padding-top:5px;line-height:20px;font-weight:lighter;color:#5f5e5e"><a href="fitternity.com/forgot/{{$name}}" style="text-decoration:none"><span style="color:#ec8601;font-weight:400">Reset your password</span></a></p>
-<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">If you didn&#39;t request this, you can safely ignore this email.</p>
+<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">Click on the link below to reset your password using our secure server:</p>
 
-<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">Your password won&#39;t change until you access the link above and create a new one.</p>
+<p style="padding-top:5px;line-height:20px;font-weight:lighter;color:#5f5e5e"><a href="fitternity.com/forgot/{{$token}}" style="text-decoration:none"><span style="color:#ec8601;font-weight:400">Reset your password</span></a></p>
 
+<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">If you did not request to have your password reset you can safely ignore this email.</p>
 
-<p style="padding-top:5px;line-height:20px;font-weight:lighter;color:#5f5e5e">You&#39;re receiving this because you registered to <span>Fitternity</span></p>
+<p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">If clicking the link does not seem to work, you can copy and paste the link into your browser's address window, or retype it there. Once you have returned to Fitternity, we will give instructions for resetting your password.</p>
  
- <p style="padding-top:25px;padding-bottom:25px;line-height:20px;font-weight:lighter;color:#5f5e5e">Regards, <br>Team Fitternity</p>
+<p style="padding-top:25px;padding-bottom:25px;line-height:20px;font-weight:lighter;color:#5f5e5e">Regards, <br>Team Fitternity</p>
 		  </td>
 	   </tr>
 	 <tr>
