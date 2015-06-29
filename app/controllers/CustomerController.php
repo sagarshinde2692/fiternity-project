@@ -321,8 +321,8 @@ class CustomerController extends \BaseController {
 		        }	
 	        }else{
 
-	        	$account_link['account_link'] = $customer['account_link'];
-				$account_link['account_link'][$data['identity']] = 1;
+	        	$account_link= $customer['account_link'];
+				$account_link[$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
 		        $customer->email = $data['email'];
 		        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
@@ -478,15 +478,6 @@ class CustomerController extends \BaseController {
         }
 
         return $response;
-	}
-
-	public function updateAccountLink($customer,$identity){
-
-		$account_link['account_link'] = $customer['account_link'];
-		$account_link['account_link'][$identity] = 1;
-		$customer->update($account_link);
-
-		return $customer;
 	}
 
 	public function createToken($customer){
