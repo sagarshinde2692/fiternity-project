@@ -578,7 +578,7 @@ class FindersController extends \BaseController {
 
 	public function detailReview($reivewid){
 
-		$review = Review::with('finder')->with('customer')->where('_id', (int) $reivewid)->first();
+		$review = Review::with('finder')->where('_id', (int) $reivewid)->first();
 		if(!$review){
 			$resp 	= 	array('status' => 400, 'review' => [], 'message' => 'No review Exist :)');
 			return Response::json($resp, 400);
