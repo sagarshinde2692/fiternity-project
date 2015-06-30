@@ -91,7 +91,7 @@
 Hello {{$name}},</span></p>      
                 
              
-              <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">The authorisation code required for resetting your password is {{$otp}}.</p>
+              <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">The authorisation code required for resetting your password is  {{$otp}}.</p>
 
 
 <p style="padding-top:15px;line-height:20px;font-weight:lighter;color:#5f5e5e">If you didn&#39;t request this, you can safely ignore this email.</p>
@@ -106,12 +106,12 @@ Hello {{$name}},</span></p>
                     </tr>
     </tbody>
   </table>
-</td>
+</td>git 
 </tr>
 </tbody>
 </table>
 </td>
-</tr>
+</tr>git 
 </tbody>
 </table>
 </div>
