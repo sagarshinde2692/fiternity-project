@@ -182,6 +182,8 @@ class SearchServicesController extends \BaseController {
 			"partial_fields": {
 				"serviceinfo": {
 					"include": [
+					"_id",
+					"name",
 					"city",
 					"category",
 					"subcategory",
