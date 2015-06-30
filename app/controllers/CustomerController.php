@@ -697,7 +697,7 @@ class CustomerController extends \BaseController {
 					return Response::json(array('status' => 400,'message' => 'email and contact no not present'),400);
 				}else if ($email == 0){	
 					return Response::json(array('status' => 200,'message' => 'sms sent and email not sent','otp'=> $otp),200);
-				}else if ($email == 0){	
+				}else if ($sms == 0){	
 					return Response::json(array('status' => 200,'message' => 'email sent and sms not sent','otp'=> $otp),200);
 				}else{
 					return Response::json(array('status' => 200,'message' => 'email and sms sent','otp'=> $otp),200);
