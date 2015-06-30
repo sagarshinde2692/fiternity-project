@@ -542,8 +542,8 @@ class CustomerController extends \BaseController {
 
 		$rules = [
 			    'email' => 'required|email|max:255',
-	    		'password' => 'required|min:8|max:20|confirmed',
-	    		'password_confirmation' => 'required|min:8|max:20',
+	    		'password' => 'required|min:6|confirmed',
+	    		'password_confirmation' => 'required|min:6',
 			];
 
         $validator = Validator::make($data, $rules);
@@ -591,11 +591,14 @@ class CustomerController extends \BaseController {
 
 				$token = $this->createPasswordToken($customer);
 
-				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'token'=>$token);
+				if(isset($customer['email']) && !empty($customer['email'])){
+					$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'token'=>$token);
+					$this->customermailer->forgotPassword($customer_data);
+					return Response::json(array('status' => 200,'message' => 'token successfull created and mail send', 'token' => $token),200);
+				}else{
+					return Response::json(array('status' => 400,'message' => 'Customer email not present'),400);
+				}
 
-				$this->customermailer->forgotPassword($customer_data);
-
-				return Response::json(array('status' => 200,'message' => 'token successfull created and mail send', 'token' => $token),200);
 			}else{
 				return Response::json(array('status' => 400,'message' => 'Customer not found'),400);
 			}
@@ -625,8 +628,8 @@ class CustomerController extends \BaseController {
 	            if(!empty($decoded)){
 	            	$rules = [
 					    'email' => 'required|email|max:255',
-			    		'password' => 'required|min:8|max:20|confirmed',
-			    		'password_confirmation' => 'required|min:8|max:20',
+			    		'password' => 'required|min:6|confirmed',
+			    		'password_confirmation' => 'required|min:6',
 					];
 
 	            	$data['email'] = $decoded->customer->email;
@@ -676,16 +679,30 @@ class CustomerController extends \BaseController {
 
 				$otp = $this->createOtp($customer['email']);
 
-				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'otp'=>$otp);
+				$email = 0;
+				if(isset($customer['email']) && !empty($customer['email'])){
+					$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'otp'=>$otp);
+					$this->customermailer->forgotPasswordApp($customer_data);
+					$email = 1;
+				}
 
-				$this->customermailer->forgotPasswordApp($customer_data);
-
+				$sms = 0;
 				if(isset($customer['contact_no']) && !empty($customer['contact_no'])){
 					$customer_data = array('name'=>ucwords($customer['name']),'contact_no'=>$customer['contact_no'],'otp'=>$otp);
 					$this->customersms->forgotPasswordApp($customer_data);
+					$sms = 1;
 				}
 
-				return Response::json(array('status' => 200,'message' => 'OTP successfull created and mail send','otp'=> $otp),200);
+				if($email == 0 && $sms == 0){
+					return Response::json(array('status' => 400,'message' => 'email and contact no not present'),400);
+				}else if ($email == 0){	
+					return Response::json(array('status' => 200,'message' => 'sms sent and email not sent','otp'=> $otp),200);
+				}else if ($sms == 0){	
+					return Response::json(array('status' => 200,'message' => 'email sent and sms not sent','otp'=> $otp),200);
+				}else{
+					return Response::json(array('status' => 200,'message' => 'email and sms sent','otp'=> $otp),200);
+				}
+
 			}else{
 				return Response::json(array('status' => 400,'message' => 'Customer not found'),400);
 			}
