@@ -21,17 +21,11 @@ class SearchServicesController extends \BaseController {
 	public function __construct() {
 
 		parent::__construct();	
-		
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
-		
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
-		
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
-		
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
-		
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
-
 	}
 
 
@@ -50,7 +44,11 @@ class SearchServicesController extends \BaseController {
 		$filters 					=	"";	
 		$selectedfields 			= 	"";		
 		$from 						=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
-		$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
+		$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;	
+
+		$date 						= 	(intval(date("H")) > 20 ) ? date("d-m-Y g:i A") : date("d-m-Y g:i A", strtotime('+1 day', time()) );	
+		$weekday 					= 	(intval(date("H")) > 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));	
+		// return $weekday;
 
 		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
 		$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
@@ -73,15 +71,15 @@ class SearchServicesController extends \BaseController {
 		$workout_intensity_filter 	= 	($workout_intensity != '') ? '{"terms" : {  "workout_intensity": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_intensity'))).'"] }},'  : '';	
 		$workout_tags_filter 		= 	($workout_tags != '') ? '{"terms" : {  "workout_tags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_tags'))).'"] }},'  : '';
 
-
 		$time_range_filter			=  ($min_time != '' && $max_time != '') ? '{"range" : {"workoutsessionschedules.start_time_24_hour_format" : { "gte" : '.$min_time.',"lte": '.$max_time.'}} },'  : '';
 		$price_range_filter			=  ($min_price != '' && $max_price != '') ? '{"range" : {"workoutsessionschedules.price" : { "gte" : '.$min_price.',"lte": '.$max_price.'}} },'  : '';
+		$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekday.'"] } },'; 
 
 		$shouldfilter = $mustfilter = $workoutsesionfilter = '';
 		
 		//used for workout sesion, 	
-		if($time_range_filter != '' || $price_range_filter){			
-			$workoutsesion_filtervalue = trim($time_range_filter.$price_range_filter,',');	
+		if($weekday_filter != "" || $time_range_filter != '' || $price_range_filter){			
+			$workoutsesion_filtervalue = trim($weekday_filter.$time_range_filter.$price_range_filter,',');	
 
 			$workoutsesionfilter = '{
               "nested": {
@@ -124,7 +122,6 @@ class SearchServicesController extends \BaseController {
 
 		$query = '"match_all": {}';
 		$basecategory_score = '';		
-
 
 		$aggsval	= '{
 			"all_categories" : {
@@ -206,8 +203,9 @@ class SearchServicesController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
-		
-		return Response::json($search_results);
+		$response 		= 	[ 'search_results' => $search_results, 'weekday' => $weekday, 'date' => $date ];
+
+		return Response::json($response);
 	}
 
 
