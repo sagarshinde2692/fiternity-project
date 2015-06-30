@@ -106,12 +106,12 @@ Hello {{$name}},</span></p>
                     </tr>
     </tbody>
   </table>
-</td>git 
+</td>
 </tr>
 </tbody>
 </table>
 </td>
-</tr>git 
+</tr>
 </tbody>
 </table>
 </div>
