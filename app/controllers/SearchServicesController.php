@@ -203,11 +203,10 @@ class SearchServicesController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
-		$response 		= 	[ 'search_results' => $search_results, 'weekday' => $weekday, 'date' => $date ];
+		$response 		= 	[ 'search_results' => json_encode($search_results), 'weekday' => $weekday, 'date' => $date ];
 
 		return Response::json($response);
 	}
-
 
 
 // 	{ "from": 0, 
