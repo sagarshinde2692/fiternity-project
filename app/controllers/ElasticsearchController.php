@@ -192,6 +192,10 @@ class ElasticsearchController extends \BaseController {
 				"properties":{
 					"name" : {"type" : "string", "index" : "not_analyzed"},
 					"name_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"findername" : {"type" : "string", "index" : "not_analyzed"},
+					"findername_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"finderslug" : {"type" : "string", "index" : "not_analyzed"},
+					"finderslug_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
 					"category" : {"type" : "string","index" : "not_analyzed"},
 					"category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
 					"subcategory" : {"type" : "string","index" : "not_analyzed"},
