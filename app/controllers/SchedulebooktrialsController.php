@@ -700,7 +700,7 @@ return Response::json($resp,200);
 
 
 			$booktrialdata = array(
-				'booktrialid'					=>		$booktrialid,
+				'booktrialid'					=>		intval($booktrialid),
 				'premium_session' 				=>		$premium_session, 
 
 				'customer_id' 					=>		$customer_id, 
