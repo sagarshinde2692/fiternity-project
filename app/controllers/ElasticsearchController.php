@@ -375,7 +375,7 @@ class ElasticsearchController extends \BaseController {
                                                                     ->with(array('city'=>function($query){$query->select('name');}))
                                                                     ->with(array('location'=>function($query){$query->select('name');}))
                                                                     ->where('_id', intval($data['finder_id']) )
-                                                                    ->get(array('_id', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location'))->first();
+                                                                    ->get(array('_id', 'title', 'slug', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location'))->first();
 				array_set($data, 'finder', $finder);
             	// return Response::json($data);
 
