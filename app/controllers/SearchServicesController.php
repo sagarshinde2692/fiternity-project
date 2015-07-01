@@ -40,8 +40,8 @@ class SearchServicesController extends \BaseController {
 		$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;	
 
 		// $date 						= 	(intval(date("H")) > 20 ) ? date("H") : date("d-m-Y g:i A", strtotime('+1 day', time()) );	
-		$weekday 					= 	(intval(date("H")) > 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));	
-		// return $weekday;
+		$weekday 					= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));	
+		// return intval(date("H")). " - ".strtolower(date( "l", time() )) ." - ". $weekday;
 
 		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
 		$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
