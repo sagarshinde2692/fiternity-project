@@ -11,6 +11,7 @@ class SearchServicesController extends \BaseController {
 	protected $elasticsearch_url            =   "";
 	protected $elasticsearch_default_url    =   "";
 
+
 	public function __construct() {
 
 		parent::__construct();	
@@ -94,7 +95,6 @@ class SearchServicesController extends \BaseController {
 			$mustfilter = '"must": ['.$must_filtervalue.']';		
 		}
 
-
 		if($shouldfilter != '' || $mustfilter != '' ){
 			$filtervalue = trim($shouldfilter.$mustfilter,',');	
 			$filters = ',"filter": { 
@@ -141,6 +141,32 @@ class SearchServicesController extends \BaseController {
 						},
 						"aggs": {
 							"city_subcategories": { "terms": { "field": "subcategory", "size": 10000 } }
+						}
+					}
+				}
+			},
+			"all_workout_intensity" : {
+				"global" : {}, 
+				"aggs" : { 
+					"city_filter": {
+						"filter": { 
+							"terms": { "city": [ "'.$city.'" ] } 
+						},
+						"aggs": {
+							"city_workout_intensity": { "terms": { "field": "workout_intensity", "size": 10000 } }
+						}
+					}
+				}
+			},
+			"all_workout_tags" : {
+				"global" : {}, 
+				"aggs" : { 
+					"city_filter": {
+						"filter": { 
+							"terms": { "city": [ "'.$city.'" ] } 
+						},
+						"aggs": {
+							"city_workout_tags": { "terms": { "field": "workout_tags", "size": 10000 } }
 						}
 					}
 				}
