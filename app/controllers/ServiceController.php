@@ -18,7 +18,7 @@ class ServiceController extends \BaseController {
 
 	public function getServiceCategorys(){
 
-		$servicecategory	 = 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->lists('name','slug');	
+		$servicecategory	 = 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
 		$resp 	= 	array('status' => 200, 'servicecategory' => $servicecategory, 'message' => 'Servicecategory List');
 		return Response::json($resp, 200);
 
