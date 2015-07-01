@@ -603,10 +603,6 @@ return Response::json($resp,200);
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
-		if(!isset($data['fitcard_user']) || $data['fitcard_user'] == ''){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - fitcard_user");
-		}
-
 		if(!isset($data['customer_phone']) || $data['customer_phone'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}

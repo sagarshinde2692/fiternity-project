@@ -174,6 +174,8 @@ class SearchServicesController extends \BaseController {
 					"include": [
 					"_id",
 					"name",
+					"findername",
+					"finderslug",
 					"city",
 					"category",
 					"subcategory",
