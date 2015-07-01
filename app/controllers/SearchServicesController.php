@@ -2,20 +2,13 @@
 
 class SearchServicesController extends \BaseController {
 
-	protected $indice = "fitternity";
-
+	protected $indice 						= 	"fitternity";
 	protected $facetssize 					=	10000;
-	
 	protected $limit 						= 	10000;
-	
 	protected $elasticsearch_host           =   "";
-	
 	protected $elasticsearch_port           =   "";
-	
 	protected $elasticsearch_default_index  =   "";
-	
 	protected $elasticsearch_url            =   "";
-	
 	protected $elasticsearch_default_url    =   "";
 
 	public function __construct() {
@@ -46,7 +39,7 @@ class SearchServicesController extends \BaseController {
 		$from 						=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;	
 
-		$date 						= 	(intval(date("H")) > 20 ) ? date("d-m-Y g:i A") : date("d-m-Y g:i A", strtotime('+1 day', time()) );	
+		// $date 						= 	(intval(date("H")) > 20 ) ? date("H") : date("d-m-Y g:i A", strtotime('+1 day', time()) );	
 		$weekday 					= 	(intval(date("H")) > 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));	
 		// return $weekday;
 
@@ -203,9 +196,7 @@ class SearchServicesController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
-		// $response 		= 	[ 'search_results' => json_decode($search_results,true), 'weekday' => $weekday, 'date' => $date ];
 		$response 		= 	[ 'search_results' => json_decode($search_results,true), 'weekday' => $weekday, 'hour' => date("H"), 'min' => date("i") ];
-		
 
 		return Response::json($response);
 	}

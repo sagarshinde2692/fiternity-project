@@ -192,6 +192,10 @@ class ElasticsearchController extends \BaseController {
 				"properties":{
 					"name" : {"type" : "string", "index" : "not_analyzed"},
 					"name_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"findername" : {"type" : "string", "index" : "not_analyzed"},
+					"findername_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+					"finderslug" : {"type" : "string", "index" : "not_analyzed"},
+					"finderslug_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
 					"category" : {"type" : "string","index" : "not_analyzed"},
 					"category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
 					"subcategory" : {"type" : "string","index" : "not_analyzed"},
@@ -371,7 +375,7 @@ class ElasticsearchController extends \BaseController {
                                                                     ->with(array('city'=>function($query){$query->select('name');}))
                                                                     ->with(array('location'=>function($query){$query->select('name');}))
                                                                     ->where('_id', intval($data['finder_id']) )
-                                                                    ->get(array('_id', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location'))->first();
+                                                                    ->get(array('_id', 'title', 'slug', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location'))->first();
 				array_set($data, 'finder', $finder);
             	// return Response::json($data);
 
