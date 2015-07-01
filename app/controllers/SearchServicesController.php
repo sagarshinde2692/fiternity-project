@@ -23,13 +23,15 @@ class SearchServicesController extends \BaseController {
 
 
 
-// 	{ "from": 0, 
-//  "size": 10, 
-//  "city":"mumbai",
-//  "category":"gyms",
-//  "min_time": 20.3,
-// "max_time":  6.15
-// }
+/*	
+{ "from": 0, 
+ "size": 10, 
+ "city":"mumbai",
+ "category":"gyms",
+ "min_time": 20.3,
+"max_time":  6.15
+}
+*/
 	public function getWorkoutsessions(){
 
 		$searchParams 				= 	array();
@@ -75,15 +77,15 @@ class SearchServicesController extends \BaseController {
 			$workoutsesion_filtervalue = trim($weekday_filter.$time_range_filter.$price_range_filter,',');	
 
 			$workoutsesionfilter = '{
-              "nested": {
-                "filter": {
-                  "bool": {
-                    "must": ['.$workoutsesion_filtervalue.']
-                  }
-                },
-                "path": "workoutsessionschedules"
-              }
-            },';	
+				"nested": {
+					"filter": {
+						"bool": {
+							"must": ['.$workoutsesion_filtervalue.']
+						}
+					},
+					"path": "workoutsessionschedules"
+				}
+			},';	
 		}
 
 		//used for category, subcategory, location, offering, facilities and workout_intensity
@@ -188,7 +190,7 @@ class SearchServicesController extends \BaseController {
 			}
 		}';
 
-		echo $body; exit;
+		// echo $body; exit;
 		$serachbody = $body;
 		$request = array(
 			'url' => $this->elasticsearch_url."fitternity/service/_search",
@@ -252,15 +254,15 @@ class SearchServicesController extends \BaseController {
 			$ratecard_filtervalue = trim($price_range_filter,',');	
 
 			$ratecardfilter = '{
-              "nested": {
-                "filter": {
-                  "bool": {
-                    "must": ['.$ratecard_filtervalue.']
-                  }
-                },
-                "path": "ratecard"
-              }
-            },';	
+				"nested": {
+					"filter": {
+						"bool": {
+							"must": ['.$ratecard_filtervalue.']
+						}
+					},
+					"path": "ratecard"
+				}
+			},';	
 		}
 
 		//used for category, subcategory, location, offering, facilities and workout_intensity
