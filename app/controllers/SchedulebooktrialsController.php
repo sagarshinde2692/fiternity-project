@@ -541,7 +541,8 @@ if($trialbooked = true){
 
 	if($device_id != ''){
 		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			// $sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$sndBefore5HourNotificationCustomer					=	'';
 			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 		}
 	}
@@ -806,7 +807,8 @@ if($trialbooked = true){
 
 	if($device_id != ''){
 		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			// $sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$sndBefore5HourNotificationCustomer					=	'';
 			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 		}
 	}
