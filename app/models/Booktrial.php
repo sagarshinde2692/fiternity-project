@@ -7,11 +7,6 @@ class Booktrial extends \Basemodel {
 
 	protected $dates = array('schedule_date','schedule_date_time');
 
-	public function setIdAttribute($value){
-		
-		$this->attributes['_id'] = intval($value);
-	}
-
 	public function finder(){
 		return $this->belongsTo('Finder','finder_id');
 	}
