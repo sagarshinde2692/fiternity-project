@@ -188,7 +188,7 @@ class SearchServicesController extends \BaseController {
 			}
 		}';
 
-		echo $body; exit;
+		// echo $body; exit;
 		$serachbody = $body;
 		$request = array(
 			'url' => $this->elasticsearch_url."fitternity/service/_search",
