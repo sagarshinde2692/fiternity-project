@@ -40,10 +40,14 @@ class SearchServicesController extends \BaseController {
 		$filters 					=	"";	
 		$selectedfields 			= 	"";		
 		$from 						=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
-		$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;	
+		$from 						=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
+		$date 						=	(Input::json()->get('date')) ? Input::json()->get('date') : null;	
 
-		// $date 						= 	(intval(date("H")) > 20 ) ? date("H") : date("d-m-Y g:i A", strtotime('+1 day', time()) );	
-		$weekday 					= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));	
+		if($date == null){
+			$weekday 				= 	strtolower(date( "l", strtotime($date)));	
+		}else{
+			$weekday 					= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));
+		}
 		// return intval(date("H")). " - ".strtolower(date( "l", time() )) ." - ". $weekday;
 
 		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
