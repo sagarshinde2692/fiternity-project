@@ -17,7 +17,11 @@ abstract Class Notification {
 
                     $job_id = $job->getJobId(); 
                     $msg = strip_tags($message);
-                    PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
+                    try{
+                        PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
+                    }catch(\Exception $e){
+                        // do nothing... php will ignore and continue    
+                    }
                     $job->delete();  
 
                 }, array(), 'pullapp');
@@ -32,16 +36,18 @@ abstract Class Notification {
         }else{
 
             $seconds    =   $this->getSeconds($delay);
-            
+
             try {
                 $messageid  =   Queue::later($seconds, function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
 
                     $job_id = $job->getJobId();
 
                     $msg = strip_tags($message); 
-
-                    PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
-
+                    try{
+                        PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
+                    }catch (\Exception $e){
+                        // do nothing... php will ignore and continue    
+                    }
                     $job->delete();  
 
                 }, array(), 'pullapp');
