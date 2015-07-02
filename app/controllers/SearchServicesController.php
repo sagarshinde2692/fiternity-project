@@ -44,10 +44,11 @@ class SearchServicesController extends \BaseController {
 		$date 						=	(Input::json()->get('date')) ? Input::json()->get('date') : null;	
 
 		if($date == null){
-			$timestamp 				= 	strtotime($date);
+			$date 					= 	date('d-m-Y',strtotime($date));
 			$weekday 				= 	strtolower(date( "l", strtotime($date)));	
 		}else{
-			$weekday 					= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));
+			$weekday 				= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));
+			$date 					= 	(intval(date("H")) < 20 ) ? date('d-m-Y',strtotime( time() )) : date('d-m-Y',strtotime( '+1 day', time() )) ;
 		}
 		// return intval(date("H")). " - ".strtolower(date( "l", time() )) ." - ". $weekday;
 
@@ -125,7 +126,6 @@ class SearchServicesController extends \BaseController {
 
 		$aggsval	= '{
 			"all_categories" : {
-				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -138,7 +138,6 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_subcategories" : {
-				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -151,7 +150,6 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_workout_intensity" : {
-				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -164,7 +162,6 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_workout_tags" : {
-				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -177,7 +174,6 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_locations" : {
-				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -231,7 +227,7 @@ class SearchServicesController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
-		$response 		= 	[ 'search_results' => json_decode($search_results,true), 'weekday' => $weekday, 'hour' => date("H"), 'min' => date("i") ];
+		$response 			= 	[ 'search_results' => json_decode($search_results,true),  'weekday' => $weekday,  'hour' => date("H"),  'min' => date("i"), 'date' => $date ];
 
 		return Response::json($response);
 	}

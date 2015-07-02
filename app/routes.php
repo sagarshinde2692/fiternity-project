@@ -310,8 +310,6 @@ Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardt
 Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
 
-
-
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -328,8 +326,6 @@ Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','us
 
 /******************** ORDERS SECTION END HERE ********************/
 ##############################################################################
-
-
 
 
 
@@ -358,10 +354,8 @@ Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton'
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 
 
-
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
-
 
 
 
@@ -474,9 +468,6 @@ Route::post('/landingpage/register', 'EmailSmsApiController@landingpageregister'
 Route::post('/offeravailed', 'EmailSmsApiController@offeravailed');
 Route::post('/fitcardbuy', 'EmailSmsApiController@fitcardbuy');
 Route::post('/not_able_to_find', 'EmailSmsApiController@not_able_to_find');
-
-
-
 Route::get('/email/testemail','EmailSmsApiController@testemail');
 
 
@@ -485,6 +476,8 @@ Route::post('/queue/push', function(){
 });
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
+
+
 
 
 ##############################################################################
@@ -496,4 +489,15 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
+
+
+
+
+##############################################################################
+/******************** FITMANIA SECTION START HERE *******************************/
+
+Route::get('/fitmania', 'FitmaniaController@getMockData');
+
+##############################################################################
+/******************** FITMANIA SECTION END HERE *******************************/
 
