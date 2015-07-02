@@ -31,7 +31,9 @@ class FitmaniaController extends \BaseController {
 			array_push($dealsofdays, $dealdata);
 		}
 
-		return Response::json($dealsofdays, 200);
+		$responseData = [ 'dealsofday' => $dealsofdays ];
+
+		return Response::json($responseData, 200);
 	}
 
 
