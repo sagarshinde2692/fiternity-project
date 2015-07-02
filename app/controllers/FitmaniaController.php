@@ -17,60 +17,45 @@ class FitmaniaController extends \BaseController {
 
 	public function getMockData(){
 
+		$dealsofdays = [];
 		$dealsofdaycolleciton = [
-
+		['_id' => 1,'name' => 'offer service1', 'description' => 'description1', 'ordering' => 1, 'finder_id' => 1],
+		['_id' => 1,'name' => 'offer service2', 'description' => 'description2', 'ordering' => 2, 'finder_id' => 1],
+		['_id' => 1,'name' => 'offer service3', 'description' => 'description3', 'ordering' => 3, 'finder_id' => 1],
+		['_id' => 1,'name' => 'offer service4', 'description' => 'description4', 'ordering' => 4, 'finder_id' => 1],
+		['_id' => 1,'name' => 'offer service5', 'description' => 'description5', 'ordering' => 5, 'finder_id' => 1]
 		];
 
-		$data = array('relatedfinders' 	=> $relatedfinders,
-			'categorytags' 	=> $categorytags,
-			'locations' 		=> $locations
-			);
-		return $data;
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transform($value);
+			array_push($dealsofdays, $dealdata);
+		}
 
+		return Response::json($dealsofdays, 200);
 	}
 
 
 
-	private function transform($service){
+	private function transform($deal){
 
-		$item  	   	=  	(!is_array($service)) ? $service->toArray() : $service;
+		$item  	   	=  	(!is_array($deal)) ? $deal->toArray() : $deal;
 		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-							->where('_id', (int) $service['finder_id'])
-							->first();
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->where('_id', (int) $item['finder_id'])->first();
 		// return $finderarr;
 
 		$data = array(
 			'_id' => $item['_id'],
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+			'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
+			'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
 			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
-			'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
-			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
-			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
-			'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
-			'short_description' => (isset($item['short_description']) && $item['short_description'] != '') ? $item['short_description'] : "", 
-			'what_i_should_carry' => (isset($item['what_i_should_carry']) && $item['what_i_should_carry'] != '') ? $item['what_i_should_carry'] : "", 
-			'what_i_should_expect' => (isset($item['what_i_should_expect']) && $item['what_i_should_expect'] != '') ? $item['what_i_should_expect'] : "", 
-			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
-			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
-			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
-			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect')),
-			'city' => (isset($finderarr->city->name) && $finderarr->city->name != '') ? strtolower($finderarr->city->name) : "",
-			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : "",
-			'active_weekdays' => (isset($item['active_weekdays']) && $item['active_weekdays'] != '') ? array_map('strtolower',$item['active_weekdays']) : "",
-			'workoutsession_active_weekdays' => (isset($item['workoutsession_active_weekdays']) && $item['workoutsession_active_weekdays'] != '') ? array_map('strtolower',$item['workoutsession_active_weekdays']) : ""
-
-			// 'workoutsessionschedules' => (isset($item['workoutsessionschedules']) && !empty($item['workoutsessionschedules'])) ? $item['workoutsessionschedules'] : "",
-			// 'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
-		);
-
-		// return $data;
-
-		
-
+			'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'coverimage', 'city_id', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect')),
+			// 'city' => (isset($finderarr->city->name) && $finderarr->city->name != '') ? strtolower($finderarr->city->name) : "",
+			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : ""
+			);
 		return $data;
 
 	}
-	
+
 }
