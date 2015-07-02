@@ -126,6 +126,7 @@ class SearchServicesController extends \BaseController {
 
 		$aggsval	= '{
 			"all_categories" : {
+				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -138,6 +139,7 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_subcategories" : {
+				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -150,6 +152,7 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_workout_intensity" : {
+				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -162,6 +165,7 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_workout_tags" : {
+				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -174,6 +178,7 @@ class SearchServicesController extends \BaseController {
 				}
 			},
 			"all_locations" : {
+				"global" : {}, 
 				"aggs" : { 
 					"city_filter": {
 						"filter": { 
@@ -227,7 +232,10 @@ class SearchServicesController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
-		$response 			= 	[ 'search_results' => json_decode($search_results,true),  'weekday' => $weekday,  'hour' => date("H"),  'min' => date("i"), 'date' => $date ];
+		$response 		= 	[ 
+							'search_results' => json_decode($search_results,true), 
+							'weekday' => $weekday, 
+							'hour' => date("H"), 'min' => date("i") ];
 
 		return Response::json($response);
 	}

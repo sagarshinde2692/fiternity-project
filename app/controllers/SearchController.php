@@ -3,26 +3,37 @@
 class SearchController extends \BaseController {
 
 	protected $indice = "fitternity";
+	
 	protected $facetssize 					=	10000;
+	
 	protected $limit 						= 	10000;
+	
 	protected $elasticsearch_host           =   "";
+	
 	protected $elasticsearch_port           =   "";
+	
 	protected $elasticsearch_default_index  =   "";
+	
 	protected $elasticsearch_url            =   "";
+	
 	protected $elasticsearch_default_url    =   "";
 
 	public function __construct() {
 		
 		parent::__construct();	
+		
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
+		
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
+		
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
+		
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
+		
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 	}
 
 	public function getGlobal() {
-
 		$searchParams = array();
 		$facetssize =  $this->facetssize;	
 		$type = "blog,finder,product";		 		
@@ -134,8 +145,7 @@ class SearchController extends \BaseController {
 	}
 
 
-	public function getFinders() {		
-		
+	public function getFinders() {			
 		$searchParams = array();
 		$facetssize =  $this->facetssize;	
 		$type = "finder";		    	
@@ -150,6 +160,7 @@ class SearchController extends \BaseController {
 		$region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
 		$offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
 		$facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';		
+
 
 		$should_filtervalue = trim($regions_filter.$region_tags_filter,',');	
 		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
@@ -241,6 +252,7 @@ class SearchController extends \BaseController {
 		$region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';	
 		$offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
 		$facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';		
+
 
 		$should_filtervalue = trim($regions_filter.$region_tags_filter,',');	
 		$must_filtervalue = trim($offerings_filter.$facilities_filter,',');	
