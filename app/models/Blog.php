@@ -16,6 +16,12 @@ class Blog extends \Basemodel {
 		'title' => 'required'
 		);
 
+
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = intval($value);
+	}
+
 	public function category(){
 		return $this->belongsTo('Blogcategory','category_id');
 	}

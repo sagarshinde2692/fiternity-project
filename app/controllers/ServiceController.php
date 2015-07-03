@@ -16,7 +16,13 @@ class ServiceController extends \BaseController {
 		parent::__construct();	
 	}
 
-	
+	public function getServiceCategorys(){
+
+		$servicecategory	 = 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
+		$resp 	= 	array('status' => 200, 'servicecategory' => $servicecategory, 'message' => 'Servicecategory List');
+		return Response::json($resp, 200);
+
+	}
 
 	/**
 	 * Update slugs for all services.
@@ -24,48 +30,31 @@ class ServiceController extends \BaseController {
 	 */
 	public function updateSlug(){
 		// echo "ssssss";exit;
-
 		$items = Service::active()->get();
-
 		$servicedata = array();
 
 		foreach ($items as $item) {  
 
 			$servicedata = $item->toArray();
-
 			echo $servicedata['_id']."<br>";
 
 			if(isset($servicedata['slug']) && $servicedata['slug'] != '') {
 
 				$servicecnt = Service::where('slug', url_slug(array($servicedata['name'])))->whereNotIn( '_id', array( intval($servicedata['_id']) ))->count();
-
 				if ($servicecnt > 0) {
-
 					array_set($servicedata, 'name', $servicedata['name']." ".$servicedata['workout_intensity'] );
-
 					array_set($servicedata, 'slug', url_slug(array($servicedata['name'], $servicedata['workout_intensity'])));
-
 				}else{
-
 					array_set($servicedata, 'name', $servicedata['name']);
-
 					array_set($servicedata, 'slug', url_slug(array($servicedata['name'])) );
-
 				}
 
 			}else{
-
 				array_set($servicedata, 'name', $servicedata['name']);
-
 				array_set($servicedata, 'slug', url_slug(array($servicedata['name'])) );
-				
 			}
-
 			$service = Service::findOrFail($servicedata['_id']);
-
 			$response = $service->update($servicedata);
-
-
 		}
 
 		// return Response::json('asfs');
@@ -84,20 +73,13 @@ class ServiceController extends \BaseController {
 	public function serviceDetail($serviceid){
 
 		$service = Service::with('category')->with('subcategory')->with('finder')->where('_id', (int) $serviceid)->first();
-
 		// return $service;
-
 		if(!$service){
-
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
-			
 			return Response::json($resp, 400);
 		}
-
 		$servicedata = $this->transform($service);
-
 		$resp 	= 	array('status' => 200, 'service' => $servicedata, 'message' => 'Particular Service Info');
-		
 		return Response::json($resp, 200);
 	}
 

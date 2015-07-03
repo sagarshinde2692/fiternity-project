@@ -2,47 +2,37 @@
 
 class SearchServicesController extends \BaseController {
 
-	protected $indice = "fitternity";
-
+	protected $indice 						= 	"fitternity";
 	protected $facetssize 					=	10000;
-	
 	protected $limit 						= 	10000;
-	
 	protected $elasticsearch_host           =   "";
-	
 	protected $elasticsearch_port           =   "";
-	
 	protected $elasticsearch_default_index  =   "";
-	
 	protected $elasticsearch_url            =   "";
-	
 	protected $elasticsearch_default_url    =   "";
+
 
 	public function __construct() {
 
 		parent::__construct();	
-		
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
-		
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
-		
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
-		
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
-		
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
-
 	}
 
 
 
-// 	{ "from": 0, 
-//  "size": 10, 
-//  "city":"mumbai",
-//  "category":"gyms",
-//  "min_time": 20.3,
-// "max_time":  6.15
-// }
+/*	
+{ "from": 0, 
+ "size": 10, 
+ "city":"mumbai",
+ "category":"gyms",
+ "min_time": 20.3,
+"max_time":  6.15
+}
+*/
 	public function getWorkoutsessions(){
 
 		$searchParams 				= 	array();
@@ -51,6 +41,16 @@ class SearchServicesController extends \BaseController {
 		$selectedfields 			= 	"";		
 		$from 						=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
+		$date 						=	(Input::json()->get('date')) ? Input::json()->get('date') : null;	
+
+		if($date == null){
+			$date 					= 	date('d-m-Y',strtotime($date));
+			$weekday 				= 	strtolower(date( "l", strtotime($date)));	
+		}else{
+			$weekday 				= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));
+			$date 					= 	(intval(date("H")) < 20 ) ? date('d-m-Y',strtotime( time() )) : date('d-m-Y',strtotime( '+1 day', time() )) ;
+		}
+		// return intval(date("H")). " - ".strtolower(date( "l", time() )) ." - ". $weekday;
 
 		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
 		$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
@@ -60,8 +60,8 @@ class SearchServicesController extends \BaseController {
 		$workout_intensity 			=	(Input::json()->get('workout_intensity')) ? strtolower(Input::json()->get('workout_intensity')) : '';			
 		$workout_tags 				=	(Input::json()->get('workout_tags')) ? strtolower(Input::json()->get('workout_tags')) : '';	
 
-		$min_time 					=	(Input::json()->get('min_time')) ? trim(strtolower(Input::json()->get('min_time'))) : '';		
-		$max_time 					=	(Input::json()->get('max_time')) ? trim(strtolower(Input::json()->get('max_time'))) : '';		
+		$min_time 					=	(Input::json()->get('min_time')) ? trim(strtolower(Input::json()->get('min_time'))) : intval(date("H")) + 1;		
+		$max_time 					=	(Input::json()->get('max_time')) ? trim(strtolower(Input::json()->get('max_time'))) : 24;		
 		$min_price 					=	(Input::json()->get('min_price')) ? trim(strtolower(Input::json()->get('min_price'))) : '';		
 		$max_price 					=	(Input::json()->get('max_price')) ? trim(strtolower(Input::json()->get('max_price'))) : '';		
 
@@ -73,26 +73,26 @@ class SearchServicesController extends \BaseController {
 		$workout_intensity_filter 	= 	($workout_intensity != '') ? '{"terms" : {  "workout_intensity": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_intensity'))).'"] }},'  : '';	
 		$workout_tags_filter 		= 	($workout_tags != '') ? '{"terms" : {  "workout_tags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_tags'))).'"] }},'  : '';
 
-
 		$time_range_filter			=  ($min_time != '' && $max_time != '') ? '{"range" : {"workoutsessionschedules.start_time_24_hour_format" : { "gte" : '.$min_time.',"lte": '.$max_time.'}} },'  : '';
 		$price_range_filter			=  ($min_price != '' && $max_price != '') ? '{"range" : {"workoutsessionschedules.price" : { "gte" : '.$min_price.',"lte": '.$max_price.'}} },'  : '';
+		$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekday.'"] } },'; 
 
 		$shouldfilter = $mustfilter = $workoutsesionfilter = '';
 		
 		//used for workout sesion, 	
-		if($time_range_filter != '' || $price_range_filter){			
-			$workoutsesion_filtervalue = trim($time_range_filter.$price_range_filter,',');	
+		if($weekday_filter != "" || $time_range_filter != '' || $price_range_filter){			
+			$workoutsesion_filtervalue = trim($weekday_filter.$time_range_filter.$price_range_filter,',');	
 
 			$workoutsesionfilter = '{
-              "nested": {
-                "filter": {
-                  "bool": {
-                    "must": ['.$workoutsesion_filtervalue.']
-                  }
-                },
-                "path": "workoutsessionschedules"
-              }
-            },';	
+				"nested": {
+					"filter": {
+						"bool": {
+							"must": ['.$workoutsesion_filtervalue.']
+						}
+					},
+					"path": "workoutsessionschedules"
+				}
+			},';	
 		}
 
 		//used for category, subcategory, location, offering, facilities and workout_intensity
@@ -100,7 +100,6 @@ class SearchServicesController extends \BaseController {
 			$must_filtervalue = trim($city_filter.$category_filter.$subcategory_filter.$location_filter.$workout_intensity_filter.$workout_tags_filter.$workoutsesionfilter,',');	
 			$mustfilter = '"must": ['.$must_filtervalue.']';		
 		}
-
 
 		if($shouldfilter != '' || $mustfilter != '' ){
 			$filtervalue = trim($shouldfilter.$mustfilter,',');	
@@ -125,7 +124,6 @@ class SearchServicesController extends \BaseController {
 		$query = '"match_all": {}';
 		$basecategory_score = '';		
 
-
 		$aggsval	= '{
 			"all_categories" : {
 				"global" : {}, 
@@ -149,6 +147,32 @@ class SearchServicesController extends \BaseController {
 						},
 						"aggs": {
 							"city_subcategories": { "terms": { "field": "subcategory", "size": 10000 } }
+						}
+					}
+				}
+			},
+			"all_workout_intensity" : {
+				"global" : {}, 
+				"aggs" : { 
+					"city_filter": {
+						"filter": { 
+							"terms": { "city": [ "'.$city.'" ] } 
+						},
+						"aggs": {
+							"city_workout_intensity": { "terms": { "field": "workout_intensity", "size": 10000 } }
+						}
+					}
+				}
+			},
+			"all_workout_tags" : {
+				"global" : {}, 
+				"aggs" : { 
+					"city_filter": {
+						"filter": { 
+							"terms": { "city": [ "'.$city.'" ] } 
+						},
+						"aggs": {
+							"city_workout_tags": { "terms": { "field": "workout_tags", "size": 10000 } }
 						}
 					}
 				}
@@ -182,6 +206,10 @@ class SearchServicesController extends \BaseController {
 			"partial_fields": {
 				"serviceinfo": {
 					"include": [
+					"_id",
+					"name",
+					"findername",
+					"finderslug",
 					"city",
 					"category",
 					"subcategory",
@@ -204,10 +232,13 @@ class SearchServicesController extends \BaseController {
 			);
 		
 		$search_results 	=	es_curl_request($request);
-		
-		return Response::json($search_results);
-	}
+		$response 		= 	[ 
+							'search_results' => json_decode($search_results,true), 
+							'weekday' => $weekday, 
+							'hour' => date("H"), 'min' => date("i") ];
 
+		return Response::json($response);
+	}
 
 
 // 	{ "from": 0, 
@@ -258,15 +289,15 @@ class SearchServicesController extends \BaseController {
 			$ratecard_filtervalue = trim($price_range_filter,',');	
 
 			$ratecardfilter = '{
-              "nested": {
-                "filter": {
-                  "bool": {
-                    "must": ['.$ratecard_filtervalue.']
-                  }
-                },
-                "path": "ratecard"
-              }
-            },';	
+				"nested": {
+					"filter": {
+						"bool": {
+							"must": ['.$ratecard_filtervalue.']
+						}
+					},
+					"path": "ratecard"
+				}
+			},';	
 		}
 
 		//used for category, subcategory, location, offering, facilities and workout_intensity

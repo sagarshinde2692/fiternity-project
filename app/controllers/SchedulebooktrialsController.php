@@ -457,6 +457,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$code								=	$booktrialid.str_random(8);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
 			$booktrialdata = array(
 				'booktrialid'					=>		$booktrialid,
@@ -494,7 +495,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_id'						=>		$device_id,
 				'booktrial_type'				=>		'auto',
 				'booktrial_actions'				=>		'call to confirm trial',
-				'source'						=>		'website'	
+				'source'						=>		'website',
+				'additional_info'				=>		$additional_info	
 				);
 
 			// return $this->customersms->bookTrial($booktrialdata);
@@ -543,7 +545,8 @@ if($trialbooked = true){
 
 	if($device_id != ''){
 		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			// $sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$sndBefore5HourNotificationCustomer					=	'';
 			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 		}
 	}
@@ -603,10 +606,6 @@ return Response::json($resp,200);
 
 		if(!isset($data['customer_email']) || $data['customer_email'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
-		}
-
-		if(!isset($data['fitcard_user']) || $data['fitcard_user'] == ''){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - fitcard_user");
 		}
 
 		if(!isset($data['customer_phone']) || $data['customer_phone'] == ''){
@@ -702,9 +701,11 @@ return Response::json($resp,200);
 			$code								=	$booktrialid.str_random(8);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+
 
 			$booktrialdata = array(
-				'booktrialid'					=>		$booktrialid,
+				'booktrialid'					=>		intval($booktrialid),
 				'premium_session' 				=>		$premium_session, 
 
 				'customer_id' 					=>		$customer_id, 
@@ -739,7 +740,8 @@ return Response::json($resp,200);
 				'device_id'						=>		$device_id,
 				'booktrial_type'				=>		'auto',
 				'booktrial_actions'				=>		'call to confirm trial',
-				'source'						=>		'website'	
+				'source'						=>		'website',
+				'additional_info'				=>		$additional_info	
 				);
 
 			// return $this->customersms->bookTrial($booktrialdata);
@@ -809,7 +811,8 @@ if($trialbooked = true){
 
 	if($device_id != ''){
 		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			// $sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$sndBefore5HourNotificationCustomer					=	'';
 			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 		}
 	}
@@ -931,6 +934,8 @@ return Response::json($resp,200);
 		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+ 
 		
 		$booktrialdata = array(
 			'premium_session' 		=>		$premium_session,
@@ -953,7 +958,8 @@ return Response::json($resp,200);
 			'going_status_txt'		=>		'not fixed',
 			'booktrial_type'		=>		'manual',
 			'booktrial_actions'		=>		'call to set up trial',
-			'source'				=>		'website'	
+			'source'				=>		'website',	
+			'additional_info'		=>		$additional_info
 			);
 
 		// return $booktrialdata;
@@ -1033,6 +1039,8 @@ return Response::json($resp,200);
 		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+
 		
 		$booktrialdata = array(
 			'premium_session' 		=>		$premium_session,	
@@ -1054,7 +1062,9 @@ return Response::json($resp,200);
 			'going_status_txt'		=>		'not fixed',
 			'booktrial_type'		=>		'2ndmanual',
 			'booktrial_actions'		=>		'call to set up trial',
-			'source'				=>		'website'
+			'source'				=>		'website',
+			'additional_info'		=>		$additional_info
+			
 			);
 
 		foreach ($finder_ids as $key => $finder_id) {
