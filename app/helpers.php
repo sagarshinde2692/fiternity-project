@@ -84,6 +84,7 @@ if (!function_exists('get_elastic_finder_document')) {
                 'coverimage'                    =>      (isset($data['coverimage'])) ? $data['coverimage'] : '',
                 'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
                 'commercial_type'               =>      (isset($data['commercial_type'])) ? $data['commercial_type'] : '',
+                'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
                 'fitternityno'                  =>      (isset($data['fitternityno'])) ? $data['fitternityno'] : '',
                 'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
                 'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
