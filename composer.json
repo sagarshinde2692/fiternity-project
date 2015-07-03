@@ -14,7 +14,9 @@
 		"davibennun/laravel-push-notification": "dev-master",
 		"aloha/twilio": "1.*",
 		"hernandev/hipchat-laravel": "1.0.*",
-		"aws/aws-sdk-php-laravel": "1.*"
+		"aws/aws-sdk-php-laravel": "1.*",
+		"guzzlehttp/guzzle": "6.0",
+		"anlutro/curl": "^0.6.2"
 	},
 	"autoload": {
 		"classmap": [
@@ -27,7 +29,7 @@
 			"app/mailers",
 			"app/sms",
 			"app/notification",
-			"app/notification"
+			"app/services"
 		]
 	},
 	"scripts": {

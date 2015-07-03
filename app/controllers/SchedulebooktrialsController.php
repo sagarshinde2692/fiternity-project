@@ -12,6 +12,8 @@ use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Sms\FinderSms as FinderSms;
 use App\Notification\CustomerNotification as CustomerNotification;
+use App\Services\Fitnessforce as Fitnessforce;
+use Carbon\Carbon;
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -21,8 +23,9 @@ class SchedulebooktrialsController extends \BaseController {
 	protected $customersms;
 	protected $findersms;
 	protected $customernotification;
+	protected $fitnessforce;
 
-	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification) {
+	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification, Fitnessforce $fitnessforce) {
 		//parent::__construct();	
 		date_default_timezone_set("Asia/Kolkata");
 		$this->customermailer			=	$customermailer;
@@ -30,6 +33,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$this->customersms 				=	$customersms;
 		$this->findersms 				=	$findersms;
 		$this->customernotification 	=	$customernotification;
+		$this->fitnessforce 	=	$fitnessforce;
 	}
 
 	/**
@@ -826,14 +830,30 @@ if($trialbooked = true){
 	$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
 	$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
 
+
 			//update queue ids for booktiral
 	$booktrial 		= 	Booktrial::findOrFail($booktrialid);
+
+	
 	$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
 		'customer_smsqueuedids' => $customer_sms_messageids,
 		'customer_notificationqueuedids' => $customer_notification_messageids,
 		'finder_emailqueuedids' => $finder_email_messageids, 
 		'finder_smsqueuedids' => $finer_sms_messageids
 		);
+
+	$fitness_force  = 	$this->bookTrialFintnessForce($booktrial,$finder);
+
+	if($fitness_force){
+		if($fitness_force['status'] == 200){
+			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+			$queueddata['fitness_force_appointment']['status'] = 200;
+			$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+		}else{
+			$queueddata['fitness_force_appointment'] = $fitness_force;
+		}
+	}
+
 	$trialbooked 	= 	$booktrial->update($queueddata);
 }
 
@@ -1055,6 +1075,33 @@ return Response::json($resp,200);
 		$resp 						= 	array('status' => 200,'message' => "Second Book a Trial");
 		return Response::json($resp,200);          
 
+	}
+
+	public function bookTrialFintnessForce($booktrial,$finder){
+
+		/*
+		Appointment Status
+		Booked​		:   [Appointment schedule by a member/enquiry.] 
+		Attended​	:	[Appointment attended by a member/enquiry.] 
+		No Show​		:  	[member/enquiry did not turned up on the appointment date .] 
+		Cancelled​	:­  	[Appointment cancelled by either member/enquiry or user.] 
+		*/
+
+		if($finder){
+			$data = [];
+			$data['authenticationkey'] = "F862975730294C0F82E24DD224A26890";
+			$data['trialowner'] = "AUTO";
+			$data['name'] = $booktrial->customer_name;
+			$data['mobileno'] = $booktrial->customer_phone; 
+			$data['emailaddress'] = $booktrial->customer_email;
+			$data['startdate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+			$data['enddate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+			$data['starttime'] = $booktrial->schedule_slot_start_time;
+			$data['endtime'] = $booktrial->schedule_slot_end_time;
+
+			return $this->fitnessforce->createAppointment($data);
+		}
+			return false;
 	}
 
 
