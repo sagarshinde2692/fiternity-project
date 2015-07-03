@@ -20,32 +20,26 @@ class FitmaniaController extends \BaseController {
 		$dealsofdays = [];
 		$dealsofdaycolleciton = [
 		['_id' => 1,
-		'name' => 'offer service1', 
+		'name' => ' service1 ', 
 		'description' => '20-15 Fitness Tardeo - Cross & Functional Training Classes Membership Fees, Rates, Reviews, Contact - Mumbai', 
 		'ordering' => 1, 
 		'finder_id' => 1
 		],
 		['_id' => 1,
-		'name' => 'offer service2', 
+		'name' => ' service2 ', 
 		'description' => '212 Jaywant industrial estate, 63 Tardeo road ,Mumbai - 34 Landmark- Diagonally opp. Sobo Central Mall near Haji Ali', 
 		'ordering' => 2, 
 		'finder_id' => 1
 		],
 		['_id' => 1,
-		'name' => 'offer service3', 
+		'name' => ' service3 ', 
 		'description' => 'Essar Fitness Andheri East,Mumbai - View address, contact number, membership fees, pictures, reviews & offers. Book free trial & buy membership  for Essar Fitness Andheri East', 
 		'ordering' => 3, 
 		'finder_id' => 1
 		],
-		['_id' => 1,'name' => 'offer service4', 
-		'description' => 'Neha Chandna Khar West,Mumbai - Diet for Weight Loss, Nutrition, Sports Nutrition, hypnotherapy. View contact number, fees, qualification, offers & reviews on Fitternity.com', 'ordering' => 4, 'finder_id' => 1],
-		['_id' => 1,'name' => 'offer service5', 
-		'description' => 'Max Power House Andheri East,Mumbai - View address, contact number, membership fees, pictures, reviews & offers. Book free trial & buy membership  for Max Power House Andheri East', 'ordering' => 5, 'finder_id' => 1],
-		['_id' => 1,'name' => 'offer service1', 
-		'description' => 'The Ultimate 6 Pack Fitness Hub Andheri East,Mumbai - View address, contact number, membership fees, pictures, reviews & offers. Book free trial & buy membership for The Ultimate 6 Pack Fitness Hub Andheri East', 'ordering' => 1, 'finder_id' => 1],
-		['_id' => 1,'name' => 'offer service2', 
-		'description' => 'Sangeet Abhinay Academy Andheri East,Mumbai - Dance Classes in Mumbai - for Zumba, Belly dancing, Hip Hop, Salsa, Ballet. View address, contact number, fees, pictures, videos, reviews & offers on Fitternity.com', 'ordering' => 2, 'finder_id' => 1],
-
+		['_id' => 1,'name' => ' service4 ', 
+		'description' => 'Neha Chandna Khar West,Mumbai - Diet for Weight Loss, Nutrition, Sports Nutrition, hypnotherapy. View contact number, fees, qualification, s & reviews on Fitternity.com', 'ordering' => 4, 'finder_id' => 1]
+		
 		];
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
