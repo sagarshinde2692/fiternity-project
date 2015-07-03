@@ -17,38 +17,14 @@ class FitmaniaController extends \BaseController {
 
 	public function getMockData(){
 
-		$dealsofdays = [];
-		$dealsofdaycolleciton = [
-		['_id' => 1,
-		'name' => ' service1 ', 
-		'description' => '20-15 Fitness Tardeo - Cross & Functional Training Classes Membership Fees, Rates, Reviews, Contact - Mumbai', 
-		'ordering' => 1, 
-		'finder_id' => 1
-		],
-		['_id' => 1,
-		'name' => ' service2 ', 
-		'description' => '212 Jaywant industrial estate, 63 Tardeo road ,Mumbai - 34 Landmark- Diagonally opp. Sobo Central Mall near Haji Ali', 
-		'ordering' => 2, 
-		'finder_id' => 1
-		],
-		['_id' => 1,
-		'name' => ' service3 ', 
-		'description' => 'Essar Fitness Andheri East,Mumbai - View address, contact number, membership fees, pictures, reviews & offers. Book free trial & buy membership  for Essar Fitness Andheri East', 
-		'ordering' => 3, 
-		'finder_id' => 1
-		],
-		['_id' => 1,'name' => ' service4 ', 
-		'description' => 'Neha Chandna Khar West,Mumbai - Diet for Weight Loss, Nutrition, Sports Nutrition, hypnotherapy. View contact number, fees, qualification, s & reviews on Fitternity.com', 'ordering' => 4, 'finder_id' => 1]
-		
-		];
+		$dealsofdays 			=	[];
+		$dealsofdaycolleciton 	=	Fitmaniadod::active()->orderBy('ordering','desc')->get()->toArray();
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
 			array_push($dealsofdays, $dealdata);
 		}
-
 		$responseData = [ 'dealsofday' => $dealsofdays ];
-
 		return Response::json($responseData, 200);
 	}
 
@@ -65,12 +41,17 @@ class FitmaniaController extends \BaseController {
 		$data = array(
 			'_id' => $item['_id'],
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+			'price' => (isset($item['price']) && $item['price'] != '') ? strtolower($item['price']) : "",
+			'special_price' => (isset($item['special_price']) && $item['special_price'] != '') ? strtolower($item['special_price']) : "",
+			'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
+			'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
 			'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
 			'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
+			'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-			'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'coverimage', 'city_id', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect')),
+			'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type')),
 			// 'city' => (isset($finderarr->city->name) && $finderarr->city->name != '') ? strtolower($finderarr->city->name) : "",
-			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : ""
+			// 'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : ""
 			);
 		return $data;
 
