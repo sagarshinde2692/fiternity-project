@@ -514,7 +514,7 @@ class CustomerController extends \BaseController {
 			    "iat" => Config::get('app.jwt.iat'),
 			    "nbf" => Config::get('app.jwt.nbf'),
 			    "exp" => Config::get('app.jwt.exp'),
-			    "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],'extra'=>array('mob'=>$mob,'location'=>$location))
+			    "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
 			);
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
