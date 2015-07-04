@@ -845,7 +845,7 @@ if($trialbooked = true){
 		'finder_smsqueuedids' => $finer_sms_messageids
 		);
 
-	$fitness_force  = 	$this->bookTrialFintnessForce($booktrial,$finder);
+	$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
 
 	if($fitness_force){
 		if($fitness_force['status'] == 200){
