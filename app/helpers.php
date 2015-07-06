@@ -107,10 +107,10 @@ if (!function_exists('get_elastic_finder_document')) {
                 'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
                 'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
                 );
-            return $postfields_data;
-        }catch(Swift_RfcComplianceException $exception){
-            Log::error($exception);
-            return [];
+return $postfields_data;
+}catch(Swift_RfcComplianceException $exception){
+    Log::error($exception);
+    return [];
         }//catch
 
     }
@@ -138,10 +138,15 @@ if (!function_exists('get_elastic_service_document')) {
 
                         if($value['weekday'] != '' && $val['start_time'] != '' && $val['start_time_24_hour_format'] != '' && $val['price'] != ''){
 
-                            $newslot = ['start_time' => $val['start_time'], 'start_time_24_hour_format' => floatval(number_format($val['start_time_24_hour_format'],2)), 'price' => intval($val['price']) , 'weekday' => $value['weekday']];
-
+                            $newslot = ['start_time' => $val['start_time'], 
+                            'start_time_24_hour_format' => floatval(number_format($val['start_time_24_hour_format'],2)), 
+                            'end_time' => $val['end_time'], 
+                            'end_time_24_hour_format' => floatval(number_format($val['end_time_24_hour_format'],2)), 
+                            'price' => intval($val['price']) , 
+                            'weekday' => $value['weekday']
+                            ];
+                            
                             array_push($slots, $newslot);
-
                         }
                     }
                 }
