@@ -748,35 +748,25 @@ $trialbooked = $booktrial->save();
 
 } catch(ValidationException $e){
 
-			// If booktrial query fail updates error message
-
+	// If booktrial query fail updates error message
 	$orderid 	=	(int) Input::json()->get('order_id');
-
 	$order 		= 	Order::findOrFail($orderid);
-
 	array_set($data, 'message', $e->getMessage());
-
 	$orderdata 	=	$order->update($data);
-
 	return array('status' => 500,'message' => $e->getMessage());
 }
 
 if($trialbooked = true){
 
 	$orderid 	=	(int) Input::json()->get('order_id');
-
 	$order 		= 	Order::findOrFail($orderid);
-
 	array_set($data, 'status', '1');
-
 	array_set($data, 'booktrial_id', intval($booktrialid));
-
 	$orderdata 	=	$order->update($data);
-
 
 	$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
-			//Send Instant (Email) To Customer & Finder
+	//Send Instant (Email) To Customer & Finder
 	$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
 	$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
 	$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
