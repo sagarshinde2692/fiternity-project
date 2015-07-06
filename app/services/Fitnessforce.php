@@ -7,9 +7,10 @@ use \GuzzleHttp\Client;
 Class Fitnessforce {
 
 
-    protected $base_uri = 'http://27.106.109.11:8088/fitnessForceApi/api/';
+    protected $base_uri = 'http://27.106.109.11:8088/FitnessForceApi/api/';
     protected $debug = false;
     protected $client;
+    protected $key = 'F862975730294C0F82E24DD224A26890';
 
 
     public function __construct() {
@@ -53,7 +54,7 @@ Class Fitnessforce {
         }
 
         $json = [];
-        $json['authenticationkey'] = "F862975730294C0F82E24DD224A26890";
+        $json['authenticationkey'] = $this->key;
         $json['trialowner'] = "AUTO";
         $json['name'] = $booktrial->customer_name;
         $json['mobileno'] = $booktrial->customer_phone; 
@@ -79,6 +80,33 @@ Class Fitnessforce {
         }catch (Exception $e) {
             $error = [  'status'=>400,
                         'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function getAppointmentStatus($appointmentid){
+
+        $url = 'Appointment?authenticationkey='.$this->key.'&appointmentid='.$appointmentid;
+
+        try {
+            $response = json_decode($this->client->get($url)->getBody()->getContents());
+            $return  = ['status'=>200,
+                        'data'=>(array) $response->success[0]
+            ];
+            return $return;
+        }catch (RequestException $e) {
+            $responce = $e->getResponse();
+            $error = [  'status'=>$responce->getStatusCode(),
+                        'message'=>$responce->getReasonPhrase()
+            ];
+
+            return $error;
+        }catch (Exception $e) {
+            $error = [  'status'=>400,
+                        'message'=>'Error'
             ];
 
             return $error;

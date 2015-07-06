@@ -1114,5 +1114,43 @@ return Response::json($resp,200);
 			return false;
 	}
 
+	public function updateAppointmentStatus(){
+
+		$date = date("d-m-Y");
+		$booktrail = Booktrial::where('schedule_date', '=', new DateTime($date))->get();
+		$response = [];
+
+		foreach ($booktrail as $key => $value) {
+			$fitness_force = $this->fitnessforce->getAppointmentStatus($value->fitness_force_appointment['appointmentid']);
+
+			if($fitness_force['status'] == 200){
+
+				$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+				$queueddata['fitness_force_appointment']['status'] = 200;
+				$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+
+				try{
+					$value->update($queueddata);
+					$response[$key] = [  	'status'=>200,
+                        			'message'=>'Sucessfull',
+                        			'id'=>$value->_id
+            		];
+				}catch(Exception $e){
+					$response[$key] = [  	'status'=>400,
+                        			'message'=>'Update error',
+                        			'id'=>$value->_id
+            		];
+				}
+
+			}else{
+				$response[$key] = $fitness_force ;
+				$response[$key]['id'] = $value->_id;
+			}
+
+		}
+
+		return Response::json($response,200);
+	}
+
 
 }
