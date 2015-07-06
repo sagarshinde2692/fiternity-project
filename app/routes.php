@@ -11,6 +11,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
 Route::get('/testcountrysms', function() { 
+	// return $items = Booktrial::find(5);
 
 	$user 			=	"chaitu87"; //your username
 	$password 		=	"564789123"; //your password
@@ -39,23 +40,14 @@ Route::get('/testcountrysms', function() {
 Route::get('/testsms', function() { 
 
 	$number = '9773348762';
-
 	$msg 	= 'test msg';
-
 	$sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
-	
 	$ci = curl_init();
-
 	curl_setopt($ci, CURLOPT_URL, $sms_url);
-
 	curl_setopt($ci, CURLOPT_HEADER, 0);
-
 	curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-
 	$response = curl_exec($ci);
-
 	curl_close($ci);
-
 	return $response;
 
 });

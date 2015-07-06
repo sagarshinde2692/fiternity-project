@@ -15,10 +15,18 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getMockData(){
+	public function getMockData($date = null){
 
+		$date 					=  	($date == null) ? Carbon::now() : $date;
+		$timestamp 				= 	strtotime($date);
 		$dealsofdays 			=	[];
-		$dealsofdaycolleciton 	=	Fitmaniadod::active()->orderBy('ordering','desc')->get()->toArray();
+
+		// $dealsofdaycolleciton 	=	Fitmaniadod::active()->where('offer_date', '=', new DateTime($date) )->orderBy('ordering','desc')->get()->toArray();
+		$dealsofdaycolleciton 	=	Fitmaniadod::active()
+												->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->orderBy('ordering','desc')->get()->toArray();
+
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
