@@ -10,8 +10,6 @@ Class Fitnessforce {
     protected $base_uri = 'http://27.106.109.11:8088/FitnessForceApi/api/';
     protected $debug = false;
     protected $client;
-    protected $key = 'F862975730294C0F82E24DD224A26890';
-
 
     public function __construct() {
 
@@ -53,8 +51,9 @@ Class Fitnessforce {
             return $error;
         }
 
+        $key = "F862975730294C0F82E24DD224A26890";
         $json = [];
-        $json['authenticationkey'] = $this->key;
+        $json['authenticationkey'] = $key;
         $json['trialowner'] = "AUTO";
         $json['name'] = $booktrial->customer_name;
         $json['mobileno'] = $booktrial->customer_phone; 
@@ -87,9 +86,12 @@ Class Fitnessforce {
 
     }
 
-    public function getAppointmentStatus($appointmentid){
+    public function getAppointmentStatus($booktrial){
 
-        $url = 'Appointment?authenticationkey='.$this->key.'&appointmentid='.$appointmentid;
+        $key = "F862975730294C0F82E24DD224A26890";
+        $appointmentid = $booktrial->fitness_force_appointment['appointmentid'];
+
+        $url = 'Appointment?authenticationkey='.$key.'&appointmentid='.$appointmentid;
 
         try {
             $response = json_decode($this->client->get($url)->getBody()->getContents());

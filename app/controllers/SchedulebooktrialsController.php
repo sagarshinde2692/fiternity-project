@@ -1117,11 +1117,11 @@ return Response::json($resp,200);
 	public function updateAppointmentStatus(){
 
 		$date = date("d-m-Y");
-		$booktrail = Booktrial::where('schedule_date', '=', new DateTime($date))->get();
+		$booktrail = Booktrial::with('finder')->where('schedule_date', '=', new DateTime($date))->get();
 		$response = [];
 
 		foreach ($booktrail as $key => $value) {
-			$fitness_force = $this->fitnessforce->getAppointmentStatus($value->fitness_force_appointment['appointmentid']);
+			$fitness_force = $this->fitnessforce->getAppointmentStatus($value);
 
 			if($fitness_force['status'] == 200){
 
