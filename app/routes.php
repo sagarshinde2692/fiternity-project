@@ -314,7 +314,6 @@ Route::post('generatefitcardcodorder',  array('as' => 'customer.generatefitcardc
 Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardtmporder','uses' => 'CustomerController@generateFitCardTmpOrder'));
 Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
-Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrial'));
 Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
 Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
 Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgotpasswordemail','uses' => 'CustomerController@forgotPasswordEmail'));
@@ -346,8 +345,6 @@ Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','us
 
 
 
-
-
 ##############################################################################
 /******************** USERS SECTION START HERE ***********************/
 Route::get('/experts', 'UsersController@getExperts');
@@ -375,9 +372,9 @@ Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersCon
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 
+
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
-
 
 
 
@@ -437,6 +434,7 @@ Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
 
 Route::get('updateserviceslug/', array('as' => 'service.updateserviceslug','uses' => 'ServiceController@updateSlug'));
 Route::get('servicedetail/{id}', array('as' => 'service.servicedetail','uses' => 'ServiceController@serviceDetail'));
+Route::get('servicecategorys', array('as' => 'service.servicecategorys','uses' => 'ServiceController@getServiceCategorys'));
 
 
 
@@ -457,7 +455,8 @@ Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
-
+// Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
+Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/
 ##############################################################################
@@ -491,9 +490,6 @@ Route::post('/landingpage/register', 'EmailSmsApiController@landingpageregister'
 Route::post('/offeravailed', 'EmailSmsApiController@offeravailed');
 Route::post('/fitcardbuy', 'EmailSmsApiController@fitcardbuy');
 Route::post('/not_able_to_find', 'EmailSmsApiController@not_able_to_find');
-
-
-
 Route::get('/email/testemail','EmailSmsApiController@testemail');
 
 
@@ -502,6 +498,8 @@ Route::post('/queue/push', function(){
 });
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
+
+
 
 
 ##############################################################################
@@ -513,4 +511,14 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
+
+
+
+##############################################################################
+/******************** FITMANIA SECTION START HERE *******************************/
+
+Route::get('/fitmania', 'FitmaniaController@getMockData');
+
+##############################################################################
+/******************** FITMANIA SECTION END HERE *******************************/
 

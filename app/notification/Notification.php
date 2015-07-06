@@ -12,37 +12,50 @@ abstract Class Notification {
 
 		if($delay == null){
 
-            $messageid = Queue::push(function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
+            try {
+                $messageid = Queue::push(function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
 
-                $job_id = $job->getJobId(); 
+                    $job_id = $job->getJobId(); 
+                    $msg = strip_tags($message);
+                    try{
+                        PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
+                    }catch(\Exception $e){
+                        // do nothing... php will ignore and continue    
+                    }
+                    $job->delete();  
 
-                $msg = strip_tags($message);
+                }, array(), 'pullapp');
 
-                PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
+                return $messageid;
 
-                $job->delete();  
+            } catch(\Exception $e){
+                // do nothing
+            }
 
-            }, array(), 'pullapp');
-
-            return $messageid;
 
         }else{
 
             $seconds    =   $this->getSeconds($delay);
 
-            $messageid  =   Queue::later($seconds, function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
+            try {
+                $messageid  =   Queue::later($seconds, function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
 
-                $job_id = $job->getJobId();
-                
-                $msg = strip_tags($message); 
+                    $job_id = $job->getJobId();
 
-                PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
+                    $msg = strip_tags($message); 
+                    try{
+                        PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
+                    }catch (\Exception $e){
+                        // do nothing... php will ignore and continue    
+                    }
+                    $job->delete();  
 
-                $job->delete();  
+                }, array(), 'pullapp');
 
-            }, array(), 'pullapp');
-            
-            return $messageid;
+                return $messageid;
+            } catch(\Exception $e){
+                // do nothing
+            }
         }
 
     }
@@ -55,7 +68,7 @@ abstract Class Notification {
      * @return int
      */
     protected function getSeconds($delay){
-        
+
         if ($delay instanceof DateTime){
             return max(0, $delay->getTimestamp() - $this->getTime());
         }

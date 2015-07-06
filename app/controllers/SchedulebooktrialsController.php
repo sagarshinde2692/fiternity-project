@@ -12,6 +12,8 @@ use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Sms\FinderSms as FinderSms;
 use App\Notification\CustomerNotification as CustomerNotification;
+use App\Services\Fitnessforce as Fitnessforce;
+use Carbon\Carbon;
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -21,8 +23,9 @@ class SchedulebooktrialsController extends \BaseController {
 	protected $customersms;
 	protected $findersms;
 	protected $customernotification;
+	protected $fitnessforce;
 
-	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification) {
+	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification, Fitnessforce $fitnessforce) {
 		//parent::__construct();	
 		date_default_timezone_set("Asia/Kolkata");
 		$this->customermailer			=	$customermailer;
@@ -30,6 +33,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$this->customersms 				=	$customersms;
 		$this->findersms 				=	$findersms;
 		$this->customernotification 	=	$customernotification;
+		$this->fitnessforce 	=	$fitnessforce;
 	}
 
 	/**
@@ -453,6 +457,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$code								=	$booktrialid.str_random(8);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
 			$booktrialdata = array(
 				'booktrialid'					=>		$booktrialid,
@@ -490,7 +495,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_id'						=>		$device_id,
 				'booktrial_type'				=>		'auto',
 				'booktrial_actions'				=>		'call to confirm trial',
-				'source'						=>		'website'	
+				'source'						=>		'website',
+				'additional_info'				=>		$additional_info	
 				);
 
 			// return $this->customersms->bookTrial($booktrialdata);
@@ -539,7 +545,8 @@ if($trialbooked = true){
 
 	if($device_id != ''){
 		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			// $sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$sndBefore5HourNotificationCustomer					=	'';
 			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 		}
 	}
@@ -599,10 +606,6 @@ return Response::json($resp,200);
 
 		if(!isset($data['customer_email']) || $data['customer_email'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
-		}
-
-		if(!isset($data['fitcard_user']) || $data['fitcard_user'] == ''){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - fitcard_user");
 		}
 
 		if(!isset($data['customer_phone']) || $data['customer_phone'] == ''){
@@ -698,9 +701,11 @@ return Response::json($resp,200);
 			$code								=	$booktrialid.str_random(8);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+
 
 			$booktrialdata = array(
-				'booktrialid'					=>		$booktrialid,
+				'booktrialid'					=>		intval($booktrialid),
 				'premium_session' 				=>		$premium_session, 
 
 				'customer_id' 					=>		$customer_id, 
@@ -735,7 +740,8 @@ return Response::json($resp,200);
 				'device_id'						=>		$device_id,
 				'booktrial_type'				=>		'auto',
 				'booktrial_actions'				=>		'call to confirm trial',
-				'source'						=>		'website'	
+				'source'						=>		'website',
+				'additional_info'				=>		$additional_info	
 				);
 
 			// return $this->customersms->bookTrial($booktrialdata);
@@ -805,7 +811,8 @@ if($trialbooked = true){
 
 	if($device_id != ''){
 		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			// $sndBefore5HourNotificationCustomer					=	$this->customernotification->bookTrialReminderBefore5Hour($booktrialdata, $delayReminderTimeBefore5Hour);
+			$sndBefore5HourNotificationCustomer					=	'';
 			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 		}
 	}
@@ -826,14 +833,30 @@ if($trialbooked = true){
 	$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
 	$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
 
+
 			//update queue ids for booktiral
 	$booktrial 		= 	Booktrial::findOrFail($booktrialid);
+
+	
 	$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
 		'customer_smsqueuedids' => $customer_sms_messageids,
 		'customer_notificationqueuedids' => $customer_notification_messageids,
 		'finder_emailqueuedids' => $finder_email_messageids, 
 		'finder_smsqueuedids' => $finer_sms_messageids
 		);
+
+	$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
+
+	if($fitness_force){
+		if($fitness_force['status'] == 200){
+			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+			$queueddata['fitness_force_appointment']['status'] = 200;
+			$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+		}else{
+			$queueddata['fitness_force_appointment'] = $fitness_force;
+		}
+	}
+
 	$trialbooked 	= 	$booktrial->update($queueddata);
 }
 
@@ -911,6 +934,8 @@ return Response::json($resp,200);
 		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+ 
 		
 		$booktrialdata = array(
 			'premium_session' 		=>		$premium_session,
@@ -933,7 +958,8 @@ return Response::json($resp,200);
 			'going_status_txt'		=>		'not fixed',
 			'booktrial_type'		=>		'manual',
 			'booktrial_actions'		=>		'call to set up trial',
-			'source'				=>		'website'	
+			'source'				=>		'website',	
+			'additional_info'		=>		$additional_info
 			);
 
 		// return $booktrialdata;
@@ -1013,6 +1039,8 @@ return Response::json($resp,200);
 		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+
 		
 		$booktrialdata = array(
 			'premium_session' 		=>		$premium_session,	
@@ -1034,7 +1062,9 @@ return Response::json($resp,200);
 			'going_status_txt'		=>		'not fixed',
 			'booktrial_type'		=>		'2ndmanual',
 			'booktrial_actions'		=>		'call to set up trial',
-			'source'				=>		'website'
+			'source'				=>		'website',
+			'additional_info'		=>		$additional_info
+			
 			);
 
 		foreach ($finder_ids as $key => $finder_id) {
@@ -1055,6 +1085,71 @@ return Response::json($resp,200);
 		$resp 						= 	array('status' => 200,'message' => "Second Book a Trial");
 		return Response::json($resp,200);          
 
+	}
+
+	public function bookTrialFintnessForce($booktrial,$finder){
+
+		/*
+		Appointment Status
+		Booked​		:   [Appointment schedule by a member/enquiry.] 
+		Attended​	:	[Appointment attended by a member/enquiry.] 
+		No Show​		:  	[member/enquiry did not turned up on the appointment date .] 
+		Cancelled​	:­  	[Appointment cancelled by either member/enquiry or user.] 
+		*/
+
+		if($finder){
+			$data = [];
+			$data['authenticationkey'] = "F862975730294C0F82E24DD224A26890";
+			$data['trialowner'] = "AUTO";
+			$data['name'] = $booktrial->customer_name;
+			$data['mobileno'] = $booktrial->customer_phone; 
+			$data['emailaddress'] = $booktrial->customer_email;
+			$data['startdate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+			$data['enddate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+			$data['starttime'] = $booktrial->schedule_slot_start_time;
+			$data['endtime'] = $booktrial->schedule_slot_end_time;
+
+			return $this->fitnessforce->createAppointment($data);
+		}
+			return false;
+	}
+
+	public function updateAppointmentStatus(){
+
+		$date = date("d-m-Y");
+		$booktrail = Booktrial::with('finder')->where('schedule_date', '=', new DateTime($date))->get();
+		$response = [];
+
+		foreach ($booktrail as $key => $value) {
+			$fitness_force = $this->fitnessforce->getAppointmentStatus($value);
+
+			if($fitness_force['status'] == 200){
+
+				$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+				$queueddata['fitness_force_appointment']['status'] = 200;
+				$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+
+				try{
+					$value->update($queueddata);
+					$response[$key] = [  	'status'=>200,
+                        			'message'=>'Sucessfull',
+                        			'id'=>$value->_id
+            		];
+				}catch(Exception $e){
+					$response[$key] = [  	'status'=>400,
+                        			'message'=>'Update error',
+                        			'id'=>$value->_id
+            		];
+				}
+
+			}else{
+				$response[$key] = $fitness_force ;
+				$response[$key]['id'] = $value->_id;
+			}
+
+		}
+
+		return Response::json($response,200);
 	}
 
 
