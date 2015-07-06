@@ -291,9 +291,9 @@ class ElasticsearchController extends \BaseController {
 							->with('facilities')
 							->active()
 							->orderBy('_id')
-				            // ->take(3000)
-				            // ->take(3000)->skip(0)
-				            ->take(3000)->skip(3000)
+				            // ->take(1)
+				            ->take(3000)->skip(0)
+				            // ->take(3000)->skip(3000)
 							->get();
 			break;
 
@@ -377,7 +377,7 @@ class ElasticsearchController extends \BaseController {
                                                                     ->where('_id', intval($data['finder_id']) )
                                                                     ->get(array('_id', 'title', 'slug', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location'))->first();
 				array_set($data, 'finder', $finder);
-            	// return Response::json($data);
+            	return Response::json($data);
 
 				$posturl 						=	$this->elasticsearch_url."fitternity/service/".$data['_id'];	
 				$postdata 						= 	get_elastic_service_document($data);
