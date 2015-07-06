@@ -20,9 +20,38 @@ class OrderController extends \BaseController {
 
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
-		$this->ordertypes 		= 	array('memberships','booktrials');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday');
 	}
 
+
+	//capture order status for customer
+	public function captureOrderStatus(){
+
+		$data		=	Input::json()->all();
+		if(empty($data['order_id'])){
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
+		}
+
+		if(empty($data['status'])){
+			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
+		}
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		if(Input::json()->get('status') == 'success'){
+			array_set($data, 'status', '1');
+			$orderdata 	=	$order->update($data);
+			//send welcome email to payment gateway customer
+			$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+			//SEND COD SMS TO CUSTOMER
+			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
+			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+			return Response::json($resp);
+		}
+
+		$orderdata 		=	$order->update($data);
+		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+		return Response::json($resp);
+	}
 
 	//create cod order for customer
 	public function generateCodOrder(){
@@ -131,7 +160,8 @@ class OrderController extends \BaseController {
 	public function generateTmpOrder(){
 
 		$data			=	Input::json()->all();
-		// must add customer id after hull if its guest user keep one guest user 
+
+
 
 		if(empty($data['customer_name'])){
 			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
@@ -206,6 +236,10 @@ class OrderController extends \BaseController {
 
 		$orderid 			=	Order::max('_id') + 1;
 		$data 				= 	Input::json()->all();
+
+		// $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
+		// array_set($data, 'customer_id', intval($customer_id));
+		
 		array_set($data, 'status', '0');
 		array_set($data, 'payment_mode', 'paymentgateway');
 		$order 				= 	new Order($data);
@@ -215,38 +249,6 @@ class OrderController extends \BaseController {
 		return Response::json($resp);
 
 	}
-
-
-
-	//capture order status for customer
-	public function captureOrderStatus(){
-
-		$data		=	Input::json()->all();
-		if(empty($data['order_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
-		}
-
-		if(empty($data['status'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
-		}
-		$orderid 	=	(int) Input::json()->get('order_id');
-		$order 		= 	Order::findOrFail($orderid);
-		if(Input::json()->get('status') == 'success'){
-			array_set($data, 'status', '1');
-			$orderdata 	=	$order->update($data);
-			//send welcome email to payment gateway customer
-			$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
-			//SEND COD SMS TO CUSTOMER
-			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
-			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
-			return Response::json($resp);
-		}
-
-		$orderdata 		=	$order->update($data);
-		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
-		return Response::json($resp);
-	}
-
 
 	public function captureFailOrders(){
 
@@ -262,6 +264,22 @@ class OrderController extends \BaseController {
 		$orderdata 	=	$order->update($data);
 		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
 		return Response::json($resp);
+	}
+
+
+	public function autoRegisterCustomer($data){
+
+		$customerdata 	= 	$data;
+		$customer 		= 	Customer::active()->where('email', $customerdata['customer_email'])->first();
+		// $customerarr 	= 	$customer->toArray();
+		// if(!$customer) {
+			
+		// } else {
+		// 		// return $customer->_id;
+		// }  
+		return "buyDealOfDay";
+
+
 	}
 
 

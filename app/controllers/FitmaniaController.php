@@ -65,4 +65,12 @@ class FitmaniaController extends \BaseController {
 
 	}
 
+
+
+
+	public function buyDealOfDay(){
+
+		return "buyDealOfDay";
+	}
+
 }
