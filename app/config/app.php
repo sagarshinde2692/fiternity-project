@@ -212,6 +212,9 @@ return array(
    
 	
 	'elasticsearch_port' 			=> 	9200,
+	'elasticsearch_host_new' 			=> 	'54.169.120.141',
+
+	//old
 	'elasticsearch_host' 			=> 	'54.179.134.14',
 	//'elasticsearch_host' 			=> 	'localhost',
 	//'elasticsearch_default_index' 	=> 	'fitternity'

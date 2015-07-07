@@ -168,11 +168,9 @@ if (!function_exists('get_elastic_service_document')) {
         }
 
         if(isset($data['lat']) && $data['lat'] != '' && isset($data['lon']) && $data['lon'] != ''){
-
             $geolocation = array('lat' => $data['lat'],'lon' => $data['lon']);
 
         }elseif(isset($data['finder']['lat']) && $data['finder']['lat'] != '' && isset($data['finder']['lon']) && $data['finder']['lon'] != ''){
-
             $geolocation = array('lat' => $data['finder']['lat'], 'lon' => $data['finder']['lon']);
 
         }else{
@@ -190,8 +188,11 @@ if (!function_exists('get_elastic_service_document')) {
             'subcategory_snow'              =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "", 
 
             'geolocation'                   =>      $geolocation,
+            'finder_id'                     =>      $data['finder_id'],
             'findername'                     =>      (isset($data['finder']['title']) && $data['finder']['title'] != '') ? strtolower($data['finder']['title']) : "", 
             'findername_snow'                =>      (isset($data['finder']['title']) && $data['finder']['title'] != '') ? strtolower($data['finder']['title']) : "", 
+            'commercial_type'               =>       (isset($data['finder']['commercial_type']) && $data['finder']['commercial_type'] != '') ? strtolower($data['finder']['commercial_type']) : "", 
+            'commercial_type_snow'          =>      (isset($data['finder']['commercial_type']) && $data['finder']['commercial_type'] != '') ? strtolower($data['finder']['commercial_type']) : "", 
             'finderslug'                     =>      (isset($data['finder']['slug']) && $data['finder']['slug'] != '') ? strtolower($data['finder']['slug']) : "", 
             'finderslug_snow'                =>      (isset($data['finder']['slug']) && $data['finder']['slug'] != '') ? strtolower($data['finder']['slug']) : "", 
             'location'                      =>      (isset($data['finder']['location']['name']) && $data['finder']['location']['name'] != '') ? strtolower($data['finder']['location']['name']) : "", 
