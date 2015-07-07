@@ -121,8 +121,9 @@ public function getWorkoutsessions(){
 
 	$aggsval	= '{
 		"all_categories": {
+			"global" : {}, 
 			"aggs": {
-				"category_filter": {
+				"city_filter": {
 					"filter": { "terms": { "city": [ "'.$city.'" ] } },
 					"aggs": {
 						"city_categories": {
@@ -133,8 +134,9 @@ public function getWorkoutsessions(){
 			}
 		},
 		"all_subcategories": {
+			"global" : {}, 
 			"aggs": {
-				"city_filter": {
+				"category_filter": {
 					"filter": { "terms": { "category": [ "'.$category.'" ] } },
 					"aggs": {
 						"city_subcategories": {
