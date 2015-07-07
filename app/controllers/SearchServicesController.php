@@ -123,7 +123,7 @@ public function getWorkoutsessions(){
 		"all_categories": {
 			"aggs": {
 				"category_filter": {
-					"filter": { "terms": { "category": [ "'.$category.'" ] } },
+					"filter": { "terms": { "city": [ "'.$city.'" ] } },
 					"aggs": {
 						"city_categories": {
 							"terms": { "field": "category", "size": 10000 }
@@ -135,7 +135,7 @@ public function getWorkoutsessions(){
 		"all_subcategories": {
 			"aggs": {
 				"city_filter": {
-					"filter": { "terms": { "city": [ "'.$city.'" ] } },
+					"filter": { "terms": { "category": [ "'.$category.'" ] } },
 					"aggs": {
 						"city_subcategories": {
 							"terms": { "field": "subcategory", "size": 10000  }
