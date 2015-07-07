@@ -27,7 +27,6 @@
 			"app/mailers",
 			"app/sms",
 			"app/notification",
-			"app/notification",
 			"app/services"
 		]
 	},

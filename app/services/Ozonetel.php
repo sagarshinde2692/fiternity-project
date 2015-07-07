@@ -1,4 +1,4 @@
-<?php
+<?php namespace App\Services ;
 
 /*
   Copyright (c) 2010-2011 Ozonetel Pvt Ltd.
@@ -28,7 +28,7 @@
 // VERSION: 1.0
 // KooKoo Php Libraries
 // ========================================================================
-class Response {
+class Ozonetel {
 
     private $doc;
     private $response;
@@ -222,7 +222,7 @@ class Response {
 
 }
 
-class CollectDtmf {
+/*class CollectDtmf {
 
     private $doc;
     private $collect_dtmf;
@@ -298,6 +298,6 @@ class CollectDtmf {
         return $this->collect_dtmf;
     }
 
-}
+}*/
 
 ?>

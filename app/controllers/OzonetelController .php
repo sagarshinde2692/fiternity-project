@@ -7,7 +7,7 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
-use App\Servies\Ozonetel as Ozonetel;
+use App\Services\Ozonetel as Ozonetel;
 
 
 class OzonetelController extends \BaseController {
