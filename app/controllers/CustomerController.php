@@ -420,34 +420,41 @@ class CustomerController extends \BaseController {
 
 		if($data['identity'] == 'facebook'){
 
-			$rules = [
-			    'facebook_id' => 'required'
-			];
+			if(isset($data['email']) && !empty($data['email'])){
 
-			$validator = Validator::make($data = Input::json()->all(),$rules);
-
-			if($validator->fails()) {
-				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-	        }else{
-
-				$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
-
-				if(empty($customer)){
-					return array('status' => 401,'message' =>array('facebook_id'=>'facebook user not present'));
-				}
-			}
-
-			$rules = [
-				    'email' => 'required|email'
+				$rules = [
+				    'email' => 'email',
+				    'facebook_id' => 'required'
 				];
 
-			$validator = Validator::make($data = Input::json()->all(),$rules);
+				$validator = Validator::make($data = Input::json()->all(),$rules);
 
-			if($validator->fails()) {
-				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-	        }
+				if($validator->fails()) {
+					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+		        }
 
-	        $customer = Customer::where('email','=',$data['email'])->first();
+		        $customer = Customer::where('email','=',$data['email'])->first();
+
+			}else{
+
+				$rules = [
+			    	'facebook_id' => 'required'
+				];
+
+				$validator = Validator::make($data = Input::json()->all(),$rules);
+
+				if($validator->fails()) {
+					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+		        }else{
+
+					$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+
+					if(empty($customer)){
+						return array('status' => 401,'message' => 'email is missing');
+					}
+				}
+			}
+			
 	    }else{
 
 	    	$rules = [
@@ -492,7 +499,7 @@ class CustomerController extends \BaseController {
 		}
 
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
-        	$cusotmer->facebook_id = $data['facebook_id'];
+        	$customer->facebook_id = $data['facebook_id'];
         }
 
 		$customer->last_visited = Carbon::now();
