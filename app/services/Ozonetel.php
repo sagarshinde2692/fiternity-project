@@ -28,6 +28,9 @@
 // VERSION: 1.0
 // KooKoo Php Libraries
 // ========================================================================
+
+  use \DOMDocument;
+  
 class Ozonetel {
 
     private $doc;
