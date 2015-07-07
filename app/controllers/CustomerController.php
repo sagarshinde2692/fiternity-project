@@ -417,17 +417,51 @@ class CustomerController extends \BaseController {
 	}
 
 	public function socialLogin($data){
-		$rules = [
-			    'email' => 'required|email'
+
+		if($data['identity'] == 'facebook'){
+
+			$rules = [
+			    'facebook_id' => 'required'
 			];
 
-		$validator = Validator::make($data = Input::json()->all(),$rules);
+			$validator = Validator::make($data = Input::json()->all(),$rules);
 
-		if($validator->fails()) {
-			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-        }
+			if($validator->fails()) {
+				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+	        }else{
 
-        $customer = Customer::where('email','=',$data['email'])->first();
+				$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+
+				if(empty($customer)){
+					return array('status' => 401,'message' =>array('facebook_id'=>'facebook user not present'));
+				}
+			}
+
+			$rules = [
+				    'email' => 'required|email'
+				];
+
+			$validator = Validator::make($data = Input::json()->all(),$rules);
+
+			if($validator->fails()) {
+				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+	        }
+
+	        $customer = Customer::where('email','=',$data['email'])->first();
+	    }else{
+
+	    	$rules = [
+				    'email' => 'required|email'
+				];
+
+			$validator = Validator::make($data = Input::json()->all(),$rules);
+
+			if($validator->fails()) {
+				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+	        }
+
+	        $customer = Customer::where('email','=',$data['email'])->first();
+	    }
 
 		if(empty($customer)){
 			$socialRegister = $this->socialRegister($data);
@@ -448,6 +482,7 @@ class CustomerController extends \BaseController {
 				$this->customermailer->register($customer_data);
 			}
 		}
+		
 
 		if($customer['account_link'][$data['identity']] != 1)
 		{
