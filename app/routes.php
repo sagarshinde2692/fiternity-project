@@ -15,14 +15,14 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 
 Route::get('/testfinder', function() { 
 
-	// $items = Finder::active()->get(array('slug','_id'));
-	// $data = array();
+	$items = Finder::active()->get();
+	$data = array();
 
-	// foreach ($items as $item) {  
-	// 	$data = $item->toArray();
-	// 	$capture = Capture::findOrFail($data['_id']);
-	// 	echo $response = $capture->update($data);
-	// }
+	foreach ($items as $item) {  
+		$data = $item->toArray();
+		$capture = Finder::findOrFail($data['_id']);
+		echo $response = $capture->update($data);
+	}
 
 	// $request = array('url' => "http://a1.fitternity.com/finderdetail/your-fitness-club-borivali-west", 'method' => 'GET' );
 	// $response 	=	es_curl_request($request);

@@ -16,6 +16,10 @@ class Servicecategory extends \Basemodel{
 		'name' => 'required'
 		);
 
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+	
 	public function categoryservices(){
 
 		return $this->hasMany('Service','servicecategory_id');

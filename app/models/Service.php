@@ -21,7 +21,10 @@ class Service extends \Basemodel{
 
 	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays');
 
-
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+	
 	public function getActiveWeekdaysAttribute(){
 
 		$activedays 		= 	array();

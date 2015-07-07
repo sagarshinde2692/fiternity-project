@@ -25,6 +25,10 @@ class Finder extends  \Basemodel {
 	];
 
 
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+
 	public function user(){
 		return $this->belongsTo('User');
 	}
