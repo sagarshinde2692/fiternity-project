@@ -395,6 +395,7 @@ Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','us
 Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
 Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
 
+
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
 
@@ -415,6 +416,7 @@ Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
 
 Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
 Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
+Route::post('/getnearbytrials', 'SearchServicesController@geoLocationService');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
