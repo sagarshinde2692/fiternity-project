@@ -22,11 +22,11 @@ class SearchController extends \BaseController {
 		
 		parent::__construct();	
 		
-		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
 		
-		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/';
+		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
 		
-		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host_new');
+		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
 		
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
 		
@@ -1010,10 +1010,10 @@ class SearchController extends \BaseController {
 		} 
 
 		$resp  = 	array(
-			'meta_title' => $meta_title,
-			'meta_description' => $meta_description,
-			'meta_keywords' => $meta_keywords,
-			'finder_leftside' => $finder_leftside,									
+			// 'meta_title' => $meta_title,
+			// 'meta_description' => $meta_description,
+			// 'meta_keywords' => $meta_keywords,
+			// 'finder_leftside' => $finder_leftside,									
 			'search_results' => json_decode($search_results,true),
 			);
 
