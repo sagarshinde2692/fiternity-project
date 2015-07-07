@@ -15,6 +15,26 @@ if (!function_exists('print_pretty')) {
     }
 }
 
+
+
+/**
+ * Clear Cache
+ * @param str $str
+ * @return str
+ */
+if (!function_exists('clear_cache')) {
+    function clear_cache($url) {
+
+
+        $finalurl = Config::get('app.apiurl').strtolower($url);
+
+        $request = array( 'url' => $finalurl, 'method' => 'GET' );
+
+        return es_curl_request($request);
+    }
+}
+
+
 /**
  * URL Slug
  * @param str $str
@@ -66,6 +86,7 @@ if (!function_exists('get_elastic_finder_document')) {
     function get_elastic_finder_document($finderdata = array()) {
 
         $data = $finderdata;
+
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
@@ -108,10 +129,11 @@ if (!function_exists('get_elastic_finder_document')) {
                 'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
                 'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
                 );
-return $postfields_data;
-}catch(Swift_RfcComplianceException $exception){
-    Log::error($exception);
-    return [];
+
+                return $postfields_data;
+        }catch(Swift_RfcComplianceException $exception){
+            Log::error($exception);
+            return [];
         }//catch
 
     }

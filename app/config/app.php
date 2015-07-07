@@ -13,6 +13,7 @@ return array(
 	|
 	*/
 
+
 	'debug' => FALSE,
 	
 	/*
@@ -26,7 +27,8 @@ return array(
 	|
 	*/
 
-	'url' => 'http://a1.fitternity.com',
+	// 'url' => 'http://a1.fitternity.com',
+	'url' => 'http://apistg.fitn.in/',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -221,5 +223,20 @@ return array(
 	//'elasticsearch_host' 			=> 	'ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com',
 	'elasticsearch_default_index' 	=> 	'fitternity',
 	'elasticsearch_default_type' 	=> 	'finder',
+
+	'jwt' => array(
+		'key' => 'fitternity', //secret key to encode token
+		'iat' => time(), // time when token is created
+		'nbf' => time()+10, // time when token can be used from
+		'exp' => time()+(86400*365), // time when token gets expired (1 year)
+		'alg' => 'HS256',
+	),
+
+	'forgot_password' => array(
+		'key' => 'fitternity', //secret key to encode token
+		'iat' => time(), // time when token is created
+		'exp' => time()+86400, // time when token gets expired (1 day)
+		'alg' => 'HS256',
+	),
     
 );

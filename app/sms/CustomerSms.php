@@ -152,6 +152,13 @@ Class CustomerSms extends VersionNextSms{
 		return $this->sendTo($to, $message);
 	}
 
+	public function forgotPasswordApp ($data){
 
+		$to 		=  	array_merge(explode(',', $data['contact_no']));
+		
+		$message 	=	"Hello ".ucwords($data['name']).", The authorisation code required for resetting your password on Fitternity is ".$data['otp'] ;
+
+		return $this->sendTo($to, $message);
+	}
 
 }

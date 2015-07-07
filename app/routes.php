@@ -9,9 +9,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 
-
 Route::get('/', function() { return "laravel 4.2 goes here....";});
-
 
 Route::get('/testfinder', function() { 
 
@@ -86,7 +84,6 @@ Route::get('/capturedata', function() {
 
 	$items = Capture::get();
 	$data = array();
-
 	foreach ($items as $item) {  
 		$data = $item->toArray();
 		$capture = Capture::findOrFail($data['_id']);
@@ -323,6 +320,22 @@ Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardt
 Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
 
+Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
+Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
+Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgotpasswordemail','uses' => 'CustomerController@forgotPasswordEmail'));
+Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpassword','uses' => 'CustomerController@forgotPassword'));
+Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
+Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp','uses' => 'CustomerController@validateOtp'));
+
+Route::group(array('before' => 'validatetoken'), function() {
+
+	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
+	Route::post('customerresetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
+	Route::get('customerlogout', array('as' => 'customer.validatetokencustomerlogout','uses' => 'CustomerController@customerLogout'));
+	Route::post('customerupdate', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
+
+});
+
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -366,6 +379,9 @@ Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton'
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 
+Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
+Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
+Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -379,6 +395,8 @@ Route::get('blogdetail/{slug}', array('as' => 'blogs.blogdetail','uses' => 'Blog
 Route::get('/blogs/{cat}', 'BlogsController@getCategoryBLogs');
 Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 Route::post('/getblogrelatedfinder', 'BlogsController@getblogRelatedFinder');
+Route::post('addcomment', array('as' => 'blogs.addcomment','uses' => 'BlogsController@addComment'));
+Route::get('getblogcomment/{slug}', array('as' => 'blogs.getblogcomment','uses' => 'BlogsController@getBlogComment'));
 
 /******************** BLOGS SECTION END HERE ********************/
 ##############################################################################
