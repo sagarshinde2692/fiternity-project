@@ -433,7 +433,7 @@ class CustomerController extends \BaseController {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		        }
 
-		        $customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+		        $customer = Customer::where('email','=',$data['email'])->first();
 
 			}else{
 
