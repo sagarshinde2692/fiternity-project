@@ -15,7 +15,7 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 
 Route::get('/testfinder', function() { 
 
-	$items = Finder::active()->get();
+	$items = Finder::active()->take(3000)->skip(0)->get();
 	$data = array();
 
 	foreach ($items as $item) {  
