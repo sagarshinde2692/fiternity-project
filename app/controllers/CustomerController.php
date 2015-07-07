@@ -287,7 +287,7 @@ class CustomerController extends \BaseController {
 		    'email' => 'required|email|max:255',
 		    'password' => 'required|min:6|max:20|confirmed',
 		    'password_confirmation' => 'required|min:6|max:20',
-		    'contact_no' => 'size:10',
+		    'contact_no' => 'max:15',
 		    'identity' => 'required'
 		];
         $validator = Validator::make($data,$rules);
@@ -765,14 +765,12 @@ class CustomerController extends \BaseController {
 	public function customerLogout(){
 
 		$jwt_token = Request::header('Authorization');
-		$jwt_key = Config::get('app.jwt.key');
-        $jwt_alg = Config::get('app.jwt.alg');
-		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-		$expiry_time_minutes = (int)round(($decoded->exp - time())/60);
+		$decodedToken = $this->customerTokenDecode($jwt_token);
+		$expiry_time_minutes = (int)round(($decodedToken->exp - time())/60);
 
-		Cache::tags('blacklist_customer_token')->put($jwt_token,$decoded->customer->email,$expiry_time_minutes);
+		Cache::tags('blacklist_customer_token')->put($jwt_token,$decodedToken->customer->email,$expiry_time_minutes);
 
-		return Response::json(array('status' => 200,'message' => 'logged out'),200);
+		return Response::json(array('status' => 200,'message' => 'logged out successfull'),200);
 	}
 
 	public function errorMessage($errors){
@@ -784,4 +782,54 @@ class CustomerController extends \BaseController {
 		}
 		return $message;
 	}
+
+	public function customerUpdate(){
+
+		$jwt_token = Request::header('Authorization');
+		$decodedToken = $this->customerTokenDecode($jwt_token);
+		$variable = ['name','email','contact_no','location'];
+
+		$data = Input::json()->all();
+		$validator = Validator::make($data, Customer::$update_rules);
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' =>$this->errorMessage($validator->errors())),400);
+		}
+
+		if(isset($data['email']) && !empty($data['email'])){
+			$customer = Customer::where('email','=',$data['email'])->where('_id','!=',(int) $decodedToken->customer->_id)->first();
+
+			if(!empty($customer)){
+				return Response::json(array('status' => 400,'message' =>array(''=>'Email already exists')),400);
+			}
+		}
+
+		$customer_data = [];
+
+		foreach ($variable as $value) {
+			if(array_key_exists($value, $data)){
+				$customer_data[$value] = $data[$value];
+			}
+		}
+
+		$customer = Customer::find((int) $decodedToken->customer->_id);
+		if(!empty($customer_data)){
+			$customer->update($customer_data);
+			$message = implode(', ', array_keys($customer_data)) ;
+			return Response::json(array('status' => 200,'message' => $message.' updated successfull'),200);
+		}
+		
+		return Response::json(array('status' => 400,'message' => 'customer data empty'),400);
+	}
+
+	public function customerTokenDecode($token){
+
+		$jwt_token = $token;
+		$jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		return $decodedToken;
+	}
+
 }
