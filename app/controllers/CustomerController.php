@@ -491,8 +491,9 @@ class CustomerController extends \BaseController {
 			$customer->account_link = $account_link;
 		}
 
+		//echo"<pre>";print_r($customer);exit;
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
-        	$cusotmer->facebook_id = $data['facebook_id'];
+        	$customer->facebook_id = $data['facebook_id'];
         }
 
 		$customer->last_visited = Carbon::now();
@@ -528,7 +529,7 @@ class CustomerController extends \BaseController {
 	        $customer->account_link = $account_link;
 
 	        if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
-	        	$cusotmer->facebook_id = $data['facebook_id'];
+	        	$customer->facebook_id = $data['facebook_id'];
 	        }
 
 	        $customer->status = "1";
