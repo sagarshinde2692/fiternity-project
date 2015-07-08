@@ -15,19 +15,26 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 
 Route::get('/testfinder', function() { 
 
-	$items = Finder::active()->take(3000)->skip(0)->get();
-	$data = array();
+	for ($i=0; $i < 7 ; $i++) { 
+		$skip = $i * 3000;
+		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
 
-	foreach ($items as $item) {  
-		$data = $item->toArray();
-		$capture = Finder::findOrFail($data['_id']);
-		echo $response = $capture->update($data);
+		foreach ($items as $item) {  
+			$data = $item->toArray();
+			$fid = $data['_id'];
+			$url =  "http://a1.fitternity.com/finderdetail/".$data['slug'];
+
+			// $fid = 579;
+			// $url =  "http://a1.fitternity.com/finderdetail/golds-gym-bandra-west";
+
+			$handlerr = curl_init($url);
+			curl_setopt($handlerr,  CURLOPT_RETURNTRANSFER, TRUE);
+			$resp = curl_exec($handlerr);
+			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
+			if ($ht == '404'){ echo "<br><br> isssue in : fid - $fid url -$url";} 
+		}
+		// exit;
 	}
-
-	// $request = array('url' => "http://a1.fitternity.com/finderdetail/your-fitness-club-borivali-west", 'method' => 'GET' );
-	// $response 	=	es_curl_request($request);
-	// return $response;
-	// return Response::json($response);
 
 });
 
@@ -258,22 +265,22 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 Route::get('/findercsv', function() { 
 
 	$headers = [
-		'Content-type'        => 'application/csv',   
-		'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-		'Content-type'        => 'text/csv',   
-		'Content-Disposition' => 'attachment; filename=freefinders.csv',   
-		'Expires'             => '0',   
-		'Pragma'              => 'public'
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=freefinders.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
 	];
 
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-								->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-								->where('finder_type', 0)
-								->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
+	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->where('finder_type', 0)
+	->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
 								// ->take(2)
-								->orderBy('id', 'desc')
-								->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
+	->orderBy('id', 'desc')
+	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
