@@ -14,7 +14,7 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/testfinder', function() { 
 
 	for ($i=0; $i < 7 ; $i++) { 
-		$skip = $i * 3000;
+		$skip = $i * 1000;
 		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
 
 		foreach ($items as $item) {  
@@ -31,7 +31,7 @@ Route::get('/testfinder', function() {
 			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
 			if ($ht == '404'){ echo "<br><br> isssue in : fid - $fid url -$url";} 
 		}
-		// exit;
+		exit;
 	}
 
 });
