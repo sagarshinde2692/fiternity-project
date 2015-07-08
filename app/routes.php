@@ -29,7 +29,7 @@ Route::get('/testfinder', function() {
 			curl_setopt($handlerr,  CURLOPT_RETURNTRANSFER, TRUE);
 			$resp = curl_exec($handlerr);
 			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
-			if ($ht == '404'){ echo "\n\n isssue in : fid - $fid url -$url";}else{ echo "\n\n NO ISSUSE in : fid - $fid } 
+			if ($ht == '404'){ echo "\n\n isssue in : fid - $fid url -$url";}else{ echo "\n\n NO ISSUSE in : fid - $fid"; } 
 		}
 		exit;
 	}
