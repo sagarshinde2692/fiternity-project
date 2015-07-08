@@ -16,20 +16,17 @@ Route::get('/testfinder', function() {
 	for ($i=0; $i < 7 ; $i++) { 
 		$skip = $i * 1000;
 		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
-
 		foreach ($items as $item) {  
 			$data = $item->toArray();
 			$fid = $data['_id'];
 			$url =  "http://a1.fitternity.com/finderdetail/".$data['slug'];
-
 			// $fid = 579;
 			// $url =  "http://a1.fitternity.com/finderdetail/golds-gym-bandra-west";
-
 			$handlerr = curl_init($url);
 			curl_setopt($handlerr,  CURLOPT_RETURNTRANSFER, TRUE);
 			$resp = curl_exec($handlerr);
 			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
-			if ($ht == '404'){ echo "\n\n isssue in : fid - $fid url -$url";}else{ echo "\n\n NO ISSUSE in : fid - $fid"; } 
+			if ($ht == '404'){ echo "\n\n isssue in : fid - $fid url -$url";}
 		}
 		exit;
 	}
