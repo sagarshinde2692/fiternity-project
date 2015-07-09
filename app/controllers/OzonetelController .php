@@ -25,12 +25,14 @@ class OzonetelController extends \BaseController {
 
 		//echo"<pre>";print_r($_REQUEST);exit;
 
-		Log::info('ozone',$_REQUEST);
+		
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+			Log::info('ozone',$_REQUEST);
 		    $this->ozonetel->addPlayText("Please wail while we connecting");
 		    $this->ozonetel->addDial("09920864894","true"); //phone number to dial
 		} elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+			Log::info('ozone',$_REQUEST);
 		    if ($_REQUEST['status'] == 'answered') {
 		    	$this->ozonetel->addRecord("recordFileName");
 		        $this->ozonetel->addPlayText("dialled number is answered");
