@@ -9,17 +9,20 @@
 
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\Ozonetel as Ozonetel;
 
 
 class CustomerController extends \BaseController {
 
 	protected $customermailer;
 	protected $customersms;
+	protected $ozonetel;
 
-	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms) {
+	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Ozonetel $ozonetel) {
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms	=	$customersms;
+		$this->ozonetel = $ozonetel;
 
 	}
 
@@ -873,5 +876,29 @@ class CustomerController extends \BaseController {
 
 		return $decodedToken;
 	}
+
+	public function callVendor(){
+
+		Log::info('ozone',$_REQUEST);
+
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+		    $this->ozonetel->addPlayText("Please wail while we connecting");
+		    $this->ozonetel->addDial("09920864894"); //phone number to dial
+		} elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+		    if ($_REQUEST['status'] == 'answered') {
+		    	$this->ozonetel->addRecord("recordFileName");
+		        $this->ozonetel->addPlayText("dialled number is answered");
+		    } else {
+		        $this->ozonetel->addPlayText("dialled number is not answered");
+		    }
+		    $this->ozonetel->addHangup();
+		} elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Record') {
+        	$this->ozonetel->addPlayText("your recorded message is ");
+        	$this->ozonetel->addPlayAudio($_REQUEST['data']);
+		}else {
+		    $this->ozonetel->addHangup();
+		}
+		$this->ozonetel->send();
+}
 
 }
