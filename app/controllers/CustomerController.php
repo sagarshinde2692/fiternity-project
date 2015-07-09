@@ -879,12 +879,12 @@ class CustomerController extends \BaseController {
 
 	public function callVendor(){
 
-		echo"<pre>";print_r($_REQUEST);exit;
+		//echo"<pre>";print_r($_REQUEST);exit;
 		Log::info('ozone',$_REQUEST);
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 		    $this->ozonetel->addPlayText("Please wail while we connecting");
-		    $this->ozonetel->addDial("09920864894"); //phone number to dial
+		    $this->ozonetel->addDial("9920864894","true"); //phone number to dial
 		} elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
 		    if ($_REQUEST['status'] == 'answered') {
 		    	$this->ozonetel->addRecord("recordFileName");
@@ -893,9 +893,6 @@ class CustomerController extends \BaseController {
 		        $this->ozonetel->addPlayText("dialled number is not answered");
 		    }
 		    $this->ozonetel->addHangup();
-		} elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Record') {
-        	$this->ozonetel->addPlayText("your recorded message is ");
-        	$this->ozonetel->addPlayAudio($_REQUEST['data']);
 		}else {
 		    $this->ozonetel->addHangup();
 		}
