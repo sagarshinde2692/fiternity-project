@@ -8,7 +8,33 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
+
 Route::get('/', function() { return "laravel 4.2 goes here....";});
+
+Route::get('/testfinder', function() { 
+
+	for ($i=0; $i < 7 ; $i++) { 
+		$skip = $i * 3000;
+		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
+
+		foreach ($items as $item) {  
+			$data = $item->toArray();
+			$fid = $data['_id'];
+			$url =  "http://a1.fitternity.com/finderdetail/".$data['slug'];
+
+			// $fid = 579;
+			// $url =  "http://a1.fitternity.com/finderdetail/golds-gym-bandra-west";
+
+			$handlerr = curl_init($url);
+			curl_setopt($handlerr,  CURLOPT_RETURNTRANSFER, TRUE);
+			$resp = curl_exec($handlerr);
+			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
+			if ($ht == '404'){ echo "<br><br> isssue in : fid - $fid url -$url";} 
+		}
+		// exit;
+	}
+
+});
 
 Route::get('/testcountrysms', function() { 
 	// return $items = Booktrial::find(5);
@@ -65,7 +91,6 @@ Route::get('/capturedata', function() {
 
 	$items = Capture::get();
 	$data = array();
-
 	foreach ($items as $item) {  
 		$data = $item->toArray();
 		$capture = Capture::findOrFail($data['_id']);
@@ -237,22 +262,22 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 Route::get('/findercsv', function() { 
 
 	$headers = [
-		'Content-type'        => 'application/csv',   
-		'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-		'Content-type'        => 'text/csv',   
-		'Content-Disposition' => 'attachment; filename=freefinders.csv',   
-		'Expires'             => '0',   
-		'Pragma'              => 'public'
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=freefinders.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
 	];
 
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-								->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-								->where('finder_type', 0)
-								->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
+	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->where('finder_type', 0)
+	->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
 								// ->take(2)
-								->orderBy('id', 'desc')
-								->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
+	->orderBy('id', 'desc')
+	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
@@ -302,6 +327,22 @@ Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardt
 Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
 
+Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
+Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
+Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgotpasswordemail','uses' => 'CustomerController@forgotPasswordEmail'));
+Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpassword','uses' => 'CustomerController@forgotPassword'));
+Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
+Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp','uses' => 'CustomerController@validateOtp'));
+
+Route::group(array('before' => 'validatetoken'), function() {
+
+	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
+	Route::post('customerresetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
+	Route::get('customerlogout', array('as' => 'customer.validatetokencustomerlogout','uses' => 'CustomerController@customerLogout'));
+	Route::post('customerupdate', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
+
+});
+
 /******************** CUSTOMERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -345,6 +386,9 @@ Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton'
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 
+Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
+Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
+Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -358,6 +402,8 @@ Route::get('blogdetail/{slug}', array('as' => 'blogs.blogdetail','uses' => 'Blog
 Route::get('/blogs/{cat}', 'BlogsController@getCategoryBLogs');
 Route::get('/updateblogdate', 'BlogsController@updateblogdate');
 Route::post('/getblogrelatedfinder', 'BlogsController@getblogRelatedFinder');
+Route::post('addcomment', array('as' => 'blogs.addcomment','uses' => 'BlogsController@addComment'));
+Route::get('getblogcomment/{slug}', array('as' => 'blogs.getblogcomment','uses' => 'BlogsController@getBlogComment'));
 
 /******************** BLOGS SECTION END HERE ********************/
 ##############################################################################
@@ -373,6 +419,7 @@ Route::get('createtype/{type}', array('as' => 'elasticsearch.createtype','uses' 
 Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','uses' => 'ElasticsearchController@checkMapping'));
 Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
 Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
+
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -394,6 +441,7 @@ Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
 
 Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
 Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
+Route::post('/getnearbytrials', 'SearchServicesController@geoLocationService');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 

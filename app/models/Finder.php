@@ -25,6 +25,10 @@ class Finder extends  \Basemodel {
 	];
 
 
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+
 	public function user(){
 		return $this->belongsTo('User');
 	}
@@ -75,5 +79,9 @@ class Finder extends  \Basemodel {
 
 	public function services(){
 		return $this->hasMany('Service','finder_id');
+	}
+
+	public function reviews(){
+		return $this->hasMany('Review','finder_id');
 	}
 }

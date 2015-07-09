@@ -977,7 +977,7 @@ class SearchController extends \BaseController {
 			}
 		}';
 
-		//echo $body; exit;
+		// echo $body; exit;
 		$serachbody = $body;
 		$request = array(
 			'url' => $this->elasticsearch_default_url."_search",

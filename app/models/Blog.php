@@ -38,4 +38,8 @@ class Blog extends \Basemodel {
 		return $this->belongsTo('User','expert_id');
 	}
 
+	public function comments(){
+		return $this->hasMany('Comment','blog_id');
+	}
+
 }

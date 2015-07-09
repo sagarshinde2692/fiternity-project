@@ -42,8 +42,8 @@ class FitmaniaController extends \BaseController {
 
 		$item  	   	=  	(!is_array($deal)) ? $deal->toArray() : $deal;
 		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->where('_id', (int) $item['finder_id'])->first();
+								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+								->where('_id', (int) $item['finder_id'])->first();
 		// return $finderarr;
 
 		$data = array(
@@ -66,11 +66,42 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-
-
 	public function buyDealOfDay(){
 
 		return "buyDealOfDay";
 	}
+
+
+	public function fitmaniaServices(){
+
+		$category 					=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : '';		
+		$subcategory 				=	(Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : '';		
+		$location 					=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : '';	
+		// $workout_intensity 			=	(Input::json()->get('workout_intensity')) ? strtolower(Input::json()->get('workout_intensity')) : '';			
+		// $workout_tags 				=	(Input::json()->get('workout_tags')) ? strtolower(Input::json()->get('workout_tags')) : '';	
+		// $min_time 					=	(Input::json()->get('min_time')) ? trim(strtolower(Input::json()->get('min_time'))) : intval(date("H")) + 1;		
+		// $max_time 					=	(Input::json()->get('max_time')) ? trim(strtolower(Input::json()->get('max_time'))) : 24;		
+		// $min_price 					=	(Input::json()->get('min_price')) ? trim(strtolower(Input::json()->get('min_price'))) : '';		
+		// $max_price 					=	(Input::json()->get('max_price')) ? trim(strtolower(Input::json()->get('max_price'))) : '';	
+
+		$services = Service::with('category')->with('subcategory')->with('finder')->where('_id', (int) $serviceid)->get();
+		// return $service;
+		if(!$service){
+			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
+			return Response::json($resp, 400);
+		}
+		$servicedata = $this->transform($service);
+		$resp 	= 	array('status' => 200, 'service' => $servicedata, 'message' => 'Particular Service Info');
+		return Response::json($resp, 200);
+
+		return 'finders';
+	}
+
+
+
+
+
+
+	
 
 }
