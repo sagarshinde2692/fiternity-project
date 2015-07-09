@@ -23,6 +23,7 @@ class OzonetelController extends \BaseController {
     // Listing Schedule Tirals for Normal Customer
 	public function callVendor(){
 
+		//echo"<pre>";print_r($_REQUEST);exit;
 		Log::info('ozone',$_REQUEST);
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {

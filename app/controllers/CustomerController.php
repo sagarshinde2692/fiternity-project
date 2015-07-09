@@ -879,6 +879,7 @@ class CustomerController extends \BaseController {
 
 	public function callVendor(){
 
+		echo"<pre>";print_r($_REQUEST);exit;
 		Log::info('ozone',$_REQUEST);
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
