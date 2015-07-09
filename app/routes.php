@@ -545,7 +545,7 @@ Route::get('/fitmania', 'FitmaniaController@getMockData');
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
 
-Route::get('callvender',  array('as' => 'ozonetel.callvender','uses' => 'OzonetelController@callVender'));
+Route::get('/callvender',  array('as' => 'ozonetel.callvender','uses' => 'OzonetelController@callVender'));
 
 
 /******************** ORDERS SECTION END HERE ********************/
