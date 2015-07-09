@@ -594,6 +594,7 @@ return Response::json($resp,200);
 
 		if(!isset($data['customer_id']) || $data['customer_id'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
+			// return Response::json($resp,500);	
 		}
 
 		if(!isset($data['customer_name']) || $data['customer_name'] == ''){

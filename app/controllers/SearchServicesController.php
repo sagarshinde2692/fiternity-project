@@ -357,7 +357,7 @@ public function getRatecards(){
 		"geolocation",
 		"location",
 		"workout_intensity",
-		"workout_tags"]
+		"workout_tags","commercial_type"]
 	}';
 
 		// echo $body; exit;
