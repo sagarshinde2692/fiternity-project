@@ -144,7 +144,7 @@ class Ozonetel {
     }
 
     //Dial
-    public function addDial($no, $record="false", $limittime="1000", $timeout, $moh='default', $promptToCalledNumber ='no', $caller_id = false) {
+    public function addDial($no, $record="false", $limittime="1000", $timeout, $moh='default', $promptToCalledNumber ='no', $caller_id="") {
         $dial = $this->doc->createElement("dial", $no);
         $dial->setAttribute("record", $record);
         $dial->setAttribute("limittime", $limittime); // for max calltime //maxtime call allowed after called_number answered
@@ -153,9 +153,7 @@ class Ozonetel {
         $dial->setAttribute("promptToCalledNumber", $promptToCalledNumber); //=no
         //If would like to play prompt to called number, give audio url
         // promptToCalledNumber = 'http://www.kookoo.in/recordings/promptToCallerParty.wav' 
-        if($caller_id){
-          $dial->setAttribute("caller_id", $caller_id); //if you want the end user to get displayed different number on the device.Note the caller_id value is the did assigned to your KooKoo Account
-        }
+        $dial->setAttribute("caller_id", $caller_id); //if you want the end user to get displayed different number on the device.Note the caller_id value is the did assigned to your KooKoo Account
         $this->response->appendChild($dial);
     }
 
