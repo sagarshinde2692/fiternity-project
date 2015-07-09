@@ -21,7 +21,7 @@ class OzonetelController extends \BaseController {
 	}
 
     // Listing Schedule Tirals for Normal Customer
-	public function callVender(){
+	public function callVendor(){
 
 		Log::info('ozone',$_REQUEST);
 		
