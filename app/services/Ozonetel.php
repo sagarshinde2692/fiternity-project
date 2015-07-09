@@ -144,11 +144,11 @@ class Ozonetel {
     }
 
     //Dial
-    public function addDial($no, $record="false", $limittime="1000", $timeout, $moh='default', $promptToCalledNumber ='no', $caller_id="") {
+    public function addDial($no, $record="false", $limittime="1000" , $moh='default', $promptToCalledNumber ='no', $caller_id="") {
         $dial = $this->doc->createElement("dial", $no);
         $dial->setAttribute("record", $record);
         $dial->setAttribute("limittime", $limittime); // for max calltime //maxtime call allowed after called_number answered
-        $dial->setAttribute("timeout", $timeout); //time out in ms
+        //$dial->setAttribute("timeout", $timeout); //time out in ms
         $dial->setAttribute("moh", $moh); //moh=default will be music on hold moh=ring for normal ring
         $dial->setAttribute("promptToCalledNumber", $promptToCalledNumber); //=no
         //If would like to play prompt to called number, give audio url
