@@ -72,7 +72,7 @@ class FitmaniaController extends \BaseController {
 		$city_id			= 	1;
 		$fitmaniaServices 	=	[];
 
-		$query	 			= 	Service::active()->orderBy('_id');	
+		$query	 			= 	Service::active()->orderBy('_id')->whereIn('show_on', array('2','3'));	
 
 		if($category != ''){ 
 			$query->where('servicecategory_id', $category); 
