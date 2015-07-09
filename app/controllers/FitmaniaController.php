@@ -27,7 +27,6 @@ class FitmaniaController extends \BaseController {
 		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 		->orderBy('ordering','desc')->get()->toArray();
 
-
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
 			array_push($dealsofdays, $dealdata);
@@ -79,7 +78,7 @@ class FitmaniaController extends \BaseController {
 		$city_id			= 	1;
 		$fitmaniaServices 	=	[];
 
-		$query	 			= 	Service::active()->with('category')->with('finder')->orderBy('_id');	
+		$query	 			= 	Service::active()->orderBy('_id');	
 
 		if($category != ''){ 
 			$query->where('servicecategory_id', $category); 
@@ -91,14 +90,14 @@ class FitmaniaController extends \BaseController {
 		
 		$serviceColleciton 		= 	$query->take($size)->skip($from)->get();
 		foreach ($serviceColleciton as $key => $value) {
-			$servicedata = $this->transform($value);
+			$servicedata = $this->transformFitmaniaService($value);
 			array_push($fitmaniaServices, $servicedata);
 		}
 		// if(!$services){  $services =  'No Service Exist :)'; }
 
 		$responseData = [
-		//'categories' => Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug')),
-		//'locations' => Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug')),
+		'categories' => Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug')),
+		'locations' => Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug')),
 		'services' => $fitmaniaServices
 		];
 		// return $responseData;
@@ -113,7 +112,7 @@ class FitmaniaController extends \BaseController {
 		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
 							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 							->where('_id', (int) $item['finder_id'])->first();
-		// return $finderarr;
+		// return $item; exit;
 
 		$data = [
 		'_id' => $item['_id'],
@@ -130,6 +129,7 @@ class FitmaniaController extends \BaseController {
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info')),
 		];
+		
 		return $data;
 	}
 
