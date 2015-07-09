@@ -20,7 +20,7 @@ class OrderController extends \BaseController {
 
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice');
 	}
 
 
@@ -161,8 +161,6 @@ class OrderController extends \BaseController {
 
 		$data			=	Input::json()->all();
 
-
-
 		if(empty($data['customer_name'])){
 			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
 		}
@@ -237,8 +235,10 @@ class OrderController extends \BaseController {
 		$orderid 			=	Order::max('_id') + 1;
 		$data 				= 	Input::json()->all();
 
+
 		// $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
 		// array_set($data, 'customer_id', intval($customer_id));
+		
 		
 		array_set($data, 'status', '0');
 		array_set($data, 'payment_mode', 'paymentgateway');

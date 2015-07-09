@@ -15,7 +15,7 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getMockData($date = null){
+	public function getDealOfDay($date = null){
 
 		$date 					=  	($date == null) ? Carbon::now() : $date;
 		$timestamp 				= 	strtotime($date);
@@ -59,12 +59,6 @@ class FitmaniaController extends \BaseController {
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type')),
 		];
 		return $data;
-	}
-
-
-	public function buyDealOfDay(){
-
-		return "buyDealOfDay";
 	}
 
 
@@ -120,7 +114,7 @@ class FitmaniaController extends \BaseController {
 		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
 		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
-		'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? strtolower($item['workout_tags']) : [],
+		'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
 		'servicecategory_id' => (isset($item['servicecategory_id']) && $item['servicecategory_id'] != '') ? intval($item['servicecategory_id']) : "",
 		'servicesubcategory_id' => (isset($item['servicesubcategory_id']) && $item['servicesubcategory_id'] != '') ? intval($item['servicesubcategory_id']) : "",
 		'location_id' => (isset($item['location_id']) && $item['location_id'] != '') ? intval($item['location_id']) : "",
@@ -133,6 +127,20 @@ class FitmaniaController extends \BaseController {
 		return $data;
 	}
 
+
+	public function buyDealOfDay(){
+
+
+		return "buyDealOfDay";
+	}
+
+
+
+	public function buyService(){
+
+
+		return "buyService";
+	}
 
 
 

@@ -532,8 +532,11 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('/fitmania', 'FitmaniaController@getMockData');
-Route::post('/fitmania', 'FitmaniaController@fitmaniaServices');
+Route::get('fitmania', 'FitmaniaController@getDealOfDay');
+Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
+Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
+
 
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/
