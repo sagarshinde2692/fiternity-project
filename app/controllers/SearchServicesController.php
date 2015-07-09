@@ -346,12 +346,7 @@ public function getRatecards(){
 				'}'.$filters.'
 			}
 		},
-		"fields" : ["_id",
-		"name",
-		"finder_id"
-		"findername",
-		"finderslug",
-		"city",
+		"fields" : ["_id","name","finder_id","findername", "finderslug","city",
 		"category",
 		"subcategory",
 		"geolocation",
@@ -529,7 +524,7 @@ public function geoLocationService(){
 		"geolocation",
 		"location",
 		"workout_intensity",
-		"workout_tags"],
+		"workout_tags","commercial_type"],
 		"sort": [
 		{
 			"_geo_distance": {
