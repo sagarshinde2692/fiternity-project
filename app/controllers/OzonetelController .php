@@ -24,7 +24,7 @@ class OzonetelController extends \BaseController {
 	public function callVendor(){
 
 		//echo"<pre>";print_r($_REQUEST);exit;
-		Log::info('ozone','asdfasdfasdfasf');
+		Log::info('ozone',['test'=>'test']);
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 		    $this->ozonetel->addPlayText("Please wail while we connecting");
