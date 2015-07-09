@@ -1047,20 +1047,25 @@ public function geoLocationFinder(){
 	$lat 				=	(Input::json()->get('lat')) ? Input::json()->get('lat') : '';
 	$lon 				=	(Input::json()->get('lon')) ? Input::json()->get('lon') : '';
 
-
+	if($category == ''){
+		$query = '"match_all": {}';
+		$basecategory_score = '';		
+	}else{
+		$query = '"multi_match": {
+			"query": "'.$category.'",
+			"fields": [
+			"category",
+			"categorytags"
+			]
+		}';	
+	}
+	
 	$body = '{
 		"from": '.$from.',
 		"size": '.$size.',
 		"query": {
 			"filtered": {
-				"query": {
-					"multi_match": {
-						"query": "'.$category.'",
-						"fields": [
-						"category",
-						"categorytags"
-						]
-					}
+				"query": {'.$query.'
 				},
 				"filter": {
 					"geo_distance_range": {
@@ -1085,18 +1090,18 @@ public function geoLocationFinder(){
 				"script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
 			}
 		},"sort": [
-		    {
-		      "_geo_distance": {
-		        "geolocation": "'.$lat.', '.$lon.'",
-		        "order": "asc",
-		        "unit": "km"
-		      }
-		    }
-		  ]
+		{
+			"_geo_distance": {
+				"geolocation": "'.$lat.', '.$lon.'",
+				"order": "asc",
+				"unit": "km"
+			}
+		}
+		]
 	}';
 
 	$serachbody = $body;
-	//return $body;
+	return $body;
 	$request = array(
 		'url' => $this->elasticsearch_default_url."_search",
 		'port' => 9200,
