@@ -239,7 +239,7 @@ return array(
 	),
 
 	'aws' => array(
-		'key' 								=> 'AKIAICYM2D37EEMAW6XQ'
+		'key' 								=> 'AKIAICYM2D37EEMAW6XQ',
 		'secret' 							=> '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',
 		'region' 							=> 'ap-southeast-1',
 		'bucket'							=> 'b.fitn.in',
@@ -248,5 +248,5 @@ return array(
 			'url'							=> 'http://b.fitn.in/ozonetel/',
 		),
 	),
-	
+
 );
