@@ -237,5 +237,16 @@ return array(
 		'exp' => time()+86400, // time when token gets expired (1 day)
 		'alg' => 'HS256',
 	),
-    
+
+	'aws' => array(
+		'key' 								=> 'AKIAICYM2D37EEMAW6XQ'
+		'secret' 							=> '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',
+		'region' 							=> 'ap-southeast-1',
+		'bucket'							=> 'b.fitn.in',
+		'ozonetel' =>array(
+			'path'							=> 'ozonetel',
+			'url'							=> 'http://b.fitn.in/ozonetel/',
+		),
+	),
+	
 );
