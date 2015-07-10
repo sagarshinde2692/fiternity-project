@@ -244,7 +244,7 @@ return array(
 		'region' 							=> 'ap-southeast-1',
 		'bucket'							=> 'b.fitn.in',
 		'ozonetel' =>array(
-			'path'							=> 'ozonetel',
+			'path'							=> 'ozonetel/',
 			'url'							=> 'http://b.fitn.in/ozonetel/',
 		),
 	),

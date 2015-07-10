@@ -8,7 +8,7 @@
  */
 
 use App\Services\Ozonetel as OzonetelResponce;
-
+use Guzzle\Http\Client;
 
 class OzonetelController extends \BaseController {
 
@@ -67,7 +67,7 @@ class OzonetelController extends \BaseController {
 
 		$ozonetel_capture = new Ozonetelcapture();
 		$ozonetel_capture->ozonetel_unique_id = $data['sid'];
-		$ozonetel_capture->ozonetel_no = (string) $data['sid'];
+		$ozonetel_capture->ozonetel_no = (string) $data['called_number'];
 		$ozonetel_capture->customer_contact_no = (string)$data['cid_e164'];
 		$ozonetel_capture->customer_contact_circle = (string)$data['circle'];
 		$ozonetel_capture->customer_contact_operator = (string)$data['operator'];
@@ -89,9 +89,15 @@ class OzonetelController extends \BaseController {
 			$ozonetel_capture->message = $data['message'];
 			$ozonetel_capture->telco_code = $data['telco_code'];
 		}else{
-			$ozonetel_capture->file_name = array_pop(explode("/",$data['data']));
+			$ozone_fileurl = explode("/",$data['data']);
+			$ozone_filename = array_pop($ozone_fileurl);
+
+			$aws_filename = time().$data['sid'].'.wav';
+
+			$ozonetel_capture->aws_file_name = $aws_filename;
 			$ozonetel_capture->ozone_url_record = $data['data'];
-			$this->addToAws($data['data']);
+			 
+			$this->addToAws($data['data'],$aws_filename);
 		}
 
 		$ozonetel_capture->update();
@@ -99,16 +105,48 @@ class OzonetelController extends \BaseController {
 		return $ozonetel_capture;
 	}
 
-	public function addToAws($source_file){
+	public function addToAws($ozone_fileurl,$aws_filename){
 
-		$s3 = AWS::createClient('s3');
+		$folder_path = public_path().'/ozone/';
+		$file_path = $this->createFolder($folder_path).$aws_filename;
+		
+		$createFolder = $this->createFolder($folder_path);
+		$copy_remote = $this->copyFromOzone($ozone_fileurl,$file_path);
+
+
+		$s3 = AWS::get('s3');
 		$s3->putObject(array(
 		    'Bucket'     => Config::get('app.aws.bucket'),
-		    'Key'        => Config::get('app.aws.ozonetel.path'),
-		    'SourceFile' => $source_file,
+		    'Key'        => Config::get('app.aws.ozonetel.path').$aws_filename,
+		    'SourceFile' => $file_path,
 		));
 
 		return $s3;
+	}
+
+	public function copyFromOzone($fromUrl,$toFile) {
+
+	    try {
+	    	fopen($toFile, 'w');
+	        $client = new Guzzle\Http\Client();
+	        $response = $client->get($fromUrl)->setResponseBody($toFile)->send();
+	        return true;
+
+	    } catch (Exception $e) {
+	        // Log the error or something
+	        return false;
+	    }
+
+	}
+
+	public function createFolder($path){
+
+		if(!is_dir($path)){
+			mkdir($path, 0777);
+			chmod($path, 0777);
+		}	
+
+		return $path;
 	}
 
 
