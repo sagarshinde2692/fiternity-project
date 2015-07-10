@@ -108,7 +108,7 @@ class OzonetelController extends \BaseController {
 		    'SourceFile' => $source_file,
 		));
 
-		return $s3
+		return $s3;
 	}
 
 
