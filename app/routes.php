@@ -537,7 +537,6 @@ Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
 // Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
 
-
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/
 
