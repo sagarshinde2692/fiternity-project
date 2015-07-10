@@ -27,7 +27,7 @@ class OzonetelController extends \BaseController {
 
 		    $this->ozonetel->addPlayText("This call is recorderd for quality purpose");
 
-		    $finder_contact_no = $this->getVendorContact($ozonetel_no['called_number']);
+		    $finder_contact_no = $this->getVendorContact($_REQUEST['called_number']);
 		   
 	    	if($finder_contact_no){
 	    		$this->ozonetel->addDial($finder_contact_no,"true");
