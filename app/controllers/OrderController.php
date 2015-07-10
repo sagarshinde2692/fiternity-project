@@ -286,10 +286,6 @@ class OrderController extends \BaseController {
 		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
-		dd($customer);
-		
-		$customerarr 	= 	$customer->toArray();
-
 		if(!$customer) {
 			$inserted_id = Customer::max('_id') + 1;
         	$customer = new Customer();
