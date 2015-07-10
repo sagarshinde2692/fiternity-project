@@ -8,10 +8,19 @@
  */
 
 
+use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Sms\CustomerSms as CustomerSms;
+
+
 class FitmaniaController extends \BaseController {
 
-	public function __construct() {
-		parent::__construct();	
+	protected $customermailer;
+	protected $customersms;
+	
+	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms) {
+
+		$this->customermailer		=	$customermailer;
+		$this->customersms 			=	$customersms;
 	}
 
 
@@ -104,8 +113,8 @@ class FitmaniaController extends \BaseController {
 
 		$item  	   	=  	(!is_array($serivce)) ? $serivce->toArray() : $serivce;
 		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-							->where('_id', (int) $item['finder_id'])->first();
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->where('_id', (int) $item['finder_id'])->first();
 		// return $item; exit;
 
 		$data = [
@@ -128,25 +137,27 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function buyDealOfDay(){
-
-
-		return "buyDealOfDay";
-	}
-
-
-
 	public function buyService(){
 
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			$resp 	= 	array('status' => 404,'message' => "Data Missing Order Id - order_id");
+			return Response::json($resp,404);			
+		}
 
-		return "buyService";
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
+		array_set($data, 'status', '1');
+		$buydealofday 	=	$order->update($data);
+
+		if($buydealofday){
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+		}
+
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce through Fitmania :)");
+		return Response::json($resp,200);		
 	}
-
-
-
-
-
-
 
 
 

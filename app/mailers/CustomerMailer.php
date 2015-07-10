@@ -4,10 +4,6 @@ use Config,Mail;
 
 Class CustomerMailer extends Mailer {
 
-	public function welcome(){
-		//$email_template, $template_data = [], $message_data = [] ;
-
-	}
 
 	public function bookTrial ($data){
 
@@ -220,6 +216,31 @@ Class CustomerMailer extends Mailer {
 		if($data['type'] == 'memberships'){
 			$subject  = 'Fitternity - Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
 		}
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$this->sendTo($email_template_customer, $template_data, $message_data);
+
+		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		array_set($message_data, 'user_name', 'Fitternity');
+
+		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+	}
+
+
+	public function buyServiceThroughFitmania ($data){
+
+		$email_template_customer 	= 	'emails.order.fitmania_offer';
+		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
+		$subject  					=   'Fitternity - Congratulations! You’ve successfully accomplished your Mission Fitmania 2015';
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
