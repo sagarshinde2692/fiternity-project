@@ -9,6 +9,6 @@
 
 class Ozonetelcapture extends  \Basemodel {
 
-	
+	protected $collection = "ozonetel_capture";
 
 }
