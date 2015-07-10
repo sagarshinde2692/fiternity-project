@@ -285,6 +285,9 @@ class OrderController extends \BaseController {
 
 		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
+
+		dd($customer);
+		
 		$customerarr 	= 	$customer->toArray();
 
 		if(!$customer) {
