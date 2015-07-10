@@ -7,14 +7,14 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
-use App\Services\Ozonetel as Ozonetel;
+use App\Services\Ozonetel as OzonetelResponce;
 
 
 class OzonetelController extends \BaseController {
 
 	protected $ozonetel;
 
-	public function __construct(Ozonetel $ozonetel) {
+	public function __construct(OzonetelResponce $ozonetel) {
 
 		$this->ozonetel	=	$ozonetel;
 
