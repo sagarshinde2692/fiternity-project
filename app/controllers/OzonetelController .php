@@ -39,10 +39,10 @@ class OzonetelController extends \BaseController {
 		} elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
 		    if ($_REQUEST['status'] == 'answered') {
 		        $this->ozonetel->addPlayText("dialled number is answered");
-		        $update_capture = $this->updateCapture($_REQUEST);
 		    } else {
 		        $this->ozonetel->addPlayText("dialled number is not answered");
 		    }
+		    $update_capture = $this->updateCapture($_REQUEST);
 		    $this->ozonetel->addHangup();
 		}else {
 		    
