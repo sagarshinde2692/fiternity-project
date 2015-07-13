@@ -57,6 +57,7 @@ class FitmaniaController extends \BaseController {
 		$data = [
 		'_id' => $item['_id'],
 		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+		'duration' => (isset($item['duration']) && $item['duration'] != '') ? strtolower($item['duration']) : "",
 		'price' => (isset($item['price']) && $item['price'] != '') ? strtolower($item['price']) : "",
 		'special_price' => (isset($item['special_price']) && $item['special_price'] != '') ? strtolower($item['special_price']) : "",
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
@@ -153,6 +154,7 @@ class FitmaniaController extends \BaseController {
 
 		if($buydealofday){
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 		}
 
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce through Fitmania :)");
