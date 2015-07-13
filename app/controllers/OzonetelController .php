@@ -133,6 +133,7 @@ class OzonetelController extends \BaseController {
 	    	fopen($toFile, 'w');
 	        $client = new Guzzle\Http\Client();
 	        $response = $client->get($fromUrl)->setResponseBody($toFile)->send();
+	        chmod($toFile, 0777);
 	        return true;
 
 	    } catch (Exception $e) {
