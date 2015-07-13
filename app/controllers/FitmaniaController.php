@@ -64,6 +64,7 @@ class FitmaniaController extends \BaseController {
 		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
 		'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
+		'offer_link__to' => (isset($item['offer_link__to']) && $item['offer_link__to'] != '') ? (int)$item['offer_link__to'] : "",
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type')),

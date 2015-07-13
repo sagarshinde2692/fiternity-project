@@ -42,6 +42,10 @@ class Fitmaniadod extends \Basemodel {
 		$this->attributes['ordering'] = intval($value);
 	}
 
+	public function setOfferLinkToAttribute($value){
+		$this->attributes['offer_link__to'] = intval($value);
+	}
+
 
 
 }
