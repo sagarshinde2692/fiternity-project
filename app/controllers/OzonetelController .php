@@ -64,8 +64,9 @@ class OzonetelController extends \BaseController {
 	}
 
 	public function addCapture($data){
-
+		
 		$ozonetel_capture = new Ozonetelcapture();
+		$ozonetel_capture->_id = Ozonetelcapture::max('_id') + 1;
 		$ozonetel_capture->ozonetel_unique_id = $data['sid'];
 		$ozonetel_capture->ozonetel_no = (string) $data['called_number'];
 		$ozonetel_capture->customer_contact_no = (string)$data['cid_e164'];
@@ -111,7 +112,7 @@ class OzonetelController extends \BaseController {
 		$file_path = $this->createFolder($folder_path).$aws_filename;
 		
 		$createFolder = $this->createFolder($folder_path);
-		$copy_remote = $this->copyFromOzone($ozone_fileurl,$file_path);
+		$copyFromOzone = $this->copyFromOzone($ozone_fileurl,$file_path);
 
 
 		$s3 = AWS::get('s3');
@@ -121,6 +122,8 @@ class OzonetelController extends \BaseController {
 		    'SourceFile' => $file_path,
 		));
 
+		unlink($file_path);
+		
 		return $s3;
 	}
 
