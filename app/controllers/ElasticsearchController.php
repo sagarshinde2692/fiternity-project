@@ -19,9 +19,9 @@ class ElasticsearchController extends \BaseController {
 
 	public function __construct() {
 		parent::__construct();	
-		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
-		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
-		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
+		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/';
+		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host_new');
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 	}
@@ -291,7 +291,7 @@ class ElasticsearchController extends \BaseController {
 							->with('facilities')
 							->active()
 							->orderBy('_id')
-				            // ->take(3000)
+				            // ->take(1)
 				            // ->take(3000)->skip(0)
 				            ->take(3000)->skip(3000)
 							->get();
@@ -375,7 +375,7 @@ class ElasticsearchController extends \BaseController {
                                                                     ->with(array('city'=>function($query){$query->select('name');}))
                                                                     ->with(array('location'=>function($query){$query->select('name');}))
                                                                     ->where('_id', intval($data['finder_id']) )
-                                                                    ->get(array('_id', 'title', 'slug', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location'))->first();
+                                                                    ->get(array('_id', 'title', 'slug', 'city_id', 'city', 'country_id', 'country', 'slug', 'title', 'location_id', 'location', 'commercial_type'))->first();
 				array_set($data, 'finder', $finder);
             	// return Response::json($data);
 

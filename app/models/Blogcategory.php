@@ -22,6 +22,10 @@ class Blogcategory extends \Basemodel {
 		'name' => 'required'
 	);
 
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+
 	public function blogs(){
 		
 		return $this->hasMany('Blog','category_id');

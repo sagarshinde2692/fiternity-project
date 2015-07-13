@@ -15,6 +15,10 @@ class Servicetrainer extends \Basemodel {
 		'name' => 'required'
 		);
 
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+	
 	public function services(){
 		
 		return $this->hasMany('Service', 'trainer_id');

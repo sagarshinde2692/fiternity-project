@@ -201,8 +201,19 @@ class FindersController extends \BaseController {
 	public function pushfinder2elastic ($slug){
 
 		$tslug 		= 	(string) $slug;
-		$result 	= 	$this->finderdetail($tslug,false);		
-		$data 		= 	$result['finder'];
+		$finderarr 	= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+							->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->with('categorytags')
+							->with('locationtags')
+							->with('offerings')
+							->with('facilities')
+							->with('servicerates')
+							->with('services')
+							->where('slug','=',$tslug)
+							->first();
+		$data 		= 	$finderarr->toArray();
+		// print_pretty($data);exit;
 		$postdata 	= 	get_elastic_finder_document($data);
 
 		$request = array(
@@ -217,23 +228,33 @@ class FindersController extends \BaseController {
 
 	public function updatefinderrating (){
 
-		//return Input::all()->json();
+		// $data = Input::all()->json();
+		// return $data;
 		$finderid = (int) Input::json()->get('finderid');
 		$total_rating_count = round(floatval(Input::json()->get('total_rating_count')),1);
 		$average_rating =  round(floatval(Input::json()->get('average_rating')),1);
-		$finderdata = array();
+
 		$finder = Finder::findOrFail($finderid);
 		$finderslug = $finder->slug;
+		$finderdata = array();
+
+
+		//cache set
 
 		array_set($finderdata, 'average_rating', round($average_rating,1));
 		array_set($finderdata, 'total_rating_count', round($total_rating_count,1));
 
+		// return $finderdata;
 		if($finder->update($finderdata)){
 			//updating elastic search	
 			$this->pushfinder2elastic($finderslug); 
 			//sending email
 			$email_template = 'emails.review';
 			$email_template_data = array( 'vendor' 	=>	ucwords($finderslug) ,  'date' 	=>	date("h:i:sa") );
+
+			// print_pretty($email_template_data);  exit;
+
+
 			$email_message_data = array(
 				'to' => Config::get('mail.to_neha'), 
 				'reciver_name' => 'Fitternity',
@@ -383,6 +404,7 @@ class FindersController extends \BaseController {
 
 		// set popularity 10000 for following category
 		$items = Finder::active()->where('finder_type', 0)->whereIn('city_id', array(2,3,4))->whereIn('category_id', array(5,11,14,32,35,6,12,8,7))->get();
+
 		$finderdata = array();
 		foreach ($items as $item) {  
 			$data 	= $item->toArray();
@@ -402,6 +424,7 @@ class FindersController extends \BaseController {
 			$response = $finder->update($finderdata);
 			print_pretty($response);
 		}
+
 	}
 
 	
@@ -614,7 +637,7 @@ class FindersController extends \BaseController {
 			'customer' => $item['customer'],
 			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
 		];
-
+		
 		return $data;
 	}
 

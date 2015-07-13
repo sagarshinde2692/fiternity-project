@@ -8,15 +8,36 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
-Route::get('/', function() { 
 
-	for($i = 0; $i < 5; $i++) {
-				echo $i;
+Route::get('/', function() { return "laravel 4.2 goes here....";});
+
+Route::get('/testfinder', function() { 
+
+	for ($i=0; $i < 7 ; $i++) { 
+		$skip = $i * 3000;
+		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
+
+		foreach ($items as $item) {  
+			$data = $item->toArray();
+			$fid = $data['_id'];
+			$url =  "http://a1.fitternity.com/finderdetail/".$data['slug'];
+
+			// $fid = 579;
+			// $url =  "http://a1.fitternity.com/finderdetail/golds-gym-bandra-west";
+
+			$handlerr = curl_init($url);
+			curl_setopt($handlerr,  CURLOPT_RETURNTRANSFER, TRUE);
+			$resp = curl_exec($handlerr);
+			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
+			if ($ht == '404'){ echo "<br><br> isssue in : fid - $fid url -$url";} 
+		}
+		// exit;
 	}
 
 });
 
 Route::get('/testcountrysms', function() { 
+	// return $items = Booktrial::find(5);
 
 	$user 			=	"chaitu87"; //your username
 	$password 		=	"564789123"; //your password
@@ -45,23 +66,14 @@ Route::get('/testcountrysms', function() {
 Route::get('/testsms', function() { 
 
 	$number = '9773348762';
-
 	$msg 	= 'test msg';
-
 	$sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
-	
 	$ci = curl_init();
-
 	curl_setopt($ci, CURLOPT_URL, $sms_url);
-
 	curl_setopt($ci, CURLOPT_HEADER, 0);
-
 	curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-
 	$response = curl_exec($ci);
-
 	curl_close($ci);
-
 	return $response;
 
 });
@@ -250,22 +262,22 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 Route::get('/findercsv', function() { 
 
 	$headers = [
-		'Content-type'        => 'application/csv',   
-		'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-		'Content-type'        => 'text/csv',   
-		'Content-Disposition' => 'attachment; filename=freefinders.csv',   
-		'Expires'             => '0',   
-		'Pragma'              => 'public'
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=freefinders.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
 	];
 
 	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-								->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-								->where('finder_type', 0)
-								->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
+	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->where('finder_type', 0)
+	->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
 								// ->take(2)
-								->orderBy('id', 'desc')
-								->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
+	->orderBy('id', 'desc')
+	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
 
 	// return $finders;
 	$output = "ID, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
@@ -372,10 +384,10 @@ Route::get('getfinderleftside/', array('as' => 'finders.getfinderleftside','uses
 Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton','uses' => 'FindersController@updatefinderlocaiton'));
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
+
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
-
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -407,6 +419,7 @@ Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','us
 Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
 Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
 
+
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
 
@@ -427,6 +440,7 @@ Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
 
 Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
 Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
+Route::post('/getnearbytrials', 'SearchServicesController@geoLocationService');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
@@ -525,4 +539,15 @@ Route::get('/fitmania', 'FitmaniaController@getMockData');
 
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/
+
+
+
+##############################################################################
+/******************** ORDERS SECTION START HERE ***********************/
+
+Route::get('/callvendor',  array('as' => 'ozonetel.callvendor','uses' => 'OzonetelController@callVendor'));
+
+
+/******************** ORDERS SECTION END HERE ********************/
+##############################################################################
 

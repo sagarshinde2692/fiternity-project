@@ -8,6 +8,10 @@ class Schedulebooktrial extends \Basemodel {
 		'name'    => 'required', 
 	];
 
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+	
 	public function scheduleservice(){
 		return $this->belongsTo('Finder');
 	}	

@@ -20,6 +20,10 @@ class User extends \Basemodel {
 	'usergroups'	=> 'required'
 	];
 
+	public function setIdAttribute($value){
+		$this->attributes['_id'] = intval($value);
+	}
+	
 	public function groups(){
 		return $this->embedsMany('Group');
 	}

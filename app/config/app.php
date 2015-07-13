@@ -26,7 +26,7 @@ return array(
 	|
 	*/
 
-	// 'url' => 'http://a1.fitternity.com',
+	//'url' => 'http://a1.fitternity.com',
 	'url' => 'http://apistg.fitn.in/',
 
 	/*
@@ -213,6 +213,9 @@ return array(
    
 	
 	'elasticsearch_port' 			=> 	9200,
+	'elasticsearch_host_new' 			=> 	'54.169.120.141',
+
+	//old
 	'elasticsearch_host' 			=> 	'54.179.134.14',
 	//'elasticsearch_host' 			=> 	'localhost',
 	//'elasticsearch_default_index' 	=> 	'fitternity'
@@ -234,5 +237,16 @@ return array(
 		'exp' => time()+86400, // time when token gets expired (1 day)
 		'alg' => 'HS256',
 	),
-    
+
+	'aws' => array(
+		'key' 								=> 'AKIAICYM2D37EEMAW6XQ',
+		'secret' 							=> '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',
+		'region' 							=> 'ap-southeast-1',
+		'bucket'							=> 'b.fitn.in',
+		'ozonetel' =>array(
+			'path'							=> 'ozonetel/',
+			'url'							=> 'http://b.fitn.in/ozonetel/',
+		),
+	),
+
 );

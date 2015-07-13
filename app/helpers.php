@@ -25,7 +25,7 @@ if (!function_exists('print_pretty')) {
 if (!function_exists('clear_cache')) {
     function clear_cache($url) {
 
-  
+
         $finalurl = Config::get('app.apiurl').strtolower($url);
 
         $request = array( 'url' => $finalurl, 'method' => 'GET' );
@@ -86,6 +86,7 @@ if (!function_exists('get_elastic_finder_document')) {
     function get_elastic_finder_document($finderdata = array()) {
 
         $data = $finderdata;
+        
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
@@ -94,6 +95,7 @@ if (!function_exists('get_elastic_finder_document')) {
                 'membership_discount'           =>      "",
                 'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
                 'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
+                'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
                 'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 // 'category_metatitle'            =>      (isset($data['category']['meta']['title']) && $data['category']['meta']['title'] != '') ? strtolower($data['category']['meta']['title']) : "", 
@@ -127,7 +129,8 @@ if (!function_exists('get_elastic_finder_document')) {
                 'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
                 'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
                 );
-            return $postfields_data;
+
+                return $postfields_data;
         }catch(Swift_RfcComplianceException $exception){
             Log::error($exception);
             return [];
@@ -158,10 +161,15 @@ if (!function_exists('get_elastic_service_document')) {
 
                         if($value['weekday'] != '' && $val['start_time'] != '' && $val['start_time_24_hour_format'] != '' && $val['price'] != ''){
 
-                            $newslot = ['start_time' => $val['start_time'], 'start_time_24_hour_format' => floatval(number_format($val['start_time_24_hour_format'],2)), 'price' => intval($val['price']) , 'weekday' => $value['weekday']];
-
+                            $newslot = ['start_time' => $val['start_time'], 
+                            'start_time_24_hour_format' => floatval(number_format($val['start_time_24_hour_format'],2)), 
+                            'end_time' => $val['end_time'], 
+                            'end_time_24_hour_format' => floatval(number_format($val['end_time_24_hour_format'],2)), 
+                            'price' => intval($val['price']) , 
+                            'weekday' => $value['weekday']
+                            ];
+                            
                             array_push($slots, $newslot);
-
                         }
                     }
                 }
@@ -182,11 +190,9 @@ if (!function_exists('get_elastic_service_document')) {
         }
 
         if(isset($data['lat']) && $data['lat'] != '' && isset($data['lon']) && $data['lon'] != ''){
-
             $geolocation = array('lat' => $data['lat'],'lon' => $data['lon']);
 
         }elseif(isset($data['finder']['lat']) && $data['finder']['lat'] != '' && isset($data['finder']['lon']) && $data['finder']['lon'] != ''){
-
             $geolocation = array('lat' => $data['finder']['lat'], 'lon' => $data['finder']['lon']);
 
         }else{
@@ -204,8 +210,11 @@ if (!function_exists('get_elastic_service_document')) {
             'subcategory_snow'              =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "", 
 
             'geolocation'                   =>      $geolocation,
+            'finder_id'                     =>      $data['finder_id'],
             'findername'                     =>      (isset($data['finder']['title']) && $data['finder']['title'] != '') ? strtolower($data['finder']['title']) : "", 
             'findername_snow'                =>      (isset($data['finder']['title']) && $data['finder']['title'] != '') ? strtolower($data['finder']['title']) : "", 
+            'commercial_type'               =>       (isset($data['finder']['commercial_type']) && $data['finder']['commercial_type'] != '') ? strtolower($data['finder']['commercial_type']) : "", 
+            'commercial_type_snow'          =>      (isset($data['finder']['commercial_type']) && $data['finder']['commercial_type'] != '') ? strtolower($data['finder']['commercial_type']) : "", 
             'finderslug'                     =>      (isset($data['finder']['slug']) && $data['finder']['slug'] != '') ? strtolower($data['finder']['slug']) : "", 
             'finderslug_snow'                =>      (isset($data['finder']['slug']) && $data['finder']['slug'] != '') ? strtolower($data['finder']['slug']) : "", 
             'location'                      =>      (isset($data['finder']['location']['name']) && $data['finder']['location']['name'] != '') ? strtolower($data['finder']['location']['name']) : "", 
