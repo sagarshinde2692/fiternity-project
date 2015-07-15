@@ -322,6 +322,8 @@ class CustomerController extends \BaseController {
 			        $customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 					$this->customermailer->register($customer_data);
 
+					Log::info('Customer Register', array('customer_details' => $customer));
+
         			return Response::json($this->createToken($customer),200);
 		        }	
 	        }else{
@@ -341,6 +343,8 @@ class CustomerController extends \BaseController {
 
 				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 				$this->customermailer->register($customer_data);
+
+				Log::info('Customer Register', array('customer_details' => $customer));
 
 				return Response::json($this->createToken($customer),200);
 	        }

@@ -1,5 +1,11 @@
 <?php
 
+$monolog = Log::getMonolog();
+$user_email = Session::get('useremail');
+$syslog = new \Monolog\Handler\SyslogHandler('fitadmin-'.$user_email);
+$formatter = new \Monolog\Formatter\LineFormatter('%channel%.%level_name%: %message% %extra%');
+$syslog->setFormatter($formatter);
+$monolog->pushHandler($syslog);
 
 App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);

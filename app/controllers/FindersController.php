@@ -467,6 +467,8 @@ class FindersController extends \BaseController {
 			$response = array('status' => 200, 'message' => 'Review Created Successfully.');
 		}
 		
+		Log::info('Customer Review', array('review_details' => $reviewdata));
+		
 		return Response::json($response, 200);  
 	}
 
