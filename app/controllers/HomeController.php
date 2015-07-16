@@ -267,10 +267,9 @@ class HomeController extends BaseController {
 
 			$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-													->with('offerings')
 													->whereIn('_id', $finder_ids)
 													->remember(Config::get('app.cachetime'))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','offerings'))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','info'))
 													->toArray();
 
 			$finders = array();
