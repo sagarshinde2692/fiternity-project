@@ -267,10 +267,10 @@ class HomeController extends BaseController {
 
 			$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 													->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+													->with('offerings')
 													->whereIn('_id', $finder_ids)
 													->remember(Config::get('app.cachetime'))
-													// ->orderByRaw(DB::raw("FIELD(_id, $collection[finder_ids])"))
-													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+													->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','offerings'))
 													->toArray();
 
 			$finders = array();
@@ -278,7 +278,6 @@ class HomeController extends BaseController {
 			// return $finder_ids;
 
 			// echo $collection['finder_ids']."<br>";1395,881,1490,968,1765,613,1682,424,1493,1,1704,1928
-			
 			foreach ($finder_ids as $key => $finderid) {
 			
 				$array = head(array_where($collection_finders, function($key, $value) use ($finderid){
