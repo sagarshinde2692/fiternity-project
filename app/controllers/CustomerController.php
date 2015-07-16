@@ -267,6 +267,8 @@ class CustomerController extends \BaseController {
 
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
+			Log::info('Customer Purchase', array('purchase_details' => $order));
+
 			return Response::json($resp);
 		}
 
