@@ -10,6 +10,10 @@ class Basemodel extends \Moloquent {
 		return $query->where('status','=','1');
 	}
 
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = intval($value);
+	}
 
 
 }

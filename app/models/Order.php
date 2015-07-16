@@ -4,7 +4,11 @@ class Order extends \Basemodel {
 
 	protected $collection = "orders";
 
-
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = intval($value);
+	}
+	
 	public function setCityIdAttribute($value){
 		
 		$this->attributes['city_id'] = intval($value);

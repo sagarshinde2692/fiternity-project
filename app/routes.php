@@ -1,5 +1,11 @@
 <?php
 
+$monolog = Log::getMonolog();
+$user_email = Session::get('useremail');
+$syslog = new \Monolog\Handler\SyslogHandler('fitadmin-'.$user_email);
+$formatter = new \Monolog\Formatter\LineFormatter('%channel%.%level_name%: %message% %extra%');
+$syslog->setFormatter($formatter);
+$monolog->pushHandler($syslog);
 
 App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
@@ -14,24 +20,21 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/testfinder', function() { 
 
 	for ($i=0; $i < 7 ; $i++) { 
-		$skip = $i * 3000;
+		$skip = $i * 1000;
 		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
-
 		foreach ($items as $item) {  
 			$data = $item->toArray();
 			$fid = $data['_id'];
 			$url =  "http://a1.fitternity.com/finderdetail/".$data['slug'];
-
 			// $fid = 579;
 			// $url =  "http://a1.fitternity.com/finderdetail/golds-gym-bandra-west";
-
 			$handlerr = curl_init($url);
 			curl_setopt($handlerr,  CURLOPT_RETURNTRANSFER, TRUE);
 			$resp = curl_exec($handlerr);
 			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
-			if ($ht == '404'){ echo "<br><br> isssue in : fid - $fid url -$url";} 
+			if ($ht == '404'){ echo "\n\n isssue in : fid - $fid url -$url";}
 		}
-		// exit;
+		exit;
 	}
 
 });
@@ -535,7 +538,10 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('/fitmania', 'FitmaniaController@getMockData');
+Route::get('fitmania', 'FitmaniaController@getDealOfDay');
+Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
+// Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
 
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/

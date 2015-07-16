@@ -164,7 +164,7 @@ public function getWorkoutsessions(){
 
 	// echo $body; exit;
 	$serachbody = $body;
-    
+
     //return $serachbody;
 	$request = array(
 		'url' => $this->elasticsearch_url."fitternity/service/_search",
@@ -346,18 +346,13 @@ public function getRatecards(){
 				'}'.$filters.'
 			}
 		},
-		"fields" : ["_id",
-		"name",
-		"finder_id"
-		"findername",
-		"finderslug",
-		"city",
+		"fields" : ["_id","name","finder_id","findername", "finderslug","city",
 		"category",
 		"subcategory",
 		"geolocation",
 		"location",
 		"workout_intensity",
-		"workout_tags"]
+		"workout_tags","commercial_type"]
 	}';
 
 		// echo $body; exit;
@@ -389,10 +384,14 @@ public function geoLocationService(){
 	$lon 				=	(Input::json()->get('lon')) ? Input::json()->get('lon') : '';
 	$city               =   (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
 
-	date_default_timezone_set('Asia/Kolkata');
+	if($lat == '' || $lon == '' ){
+		$response 		= 	[ 'search_results' => []];
+		return Response::json($search_results); 
+	}
+
 	$date = getdate();
 
-        //$date 					= 	date('d-m-Y',strtotime($date));
+    //$date 					= 	date('d-m-Y',strtotime($date));
 	$weekday 				= 	(intval(date("H")) < 22 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));
 	$min_time = (intval(date("H")) < 21 ) ? intval(date("H")) + 2 : 0;
 	$max_time = 24;
@@ -529,7 +528,7 @@ public function geoLocationService(){
 		"geolocation",
 		"location",
 		"workout_intensity",
-		"workout_tags"],
+		"workout_tags","commercial_type"],
 		"sort": [
 		{
 			"_geo_distance": {

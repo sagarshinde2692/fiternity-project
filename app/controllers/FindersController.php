@@ -53,7 +53,8 @@ class FindersController extends \BaseController {
 			->with('offerings')
 			->with('facilities')
 			->with('servicerates')
-			->with('services')
+			// ->with('services')
+			->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('_id', 'DESC');}))
 			->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 			->where('slug','=',$tslug)
 			->first();
@@ -202,16 +203,16 @@ class FindersController extends \BaseController {
 
 		$tslug 		= 	(string) $slug;
 		$finderarr 	= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-							->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-							->with('categorytags')
-							->with('locationtags')
-							->with('offerings')
-							->with('facilities')
-							->with('servicerates')
-							->with('services')
-							->where('slug','=',$tslug)
-							->first();
+		->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with('categorytags')
+		->with('locationtags')
+		->with('offerings')
+		->with('facilities')
+		->with('servicerates')
+		->with('services')
+		->where('slug','=',$tslug)
+		->first();
 		$data 		= 	$finderarr->toArray();
 		// print_pretty($data);exit;
 		$postdata 	= 	get_elastic_finder_document($data);
@@ -447,7 +448,7 @@ class FindersController extends \BaseController {
 
 		$finderobj = Finder::where('_id', intval($data['finder_id']))->first();
 		$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
-        clear_cache($cacheurl);
+		clear_cache($cacheurl);
 
 		//if exist then update
 		$oldreview = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
@@ -465,6 +466,8 @@ class FindersController extends \BaseController {
 			$updatefinder = $this->updateFinderRatingV1($reviewdata);
 			$response = array('status' => 200, 'message' => 'Review Created Successfully.');
 		}
+		
+		Log::info('Customer Review', array('review_details' => $reviewdata));
 		
 		return Response::json($response, 200);  
 	}
@@ -627,15 +630,15 @@ class FindersController extends \BaseController {
 
 		$item  =  (!is_array($review)) ? $review->toArray() : $review;
 		$data = [
-			'finder_id' => $item['finder_id'],
-			'customer_id' => $item['customer_id'],
-			'rating' => $item['rating'],
-			'detail_rating' => $item['detail_rating'],
-			'description' => $item['description'],
-			'created_at' => $item['created_at'],
-			'updated_at' => $item['updated_at'],
-			'customer' => $item['customer'],
-			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
+		'finder_id' => $item['finder_id'],
+		'customer_id' => $item['customer_id'],
+		'rating' => $item['rating'],
+		'detail_rating' => $item['detail_rating'],
+		'description' => $item['description'],
+		'created_at' => $item['created_at'],
+		'updated_at' => $item['updated_at'],
+		'customer' => $item['customer'],
+		'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
 		];
 		
 		return $data;

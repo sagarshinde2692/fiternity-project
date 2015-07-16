@@ -3,19 +3,11 @@
 class SearchController extends \BaseController {
 
 	protected $indice = "fitternity";
-	
 	protected $facetssize 					=	10000;
-	
 	protected $limit 						= 	10000;
-	
-	protected $elasticsearch_host           =   "";
-	
 	protected $elasticsearch_port           =   "";
-	
 	protected $elasticsearch_default_index  =   "";
-	
 	protected $elasticsearch_url            =   "";
-	
 	protected $elasticsearch_default_url    =   "";
 
 	public function __construct() {
@@ -23,13 +15,9 @@ class SearchController extends \BaseController {
 		parent::__construct();	
 		
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
-		
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
-		
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
-		
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
-		
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 	}
 
@@ -1047,20 +1035,25 @@ public function geoLocationFinder(){
 	$lat 				=	(Input::json()->get('lat')) ? Input::json()->get('lat') : '';
 	$lon 				=	(Input::json()->get('lon')) ? Input::json()->get('lon') : '';
 
-
+	if($category == ''){
+		$query = '"match_all": {}';
+		$basecategory_score = '';		
+	}else{
+		$query = '"multi_match": {
+			"query": "'.$category.'",
+			"fields": [
+			"category",
+			"categorytags"
+			]
+		}';	
+	}
+	
 	$body = '{
 		"from": '.$from.',
 		"size": '.$size.',
 		"query": {
 			"filtered": {
-				"query": {
-					"multi_match": {
-						"query": "'.$category.'",
-						"fields": [
-						"category",
-						"categorytags"
-						]
-					}
+				"query": {'.$query.'
 				},
 				"filter": {
 					"geo_distance_range": {
@@ -1085,18 +1078,18 @@ public function geoLocationFinder(){
 				"script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
 			}
 		},"sort": [
-		    {
-		      "_geo_distance": {
-		        "geolocation": "'.$lat.', '.$lon.'",
-		        "order": "asc",
-		        "unit": "km"
-		      }
-		    }
-		  ]
+		{
+			"_geo_distance": {
+				"geolocation": "'.$lat.', '.$lon.'",
+				"order": "asc",
+				"unit": "km"
+			}
+		}
+		]
 	}';
 
 	$serachbody = $body;
-	//return $body;
+	// return $body;
 	$request = array(
 		'url' => $this->elasticsearch_default_url."_search",
 		'port' => 9200,
