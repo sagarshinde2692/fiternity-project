@@ -1,8 +1,7 @@
 <?php
 
 $monolog = Log::getMonolog();
-$user_email = Session::get('useremail');
-$syslog = new \Monolog\Handler\SyslogHandler('fitadmin-'.$user_email);
+$syslog = new \Monolog\Handler\SyslogHandler('fitapi');
 $formatter = new \Monolog\Formatter\LineFormatter('%channel%.%level_name%: %message% %extra%');
 $syslog->setFormatter($formatter);
 $monolog->pushHandler($syslog);
