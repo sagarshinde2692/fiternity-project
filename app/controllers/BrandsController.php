@@ -13,7 +13,7 @@ class BrandsController extends \BaseController {
         parent::__construct();
     }
 
-    public function brandDetail($slug, $cache = true){
+    public function brandDetail($slug, $cache = false){
 
         $data = array();
         $slug = (string) $slug;
@@ -28,6 +28,7 @@ class BrandsController extends \BaseController {
 
                 $finders     =   Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
                                             ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                                            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
                                             ->where('status', '=', '1')
                                             ->whereIn('_id', array_map('intval',$brand->finder_id))
                                             ->get();
@@ -38,10 +39,12 @@ class BrandsController extends \BaseController {
 
                 Cache::tags('brand_detail')->put($slug,$data,Config::get('cache.cache_time'));
                 
+            }else{
+                return Response::json(array('status' => 400,'message' => 'brand not found'),400);
             }
         }
 
-        return Response::json(Cache::tags('brand_detail')->get($slug));
+        return Response::json(array('status' => 200,'brand_detail' => Cache::tags('brand_detail')->get($slug)),200);
     }
 
 }
