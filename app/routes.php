@@ -482,19 +482,19 @@ Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => '
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
 Route::post('/notify/{notifytype}','EmailSmsApiController@triggerNotify');
 Route::post('/email/requestcallback','EmailSmsApiController@RequestCallback');
-Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
-Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
+// Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
+// Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
 Route::post('/email/finderlead','EmailSmsApiController@FinderLead');
 Route::post('/email/emailfinder','EmailSmsApiController@EmailSmsFinder');
-Route::post('/email/newfinder','EmailSmsApiController@findercreated');
-Route::post('/email/finderreview','EmailSmsApiController@ReviewOnfinder');
-Route::post('/email/createcommunity','EmailSmsApiController@CreateCommunity');
-Route::post('/email/joincommuntiy','EmailSmsApiController@JoinCommunity');
-Route::post('/email/interestcommunity','EmailSmsApiController@InterestCommunity');
+// Route::post('/email/newfinder','EmailSmsApiController@findercreated');
+// Route::post('/email/finderreview','EmailSmsApiController@ReviewOnfinder');
+// Route::post('/email/createcommunity','EmailSmsApiController@CreateCommunity');
+// Route::post('/email/joincommuntiy','EmailSmsApiController@JoinCommunity');
+// Route::post('/email/interestcommunity','EmailSmsApiController@InterestCommunity');
 Route::post('/email/commentonblog','EmailSmsApiController@CommentOnBlog');
 Route::post('/subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
-Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
-Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
+// Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
+// Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
 Route::post('/landing', 'CaptureController@postCapture');
 Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
 Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
