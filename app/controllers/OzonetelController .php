@@ -29,8 +29,8 @@ class OzonetelController extends \BaseController {
 
 		    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
 		   
-	    	if($finder_contact_no){
-	    		$this->ozonetel->addDial($getFinderDetails->finder_contact_no,"true");
+	    	if($finderDetails){
+	    		$this->ozonetel->addDial($finderDetails->finder_contact_no,"true");
 	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder_id);
 	    	}else{
 	    		$this->ozonetel->addHangup();
