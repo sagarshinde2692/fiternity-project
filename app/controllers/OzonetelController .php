@@ -27,11 +27,11 @@ class OzonetelController extends \BaseController {
 
 		    $this->ozonetel->addPlayText("This call is recorderd for quality purpose");
 
-		    $finder_contact_no = $this->getVendorContact($_REQUEST['called_number']);
+		    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
 		   
 	    	if($finder_contact_no){
-	    		$this->ozonetel->addDial($finder_contact_no,"true");
-	    		$add_capture = $this->addCapture($_REQUEST);
+	    		$this->ozonetel->addDial($getFinderDetails->finder_contact_no,"true");
+	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder_id);
 	    	}else{
 	    		$this->ozonetel->addHangup();
 	    	}
@@ -45,25 +45,32 @@ class OzonetelController extends \BaseController {
 		    $update_capture = $this->updateCapture($_REQUEST);
 		    $this->ozonetel->addHangup();
 		}else {
-		    
+		    $this->ozonetel->addHangup();
 		}
 		$this->ozonetel->send();
 
 	}
 
-	public function getVendorContact($ozonetel_no){
+	public function getFinderDetails($ozonetel_no){
 
-		$ozonetel = Ozonetel::where('ozonetel_no','=',(string) $ozonetel_no)->first();
+		$ozonetel = array();
 
-		if(!empty($ozonetel)){
-			return $ozonetel->finder_contact_no;
-		}else{
+		try {
+			$ozonetel = Ozonetel::where('ozonetel_no','=',(string) $ozonetel_no)->first();
+
+			if(!empty($ozonetel)){
+				return $ozonetel;
+			}else{
+				return false;
+			}
+
+		} catch (Exception $e) {
 			return false;
 		}
 
 	}
 
-	public function addCapture($data){
+	public function addCapture($data,$finder_id){
 		
 		$ozonetel_capture = new Ozonetelcapture();
 		$ozonetel_capture->_id = Ozonetelcapture::max('_id') + 1;
@@ -73,6 +80,9 @@ class OzonetelController extends \BaseController {
 		$ozonetel_capture->customer_contact_circle = (string)$data['circle'];
 		$ozonetel_capture->customer_contact_operator = (string)$data['operator'];
 		$ozonetel_capture->customer_contact_type = (string)$data['cid_type'];
+		$ozonetel_capture->customer_cid = (string)$data['cid'];
+		$ozonetel_capture->finder_id = $finder_id;
+		$ozonetel_capture->call_status = "called";
 		$ozonetel_capture->status = "1";
 		$ozonetel_capture->save();
 
@@ -84,21 +94,23 @@ class OzonetelController extends \BaseController {
 		$ozonetel_capture = Ozonetelcapture::where('ozonetel_unique_id','=',$data['sid'])->first();
 		$ozonetel_capture->call_status = $data['status'];
 		$ozonetel_capture->rec_md5_checksum = (string) $data['rec_md5_checksum'];
-		$ozonetel_capture->pickduration = $data['pickduration'];
+		$ozonetel_capture->pick_duration = $data['pickduration'];
 
 		if($data['status'] != 'answered'){
+
+			$ozonetel_capture->call_status = "not answered";
 			$ozonetel_capture->message = $data['message'];
 			$ozonetel_capture->telco_code = $data['telco_code'];
+			
 		}else{
-			$ozone_fileurl = explode("/",$data['data']);
-			$ozone_filename = array_pop($ozone_fileurl);
-
-			$aws_filename = time().$data['sid'].'.wav';
-
-			$ozonetel_capture->aws_file_name = $aws_filename;
+			
+			$ozonetel_capture->call_status = "answered";
+			$ozonetel_capture->call_duration = $data['callduration'];
 			$ozonetel_capture->ozone_url_record = $data['data'];
-			 
-			$this->addToAws($data['data'],$aws_filename);
+			
+			/*$aws_filename = time().$data['sid'].'.wav';
+			$ozonetel_capture->aws_file_name = $aws_filename;
+			$this->addToAws($data['data'],$aws_filename);*/
 		}
 
 		$ozonetel_capture->update();
