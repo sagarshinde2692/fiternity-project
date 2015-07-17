@@ -39,7 +39,7 @@ class BlogsController extends \BaseController {
 		return Cache::tags('blog_list')->get($offset.'_'.$limit);
 	}
 
-	public function blogdetail($slug, $cache = false){
+	public function blogdetail($slug, $cache = true){
 
 		$data = array();
 		$tslug = (string) $slug;

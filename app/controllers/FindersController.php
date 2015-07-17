@@ -36,7 +36,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = false){
+	public function finderdetail($slug, $cache = true){
 
 		$data 	=  array();
 		$tslug 	= (string) strtolower($slug);
@@ -567,7 +567,7 @@ class FindersController extends \BaseController {
 		}
 	}
 
-	public function getFinderReview($slug,$cache = false){
+	public function getFinderReview($slug,$cache = true){
 		$data = array();
 		$tslug = (string) $slug;
 
