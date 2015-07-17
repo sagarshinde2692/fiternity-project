@@ -575,6 +575,19 @@ if($trialbooked = true){
 		'finder_emailqueuedids' => $finder_email_messageids, 
 		'finder_smsqueuedids' => $finer_sms_messageids
 		);
+
+	$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
+
+	if($fitness_force){
+		if($fitness_force['status'] == 200){
+			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+			$queueddata['fitness_force_appointment']['status'] = 200;
+			$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+		}else{
+			$queueddata['fitness_force_appointment'] = $fitness_force;
+		}
+	}
+	
 	$trialbooked 	= 	$booktrial->update($queueddata);
 }
 
