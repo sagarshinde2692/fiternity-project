@@ -36,17 +36,27 @@ class OzonetelController extends \BaseController {
 	    		$this->ozonetel->addHangup();
 	    	}
 
-		} elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
-		    if ($_REQUEST['status'] == 'answered') {
-		        $this->ozonetel->addPlayText("dialled number is answered");
-		    } else {
-		        $this->ozonetel->addPlayText("dialled number is not answered");
-		    }
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+
 		    $update_capture = $this->updateCapture($_REQUEST);
 		    $this->ozonetel->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
+
+		    $update_capture = $this->updateCapture($_REQUEST);
+		    $this->ozonetel->addHangup();
+
 		}else {
+
+		    if ($_REQUEST['status'] == 'answered') {
+
+				$update_capture = $this->updateCapture($_REQUEST);
+
+		    }
+
 		    $this->ozonetel->addHangup();
 		}
+		
 		$this->ozonetel->send();
 
 	}
