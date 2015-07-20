@@ -31,10 +31,10 @@ class FitmaniaController extends \BaseController {
 		$dealsofdays 			=	[];
 
 		// $dealsofdaycolleciton 	=	Fitmaniadod::active()->where('offer_date', '=', new DateTime($date) )->orderBy('ordering','desc')->get()->toArray();
-		$dealsofdaycolleciton 	=	Fitmaniadod::active()
-		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-		->orderBy('ordering','desc')->get()->toArray();
+		$dealsofdaycolleciton 	=	Fitmaniadod::with('location')->with('city')->active()
+												->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->orderBy('ordering','desc')->get()->toArray();
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -57,14 +57,17 @@ class FitmaniaController extends \BaseController {
 		$data = [
 		'_id' => $item['_id'],
 		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
-		'duration' => (isset($item['duration']) && $item['duration'] != '') ? strtolower($item['duration']) : "",
+		'city' => (isset($item['city']) && !empty($item['city']) ) ? $item['city'] : "",
+		'location' => (isset($item['location']) && !empty($item['location']) ) ? $item['location'] : "",
+		'finder_name' => (isset($item['finder_name']) && $item['finder_name'] != '') ? strtolower($item['finder_name']) : "",
 		'price' => (isset($item['price']) && $item['price'] != '') ? strtolower($item['price']) : "",
-		'special_price' => (isset($item['special_price']) && $item['special_price'] != '') ? strtolower($item['special_price']) : "",
+		'location_cluster' => (isset($item['location_cluster']) && $item['location_cluster'] != '') ? strtolower($item['location_cluster']) : "",
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
 		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
+		'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "",
+		'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "",
 		'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
-		'offer_link__to' => (isset($item['offer_link__to']) && $item['offer_link__to'] != '') ? (int)$item['offer_link__to'] : "",
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type')),
