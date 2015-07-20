@@ -57,8 +57,8 @@ class FitmaniaController extends \BaseController {
 		$data = [
 		'_id' => $item['_id'],
 		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
-		'city' => (isset($item['city']) && !empty($item['city']) ) ? $item['city'] : "",
-		'location' => (isset($item['location']) && !empty($item['location']) ) ? $item['location'] : "",
+		'location' => (isset($item['location']) && !empty($item['location']) ) ? array_only($item['location'], array('_id', 'name', 'slug')) : "",
+		'city' => (isset($item['city']) && !empty($item['city']) ) ? array_only($item['city'], array('_id', 'name', 'slug')) : "",
 		'finder_name' => (isset($item['finder_name']) && $item['finder_name'] != '') ? strtolower($item['finder_name']) : "",
 		'price' => (isset($item['price']) && $item['price'] != '') ? strtolower($item['price']) : "",
 		'location_cluster' => (isset($item['location_cluster']) && $item['location_cluster'] != '') ? strtolower($item['location_cluster']) : "",
