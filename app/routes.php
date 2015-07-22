@@ -9,6 +9,8 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 
+
+
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
 Route::get('/testfinder', function() { 
