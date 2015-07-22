@@ -416,6 +416,8 @@ class CustomerController extends \BaseController {
 		return $this->createToken($customer);
 	}
 
+
+
 	public function socialLogin($data){
 
 		if($data['identity'] == 'facebook'){
@@ -508,6 +510,8 @@ class CustomerController extends \BaseController {
 		return $this->createToken($customer);
 	}
 
+
+
 	public function socialRegister($data){
 
 		$rules = [
@@ -547,6 +551,8 @@ class CustomerController extends \BaseController {
         return $response;
 	}
 
+
+
 	public function createToken($customer){
 
 		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
@@ -566,10 +572,12 @@ class CustomerController extends \BaseController {
         return array('status' => 200,'message' => 'successfull login', 'token' => $token);
 	}
 
+
 	public function validateToken(){
 
 		return Response::json(array('status' => 200,'message' => 'token is correct'),200);
 	}
+
 
 	public function resetPassword(){
 
@@ -609,6 +617,8 @@ class CustomerController extends \BaseController {
         return Response::json($response,$responce['status']);
 	}
 
+
+
 	public function createPasswordToken($customer){
 		$password_claim = array(
 			    "iat" => Config::get('app.forgot_password.iat'),
@@ -622,6 +632,8 @@ class CustomerController extends \BaseController {
 
         return $token;
 	}
+
+
 
 	public function forgotPasswordEmail(){
 
@@ -649,6 +661,8 @@ class CustomerController extends \BaseController {
 		}
 
 	}
+
+
 
 	public function forgotPassword(){
 
@@ -711,6 +725,8 @@ class CustomerController extends \BaseController {
 	    }
 	}
 
+
+
 	public function forgotPasswordEmailApp(){
 
 		$data = Input::json()->all();
@@ -754,6 +770,8 @@ class CustomerController extends \BaseController {
 
 	}
 
+
+
 	public function createOtp($email){
 		$length = 4;
 		$characters = '0123456789';
@@ -773,6 +791,8 @@ class CustomerController extends \BaseController {
 
 	    return $randomString;
 	}
+
+
 
 	public function validateOtp(){
 
@@ -803,6 +823,8 @@ class CustomerController extends \BaseController {
 
 	    return Response::json($response,$response['status']);
 	}
+
+	
 
 	public function customerLogout(){
 

@@ -161,6 +161,8 @@ class OrderController extends \BaseController {
 
 		$data			=	Input::json()->all();
 
+		// $required_fiels = ['customer_name', ];
+
 		if(empty($data['customer_name'])){
 			$resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
         	return Response::json($resp,404);			
