@@ -31,10 +31,10 @@ class FitmaniaController extends \BaseController {
 		$dealsofdays 			=	[];
 
 		// $dealsofdaycolleciton 	=	Fitmaniadod::active()->where('offer_date', '=', new DateTime($date) )->orderBy('ordering','desc')->get()->toArray();
-		$dealsofdaycolleciton 	=	Fitmaniadod::active()
-		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-		->orderBy('ordering','desc')->get()->toArray();
+		$dealsofdaycolleciton 	=	Fitmaniadod::with('location')->with('city')->active()
+												->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->orderBy('ordering','desc')->get()->toArray();
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -57,17 +57,21 @@ class FitmaniaController extends \BaseController {
 		$data = [
 		'_id' => $item['_id'],
 		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
-		'duration' => (isset($item['duration']) && $item['duration'] != '') ? strtolower($item['duration']) : "",
+		'location' => (isset($item['location']) && !empty($item['location']) ) ? array_only($item['location'], array('_id', 'name', 'slug')) : "",
+		'city' => (isset($item['city']) && !empty($item['city']) ) ? array_only($item['city'], array('_id', 'name', 'slug')) : "",
+		'finder_name' => (isset($item['finder_name']) && $item['finder_name'] != '') ? strtolower($item['finder_name']) : "",
 		'price' => (isset($item['price']) && $item['price'] != '') ? strtolower($item['price']) : "",
-		'special_price' => (isset($item['special_price']) && $item['special_price'] != '') ? strtolower($item['special_price']) : "",
+		'location_cluster' => (isset($item['location_cluster']) && $item['location_cluster'] != '') ? strtolower($item['location_cluster']) : "",
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
 		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
+		'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "",
+		'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "",
 		'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
-		'offer_link__to' => (isset($item['offer_link__to']) && $item['offer_link__to'] != '') ? (int)$item['offer_link__to'] : "",
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type')),
+		'slabs' => (isset($item['slabs']) && !empty($item['slabs']) ) ? pluck($item['slabs'], array('price', 'limit', 'can_sold', 'total_purchase')) : "",
 		];
 		return $data;
 	}
@@ -111,13 +115,14 @@ class FitmaniaController extends \BaseController {
 	}
 
 
+
 	private function transformFitmaniaService($serivce){
 
 		$item  	   	=  	(!is_array($serivce)) ? $serivce->toArray() : $serivce;
 		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		->where('_id', (int) $item['finder_id'])->first();
+								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+								->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+								->where('_id', (int) $item['finder_id'])->first();
 		// return $item; exit;
 
 		$data = [
@@ -133,7 +138,7 @@ class FitmaniaController extends \BaseController {
 		'ratecards' => (isset($item['ratecards']) && $item['ratecards'] != '') ? $item['ratecards'] : [],
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category')),
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location')),
 		];
 		
 		return $data;
@@ -148,6 +153,16 @@ class FitmaniaController extends \BaseController {
 			return Response::json($resp,404);			
 		}
 
+
+		//Maintain Slab for deals of day
+		if($data['type'] == 'fitmaniadealsofday'){
+			if( empty($data['service_id']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+        		return Response::json($resp,404);				
+			}
+		}
+
+
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
 		$orderData 	= 	$order->toArray();
@@ -155,6 +170,33 @@ class FitmaniaController extends \BaseController {
 		$buydealofday 	=	$order->update($data);
 
 		if($buydealofday){
+
+			$dealofday = Fitmaniadod::findOrFail(intval($data['service_id']));
+			$dealslabsarr = $dealofday->toArray();
+
+			$deal_total_purchase_cnt = Order::where('service_id', intval($data['service_id']))->where('status', '=', '1')->count();
+			$slab_arr = $dealslabsarr['slabs'];
+
+			// return $dealslabsarr['slabs'];
+			foreach ($dealslabsarr['slabs'] as $key => $item) {
+				// return $item['total_purchase'];
+				// $slab = [];
+				if(intval($item['can_sold']) == 1){
+					$item['total_purchase'] =  intval($item['total_purchase']) + 1;
+					if(intval($item['limit']) == intval($item['total_purchase'])){
+						$item['can_sold'] = 0;
+					}
+					$slab_arr[$key] = $item;
+					break;
+				}
+				
+			}
+			// return $slab_arr;
+			$slabdata = [];
+			array_set($slabdata, 'slabs', $slab_arr);
+
+			$dealofday->update($slabdata);
+
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 		}

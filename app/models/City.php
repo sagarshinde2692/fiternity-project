@@ -43,4 +43,9 @@ class City extends \Basemodel {
 		return $this->hasOnce('Homepage');
 	}
 
+	public function fitmaniadods(){
+		return $this->hasMany('Fitmaniadod','city_id');
+	}
+
+
 }

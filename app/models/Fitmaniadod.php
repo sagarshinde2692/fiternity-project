@@ -30,22 +30,29 @@ class Fitmaniadod extends \Basemodel {
 		$this->attributes['finder_id'] = intval($value);
 	}
 
-	public function setPriceAttribute($value){
-		$this->attributes['price'] = intval($value);
+	public function setLocationIdAttribute($value){
+		$this->attributes['location_id'] = intval($value);
 	}
 
-	public function setSpecialPriceAttribute($value){
-		$this->attributes['special_price'] = intval($value);
+	public function setCityIdAttribute($value){
+		$this->attributes['city_id'] = intval($value);
+	}
+
+	public function setPriceAttribute($value){
+		$this->attributes['price'] = intval($value);
 	}
 
 	public function setOrderingAttribute($value){
 		$this->attributes['ordering'] = intval($value);
 	}
 
-	public function setOfferLinkToAttribute($value){
-		$this->attributes['offer_link__to'] = intval($value);
-	}
+	public function location(){
+		return $this->belongsTo('Location');
+	}	
 
+	public function city(){
+		return $this->belongsTo('City');
+	}
 
 
 }

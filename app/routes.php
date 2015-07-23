@@ -14,6 +14,8 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 
+
+
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
 Route::get('/testfinder', function() { 
@@ -390,6 +392,7 @@ Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbookt
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
+Route::get('findertopreview/{slug}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -487,19 +490,19 @@ Route::get('updateappointmentstatus', array('as' => 'customer.updateappointments
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
 Route::post('/notify/{notifytype}','EmailSmsApiController@triggerNotify');
 Route::post('/email/requestcallback','EmailSmsApiController@RequestCallback');
-Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
-Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
+// Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
+// Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
 Route::post('/email/finderlead','EmailSmsApiController@FinderLead');
 Route::post('/email/emailfinder','EmailSmsApiController@EmailSmsFinder');
-Route::post('/email/newfinder','EmailSmsApiController@findercreated');
-Route::post('/email/finderreview','EmailSmsApiController@ReviewOnfinder');
-Route::post('/email/createcommunity','EmailSmsApiController@CreateCommunity');
-Route::post('/email/joincommuntiy','EmailSmsApiController@JoinCommunity');
-Route::post('/email/interestcommunity','EmailSmsApiController@InterestCommunity');
+// Route::post('/email/newfinder','EmailSmsApiController@findercreated');
+// Route::post('/email/finderreview','EmailSmsApiController@ReviewOnfinder');
+// Route::post('/email/createcommunity','EmailSmsApiController@CreateCommunity');
+// Route::post('/email/joincommuntiy','EmailSmsApiController@JoinCommunity');
+// Route::post('/email/interestcommunity','EmailSmsApiController@InterestCommunity');
 Route::post('/email/commentonblog','EmailSmsApiController@CommentOnBlog');
 Route::post('/subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
-Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
-Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
+// Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
+// Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
 Route::post('/landing', 'CaptureController@postCapture');
 Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
 Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
