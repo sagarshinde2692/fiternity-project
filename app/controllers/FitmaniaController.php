@@ -42,18 +42,9 @@ class FitmaniaController extends \BaseController {
 		->orderBy('ordering','desc')->get()->toArray();
 
 		if($city == 'mumbai'){
-			$location_cluster	=	['central mumbai'=>'Central Mumbai', 
-			'south mumbai'=>'South Mumbai', 
-			'western mumbai'=>'Western Mumbai', 
-			'navi mumbai'=>'Navi Mumbai', 
-			'thane'=>'Thane', 
-			'mira - bhayandar'=>'Mira - Bhayandar'
-			];
+			$location_cluster	=	['central mumbai','south mumbai','western mumbai','navi mumbai','thane','mira - bhayandar',];
 		}else{
-			$location_cluster	=	[
-			'pune city'=>'Pune City',
-			'pimpri chinchwad'=>'Pimpri Chinchwad'
-			];
+			$location_cluster	=	[ 'pune city', 'pimpri chinchwad' ];
 		}	
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
