@@ -82,7 +82,7 @@ zumba_trials
 		$storecapture = Capture::create($data);
 		if($storecapture){
 			if(Input::json()->get('capture_type') == 'pre-register-fitmania'){
-				$sndInstantSmsFinder	=	$this->customersms->bookTrial($data);
+				$sndInstantSmsFinder	=	$this->customersms->fitmaniaPreRegister($data);
 			}
 		}
 
