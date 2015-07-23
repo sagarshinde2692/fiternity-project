@@ -644,5 +644,33 @@ class FindersController extends \BaseController {
 		return $data;
 	}
 
+	public function finderTopReview($slug,$cache=true){
+
+		$finder = Finder::where('slug','=',(string)$slug)
+		->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->first();
+
+		//echo"<pre>";print_r($finder);exit;
+
+		$review = Review::where('finder_id','=',$finder->_id)
+		->orderBy('created_at', 'desc')
+		->orderBy('rating', 'desc')
+		->take(2)->get();
+
+		echo"<pre>";print_r($review);exit;
+
+		$review = Review::with('finder')->where('_id', (int) $reivewid)->first();
+
+		if(!$review){
+			$resp 	= 	array('status' => 400, 'review' => [], 'message' => 'No review Exist :)');
+			return Response::json($resp, 400);
+		}
+
+		$reviewdata = $this->transform($review);
+		$resp 	= 	array('status' => 200, 'review' => $reviewdata, 'message' => 'Particular Review Info');
+		return Response::json($resp, 200);
+	}
+
 
 }
