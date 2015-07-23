@@ -44,15 +44,15 @@ Class Fitnessforce {
         $booktrial = $data['booktrial'];
         $finder = $data['finder'];
 
-        if(isset($finder->fitnessforce_key) && $finder->fitnessforce_key != ''){
+        if(!isset($finder['fitnessforce_key']) || $finder['fitnessforce_key'] == ''){
             $error = [  'status'=>400,
-                    'reason'=>'finder not found'
+                    'reason'=>'fitnessforce key not found'
             ];
             return $error;
         }
 
         $json = [];
-        $json['authenticationkey'] = $finder->fitnessforce_key;
+        $json['authenticationkey'] = $finder['fitnessforce_key'];
         $json['name'] = $booktrial->customer_name;
         $json['mobileno'] = $booktrial->customer_phone; 
         $json['emailaddress'] = $booktrial->customer_email;
