@@ -78,6 +78,7 @@ class FitmaniaController extends \BaseController {
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type')),
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','location')),
 		'slabs' => (isset($item['slabs']) && !empty($item['slabs']) ) ? pluck($item['slabs'], array('price', 'limit', 'can_sold', 'total_purchase')) : "",
 		];
 		return $data;
