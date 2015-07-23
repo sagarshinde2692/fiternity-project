@@ -1,16 +1,21 @@
 <?php
 
+use App\Sms\CustomerSms as CustomerSms;
+
 
 class CaptureController extends \BaseController {
 
-	public function __construct()
-	{
-		$this->afterFilter(function($response)
-		{
+
+	public function __construct(CustomerSms $customersms){
+
+		$this->findersms 				=	$findersms;
+
+		$this->afterFilter(function($response) {
 			header("Access-Control-Allow-Origin: *");
 			header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 			return $response;
 		});
+
 	}
 
 	/*
@@ -58,6 +63,10 @@ zumba_callbacks
 zumba_party
 zumba_trials
 */
+
+
+	protected $customersms;
+
 	public function postCapture(){
 		
 		$data = array(
@@ -69,12 +78,16 @@ zumba_trials
 			);
 
 		$yet_to_connect_arr = array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy');
-
 		// if(in_array(Input::json()->get('capture_type'), $yet_to_connect_arr)){
-
 		// }
 
 		$storecapture = Capture::create($data);
+		if($storecapture){
+			if(Input::json()->get('capture_type') == 'pre-register-fitmania'){
+				$sndInstantSmsFinder	=	$this->findersms->bookTrial($data);
+			}
+		}
+
 		return Response::json($storecapture);
 	}	
 

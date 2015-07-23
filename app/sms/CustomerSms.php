@@ -171,6 +171,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->sendTo($to, $message);
 	}
 
+	public function fitmaniaPreRegister ($data){
+
+		$to 		=  	array_merge(explode(',', $data['mobile']));
+		
+		$message 	=	"Thanks for pre-registering on FitMania Sale by Fitternity.com. We will be getting in touch with you to share more details. Spread the word http://on.fb.me/1JgBYIU .";
+
+		return $this->sendTo($to, $message);
+	}
+
 
 
 
