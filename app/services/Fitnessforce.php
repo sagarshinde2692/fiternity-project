@@ -44,22 +44,20 @@ Class Fitnessforce {
         $booktrial = $data['booktrial'];
         $finder = $data['finder'];
 
-        if(!$finder){
+        if(isset($finder->fitnessforce_key) && $finder->fitnessforce_key != ''){
             $error = [  'status'=>400,
                     'reason'=>'finder not found'
             ];
             return $error;
         }
 
-        $key = "F862975730294C0F82E24DD224A26890";
         $json = [];
-        $json['authenticationkey'] = $key;
-        $json['trialowner'] = "AUTO";
+        $json['authenticationkey'] = $finder->fitnessforce_key;
         $json['name'] = $booktrial->customer_name;
         $json['mobileno'] = $booktrial->customer_phone; 
         $json['emailaddress'] = $booktrial->customer_email;
-        $json['startdate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
-        $json['enddate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+        $json['trialowner'] = "AUTO";
+        $json['appointmentdate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
         $json['starttime'] = $booktrial->schedule_slot_start_time;
         $json['endtime'] = $booktrial->schedule_slot_end_time;
 
