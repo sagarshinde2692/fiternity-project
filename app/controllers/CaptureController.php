@@ -65,9 +65,6 @@ zumba_party
 zumba_trials
 */
 
-
-	protected $customersms;
-
 	public function postCapture(){
 		
 		$data = array(
