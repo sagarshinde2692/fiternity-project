@@ -5,10 +5,11 @@ use App\Sms\CustomerSms as CustomerSms;
 
 class CaptureController extends \BaseController {
 
+	protected $customersms;
 
 	public function __construct(CustomerSms $customersms){
 
-		$this->findersms 				=	$findersms;
+		$this->customersms 				=	$customersms;
 
 		$this->afterFilter(function($response) {
 			header("Access-Control-Allow-Origin: *");
