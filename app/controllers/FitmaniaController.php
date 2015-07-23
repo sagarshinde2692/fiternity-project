@@ -36,17 +36,32 @@ class FitmaniaController extends \BaseController {
 
 		// $dealsofdaycolleciton 	=	Fitmaniadod::active()->where('offer_date', '=', new DateTime($date) )->orderBy('ordering','desc')->get()->toArray();
 		$dealsofdaycolleciton 	=	Fitmaniadod::with('location')->with('city')->active()
-												->where('city_id', '=', $city_id)
-												->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-												->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-												->orderBy('ordering','desc')->get()->toArray();
+		->where('city_id', '=', $city_id)
+		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		->orderBy('ordering','desc')->get()->toArray();
+
+		if($city == 'mumbai'){
+			$location_cluster	=	['central mumbai'=>'Central Mumbai', 
+			'south mumbai'=>'South Mumbai', 
+			'western mumbai'=>'Western Mumbai', 
+			'navi mumbai'=>'Navi Mumbai', 
+			'thane'=>'Thane', 
+			'mira - bhayandar'=>'Mira - Bhayandar'
+			];
+		}else{
+			$location_cluster	=	[
+			'pune city'=>'Pune City',
+			'pimpri chinchwad'=>'Pimpri Chinchwad'
+			];
+		}	
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
 			array_push($dealsofdays, $dealdata);
 		}
 
-		$responseData = [ 'dealsofday' => $dealsofdays ];
+		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
 
 		return Response::json($responseData, 200);
 	}
@@ -128,9 +143,9 @@ class FitmaniaController extends \BaseController {
 
 		$item  	   	=  	(!is_array($serivce)) ? $serivce->toArray() : $serivce;
 		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-								->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-								->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-								->where('_id', (int) $item['finder_id'])->first();
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->where('_id', (int) $item['finder_id'])->first();
 		// return $item; exit;
 
 		$data = [
@@ -166,7 +181,7 @@ class FitmaniaController extends \BaseController {
 		if($data['type'] == 'fitmaniadealsofday'){
 			if( empty($data['service_id']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
-        		return Response::json($resp,404);				
+				return Response::json($resp,404);				
 			}
 		}
 
