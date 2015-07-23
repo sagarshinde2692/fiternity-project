@@ -6,8 +6,8 @@ use \GuzzleHttp\Client;
 
 Class Fitnessforce {
 
-
-    protected $base_uri = 'http://27.106.109.11:8088/FitnessForceApi/api/';
+    protected $base_uri = 'http://api.fitnessforce.com/';
+    //protected $base_uri = 'http://27.106.109.11:8088/FitnessForceApi/api/';
     protected $debug = false;
     protected $client;
 
@@ -62,7 +62,8 @@ Class Fitnessforce {
         $json['endtime'] = $booktrial->schedule_slot_end_time;
 
         try {
-            $response = json_decode($this->client->post('Appointment',['json'=>$json])->getBody()->getContents());
+            //$response = json_decode($this->client->post('Appointment',['json'=>$json])->getBody()->getContents());
+            $response = json_decode($this->client->post('appointment',['json'=>$json])->getBody()->getContents());
             $return  = ['status'=>200,
                         'data'=>(array) $response->success[0]
             ];
