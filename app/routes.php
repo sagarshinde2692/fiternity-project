@@ -79,23 +79,30 @@ Route::get('/testsms', function() {
 
 Route::get('/capturedata', function() { 
 
-	// $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim(977348762)) . "&source=fitter&message=" . urlencode('hi');
-	// $ci = curl_init();
-	// curl_setopt($ci, CURLOPT_URL, $sms_url);
-	// curl_setopt($ci, CURLOPT_HEADER, 0);
-	// curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-	// $response = curl_exec($ci);
-	// curl_close($ci);
-	// exit;
+	$headers = [
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=trials.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
+	];
 
-	$items = Capture::get();
+	// $items = Booktrial::take(5)->skip(0)->get();
+	$items = Booktrial::get();
 	$data = array();
-	foreach ($items as $item) {  
-		$data = $item->toArray();
-		$capture = Capture::findOrFail($data['_id']);
-		echo $response = $capture->update($data);
-
+	$output = "ID, NAME, EMAIL, NUMBER, FINDERID, FINDERNAME,  FINDERLOCATION, FINDERCATEGORYTAGS \n";
+	foreach ($items as $value) {  
+		// $data = $item->toArray();
+		$finderobj = Finder::with('categorytags')->with('location')->findOrFail((int)$value->finder_id);
+		$finder = $finderobj->toArray();
+		$finderlocation = strtolower($finder['location']['name']);
+		$findercategorytags = implode(",", array_pluck($finder['categorytags'],'name')) ;
+		// echo $response = $capture->update($data);
+		$output .= "$value->_id, $value->customer_name, ".$value->customer_email.", ".$value->customer_phone.", ".$value->finder_id.", ".$value->finder_name.", ".$finderlocation .", $findercategorytags\n";
 	}
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
 
 });
 
