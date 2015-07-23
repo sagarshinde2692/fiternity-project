@@ -655,7 +655,7 @@ class FindersController extends \BaseController {
 
 			try {
 
-				$finder = Finder::where('slugsasa','=',(string)$slug)
+				$finder = Finder::where('slug','=',(string)$slug)
 						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 						->first(array('title','photos','city_id','location_id','info','contact','total_rating_count','detail_rating_summary_average','detail_rating_summary_count'));
