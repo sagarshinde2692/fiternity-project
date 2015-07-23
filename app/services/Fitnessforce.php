@@ -57,7 +57,8 @@ Class Fitnessforce {
         $json['mobileno'] = $booktrial->customer_phone; 
         $json['emailaddress'] = $booktrial->customer_email;
         $json['trialowner'] = "AUTO";
-        $json['appointmentdate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+        $json['startdate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+        $json['enddate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
         $json['starttime'] = $booktrial->schedule_slot_start_time;
         $json['endtime'] = $booktrial->schedule_slot_end_time;
 
