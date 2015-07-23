@@ -534,7 +534,7 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('fitmania', 'FitmaniaController@getDealOfDay');
+Route::get('fitmania/{city?}', 'FitmaniaController@getDealOfDay');
 Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
 // Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');

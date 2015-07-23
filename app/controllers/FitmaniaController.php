@@ -24,14 +24,19 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getDealOfDay($date = null){
+	public function getDealOfDay($city = 'mumbai'){
 
-		$date 					=  	($date == null) ? Carbon::now() : $date;
+		// $date 				=  	($date == null) ? Carbon::now() : $date;
+		$date 					=  	Carbon::now();
 		$timestamp 				= 	strtotime($date);
+		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
 		$dealsofdays 			=	[];
 
 		// $dealsofdaycolleciton 	=	Fitmaniadod::active()->where('offer_date', '=', new DateTime($date) )->orderBy('ordering','desc')->get()->toArray();
 		$dealsofdaycolleciton 	=	Fitmaniadod::with('location')->with('city')->active()
+												->where('city_id', '=', $city_id)
 												->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												->orderBy('ordering','desc')->get()->toArray();
@@ -40,7 +45,9 @@ class FitmaniaController extends \BaseController {
 			$dealdata = $this->transform($value);
 			array_push($dealsofdays, $dealdata);
 		}
+
 		$responseData = [ 'dealsofday' => $dealsofdays ];
+
 		return Response::json($responseData, 200);
 	}
 
@@ -82,12 +89,12 @@ class FitmaniaController extends \BaseController {
 		// return $data = Input::json()->all();
 		$from 				=	(Input::json()->get('from')) ? intval(Input::json()->get('from')) : 0;
 		$size 				=	(Input::json()->get('size')) ? intval(Input::json()->get('size')) : 10;
+		$city 				=	(Input::json()->get('city')) ? intval(Input::json()->get('city')) : 1;
 		$category 			=	(Input::json()->get('category')) ? intval(Input::json()->get('category')) : '';		
 		$location 			=	(Input::json()->get('location')) ? intval(Input::json()->get('location')) : '';	
-		$city_id			= 	1;
 		$fitmaniaServices 	=	[];
 
-		$query	 			= 	Service::active()->orderBy('_id')->whereIn('show_on', array('2','3'));	
+		$query	 			= 	Service::active()->orderBy('_id')->whereIn('show_on', array('2','3'))->where('city_id', $city);	
 
 		if($category != ''){ 
 			$query->where('servicecategory_id', $category); 
@@ -95,8 +102,8 @@ class FitmaniaController extends \BaseController {
 		
 		if($location != ''){ 
 			$query->where('location_id', $location); 
-		}		
-		
+		}	
+
 		$serviceColleciton 		= 	$query->take($size)->skip($from)->get();
 		foreach ($serviceColleciton as $key => $value) {
 			$servicedata = $this->transformFitmaniaService($value);
@@ -106,7 +113,7 @@ class FitmaniaController extends \BaseController {
 
 		$responseData = [
 		'categories' => Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug')),
-		'locations' => Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug')),
+		'locations' => Location::active()->whereIn('cities',array($city))->orderBy('name')->get(array('name','_id','slug')),
 		'services' => $fitmaniaServices
 		];
 		// return $responseData;
