@@ -51,9 +51,9 @@ class FitmaniaController extends \BaseController {
 		}
 
 		if($city == 'mumbai'){
-			$location_cluster	=	['central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane','mira-bhayandar'];
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane','mira-bhayandar'];
 		}else{
-			$location_cluster	=	[ 'pune-city', 'pimpri-chinchwad' ];
+			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
 		}	
 
 		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
@@ -133,7 +133,7 @@ class FitmaniaController extends \BaseController {
 
 		$responseData = [
 		'categories' => Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug')),
-		'locations' => Location::active()->whereIn('cities',array($city))->orderBy('name')->get(array('name','_id','slug')),
+		'locations' => Location::active()->whereIn('cities', array($city))->orderBy('name')->get(array('name','_id','slug')),
 		'services' => $fitmaniaServices
 		];
 		// return $responseData;
