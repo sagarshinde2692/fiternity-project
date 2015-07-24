@@ -13,6 +13,30 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
+Route::get('/checkreview', function() { 
+
+	// $items = Comment::get();
+	// $items = DB::table('reviewsdump')->take(2)->skip(0)->get();
+	$items = DB::table('reviewsdump')->get();
+
+	$old_review_data = array();
+	foreach ($items as $item) {  
+		// $data = $item->toArray();
+		$older_review_id 			=	$item['_id'];
+		$older_review_finder_id 	= 	intval(trim(str_replace("finder","",$item['object']['uid'])));
+		$older_review_description 	= 	$item['description'];
+		$older_user_email_exist 	= 	(isset($item['user']['email']) && $item['user']['email'] != '') ?  1 : 0 ;
+		// return $older_review_id. " -- " .$older_review_finder_id. " -- " .$older_review_description;
+		$reviewcnt =  Review::where('finder_id', $older_review_finder_id)->where('description', $older_review_description)->count();
+		$review_already_exist = 0;
+		if($reviewcnt > 0){ $review_already_exist = 1; }
+		echo  "review_already_exist  :  $review_already_exist  ---  older_user_email_exist  :  $older_user_email_exist<br>";
+		DB::table('reviewsdump')->where('_id', $older_review_id)->update(array('review_already_exist' => $review_already_exist, 'older_user_email_exist' => $older_user_email_exist));
+	}
+
+});
+
+
 Route::get('/testfinder', function() { 
 
 	for ($i=0; $i < 7 ; $i++) { 

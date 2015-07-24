@@ -302,6 +302,7 @@ class OrderController extends \BaseController {
 	        $customer->identity = 'email';
 	        $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 	        $customer->status = "1";
+	        $customer->ishulluser = 1;
 	        $customer->save();
 
 	        return $inserted_id;

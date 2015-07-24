@@ -24,7 +24,7 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getDealOfDay($city = 'mumbai'){
+	public function getDealOfDay($city = 'mumbai', $location_cluster = ''){
 
 		// $date 				=  	($date == null) ? Carbon::now() : $date;
 		$date 					=  	Carbon::now();
@@ -34,23 +34,27 @@ class FitmaniaController extends \BaseController {
 		$city_id				= 	(int) $citydata['_id'];	
 		$dealsofdays 			=	[];
 
-		// $dealsofdaycolleciton 	=	Fitmaniadod::active()->where('offer_date', '=', new DateTime($date) )->orderBy('ordering','desc')->get()->toArray();
-		$dealsofdaycolleciton 	=	Fitmaniadod::with('location')->with('city')->active()
-		->where('city_id', '=', $city_id)
-		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-		->orderBy('ordering','desc')->get()->toArray();
+		$query 	=	Fitmaniadod::with('location')->with('city')->active()
+									->where('city_id', '=', $city_id)
+									->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+									->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
+
+		if($location_cluster != ''){ 
+			$query->where('location_cluster', $location_cluster); 
+		}	
+
+		$dealsofdaycolleciton 	= $query->orderBy('ordering','desc')->get()->toArray();
+		
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transform($value);
+			array_push($dealsofdays, $dealdata);
+		}
 
 		if($city == 'mumbai'){
 			$location_cluster	=	['central mumbai','south mumbai','western mumbai','navi mumbai','thane','mira - bhayandar',];
 		}else{
 			$location_cluster	=	[ 'pune city', 'pimpri chinchwad' ];
 		}	
-
-		foreach ($dealsofdaycolleciton as $key => $value) {
-			$dealdata = $this->transform($value);
-			array_push($dealsofdays, $dealdata);
-		}
 
 		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
 
@@ -83,9 +87,10 @@ class FitmaniaController extends \BaseController {
 		'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type')),
-		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','location')),
-		'slabs' => (isset($item['slabs']) && !empty($item['slabs']) ) ? pluck($item['slabs'], array('price', 'limit', 'can_sold', 'total_purchase')) : "",
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact')),
+		'slabs' => (isset($item['slabs']) && !empty($item['slabs']) ) ? pluck($item['slabs'], array('price', 'limit', 'can_sold', 'total_purchase', 'discount')) : "",
+		'august_available_dates' => (isset($item['august_available_dates']) && !empty($item['august_available_dates']) ) ? $item['august_available_dates'] : "",
+		'september_available_dates' => (isset($item['september_available_dates']) && !empty($item['september_available_dates']) ) ? $item['september_available_dates'] : "",
 		];
 		return $data;
 	}
@@ -152,7 +157,7 @@ class FitmaniaController extends \BaseController {
 		'ratecards' => (isset($item['ratecards']) && $item['ratecards'] != '') ? $item['ratecards'] : [],
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location')),
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact')),
 		];
 		
 		return $data;
