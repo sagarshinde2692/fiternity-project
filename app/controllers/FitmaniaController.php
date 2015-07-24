@@ -196,10 +196,10 @@ class FitmaniaController extends \BaseController {
 		$buydealofday 	=	$order->update($data);
 
 		if($buydealofday){
-			$dealofday = Fitmaniadod::findOrFail(intval($data['service_id']));
+			$dealofday = Fitmaniadod::findOrFail(intval($orderData['service_id']));
 			$dealslabsarr = $dealofday->toArray();
 
-			$deal_total_purchase_cnt = Order::where('service_id', intval($data['service_id']))->where('status', '=', '1')->count();
+			$deal_total_purchase_cnt = Order::where('service_id', intval($orderData['service_id']))->where('status', '=', '1')->count();
 			$slab_arr = $dealslabsarr['slabs'];
 
 			// return $dealslabsarr['slabs'];
@@ -214,7 +214,6 @@ class FitmaniaController extends \BaseController {
 					$slab_arr[$key] = $item;
 					break;
 				}
-				
 			}
 			// return $slab_arr;
 			$slabdata = [];
