@@ -180,24 +180,22 @@ class FitmaniaController extends \BaseController {
 			return Response::json($resp,404);			
 		}
 
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
 
 		//Maintain Slab for deals of day
-		if($data['type'] == 'fitmaniadealsofday'){
-			if( empty($data['service_id']) ){
+		if($orderData['type'] == 'fitmaniadealsofday'){
+			if( empty($orderData['service_id']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
 				return Response::json($resp,404);				
 			}
 		}
-
-
-		$orderid 	=	(int) Input::json()->get('order_id');
-		$order 		= 	Order::findOrFail($orderid);
-		$orderData 	= 	$order->toArray();
+		
 		array_set($data, 'status', '1');
 		$buydealofday 	=	$order->update($data);
 
 		if($buydealofday){
-
 			$dealofday = Fitmaniadod::findOrFail(intval($data['service_id']));
 			$dealslabsarr = $dealofday->toArray();
 
