@@ -70,10 +70,10 @@ class FitmaniaController extends \BaseController {
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 		->where('_id', (int) $item['finder_id'])->first();
 		// return $finderarr;
-		
+
 		if(isset($item['slabs']) && !empty($item['slabs'])){
 			$current_going_slab = head(array_where($item['slabs'], function($key, $value){
-				if($value['can_sold'] === 1){
+				if($value['can_sold'] == 1){
 					return $value;
 				}
 			}));
