@@ -35,9 +35,9 @@ class FitmaniaController extends \BaseController {
 		$dealsofdays 			=	[];
 
 		$query 	=	Fitmaniadod::with('location')->with('city')->active()
-									->where('city_id', '=', $city_id)
-									->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-									->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
+		->where('city_id', '=', $city_id)
+		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
 
 		if($location_cluster != ''){ 
 			$query->where('location_cluster', $location_cluster); 
@@ -70,6 +70,13 @@ class FitmaniaController extends \BaseController {
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 		->where('_id', (int) $item['finder_id'])->first();
 		// return $finderarr;
+		if(isset($item['slabs']) && !empty($item['slabs']){
+			$current_going_slab = head(array_where($item['slabs'], function($key, $value){
+				if($value['can_sold'] === 1){
+					return $value;
+				}
+			}));
+		}
 
 		$data = [
 		'_id' => $item['_id'],
@@ -88,7 +95,7 @@ class FitmaniaController extends \BaseController {
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact')),
-		'slabs' => (isset($item['slabs']) && !empty($item['slabs']) ) ? pluck($item['slabs'], array('price', 'limit', 'can_sold', 'total_purchase', 'discount')) : "",
+		'slabs' => (isset($current_going_slab) && !empty($current_going_slab) ) ? $current_going_slab : [],
 		'august_available_dates' => (isset($item['august_available_dates']) && !empty($item['august_available_dates']) ) ? $item['august_available_dates'] : "",
 		'september_available_dates' => (isset($item['september_available_dates']) && !empty($item['september_available_dates']) ) ? $item['september_available_dates'] : "",
 		];
