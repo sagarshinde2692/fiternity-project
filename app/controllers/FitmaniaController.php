@@ -130,9 +130,9 @@ class FitmaniaController extends \BaseController {
 			array_push($fitmaniaServices, $servicedata);
 		}
 		// if(!$services){  $services =  'No Service Exist :)'; }
-
+		$all = array('_id'=>0,'slug'=>'all','name'=>'all',);
 		$responseData = [
-		'categories' => Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug')),
+		'categories' => array_push(Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug')),$all),
 		'locations' => Location::active()->whereIn('cities', array($city))->orderBy('name')->get(array('name','_id','slug')),
 		'services' => $fitmaniaServices
 		];
