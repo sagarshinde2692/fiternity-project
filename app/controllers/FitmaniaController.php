@@ -35,9 +35,9 @@ class FitmaniaController extends \BaseController {
 		$dealsofdays 			=	[];
 
 		$query 	=	Fitmaniadod::with('location')->with('city')->active()
-		->where('city_id', '=', $city_id)
-		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
+		->where('city_id', '=', $city_id);
+		// ->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		// ->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
 
 		if($location_cluster != ''){ 
 			$query->where('location_cluster', $location_cluster); 
