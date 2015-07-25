@@ -73,7 +73,7 @@ class FitmaniaController extends \BaseController {
 
 		if(isset($item['slabs']) && !empty($item['slabs'])){
 			$current_going_slab = head(array_where($item['slabs'], function($key, $value){
-				if($value['can_sold'] == 1 && value['price'] > 0){
+				if($value['can_sold'] == 1 && $value['price'] > 0){
 					return $value;
 				}
 			}));
