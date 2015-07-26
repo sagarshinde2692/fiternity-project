@@ -34,7 +34,7 @@ class FitmaniaController extends \BaseController {
 		$city_id				= 	(int) $citydata['_id'];	
 		$dealsofdays 			=	[];
 
-		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id);
+		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
 		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
 
@@ -229,7 +229,7 @@ class FitmaniaController extends \BaseController {
 
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-			
+
 		}
 
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce through Fitmania :)");
