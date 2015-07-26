@@ -157,7 +157,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		
-		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity";
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
 
 		return $this->sendTo($to, $message);
 	}
