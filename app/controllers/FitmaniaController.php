@@ -232,6 +232,7 @@ class FitmaniaController extends \BaseController {
 
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
 		}
 
