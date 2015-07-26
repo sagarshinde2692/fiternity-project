@@ -48,7 +48,7 @@
    td[class="logo"]{padding:10px 0 5px 0!important;margin: 0 auto !important;}
    img[class="logo"]{padding:0!important;margin: 0 auto !important;}
 
- }
+ }`
  /*##############################################*/
  /*IPHONE STYLES*/
  /*##############################################*/

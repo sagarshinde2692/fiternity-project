@@ -239,7 +239,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.fitmania_offer';
 		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
 		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
@@ -251,12 +251,13 @@ Class CustomerMailer extends Mailer {
 
 		$this->sendTo($email_template_customer, $template_data, $message_data);
 
-		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
 		return $this->sendTo($email_template_mailus, $template_data, $message_data);
 	}
+
 
 	public function forgotPassword ($data){
 

@@ -183,7 +183,7 @@ class FitmaniaController extends \BaseController {
 		if(empty($data['order_id'])){
 			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
 		}
-
+		// return Input::json()->all();
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
 		$orderData 	= 	$order->toArray();
