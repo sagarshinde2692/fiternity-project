@@ -206,7 +206,6 @@ class FitmaniaController extends \BaseController {
 			$dealofday = Fitmaniadod::findOrFail(intval($orderData['service_id']));
 			$dealslabsarr = $dealofday->toArray();
 
-			$deal_total_purchase_cnt = Order::where('service_id', intval($orderData['service_id']))->where('status', '=', '1')->count();
 			$slab_arr = $dealslabsarr['slabs'];
 
 			// return $dealslabsarr['slabs'];

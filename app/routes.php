@@ -134,17 +134,40 @@ Route::get('/capturedata', function() {
 
 Route::get('/updatefinder', function() { 
 
-	$items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
-		//exit;				
+	$items = Fitmaniadod::get();
+
 	$finderdata = array();
 	foreach ($items as $item) {  
 		$data 	= $item->toArray();
-			//print_pretty($data);
-		array_set($finderdata, 'status', '0');
-		$finder = Finder::findOrFail($data['_id']);
+
+		$august_available_dates = $data['august_available_dates'];
+		$august_available_dates_new = [];
+
+		foreach ($august_available_dates as $day){
+			$date = explode('-', $day);
+			// return ucfirst( date("l", strtotime("$date[0]-08-2015") )) ;
+			array_push($august_available_dates_new, $date[0].'-'.ucfirst( date("l", strtotime("$date[0]-08-2015") )) );
+
+		}
+		// return $august_available_dates_new;
+		array_set($finderdata, 'august_available_dates', $august_available_dates_new);
+		$finder = Fitmaniadod::findOrFail($data['_id']);
 		$response = $finder->update($finderdata);
 		print_pretty($response);
 	}
+
+
+	// $items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
+	// 	//exit;				
+	// $finderdata = array();
+	// foreach ($items as $item) {  
+	// 	$data 	= $item->toArray();
+	// 		//print_pretty($data);
+	// 	array_set($finderdata, 'status', '0');
+	// 	$finder = Finder::findOrFail($data['_id']);
+	// 	$response = $finder->update($finderdata);
+	// 	print_pretty($response);
+	// }
 });
 
 
