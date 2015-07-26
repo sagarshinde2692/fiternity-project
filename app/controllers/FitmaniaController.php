@@ -178,8 +178,7 @@ class FitmaniaController extends \BaseController {
 
 		$data			=	Input::json()->all();		
 		if(empty($data['order_id'])){
-			$resp 	= 	array('status' => 404,'message' => "Data Missing Order Id - order_id");
-			return Response::json($resp,404);			
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
 		}
 
 		$orderid 	=	(int) Input::json()->get('order_id');
@@ -189,8 +188,7 @@ class FitmaniaController extends \BaseController {
 		//Maintain Slab for deals of day
 		if($orderData['type'] == 'fitmaniadealsofday'){
 			if( empty($orderData['service_id']) ){
-				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
-				return Response::json($resp,404);				
+				return Response::json(array('status' => 404,'message' => "Data Missing - service_id"),404);				
 			}
 		}
 

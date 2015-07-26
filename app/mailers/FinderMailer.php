@@ -75,41 +75,27 @@ Class FinderMailer extends Mailer {
 
 	public function buyServiceThroughFitmania ($data){
 
-		//set email ids
-
-		// set template base on deals of day or membership service
-
-		// $email_template_customer 	= 	'emails.order.fitmaniadealsofday_vendor';
-		$email_template_customer 	= 	'emails.order.fitmaniaservice_vendor';
-		// $email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
+		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor';
 		$template_data 				= 	$data;
 
 		if($data['finder_vcc_email'] != ''){
-			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_fitmaniasale'));
 		}else{
-			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
 		} 
 
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
 		$subject  					=   'FitMania Sale by Fitternity - Membership purchase request for '.ucwords($data['finder_name']);
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
-			'user_name' => $data['customer_name'],
+			'user_email' => Config::get('mail.to_mailus'),,
+			'user_name' => ucwords($data['finder_name']),
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
 			);
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		return $this->sendTo($email_template_customer, $template_data, $message_data);
 
-		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
 	}
-
-
 
 
 	public function cancelBookTrial(){

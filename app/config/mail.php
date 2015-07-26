@@ -166,4 +166,6 @@ return array(
 	'bcc_forgot_password' 							=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com','mjmjadhav@gmail.com'),
 	'bcc_forgot_password_app' 						=> 	array('ut.mehrotra@gmail.com','mailus@fitternity.com'),
 	'bcc_register' 									=> 	array('sanjay.id7@gmail.com','mailus@fitternity.com'),
+	'bcc_emailds_fitmaniasale' 						=> 	array('mailus@fitternity.com','harshitagupta@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com','apoorvasharma@fitternity.com','vishwaskharote@fitternity.com'),
+
 );
