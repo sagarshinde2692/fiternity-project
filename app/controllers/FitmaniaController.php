@@ -42,7 +42,7 @@ class FitmaniaController extends \BaseController {
 			$query->where('location_cluster', $location_cluster); 
 		}	
 
-		$dealsofdaycolleciton 	= $query->orderBy('ordering','desc')->get()->toArray();
+		$dealsofdaycolleciton 	= $query->orderBy('ordering')->get()->toArray();
 		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
