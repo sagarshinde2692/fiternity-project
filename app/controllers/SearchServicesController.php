@@ -168,7 +168,7 @@ public function getWorkoutsessions(){
     //return $serachbody;
 	$request = array(
 		'url' => $this->elasticsearch_url."fitternity/service/_search",
-		'port' => 9200,
+		'port' => $this->elasticsearch_port,
 		'method' => 'POST',
 		'postfields' => $serachbody
 		);
@@ -360,7 +360,7 @@ public function getRatecards(){
 	$serachbody = $body;
 	$request = array(
 		'url' => $this->elasticsearch_url."fitternity/service/_search",
-		'port' => 9200,
+		'port' => $this->elasticsearch_port,
 		'method' => 'POST',
 		'postfields' => $serachbody
 		);
@@ -546,7 +546,7 @@ public function geoLocationService(){
         //return $serachbody;
 		$request = array(
 			'url' => $this->elasticsearch_url."fitternity/service/_search",
-			'port' => 9200,
+			'port' => $this->elasticsearch_port,
 			'method' => 'POST',
 			'postfields' => $serachbody
 			);
