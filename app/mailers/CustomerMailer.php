@@ -240,7 +240,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
 		$template_data 				= 	$data;
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
-		$subject  					=   'Fitternity - Congratulations! You’ve successfully accomplished your Mission Fitmania 2015';
+		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],

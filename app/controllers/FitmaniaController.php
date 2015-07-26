@@ -34,8 +34,7 @@ class FitmaniaController extends \BaseController {
 		$city_id				= 	(int) $citydata['_id'];	
 		$dealsofdays 			=	[];
 
-		$query 	=	Fitmaniadod::with('location')->with('city')->active()
-		->where('city_id', '=', $city_id);
+		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id);
 		// ->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 		// ->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
 
@@ -95,7 +94,7 @@ class FitmaniaController extends \BaseController {
 		'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact')),
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name')),
 		'current_going_slab' => (isset($current_going_slab) && !empty($current_going_slab) ) ? $current_going_slab : "",
 		'august_available_dates' => (isset($item['august_available_dates']) && !empty($item['august_available_dates']) ) ? $item['august_available_dates'] : "",
 		'september_available_dates' => (isset($item['september_available_dates']) && !empty($item['september_available_dates']) ) ? $item['september_available_dates'] : "",
@@ -167,7 +166,7 @@ class FitmaniaController extends \BaseController {
 		'ratecards' => (isset($item['ratecards']) && $item['ratecards'] != '') ? $item['ratecards'] : [],
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact')),
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name')),
 		];
 		
 		return $data;
