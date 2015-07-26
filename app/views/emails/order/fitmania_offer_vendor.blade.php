@@ -204,7 +204,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     sanjay </td>
+                     {{ ucwords($customer_name) }}</td>
                       </tr>
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -215,7 +215,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     9773348762 </td>
+                     @if ($customer_phone)  {{ $customer_phone }} @endif</td>
                       </tr>
                       
                       <tr>
@@ -227,7 +227,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight: 500" st-title="3col-title1">
-                     Rs. 1000
+                     Rs. @if ($amount)  {{ $amount }} @endif
                       
                        </td>
                       </tr>
@@ -275,7 +275,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     membershitp </td>
+                     @if ($service_durationservice_name) {{ ucwords($service_name) }} @endif @if ($service_duration) {{ ucwords($service_duration) }} @endif  </td>
                       </tr> 
                      
                        <tr>
