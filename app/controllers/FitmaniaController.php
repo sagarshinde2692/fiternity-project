@@ -195,7 +195,7 @@ class FitmaniaController extends \BaseController {
 			}
 		}
 
-		$city_id 	= (int) $orderData['service_id'];
+		$city_id 	= (int) $orderData['city_id'];
 		if($city_id == 1){
 			array_set($data, 'city_name', 'mumbai');
 		}else{
