@@ -267,7 +267,7 @@
               <!-- title2 -->
                <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Workout form : 
+                     <p style="font-weight:light">  Membership Type : 
                      
                        </td>
                       </tr>

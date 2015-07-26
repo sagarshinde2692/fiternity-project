@@ -230,9 +230,9 @@ class FitmaniaController extends \BaseController {
 
 			$dealofday->update($slabdata);
 
-			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+			// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			return $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
 		}
 
