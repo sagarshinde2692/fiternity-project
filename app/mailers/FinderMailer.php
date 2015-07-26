@@ -87,7 +87,7 @@ Class FinderMailer extends Mailer {
 		$subject  					=   'FitMania Sale by Fitternity - Membership purchase request for '.ucwords($data['finder_name']);
 
 		$message_data 	= array(
-			'user_email' => Config::get('mail.to_mailus'),,
+			'user_email' => Config::get('mail.to_mailus'),
 			'user_name' => ucwords($data['finder_name']),
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject

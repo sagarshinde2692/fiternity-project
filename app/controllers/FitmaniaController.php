@@ -9,6 +9,7 @@
 
 
 use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
 
 
@@ -16,11 +17,13 @@ class FitmaniaController extends \BaseController {
 
 	protected $customermailer;
 	protected $customersms;
+	protected $findermailer;
 	
-	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms) {
+	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, FinderMailer $findermailer) {
 
 		$this->customermailer		=	$customermailer;
-		$this->customersms 			=	$customersms;
+		$this->customersms		=	$customersms;
+		$this->findermailer 			=	$findermailer;
 	}
 
 
