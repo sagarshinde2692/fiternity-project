@@ -204,7 +204,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($customer_name) }}</td>
+                     sanjay </td>
                       </tr>
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
@@ -215,7 +215,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     @if ($customer_phone)  {{ $customer_phone }} @endif</td>
+                     9773348762 </td>
                       </tr>
                       
                       <tr>
@@ -227,7 +227,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight: 500" st-title="3col-title1">
-                     Rs. {{ $amount }}
+                     Rs. 1000
                       
                        </td>
                       </tr>
@@ -275,7 +275,7 @@
                      
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     @if ($service_durationservice_name) {{ ucwords($service_name) }} @endif @if ($service_duration) {{ ucwords($service_duration) }} @endif  </td>
+                     membershitp </td>
                       </tr> 
                      
                        <tr>
