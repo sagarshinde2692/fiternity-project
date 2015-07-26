@@ -21,9 +21,9 @@ class FitmaniaController extends \BaseController {
 	
 	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, FinderMailer $findermailer) {
 
-		$this->customermailer		=	$customermailer;
+		$this->customermailer	=	$customermailer;
 		$this->customersms		=	$customersms;
-		$this->findermailer 			=	$findermailer;
+		$this->findermailer 	=	$findermailer;
 	}
 
 

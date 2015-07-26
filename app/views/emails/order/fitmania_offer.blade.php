@@ -145,7 +145,7 @@
               
                
          <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
-Hi Shipra!</span></p>      
+Hi {{ $customer_name }}!</span></p>      
              
               <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
 
@@ -156,7 +156,7 @@ Hi Shipra!</span></p>
 
  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Subscription number:</span> {{ $_id }}
 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Membership details:</span> ucwords($service_name) }} {{ ucwords($service_duration) }}  at {{ ucwords($finder_name) }} {{ ucwords($location) }}
+ <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Membership details:</span> {{ ucwords($service_name) }} {{ ucwords($service_duration) }}  at {{ ucwords($finder_name) }} {{ ucwords($location) }}
 
  <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">2. Start the membership</span>
 
