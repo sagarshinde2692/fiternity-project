@@ -134,7 +134,7 @@ class OrderController extends \BaseController {
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
 		
 		array_set($data, 'customer_id', intval($customer_id));
-		
+
 		array_set($data, 'status', '0');
 		array_set($data, 'payment_mode', 'cod');
 		$order 				= 	new Order($data);
@@ -142,7 +142,7 @@ class OrderController extends \BaseController {
 		$orderstatus   		= 	$order->save();
 
 		//SEND COD EMAIL TO CUSTOMER
-		$sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
+		return $sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
 
 		//SEND COD SMS TO CUSTOMER
 		$sndCodSms	= 	$this->customersms->sendCodOrderSms($order->toArray());
