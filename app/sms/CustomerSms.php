@@ -113,7 +113,6 @@ Class CustomerSms extends VersionNextSms{
 
 
 
-
 	public function manualBookTrial ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
@@ -133,7 +132,6 @@ Class CustomerSms extends VersionNextSms{
 
 
 	public function sendCodOrderSms ($data){
-
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 

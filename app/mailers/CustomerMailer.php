@@ -187,6 +187,10 @@ Class CustomerMailer extends Mailer {
 			$subject  = 'Fitternity - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
 		}
 
+		if($data['type'] == 'fitmaniaservice'){
+			$subject  = 'FitMania Sale - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
+		}
+
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],

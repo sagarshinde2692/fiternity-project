@@ -592,11 +592,14 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 /******************** FITMANIA SECTION START HERE *******************************/
 
 Route::get('fitmania/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
-Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
 Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
 Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
 // Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
+
+
+Route::get('resendemails', 'FitmaniaController@resendEmails');
+
 
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/

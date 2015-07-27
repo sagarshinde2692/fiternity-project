@@ -123,7 +123,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
-		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
+		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'){
 			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 			}

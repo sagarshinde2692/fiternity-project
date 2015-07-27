@@ -303,6 +303,72 @@ class FitmaniaController extends \BaseController {
 		return Response::json($resp,200);		
 	}
 
+	public function buyServiceMembership(){
+
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		}
+		// return Input::json()->all();
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
+
+		array_set($data, 'status', '1');
+		$buydealofday 	=	$order->update($data);
+
+		$resp 	= 	array('status' => 404,'message' => "Order Update Fail :)");
+
+		if($buydealofday){
+
+			$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
+			$sndsEmailFinder		= 	$this->findermailer->buyServiceMembershipThroughFitmania($orderData);
+
+			$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
+		}
+
+		return Response::json($resp,200);		
+	}
+
+
+	//resend email to customer and finder for successfull orders
+	public function resendEmails(){
+
+		$order_ids = [2329,2331,2333,2334,2345,2347,2348,2350,2365,2372,2375,2376,2379,2381,2383,2390,2393,2394,2395,2396,2398,2406,2408,2420,2426,2428,2430,2432,2435,2437,2446,2448,2453,2454,2455,
+		2463,2468,2469,2474,2475,2482,2491,2495,2496,2497,2498,2500,2505,2506,2507,2508,2508,2509,2510,2511,2512,2516,2548,2576,2587];
+
+		$order_ids = [2459,2447];		
+
+		//updates city name  first
+		$items = Order::active()->whereIn('_id', $order_ids)->get();
+		$finderdata = array();
+
+		foreach ($items as $item) {  
+			$data 	= $item->toArray();
+			$finder = Order::findOrFail($data['_id']);
+			$city_name = ($data['city_id'] == 1) ? 'mumbai' : 'pune';
+			array_set($finderdata, 'status', '1');
+			array_set($finderdata, 'city_name', $city_name);
+			$response = $finder->update($finderdata);
+			print_pretty($response);
+		}
+
+		$items = Order::active()->whereIn('_id', $order_ids)->get();
+		$finderdata = array();
+		
+		foreach ($items as $item) {  
+			$orderData 				= 	$item->toArray();
+			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		}
+
+		// return Response::json($resp,200);		
+
+
+	}
+
 
 
 }
