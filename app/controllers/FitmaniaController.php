@@ -45,7 +45,7 @@ class FitmaniaController extends \BaseController {
 			$query->where('location_cluster', $location_cluster); 
 		}	
 
-		$dealsofdaycolleciton 	= $query->orderBy('ordering')->get()->toArray();
+		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'asc')->get()->toArray();
 		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -232,7 +232,7 @@ class FitmaniaController extends \BaseController {
 
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+			//$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
 		}
 
