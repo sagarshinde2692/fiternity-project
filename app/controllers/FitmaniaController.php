@@ -304,40 +304,40 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-
 	//resend email to customer and finder for successfull orders
 	public function resendEmails(){
-
+		
 		$order_ids = [2329,2331,2333,2334,2345,2347,2348,2350,2365,2372,2375,2376,2379,2381,2383,2390,2393,2394,2395,2396,2398,2406,2408,2420,2426,2428,2430,2432,2435,2437,2446,2448,2453,2454,2455,
 		2463,2468,2469,2474,2475,2482,2491,2495,2496,2497,2498,2500,2505,2506,2507,2508,2508,2509,2510,2511,2512,2516,2548,2576,2587];
 
-		$order_ids = [2459,2447];		
+		// $order_ids = [2459,2447,2249];		
 
 		//updates city name  first
-		$items = Order::active()->whereIn('_id', $order_ids)->get();
+		// $items = Order::active()->whereIn('_id', $order_ids)->get();
+		// $finderdata = array();
+
+		// foreach ($items as $item) {  
+		// 	$data 	= $item->toArray();
+		// 	$finder = Order::findOrFail($data['_id']);
+		// 	$city_name = ($data['city_id'] == 1) ? 'mumbai' : 'pune';
+		// 	array_set($finderdata, 'status', '1');
+		// 	array_set($finderdata, 'city_name', $city_name);
+		// 	$response = $finder->update($finderdata);
+		// 	print_pretty($response);
+		// }
+
+		$orders = Order::active()->whereIn('_id', $order_ids)->get();
 		$finderdata = array();
 
-		foreach ($items as $item) {  
-			$data 	= $item->toArray();
-			$finder = Order::findOrFail($data['_id']);
-			$city_name = ($data['city_id'] == 1) ? 'mumbai' : 'pune';
-			array_set($finderdata, 'status', '1');
-			array_set($finderdata, 'city_name', $city_name);
-			$response = $finder->update($finderdata);
-			print_pretty($response);
-		}
-
-		$items = Order::active()->whereIn('_id', $order_ids)->get();
-		$finderdata = array();
-		
-		foreach ($items as $item) {  
-			$orderData 				= 	$item->toArray();
+		foreach ($orders as $order) {  
+			$orderData 				= 	$order->toArray();
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
 			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+
+			echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
 		}
 
-		// return Response::json($resp,200);		
 
 
 	}

@@ -78,7 +78,7 @@ Class FinderMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor';
 		$template_data 				= 	$data;
 
-		if($data['finder_vcc_email'] != ''){
+		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
 			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_fitmaniasale'));
 		}else{
 			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
@@ -104,7 +104,7 @@ Class FinderMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.fitmania_membership_vendor';
 		$template_data 				= 	$data;
 
-		if($data['finder_vcc_email'] != ''){
+		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
 			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_fitmaniasale'));
 		}else{
 			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
