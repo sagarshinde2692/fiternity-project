@@ -196,11 +196,6 @@ class FitmaniaController extends \BaseController {
 		}
 
 		$city_id 	= (int) $orderData['city_id'];
-		if($city_id == 1){
-			array_set($data, 'city_name', 'mumbai');
-		}else{
-			array_set($data, 'city_name', 'pune');
-		}
 
 		array_set($data, 'status', '1');
 		$buydealofday 	=	$order->update($data);
