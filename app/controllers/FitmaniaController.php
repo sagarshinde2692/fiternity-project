@@ -195,8 +195,6 @@ class FitmaniaController extends \BaseController {
 			}
 		}
 
-		$city_id 	= (int) $orderData['city_id'];
-
 		array_set($data, 'status', '1');
 		$buydealofday 	=	$order->update($data);
 
