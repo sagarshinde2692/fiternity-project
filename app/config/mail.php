@@ -166,7 +166,7 @@ return array(
 	'bcc_forgot_password' 							=> 	array('mailus@fitternity.com','mjmjadhav@gmail.com'),
 	'bcc_forgot_password_app' 						=> 	array('ut.mehrotra@gmail.com','mailus@fitternity.com'),
 	'bcc_register' 									=> 	array('mailus@fitternity.com'),
-	'bcc_emailds_fitmaniasale' 						=> 	array('vishwaskharote@fitternity.com'),
-	'bcc_emailds_fitmaniasale1' 						=> 	array('mailus@fitternity.com','harshitagupta@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com','apoorvasharma@fitternity.com','vishwaskharote@fitternity.com'),
+	// 'bcc_emailds_fitmaniasale' 						=> 	array('vishwaskharote@fitternity.com'),
+	'bcc_emailds_fitmaniasale' 						=> 	array('mailus@fitternity.com','harshitagupta@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com','apoorvasharma@fitternity.com','vishwaskharote@fitternity.com'),
 
 );
