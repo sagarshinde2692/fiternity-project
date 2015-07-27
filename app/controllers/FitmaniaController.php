@@ -303,33 +303,6 @@ class FitmaniaController extends \BaseController {
 		return Response::json($resp,200);		
 	}
 
-	public function buyServiceMembership(){
-
-		$data			=	Input::json()->all();		
-		if(empty($data['order_id'])){
-			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
-		}
-		// return Input::json()->all();
-		$orderid 	=	(int) Input::json()->get('order_id');
-		$order 		= 	Order::findOrFail($orderid);
-		$orderData 	= 	$order->toArray();
-
-		array_set($data, 'status', '1');
-		$buydealofday 	=	$order->update($data);
-
-		$resp 	= 	array('status' => 404,'message' => "Order Update Fail :)");
-
-		if($buydealofday){
-
-			$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceMembershipThroughFitmania($orderData);
-
-			$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
-		}
-
-		return Response::json($resp,200);		
-	}
 
 
 	//resend email to customer and finder for successfull orders
