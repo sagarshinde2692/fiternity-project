@@ -224,7 +224,7 @@ Hi {{ $customer_name }}!</span></p>
                 <tbody>
                  <!-- image 2 -->
                  <tr>
-                  <td width="100%" align="center" class="devicewidth" ><a href="http://www.fitternity.com/pune" target="_blank"><img src="http://email.fitternity.com/148/Intense-Workout.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
+                  <td width="100%" align="center" class="devicewidth" ><a href="http://www.fitternity.com/selections/{{$city_name}}/intense-workout" target="_blank"><img src="http://email.fitternity.com/148/Intense-Workout.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
                   </td>
                 </tr>
                 <!-- end of image2 -->
@@ -244,7 +244,7 @@ Hi {{ $customer_name }}!</span></p>
           <tbody>
            <!-- image 2 -->
            <tr>
-            <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/pune"><img src="http://email.fitternity.com/148/trending-now.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
+            <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/selections/{{$city_name}}/trending-now"><img src="http://email.fitternity.com/148/trending-now.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
             </td>
           </tr>
           <!-- end of image2 -->
@@ -263,7 +263,7 @@ Hi {{ $customer_name }}!</span></p>
           <tbody>
            <!-- image 2 -->
            <tr>
-            <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/pune"><img src="http://email.fitternity.com/148/all-for-variety.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
+            <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/selections/{{$city_name}}/all-for-variety"><img src="http://email.fitternity.com/148/all-for-variety.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
             </td>
           </tr>
           <!-- end of image2 -->
