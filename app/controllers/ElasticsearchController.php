@@ -16,6 +16,7 @@ class ElasticsearchController extends \BaseController {
 	protected $elasticsearch_default_index  =   "";
 	protected $elasticsearch_url            =   "";
 	protected $elasticsearch_default_url    =   "";
+    protected $autosuggestIndex             =   "autosuggest";
 
 	public function __construct() {
 		parent::__construct();	
@@ -24,6 +25,7 @@ class ElasticsearchController extends \BaseController {
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host_new');
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
+
 	}
 
 
@@ -35,6 +37,7 @@ class ElasticsearchController extends \BaseController {
 			'port' => $this->elasticsearch_port,
 			'method' => 'PUT',
 			);
+
 		return es_curl_request($request);       
 	}
 
@@ -228,6 +231,38 @@ class ElasticsearchController extends \BaseController {
 			}
 		}';
 
+        $autosuggest_mappings = '{
+                "_source": {
+                    "compress": "true"
+                },
+                "_all": {
+                    "enabled": "true"
+                },
+                "properties": {
+                    "input": {
+                        "type": "string",
+                        "index_analyzer": "index_analyzerV1",
+                        "search_analyzer": "search_analyzer"
+                    },
+                    "city": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "location": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "slug": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    },
+                    "identifier": {
+                        "type": "string",
+                        "index": "not_analyzed"
+                    }
+                }
+            }';
+
 
 		switch (strtolower($type)) {
 			case "fitternityfinder":
@@ -254,6 +289,11 @@ class ElasticsearchController extends \BaseController {
 			$typemapping 	=	$common_findermapping;
 			$typeurl 		=	$this->elasticsearch_url."fitcard/finder/_mapping";	
 			break;
+
+            case "autosuggestindex":
+                $typemapping 	=	$autosuggest_mappings;
+                $typeurl 		=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/_mapping";
+            break;
 		}
 
 		$postfields_data 	= 	json_encode(json_decode($typemapping,true));
@@ -291,9 +331,9 @@ class ElasticsearchController extends \BaseController {
 							->with('facilities')
 							->active()
 							->orderBy('_id')
-				            // ->take(1)
+                            ->take(1)
 				            // ->take(3000)->skip(0)
-				            ->take(3000)->skip(3000)
+				            //->take(3000)->skip(3000)
 							->get();
 			break;
 
@@ -425,7 +465,148 @@ class ElasticsearchController extends \BaseController {
 
     }
 
+    //new controller functions to support Autosuggest search
+    public function indexautosuggestdata($source = ''){
+
+        $indexdocs = '';
+        switch($source) {
+            case 'fitternityfinders':
+                $indexdocs = Finder::active()
+                ->with(array('category'=>function($query){$query->select('name','meta');}))
+                ->with(array('city'=>function($query){$query->select('name');}))
+                ->with(array('location'=>function($query){$query->select('name');}))
+                ->take(3000)->skip(0)->get();
+                //->take(3000)->skip(3000)->get();
+                break;
+
+            case 'fitternitycategories':
+                $indexdocs = Findercategory::active()->get();
+                break;
+
+            case 'fitternitybrands':
+                //to do add brands as models or merge from staging
+                break;
+        }
+            foreach($indexdocs as $doc)
+            {
+                $data = $doc->toArray();
+                switch($source)
+                {
+                    case 'fitternityfinders':
+
+                        $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
+                        //$posturl 						=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
+                        $postdata 						= 	get_elastic_autosuggest_doc($data);
+                        if(empty($postdata)) continue;
+                        break;
+
+                    case 'fitternitycategories':
+                        $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/C".$data['_id'];
+                        $postdata                       =   get_elastic_category_doc($data);
+                    break;
+
+                    case 'fitternitybrands':
+                        $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/";
+
+                    break;
+                }
+                $response = $this->pushdocument($posturl, json_encode($postdata));
+
+            }
+    }
+
+    public function manageAutoSuggestSetttings(){
+
+        $autosuggestindex  = "autosuggest_index_alllocations";
+        $url 		= $this->elasticsearch_url."$autosuggestindex/_close";
+        $request = array(
+            'url' =>  $url,
+            'port' => $this->elasticsearch_port,
+            'method' => 'POST',
+        );
+
+        echo es_curl_request($request);
 
 
+        $body =	'{
+                "analysis": {
+                    "analyzer": {
+                        "search_analyzer": {
+                            "type": "custom",
+                            "filter": [
+                                "lowercase"
+                            ],
+                            "tokenizer": "standard"
+                        },
+                        "index_analyzerV1": {
+                            "type": "custom",
+                            "filter": [
+                                "standard",
+                                "lowercase"
+                            ],
+                            "tokenizer": "my_ngram_tokenizer"
+                        },
+                        "index_analyzerV2": {
+                            "type": "custom",
+                            "filter": [
+                                "standard",
+                                "lowercase",
+                                "ngram-filter"
+                            ],
+                            "tokenizer": "standard"
+                        }
+                    },
+                    "tokenizer": {
+                        "my_ngram_tokenizer": {
+                            "type": "nGram",
+                            "min_gram": "2",
+                            "max_gram": "20"
+                        }
+                    },
+                    "filter": {
+                        "ngram-filter": {
+                            "type": "nGram",
+                            "min_gram": "2",
+                            "max_gram": "20"
+                        },
+                        "stop-filter": {
+                            "type": "stop",
+                            "stopwords": "_english_",
+                            "ignore_case": "true"
+                        },
+                        "snowball-filter": {
+                            "type": "snowball",
+                            "language": "english"
+                        },
+                        "delimiter-filter": {
+                            "type": "word_delimiter"
+                        }
+                    }
+                }
+            }';
+
+        $index 				= $autosuggestindex;
+        $url 			 	= $this->elasticsearch_url."$autosuggestindex/_settings";
+        //$url 			 	= $this->elasticsearch_url."_settings/";
+        $postfields_data 	= json_encode(json_decode($body,true));
+
+        //var_dump($postfields_data);	exit;
+        $request = array(
+            'url' => $url,
+            'port' => $this->elasticsearch_port,
+            'postfields' => $postfields_data,
+            'method' => 'PUT',
+        );
+        echo es_curl_request($request);
+
+        $url = $this->elasticsearch_url."$autosuggestindex/_open";
+        $request = array(
+            'url' =>  $url,
+            'port' => $this->elasticsearch_port,
+            'method' => 'POST',
+        );
+
+        echo es_curl_request($request);
+    }
 
 }

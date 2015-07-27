@@ -11,7 +11,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
-Route::get('/testfinder', function() { 
+Route::get('/testfinder', function() {
 
 	for ($i=0; $i < 7 ; $i++) { 
 		$skip = $i * 1000;
@@ -416,7 +416,9 @@ Route::get('createtype/{type}', array('as' => 'elasticsearch.createtype','uses' 
 Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','uses' => 'ElasticsearchController@checkMapping'));
 Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
 Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
-
+Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexautosuggestdata','uses' => 'ElasticsearchController@indexautosuggestdata'));
+Route::get('IndexRankMongo2Elastic', array('as' => 'elasticsearch.IndexRankMongo2Elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
+Route::get('manageAutoSuggestSetttings', array('as' => 'elasticsearch.manageAutoSuggestSetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -439,6 +441,9 @@ Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
 Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
 Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
 Route::post('/getnearbytrials', 'SearchServicesController@geoLocationService');
+Route::post('/getRankedFinder', 'RankingSearchController@getRankedFinderResults');
+Route::post('/getFinderCategory', 'RankingController@getFinderCategory');
+Route::post('/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
