@@ -64,6 +64,41 @@ class FitmaniaController extends \BaseController {
 	}
 
 
+	public function getDealOfDayZumba($city = 'mumbai', $location_cluster = ''){
+
+		$date 					=  	'27-07-2015';
+		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
+		$dealsofdays 			=	[];
+
+		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
+		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
+
+		if($location_cluster != ''){ 
+			$query->where('location_cluster', $location_cluster); 
+		}	
+
+		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transform($value);
+			array_push($dealsofdays, $dealdata);
+		}
+
+		if($city == 'mumbai'){
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane'];
+		}else{
+			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
+		}	
+
+		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
+
+		return Response::json($responseData, 200);
+	}
+
+
 
 	private function transform($deal){
 
@@ -137,9 +172,9 @@ class FitmaniaController extends \BaseController {
 		$categories = Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug'))->toArray();
 		$locations = Location::active()->whereIn('cities', array($city))->orderBy('name')->get(array('name','_id','slug'))->toArray();
 		$responseData = [
-			'categories' => array_merge($all,$categories),
-			'locations' => array_merge($all,$locations),
-			'services' => $fitmaniaServices
+		'categories' => array_merge($all,$categories),
+		'locations' => array_merge($all,$locations),
+		'services' => $fitmaniaServices
 		];
 		// return $responseData;
 
@@ -199,29 +234,33 @@ class FitmaniaController extends \BaseController {
 		$buydealofday 	=	$order->update($data);
 
 		if($buydealofday){
-			$dealofday = Fitmaniadod::findOrFail(intval($orderData['service_id']));
-			$dealslabsarr = $dealofday->toArray();
 
-			$slab_arr = $dealslabsarr['slabs'];
+			if($orderData['type'] == 'fitmaniadealsofday'){
 
-			// return $dealslabsarr['slabs'];
-			foreach ($dealslabsarr['slabs'] as $key => $item) {
-				// return $item['total_purchase'];
-				// $slab = [];
-				if(intval($item['can_sold']) == 1){
-					$item['total_purchase'] =  intval($item['total_purchase']) + 1;
-					if(intval($item['limit']) == intval($item['total_purchase'])){
-						$item['can_sold'] = 0;
+				$dealofday = Fitmaniadod::findOrFail(intval($orderData['service_id']));
+				$dealslabsarr = $dealofday->toArray();
+
+				$slab_arr = $dealslabsarr['slabs'];
+
+				// return $dealslabsarr['slabs'];
+				foreach ($dealslabsarr['slabs'] as $key => $item) {
+					// return $item['total_purchase'];
+					// $slab = [];
+					if(intval($item['can_sold']) == 1){
+						$item['total_purchase'] =  intval($item['total_purchase']) + 1;
+						if(intval($item['limit']) == intval($item['total_purchase'])){
+							$item['can_sold'] = 0;
+						}
+						$slab_arr[$key] = $item;
+						break;
 					}
-					$slab_arr[$key] = $item;
-					break;
 				}
-			}
-			// return $slab_arr;
-			$slabdata = [];
-			array_set($slabdata, 'slabs', $slab_arr);
+				// return $slab_arr;
+				$slabdata = [];
+				array_set($slabdata, 'slabs', $slab_arr);
 
-			$dealofday->update($slabdata);
+				$dealofday->update($slabdata);
+			}
 
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
