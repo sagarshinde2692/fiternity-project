@@ -164,10 +164,10 @@ Hi {{ $customer_name }}!</span></p>
  <p><span style="color:#ec8601; font-weight:450;"> Location : </span>{{ ucwords($location) }}</p>
  <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Address:</span> {{ ucfirst($finder_address) }}
  
- @if ($finder_poc_for_customer_name) 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Person to contact:</span> {{ ucwords($finder_poc_for_customer_name) }}
+ 
+ <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Person to contact:</span> @if ($finder_poc_for_customer_name) {{ ucwords($finder_poc_for_customer_name) }} @endif @if ($finder_poc_for_customer_mobile) {{ ucwords($finder_poc_for_customer_mobile) }} @endif
 </p>
- @endif
+ 
 
 <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">3. Call us for help</span>
 
