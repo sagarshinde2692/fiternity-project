@@ -240,14 +240,8 @@ Class CustomerMailer extends Mailer {
 
 	public function buyServiceThroughFitmania ($data){
 
-		if($data['type'] == 'fitmaniadealsofday'){
-			$email_template_customer 	= 	'emails.order.fitmanianew_offer_template';
-			$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
-		}else{
-			$email_template_customer 	= 	'emails.order.fitmania_membership_template';
-			$email_template_mailus 		= 	'emails.order.fitmania_membership_mailus';
-		}
-		
+		$email_template_customer 	= 	'emails.order.fitmanianew_offer_template';
+		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
 		$template_data 				= 	$data;
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
