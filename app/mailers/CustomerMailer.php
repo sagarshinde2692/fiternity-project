@@ -240,7 +240,7 @@ Class CustomerMailer extends Mailer {
 
 	public function buyServiceThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmanianew_offer_template';
+		$email_template_customer 	= 	'emails.order.fitmanianew_offer_template_v1';
 		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
 		$template_data 				= 	$data;
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');

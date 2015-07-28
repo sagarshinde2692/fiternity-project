@@ -75,7 +75,7 @@ Class FinderMailer extends Mailer {
 
 	public function buyServiceThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor';
+		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_v1';
 		$template_data 				= 	$data;
 
 		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
