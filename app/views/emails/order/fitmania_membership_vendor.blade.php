@@ -219,6 +219,18 @@
                              {{ $customer_phone }} </td>
                            </tr>
 
+                           <tr>
+                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                           <p style="font-weight:light">Purchase price:
+
+                           </td>
+                         </tr>
+
+                         <tr>
+                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                             {{ $amount }} </td>
+                           </tr>
+
 
 
 
@@ -319,7 +331,6 @@
        <table bgcolor="#fff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
         <tr>
           <td height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
-          <p style="padding-top:25px;padding-bottom:25px"> <strong> <i> We request you to call the customer and confirm the starting date. </i></strong> </p>
             Please call us in case of any queries - you can reach your assigned Relationship Manager directly or call us on  +91 92222 21131. 
             <p style="padding-top:10px">Regards</p>
             <p>TEAM FITTERNITY
