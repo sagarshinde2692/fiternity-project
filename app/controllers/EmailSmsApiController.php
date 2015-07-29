@@ -70,8 +70,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function RequestCallback() {
-		date_default_timezone_set("Asia/Kolkata");
-
+		
 		$vendor = Input::json()->get('vendor');
 
 		if($vendor != ''){
@@ -116,7 +115,7 @@ class EmailSmsApiController extends \BaseController {
 	public function BookTrial() {
 
 		// return $data	= Input::json()->all();
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$data = array(
 			'capture_type' 			=>		'book_trial',
 			'name' 					=>		Input::json()->get('name'), 
@@ -152,7 +151,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function extraBookTrial() {
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$data = array(
 			'capture_type' 			=>		'extrabook_trial',
 			'name' 					=>		Input::json()->get('name'), 
@@ -222,7 +221,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function fivefitnesscustomer(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$emaildata = array(
 			'email_template' => 'emails.finder.fivefitness', 
 			'email_template_data' => $data = array(
@@ -254,7 +253,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function refundfivefitnesscustomer(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$emaildata = array(
 			'email_template' => 'emails.finder.refund', 
 			'email_template_data' => $data = array(
@@ -283,7 +282,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function landingpagecallback(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$emaildata = array(
 			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
 			'email_template_data' => $data = array(
@@ -308,7 +307,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function landingpageregister(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$emaildata = array(
 			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
 			'email_template_data' => $data = array(
@@ -339,7 +338,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function landingconversion(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$emaildata = array(
 			'email_template' => 'emails.finder.fivefitness', 
 			'email_template_data' => $data = array(
@@ -389,7 +388,7 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function offeravailed(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$data = array(
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
@@ -427,7 +426,7 @@ class EmailSmsApiController extends \BaseController {
 
 
 	public function fitcardbuy(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$data = array(
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
@@ -462,7 +461,7 @@ class EmailSmsApiController extends \BaseController {
 
 
 	public function not_able_to_find(){
-		date_default_timezone_set("Asia/Kolkata");
+		
 		$data = array(				
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 

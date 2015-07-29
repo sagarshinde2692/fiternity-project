@@ -1,5 +1,10 @@
 <?php
 
+$monolog = Log::getMonolog();
+$syslog = new \Monolog\Handler\SyslogHandler('fitapi');
+$formatter = new \Monolog\Formatter\LineFormatter('%channel%.%level_name%: %message% %extra%');
+$syslog->setFormatter($formatter);
+$monolog->pushHandler($syslog);
 
 App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
@@ -8,6 +13,8 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
+
+
 
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
@@ -323,7 +330,6 @@ Route::post('generatefitcardcodorder',  array('as' => 'customer.generatefitcardc
 Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardtmporder','uses' => 'CustomerController@generateFitCardTmpOrder'));
 Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
-
 Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
 Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
 Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgotpasswordemail','uses' => 'CustomerController@forgotPasswordEmail'));
@@ -386,6 +392,7 @@ Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbookt
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
+Route::get('findertopreview/{slug}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -476,7 +483,8 @@ Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
-
+// Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
+Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/
 ##############################################################################
@@ -487,19 +495,19 @@ Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => '
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
 Route::post('/notify/{notifytype}','EmailSmsApiController@triggerNotify');
 Route::post('/email/requestcallback','EmailSmsApiController@RequestCallback');
-Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
-Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
+// Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
+// Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
 Route::post('/email/finderlead','EmailSmsApiController@FinderLead');
 Route::post('/email/emailfinder','EmailSmsApiController@EmailSmsFinder');
-Route::post('/email/newfinder','EmailSmsApiController@findercreated');
-Route::post('/email/finderreview','EmailSmsApiController@ReviewOnfinder');
-Route::post('/email/createcommunity','EmailSmsApiController@CreateCommunity');
-Route::post('/email/joincommuntiy','EmailSmsApiController@JoinCommunity');
-Route::post('/email/interestcommunity','EmailSmsApiController@InterestCommunity');
+// Route::post('/email/newfinder','EmailSmsApiController@findercreated');
+// Route::post('/email/finderreview','EmailSmsApiController@ReviewOnfinder');
+// Route::post('/email/createcommunity','EmailSmsApiController@CreateCommunity');
+// Route::post('/email/joincommuntiy','EmailSmsApiController@JoinCommunity');
+// Route::post('/email/interestcommunity','EmailSmsApiController@InterestCommunity');
 Route::post('/email/commentonblog','EmailSmsApiController@CommentOnBlog');
 Route::post('/subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
-Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
-Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
+// Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
+// Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
 Route::post('/landing', 'CaptureController@postCapture');
 Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
 Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
@@ -544,4 +552,25 @@ Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
 
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/
+
+
+
+##############################################################################
+/******************** ORDERS SECTION START HERE ***********************/
+
+Route::get('/callvendor',  array('as' => 'ozonetel.callvendor','uses' => 'OzonetelController@callVendor'));
+
+
+/******************** ORDERS SECTION END HERE ********************/
+##############################################################################
+
+
+
+##############################################################################
+/******************** BRAND SECTION START HERE *******************************/
+
+Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'BrandsController@brandDetail'));
+
+##############################################################################
+/******************** BRAND SECTION END HERE *******************************/
 

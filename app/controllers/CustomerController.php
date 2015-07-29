@@ -267,6 +267,8 @@ class CustomerController extends \BaseController {
 
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
+			Log::info('Customer Purchase : '.json_encode(array('purchase_details' => $order)));
+
 			return Response::json($resp);
 		}
 
@@ -311,7 +313,7 @@ class CustomerController extends \BaseController {
 			        $customer->email = $data['email'];
 			        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 			        $customer->password = md5($data['password']);
-			        if(isset($customer['contact_no'])){
+			        if(isset($data['contact_no'])){
 			        	$customer->contact_no = $data['contact_no'];
 			        }
 			        $customer->identity = $data['identity'];
@@ -321,6 +323,8 @@ class CustomerController extends \BaseController {
 
 			        $customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 					$this->customermailer->register($customer_data);
+
+					Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
         			return Response::json($this->createToken($customer),200);
 		        }	
@@ -332,7 +336,7 @@ class CustomerController extends \BaseController {
 		        $customer->email = $data['email'];
 		        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
 		        $customer->password = md5($data['password']);
-		        if(isset($customer['contact_no'])){
+		        if(isset($data['contact_no'])){
 		        	$customer->contact_no = $data['contact_no'];
 		        }
 		        $customer->account_link = $account_link;
@@ -341,6 +345,8 @@ class CustomerController extends \BaseController {
 
 				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 				$this->customermailer->register($customer_data);
+
+				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
 				return Response::json($this->createToken($customer),200);
 	        }
@@ -415,6 +421,8 @@ class CustomerController extends \BaseController {
 
 		return $this->createToken($customer);
 	}
+
+
 
 	public function socialLogin($data){
 
@@ -508,6 +516,8 @@ class CustomerController extends \BaseController {
 		return $this->createToken($customer);
 	}
 
+
+
 	public function socialRegister($data){
 
 		$rules = [
@@ -547,6 +557,8 @@ class CustomerController extends \BaseController {
         return $response;
 	}
 
+
+
 	public function createToken($customer){
 
 		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
@@ -566,10 +578,12 @@ class CustomerController extends \BaseController {
         return array('status' => 200,'message' => 'successfull login', 'token' => $token);
 	}
 
+
 	public function validateToken(){
 
 		return Response::json(array('status' => 200,'message' => 'token is correct'),200);
 	}
+
 
 	public function resetPassword(){
 
@@ -609,6 +623,8 @@ class CustomerController extends \BaseController {
         return Response::json($response,$responce['status']);
 	}
 
+
+
 	public function createPasswordToken($customer){
 		$password_claim = array(
 			    "iat" => Config::get('app.forgot_password.iat'),
@@ -622,6 +638,8 @@ class CustomerController extends \BaseController {
 
         return $token;
 	}
+
+
 
 	public function forgotPasswordEmail(){
 
@@ -649,6 +667,8 @@ class CustomerController extends \BaseController {
 		}
 
 	}
+
+
 
 	public function forgotPassword(){
 
@@ -711,6 +731,8 @@ class CustomerController extends \BaseController {
 	    }
 	}
 
+
+
 	public function forgotPasswordEmailApp(){
 
 		$data = Input::json()->all();
@@ -754,6 +776,8 @@ class CustomerController extends \BaseController {
 
 	}
 
+
+
 	public function createOtp($email){
 		$length = 4;
 		$characters = '0123456789';
@@ -773,6 +797,8 @@ class CustomerController extends \BaseController {
 
 	    return $randomString;
 	}
+
+
 
 	public function validateOtp(){
 
@@ -803,6 +829,8 @@ class CustomerController extends \BaseController {
 
 	    return Response::json($response,$response['status']);
 	}
+
+	
 
 	public function customerLogout(){
 

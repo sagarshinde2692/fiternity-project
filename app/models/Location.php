@@ -27,5 +27,10 @@ class Location extends \Basemodel {
 	}
 
 
+	public function fitmaniadods(){
+		return $this->hasMany('Fitmaniadod');
+	}
+
+
 	
 }

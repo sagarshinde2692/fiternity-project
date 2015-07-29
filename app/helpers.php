@@ -86,7 +86,7 @@ if (!function_exists('get_elastic_finder_document')) {
     function get_elastic_finder_document($finderdata = array()) {
 
         $data = $finderdata;
-
+        
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
