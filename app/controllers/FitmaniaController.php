@@ -98,6 +98,42 @@ class FitmaniaController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
+	public function getDealOfDayBetweenDate($startdate = null, $enddate = null, $city = 'mumbai', $location_cluster = ''){
+
+		// $date 					=  	'27-07-2015';
+		$startdate 				=  	($startdate == null) ? Carbon::now() : $startdate;
+		$enddate 				=  	($enddate == null) ? Carbon::now() : $enddate;
+
+		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
+		$dealsofdays 			=	[];
+
+		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
+		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $startdate )) ))
+		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $enddate )) ));
+
+		if($location_cluster != ''){ 
+			$query->where('location_cluster', $location_cluster); 
+		}	
+
+		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transform($value);
+			array_push($dealsofdays, $dealdata);
+		}
+
+		if($city == 'mumbai'){
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane'];
+		}else{
+			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
+		}	
+
+		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
+
+		return Response::json($responseData, 200);
+	}
 
 
 	private function transform($deal){
@@ -135,8 +171,8 @@ class FitmaniaController extends \BaseController {
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
 		'slabs' => (isset($item['slabs']) && !empty($item['slabs']) ) ? $item['slabs'] : "",
 		'current_going_slab' => (isset($current_going_slab) && !empty($current_going_slab) ) ? $current_going_slab : "",
-		'august_available_dates' => (isset($item['august_available_dates']) && !empty($item['august_available_dates']) ) ? $item['august_available_dates'] : "",
-		'september_available_dates' => (isset($item['september_available_dates']) && !empty($item['september_available_dates']) ) ? $item['september_available_dates'] : "",
+		'august_available_dates' => "",
+		'available_dates' => (isset($item['available_dates']) && !empty($item['available_dates']) ) ? $item['available_dates'] : "",
 		];
 		return $data;
 	}
@@ -310,7 +346,7 @@ class FitmaniaController extends \BaseController {
 		$order_ids = [2329,2331,2333,2334,2345,2347,2348,2350,2365,2372,2375,2376,2379,2381,2383,2390,2393,2394,2395,2396,2398,2406,2408,2420,2426,2428,2430,2432,2435,2437,2446,2448,2453,2454,2455,
 		2463,2468,2469,2474,2475,2482,2491,2495,2496,2497,2498,2500,2505,2506,2507,2508,2508,2509,2510,2511,2512,2516,2548,2576,2587];
 
-		$order_ids = [2518,2503];		
+		$order_ids = [2613];		
 
 		//updates city name  first
 		// $items = Order::active()->whereIn('_id', $order_ids)->get();
