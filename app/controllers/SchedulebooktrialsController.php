@@ -591,6 +591,8 @@ if($trialbooked = true){
 	$trialbooked 	= 	$booktrial->update($queueddata);
 }
 
+Log::info('Customer Book Trial', array('book_trial_details' => $trialbooked));
+
 $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
 return Response::json($resp,200);	
 }
