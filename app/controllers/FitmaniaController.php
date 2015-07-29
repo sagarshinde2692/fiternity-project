@@ -343,12 +343,11 @@ class FitmaniaController extends \BaseController {
 	//resend email to customer and finder for successfull orders
 	public function resendEmails(){
 		
-		$order_ids = [2329,2331,2333,2334,2345,2347,2348,2350,2365,2372,2375,2376,2379,2381,2383,2390,2393,2394,2395,2396,2398,2406,2408,2420,2426,2428,2430,2432,2435,2437,2446,2448,2453,2454,2455,
-		2463,2468,2469,2474,2475,2482,2491,2495,2496,2497,2498,2500,2505,2506,2507,2508,2508,2509,2510,2511,2512,2516,2548,2576,2587];
+		// $order_ids = [2329,2334,2333,2331,2345,2348,2347,2350,2365,2375,2379,2376,2381,2383,2390,2395,2372,2393,2394,2396,2406,2408,2413,2426,2428,2430,2432,2437,2435,2448,2446,2453,2455,2454,2463,2468,2469,2475,2474,2377,2491,2495,2497,2482,2500,2498,2496,2503,2508,2508,2505,2507,2510,2509,2512,2511,2398,2516,2506,2548,2564,2576,2587,2659,2733,2921,2922,2924,2930,2931,2933,2934,2968,2972,2973,2985,2990,2989,2990];
 
-		$order_ids = [2613];		
+		$order_ids = [2006];		//  sanjay.fitternity@gmail.com
 
-		//updates city name  first
+		// updates city name  first
 		// $items = Order::active()->whereIn('_id', $order_ids)->get();
 		// $finderdata = array();
 
@@ -367,11 +366,12 @@ class FitmaniaController extends \BaseController {
 
 		foreach ($orders as $order) {  
 			$orderData 				= 	$order->toArray();
-			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
+			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+			// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
-			echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
+			echo "$sndsEmailCustomer <br><br>";
+			// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
 		}
 
 
