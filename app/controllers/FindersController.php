@@ -464,6 +464,9 @@ class FindersController extends \BaseController {
 			$review->_id = $inserted_id;
 			$reviewobject = $review->save();
 			$updatefinder = $this->updateFinderRatingV1($reviewdata);
+
+			Log::info('Customer Review : '.json_encode(array('review_details' => Review::findOrFail($inserted_id))));
+
 			$response = array('status' => 200, 'message' => 'Review Created Successfully.');
 		}
 		

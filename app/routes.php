@@ -1,5 +1,10 @@
 <?php
 
+$monolog = Log::getMonolog();
+$syslog = new \Monolog\Handler\SyslogHandler('fitapi');
+$formatter = new \Monolog\Formatter\LineFormatter('%channel%.%level_name%: %message% %extra%');
+$syslog->setFormatter($formatter);
+$monolog->pushHandler($syslog);
 
 App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
