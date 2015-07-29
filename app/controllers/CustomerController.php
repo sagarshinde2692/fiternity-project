@@ -267,7 +267,7 @@ class CustomerController extends \BaseController {
 
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
-			Log::info('Customer Purchase', array('purchase_details' => $order));
+			Log::info('Customer Purchase : '.json_encode(array('purchase_details' => $order)));
 
 			return Response::json($resp);
 		}
@@ -324,7 +324,7 @@ class CustomerController extends \BaseController {
 			        $customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 					$this->customermailer->register($customer_data);
 
-					Log::info('Customer Register', array('customer_details' => $customer));
+					Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
         			return Response::json($this->createToken($customer),200);
 		        }	
@@ -346,7 +346,7 @@ class CustomerController extends \BaseController {
 				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 				$this->customermailer->register($customer_data);
 
-				Log::info('Customer Register', array('customer_details' => $customer));
+				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
 				return Response::json($this->createToken($customer),200);
 	        }

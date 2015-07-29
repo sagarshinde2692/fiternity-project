@@ -574,6 +574,8 @@ if($trialbooked = true){
 	$trialbooked 	= 	$booktrial->update($queueddata);
 }
 
+Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
+
 $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
 return Response::json($resp,200);	
 }
@@ -831,7 +833,7 @@ return Response::json($resp,200);
 			$trialbooked 	= 	$booktrial->update($queueddata);
 		}
 
-		Log::info('Customer Book Trial', array('book_trial_details' => $trialbooked));
+		Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
 		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
 		return Response::json($resp,200);	

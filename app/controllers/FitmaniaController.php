@@ -159,7 +159,7 @@ class FitmaniaController extends \BaseController {
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 		}
 
-		Log::info('Customer Purchase', array('purchase_details' => $order));
+		Log::info('Customer Purchase : '.json_encode(array('purchase_details' => $order)));
 		
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce through Fitmania :)");
 		return Response::json($resp,200);		
