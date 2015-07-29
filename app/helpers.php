@@ -362,5 +362,116 @@ if (!function_exists('pluck')) {
     }
 }
 
+if (!function_exists(('get_elastic_autosuggest_doc'))){
+
+    function get_elastic_autosuggest_doc($source=''){
+
+        $data = $source;
+        $postfields_data = array(
+            'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
+            'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
+            'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
+            'identifier'                    =>      $data['category']['name'],
+            'slug'                          =>      $data['slug'],
+    );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_category_doc'))){
+
+    function get_elastic_category_doc($source=''){
+
+        $data = $source;
+        $postfields_data = array(
+            'input'                         =>      $data['name'],
+            'city'                          =>      array('mumbai','pune','bangalore','chennai','hyderabad','delhi','ahmedabad','gurgaon'),
+            'location'                      =>      '',
+            'identifier'                    =>      'categories',
+            'slug'                          =>      $data['slug'],
+        );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('evalBaseCategoryScore'))){
+    function evalBaseCategoryScore($categoryId){
+        $val = 0;
+        switch($categoryId)
+        {
+            case 5:
+            case 'gyms':
+                $val = 13; //gyms
+                break;
+
+            case 12:
+            case 'zumba':
+                $val =  12;
+                break;
+
+            case 6:
+            case 'yoga':
+                $val =  11;
+                break;
+
+            case 35:
+            case 32:
+            case 'cross functional training':
+            case 'crossfit':
+                $val =  10;
+                break;
+
+            case 13:
+            case 'kick boxing':
+                $val =  9;
+                break;
+
+            case 8:
+            case 7:
+            case 29:
+            case 'martial arts':
+            case 'dance':
+            case 'dance teachers':
+                $val =  8;
+                break;
+
+            case 14:
+            case 'spinning and indoor cycling':
+                $val =  7;
+                break;
+
+            case 11:
+            case 'pilates':
+                $val =  6;
+                break;
+
+            case 36:
+            case 'marathon training':
+                $val =  5;
+                break;
+
+            case 10:
+            case 'swimming':
+                $val =  4;
+                break;
+
+            case 41:
+            case 'personal trainers':
+                $val =  3;
+                break;
+
+            case 40:
+            case 'sports':
+                $val =  2;
+                break;
+
+            case 42:
+            case 'Healthy Tiffins':
+                $val =  1;
+                break;
+        }
+        return $val;
+    }
+}
 
 ?>
