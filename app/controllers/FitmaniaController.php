@@ -98,7 +98,7 @@ class FitmaniaController extends \BaseController {
 		$category_cluster	=	[ 'beverages', 'desserts', 'snacks', 'packages'];
 
 
-		$responseData = [ 'dealsofday' => $dealsofdays,  'category_cluster' => $category_cluster ];
+		$responseData = [ 'dealsofday' => $dealsofdays,  'location_cluster' => $category_cluster ];
 
 		return Response::json($responseData, 200);
 	}
