@@ -65,8 +65,9 @@ class FitmaniaController extends \BaseController {
 
 	public function getDealOfDayHealthyTiffin($city = 'mumbai', $category_cluster = ''){
 
-		// $date 				=  	($date == null) ? Carbon::now() : $date;
-		$date 					=  	Carbon::now();
+		// $date 					=  	Carbon::now();
+		$date 					=  	'31-07-2015';
+
 		$timestamp 				= 	strtotime($date);
 		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
 		$city_name 				= 	$citydata['name'];
@@ -196,6 +197,7 @@ class FitmaniaController extends \BaseController {
 		'finder_name' => (isset($item['finder_name']) && $item['finder_name'] != '') ? strtolower($item['finder_name']) : "",
 		'price' => (isset($item['price']) && $item['price'] != '') ? strtolower($item['price']) : "",
 		'location_cluster' => (isset($item['location_cluster']) && $item['location_cluster'] != '') ? strtolower($item['location_cluster']) : "",
+		'category_cluster' => (isset($item['category_cluster']) && $item['category_cluster'] != '') ? strtolower($item['category_cluster']) : "",
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
 		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
@@ -209,6 +211,8 @@ class FitmaniaController extends \BaseController {
 		'current_going_slab' => (isset($current_going_slab) && !empty($current_going_slab) ) ? $current_going_slab : "",
 		'august_available_dates' => "",
 		'available_dates' => (isset($item['available_dates']) && !empty($item['available_dates']) ) ? $item['available_dates'] : "",
+		'delivery_area' => (isset($item['delivery_area']) && !empty($item['delivery_area']) ) ? $item['delivery_area'] : "",
+		'delivery_time' => (isset($item['delivery_time']) && !empty($item['delivery_time']) ) ? $item['delivery_time'] : "",
 		];
 		return $data;
 	}
@@ -374,6 +378,32 @@ class FitmaniaController extends \BaseController {
 
 		return Response::json($resp,200);		
 	}
+
+
+	public function buyServiceHealthyTiffin(){
+
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		}
+		// return Input::json()->all();
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
+
+		array_set($data, 'status', '1');
+		$buydealofday 	=	$order->update($data);
+
+		$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
+		$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
+		$sndsEmailFinder		= 	$this->findermailer->buyServiceMembershipThroughFitmania($orderData);
+
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
+
+		return Response::json($resp,200);		
+	}
+
+
 
 
 	//resend email to customer and finder for successfull orders
