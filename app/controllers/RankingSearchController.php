@@ -98,12 +98,27 @@ class RankingSearchController extends \BaseController
            '.$sort.'
 		}';
 
-        $eSQuery = json_decode($body,true);
+        $request = array(
+            'url' => $this->elasticsearch_url."fitternity/finder/_search",
+            'port' => 8050,
+            'method' => 'POST',
+            'postfields' => $body
+        );
+
+
+        $search_results 	=	es_curl_request($request);
+
+        $response 		= 	[
+            'search_results' => json_decode($search_results,true)];
+
+        return Response::json($response);
+
+        /*$eSQuery = json_decode($body,true);
         $searchParams['index'] = $this->indice;
         $searchParams['type']  = $type;
         $searchParams['body'] = $eSQuery;
         $results =  Es::search($searchParams);
-        return $results;
+        return $results;*/
     }
 }
 
