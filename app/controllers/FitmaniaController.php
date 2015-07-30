@@ -211,6 +211,9 @@ class FitmaniaController extends \BaseController {
 		'current_going_slab' => (isset($current_going_slab) && !empty($current_going_slab) ) ? $current_going_slab : "",
 		'august_available_dates' => "",
 		'available_dates' => (isset($item['available_dates']) && !empty($item['available_dates']) ) ? $item['available_dates'] : "",
+		'finder_poc_for_customer_name' => (isset($item['finder_poc_for_customer_name']) && !empty($item['finder_poc_for_customer_name']) ) ? $item['finder_poc_for_customer_name'] : "",
+		'finder_poc_for_customer_mobile' => (isset($item['finder_poc_for_customer_mobile']) && !empty($item['finder_poc_for_customer_mobile']) ) ? $item['finder_poc_for_customer_mobile'] : "",
+		'finder_vcc_email' => (isset($item['finder_vcc_email']) && !empty($item['finder_vcc_email']) ) ? $item['finder_vcc_email'] : "",
 		'delivery_area' => (isset($item['delivery_area']) && !empty($item['delivery_area']) ) ? $item['delivery_area'] : "",
 		'delivery_time' => (isset($item['delivery_time']) && !empty($item['delivery_time']) ) ? $item['delivery_time'] : "",
 		];
