@@ -63,6 +63,42 @@ class FitmaniaController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
+	public function getDealOfDayHealthyTiffin($city = 'mumbai', $category_cluster = ''){
+
+		// $date 				=  	($date == null) ? Carbon::now() : $date;
+		$date 					=  	Carbon::now();
+		$timestamp 				= 	strtotime($date);
+		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
+		$dealsofdays 			=	[];
+
+		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
+		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
+
+		if($category_cluster != ''){ 
+			$query->where('category_cluster', $category_cluster); 
+		}	
+
+		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transform($value);
+			array_push($dealsofdays, $dealdata);
+		}
+
+		if($city == 'mumbai'){
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane'];
+		}else{
+			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
+		}	
+
+		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
+
+		return Response::json($responseData, 200);
+	}
+
 
 	public function getDealOfDayZumba($city = 'mumbai', $location_cluster = ''){
 
