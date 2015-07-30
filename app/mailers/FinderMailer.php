@@ -125,6 +125,32 @@ Class FinderMailer extends Mailer {
 
 	}
 
+	public function buyServiceHealthyTiffinThroughFitmania ($data){
+
+		$email_template_customer 	= 	'emails.order.fitmania_healthytiffin_vendor_v1';
+		$template_data 				= 	$data;
+
+		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_fitmaniasale'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		} 
+		
+		// $bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
+
+		$subject  					=   'FitMania Sale by Fitternity - Order confirmation for '.ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' => ucwords($data['finder_name']),
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+
+	}
+
 
 	public function cancelBookTrial(){
 
