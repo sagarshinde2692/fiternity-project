@@ -165,15 +165,16 @@ Hi {{ $customer_name }}!</span></p>
  
  <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Address:</span> {{ ucfirst($finder_address) }}
 
- @if ($finder_poc_for_customer_name) 
+ <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Person:</span> {{ ucwords($finder_poc_for_customer_name) }}  
 </p>
- @endif
+<?PHP } ?>
 
- @if ($finder_poc_for_customer_mobile) 
+
+ <?php if(isset($finder_poc_for_customer_mobile) && $finder_poc_for_customer_mobile != ""){ ?> 
 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Number:</span> {{ ucwords($finder_poc_for_customer_mobile) }}  
 </p>
- @endif
+<?PHP } ?>
 
 
 <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">3. Call us for help</span>

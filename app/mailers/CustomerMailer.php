@@ -253,13 +253,13 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		$this->sendEmail($email_template_customer, $template_data, $message_data);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
 	}
 
 	public function buyServiceThroughFitmaniaResend1 ($data){
@@ -277,7 +277,7 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendTo($email_template_customer, $template_data, $message_data);
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
@@ -301,13 +301,13 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		$this->sendEmail($email_template_customer, $template_data, $message_data);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
 	}
 
 

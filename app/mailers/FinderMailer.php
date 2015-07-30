@@ -95,7 +95,7 @@ Class FinderMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendTo($email_template_customer, $template_data, $message_data);
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
 
 	}
 
@@ -121,7 +121,7 @@ Class FinderMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendTo($email_template_customer, $template_data, $message_data);
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
 
 	}
 

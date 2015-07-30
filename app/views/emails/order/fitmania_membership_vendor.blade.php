@@ -195,6 +195,7 @@
                        <tr>
                         <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
                       </tr>
+                      <?php if(isset($customer_name) && $customer_name != ""){ ?>  
                       <tr>
                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                          <p style="font-weight:light">Name of the customer:   
@@ -206,7 +207,9 @@
                        <tr>
                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                            {{ ucwords($customer_name) }}</td>
-                         </tr>
+                         </tr> <?PHP } ?>
+
+                         <?php if(isset($customer_phone) && $customer_phone != ""){ ?>  
                          <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Number of the customer::
@@ -217,8 +220,9 @@
                          <tr>
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $customer_phone }} </td>
-                           </tr>
+                           </tr> <?PHP } ?>
 
+                           <?php if(isset($amount) && $amount != ""){ ?> 
                            <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Purchase price:
@@ -229,7 +233,7 @@
                          <tr>
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $amount }} </td>
-                           </tr>
+                           </tr><?PHP } ?>
 
 
 
