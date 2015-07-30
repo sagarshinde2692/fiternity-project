@@ -95,7 +95,7 @@ class FitmaniaController extends \BaseController {
 			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
 		}	
 
-		$category_cluster	=	[ 'beverages', 'desserts', 'snacks', 'packages'];
+		$category_cluster	=	['all', 'beverages', 'desserts', 'snacks', 'packages'];
 
 
 		$responseData = [ 'dealsofday' => $dealsofdays,  'location_cluster' => $category_cluster ];
