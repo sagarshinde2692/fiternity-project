@@ -79,7 +79,7 @@ class RankingSearchController extends \BaseController
 
 
         $category_facets = '"category": {"terms": {"field": "category","all_terms": true,"size": '.$facetssize.',"order": "term"}},';
-        $regions_facets = '"regions": {"terms": {"field": "regions","all_terms": true,"size": '.$facetssize.',"order": "term"}},';
+        $regions_facets = '"regions": {"terms": {"field": "locationtags","all_terms": true,"size": '.$facetssize.',"order": "term"}},';
         $offerings_facets = '"offerings": {"terms": {"field": "offerings","all_terms": true,"size": '.$facetssize.',"order": "term"}},';
         $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms": true,"size": '.$facetssize.',"order": "term"}},';
         $facetsvalue = trim($category_facets.$regions_facets.$offerings_facets.$facilities_facets,',');
