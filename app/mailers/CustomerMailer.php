@@ -288,7 +288,7 @@ Class CustomerMailer extends Mailer {
 
 	public function buyServiceMembershipThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmania_membership_template';
+		$email_template_customer 	= 	'emails.order.fitmania_membership_template_v1';
 		$email_template_mailus 		= 	'emails.order.fitmania_membership_mailus';
 		$template_data 				= 	$data;
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
