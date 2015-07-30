@@ -599,13 +599,14 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 
 Route::get('fitmania/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
 Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
+Route::get('fitmaniahealthytiffin/{city?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
 Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
 
 Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
 
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
 Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
-// Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
+Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
 
 
 Route::get('resendemails', 'FitmaniaController@resendEmails');
