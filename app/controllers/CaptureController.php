@@ -65,18 +65,19 @@ zumba_party
 zumba_trials
 */
 
-
-	protected $customersms;
-
 	public function postCapture(){
 		
-		$data = array(
-				'capture_type' => Input::json()->get('capture_type'),
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'),
-				'mobile' => Input::json()->get('mobile'),
-				'created_at' => date('Y-m-d H:i:s')
-			);
+		// $data = array(
+		// 		'capture_type' => Input::json()->get('capture_type'),
+		// 		'name' => Input::json()->get('name'), 
+		// 		'email' => Input::json()->get('email'),
+		// 		'mobile' => Input::json()->get('mobile'),
+		// 		'mobile' => Input::json()->get('mobile'),
+		// 		'created_at' => date('Y-m-d H:i:s')
+		// 	);
+		
+		$data 			= Input::json()->all();
+
 
 		$yet_to_connect_arr = array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy');
 		// if(in_array(Input::json()->get('capture_type'), $yet_to_connect_arr)){
@@ -85,7 +86,7 @@ zumba_trials
 		$storecapture = Capture::create($data);
 		if($storecapture){
 			if(Input::json()->get('capture_type') == 'pre-register-fitmania'){
-				$sndInstantSmsFinder	=	$this->customersms->bookTrial($data);
+				$sndInstantSmsFinder	=	$this->customersms->fitmaniaPreRegister($data);
 			}
 		}
 

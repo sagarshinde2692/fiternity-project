@@ -15,10 +15,10 @@ class SearchServicesController extends \BaseController {
 	public function __construct() {
 
 		parent::__construct();	
-		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
-		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/';
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/'.Config::get('app.elasticsearch_default_index').'/'.Config::get('app.elasticsearch_default_type').'/';
+		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/';
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host_new');
-		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
+		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port_new');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 	}
 
@@ -168,7 +168,7 @@ public function getWorkoutsessions(){
     //return $serachbody;
 	$request = array(
 		'url' => $this->elasticsearch_url."fitternity/service/_search",
-		'port' => 9200,
+		'port' => $this->elasticsearch_port,
 		'method' => 'POST',
 		'postfields' => $serachbody
 		);
@@ -360,7 +360,7 @@ public function getRatecards(){
 	$serachbody = $body;
 	$request = array(
 		'url' => $this->elasticsearch_url."fitternity/service/_search",
-		'port' => 9200,
+		'port' => $this->elasticsearch_port,
 		'method' => 'POST',
 		'postfields' => $serachbody
 		);
@@ -546,7 +546,7 @@ public function geoLocationService(){
         //return $serachbody;
 		$request = array(
 			'url' => $this->elasticsearch_url."fitternity/service/_search",
-			'port' => 9200,
+			'port' => $this->elasticsearch_port,
 			'method' => 'POST',
 			'postfields' => $serachbody
 			);

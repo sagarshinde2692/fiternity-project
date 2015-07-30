@@ -9,6 +9,7 @@
 
 use App\Mailers\FinderMailer as FinderMailer;
 
+
 class FindersController extends \BaseController {
 
 
@@ -32,8 +33,6 @@ class FindersController extends \BaseController {
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 		$this->findermailer						=	$findermailer;
 	}
-
-
 
 
 	public function finderdetail($slug, $cache = true){
