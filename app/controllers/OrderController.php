@@ -123,7 +123,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
-		if($data['type'] == 'memberships' || $data['type'] == 'booktrials'){
+		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'){
 			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 			}
@@ -131,6 +131,10 @@ class OrderController extends \BaseController {
 
 		$orderid 			=	Order::max('_id') + 1;
 		$data 				= 	Input::json()->all();
+		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
+		
+		array_set($data, 'customer_id', intval($customer_id));
+		
 		array_set($data, 'status', '0');
 		array_set($data, 'payment_mode', 'cod');
 		$order 				= 	new Order($data);
@@ -302,6 +306,7 @@ class OrderController extends \BaseController {
 	        $customer->identity = 'email';
 	        $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 	        $customer->status = "1";
+	        $customer->ishulluser = 1;
 	        $customer->save();
 
 	        return $inserted_id;
