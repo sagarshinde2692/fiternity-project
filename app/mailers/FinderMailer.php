@@ -95,13 +95,13 @@ Class FinderMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendTo($email_template_customer, $template_data, $message_data);
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
 
 	}
 
 	public function buyServiceMembershipThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmania_membership_vendor';
+		$email_template_customer 	= 	'emails.order.fitmania_membership_vendor_v1';
 		$template_data 				= 	$data;
 
 		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
@@ -121,7 +121,7 @@ Class FinderMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendTo($email_template_customer, $template_data, $message_data);
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
 
 	}
 

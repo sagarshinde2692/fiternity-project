@@ -62,6 +62,16 @@ abstract Class Mailer {
 
 	}
 
+	public function  sendEmail($email_template, $template_data = [], $message_data = []){
+
+		return Mail::send($email_template, $template_data, function($message) use ($message_data){
+			$message->to($message_data['user_email'], $message_data['user_name'])
+					->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
+					->subject($message_data['email_subject']);
+		});
+
+	}
+
 
 
 	/**

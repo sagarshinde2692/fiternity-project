@@ -195,18 +195,21 @@
                        <tr>
                         <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
                       </tr>
+
+                      <?php if(isset($customer_name) && $customer_name != ""){ ?>  
                       <tr>
                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                          <p style="font-weight:light">Name of the customer:   
-
                          </td>
                        </tr>
-
-
                        <tr>
                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                            {{ ucwords($customer_name) }}</td>
                          </tr>
+                        <?PHP } ?>
+
+
+                        <?php if(isset($customer_phone) && $customer_phone != ""){ ?>  
                          <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Number of the customer::
@@ -218,7 +221,9 @@
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $customer_phone }} </td>
                            </tr>
+                           <?PHP } ?>
 
+                        <?php if(isset($amount) && $amount != ""){ ?>  
                            <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Purchase price:
@@ -230,15 +235,11 @@
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $amount }} </td>
                            </tr>
-
-
-
+                           <?PHP } ?>
 
                            <tr>
                             <td width="100%" height="5"></td>
                           </tr>
-
-
                         </tbody>
                       </table>
                     </td>
@@ -266,6 +267,8 @@
                     </tr>
                     <!-- Spacing -->
                     <!-- title2 -->
+ 
+
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                        <p style="font-weight:light">  Membership Type : 
@@ -276,9 +279,10 @@
                      
                      <tr>
                        <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                         @if ($service_name) {{ ucwords($service_name) }} @endif  </td>
+                        <?php if(isset($service_name) && $service_name != ""){ ?>  {{ ucwords($service_name) }} <?PHP } ?>  </td>
                        </tr> 
 
+                       <?php if(isset($_id) && $_id != ""){ ?>
                        <tr>
                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                          <p style="font-weight:light">  Subscription Code:  
@@ -291,6 +295,7 @@
                            {{ $_id }} (this code will be shared by the customer to avail the membership)
                          </td>
                        </tr>
+                       <?php }?>
 
 
 
