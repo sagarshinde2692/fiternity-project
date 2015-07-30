@@ -95,7 +95,10 @@ class FitmaniaController extends \BaseController {
 			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
 		}	
 
-		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
+		$category_cluster	=	[ 'beverages', 'desserts', 'snacks', 'packages'];
+
+
+		$responseData = [ 'dealsofday' => $dealsofdays,  'category_cluster' => $category_cluster ];
 
 		return Response::json($responseData, 200);
 	}
@@ -397,11 +400,11 @@ class FitmaniaController extends \BaseController {
 		array_set($data, 'status', '1');
 		$buydealofday 	=	$order->update($data);
 
-		$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
-		$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
-		$sndsEmailFinder		= 	$this->findermailer->buyServiceMembershipThroughFitmania($orderData);
+		$sndsSmsCustomer		= 	$this->customersms->buyServiceHealthyTiffinThroughFitmania($orderData);
+		$sndsEmailCustomer		= 	$this->customermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
+		$sndsEmailFinder		= 	$this->findermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
 
-		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Healthy through Fitmania :)");
 
 		return Response::json($resp,200);		
 	}

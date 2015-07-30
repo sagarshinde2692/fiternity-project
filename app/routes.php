@@ -600,7 +600,7 @@ Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
 
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
 Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
-// Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
+Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
 
 
 Route::get('resendemails', 'FitmaniaController@resendEmails');
