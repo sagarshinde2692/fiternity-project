@@ -55,7 +55,7 @@ class FitmaniaController extends \BaseController {
 		}
 
 		if($city == 'mumbai'){
-			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane'];
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai'];
 		}else{
 			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
 		}	
