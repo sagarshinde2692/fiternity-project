@@ -423,9 +423,9 @@ class FitmaniaController extends \BaseController {
 	//resend email to customer and finder for successfull orders
 	public function resendEmails(){
 		
-		// $order_ids = [2329,2334,2333,2331,2345,2348,2347,2350,2365,2375,2379,2376,2381,2383,2390,2395,2372,2393,2394,2396,2406,2408,2413,2426,2428,2430,2432,2437,2435,2448,2446,2453,2455,2454,2463,2468,2469,2475,2474,2377,2491,2495,2497,2482,2500,2498,2496,2503,2508,2508,2505,2507,2510,2509,2512,2511,2398,2516,2506,2548,2564,2576,2587,2659,2733,2921,2922,2924,2930,2931,2933,2934,2968,2972,2973,2985,2990,2989,2990];
+		$order_ids = [2503,2518];
 
-		$order_ids = [2310];		//  sanjay.fitternity@gmail.com
+		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
 		// updates city name  first
 		// $items = Order::active()->whereIn('_id', $order_ids)->get();
@@ -441,22 +441,23 @@ class FitmaniaController extends \BaseController {
 		// 	print_pretty($response);
 		// }
 
-		$orders = Order::active()->whereIn('_id', $order_ids)->get();
-		$finderdata = array();
+		// $orders = Order::active()->whereIn('_id', $order_ids)->get();
+		// $finderdata = array();
 
-		foreach ($orders as $order) {  
-			$orderData 				= 	$order->toArray();
-			// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
-			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
-			// echo "$sndsEmailCustomer <br><br>";
+		// foreach ($orders as $order) {  
+		// 	$orderData 				= 	$order->toArray();
+		// 	// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
+		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+		// 	// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		// 	// echo "$sndsEmailCustomer <br><br>";
 			
-			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+		// 	$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+		// 	$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
-			echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
-		}
+		// 	echo "$sndsEmailCustomer <br><br>";
+		// 	// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
+		// }
 
 
 
