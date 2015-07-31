@@ -147,9 +147,9 @@
          <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
 Hi {{ $customer_name }}!</span></p>      
              
-<p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
+<p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
 
- <p style="line-height:20px; font-weight:lighter; color:#5f5e5e; padding-top:15px;"><span style="color:#222222; font-weight:600;" > How do you avail the membership and get started?</span></p>
+ <p style="line-height:20px; font-weight:lighter; color:#5f5e5e; padding-top:15px;"><span style="color:#222222; font-weight:600;" > Next steps on your purchase </span></p>
 
  <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;"> 1. Refer to your purchase details</span> 
 

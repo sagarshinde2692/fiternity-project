@@ -147,7 +147,7 @@
          <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
 Hi {{ $customer_name }}!</span></p>      
              
-              <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
+              <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing your membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
 
 
  <p style="line-height:20px; font-weight:lighter; color:#5f5e5e; padding-top:15px;"><span style="color:#222222; font-weight:600;" > How do you avail the membership and get started?</span></p>
@@ -198,7 +198,7 @@ Hi {{ $customer_name }}!</span></p>
 <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#222222; font-weight:600;">Whats more?</span>
 
  <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#222;">Fitternity is India's leading search engine that helps you find fitness activities around you. We are on a simple mission to make fitness easy and affordable. 
- <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#222;">Our search engine helps you filter basis your requirement (location, budget etc.) and gets you different fitness activities (gym, yoga, zumba, crossfit, fitness classes, healthy tiffins & more) with all details you need, without stepping outside your house! You can book trials through Fitternity for the options you like and also purchase memberships at amazing discounts. <hr />
+ <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#222;">Our search engine helps you filter basis your requirement (location, budget etc.) and gets you different fitness activities (gym, yoga, zumba, crossfit, fitness classes, healthy tiffins & more) with all details you need, without stepping outside your house! <br><br>You can book trials through Fitternity for the options you like and also purchase memberships at amazing discounts. <hr />
 </p>
 <p><h3 style="padding-top:25px; line-height:20px; font-weight:600; color:#ec8601">Explore fitness like never before</h3></p>
           </td>

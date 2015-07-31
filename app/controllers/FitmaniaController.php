@@ -27,7 +27,7 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getDealOfDay($city = 'mumbai', $location_cluster = ''){
+	public function getDealOfDay($city = 'mumbai', $from = '', $size = '', $location_cluster = ''){
 
 		// $date 				=  	($date == null) ? Carbon::now() : $date;
 		$date 					=  	Carbon::now();
@@ -45,7 +45,9 @@ class FitmaniaController extends \BaseController {
 			$query->where('location_cluster', $location_cluster); 
 		}	
 
-		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		// $dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		$dealsofdaycolleciton 	= $query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
+		
 		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -63,15 +65,17 @@ class FitmaniaController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
-	public function getDealOfDayHealthyTiffin($city = 'mumbai', $category_cluster = ''){
+	public function getDealOfDayHealthyTiffin($city = 'mumbai', $from = '', $size = '', $category_cluster = ''){
 
 		// $date 					=  	Carbon::now();
 		$date 					=  	'31-07-2015';
-
 		$timestamp 				= 	strtotime($date);
 		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
 		$city_name 				= 	$citydata['name'];
 		$city_id				= 	(int) $citydata['_id'];	
+		$from 					=	($from != '') ? intval($from) : 0;
+		$size 					=	($size != '') ? intval($size) : 10;
+
 		$dealsofdays 			=	[];
 
 		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
@@ -82,7 +86,7 @@ class FitmaniaController extends \BaseController {
 			$query->where('category_cluster', $category_cluster); 
 		}	
 
-		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		$dealsofdaycolleciton 	= $query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
 		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -202,7 +206,7 @@ class FitmaniaController extends \BaseController {
 		'location_cluster' => (isset($item['location_cluster']) && $item['location_cluster'] != '') ? strtolower($item['location_cluster']) : "",
 		'category_cluster' => (isset($item['category_cluster']) && $item['category_cluster'] != '') ? strtolower($item['category_cluster']) : "",
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
-		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
+		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? $item['offer_pic'] : "",
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
 		'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "",
 		'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "",
@@ -442,12 +446,16 @@ class FitmaniaController extends \BaseController {
 
 		foreach ($orders as $order) {  
 			$orderData 				= 	$order->toArray();
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
+			// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
 			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 			// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+			// echo "$sndsEmailCustomer <br><br>";
+			
+			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
-			echo "$sndsEmailCustomer <br><br>";
-			// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
+			echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
 		}
 
 
