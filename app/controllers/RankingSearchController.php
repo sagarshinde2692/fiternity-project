@@ -38,13 +38,15 @@ class RankingSearchController extends \BaseController
         $from =  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
         $size =  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;
         $location = (Input::json()->get('location')) ? Input::json()->get('location') : 'mumbai';
+        $orderfield  = (Input::json()->get('sort')) ? Input::json()->get('sort') : '';
+        $order = (Input::json()->get('order')) ? Input::json()->get('order') : '';
         //input filters
         $category = Input::json()->get('category');
 
 
         $location_filter =  '{"term" : { "city" : "'.$location.'"} },';
         $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"] }},': '';
-        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';
+        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';
         $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';
         $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
         $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';
@@ -55,20 +57,30 @@ class RankingSearchController extends \BaseController
         $mustfilter = '"must": ['.$must_filtervalue.']';		//used for offering and facilities
         $filtervalue = trim($shouldfilter.$mustfilter,',');
 
-        $sort = '"sort":[{"rankv2":{"order":"desc"}}]';
 
-        if($category_filter != '')
+
+        if($orderfield == 'popularity')
         {
-            $factor = evalBaseCategoryScore($category);
-            $sort = '"sort":
-        {"_script" : {
-            "script" : "(doc[\'category\'].value == \''.$category.'\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + '.$factor.' : doc[\'rankv2\'].value + 0)",
-            "type" : "number",
-            "params" : {
-                "factor" : 13
-            },
-            "order" : "desc"
-        }}';
+            if($category_filter != '') {
+                $factor = evalBaseCategoryScore($category);
+                $sort = '"sort":
+                        {"_script" : {
+                            "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+                            "type" : "number",
+                            "params" : {
+                                "factor" : 13
+                            },
+                            "order" : "' . $order . '"
+                        }}';
+            }
+            else{
+                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+            }
+
+        }
+        else
+        {
+            $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
         }
 
         if($shouldfilter != '' || $mustfilter != ''){
@@ -77,14 +89,11 @@ class RankingSearchController extends \BaseController
 			},"_cache" : true';
         }
 
-
-        $category_facets = '"category": {"terms": {"field": "category","all_terms": true,"all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $regions_facets = '"regions": {"terms": {"field": "location","all_terms": true,"all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","all_terms": true,"all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms": true,"all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $facetsvalue = trim($category_facets.$regions_facets.$offerings_facets.$facilities_facets,',');
-
-        $aggs = '{}';
+        $budgets_facets = '"budget": {"terms": {"field": "price_range","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
+        $regions_facets = '"regions": {"terms": {"field": "locationtags","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
+        $facetsvalue = trim($regions_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
         $body =	'{
 			"from": '.$from.',
