@@ -418,6 +418,12 @@ Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','us
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
 
+Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
+
+
+
+
+
 /******************** ORDERS SECTION END HERE ********************/
 ##############################################################################
 

@@ -197,7 +197,14 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
+	public function buyArsenalMembership ($data){
 
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+		
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for your payment of Fitternity.com towards Arsenal Mumbai Supporters Club, we acknowledge the receipt of the same. You will soon receive an email with the details. Regards, Team Fitternity.";
+
+		return $this->sendSms($to, $message);
+	}
 
 
 
