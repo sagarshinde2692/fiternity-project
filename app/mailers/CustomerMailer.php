@@ -188,7 +188,7 @@ Class CustomerMailer extends Mailer {
 		}
 
 		if($data['type'] == 'arsenalmembership'){
-			$subject  = 'Fitternity - Acknowledgement of request to purchase '. ucwords($data['service_name']). " at ". ucwords($data['finder_name']);
+			$subject  = 'Fitternity - Acknowledgement of request to purchase Arsenal Mumbai Membership';
 		}
 
 		if($data['type'] == 'fitmaniaservice'){

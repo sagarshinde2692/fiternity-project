@@ -410,23 +410,23 @@ class FitmaniaController extends \BaseController {
 	public function resendEmails(){
 		
 		// $order_ids = [3338,3341,3345,3342,3352,3351,3356,3355,3364,3428,3430,3392];
-		$order_ids = [3428];
+		$order_ids = [3186];
 
 		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
 		// updates city name  first
-		// $items = Order::whereIn('_id', $order_ids)->get();
-		// $finderdata = array();
+		$items = Order::whereIn('_id', $order_ids)->get();
+		$finderdata = array();
 
-		// foreach ($items as $item) {  
-		// 	$data 	= $item->toArray();
-		// 	$finder = Order::findOrFail($data['_id']);
-		// 	$city_name = ($data['city_id'] == 1) ? 'mumbai' : 'pune';
-		// 	array_set($finderdata, 'status', '1');
-		// 	array_set($finderdata, 'city_name', $city_name);
-		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($finderdata); 
-		// }
+		foreach ($items as $item) {  
+			$data 	= $item->toArray();
+			$finder = Order::findOrFail($data['_id']);
+			$city_name = ($data['city_id'] == 1) ? 'mumbai' : 'pune';
+			array_set($finderdata, 'status', '1');
+			array_set($finderdata, 'city_name', $city_name);
+			$response = $finder->update($finderdata);
+			print_pretty($finderdata); 
+		}
 
 		// exit;
 
