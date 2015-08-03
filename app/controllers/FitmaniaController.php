@@ -27,7 +27,7 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getDealOfDay($city = 'mumbai', $location_cluster = ''){
+	public function getDealOfDay($city = 'mumbai', $from = '', $size = '', $location_cluster = ''){
 
 		// $date 				=  	($date == null) ? Carbon::now() : $date;
 		$date 					=  	Carbon::now();
@@ -45,7 +45,9 @@ class FitmaniaController extends \BaseController {
 			$query->where('location_cluster', $location_cluster); 
 		}	
 
-		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		// $dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		$dealsofdaycolleciton 	= $query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
+		
 		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -53,7 +55,7 @@ class FitmaniaController extends \BaseController {
 		}
 
 		if($city == 'mumbai'){
-			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane'];
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai'];
 		}else{
 			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
 		}	
@@ -63,15 +65,17 @@ class FitmaniaController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
-	public function getDealOfDayHealthyTiffin($city = 'mumbai', $category_cluster = ''){
+	public function getDealOfDayHealthyTiffin($city = 'mumbai', $from = '', $size = '', $category_cluster = ''){
 
 		// $date 					=  	Carbon::now();
 		$date 					=  	'31-07-2015';
-
 		$timestamp 				= 	strtotime($date);
 		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
 		$city_name 				= 	$citydata['name'];
 		$city_id				= 	(int) $citydata['_id'];	
+		$from 					=	($from != '') ? intval($from) : 0;
+		$size 					=	($size != '') ? intval($size) : 10;
+
 		$dealsofdays 			=	[];
 
 		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
@@ -82,7 +86,7 @@ class FitmaniaController extends \BaseController {
 			$query->where('category_cluster', $category_cluster); 
 		}	
 
-		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		$dealsofdaycolleciton 	= $query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
 		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -202,7 +206,7 @@ class FitmaniaController extends \BaseController {
 		'location_cluster' => (isset($item['location_cluster']) && $item['location_cluster'] != '') ? strtolower($item['location_cluster']) : "",
 		'category_cluster' => (isset($item['category_cluster']) && $item['category_cluster'] != '') ? strtolower($item['category_cluster']) : "",
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
-		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
+		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? $item['offer_pic'] : "",
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
 		'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "",
 		'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "",
@@ -419,9 +423,9 @@ class FitmaniaController extends \BaseController {
 	//resend email to customer and finder for successfull orders
 	public function resendEmails(){
 		
-		// $order_ids = [2329,2334,2333,2331,2345,2348,2347,2350,2365,2375,2379,2376,2381,2383,2390,2395,2372,2393,2394,2396,2406,2408,2413,2426,2428,2430,2432,2437,2435,2448,2446,2453,2455,2454,2463,2468,2469,2475,2474,2377,2491,2495,2497,2482,2500,2498,2496,2503,2508,2508,2505,2507,2510,2509,2512,2511,2398,2516,2506,2548,2564,2576,2587,2659,2733,2921,2922,2924,2930,2931,2933,2934,2968,2972,2973,2985,2990,2989,2990];
+		$order_ids = [2503,2518];
 
-		$order_ids = [2310];		//  sanjay.fitternity@gmail.com
+		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
 		// updates city name  first
 		// $items = Order::active()->whereIn('_id', $order_ids)->get();
@@ -437,18 +441,23 @@ class FitmaniaController extends \BaseController {
 		// 	print_pretty($response);
 		// }
 
-		$orders = Order::active()->whereIn('_id', $order_ids)->get();
-		$finderdata = array();
+		// $orders = Order::active()->whereIn('_id', $order_ids)->get();
+		// $finderdata = array();
 
-		foreach ($orders as $order) {  
-			$orderData 				= 	$order->toArray();
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
-			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		// foreach ($orders as $order) {  
+		// 	$orderData 				= 	$order->toArray();
+		// 	// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
+		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+		// 	// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		// 	// echo "$sndsEmailCustomer <br><br>";
+			
+		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+		// 	$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+		// 	$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
-			echo "$sndsEmailCustomer <br><br>";
-			// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
-		}
+		// 	echo "$sndsEmailCustomer <br><br>";
+		// 	// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
+		// }
 
 
 
