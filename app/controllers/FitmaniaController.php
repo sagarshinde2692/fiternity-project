@@ -312,7 +312,7 @@ class FitmaniaController extends \BaseController {
 
 		//Maintain Slab for deals of day
 		if($orderData['type'] == 'fitmaniadealsofday'){
-			if( empty($orderData['service_id']) ){
+			if(empty($orderData['service_id']) ){
 				return Response::json(array('status' => 404,'message' => "Data Missing - service_id"),404);				
 			}
 		}
@@ -406,7 +406,6 @@ class FitmaniaController extends \BaseController {
 
 
 
-
 	//resend email to customer and finder for successfull orders
 	public function resendEmails(){
 		
@@ -448,8 +447,6 @@ class FitmaniaController extends \BaseController {
 			echo "$sndsEmailCustomer === $sndsEmailFinder<br><br>";
 			// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
 		}
-
-
 
 	}
 
