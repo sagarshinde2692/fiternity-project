@@ -184,7 +184,7 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Hello ".ucwords($data['name']).", The authorisation code required for resetting your password on Fitternity is ".$data['otp'] ;
 
-		return $this->sendTo($to, $message);
+		return $this->sendSms($to, $message);
 	}
 
 	public function fitmaniaPreRegister ($data){
