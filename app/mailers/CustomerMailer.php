@@ -352,7 +352,7 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Your Password Reset Request for Fitternity'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		return $this->sendEmail($email_template, $template_data, $message_data);
 	}
 
 	public function forgotPasswordApp ($data){
@@ -368,7 +368,7 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Your Password Reset Request for Fitternity'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		return $this->sendEmail($email_template, $template_data, $message_data);
 	}
 
 	public function register($data){
@@ -384,7 +384,7 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Welcome to Fitternity'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		return $this->sendEmail($email_template, $template_data, $message_data);
 	}
 
 
