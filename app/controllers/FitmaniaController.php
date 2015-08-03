@@ -55,7 +55,8 @@ class FitmaniaController extends \BaseController {
 		}
 
 		if($city == 'mumbai'){
-			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai'];
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai','navi-mumbai','thane'];
+
 		}else{
 			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
 		}	
@@ -316,24 +317,15 @@ class FitmaniaController extends \BaseController {
 			}
 		}
 
-		array_set($data, 'status', '1');
-		$buydealofday 	=	$order->update($data);
-
-		$resp 	= 	array('status' => 404,'message' => "Order Update Fail :)");
+		// array_set($data, 'status', '1');
+		$buydealofday 	=	$order->update(['status' => '1']);
 
 		if($buydealofday){
-
 			if($orderData['type'] == 'fitmaniadealsofday'){
-
 				$dealofday = Fitmaniadod::findOrFail(intval($orderData['service_id']));
 				$dealslabsarr = $dealofday->toArray();
-
 				$slab_arr = $dealslabsarr['slabs'];
-
-				// return $dealslabsarr['slabs'];
 				foreach ($dealslabsarr['slabs'] as $key => $item) {
-					// return $item['total_purchase'];
-					// $slab = [];
 					if(intval($item['can_sold']) == 1){
 						$item['total_purchase'] =  intval($item['total_purchase']) + 1;
 						if(intval($item['limit']) == intval($item['total_purchase'])){
@@ -346,19 +338,14 @@ class FitmaniaController extends \BaseController {
 				// return $slab_arr;
 				$slabdata = [];
 				array_set($slabdata, 'slabs', $slab_arr);
-
 				$dealofday->update($slabdata);
 			}
-
-			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
-
-			$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce through Fitmania :)");
 		}
 
+		$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+		$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+		$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 		Log::info('Customer Purchase : '.json_encode(array('purchase_details' => $order)));
-		
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce through Fitmania :)");
 		
 		return Response::json($resp,200);		
@@ -423,12 +410,13 @@ class FitmaniaController extends \BaseController {
 	//resend email to customer and finder for successfull orders
 	public function resendEmails(){
 		
-		$order_ids = [2503,2518];
+		// $order_ids = [3338,3341,3345,3342,3352,3351,3356,3355,3364,3428,3430,3392];
+		$order_ids = [3428];
 
 		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
 		// updates city name  first
-		// $items = Order::active()->whereIn('_id', $order_ids)->get();
+		// $items = Order::whereIn('_id', $order_ids)->get();
 		// $finderdata = array();
 
 		// foreach ($items as $item) {  
@@ -438,26 +426,28 @@ class FitmaniaController extends \BaseController {
 		// 	array_set($finderdata, 'status', '1');
 		// 	array_set($finderdata, 'city_name', $city_name);
 		// 	$response = $finder->update($finderdata);
-		// 	print_pretty($response);
+		// 	print_pretty($finderdata); 
 		// }
 
-		// $orders = Order::active()->whereIn('_id', $order_ids)->get();
-		// $finderdata = array();
+		// exit;
 
-		// foreach ($orders as $order) {  
-		// 	$orderData 				= 	$order->toArray();
-		// 	// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
-		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-		// 	// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
-		// 	// echo "$sndsEmailCustomer <br><br>";
+		$orders = Order::whereIn('_id', $order_ids)->get();
+		$finderdata = array();
+
+		foreach ($orders as $order) {  
+			$orderData 				= 	$order->toArray();
+			// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
+			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+			// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+			// echo "$sndsEmailCustomer <br><br>";
 			
-		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-		// 	$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-		// 	$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
-		// 	echo "$sndsEmailCustomer <br><br>";
-		// 	// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
-		// }
+			echo "$sndsEmailCustomer === $sndsEmailFinder<br><br>";
+			// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
+		}
 
 
 
