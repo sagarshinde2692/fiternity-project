@@ -180,6 +180,8 @@
                     <?php if(isset($customer_email) && $customer_email != ""){ ?><p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Email: {{ $customer_email }} </p> <?php }?>
                       <?php if(isset($customer_phone) && $customer_phone != ""){ ?><p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Contact: {{ $customer_phone }}</p> <?php }?>
 
+                       <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Delivery: Kits will be delievered between 15th to 25th September 2015.</p> 
+
                         <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
 
                         
