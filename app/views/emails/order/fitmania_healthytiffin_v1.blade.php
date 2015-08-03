@@ -147,34 +147,40 @@
          <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
 Hi {{ $customer_name }}!</span></p>      
              
-<p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
+<p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
 
- <p style="line-height:20px; font-weight:lighter; color:#5f5e5e; padding-top:15px;"><span style="color:#222222; font-weight:600;" > How do you avail the membership and get started?</span></p>
+ <p style="line-height:20px; font-weight:lighter; color:#5f5e5e; padding-top:15px;"><span style="color:#222222; font-weight:600;" > Next steps on your purchase </span></p>
 
  <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;"> 1. Refer to your purchase details</span> 
 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Subscription number:</span> {{ $_id }}
+ <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Order number:</span>  <?php if(isset($_id) && $_id != ""){ ?>{{ $_id }}<?php }?>
 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Membership details:</span> {{ ucwords($service_name) }} {{ ucwords($service_duration) }}  at {{ ucwords($finder_name) }} 
+ <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Purchase details:</span> 
+<?php if(isset($service_name) && $service_name != ""){ ?>  {{ ucwords($service_name) }} <?PHP } ?>
+  from 
+ <?php if(isset($finder_name) && $finder_name != ""){ ?>  {{ ucwords($finder_name) }}  <?PHP } ?>
 
- <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">2. Start the membership</span>
+ <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601">Delivery Address:<span style="color:#222222; font-weight:450;"><?php if(isset($delivery_area) && $delivery_area != ""){ ?>  {{ ucwords($delivery_area) }}  <?PHP } ?></span> .</p>
 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">On your membership start date - visit {{ ucwords($finder_name) }} {{ ucwords($location) }} and flash the subscription number. </span>
 
- <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Location:</span> {{ ucwords($location) }}.
+ <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">2. Receive your order</span>
+
+ <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">
+<span style="color:#222222; font-weight:450;"><?php if(isset($finder_name) && $finder_name != ""){ ?>  {{ ucwords($finder_name) }}  <?PHP } ?></span>
+   is in-charge of delivering your order within 7 days. They will be connecting with you to coordinate the same. </p>
+
+ <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601">If you wish to speak to them directly - </p>
  
- <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Address:</span> {{ ucfirst($finder_address) }}
-
  <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Person:</span> {{ ucwords($finder_poc_for_customer_name) }}  
+ <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Person to Contact:</span> {{ ucwords($finder_poc_for_customer_name) }}  
 </p>
 <?PHP } ?>
-
 
  <?php if(isset($finder_poc_for_customer_mobile) && $finder_poc_for_customer_mobile != ""){ ?> 
 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Number:</span> {{ ucwords($finder_poc_for_customer_mobile) }}  
 </p>
 <?PHP } ?>
+ 
 
 
 <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">3. Call us for help</span>

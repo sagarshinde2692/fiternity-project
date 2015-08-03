@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fitternity - Confirmation of purchase: </title>
+<title>Acknowledgement mail for service request (for COD)</title>
 <style type="text/css">
  /* Client-specific Styles */
  #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
@@ -88,7 +88,7 @@
 
 </head>
 <body style="background-image:url(http://email.fitternity.com/140/gplaypattern.png)" >
-  <div class="block">
+  <div class="block" style="background-color:#222222">
    <!-- start of header -->
    <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
     <tbody>
@@ -123,14 +123,36 @@
   <!-- end of header -->
 
 </div>
+<div class="block" style="background-color:#f9a91e"> 
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
+    <tbody>
+     <tr>
+      <td align="center">
+       <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" >
+        <tbody>
+          <!-- Title -->
+          
+      <tr>
+                      <td width="100%" height="3px" bgcolor="#f9a91e"></td>
+                    </tr>
+         
+              <!-- end of text content table -->
+            </tbody>
+          </table>
+         
+        
+              </tbody>
+            </table>
 
+
+</div>
 <div class="block"><!-- Start Editor's Note -->
  <!-- start textbox-with-title -->
  <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
   <tbody>
    <tr>
     <td align="center">
-     <table bgcolor="#fff" width="580px" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+     <table width="580px" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
       <tbody>
       
       <tr>
@@ -145,53 +167,24 @@
               
                
          <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
-Hi {{ $customer_name }}!</span></p>      
+Hi {{  ucwords($customer_name) }}!</span></p>      
+                
              
-<p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr />
+              <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Thank you for requesting purchase of Arsenal Mumbai Membership 2015-16. </p>
 
- <p style="line-height:20px; font-weight:lighter; color:#5f5e5e; padding-top:15px;"><span style="color:#222222; font-weight:600;" > How do you avail the membership and get started?</span></p>
+<p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e">Our team will reach out to you to get the cash pick up details. Once the cash has been collected, you will receive a purchase confirmation.</p>
 
- <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;"> 1. Refer to your purchase details</span> 
+                       <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Delivery: Kits will be delievered between 15th to 25th September 2015.</p> 
 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Subscription number:</span> {{ $_id }}
 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Membership details:</span> {{ ucwords($service_name) }} {{ ucwords($service_duration) }}  at {{ ucwords($finder_name) }} 
-
- <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">2. Start the membership</span>
-
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">On your membership start date - visit {{ ucwords($finder_name) }} {{ ucwords($location) }} and flash the subscription number. </span>
-
- <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Location:</span> {{ ucwords($location) }}.
+<p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
  
- <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Address:</span> {{ ucfirst($finder_address) }}
-
- <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Person:</span> {{ ucwords($finder_poc_for_customer_name) }}  
-</p>
-<?PHP } ?>
-
-
- <?php if(isset($finder_poc_for_customer_mobile) && $finder_poc_for_customer_mobile != ""){ ?> 
-<p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Number:</span> {{ ucwords($finder_poc_for_customer_mobile) }}  
-</p>
-<?PHP } ?>
-
-
-<p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">3. Call us for help</span>
-
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on +91922221131 or 02261222222<hr />
-  
-</p>
-
-<p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#222222; font-weight:600;">Whats more?</span>
-
- <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#222;">Fitternity is India's leading search engine that helps you find fitness activities around you. We are on a simple mission to make fitness easy and affordable. 
- <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#222;">Our search engine helps you filter basis your requirement (location, budget etc.) and gets you different fitness activities (gym, yoga, zumba, crossfit, fitness classes, healthy tiffins & more) with all details you need, without stepping outside your house! You can book trials through Fitternity for the options you like and also purchase memberships at amazing discounts. <hr />
-</p>
-<p><h3 style="padding-top:25px; line-height:20px; font-weight:600; color:#ec8601">Explore fitness like never before</h3></p>
+ <p style="padding-top:25px; padding-bottom:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Cheers, <br />Team Fitternity</p>
           </td>
        </tr>
-     
+     <tr>
+                      <td width="100%"><hr /></td>
+                    </tr>
     </tbody>
   </table>
 </td>
@@ -203,87 +196,7 @@ Hi {{ $customer_name }}!</span></p>
 </tbody>
 </table>
 </div>
-<div class="block"> 
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
-    <tbody>
-     <tr>
-      <td align="center">
-         <table bgcolor="#f3f3f3" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-        <tbody>
-          <!-- Title -->
-          
-         
-        <tr>
-          <td>
-           <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-            <tbody>
-             <tr>
-              <td>
-               <!-- col 1 -->
-               <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                <tbody>
-                 <!-- image 2 -->
-                 <tr>
-                  <td width="100%" align="center" class="devicewidth" ><a href="http://www.fitternity.com/selections/{{$city_name}}/intense-workout" target="_blank"><img src="http://email.fitternity.com/148/Intense-Workout.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
-                  </td>
-                </tr>
-                <!-- end of image2 -->
-               
-              <!-- end of text content table -->
-            </tbody>
-          </table>
-          <table width=".5%" align="left" border="0" cellpadding="0" cellspacing="0" class="removeMobile">
-                         <tbody>
-                           <tr>
-                             <td width="100%"style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-                           </tr>
-                         </tbody>
-                       </table>
-         
-        <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-          <tbody>
-           <!-- image 2 -->
-           <tr>
-            <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/selections/{{$city_name}}/trending-now"><img src="http://email.fitternity.com/148/trending-now.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
-            </td>
-          </tr>
-          <!-- end of image2 -->
-          
-        <!-- end of text content table -->
-      </tbody>
-    </table>
-    <table width=".5%" align="left" border="0" cellpadding="0" cellspacing="0" class="removeMobile">
-                         <tbody>
-                           <tr>
-                             <td width="100%"style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-                           </tr>
-                         </tbody>
-                       </table>
-                        <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-          <tbody>
-           <!-- image 2 -->
-           <tr>
-            <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/selections/{{$city_name}}/all-for-variety"><img src="http://email.fitternity.com/148/all-for-variety.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
-            </td>
-          </tr>
-          <!-- end of image2 -->
-         
-        <!-- end of text content table -->
-      </tbody>
-    </table>
-  <tr>
-        <td width="100%" height="20" ></td>
-      </tr> 
 
-
-
-</tbody>
-</table>
-</td>
-</tr>
-</tbody>
-</table></td></tr></tbody></table>
-</div>
 
   
 

@@ -27,7 +27,7 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getDealOfDay($city = 'mumbai', $location_cluster = ''){
+	public function getDealOfDay($city = 'mumbai', $from = '', $size = '', $location_cluster = ''){
 
 		// $date 				=  	($date == null) ? Carbon::now() : $date;
 		$date 					=  	Carbon::now();
@@ -45,7 +45,48 @@ class FitmaniaController extends \BaseController {
 			$query->where('location_cluster', $location_cluster); 
 		}	
 
-		$dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		// $dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
+		$dealsofdaycolleciton 	= $query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
+		
+		
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transform($value);
+			array_push($dealsofdays, $dealdata);
+		}
+
+		if($city == 'mumbai'){
+			$location_cluster	=	['all','central-mumbai','south-mumbai','western-mumbai'];
+		}else{
+			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
+		}	
+
+		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
+
+		return Response::json($responseData, 200);
+	}
+
+	public function getDealOfDayHealthyTiffin($city = 'mumbai', $from = '', $size = '', $category_cluster = ''){
+
+		// $date 					=  	Carbon::now();
+		$date 					=  	'31-07-2015';
+		$timestamp 				= 	strtotime($date);
+		$citydata 				=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
+		$from 					=	($from != '') ? intval($from) : 0;
+		$size 					=	($size != '') ? intval($size) : 10;
+
+		$dealsofdays 			=	[];
+
+		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
+		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
+
+		if($category_cluster != ''){ 
+			$query->where('category_cluster', $category_cluster); 
+		}	
+
+		$dealsofdaycolleciton 	= $query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
 		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
@@ -58,7 +99,10 @@ class FitmaniaController extends \BaseController {
 			$location_cluster	=	['all','pune-city', 'pimpri-chinchwad' ];
 		}	
 
-		$responseData = [ 'dealsofday' => $dealsofdays, 'location_cluster' => $location_cluster ];
+		$category_cluster	=	['all', 'beverages', 'desserts', 'snacks', 'packages'];
+
+
+		$responseData = [ 'dealsofday' => $dealsofdays,  'location_cluster' => $category_cluster ];
 
 		return Response::json($responseData, 200);
 	}
@@ -160,8 +204,9 @@ class FitmaniaController extends \BaseController {
 		'finder_name' => (isset($item['finder_name']) && $item['finder_name'] != '') ? strtolower($item['finder_name']) : "",
 		'price' => (isset($item['price']) && $item['price'] != '') ? strtolower($item['price']) : "",
 		'location_cluster' => (isset($item['location_cluster']) && $item['location_cluster'] != '') ? strtolower($item['location_cluster']) : "",
+		'category_cluster' => (isset($item['category_cluster']) && $item['category_cluster'] != '') ? strtolower($item['category_cluster']) : "",
 		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? strtolower($item['finder_id']) : "",
-		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? strtolower($item['offer_pic']) : "",
+		'offer_pic' => (isset($item['offer_pic']) && $item['offer_pic'] != '') ? $item['offer_pic'] : "",
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
 		'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "",
 		'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "",
@@ -173,6 +218,11 @@ class FitmaniaController extends \BaseController {
 		'current_going_slab' => (isset($current_going_slab) && !empty($current_going_slab) ) ? $current_going_slab : "",
 		'august_available_dates' => "",
 		'available_dates' => (isset($item['available_dates']) && !empty($item['available_dates']) ) ? $item['available_dates'] : "",
+		'finder_poc_for_customer_name' => (isset($item['finder_poc_for_customer_name']) && !empty($item['finder_poc_for_customer_name']) ) ? $item['finder_poc_for_customer_name'] : "",
+		'finder_poc_for_customer_mobile' => (isset($item['finder_poc_for_customer_mobile']) && !empty($item['finder_poc_for_customer_mobile']) ) ? $item['finder_poc_for_customer_mobile'] : "",
+		'finder_vcc_email' => (isset($item['finder_vcc_email']) && !empty($item['finder_vcc_email']) ) ? $item['finder_vcc_email'] : "",
+		'delivery_area' => (isset($item['delivery_area']) && !empty($item['delivery_area']) ) ? $item['delivery_area'] : "",
+		'delivery_time' => (isset($item['delivery_time']) && !empty($item['delivery_time']) ) ? $item['delivery_time'] : "",
 		];
 		return $data;
 	}
@@ -344,12 +394,38 @@ class FitmaniaController extends \BaseController {
 	}
 
 
+	public function buyServiceHealthyTiffin(){
+
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		}
+		// return Input::json()->all();
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
+
+		array_set($data, 'status', '1');
+		$buydealofday 	=	$order->update($data);
+
+		$sndsSmsCustomer		= 	$this->customersms->buyServiceHealthyTiffinThroughFitmania($orderData);
+		$sndsEmailCustomer		= 	$this->customermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
+		$sndsEmailFinder		= 	$this->findermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
+
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Healthy through Fitmania :)");
+
+		return Response::json($resp,200);		
+	}
+
+
+
+
 	//resend email to customer and finder for successfull orders
 	public function resendEmails(){
 		
-		// $order_ids = [2329,2334,2333,2331,2345,2348,2347,2350,2365,2375,2379,2376,2381,2383,2390,2395,2372,2393,2394,2396,2406,2408,2413,2426,2428,2430,2432,2437,2435,2448,2446,2453,2455,2454,2463,2468,2469,2475,2474,2377,2491,2495,2497,2482,2500,2498,2496,2503,2508,2508,2505,2507,2510,2509,2512,2511,2398,2516,2506,2548,2564,2576,2587,2659,2733,2921,2922,2924,2930,2931,2933,2934,2968,2972,2973,2985,2990,2989,2990];
+		$order_ids = [2503,2518];
 
-		$order_ids = [2310];		//  sanjay.fitternity@gmail.com
+		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
 		// updates city name  first
 		// $items = Order::active()->whereIn('_id', $order_ids)->get();
@@ -365,18 +441,23 @@ class FitmaniaController extends \BaseController {
 		// 	print_pretty($response);
 		// }
 
-		$orders = Order::active()->whereIn('_id', $order_ids)->get();
-		$finderdata = array();
+		// $orders = Order::active()->whereIn('_id', $order_ids)->get();
+		// $finderdata = array();
 
-		foreach ($orders as $order) {  
-			$orderData 				= 	$order->toArray();
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
-			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		// foreach ($orders as $order) {  
+		// 	$orderData 				= 	$order->toArray();
+		// 	// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmaniaResend1($orderData);
+		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+		// 	// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		// 	// echo "$sndsEmailCustomer <br><br>";
+			
+		// 	// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
+		// 	$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+		// 	$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
-			echo "$sndsEmailCustomer <br><br>";
-			// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
-		}
+		// 	echo "$sndsEmailCustomer <br><br>";
+		// 	// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
+		// }
 
 
 

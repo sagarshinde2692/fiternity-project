@@ -418,6 +418,12 @@ Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','us
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
 
+Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
+
+
+
+
+
 /******************** ORDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -603,7 +609,9 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('fitmania/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
+Route::get('fitmania/{city?}/{from?}/{size?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
+Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
+
 Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
 Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
 
@@ -611,7 +619,7 @@ Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
 
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
 Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
-// Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
+Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
 
 
 Route::get('resendemails', 'FitmaniaController@resendEmails');

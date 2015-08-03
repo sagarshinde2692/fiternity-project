@@ -155,18 +155,27 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		
-		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing your membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
 
-		return $this->sendTo($to, $message);
+		return $this->sendSms($to, $message);
 	}
 
 	public function buyServiceMembershipThroughFitmania ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		
-		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing your membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
 
-		return $this->sendTo($to, $message);
+		return $this->sendSms($to, $message);
+	}
+
+	public function buyServiceHealthyTiffinThroughFitmania ($data){
+
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+		
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing healthy food from ". ucwords($data['finder_name']).". Your Order ID is ".$data['_id'].". We will be sending you an email with the all details. Call us on +91922221131 for any queries.";
+
+		return $this->sendSms($to, $message);
 	}
 
 	public function forgotPasswordApp ($data){
@@ -175,7 +184,7 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Hello ".ucwords($data['name']).", The authorisation code required for resetting your password on Fitternity is ".$data['otp'] ;
 
-		return $this->sendTo($to, $message);
+		return $this->sendSms($to, $message);
 	}
 
 	public function fitmaniaPreRegister ($data){
@@ -188,7 +197,14 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
+	public function buyArsenalMembership ($data){
 
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+		
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for your payment of Fitternity.com towards Arsenal Mumbai Supporters Club, we acknowledge the receipt of the same. You will soon receive an email with the details. Regards, Team Fitternity.";
+
+		return $this->sendSms($to, $message);
+	}
 
 
 

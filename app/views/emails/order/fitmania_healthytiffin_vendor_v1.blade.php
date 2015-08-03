@@ -142,7 +142,7 @@
                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
                   <p style="padding-top:15px">Hi, 
                     <p style="padding-top:15px"> Greetings from Fitternity.com ! 
-                      <p style="padding-top:15px">We have received a purchase request for membership on FitMania Sale currently live on Fitternity.com: 
+                      <p style="padding-top:15px">We have received an order on FitMania Sale currently live on Fitternity.com.
                         <a href="http://www.fitternity.com/fitmania"> http://www.fitternity.com/fitmania </a></p>
                         <p style="padding-top:15px; font-size:15px;">Here are the details:</p>
 
@@ -195,21 +195,21 @@
                        <tr>
                         <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
                       </tr>
-
                       <?php if(isset($customer_name) && $customer_name != ""){ ?>  
                       <tr>
                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                          <p style="font-weight:light">Name of the customer:   
+
                          </td>
                        </tr>
+
+
                        <tr>
                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                            {{ ucwords($customer_name) }}</td>
-                         </tr>
-                        <?PHP } ?>
+                         </tr> <?PHP } ?>
 
-
-                        <?php if(isset($customer_phone) && $customer_phone != ""){ ?>  
+                         <?php if(isset($customer_phone) && $customer_phone != ""){ ?>  
                          <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Number of the customer::
@@ -220,10 +220,9 @@
                          <tr>
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $customer_phone }} </td>
-                           </tr>
-                           <?PHP } ?>
+                           </tr> <?PHP } ?>
 
-                        <?php if(isset($amount) && $amount != ""){ ?>  
+                           <?php if(isset($amount) && $amount != ""){ ?> 
                            <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Purchase price:
@@ -234,12 +233,30 @@
                          <tr>
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $amount }} </td>
-                           </tr>
-                           <?PHP } ?>
+                           </tr><?PHP } ?>
+
+
+                           <?php if(isset($delivery_area) && $delivery_area != ""){ ?> 
+                           <tr>
+                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                           <p style="font-weight:light">Delivery Address:
+
+                           </td>
+                         </tr>
+
+                         <tr>
+                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                             {{ $delivery_area }} </td>
+                           </tr><?PHP } ?>
+
+
+
 
                            <tr>
                             <td width="100%" height="5"></td>
                           </tr>
+
+
                         </tbody>
                       </table>
                     </td>
@@ -267,11 +284,11 @@
                     </tr>
                     <!-- Spacing -->
                     <!-- title2 -->
- 
+                      <?php if(isset($service_name) && $service_name != ""){ ?>  
 
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                       <p style="font-weight:light">  Membership Type : 
+                       <p style="font-weight:light">  Product Type : 
 
                        </td>
                      </tr>
@@ -279,13 +296,15 @@
                      
                      <tr>
                        <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                        <?php if(isset($service_name) && $service_name != ""){ ?>  {{ ucwords($service_name) }} <?PHP } ?>  </td>
+                         {{ ucwords($service_name) }}  </td>
                        </tr> 
+                       <?PHP } ?>
 
-                       <?php if(isset($_id) && $_id != ""){ ?>
+                      <?php if(isset($_id) && $_id != ""){ ?>  
+
                        <tr>
                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                         <p style="font-weight:light">  Subscription Code:  
+                         <p style="font-weight:light">  Order Number:  
 
                          </td>
                        </tr>
@@ -295,7 +314,8 @@
                            {{ $_id }} (this code will be shared by the customer to avail the membership)
                          </td>
                        </tr>
-                       <?php }?>
+                       <?PHP } ?>
+
 
 
 
@@ -336,13 +356,14 @@
        <table bgcolor="#fff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
         <tr>
           <td height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
-            Please call us in case of any queries - you can reach your assigned Relationship Manager directly or call us on  +91 92222 21131. 
+            <p>Please process their order and plan for delivery within 7 days from the purchase date. </p>
+            <p>Reach out to us on +91 92222 21131 in case of any queries. </p>
+
             <p style="padding-top:10px">Regards</p>
             <p>TEAM FITTERNITY
             </p>
           </p></td>
         </tr>
-
 
 
         <tr>
