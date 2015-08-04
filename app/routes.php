@@ -18,8 +18,33 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
-Route::get('/testfinder', function() {
 
+Route::get('/checkreview', function() { 
+
+	// $items = Comment::get();
+	// $items = DB::table('reviewsdump')->take(2)->skip(0)->get();
+	$items = DB::table('reviewsdump')->get();
+
+	$old_review_data = array();
+	foreach ($items as $item) {  
+		// $data = $item->toArray();
+		$older_review_id 			=	$item['_id'];
+		$older_review_finder_id 	= 	intval(trim(str_replace("finder","",$item['object']['uid'])));
+		$older_review_description 	= 	$item['description'];
+		$older_user_email_exist 	= 	(isset($item['user']['email']) && $item['user']['email'] != '') ?  1 : 0 ;
+		// return $older_review_id. " -- " .$older_review_finder_id. " -- " .$older_review_description;
+		$reviewcnt =  Review::where('finder_id', $older_review_finder_id)->where('description', $older_review_description)->count();
+		$review_already_exist = 0;
+		if($reviewcnt > 0){ $review_already_exist = 1; }
+		echo  "review_already_exist  :  $review_already_exist  ---  older_user_email_exist  :  $older_user_email_exist<br>";
+		DB::table('reviewsdump')->where('_id', $older_review_id)->update(array('review_already_exist' => $review_already_exist, 'older_user_email_exist' => $older_user_email_exist));
+	}
+
+});
+
+
+Route::get('/testfinder', function() { 
+	
 	for ($i=0; $i < 7 ; $i++) { 
 		$skip = $i * 1000;
 		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
@@ -84,23 +109,30 @@ Route::get('/testsms', function() {
 
 Route::get('/capturedata', function() { 
 
-	// $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim(977348762)) . "&source=fitter&message=" . urlencode('hi');
-	// $ci = curl_init();
-	// curl_setopt($ci, CURLOPT_URL, $sms_url);
-	// curl_setopt($ci, CURLOPT_HEADER, 0);
-	// curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-	// $response = curl_exec($ci);
-	// curl_close($ci);
-	// exit;
+	$headers = [
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=trials.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
+	];
 
-	$items = Capture::get();
+	// $items = Booktrial::take(5)->skip(0)->get();
+	$items = Booktrial::get();
 	$data = array();
-	foreach ($items as $item) {  
-		$data = $item->toArray();
-		$capture = Capture::findOrFail($data['_id']);
-		echo $response = $capture->update($data);
-
+	$output = "ID, NAME, EMAIL, NUMBER, FINDERID, FINDERNAME,  FINDERLOCATION, FINDERCATEGORYTAGS \n";
+	foreach ($items as $value) {  
+		// $data = $item->toArray();
+		$finderobj = Finder::with('categorytags')->with('location')->findOrFail((int)$value->finder_id);
+		$finder = $finderobj->toArray();
+		$finderlocation = strtolower($finder['location']['name']);
+		$findercategorytags = implode(",", array_pluck($finder['categorytags'],'name')) ;
+		// echo $response = $capture->update($data);
+		$output .= "$value->_id, $value->customer_name, ".$value->customer_email.", ".$value->customer_phone.", ".$value->finder_id.", ".$value->finder_name.", ".$finderlocation .", $findercategorytags\n";
 	}
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
 
 });
 
@@ -108,17 +140,43 @@ Route::get('/capturedata', function() {
 
 Route::get('/updatefinder', function() { 
 
-	$items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
-		//exit;				
+	return $items = Fitmaniadod::where('ordering' , '>' ,10)->get()->count();
+
 	$finderdata = array();
 	foreach ($items as $item) {  
 		$data 	= $item->toArray();
-			//print_pretty($data);
-		array_set($finderdata, 'status', '0');
-		$finder = Finder::findOrFail($data['_id']);
-		$response = $finder->update($finderdata);
+
+		// $august_available_dates = $data['august_available_dates'];
+		// $august_available_dates_new = [];
+
+		// foreach ($august_available_dates as $day){
+		// 	$date = explode('-', $day);
+		// 	// return ucfirst( date("l", strtotime("$date[0]-08-2015") )) ;
+		// 	array_push($august_available_dates_new, $date[0].'-'.ucfirst( date("l", strtotime("$date[0]-08-2015") )) );
+
+		// }
+		// // return $august_available_dates_new;
+		// array_set($finderdata, 'august_available_dates', $august_available_dates_new);
+
+		$finder = Fitmaniadod::findOrFail($data['_id']);
+
+		// $response = $finder->update($finderdata);
+
 		print_pretty($response);
 	}
+
+
+	// $items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
+	// 	//exit;				
+	// $finderdata = array();
+	// foreach ($items as $item) {  
+	// 	$data 	= $item->toArray();
+	// 		//print_pretty($data);
+	// 	array_set($finderdata, 'status', '0');
+	// 	$finder = Finder::findOrFail($data['_id']);
+	// 	$response = $finder->update($finderdata);
+	// 	print_pretty($response);
+	// }
 });
 
 
@@ -360,6 +418,12 @@ Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','us
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
 
+Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
+
+
+
+
+
 /******************** ORDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -545,10 +609,21 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('fitmania', 'FitmaniaController@getDealOfDay');
+Route::get('fitmania/{city?}/{from?}/{size?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
+Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
+
+Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
+Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
+
 Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
-// Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
+Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
+Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
+
+
+Route::get('resendemails', 'FitmaniaController@resendEmails');
+
 
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/

@@ -187,6 +187,14 @@ Class CustomerMailer extends Mailer {
 			$subject  = 'Fitternity - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
 		}
 
+		if($data['type'] == 'arsenalmembership'){
+			$subject  = 'Fitternity - Acknowledgement of request to purchase '. ucwords($data['service_name']). " at ". ucwords($data['finder_name']);
+		}
+
+		if($data['type'] == 'fitmaniaservice'){
+			$subject  = 'FitMania Sale - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
+		}
+
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
 			'user_name' => $data['customer_name'],
@@ -236,11 +244,11 @@ Class CustomerMailer extends Mailer {
 
 	public function buyServiceThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmania_offer';
+		$email_template_customer 	= 	'emails.order.fitmanianew_offer_template_v1';
 		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
 		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
-		$subject  					=   'Fitternity - Congratulations! You’ve successfully accomplished your Mission Fitmania 2015';
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
@@ -249,14 +257,87 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		$this->sendEmail($email_template_customer, $template_data, $message_data);
 
-		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
 	}
+
+	public function buyServiceThroughFitmaniaResend1 ($data){
+
+		$email_template_customer 	= 	'emails.order.fitmanianew_offer_template';
+		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		// array_set($message_data, 'user_name', 'Fitternity');
+
+		// return $this->sendTo($email_template_mailus, $template_data, $message_data);
+	}
+
+	public function buyServiceMembershipThroughFitmania ($data){
+
+		$email_template_customer 	= 	'emails.order.fitmania_membership_template_v1';
+		$email_template_mailus 		= 	'emails.order.fitmania_membership_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$this->sendEmail($email_template_customer, $template_data, $message_data);
+
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_name', 'Fitternity');
+
+		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
+	}
+
+	public function buyServiceHealthyTiffinThroughFitmania ($data){
+
+		$email_template_customer 	= 	'emails.order.fitmania_healthytiffin_v1';
+		$email_template_mailus 		= 	'emails.order.fitmania_healthytiffin_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$this->sendEmail($email_template_customer, $template_data, $message_data);
+
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_name', 'Fitternity');
+
+		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
+	}
+
 
 	public function forgotPassword ($data){
 
@@ -269,9 +350,9 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Your Password Reset Request for Fitternity'
-		);
+			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		return $this->sendEmail($email_template, $template_data, $message_data);
 	}
 
 	public function forgotPasswordApp ($data){
@@ -285,9 +366,9 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Your Password Reset Request for Fitternity'
-		);
+			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		return $this->sendEmail($email_template, $template_data, $message_data);
 	}
 
 	public function register($data){
@@ -301,9 +382,35 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Welcome to Fitternity'
-		);
+			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		return $this->sendEmail($email_template, $template_data, $message_data);
 	}
+
+
+	public function buyArsenalMembership ($data){
+
+		$email_template_customer 	= 	'emails.order.pg_arsenalmembership';
+		$email_template_mailus 		= 	'emails.order.pg_arsenalmembership_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$subject  					=   'Regarding your purchase on Arsernal Membership by Fitternity';
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$this->sendEmail($email_template_customer, $template_data, $message_data);
+
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_name', 'Fitternity');
+
+		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
+	}
+
 
 }
