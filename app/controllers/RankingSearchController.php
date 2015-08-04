@@ -46,13 +46,14 @@ class RankingSearchController extends \BaseController
 
         $location_filter =  '{"term" : { "city" : "'.$location.'"} },';
         $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"] }},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"] }},': '';        
         $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';
         $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';
         $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
         $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';
 
         $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter,',');
+        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],';	//used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';		//used for offering and facilities
         $filtervalue = trim($shouldfilter.$mustfilter,',');
