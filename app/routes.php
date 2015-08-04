@@ -21,8 +21,8 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 Route::get('/checkreview', function() { 
 
 	// $items = Comment::get();
-	// $items = DB::table('reviewsdump')->take(2)->skip(0)->get();
-	$items = DB::table('reviewsdump')->get();
+	$items = DB::table('reviewsdump')->take(2)->skip(0)->get();
+	// $items = DB::table('reviewsdump')->get();
 
 	$old_review_data = array();
 	foreach ($items as $item) {  

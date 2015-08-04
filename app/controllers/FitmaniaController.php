@@ -410,7 +410,7 @@ class FitmaniaController extends \BaseController {
 	public function resendEmails(){
 		
 		// $order_ids = [3338,3341,3345,3342,3352,3351,3356,3355,3364,3428,3430,3392];
-		$order_ids = [3186];
+		$order_ids = [2659,3488];
 
 		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
@@ -425,7 +425,7 @@ class FitmaniaController extends \BaseController {
 			array_set($finderdata, 'status', '1');
 			array_set($finderdata, 'city_name', $city_name);
 			$response = $finder->update($finderdata);
-			print_pretty($finderdata); 
+			// print_pretty($finderdata); 
 		}
 
 		// exit;
