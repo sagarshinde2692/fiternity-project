@@ -413,4 +413,22 @@ Class CustomerMailer extends Mailer {
 	}
 
 
+	public function resendFitmaniaCustomerEmail ($data){
+
+		$email_template_customer 	= 	'emails.order.fitmania_customer_resend';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+
+	}
+
 }

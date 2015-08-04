@@ -152,7 +152,23 @@ Class FinderMailer extends Mailer {
 	}
 
 
-	public function cancelBookTrial(){
+	public function resendFitmaniaFinderEmail ($data){
+
+		$email_template_customer 	= 	'emails.finder.fitmaniafinder_consolidated';
+		$template_data 				= 	$data;
+		// $bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		// $bcc_emailids 				= 	[$data['finder_vcc_email']];
+		$bcc_emailids 				=  	array_merge(explode(',', $data['finder_vcc_email']));
+		$subject  					=   'Confirmation of orders received through FitMania Sale on Fitternity.com (till August 3, 2015)';
+
+		$message_data 	= array(
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' => 'Fitternity',
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		return $this->sendTo($email_template_customer, $template_data, $message_data);
 
 	}
 

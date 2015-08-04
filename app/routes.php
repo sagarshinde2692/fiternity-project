@@ -617,6 +617,8 @@ Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTif
 
 
 Route::get('resendemails', 'FitmaniaController@resendEmails');
+Route::get('resendfinderemail', 'FitmaniaController@resendFinderEmail');
+Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 
 
 ##############################################################################
