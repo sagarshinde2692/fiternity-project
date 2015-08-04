@@ -254,7 +254,7 @@ class FitmaniaController extends \BaseController {
 			$servicedata = $this->transformFitmaniaService($value);
 			array_push($fitmaniaServices, $servicedata);
 		}
-		if(!$services){  $services =  'No Service Exist :)'; }
+		// if(!$services){  $services =  'No Service Exist :)'; }
 $all = [array('_id'=>0,'slug'=>'all','name'=>'all',)];
 $categories = Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','_id','slug'))->toArray();
 $locations = Location::active()->whereIn('cities', array($city))->orderBy('name')->get(array('name','_id','slug'))->toArray();
