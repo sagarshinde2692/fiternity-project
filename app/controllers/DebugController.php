@@ -23,6 +23,7 @@ class DebugController extends \BaseController {
 			$finderarray['id'] = $value->_id;
 			$finderarray['slug'] = $value->slug;
 			$finderarray['finder_vcc_email'] = $value->finder_vcc_email;
+			$finderarray['finder_type'] = ($value->finder_type == 0) ? 'free' : 'paid';
 
 			$explode = explode(',', $value->finder_vcc_email);
 			$valid = [];
@@ -41,17 +42,13 @@ class DebugController extends \BaseController {
 			$array[] = $finderarray;
 		}
 
-		//echo"<pre>";print_r($array);exit;
-
 		foreach ($array as $key => $value) {
 
-			//echo"<pre>";print_r(count($value['invalid']));
 			if(count($value['invalid']) > 0)
 			{
 				echo"<pre>";print_r($value);
 			}
-			//echo"<pre>";print_r($value);
-			# code...
+			
 		}
 		
 	}
