@@ -317,8 +317,7 @@ class FitmaniaController extends \BaseController {
 			}
 		}
 
-		if($orderData['service_id'] == 0){
-		// array_set($data, 'status', '1');
+		if($orderData['status'] == 0){
 			$buydealofday 	=	$order->update(['status' => '1']);
 
 			if($buydealofday){
@@ -351,9 +350,9 @@ class FitmaniaController extends \BaseController {
 			return Response::json($resp,200);		
 		}
 
-		$resp 	= 	array('status' => 404,'message' => "Serivce already purchase :)");
-		return Response::json($resp,404);		
-		
+		$resp 	= 	array('status' => 401,'message' => "Serivce already purchase :)");
+		return Response::json($resp,401);		
+
 
 	}
 
@@ -364,26 +363,27 @@ class FitmaniaController extends \BaseController {
 		if(empty($data['order_id'])){
 			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
 		}
+		
 		// return Input::json()->all();
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
 		$orderData 	= 	$order->toArray();
 
-		array_set($data, 'status', '1');
-		$buydealofday 	=	$order->update($data);
+		if($orderData['status'] == 0){
+			$buydealofday 	=	$order->update(['status' => '1']);
+			$resp 			= 	array('status' => 404,'message' => "Order Update Fail :)");
 
-		$resp 	= 	array('status' => 404,'message' => "Order Update Fail :)");
-
-		if($buydealofday){
-
-			$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceMembershipThroughFitmania($orderData);
-
-			$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
+			if($buydealofday){
+				$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
+				$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
+				$sndsEmailFinder		= 	$this->findermailer->buyServiceMembershipThroughFitmania($orderData);
+				$resp 					= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
+				return Response::json($resp,200);		
+			}
 		}
 
-		return Response::json($resp,200);		
+		$resp 	= 	array('status' => 401,'message' => "Serivce already purchase :)");
+		return Response::json($resp,401);		
 	}
 
 
@@ -398,16 +398,18 @@ class FitmaniaController extends \BaseController {
 		$order 		= 	Order::findOrFail($orderid);
 		$orderData 	= 	$order->toArray();
 
-		array_set($data, 'status', '1');
-		$buydealofday 	=	$order->update($data);
+		if($orderData['status'] == 0){
+			$buydealofday 	=	$order->update(['status' => '1']);
+			$sndsSmsCustomer		= 	$this->customersms->buyServiceHealthyTiffinThroughFitmania($orderData);
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
+			$sndsEmailFinder		= 	$this->findermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
 
-		$sndsSmsCustomer		= 	$this->customersms->buyServiceHealthyTiffinThroughFitmania($orderData);
-		$sndsEmailCustomer		= 	$this->customermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
-		$sndsEmailFinder		= 	$this->findermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
+			$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Healthy through Fitmania :)");
+			return Response::json($resp,200);	
+		}
 
-		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Healthy through Fitmania :)");
-
-		return Response::json($resp,200);		
+		$resp 	= 	array('status' => 401,'message' => "Serivce already purchase :)");
+		return Response::json($resp,401);		
 	}
 
 
