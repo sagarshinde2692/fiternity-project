@@ -351,7 +351,15 @@ class FitmaniaController extends \BaseController {
 			}
 
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+
+			if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
+				$order->update(['email_not_sent'=>'buyService']);
+			}else{
+				$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			}
+
+			$orderData = $this->getFinderEmail($orderData);
+			
 			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
 
 			$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce through Fitmania :)");
@@ -384,7 +392,15 @@ class FitmaniaController extends \BaseController {
 		if($buydealofday){
 
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
+
+			if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
+				$order->update(['email_not_sent'=>'buyServiceMembership']);
+			}else{
+				$sndsEmailCustomer		= 	$this->customermailer->buyServiceMembershipThroughFitmania($orderData);
+			}
+
+			$orderData = $this->getFinderEmail($orderData);
+
 			$sndsEmailFinder		= 	$this->findermailer->buyServiceMembershipThroughFitmania($orderData);
 
 			$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
@@ -409,7 +425,15 @@ class FitmaniaController extends \BaseController {
 		$buydealofday 	=	$order->update($data);
 
 		$sndsSmsCustomer		= 	$this->customersms->buyServiceHealthyTiffinThroughFitmania($orderData);
-		$sndsEmailCustomer		= 	$this->customermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
+
+		if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
+			$order->update(['email_not_sent'=>'buyServiceHealthyTiffin']);
+		}else{
+			$sndsEmailCustomer		= 	$this->customermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
+		}
+		
+		$orderData = $this->getFinderEmail($orderData);
+
 		$sndsEmailFinder		= 	$this->findermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
 
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Healthy through Fitmania :)");
@@ -461,6 +485,28 @@ class FitmaniaController extends \BaseController {
 
 
 
+	}
+
+	public function getFinderEmail($orderData){
+
+		if(isset($orderData['finder_vcc_email']) && $orderData['finder_vcc_email'] != ""){
+			$explode = explode(',', $orderData['finder_vcc_email']);
+			$valid_finder_email = [];
+			foreach ($explode as $email) {
+				if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === true){
+					$valid_finder_email[] = $email;
+				}
+			}
+			if(!empty($valid_finder_email)){
+				$orderData['finder_vcc_email'] = implode(",", $valid_finder_email);
+			}else{
+				$orderData['finder_vcc_email'] = "";
+			}
+		}else{
+			$orderData['finder_vcc_email'] = "";
+		}
+
+		return $orderData;
 	}
 
 

@@ -308,6 +308,20 @@ class FindersController extends \BaseController {
 
 			$finderarr = $finder->toArray();
 			if($finder->finder_vcc_email != ""){
+
+				$explode = explode(',', $finder->finder_vcc_email);
+				$valid_finder_email = [];
+				foreach ($explode as $email) {
+					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === true){
+						$valid_finder_email[] = $email;
+					}
+				}
+				if(!empty($valid_finder_email)){
+					$finder_vcc_email = implode(",", $valid_finder_email);
+				}else{
+					$finder_vcc_email = "";
+				}
+
 				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
 				// echo "<pre>";print_r($trials); 
 
@@ -331,7 +345,7 @@ class FindersController extends \BaseController {
 					'finder_name'					=> $finder->title,
 					'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
 					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
-					'finder_vcc_email'				=> $finder->finder_vcc_email,	
+					'finder_vcc_email'				=> $finder_vcc_email,	
 					'scheduletrials' 				=> $trialdata
 					);
 				// echo "<pre>";print_r($scheduledata); exit;

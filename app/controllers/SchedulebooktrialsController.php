@@ -368,6 +368,10 @@ class SchedulebooktrialsController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+		}
+
 		if(empty($data['customer_phone'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
@@ -445,7 +449,23 @@ class SchedulebooktrialsController extends \BaseController {
 			$city_id 							=	(int) $finder['city_id'];
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 
-			$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+			//$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+			
+			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
+				$explode = explode(',', $finder['finder_vcc_email']);
+				$valid_finder_email = [];
+				foreach ($explode as $email) {
+					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === true){
+						$valid_finder_email[] = $email;
+					}
+				}
+				if(!empty($valid_finder_email)){
+					$finder_vcc_email = implode(",", $valid_finder_email);
+				} 
+			}else{
+				$finder_vcc_email = "";
+			}
+
 			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
@@ -621,6 +641,10 @@ class SchedulebooktrialsController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+		}
+
 		if(!isset($data['customer_phone']) || $data['customer_phone'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
@@ -702,7 +726,23 @@ class SchedulebooktrialsController extends \BaseController {
 			$city_id 							=	(int) $finder['city_id'];
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 
-			$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+			//$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+
+			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
+				$explode = explode(',', $finder['finder_vcc_email']);
+				$valid_finder_email = [];
+				foreach ($explode as $email) {
+					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === true){
+						$valid_finder_email[] = $email;
+					}
+				}
+				if(!empty($valid_finder_email)){
+					$finder_vcc_email = implode(",", $valid_finder_email);
+				} 
+			}else{
+				$finder_vcc_email = "";
+			}
+
 			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
@@ -889,6 +929,10 @@ class SchedulebooktrialsController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
 		}
 
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+		}
+
 		if(empty($data['customer_phone'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
 		}
@@ -994,6 +1038,10 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if(empty($data['customer_email'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+		}
+
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
 		}
 
 		if(empty($data['customer_phone'])){
