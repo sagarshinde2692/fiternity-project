@@ -331,23 +331,21 @@ Route::get('/findercsv', function() {
 	'Pragma'              => 'public'
 	];
 
-	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->where('finder_type', 0)
-	->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
-								// ->take(2)
-	->orderBy('id', 'desc')
-	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
+	$finders 		= 	Finder::active()
+						// ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+						// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						->skip(0)
+						->take(3000)
+						// ->orderBy('id', 'desc')
+						->get();
 
 	// return $finders;
-	$output = "ID, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
+	$output = "ID, SLUG, CITY, TYPE, EMAIL, TYPE \n";
 
 	foreach ($finders as $key => $value) {
-
 		$type = ($value->finder_type == '0') ? 'Free' : 'Paid';
-
-		$output .= "$value->_id, $value->slug, ".$value->category->name.", ".$value->location->name.", ".$value->popularity .", $type\n";
+		$output .= "$value->_id, $value->slug, ".$value->city->name.", ".$type.", ".$value->finder_vcc_email ."\n";
 	}
 
 	
