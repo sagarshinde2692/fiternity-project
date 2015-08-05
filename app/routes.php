@@ -355,6 +355,8 @@ Route::get('/findercsv', function() {
 
 });
 
+Route::get('/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
+
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
 
