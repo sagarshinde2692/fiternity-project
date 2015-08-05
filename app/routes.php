@@ -335,8 +335,9 @@ Route::get('/findercsv', function() {
 						// ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 						// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-						->skip(3000)
+						->skip(0)
 						->take(3000)
+						->where('id', 'desc')
 						// ->orderBy('id', 'desc')
 						->get();
 
