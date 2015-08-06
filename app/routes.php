@@ -320,6 +320,42 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 
 
 
+
+Route::get('/trialcsv', function() { 
+
+
+	$headers = [
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=trialsdiff.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
+	];
+
+	$booktrialslotcnt = Booktrial::where('booktrial_type', 'auto')->where('source', 'website')->skip(0)->take(3000)->get();
+
+	// return $booktrialslotcnt;
+	// return $finders;sourceja
+	$output = "ID, customer name,customer email, Created At, Updated At, Schedule Date, Diff date \n";
+	$emails = ['chaithanya.padi@gmail.com','chaithanyapadi@fitternity.com','sanjay.id7@gmail.com','sanjay.fitternity@gmail.com','utkarsh2arsh@gmail.com','ut.mehrotra@gmail.com','neha@fitternity.com','jayamvora@fitternity.com'];
+	foreach ($booktrialslotcnt as $key => $value) {
+		$dStart = strtotime($value->created_at);
+		$dEnd  = strtotime($value->schedule_date);
+		$dDiff = $dEnd - $dStart;
+		// $dDiff = $dStart->diff($dEnd);
+		if(floor($dDiff/(60*60*24)) > 0 && floor($dDiff/(60*60*24)) < 50){
+			if(!in_array($value->customer_email, $emails)){
+				$output .= "$value->_id,$value->customer_name,$value->customer_email, $value->created_at, $value->updated_at, ".$value->schedule_date.", ".floor($dDiff/(60*60*24))."\n";
+			}
+		}
+	}
+
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
+
+});
+
 Route::get('/findercsv', function() { 
 
 	$headers = [
@@ -331,13 +367,28 @@ Route::get('/findercsv', function() {
 	'Pragma'              => 'public'
 	];
 
+	$finders 		= 	Blog::active()->get();
+
+	// return $finders;
+	$output = "ID, URL, \n";
+
+	foreach ($finders as $key => $value) {
+		$output .= "$value->_id, http://www.fitternity.com/article/$value->slug, "."\n";
+	}
+
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
+
+
+
+
 	$finders 		= 	Finder::active()
 						// ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+						// ->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 						// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-						->skip(0)
-						->take(3000)
-						// ->orderBy('id', 'desc')
+						// ->skip(0)
+						// ->take(3000)
+						->where('finder_type', 1)
 						->get();
 
 	// return $finders;
@@ -451,6 +502,7 @@ Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton'
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 
+Route::get('reviewlisting/{finderid}/{from?}/{size?}', array('as' => 'finders.reviewlisting','uses' => 'FindersController@reviewListing'));
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));

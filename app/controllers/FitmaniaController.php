@@ -418,7 +418,7 @@ class FitmaniaController extends \BaseController {
 	public function resendEmails(){
 
 		// $order_ids = [3338,3341,3345,3342,3352,3351,3356,3355,3364,3428,3430,3392];
-		$order_ids = [4402];
+		$order_ids = [3480,4536,4397];
 
 		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
@@ -464,9 +464,9 @@ class FitmaniaController extends \BaseController {
 		3452,3456,3458,3459,3464,3465,3468,3478,3482,3484,3485,3486,3487,3488,3492,3497,3500,3507,3392,3509,3518,3523,3527,3528,3549,3552,3558,3560,3559,3562,3565,3570,3575,3581,3588,3590,3593,3598,3600,3603,3604,3613,3617,3629,3636,3638,
 		3639,3640,3641,3644,3647,3649,3650,3655,3660,3663,3665,3667,3668,3672,3677,3678,3682,3681,3684,3687,3688,3695,3696,3698,3701,3705,3710,3711,3714,3717,3725,3726,3728,3697,3730,3733,3734,3735,3732,3741,3744,3745,3746,3747,3749,3753,
 		3756,3760,3764,3765,3768,3770,3774,3779,3780,3783,3785,3789,3790,3792,3795,3798,3799,3800,3805,2999,3814,3812,3818,3820,3853,3855,3856,3869,3878,3883,3885,3887,3892,3894,3912,3918,3915,3935,3939,3949,3959,3956,3961,3997,3979,3984,
-		3985,3992,3994,3996,4002,4010,4016,4021,4034,4033,4037,4041,4046,4049,4048,4053,4058,4064,4066,4071,4072,4075,4092,4130,4121,4124,4126,4129];		
+		3985,3992,3994,3996,4002,4010,4016,4021,4034,4033,4037,4041,4046,4049,4048,4053,4058,4064,4066,4071,4072,4075,4092,4130,4121,4124,4126,4129,3095];		
 
-
+		$finderids = [2836,6130];
 		$finders 			=	Order::whereIn('_id', $order_ids)->get()->groupBy('finder_id')->toArray();
 		$i = 0;
 
@@ -487,23 +487,28 @@ class FitmaniaController extends \BaseController {
 
 			$finder = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
 			$finderarr = $finder->toArray();
+			if(in_array(intval($finderid), $finderids)){
+				echo "<br><br> finderid  ---- $finderid ";
 
-			if(isset($finder->finder_vcc_email) && $finder->finder_vcc_email != ""){
-				echo "<br><br> finder_vcc_email =  ---- $finder->finder_vcc_email  finderid  ---- $finderid ";
-			// if($i > 20 ){
+				if(isset($finder->finder_vcc_email) && $finder->finder_vcc_email != ""){
+					echo "<br><br> finder_vcc_email =  ---- $finder->finder_vcc_email  finderid  ---- $finderid ";
+					// if($i > 20 ){
+					$emaildata = [
+					'finder_vcc_email'	=> $finder->finder_vcc_email,	
+					'orders' 			=> $orderdata
+					];
+					// return $emaildata;
+					$this->findermailer->resendFitmaniaFinderEmail($emaildata);	
 
-				$emaildata = [
-				'finder_vcc_email'	=> $finder->finder_vcc_email,	
-				'orders' 			=> $orderdata
-				];
-					// return $this->findermailer->resendFitmaniaFinderEmail($emaildata);					
-				if(!$this->findermailer->resendFitmaniaFinderEmail($emaildata)){
-					echo "<br><br> finderid =  finderid  ---- $finderid <br>finder_vcc_email  ---- ". $orders[0]['finder_vcc_email'];
+					// if(!$this->findermailer->resendFitmaniaFinderEmail($emaildata)){
+					// 	echo "<br><br> finderid =  finderid  ---- $finderid <br>finder_vcc_email  ---- ". $orders[0]['finder_vcc_email'];
+					// }
+
+				// }
+				// $i++;
+				}else{
+					echo "<br><br> finder_vcc_email not exist finderid  ---- $finderid ";
 				}
-			// }
-			// $i++;
-			}else{
-				echo "<br><br> finder_vcc_email not exist finderid  ---- $finderid ";
 			}
 
 		}
