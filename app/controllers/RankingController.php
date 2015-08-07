@@ -35,11 +35,11 @@ class RankingController extends \BaseController {
 
     public function __construct() {
         parent::__construct();
-        $this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
-        $this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/';
-        $this->elasticsearch_host 				=	Config::get('app.elasticsearch_host_new');
-        $this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
-        $this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
+        $this->elasticsearch_default_url        =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/'.Config::get('app.elasticsearch_default_index').'/';
+        $this->elasticsearch_url                =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/';
+        $this->elasticsearch_host               =   Config::get('app.elasticsearch_host_new');
+        $this->elasticsearch_port               =   Config::get('app.elasticsearch_port_new');
+        $this->elasticsearch_default_index      =   Config::get('app.elasticsearch_default_index');
         $this->gauss_variance                   =   (-1)*(pow($this->gauss_scale, 2))/(2*log10($this->gauss_decay));
         $this->views_max                        =   Finder::active()->max('views');
         $this->views_min                        =   Finder::active()->min('views');
@@ -67,25 +67,23 @@ class RankingController extends \BaseController {
             ->with('facilities')
             ->active()
             ->orderBy('_id')
-            //->whereIn('_id',array(232))
+            //->whereIn('_id',array(1))
             ->take(3000)->skip(3000)
             //->take(3000)->skip(3000)
             ->get();
 
         foreach ($items as $finderdocument) {
                 $data = $finderdocument->toArray();
-                $score = $this->generateRank($finderdocument);
-            //return $score;//.' '.intval($finderdocument['popularity']);
+                $score = $this->generateRank($finderdocument);                
                 $postdata = get_elastic_finder_document($data);
                 $postdata['rank'] = $score;
                 $catval = $this->evalBaseCategoryScore($finderdocument['category_id']);
                 $postdata['rankv1'] = $catval;
                 $postdata['rankv2'] = $score + $catval;
-                $postfields_data = json_encode($postdata);
-
+                $postfields_data = json_encode($postdata);                
                 $posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
-
-                $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+                
+                $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
                 echo "<br>$posturl    ---  ".es_curl_request($request);
         }
 
@@ -276,7 +274,7 @@ class RankingController extends \BaseController {
     }
     public function pushdocument($posturl, $postfields_data){
 
-        $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+        $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
 
         echo "<br>$posturl    ---  ".es_curl_request($request);
     }

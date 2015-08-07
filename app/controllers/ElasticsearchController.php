@@ -183,7 +183,8 @@ class ElasticsearchController extends \BaseController {
 					"locationtags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
 					"offerings" : {"type" : "string", "index" : "not_analyzed"},
 					"facilities" : {"type" : "string", "index" : "not_analyzed"},
-					"geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10}
+					"geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
+					"average_rating" : {"type" : "float", "index" : "not_analyzed"}
 				}
 			}
 		}';

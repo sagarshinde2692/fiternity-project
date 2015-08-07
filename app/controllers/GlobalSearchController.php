@@ -56,7 +56,7 @@ class GlobalSearchController extends \BaseController
                                 }
                             }
         }';
-
+        
         $body = json_decode($query,true);
         $searchParams['index'] = $this->indice;
         $searchParams['type']  = $this->type;
