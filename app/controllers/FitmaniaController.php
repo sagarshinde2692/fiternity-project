@@ -211,6 +211,7 @@ class FitmaniaController extends \BaseController {
 		'description' => (isset($item['description']) && $item['description'] != '') ? $item['description'] : "",
 		'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "",
 		'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "",
+		'about_the_expert' => (isset($item['about_the_expert']) && $item['about_the_expert'] != '') ? $item['about_the_expert'] : "",
 		'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? (int)$item['ordering'] : "",
 		'offer_date' => (isset($item['offer_date']) && $item['offer_date'] != '') ? strtolower($item['offer_date']) : "",
 		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
