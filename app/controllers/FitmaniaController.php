@@ -400,6 +400,29 @@ class FitmaniaController extends \BaseController {
 
 		if($orderData['status'] == 0){
 			$buydealofday 	=	$order->update(['status' => '1']);
+
+			if($buydealofday){
+				if($orderData['type'] == 'fitmaniadealsofday'){
+					$dealofday = Fitmaniadod::findOrFail(intval($orderData['service_id']));
+					$dealslabsarr = $dealofday->toArray();
+					$slab_arr = $dealslabsarr['slabs'];
+					foreach ($dealslabsarr['slabs'] as $key => $item) {
+						if(intval($item['can_sold']) == 1){
+							$item['total_purchase'] =  intval($item['total_purchase']) + 1;
+							if(intval($item['limit']) == intval($item['total_purchase'])){
+								$item['can_sold'] = 0;
+							}
+							$slab_arr[$key] = $item;
+							break;
+						}
+					}
+					
+					$slabdata = [];
+					array_set($slabdata, 'slabs', $slab_arr);
+					$dealofday->update($slabdata);
+				}
+			}
+
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceHealthyTiffinThroughFitmania($orderData);
 			$sndsEmailCustomer		= 	$this->customermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
 			$sndsEmailFinder		= 	$this->findermailer->buyServiceHealthyTiffinThroughFitmania($orderData);
