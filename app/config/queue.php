@@ -50,11 +50,20 @@ return array(
 			'region' => 'ap-southeast-1',
 		),
 
-		'iron' => array(
+		/*'iron' => array(
 			'driver'  => 'iron',
 			'host'    => 'mq-aws-us-east-1.iron.io',
 			'token'   => 'tsFrArQmL8VS8Cx-5PDg3gij19Y',
 			'project' => '549a5af560c8e60009000030',
+			'queue'   => 'app',
+			'encrypt' => true,
+		),*/
+
+		'iron' => array(
+			'host'    => 'mq-aws-us-east-1.iron.io',
+			'driver'  => 'iron',
+			'token'   => 'r2lZpXua2Ig8QH6cds7cSliImMw',
+			'project' => '55bb7299b8cdc0000a000035',
 			'queue'   => 'app',
 			'encrypt' => true,
 		),

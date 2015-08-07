@@ -353,6 +353,8 @@ Route::get('/findercsv', function() {
 
 });
 
+Route::get('/ironworker',  array('as' => 'debug.ironworker','uses' => 'DebugController@ironWorker'));
+
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
 
