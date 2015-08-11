@@ -1,6 +1,6 @@
 <?PHP namespace App\Mailers;
 
-use Mail, Queue;
+use Mail, Queue, IronWorker, Config;
 
 abstract Class Mailer {
 
@@ -64,12 +64,11 @@ abstract Class Mailer {
 
 	public function  sendEmail($email_template, $template_data = [], $message_data = []){
 
-		return Mail::send($email_template, $template_data, function($message) use ($message_data){
-			$message->to($message_data['user_email'], $message_data['user_name'])
-					->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
-					->subject($message_data['email_subject']);
-		});
-
+			return Mail::send($email_template, $template_data, function($message) use ($message_data){
+				$message->to($message_data['user_email'], $message_data['user_name'])
+				->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
+				->subject($message_data['email_subject']);
+			});
 	}
 
 
@@ -102,6 +101,26 @@ abstract Class Mailer {
 		return time();
 	}
 
+
+	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		$worker = new IronWorker(array(
+		    'token' => Config::get('queue.connections.iron.token'),
+    		'project_id' => Config::get('queue.connections.iron.project')
+		));
+		
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
 	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
+		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+		$queue_name = 'Mailer';
+
+		$messageid = $worker->postTask($queue_name,$payload,$options);
+
+		return $messageid;
+
+	}
 
 }

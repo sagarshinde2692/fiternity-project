@@ -327,8 +327,8 @@ class OrderController extends \BaseController {
 		$order 		= 	Order::findOrFail($orderid);
 		$orderData 	= 	$order->toArray();
 
-		array_set($data, 'status', '1');
-		$buydealofday 			=	$order->update($data);
+		// array_set($data, 'status', '1');
+		$buydealofday 			=	$order->update(['status' => '1']);
 		$sndsSmsCustomer		= 	$this->customersms->buyArsenalMembership($orderData);
 		$sndsEmailCustomer		= 	$this->customermailer->buyArsenalMembership($orderData);
 

@@ -27,7 +27,9 @@ Class FinderMailer extends Mailer {
 			'email_subject' => 'Session request from customer '.ucwords($data['customer_name']).' has been confirmed | Fitternity'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		$label = 'BookTrial-F';
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 	}
 
 	//currently not using reminder
@@ -43,7 +45,11 @@ Class FinderMailer extends Mailer {
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Reminder Mail: Request For Book a Trial'
 			);
-		return $this->sendTo($email_template, $template_data, $message_data, $delay);
+		
+		$label = 'TrialRmdBefore12Hr-F';
+		$priority = 0;
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority, $delay);
 	}
 
 	public function sendBookTrialDaliySummary ($data){
@@ -68,14 +74,16 @@ Class FinderMailer extends Mailer {
 			);
 		// echo "<pre>";print_r($data);exit;
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		$label = 'TrialDaliySummary-F';
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 
 	}
 
 
 	public function buyServiceThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_v1';
+		$email_template 	= 	'emails.order.fitmania_offer_vendor_v1';
 		$template_data 				= 	$data;
 
 		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
@@ -95,13 +103,15 @@ Class FinderMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuyServiceFitmania-F';
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 
 	}
 
 	public function buyServiceMembershipThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmania_membership_vendor_v1';
+		$email_template 	= 	'emails.order.fitmania_membership_vendor_v1';
 		$template_data 				= 	$data;
 
 		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
@@ -121,13 +131,15 @@ Class FinderMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuySrvMbrFitM-F';
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 
 	}
 
 	public function buyServiceHealthyTiffinThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmania_healthytiffin_vendor_v1';
+		$email_template 	= 	'emails.order.fitmania_healthytiffin_vendor_v1';
 		$template_data 				= 	$data;
 
 		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
@@ -147,12 +159,32 @@ Class FinderMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuySrvHltTifFitM-F';
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 
 	}
 
 
-	public function cancelBookTrial(){
+	public function resendFitmaniaFinderEmail ($data){
+
+		$email_template 	= 	'emails.finder.fitmaniafinder_consolidated';
+		$template_data 				= 	$data;
+		// $bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		// $bcc_emailids 				= 	[$data['finder_vcc_email']];
+		$bcc_emailids 				=  	array_merge(explode(',', $data['finder_vcc_email']));
+		$subject  					=   'Confirmation of orders received through FitMania Sale on Fitternity.com (till August 3, 2015)';
+
+		$message_data 	= array(
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' => 'Fitternity',
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$label = 'ResendFitmania-F';
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 
 	}
 

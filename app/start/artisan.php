@@ -15,3 +15,6 @@
 
 // Artisan::add(new BooktrialsummaryCommand);
 
+Artisan::add(new UploadWorker);
+
+Artisan::add(new RunWorker);

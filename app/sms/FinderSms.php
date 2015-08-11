@@ -12,7 +12,10 @@ Class FinderSms extends VersionNextSms{
 		}else{
 			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
 		}
-		return $this->sendTo($to, $message);
+
+		$label = 'BookTrial-F';
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 
@@ -24,7 +27,10 @@ Class FinderSms extends VersionNextSms{
 		}else{
 			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
 		}
-		return $this->sendTo($to, $message);
+
+		$label = 'RescheduledTrial-F';
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 	//currently not using reminder
@@ -36,7 +42,10 @@ Class FinderSms extends VersionNextSms{
 		}else{
 			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
 		}
-		return $this->sendTo($to, $message);
+
+		$label = 'BookTrialReminder-F';
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 
@@ -49,7 +58,11 @@ Class FinderSms extends VersionNextSms{
 		}else{
 			$message 	=	"This is a reminder for session scheduled for ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name'])." for ".ucwords($data['service_name'])." on ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
 		}
-		return $this->sendTo($to, $message, $delay);
+
+		$label = 'TrialRmdBefore1Hr-F';
+		$priority = 0;
+
+		return $this->sendToWorker($to, $message, $label, $priority, $delay);
 	}
 
 
@@ -62,7 +75,11 @@ Class FinderSms extends VersionNextSms{
 		}else{
 			$message 	=	"We have received a cancellation request for session booked for ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
 		}
-		return $this->sendTo($to, $message, $delay);
+
+		$label = 'CancelBookTrial-F';
+		$priority = 0;
+
+		return $this->sendToWorker($to, $message, $label, $priority, $delay);
 	}
 
 

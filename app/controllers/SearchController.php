@@ -872,7 +872,7 @@ class SearchController extends \BaseController {
 		$facilities_filter 		= ($facilities != '') ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('facilities'))).'"] }},'  : '';	
 		$price_range_filter 	= ($price_range != '') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('price_range'))).'"] }},'  : '';	
 
-		$shouldfilter = $mustfilter = '';
+		$shouldfilter = $mustfilter =  $mustnotfilter = '';
 		
 		//used for location , category, 	
 		if($location_filter != ''){			
@@ -884,11 +884,18 @@ class SearchController extends \BaseController {
 		//used for offering, facilities and price range
 		if($city_filter != '' || $offerings_filter != '' || $facilities_filter != '' || $price_range_filter != ''){
 			$must_filtervalue = trim($city_filter.$offerings_filter.$facilities_filter.$price_range_filter,',');	
-			$mustfilter = '"must": ['.$must_filtervalue.']';		
+			$mustfilter = '"must": ['.$must_filtervalue.'],';		
+		}
+
+		if($category == ''){
+			$exclude_category 		= '{"terms" : {  "category": ["dietitians and nutritionists","healthy tiffins","personal trainers","swimming","physiotherapists","sports"] }},' ;
+			$exclude_categorytags 	= '{"terms" : {  "categorytags": ["dietitians and nutritionists","healthy tiffins","personal trainers","swimming","physiotherapists","sports"] }},' ;
+			$mustnot_filtervalue = trim($exclude_category.$exclude_categorytags,',');	
+			$mustnotfilter = '"must_not": ['.$mustnot_filtervalue.']';		
 		}
 
 		if($shouldfilter != '' || $mustfilter != ''){
-			$filtervalue = trim($shouldfilter.$mustfilter,',');	
+			$filtervalue = trim($shouldfilter.$mustfilter.$mustnotfilter,',');	
 			$filters = ',"filter": { 
 				"bool" : {'.$filtervalue.'}
 			},"_cache" : true';
