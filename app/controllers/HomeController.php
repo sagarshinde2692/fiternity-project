@@ -73,9 +73,6 @@ class HomeController extends BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
-			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
-
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();						
 			$str_finder_ids 		= 		$homepage['gym_finders'].",".$homepage['yoga_finders'].",".$homepage['zumba_finders'];
 			$finder_ids 			= 		array_map('intval', explode(",",$str_finder_ids));
@@ -125,9 +122,7 @@ class HomeController extends BaseController {
 												->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 												->take(4)->toArray();		
 
-			$homedata 				= 	array('categorytags' => $categorytags,
-											'locations' => $locations,
-											'popular_finders' => $popular_finders,    
+			$homedata 				= 	array('popular_finders' => $popular_finders,    
 											'footer_finders' => $footer_finders,    
 											'recent_blogs' => $recent_blogs,
 											'city_name' => $city_name,
