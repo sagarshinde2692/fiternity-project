@@ -14,7 +14,10 @@ Class CustomerSms extends VersionNextSms{
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Please flash this subscription code for the session: ".$data['code'].". For address refer to http://www.fitternity.com/".$data['finder_slug'] .". Thank you for using Fitternity.";
 		}
 		
-		return $this->sendTo($to, $message);
+		$label = 'BookTrial-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 
@@ -29,7 +32,10 @@ Class CustomerSms extends VersionNextSms{
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on +91 92222 21131 or reply to this message.";
 		}
 		
-		return $this->sendTo($to, $message);
+		$label = 'RescheduledTrial-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 	public function bookTrialReminderBefore1Min ($data, $delay){
@@ -38,22 +44,25 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your workout session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the session. Incase if you would like to reschedule or cancel your session call us on +91 92222 21131 or reply to this message.";
 		
-		//return $this->sendTo($to, $message, $delay);
-		$this->sendTo($to, $message);
+		$label = 'TrialRmdBefore12Hr-C';
+
+		$this->sendToWorker($to, $message, $label);
 
 		//testing for berfore1hour template
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_name']).", ".ucwords($data['finder_address']).", ".ucwords($data['finder_location']).". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
 		
-		// return $this->sendTo($to, $message, $delay);
-		$this->sendTo($to, $message);
+		$label = 'TrialRmdBefore1Hr-C';
+
+		$this->sendToWorker($to, $message, $label);
 
 		//testing for bookTrialReminderAfter2Hour template
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		$message 	=	"Hope you had a good session. We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
 		
-		//return $this->sendTo($to, $message, $delay);
-		return $this->sendTo($to, $message);
+		$label = 'TrialRmdAfter2Hr-C';
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 	public function bookTrialReminderBefore12Hour ($data, $delay){
@@ -65,7 +74,12 @@ Class CustomerSms extends VersionNextSms{
 		}else{
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your workout session at ".ucwords($data['finder_name'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the session. Incase if you would like to reschedule or cancel your session call us on +91 92222 21131 or reply to this message.";
 		}
-		return $this->sendTo($to, $message, $delay);
+
+		$label = 'TrialRmdBefore12Hr-C';
+		$priority = 0;
+
+		return $this->sendToWorker($to, $message, $label, $priority, $delay);
+
 	}
 
 
@@ -79,7 +93,11 @@ Class CustomerSms extends VersionNextSms{
 		}else{
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).". For address please refer to http://www.fitternity.com/".$data['finder_slug'].". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
 		}
-		return $this->sendTo($to, $message, $delay);
+		
+		$label = 'TrialRmdBefore1Hr-C';
+		$priority = 0;
+
+		return $this->sendToWorker($to, $message, $label, $priority, $delay);
 	}
 
 
@@ -94,7 +112,11 @@ Class CustomerSms extends VersionNextSms{
 			$message 	=	"Hope you had a good session. We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
 		}
 		
-		return $this->sendTo($to, $message, $delay);
+		$label = 'TrialRmdAfter2Hr-C';
+		$priority = 0;
+
+		return $this->sendToWorker($to, $message, $label, $priority, $delay);
+
 	}
 
 
@@ -108,7 +130,9 @@ Class CustomerSms extends VersionNextSms{
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity.com. For any queries call us on +91 92222 21131 or reply to this message.";
 		}
 		
-		return $this->sendTo($to, $message);
+		$label = 'CancelBookTrial-C';
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 
@@ -118,7 +142,10 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to book a trial at ".ucwords($data['finder_name']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
 
-		return $this->sendTo($to, $message);
+		$label = 'ManualBookTrial-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 
@@ -127,7 +154,10 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to book a trial at ".ucwords($data['finder_names']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
 
-		return $this->sendTo($to, $message);
+		$label = 'Manual2ndBookTrial-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority, $delay);
 	}
 
 
@@ -141,7 +171,9 @@ Class CustomerSms extends VersionNextSms{
 			$message 	=	"Hi ".ucwords($data['customer_name']).". Thank You for requesting purchase of AMSC membership  Renewal at Rs. 650. We will get in touch with you shortly to help you get started. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity.";
 		}
 
-		return $this->sendTo($to, $message);
+		$label = 'CodOrder-C';
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 
@@ -151,7 +183,10 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity";
 
-		return $this->sendTo($to, $message);
+		$label = 'PgOrder-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 
@@ -161,7 +196,10 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing your membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
 
-		return $this->sendSms($to, $message);
+		$label = 'BuySrvFitmania-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 	public function buyServiceMembershipThroughFitmania ($data){
@@ -170,7 +208,10 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing your membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
 
-		return $this->sendSms($to, $message);
+		$label = 'BuySrvMbrFitM-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 	public function buyServiceHealthyTiffinThroughFitmania ($data){
@@ -179,7 +220,10 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing healthy food from ". ucwords($data['finder_name']).". Your Order ID is ".$data['_id'].". We will be sending you an email with the all details. Call us on +91922221131 for any queries.";
 
-		return $this->sendSms($to, $message);
+		$label = 'BuySrvHltTifFitM-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 	public function forgotPasswordApp ($data){
@@ -188,7 +232,10 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Hello ".ucwords($data['name']).", The authorisation code required for resetting your password on Fitternity is ".$data['otp'] ;
 
-		return $this->sendSms($to, $message);
+		$label = 'ForgotPwdApp-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 	public function fitmaniaPreRegister ($data){
@@ -197,7 +244,10 @@ Class CustomerSms extends VersionNextSms{
 		
 		$message 	=	"Thanks for pre-registering on FitMania Sale by Fitternity.com. We will be getting in touch with you to share more details. Spread the word http://on.fb.me/1JgBYIU .";
 
-		return $this->sendTo($to, $message);
+		$label = 'FitMPreRegister-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
 
@@ -208,7 +258,9 @@ Class CustomerSms extends VersionNextSms{
 		// $message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for your payment of Fitternity.com towards Arsenal Mumbai Supporters Club, we acknowledge the receipt of the same. You will soon receive an email with the details. Regards, Team Fitternity.";
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank You for requesting purchase of AMSC membership  Renewal. We will get in touch with you shortly to help you get started. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity.";
 
-		return $this->sendSms($to, $message);
+		$label = 'BuyArsenalMbrShip-C';
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 

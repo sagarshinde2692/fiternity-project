@@ -31,7 +31,8 @@
 			"app/mailers",
 			"app/sms",
 			"app/notification",
-			"app/services"
+			"app/services",
+			"app/workers"
 		]
 	},
 	"scripts": {
