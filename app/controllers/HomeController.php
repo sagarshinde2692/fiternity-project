@@ -8,62 +8,6 @@ class HomeController extends BaseController {
      	parent::__construct();	
     }
 
-	public function getHomePageData(){   
-
-
-		$categorytags = $locations = $popular_finders =	$recent_blogs =	array();						
-		
-		$finder_gym_slugs 		=		array('beyond-fitness-borivali-west', 
-											   'your-fitness-club-mumbai-central', 
-											   'golds-gym-lower-parel', 
-											   '48-fitness-lokhandwala');
-
-		$finder_yoga_slugs 		=		array('nuage-hot-yoga-lokhandwala', 
-											   'samanta-duggal', 
-											   'cosmic-fusion-santacruz-west', 
-											   'yoga-hut-borivali-west');
-
-		$finder_zumba_slugs 	=		array('baile-de-salon', 
-											   'rudra-shala-malad-west', 
-											   'studio-balance-hughes-road', 
-											   'adil-dance-academy-versova');
-
-		$finder_slugs 			= 		array_merge($finder_gym_slugs,$finder_yoga_slugs,$finder_zumba_slugs);
-
-		$categorytags			= 		Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-		$locations				= 		Location::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
-
-		$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-												->whereIn('slug', $finder_slugs)
-												->remember(Config::get('app.cachetime'))
-												->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
-												->groupBy('category.name')
-												->toArray();
-
-		array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
-		array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
-		array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
-
-		$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-											->with('categorytags')
-											->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
-											->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-											->where('status', '=', '1')
-											->orderBy('_id', 'desc')
-											->remember(Config::get('app.cachetime'))
-											->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
-											->take(4)->toArray();		
-
-		$homedata 				= 	array(			
-										'categorytags' => $categorytags,
-										'locations' => $locations,
-										'popular_finders' => $popular_finders,       
-										'recent_blogs' => $recent_blogs
-									);
-		return Response::json($homedata);
-	}
-
 
 	public function getHomePageDatav2($city = 'mumbai',$cache = true){   
 
@@ -196,6 +140,28 @@ class HomeController extends BaseController {
 
 		return Response::json(Cache::tags('home_by_city')->get($city));
 	}
+
+
+	public function getCityLocation($city = 'mumbai',$cache = true){   
+
+		$location_by_city = $cache ? Cache::tags('location_by_city')->has($city) : false;
+
+		if(!$location_by_city){
+			$categorytags = $locations  =	array();
+			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			$city_name 		= 	$citydata['name'];
+			$city_id		= 	(int) $citydata['_id'];	
+
+			$locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+			$homedata 				= 	array('locations' => $locations );
+
+			Cache::tags('location_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+		}
+
+		return Response::json(Cache::tags('location_by_city')->get($city));
+	}
+
+
 
 	public function zumbadiscover(){
 		$finder_slugs 		=		array('mint-v-s-fitness-khar-west', 

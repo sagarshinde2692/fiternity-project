@@ -424,6 +424,7 @@ Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 
 Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
+Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
 
 
