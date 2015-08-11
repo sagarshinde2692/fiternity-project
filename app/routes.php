@@ -118,7 +118,9 @@ Route::get('/capturedata', function() {
 	];
 
 	// $items = Booktrial::take(5)->skip(0)->get();
-	$items = Booktrial::get();
+	// $items = Finder::active()->get();
+	$items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
+
 	$data = array();
 	$output = "ID, NAME, EMAIL, NUMBER, FINDERID, FINDERNAME,  FINDERLOCATION, FINDERCATEGORYTAGS \n";
 	foreach ($items as $value) {  
@@ -410,6 +412,7 @@ Route::get('/findercsv', function() {
 
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
+Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 

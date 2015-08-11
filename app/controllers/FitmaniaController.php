@@ -442,7 +442,8 @@ class FitmaniaController extends \BaseController {
 	public function resendEmails(){
 
 		// $order_ids = [3338,3341,3345,3342,3352,3351,3356,3355,3364,3428,3430,3392];
-		$order_ids = [3480,4536,4397];
+		// $order_ids = [3480,4536,4397];
+		$order_ids = [4710];
 
 		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
@@ -465,9 +466,11 @@ class FitmaniaController extends \BaseController {
 		foreach ($orders as $order) {  
 			$orderData 				= 	$order->toArray();
 			// $sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
-			$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
-			$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
-			echo "$sndsEmailCustomer === $sndsEmailFinder<br><br>";
+			// $sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
+			// $sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+			// echo "$sndsEmailCustomer === $sndsEmailFinder<br><br>";
+			$sndsEmailCustomer		= 	$this->customermailer->buyArsenalMembership($orderData);
+			echo "$sndsEmailCustomer <br><br>";
 			// echo "$sndsSmsCustomer === $sndsEmailCustomer === $sndsEmailFinder<br><br>";
 		}
 
