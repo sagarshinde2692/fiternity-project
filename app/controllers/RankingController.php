@@ -67,11 +67,11 @@ class RankingController extends \BaseController {
             ->with('facilities')
             ->active()
             ->orderBy('_id')
-            //->whereIn('_id',array(1))
-            ->take(3000)->skip(3000)
+            ->whereIn('_id',array(579))
+            //->take(3000)->skip(3000)
             //->take(3000)->skip(3000)
             ->get();
-
+            return $items;
         foreach ($items as $finderdocument) {
                 $data = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);                

@@ -20,10 +20,10 @@ class GlobalSearchController extends \BaseController
     {
         parent::__construct();
 
-        $this->elasticsearch_default_url = "http://" . Config::get('app.elasticsearch_host') . ":" . Config::get('app.elasticsearch_port') . '/' . Config::get('app.elasticsearch_default_index') . '/' . Config::get('app.elasticsearch_default_type') . '/';
-        $this->elasticsearch_url = "http://" . Config::get('app.elasticsearch_host') . ":" . Config::get('app.elasticsearch_port') . '/';
+        $this->elasticsearch_default_url = "http://" . Config::get('app.elasticsearch_host_new') . ":" . Config::get('app.elasticsearch_port_new') . '/' . Config::get('app.elasticsearch_default_index') . '/' . Config::get('app.elasticsearch_default_type') . '/';
+        $this->elasticsearch_url = "http://" . Config::get('app.elasticsearch_host_new') . ":" . Config::get('app.elasticsearch_port_new') . '/';
         $this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
-        $this->elasticsearch_port = Config::get('app.elasticsearch_port');
+        $this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
     }
 
     public function getautosuggestresults(){
@@ -32,42 +32,112 @@ class GlobalSearchController extends \BaseController
         $key     =         Input::json()->get('key');
         $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
 
+        $keys    =         explode(" ", $key);
 
-        $city_filter = '{ "term" : { "city" : "'.$city.'" } },';
-        $key_filter  = '{ "term" : { "input" : "'.$key.'" } },';
+        $key2_string_query  = '';
+        $key2_fuzzy_query = '';
+    
+        if(count($keys) > 1)
+        {
+            $key2_string_query  =    '{
+                                        "query_string": {
+                                            "fields": [
+                                                "inputv2",
+                                                "inputv3",
+                                                "inputv4"
+                                            ],
+                                            "query": "*'.$keys[1].'*",
+                                            "fuzziness": 0,
+                                            "fuzzy_prefix_length": 0,
+                                            "boost": 1
+                                        }
+                                    },';
 
-        $query       =  '{
-                            "from" : '.$from.',
-                            "size" : 10,
-                            "query" : {
-                            "filtered" : {
-                                    "query" :  {"match": {
-                                                          "input": "'.$key.'"
-                                                        }},
-                                    "filter" : {
-                                                "bool" : {
-                                                            "must" : {
-                                                                        "term" : {
-                                                                                    "city" : "'.$city.'"
-                                                                        }
-                                                            }
+            $key2_fuzzy_query   = ',{
+                            "fuzzy": {
+                                "input": {
+                                    "value": "'.$keys[1].'",
+                                    "fuzziness": 1,
+                                    "prefix_length": 3,
+                                    "boost": 1
+                                }
+                            }
+                        }';
+
+        };
+       
+        $query          = '{
+                            "from": '.$from.',
+                            "size": 10,
+                            "fields": [
+                                "input",
+                                "location",
+                                "identifier",
+                                "slug"
+                            ],
+                            "query": {
+                                "filtered": {
+                                    "query": {
+                                        "bool": {
+                                            "should": [
+                                                {
+                                                    "query_string": {
+                                                        "fields": [
+                                                            "inputv2",
+                                                            "inputv3",
+                                                            "inputv4"
+                                                        ],
+                                                        "query": "*'.$keys[0].'*",
+                                                        "fuzziness": 0,
+                                                        "fuzzy_prefix_length": 0,
+                                                        "boost": 5                                                        
+                                                    }
+                                                },'.$key2_string_query.'
+                                                {
+                                                    "fuzzy": {
+                                                        "input": {
+                                                            "value": "'.$keys[0].'",
+                                                            "fuzziness": 1,
+                                                            "prefix_length": 2,
+                                                            "boost": 5
+                                                        }
+                                                    }
+                                                }'.$key2_fuzzy_query.'
+                                            ]
+                                        }
+                                    },
+                                    "filter": {
+                                        "bool": {
+                                            "must": [
+                                                {
+                                                    "term": {
+                                                        "city": "'.$city.'"
+                                                        ,"_cache": true 
+                                                    }                                                    
                                                 }
+                                            ]
+                                        }
                                     }
                                 }
                             }
-        }';
+}';
         
-        $body = json_decode($query,true);
-        $searchParams['index'] = $this->indice;
-        $searchParams['type']  = $this->type;
-        $searchParams['body']  = $body;
-        $rs = Es::search($searchParams);
-        if(isset($rs['hits']['hits']) && $rs['hits']['hits'] != '')
-        {
-            return $rs;
-        }
+      
+        $request = array(
+            'url' => $this->elasticsearch_host.$this->elasticsearch_port."/"."autosuggest_index_alllocations/autosuggestor/_search",
+            'port' => 8050,
+            'method' => 'POST',
+            'postfields' => $query
+        );
 
-        return '';
+        return $request;
+        $search_results     =   es_curl_request($request);
+
+        $response       =   [
+            'search_results' => json_decode($search_results,true)];
+
+        return Response::json($response);
+       
     }
 
 }

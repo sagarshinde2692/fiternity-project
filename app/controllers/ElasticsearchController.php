@@ -23,7 +23,7 @@ class ElasticsearchController extends \BaseController {
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
 		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/';
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host_new');
-		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
+		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port_new');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 
 	}
@@ -233,36 +233,45 @@ class ElasticsearchController extends \BaseController {
 		}';
 
         $autosuggest_mappings = '{
-                "_source": {
-                    "compress": "true"
-                },
-                "_all": {
-                    "enabled": "true"
-                },
-                "properties": {
-                    "input": {
-                        "type": "string",
-                        "index_analyzer": "index_analyzerV1",
-                        "search_analyzer": "search_analyzer"
-                    },
-                    "city": {
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "location": {
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "slug": {
-                        "type": "string",
-                        "index": "not_analyzed"
-                    },
-                    "identifier": {
-                        "type": "string",
-                        "index": "not_analyzed"
-                    }
-                }
-            }';
+						    "_source": {
+						        "compress": "true"
+						    },
+						    "_all": {
+						        "enabled": "true"
+						    },
+						    "properties": {
+						        "input": {
+						            "type": "string",
+						            "index_analyzer": "index_analyzerV1",
+						            "search_analyzer": "search_analyzer"
+						        },
+						        "virgininput": {
+						            "type": "string",
+						            "index": "not_analyzed",
+						            "store": "yes"
+						        },
+						        "city": {
+						            "type": "string",
+						            "index": "not_analyzed",
+						            "store": "yes"
+						        },
+						        "location": {
+						            "type": "string",
+						            "index": "not_analyzed",
+						            "store": "yes"
+						        },
+						        "slug": {
+						            "type": "string",
+						            "index": "not_analyzed",
+						            "store": "yes"
+						        },
+						        "identifier": {
+						            "type": "string",
+						            "index": "not_analyzed",
+						            "store": "yes"
+						        }
+						    }
+}';
 
 
 		switch (strtolower($type)) {
@@ -476,8 +485,11 @@ class ElasticsearchController extends \BaseController {
                 ->with(array('category'=>function($query){$query->select('name','meta');}))
                 ->with(array('city'=>function($query){$query->select('name');}))
                 ->with(array('location'=>function($query){$query->select('name');}))
-                ->take(3000)->skip(0)->get();
-                //->take(3000)->skip(3000)->get();
+                ->with('offerings')
+				->with('facilities')
+                //->whereIn('_id',array(579))
+                ->take(3000)->skip(3000)->get();
+                //->take(3000)->skip(3000)->get();                
                 break;
 
             case 'fitternitycategories':
@@ -497,7 +509,7 @@ class ElasticsearchController extends \BaseController {
 
                         $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
                         //$posturl 						=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
-                        $postdata 						= 	get_elastic_autosuggest_doc($data);
+                        $postdata 						= 	get_elastic_autosuggest_doc($data);                        
                         if(empty($postdata)) continue;
                         break;
 
@@ -510,7 +522,7 @@ class ElasticsearchController extends \BaseController {
                         $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/";
 
                     break;
-                }
+                }               
                 $response = $this->pushdocument($posturl, json_encode($postdata));
 
             }
@@ -560,14 +572,14 @@ class ElasticsearchController extends \BaseController {
                     "tokenizer": {
                         "my_ngram_tokenizer": {
                             "type": "nGram",
-                            "min_gram": "2",
+                            "min_gram": "3",
                             "max_gram": "20"
                         }
                     },
                     "filter": {
                         "ngram-filter": {
                             "type": "nGram",
-                            "min_gram": "2",
+                            "min_gram": "3",
                             "max_gram": "20"
                         },
                         "stop-filter": {
