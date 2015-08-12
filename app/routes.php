@@ -94,7 +94,7 @@ Route::get('/updatefinder', function() {
 
 
 	// $items = Finder::active()->take(3000)->skip(0)->get();
-	$items = Finder::active()->take(3000)->skip(3000)->get();
+	$items = Service::active()->take(3000)->skip(0)->get();
 
 	$finderdata = array();
 	foreach ($items as $item) {  
@@ -112,24 +112,23 @@ Route::get('/updatefinder', function() {
 		// // return $august_available_dates_new;
 		// array_set($finderdata, 'august_available_dates', $august_available_dates_new);
 
-		$finder = Finder::findOrFail($data['_id']);
+		$finder = Service::findOrFail($data['_id']);
 		$finderratecards = [];
         foreach ($data['ratecards'] as $key => $value) {
             $ratecard = [
             'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
-            'service_name'=> (isset($value['service_name']) && $value['service_name'] != '') ? $value['service_name'] : '',
+            'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
             'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
             'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
             'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
-            'product_id'=> (isset($value['product_id']) && $value['product_id'] != '') ? $value['product_id'] : '',
-            'product_url'=> (isset($value['product_url']) && $value['product_url'] != '') ? $value['product_url'] : '',
+            'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
+            'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
             'direct_payment_enable'=> '0'
             ];
             array_push($finderratecards, $ratecard);
         }
 
         array_set($finderdata, 'ratecards', array_values($finderratecards));
-		array_set($finderdata, 'share_customer_no', '0');
 		$response = $finder->update($finderdata);
 
 		print_pretty($response);
