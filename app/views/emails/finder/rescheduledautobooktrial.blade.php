@@ -206,6 +206,19 @@
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                      {{ ucwords($customer_name) }}</td>
                       </tr>
+
+                       @if ($share_customer_no)
+                          <tr>
+                        <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                         <p style="font-weight:light">Phone Number of the customer:   
+                         </td>
+                       </tr>
+                       <tr>
+                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                           {{ $customer_name }}</td>
+                         </tr>
+                          @endif 
+                          
                     <tr>
                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                      <p style="font-weight:light">Contact person (name provided to the customer):
