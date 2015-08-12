@@ -91,8 +91,10 @@ Route::get('/capturedata', function() {
 
 Route::get('/updatefinder', function() { 
 
-	$items = Finder::active()->take(3000)->skip(0)->get();
-	// $items = Finder::active()->take(1000)->skip(5000)->get();
+
+
+	// $items = Finder::active()->take(3000)->skip(0)->get();
+	$items = Finder::active()->take(3000)->skip(3000)->get();
 
 	$finderdata = array();
 	foreach ($items as $item) {  
