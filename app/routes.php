@@ -18,29 +18,6 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
-Route::get('/checkreview', function() { 
-
-	// $items = Comment::get();
-	$items = DB::table('reviewsdump')->take(2)->skip(0)->get();
-	// $items = DB::table('reviewsdump')->get();
-
-	$old_review_data = array();
-	foreach ($items as $item) {  
-		// $data = $item->toArray();
-		$older_review_id 			=	$item['_id'];
-		$older_review_finder_id 	= 	intval(trim(str_replace("finder","",$item['object']['uid'])));
-		$older_review_description 	= 	$item['description'];
-		$older_user_email_exist 	= 	(isset($item['user']['email']) && $item['user']['email'] != '') ?  1 : 0 ;
-		// return $older_review_id. " -- " .$older_review_finder_id. " -- " .$older_review_description;
-		$reviewcnt =  Review::where('finder_id', $older_review_finder_id)->where('description', $older_review_description)->count();
-		$review_already_exist = 0;
-		if($reviewcnt > 0){ $review_already_exist = 1; }
-		echo  "review_already_exist  :  $review_already_exist  ---  older_user_email_exist  :  $older_user_email_exist<br>";
-		DB::table('reviewsdump')->where('_id', $older_review_id)->update(array('review_already_exist' => $review_already_exist, 'older_user_email_exist' => $older_user_email_exist));
-	}
-
-});
-
 
 Route::get('/testfinder', function() { 
 
@@ -63,33 +40,6 @@ Route::get('/testfinder', function() {
 	}
 
 });
-
-Route::get('/testcountrysms', function() { 
-	// return $items = Booktrial::find(5);
-
-	$user 			=	"chaitu87"; //your username
-	$password 		=	"564789123"; //your password
-	// $mobilenumbers 	=	"919004483103"; //enter Mobile numbers comma seperated
-	$mobilenumbers 	=	"919773348762"; //enter Mobile numbers comma seperated
-	$message  		=	"Hey Primi. Your workout session is confirmed for December 2, 2015 (Tuesday), 5.00 PM for Zumba at Fitness First, Andheri (West). Thank you for using Fitternity.com. For any queries call us on +91 92222 21131 or reply to this message."; //enter Your Message
-	$senderid 		=	"FTRNTY"; //Your senderid
-	$messagetype 	=	"N"; //Type Of Your Message
-	$DReports 		=	"Y"; //Delivery Reports
-	$url 			=	"http://www.smscountry.com/SMSCwebservice_Bulk.aspx";
-	$message 		=	urlencode($message);
-	$ch 			=	curl_init();
-	$ret 			=	curl_setopt($ch, CURLOPT_URL,$url);
-	curl_setopt ($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-	curl_setopt ($ch, CURLOPT_POSTFIELDS,"User=$user&passwd=$password&mobilenumber=$mobilenumbers&message=$message&sid=$senderid&mtype=$messagetype&DR=$DReports");
-	$ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	//If you are behind proxy then please uncomment below line and provide your proxy ip with port.
-	// $ret = curl_setopt($ch, CURLOPT_PROXY, "PROXY IP ADDRESS:PORT");
-	return $curlresponse = curl_exec($ch); 
-
-});
-
 
 Route::get('/testsms', function() { 
 
@@ -141,7 +91,8 @@ Route::get('/capturedata', function() {
 
 Route::get('/updatefinder', function() { 
 
-	return $items = Fitmaniadod::where('ordering' , '>' ,10)->get()->count();
+	$items = Finder::active()->take(3000)->skip(0)->get();
+	// $items = Finder::active()->take(1000)->skip(5000)->get();
 
 	$finderdata = array();
 	foreach ($items as $item) {  
@@ -159,9 +110,25 @@ Route::get('/updatefinder', function() {
 		// // return $august_available_dates_new;
 		// array_set($finderdata, 'august_available_dates', $august_available_dates_new);
 
-		$finder = Fitmaniadod::findOrFail($data['_id']);
+		$finder = Finder::findOrFail($data['_id']);
+		$finderratecards = [];
+        foreach ($data['ratecards'] as $key => $value) {
+            $ratecard = [
+            'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
+            'service_name'=> (isset($value['service_name']) && $value['service_name'] != '') ? $value['service_name'] : '',
+            'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
+            'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
+            'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
+            'product_id'=> (isset($value['product_id']) && $value['product_id'] != '') ? $value['product_id'] : '',
+            'product_url'=> (isset($value['product_url']) && $value['product_url'] != '') ? $value['product_url'] : '',
+            'direct_payment_enable'=> '0'
+            ];
+            array_push($finderratecards, $ratecard);
+        }
 
-		// $response = $finder->update($finderdata);
+        array_set($finderdata, 'ratecards', array_values($finderratecards));
+		array_set($finderdata, 'share_customer_no', '0');
+		$response = $finder->update($finderdata);
 
 		print_pretty($response);
 	}
@@ -325,7 +292,6 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 
 Route::get('/trialcsv', function() { 
 
-
 	$headers = [
 	'Content-type'        => 'application/csv',   
 	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
@@ -352,7 +318,6 @@ Route::get('/trialcsv', function() {
 			}
 		}
 	}
-
 	
 	return Response::make(rtrim($output, "\n"), 200, $headers);
 
@@ -377,12 +342,8 @@ Route::get('/findercsv', function() {
 	foreach ($finders as $key => $value) {
 		$output .= "$value->_id, http://www.fitternity.com/article/$value->slug, "."\n";
 	}
-
 	
 	return Response::make(rtrim($output, "\n"), 200, $headers);
-
-
-
 
 	$finders 		= 	Finder::active()
 						// ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
