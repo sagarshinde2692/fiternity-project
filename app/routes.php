@@ -70,7 +70,7 @@ Route::get('/capturedata', function() {
 	// $items = Booktrial::take(5)->skip(0)->get();
 	// $items = Finder::active()->get();
 	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
-	return $items = Finder::active()->orderBy('_id')->take(3000)->skip(0)->get();
+	$items = Finder::active()->orderBy('_id')->take(3000)->skip(0)->get();
 
 	$data = array();
 	$output = "ID, SLUG, CITY, FINDERTYPE, COMMERCIALTYPE \n";
