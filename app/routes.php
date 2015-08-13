@@ -451,6 +451,7 @@ Route::post('/getnearbytrials', 'SearchServicesController@geoLocationService');
 Route::post('/getRankedFinder', 'RankingSearchController@getRankedFinderResults');
 Route::post('/getFinderCategory', 'RankingController@getFinderCategory');
 Route::post('/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+Route::post('/getCategoryOfferings', 'RankingSearchController@CategoryAmenities');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 

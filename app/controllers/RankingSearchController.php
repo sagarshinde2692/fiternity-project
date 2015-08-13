@@ -115,7 +115,7 @@ class RankingSearchController extends \BaseController
             'postfields' => $body
         );
 
-
+        
         $search_results     =   es_curl_request($request);
 
         $response       =   [
@@ -129,6 +129,51 @@ class RankingSearchController extends \BaseController
         $searchParams['body'] = $eSQuery;
         $results =  Es::search($searchParams);
         return $results;*/
+    }
+
+    public function CategoryAmenities()
+    {
+        $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
+        $city     =  (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+        $city_id = 0;
+        switch ($city) {
+            case 'mumbai':
+                $city_id = 1;
+                break;
+            case 'pune':
+                $city_id = 2;
+                break;
+            case 'bangalore':
+                $city_id = 3;
+                break;
+            case 'delhi':
+                $city_id = 4;
+                break;
+            case 'hyderabad':
+                $city_id = 5;
+                break;
+            case 'ahmedabad':
+                $city_id = 6;
+                break; 
+            case 'gurgaon':
+                $city_id = 8;
+                break;           
+            default:                
+                break;
+        }
+        
+        $categorytag_offerings = '';
+        if($category != '')
+        {
+            $categorytag_offerings = Findercategorytag::active()
+                                    ->where('name', $category)
+                                    ->whereIn('cities',array($city_id))
+                                    ->with('offerings')
+                                    ->orderBy('ordering')
+                                    ->get(array('_id','name','offering_header','slug','status','offerings'));
+        } 
+            
+        return Response::json($categorytag_offerings);
     }
 }
 
