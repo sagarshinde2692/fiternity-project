@@ -83,7 +83,7 @@ Route::get('/capturedata', function() {
 		$commercial_type 	= $commercial_type_arr[intval($value->commercial_type)];
 		$cityname 			= $value->city->name;
 		// echo $response = $capture->update($data);
-		echo $output .= "$value->_id, $value->slug, $cityname, $FINDERTYPE, $commercial_type"."\n";
+		$output .= "$value->_id, $value->slug, $cityname, $FINDERTYPE, $commercial_type"."\n";
 		// exit();
 	}
 	
