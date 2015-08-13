@@ -62,25 +62,28 @@ Route::get('/capturedata', function() {
 	'Content-type'        => 'application/csv',   
 	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
 	'Content-type'        => 'text/csv',   
-	'Content-Disposition' => 'attachment; filename=trials.csv',   
+	'Content-Disposition' => 'attachment; filename=finderlist1.csv',   
 	'Expires'             => '0',   
 	'Pragma'              => 'public'
 	];
 
 	// $items = Booktrial::take(5)->skip(0)->get();
 	// $items = Finder::active()->get();
-	$items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
+	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
+	return $items = Finder::active()->orderBy('_id')->take(3000)->skip(0)->get();
 
 	$data = array();
-	$output = "ID, NAME, EMAIL, NUMBER, FINDERID, FINDERNAME,  FINDERLOCATION, FINDERCATEGORYTAGS \n";
+	$output = "ID, SLUG, CITY, FINDERTYPE, COMMERCIALTYPE \n";
 	foreach ($items as $value) {  
 		// $data = $item->toArray();
-		$finderobj = Finder::with('categorytags')->with('location')->findOrFail((int)$value->finder_id);
+		$finderobj = Finder::with('city')->findOrFail((int)$value->finder_id);
 		$finder = $finderobj->toArray();
-		$finderlocation = strtolower($finder['location']['name']);
-		$findercategorytags = implode(",", array_pluck($finder['categorytags'],'name')) ;
+		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
+		$FINDERTYPE 		= ($value->finder_type == 1) ? 'paid' : 'free';
+		$commercial_type 	= $commercial_type_arr[intval($value->commercial_type)];
+		$cityname 			= $value->city->name;
 		// echo $response = $capture->update($data);
-		$output .= "$value->_id, $value->customer_name, ".$value->customer_email.", ".$value->customer_phone.", ".$value->finder_id.", ".$value->finder_name.", ".$finderlocation .", $findercategorytags\n";
+		$output .= "$value->_id, $value->slug, $cityname, ".$value->type.", ".$commercial_type."\n";
 	}
 	
 	return Response::make(rtrim($output, "\n"), 200, $headers);
