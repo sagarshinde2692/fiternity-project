@@ -58,32 +58,34 @@ class RankingController extends \BaseController {
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
 
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
-            ->with(array('city'=>function($query){$query->select('name');}))
-            ->with(array('category'=>function($query){$query->select('name','meta');}))
-            ->with(array('location'=>function($query){$query->select('name');}))
-            ->with('categorytags')
-            ->with('locationtags')
-            ->with('offerings')
-            ->with('facilities')
-            ->active()
-            ->orderBy('_id')
-            ->whereIn('_id',array(579))
-            //->take(3000)->skip(3000)
-            //->take(3000)->skip(3000)
-            ->get();
-            return $items;
+                            ->with(array('city'=>function($query){$query->select('name');}))
+                            ->with(array('category'=>function($query){$query->select('name','meta');}))
+                            ->with(array('location'=>function($query){$query->select('name');}))
+                            ->with('categorytags')
+                            ->with('locationtags')
+                            ->with('offerings')
+                            ->with('facilities')
+                            ->active()
+                            ->orderBy('_id')
+                            ->take(3500)->skip(3500)
+                            // ->take(3000)->skip(0)
+                            //->take(3000)->skip(3000)
+                            ->get();
+                                   
         foreach ($items as $finderdocument) {
                 $data = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);                
                 $postdata = get_elastic_finder_document($data);
                 $postdata['rank'] = $score;
-                $catval = $this->evalBaseCategoryScore($finderdocument['category_id']);
+                $catval = evalBaseCategoryScore($finderdocument['category_id']);
                 $postdata['rankv1'] = $catval;
                 $postdata['rankv2'] = $score + $catval;
                 $postfields_data = json_encode($postdata);                
-                $posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
+                //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
+                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 
-                $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
+                //$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
+                $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
                 echo "<br>$posturl    ---  ".es_curl_request($request);
         }
 
@@ -93,90 +95,11 @@ class RankingController extends \BaseController {
 
         //$finderCategory = $finderDocument['category'];
 
-        $score = (3*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 5*($this->evalPopularity($finderDocument)))/10;
+        $score = (8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/13;
         return $score;
 
     }
-
-    public function evalBaseCategoryScore($categoryId){
-        //Boost for the prioritized category for global search without any category selected
-        $val = 0;
-        switch($categoryId)
-        {
-            case 5:
-            case 'gyms':
-                $val = 13; //gyms
-                break;
-
-            case 12:
-            case 'zumba':
-                $val =  12;
-                break;
-
-            case 6:
-            case 'yoga':
-                $val =  11;
-                break;
-
-            case 35:
-            case 32:
-            case 'cross functional training':
-            case 'crossfit':
-                $val =  10;
-                break;
-
-            case 13:
-            case 'kick boxing':
-                $val =  9;
-                break;
-
-            case 8:
-            case 7:
-            case 29:
-            case 'martial arts':
-            case 'dance':
-            case 'dance teachers':
-                $val =  8;
-                break;
-
-            case 14:
-            case 'spinning and indoor cycling':
-                $val =  7;
-                break;
-
-            case 11:
-            case 'pilates':
-                $val =  6;
-                break;
-
-            case 36:
-            case 'marathon training':
-                $val =  5;
-                break;
-
-            case 10:
-            case 'swimming':
-                $val =  4;
-                break;
-
-            case 41:
-            case 'personal trainers':
-                $val =  3;
-                break;
-
-            case 40:
-            case 'sports':
-                $val =  2;
-                break;
-
-            case 42:
-            case 'Healthy Tiffins':
-                $val =  1;
-                break;
-        }
-        return $val;
-    }
-
+    
     public function evalProfileCompleteness($finderDocument = ''){
 
         $aboutUs        = $finderDocument['info']['about'] != '' ? 1 : 0;
@@ -204,11 +127,11 @@ class RankingController extends \BaseController {
                 return $val;
 
             case 2:
-                $val=0.699;
+                $val=0.7;
                 return $val;
 
             case 3:
-                $val=0.399;
+                $val=0.4;
                 return $val;
 
             default:
@@ -247,7 +170,7 @@ class RankingController extends \BaseController {
     public function embedTrialsBooked(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $items = Finder::active()->orderBy('_id')->take(3000)->skip(3000)->get();
+        $items = Finder::active()->orderBy('_id')->take(3500)->skip(3500)->get();
 
         foreach($items as $item)
         {

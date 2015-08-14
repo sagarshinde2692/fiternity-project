@@ -69,7 +69,7 @@ class RankingSearchController extends \BaseController
                             "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
                             "type" : "number",
                             "params" : {
-                                "factor" : 13
+                                "factor" : 11
                             },
                             "order" : "' . $order . '"
                         }}';
@@ -109,13 +109,13 @@ class RankingSearchController extends \BaseController
         }';
         
         $request = array(
-            'url' => "localhost:9200/"."fitternity/finder/_search",
-            'port' => 9200,
+            'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+            'port' => 8050,
             'method' => 'POST',
             'postfields' => $body
         );
 
-        
+
         $search_results     =   es_curl_request($request);
 
         $response       =   [

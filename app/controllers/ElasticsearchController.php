@@ -20,10 +20,10 @@ class ElasticsearchController extends \BaseController {
 
 	public function __construct() {
 		parent::__construct();	
-		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
-		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port').'/';
-		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host_new');
-		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port_new');
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
+		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
+		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
+		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 
 	}
@@ -276,8 +276,9 @@ class ElasticsearchController extends \BaseController {
 
 		switch (strtolower($type)) {
 			case "fitternityfinder":
-			$typemapping 	=	$common_findermapping;
+			$typemapping 	=	$common_findermapping;			
 			$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
+			//return $typeurl;
 			break;
 
 			case "fitternityservice":
@@ -487,8 +488,10 @@ class ElasticsearchController extends \BaseController {
                 ->with(array('location'=>function($query){$query->select('name');}))
                 ->with('offerings')
 				->with('facilities')
-                //->whereIn('_id',array(579))
-                ->take(3000)->skip(3000)->get();
+				->active()
+				->take(3500)->skip(3000)->get();
+                //->whereIn('_id',array(579))                
+                //->take(3000)->skip(3000)->get();
                 //->take(3000)->skip(3000)->get();                
                 break;
 
@@ -499,7 +502,15 @@ class ElasticsearchController extends \BaseController {
             case 'fitternitybrands':
                 //to do add brands as models or merge from staging
                 break;
+            case 'fitternitylocations' :
+            	$indexdocs = Location::active()->with('cities')->get(); 
+            						//->whereIn('_id',array(126))
+            						
+
+            	break;
+            	
         }
+        
             foreach($indexdocs as $doc)
             {
                 $data = $doc->toArray();
@@ -509,7 +520,7 @@ class ElasticsearchController extends \BaseController {
 
                         $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
                         //$posturl 						=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
-                        $postdata 						= 	get_elastic_autosuggest_doc($data);                        
+                        $postdata 						= 	get_elastic_autosuggest_doc($data);                                             
                         if(empty($postdata)) continue;
                         break;
 
@@ -522,9 +533,15 @@ class ElasticsearchController extends \BaseController {
                         $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/";
 
                     break;
+
+                    case 'fitternitylocations':
+                    	$posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/levenshtein(str1, str2)".$data['_id'];
+                        $postdata                       =   get_elastic_location_doc($data);       
+                                                                
+                    break;
+
                 }               
                 $response = $this->pushdocument($posturl, json_encode($postdata));
-
             }
     }
 

@@ -70,7 +70,7 @@ class GlobalSearchController extends \BaseController
                             "from": '.$from.',
                             "size": 10,
                             "fields": [
-                                "input",
+                                "virgininput",
                                 "location",
                                 "identifier",
                                 "slug"
@@ -121,16 +121,14 @@ class GlobalSearchController extends \BaseController
                                 }
                             }
 }';
-        
-      
+            //$this->elasticsearch_host.$this->elasticsearch_port.  
         $request = array(
-            'url' => $this->elasticsearch_host.$this->elasticsearch_port."/"."autosuggest_index_alllocations/autosuggestor/_search",
+            'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
             'port' => 8050,
             'method' => 'POST',
             'postfields' => $query
         );
-
-        return $request;
+        
         $search_results     =   es_curl_request($request);
 
         $response       =   [

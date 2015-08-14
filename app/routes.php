@@ -20,6 +20,9 @@ Route::get('/', function() { return "laravel 4.2 goes here....";});
 
 Route::get('/testfinder', function() {
 
+	return $indexdocs = Location::active()->with('cities')->get();  
+
+
 	for ($i=0; $i < 7 ; $i++) { 
 		$skip = $i * 1000;
 		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
@@ -426,6 +429,7 @@ Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic',
 Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexautosuggestdata','uses' => 'ElasticsearchController@indexautosuggestdata'));
 Route::get('IndexRankMongo2Elastic', array('as' => 'elasticsearch.IndexRankMongo2Elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
 Route::get('manageAutoSuggestSetttings', array('as' => 'elasticsearch.manageAutoSuggestSetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
+Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
