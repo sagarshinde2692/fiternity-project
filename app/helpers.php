@@ -128,6 +128,7 @@ if (!function_exists('get_elastic_finder_document')) {
                 'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
                 'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
                 'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
+                'photos'                        =>      (isset($data['photos']) && $data['photos'] != '') ? array_map('strtolower', array_pluck($data['photos'],'url')) : "",
                 );
 
                 return $postfields_data;
@@ -369,6 +370,10 @@ if (!function_exists(('get_elastic_autosuggest_doc'))){
         $data = $source;
         $postfields_data = array(
             'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
+            'virgininput'                   =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
+            'inputv2'                       =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",                                                                       
+            'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+            'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
             'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
             'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
             'identifier'                    =>      $data['category']['name'],
@@ -385,9 +390,31 @@ if (!function_exists(('get_elastic_category_doc'))){
         $data = $source;
         $postfields_data = array(
             'input'                         =>      $data['name'],
+            'inputv2'                       =>      '',
+            'inputv3'                       =>      '',
+            'inputv4'                       =>      '',
             'city'                          =>      array('mumbai','pune','bangalore','chennai','hyderabad','delhi','ahmedabad','gurgaon'),
             'location'                      =>      '',
             'identifier'                    =>      'categories',
+            'slug'                          =>      $data['slug'],
+        );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_location_doc'))){
+
+    function get_elastic_location_doc($source=''){
+
+        $data = $source;
+        $postfields_data = array(
+            'input'                         =>      $data['name'],
+            'inputv2'                       =>      '',
+            'inputv3'                       =>      '',
+            'inputv4'                       =>      '',
+            'city'                          =>      (isset($data['cities']) && $data['cities'] != '') ? $data['cities'][0]['name']:"",
+            'location'                      =>      (isset($data['cities']) && $data['cities'] != '') ? $data['cities'][0]['name']:"",
+            'identifier'                    =>      'locations',
             'slug'                          =>      $data['slug'],
         );
         return $postfields_data;
@@ -399,20 +426,16 @@ if (!function_exists(('evalBaseCategoryScore'))){
         $val = 0;
         switch($categoryId)
         {
-            case 5:
-            case 'gyms':
-                $val = 13; //gyms
-                break;
-
-            case 12:
-            case 'zumba':
-                $val =  12;
-                break;
-
             case 6:
             case 'yoga':
-                $val =  11;
-                break;
+            case 12:
+            case 'zumba':
+            case 5:
+            case 'gyms':
+            case 43:
+            case 'fitness studios':
+                $val = 11; //gyms
+                break;           
 
             case 35:
             case 32:

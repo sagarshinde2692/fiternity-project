@@ -44,18 +44,20 @@ class RankingSearchController extends \BaseController
         $category = Input::json()->get('category');
 
 
-        $location_filter =  '{"term" : { "city" : "'.$location.'"} },';
-        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"] }},': '';
-        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"] }},': '';        
-        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';
-        $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"] }},'  : '';
-        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"] }},'  : '';
-        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"] }},'  : '';
+
+        $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+        $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
 
         $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
         $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
-        $shouldfilter = '"should": ['.$should_filtervalue.'],';	//used for location
-        $mustfilter = '"must": ['.$must_filtervalue.']';		//used for offering and facilities
+        $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
+        $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+
         $filtervalue = trim($shouldfilter.$mustfilter,',');
 
 
@@ -69,7 +71,9 @@ class RankingSearchController extends \BaseController
                             "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
                             "type" : "number",
                             "params" : {
-                                "factor" : 13
+
+                                "factor" : 11
+
                             },
                             "order" : "' . $order . '"
                         }}';
@@ -86,8 +90,8 @@ class RankingSearchController extends \BaseController
 
         if($shouldfilter != '' || $mustfilter != ''){
             $filters = '"filter": {
-				"bool" : {'.$filtervalue.'}
-			},"_cache" : true';
+                "bool" : {'.$filtervalue.'}
+            },"_cache" : true';
         }
 
         $budgets_facets = '"budget": {"terms": {"field": "price_range","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
@@ -96,29 +100,32 @@ class RankingSearchController extends \BaseController
         $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
         $facetsvalue = trim($regions_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
-        $body =	'{
-			"from": '.$from.',
-			"size": '.$size.',
-			"facets": {'.$facetsvalue.'},
-			"query": {
+
+        $body = '{
+            "from": '.$from.',
+            "size": '.$size.',
+            "facets": {'.$facetsvalue.'},
+            "query": {
+
                     "filtered": {
                             '.$filters.'
-						}
-					},
+                        }
+                    },
            '.$sort.'
-		}';
-
+        }';
+        
         $request = array(
-            'url' => $this->elasticsearch_url."fitternity/finder/_search",
+            'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
             'port' => 8050,
             'method' => 'POST',
             'postfields' => $body
         );
 
 
-        $search_results 	=	es_curl_request($request);
+        $search_results     =   es_curl_request($request);
 
-        $response 		= 	[
+        $response       =   [
+
             'search_results' => json_decode($search_results,true)];
 
         return Response::json($response);
@@ -129,6 +136,52 @@ class RankingSearchController extends \BaseController
         $searchParams['body'] = $eSQuery;
         $results =  Es::search($searchParams);
         return $results;*/
+    }
+
+    public function CategoryAmenities()
+    {
+        $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
+        $city     =  (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+        $city_id = 0;
+        switch ($city) {
+            case 'mumbai':
+                $city_id = 1;
+                break;
+            case 'pune':
+                $city_id = 2;
+                break;
+            case 'bangalore':
+                $city_id = 3;
+                break;
+            case 'delhi':
+                $city_id = 4;
+                break;
+            case 'hyderabad':
+                $city_id = 5;
+                break;
+            case 'ahmedabad':
+                $city_id = 6;
+                break; 
+            case 'gurgaon':
+                $city_id = 8;
+                break;           
+            default:                
+                break;
+        }
+        
+        $categorytag_offerings = '';
+        if($category != '')
+        {
+            $categorytag_offerings = Findercategorytag::active()
+                                    ->where('name', $category)
+                                    ->whereIn('cities',array($city_id))
+                                    ->with('offerings')
+                                    ->orderBy('ordering')
+                                    ->get(array('_id','name','offering_header','slug','status','offerings'));
+        } 
+            
+        return Response::json($categorytag_offerings);
+
     }
 }
 
