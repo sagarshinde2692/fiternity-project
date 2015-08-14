@@ -70,10 +70,10 @@ Route::get('/capturedata', function() {
 	// $items = Booktrial::take(5)->skip(0)->get();
 	// $items = Finder::active()->get();
 	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
-	$items = Finder::active()->with('city')->orderBy('_id')->take(3000)->skip(3000)->get(array('_id','finder_type','slug','city_id','commercial_type','city'));
+	$items = Finder::active()->with('city')->with('category')->orderBy('_id')->take(3000)->skip(0)->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id'));
 
 	$data = array();
-	$output = "ID, SLUG, CITY, FINDERTYPE, COMMERCIALTYPE \n";
+	$output = "ID, SLUG, CITY, CATEGORY, FINDERTYPE, COMMERCIALTYPE \n";
 	foreach ($items as $value) {  
 		// $data = $item->toArray();
 		// $finderobj = Finder::with('city')->findOrFail((int)$value->finder_id);
@@ -82,8 +82,9 @@ Route::get('/capturedata', function() {
 		$FINDERTYPE 		= ($value->finder_type == 1) ? 'paid' : 'free';
 		$commercial_type 	= $commercial_type_arr[intval($value->commercial_type)];
 		$cityname 			= $value->city->name;
+		$category 			= $value->category->name;
 		// echo $response = $capture->update($data);
-		$output .= "$value->_id, $value->slug, $cityname, $FINDERTYPE, $commercial_type"."\n";
+		$output .= "$value->_id, $value->slug, $cityname, $category, $FINDERTYPE, $commercial_type"."\n";
 		// exit();
 	}
 	
