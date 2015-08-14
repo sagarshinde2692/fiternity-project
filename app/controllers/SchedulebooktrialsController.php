@@ -449,6 +449,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
+			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
 
 			$service_name						=	strtolower(Input::json()->get('service_name'));
 			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
@@ -482,6 +483,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
 				'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
 				'show_location_flag'			=> 		$show_location_flag,
+				'share_customer_no'				=> 		$share_customer_no,
 
 				'service_name'					=>		$service_name,
 				'schedule_slot_start_time'		=>		$schedule_slot_start_time,
@@ -703,6 +705,8 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
+			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+
 
 			$service_name						=	strtolower(Input::json()->get('service_name'));
 			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
@@ -737,6 +741,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
 				'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
 				'show_location_flag'			=> 		$show_location_flag,
+				'share_customer_no'				=> 		$share_customer_no,
 
 				'service_name'					=>		$service_name,
 				'schedule_slot_start_time'		=>		$schedule_slot_start_time,
