@@ -70,24 +70,50 @@ Route::get('/capturedata', function() {
 	// $items = Booktrial::take(5)->skip(0)->get();
 	// $items = Finder::active()->get();
 	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
-	$items = Finder::active()->with('city')->with('category')->orderBy('_id')->take(3000)->skip(0)->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id'));
+	$items = Finder::active()->with('city')->with('category')->orderBy('_id')->take(3000)->skip(3000)->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','contact'));
 
 	$data = array();
 	$output = "ID, SLUG, CITY, CATEGORY, FINDERTYPE, COMMERCIALTYPE \n";
+
+	$fp = fopen('finder2.csv', 'w');
+
+	$header = ["ID", "SLUG", "CITY", "CATEGORY", "FINDERTYPE", "COMMERCIALTYPE", "Contact-address", "Contact-email", "Contact-phone", "finder_vcc_email", "finder_vcc_mobile"  ];
+	
+	fputcsv($fp, $header);
+
 	foreach ($items as $value) {  
+
 		// $data = $item->toArray();
 		// $finderobj = Finder::with('city')->findOrFail((int)$value->finder_id);
 		// $finder = $finderobj->toArray();
+		// echo $response = $capture->update($data);
 		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
 		$FINDERTYPE 		= ($value->finder_type == 1) ? 'paid' : 'free';
 		$commercial_type 	= $commercial_type_arr[intval($value->commercial_type)];
 		$cityname 			= $value->city->name;
 		$category 			= $value->category->name;
-		// echo $response = $capture->update($data);
-		$output .= "$value->_id, $value->slug, $cityname, $category, $FINDERTYPE, $commercial_type"."\n";
+		// $output .= "$value->_id, $value->slug, $cityname, $category, $FINDERTYPE, $commercial_type"."\n";
+
+		$fields = [$value->_id,
+				$value->slug,
+				$cityname,
+				$category,
+				$FINDERTYPE,
+				$commercial_type,
+				$value->contact['address'],
+				$value->contact['email'],
+				$value->contact['phone'],
+				$value->finder_vcc_email,
+				$value->finder_vcc_mobile
+		];
+		return $fields;
+		fputcsv($fp, $fields);
 		// exit();
 	}
+
+	fclose($fp);
 	
+	return "done";
 	return Response::make(rtrim($output, "\n"), 200, $headers);
 
 });
@@ -385,6 +411,7 @@ Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 
 Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 Route::get('/yfc_finders', 'HomeController@yfc_finders');
+Route::get('landingzumba', 'HomeController@landingzumba');
 
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
 Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
