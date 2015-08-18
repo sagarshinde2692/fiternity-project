@@ -94,7 +94,7 @@ class RankingSearchController extends \BaseController
         }
 
         $budgets_facets = '"budget": {"terms": {"field": "price_range","order":{"_term": "asc"}}},';
-        $regions_facets = '"cluster": {
+        $regions_facets = '"loccluster": {
             "terms": {
                 "field": "locationcluster"
                
@@ -129,8 +129,9 @@ class RankingSearchController extends \BaseController
         }';
       
         $request = array(
-            'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
-            'port' => 8050,
+            //'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+            'url' => "http://localhost:9200/"."fitternity/finder/_search",
+            'port' => 9200,
             'method' => 'POST',
             'postfields' => $body
         );
