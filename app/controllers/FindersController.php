@@ -23,6 +23,7 @@ class FindersController extends \BaseController {
 	protected $elasticsearch_default_url    =   "";
 
 	protected $findermailer;
+	protected $cacheapi;
 
 	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi) {
 
