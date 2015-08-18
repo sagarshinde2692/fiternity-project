@@ -16,21 +16,28 @@ class Location extends \Basemodel {
 		'name' => 'required'
 	];
 
+	public function setLocationclusterIdAttribute($value){
+		$this->attributes['locationcluster_id'] = intval($value);
+	}
+	
+	public function locationcluster(){
+		return $this->belongsTo('Locationcluster');
+	}	
+
 	public function finders(){
-		
 		return $this->hasMany('Finder');
 	}
-
-	public function cities(){
-
-		return $this->belongsToMany('City', null, 'locations', 'cities');
-	}
-
 
 	public function fitmaniadods(){
 		return $this->hasMany('Fitmaniadod');
 	}
 
+	public function ratecards(){
+		return $this->hasMany('Ratecard','location_id');
+	}
 
+	public function cities(){
+		return $this->belongsToMany('City', null, 'locations', 'cities');
+	}
 	
 }
