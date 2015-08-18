@@ -44,6 +44,7 @@ class RankingSearchController extends \BaseController
         $category = Input::json()->get('category');
 
 
+
         $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
         $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
         $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
@@ -56,6 +57,7 @@ class RankingSearchController extends \BaseController
         $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+
         $filtervalue = trim($shouldfilter.$mustfilter,',');
 
 
@@ -69,7 +71,9 @@ class RankingSearchController extends \BaseController
                             "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
                             "type" : "number",
                             "params" : {
+
                                 "factor" : 11
+
                             },
                             "order" : "' . $order . '"
                         }}';
@@ -83,31 +87,47 @@ class RankingSearchController extends \BaseController
         {
             $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
         }
-
         if($shouldfilter != '' || $mustfilter != ''){
             $filters = '"filter": {
                 "bool" : {'.$filtervalue.'}
             },"_cache" : true';
         }
 
-        $budgets_facets = '"budget": {"terms": {"field": "price_range","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $regions_facets = '"regions": {"terms": {"field": "locationtags","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
+        $budgets_facets = '"budget": {"terms": {"field": "price_range","order":{"_term": "asc"}}},';
+        $regions_facets = '"cluster": {
+            "terms": {
+                "field": "locationcluster"
+               
+            },"aggs": {
+              "region": {
+                "terms": {
+                "field": "locationtags",
+                "order": {
+                  "_term": "asc"
+                }
+               
+            }
+              }
+            }
+        },';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","order": {"_term": "asc"}}},';
         $facetsvalue = trim($regions_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
+
 
         $body = '{
             "from": '.$from.',
             "size": '.$size.',
-            "facets": {'.$facetsvalue.'},
+            "aggs": {'.$facetsvalue.'},
             "query": {
+
                     "filtered": {
                             '.$filters.'
                         }
                     },
            '.$sort.'
         }';
-        
+      
         $request = array(
             'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
             'port' => 8050,
@@ -119,6 +139,7 @@ class RankingSearchController extends \BaseController
         $search_results     =   es_curl_request($request);
 
         $response       =   [
+
             'search_results' => json_decode($search_results,true)];
 
         return Response::json($response);
@@ -174,6 +195,7 @@ class RankingSearchController extends \BaseController
         } 
             
         return Response::json($categorytag_offerings);
+
     }
 }
 
