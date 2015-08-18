@@ -129,9 +129,9 @@ class RankingSearchController extends \BaseController
         }';
       
         $request = array(
-            //'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
-            'url' => "http://localhost:9200/"."fitternity/finder/_search",
-            'port' => 9200,
+            'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+            //'url' => "http://localhost:9200/"."fitternity/finder/_search",
+            'port' => 8050,
             'method' => 'POST',
             'postfields' => $body
         );
