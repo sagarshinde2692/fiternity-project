@@ -9,6 +9,7 @@
 
 use App\Mailers\FinderMailer as FinderMailer;
 
+
 class FindersController extends \BaseController {
 
 
@@ -32,8 +33,6 @@ class FindersController extends \BaseController {
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 		$this->findermailer						=	$findermailer;
 	}
-
-
 
 
 	public function finderdetail($slug, $cache = true){
@@ -719,6 +718,20 @@ class FindersController extends \BaseController {
 		$response = array('status'=>$status,'message'=>$message);
 		
 		return Response::json($response,$status);
+	}
+
+
+
+	public function reviewListing($finder_id, $from = '', $size = ''){
+		
+		$finder_id			= 	(int) $finder_id;	
+		$from 				=	($from != '') ? intval($from) : 0;
+		$size 				=	($size != '') ? intval($size) : 10;
+
+		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$responseData 		= 	['reviews' => $reviews,  'message' => 'List for reivews'];
+
+		return Response::json($responseData, 200);
 	}
 
 

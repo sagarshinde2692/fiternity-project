@@ -45,6 +45,11 @@ class Finder extends  \Basemodel {
 		return $this->belongsTo('City');
 	}	
 
+	
+	public function locationcluster(){
+		return $this->belongsTo('Locationcluster');
+	}	
+
 	public function location(){
 		return $this->belongsTo('Location');
 	}	

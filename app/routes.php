@@ -18,10 +18,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
-Route::get('/testfinder', function() {
-
-	return $indexdocs = Location::active()->with('cities')->get();  
-
+Route::get('/testfinder', function() { 
 
 	for ($i=0; $i < 7 ; $i++) { 
 		$skip = $i * 1000;
@@ -43,33 +40,6 @@ Route::get('/testfinder', function() {
 
 });
 
-Route::get('/testcountrysms', function() { 
-	// return $items = Booktrial::find(5);
-
-	$user 			=	"chaitu87"; //your username
-	$password 		=	"564789123"; //your password
-	// $mobilenumbers 	=	"919004483103"; //enter Mobile numbers comma seperated
-	$mobilenumbers 	=	"919773348762"; //enter Mobile numbers comma seperated
-	$message  		=	"Hey Primi. Your workout session is confirmed for December 2, 2015 (Tuesday), 5.00 PM for Zumba at Fitness First, Andheri (West). Thank you for using Fitternity.com. For any queries call us on +91 92222 21131 or reply to this message."; //enter Your Message
-	$senderid 		=	"FTRNTY"; //Your senderid
-	$messagetype 	=	"N"; //Type Of Your Message
-	$DReports 		=	"Y"; //Delivery Reports
-	$url 			=	"http://www.smscountry.com/SMSCwebservice_Bulk.aspx";
-	$message 		=	urlencode($message);
-	$ch 			=	curl_init();
-	$ret 			=	curl_setopt($ch, CURLOPT_URL,$url);
-	curl_setopt ($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-	curl_setopt ($ch, CURLOPT_POSTFIELDS,"User=$user&passwd=$password&mobilenumber=$mobilenumbers&message=$message&sid=$senderid&mtype=$messagetype&DR=$DReports");
-	$ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-	//If you are behind proxy then please uncomment below line and provide your proxy ip with port.
-	// $ret = curl_setopt($ch, CURLOPT_PROXY, "PROXY IP ADDRESS:PORT");
-	return $curlresponse = curl_exec($ch); 
-
-});
-
-
 Route::get('/testsms', function() { 
 
 	$number = '9773348762';
@@ -87,23 +57,63 @@ Route::get('/testsms', function() {
 
 Route::get('/capturedata', function() { 
 
-	// $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim(977348762)) . "&source=fitter&message=" . urlencode('hi');
-	// $ci = curl_init();
-	// curl_setopt($ci, CURLOPT_URL, $sms_url);
-	// curl_setopt($ci, CURLOPT_HEADER, 0);
-	// curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-	// $response = curl_exec($ci);
-	// curl_close($ci);
-	// exit;
+	$headers = [
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=finderlist2.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
+	];
 
-	$items = Capture::get();
+	// $items = Booktrial::take(5)->skip(0)->get();
+	// $items = Finder::active()->get();
+	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
+	$items = Finder::active()->with('city')->with('category')->orderBy('_id')->take(3000)->skip(3000)->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','contact'));
+
 	$data = array();
-	foreach ($items as $item) {  
-		$data = $item->toArray();
-		$capture = Capture::findOrFail($data['_id']);
-		echo $response = $capture->update($data);
+	$output = "ID, SLUG, CITY, CATEGORY, FINDERTYPE, COMMERCIALTYPE \n";
 
+	$fp = fopen('finder2.csv', 'w');
+
+	$header = ["ID", "SLUG", "CITY", "CATEGORY", "FINDERTYPE", "COMMERCIALTYPE", "Contact-address", "Contact-email", "Contact-phone", "finder_vcc_email", "finder_vcc_mobile"  ];
+	
+	fputcsv($fp, $header);
+
+	foreach ($items as $value) {  
+
+		// $data = $item->toArray();
+		// $finderobj = Finder::with('city')->findOrFail((int)$value->finder_id);
+		// $finder = $finderobj->toArray();
+		// echo $response = $capture->update($data);
+		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
+		$FINDERTYPE 		= ($value->finder_type == 1) ? 'paid' : 'free';
+		$commercial_type 	= $commercial_type_arr[intval($value->commercial_type)];
+		$cityname 			= $value->city->name;
+		$category 			= $value->category->name;
+		// $output .= "$value->_id, $value->slug, $cityname, $category, $FINDERTYPE, $commercial_type"."\n";
+
+		$fields = [$value->_id,
+				$value->slug,
+				$cityname,
+				$category,
+				$FINDERTYPE,
+				$commercial_type,
+				$value->contact['address'],
+				$value->contact['email'],
+				$value->contact['phone'],
+				$value->finder_vcc_email,
+				$value->finder_vcc_mobile
+		];
+		return $fields;
+		fputcsv($fp, $fields);
+		// exit();
 	}
+
+	fclose($fp);
+	
+	return "done";
+	return Response::make(rtrim($output, "\n"), 200, $headers);
 
 });
 
@@ -111,17 +121,61 @@ Route::get('/capturedata', function() {
 
 Route::get('/updatefinder', function() { 
 
-	$items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
-		//exit;				
+
+
+	// $items = Finder::active()->take(3000)->skip(0)->get();
+	$items = Service::active()->take(3000)->skip(0)->get();
+
 	$finderdata = array();
 	foreach ($items as $item) {  
 		$data 	= $item->toArray();
-			//print_pretty($data);
-		array_set($finderdata, 'status', '0');
-		$finder = Finder::findOrFail($data['_id']);
+
+		// $august_available_dates = $data['august_available_dates'];
+		// $august_available_dates_new = [];
+
+		// foreach ($august_available_dates as $day){
+		// 	$date = explode('-', $day);
+		// 	// return ucfirst( date("l", strtotime("$date[0]-08-2015") )) ;
+		// 	array_push($august_available_dates_new, $date[0].'-'.ucfirst( date("l", strtotime("$date[0]-08-2015") )) );
+
+		// }
+		// // return $august_available_dates_new;
+		// array_set($finderdata, 'august_available_dates', $august_available_dates_new);
+
+		$finder = Service::findOrFail($data['_id']);
+		$finderratecards = [];
+        foreach ($data['ratecards'] as $key => $value) {
+            $ratecard = [
+            'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
+            'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
+            'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
+            'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
+            'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
+            'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
+            'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
+            'direct_payment_enable'=> '0'
+            ];
+            array_push($finderratecards, $ratecard);
+        }
+
+        array_set($finderdata, 'ratecards', array_values($finderratecards));
 		$response = $finder->update($finderdata);
+
 		print_pretty($response);
 	}
+
+
+	// $items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
+	// 	//exit;				
+	// $finderdata = array();
+	// foreach ($items as $item) {  
+	// 	$data 	= $item->toArray();
+	// 		//print_pretty($data);
+	// 	array_set($finderdata, 'status', '0');
+	// 	$finder = Finder::findOrFail($data['_id']);
+	// 	$response = $finder->update($finderdata);
+	// 	print_pretty($response);
+	// }
 });
 
 
@@ -266,6 +320,40 @@ Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' 
 
 
 
+
+Route::get('/trialcsv', function() { 
+
+	$headers = [
+	'Content-type'        => 'application/csv',   
+	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
+	'Content-type'        => 'text/csv',   
+	'Content-Disposition' => 'attachment; filename=trialsdiff.csv',   
+	'Expires'             => '0',   
+	'Pragma'              => 'public'
+	];
+
+	$booktrialslotcnt = Booktrial::where('booktrial_type', 'auto')->where('source', 'website')->skip(0)->take(3000)->get();
+
+	// return $booktrialslotcnt;
+	// return $finders;sourceja
+	$output = "ID, customer name,customer email, Created At, Updated At, Schedule Date, Diff date \n";
+	$emails = ['chaithanya.padi@gmail.com','chaithanyapadi@fitternity.com','sanjay.id7@gmail.com','sanjay.fitternity@gmail.com','utkarsh2arsh@gmail.com','ut.mehrotra@gmail.com','neha@fitternity.com','jayamvora@fitternity.com'];
+	foreach ($booktrialslotcnt as $key => $value) {
+		$dStart = strtotime($value->created_at);
+		$dEnd  = strtotime($value->schedule_date);
+		$dDiff = $dEnd - $dStart;
+		// $dDiff = $dStart->diff($dEnd);
+		if(floor($dDiff/(60*60*24)) > 0 && floor($dDiff/(60*60*24)) < 50){
+			if(!in_array($value->customer_email, $emails)){
+				$output .= "$value->_id,$value->customer_name,$value->customer_email, $value->created_at, $value->updated_at, ".$value->schedule_date.", ".floor($dDiff/(60*60*24))."\n";
+			}
+		}
+	}
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
+
+});
+
 Route::get('/findercsv', function() { 
 
 	$headers = [
@@ -277,23 +365,32 @@ Route::get('/findercsv', function() {
 	'Pragma'              => 'public'
 	];
 
-	$finders 		= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->where('finder_type', 0)
-	->whereIn('category_id', array(5,11,14,32,35,6,12,8,7,36,41,25,42,26,40))
-								// ->take(2)
-	->orderBy('id', 'desc')
-	->get(array('_id', 'title', 'slug', 'city_id', 'city', 'category_id', 'category', 'location_id', 'location', 'popularity', 'finder_type'));
+	$finders 		= 	Blog::active()->get();
 
 	// return $finders;
-	$output = "ID, SLUG, CATEGORY, LOCATION, POPULARITY, TYPE \n";
+	$output = "ID, URL, \n";
 
 	foreach ($finders as $key => $value) {
+		$output .= "$value->_id, http://www.fitternity.com/article/$value->slug, "."\n";
+	}
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
 
+	$finders 		= 	Finder::active()
+						// ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+						// ->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+						// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						// ->skip(0)
+						// ->take(3000)
+						->where('finder_type', 1)
+						->get();
+
+	// return $finders;
+	$output = "ID, SLUG, CITY, TYPE, EMAIL, TYPE \n";
+
+	foreach ($finders as $key => $value) {
 		$type = ($value->finder_type == '0') ? 'Free' : 'Paid';
-
-		$output .= "$value->_id, $value->slug, ".$value->category->name.", ".$value->location->name.", ".$value->popularity .", $type\n";
+		$output .= "$value->_id, $value->slug, ".$value->city->name.", ".$type.", ".$value->finder_vcc_email ."\n";
 	}
 
 	
@@ -307,17 +404,20 @@ Route::get('/findercsv', function() {
 
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
+Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 
 Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 Route::get('/yfc_finders', 'HomeController@yfc_finders');
+Route::get('landingzumba', 'HomeController@landingzumba');
 
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
 Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 
 Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
+Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
 
 
@@ -363,6 +463,12 @@ Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','us
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
 
+Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
+
+
+
+
+
 /******************** ORDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -392,6 +498,7 @@ Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton'
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
 
+Route::get('reviewlisting/{finderid}/{from?}/{size?}', array('as' => 'finders.reviewlisting','uses' => 'FindersController@reviewListing'));
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
@@ -550,10 +657,23 @@ Route::get('/flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('fitmania', 'FitmaniaController@getDealOfDay');
+Route::get('fitmania/{city?}/{from?}/{size?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
+Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
+
+Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
+Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
+
 Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+
 Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
-// Route::post('buyfitmaniadealofday', 'FitmaniaController@buyDealOfDay');
+Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
+Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
+
+
+Route::get('resendemails', 'FitmaniaController@resendEmails');
+Route::get('resendfinderemail', 'FitmaniaController@resendFinderEmail');
+Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
+
 
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/

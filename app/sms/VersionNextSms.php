@@ -62,6 +62,27 @@ abstract Class VersionNextSms {
     }
 
 
+
+
+    public function sendSms($to, $message){
+
+       $msg = strip_tags($message); 
+
+       foreach ($to as $number) {
+
+            $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+            $ci = curl_init();
+            curl_setopt($ci, CURLOPT_URL, $sms_url);
+            curl_setopt($ci, CURLOPT_HEADER, 0);
+            curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
+            $response = curl_exec($ci);
+            curl_close($ci);
+
+        }
+
+    }
+
+
     /**
      * Calculate the number of seconds with the given delay.
      *
@@ -69,7 +90,7 @@ abstract Class VersionNextSms {
      * @return int
      */
     protected function getSeconds($delay){
-        
+
         if ($delay instanceof DateTime){
             return max(0, $delay->getTimestamp() - $this->getTime());
         }

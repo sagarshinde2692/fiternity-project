@@ -441,7 +441,12 @@ class CustomerController extends \BaseController {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		        }
 
-		        $customer = Customer::where('email','=',$data['email'])->first();
+		        $customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+
+		        if(!isset($customer->email) || $customer->email == ''){
+		        	$customer->email = $data['email'];
+		        	$customer->update();
+		        }
 
 			}else{
 
@@ -457,7 +462,7 @@ class CustomerController extends \BaseController {
 
 					$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
 
-					if(empty($customer)){
+					if(empty($customer) || !isset($customer->email) || $customer->email == ''){
 						return array('status' => 401,'message' => 'email is missing');
 					}
 				}
