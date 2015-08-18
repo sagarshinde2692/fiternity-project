@@ -156,7 +156,16 @@ class HomeController extends BaseController {
 		return Response::json(Cache::tags('location_by_city')->get($city));
 	}
 
+	public function landingzumba(){
+		$finder_slugs 		=		array(1493,2701,1771,1623,4742,5373,1646,731,6140,6134,3382,1783);
+		$zumba = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						->whereIn('_id', $finder_slugs)
+						->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact'));
 
+		return Response::json($zumba);
+
+	}
 
 	public function zumbadiscover(){
 		$finder_slugs 		=		array('mint-v-s-fitness-khar-west', 

@@ -87,24 +87,38 @@ class RankingSearchController extends \BaseController
         {
             $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
         }
-
         if($shouldfilter != '' || $mustfilter != ''){
             $filters = '"filter": {
                 "bool" : {'.$filtervalue.'}
             },"_cache" : true';
         }
 
-        $budgets_facets = '"budget": {"terms": {"field": "price_range","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $regions_facets = '"regions": {"terms": {"field": "locationtags","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms" : false,"size": '.$facetssize.',"order": "term"}},';
+        $budgets_facets = '"budget": {"terms": {"field": "price_range","order":{"_term": "asc"}}},';
+        $regions_facets = '"loccluster": {
+            "terms": {
+                "field": "locationcluster"
+               
+            },"aggs": {
+              "region": {
+                "terms": {
+                "field": "locationtags",
+                "order": {
+                  "_term": "asc"
+                }
+               
+            }
+              }
+            }
+        },';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","order": {"_term": "asc"}}},';
         $facetsvalue = trim($regions_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
 
         $body = '{
             "from": '.$from.',
             "size": '.$size.',
-            "facets": {'.$facetsvalue.'},
+            "aggs": {'.$facetsvalue.'},
             "query": {
 
                     "filtered": {
@@ -113,10 +127,11 @@ class RankingSearchController extends \BaseController
                     },
            '.$sort.'
         }';
-        
+      
         $request = array(
-            'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
-            'port' => 8050,
+            //'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+            'url' => "http://localhost:9200/"."fitternity/finder/_search",
+            'port' => 9200,
             'method' => 'POST',
             'postfields' => $body
         );

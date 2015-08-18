@@ -184,7 +184,8 @@ class ElasticsearchController extends \BaseController {
 					"offerings" : {"type" : "string", "index" : "not_analyzed"},
 					"facilities" : {"type" : "string", "index" : "not_analyzed"},
 					"geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
-					"average_rating" : {"type" : "float", "index" : "not_analyzed"}
+					"average_rating" : {"type" : "float", "index" : "not_analyzed"},
+					"locationcluster" : {"type" : "string", "index" : "not_analyzed"}
 				}
 			}
 		}';
@@ -276,8 +277,9 @@ class ElasticsearchController extends \BaseController {
 
 		switch (strtolower($type)) {
 			case "fitternityfinder":
-			$typemapping 	=	$common_findermapping;			
-			$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
+			$typemapping 	=	$common_findermapping;	
+			$typeurl 		=	"http://localhost:9200/"."fitternity/finder/_mapping"; 			
+			//$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
 			//return $typeurl;
 			break;
 
@@ -312,7 +314,7 @@ class ElasticsearchController extends \BaseController {
 
 		$request = array(
 			'url' => $typeurl,
-			'port' => Config::get('elasticsearch.elasticsearch_port'),
+			'port' => 9200,//Config::get('elasticsearch.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => $postfields_data
 			);

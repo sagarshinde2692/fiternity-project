@@ -92,16 +92,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "2.8.17",
+            "version": "2.8.18",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "2f854073d68ee891c1e582015a423938942aa913"
+                "reference": "f8c68d5de3e204320a2a47d0d786a8ee17b1a8ee"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2f854073d68ee891c1e582015a423938942aa913",
-                "reference": "2f854073d68ee891c1e582015a423938942aa913",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/f8c68d5de3e204320a2a47d0d786a8ee17b1a8ee",
+                "reference": "f8c68d5de3e204320a2a47d0d786a8ee17b1a8ee",
                 "shasum": ""
             },
             "require": {
@@ -151,7 +151,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-08-04 21:28:55"
+            "time": "2015-08-12 20:41:18"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -714,16 +714,16 @@
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "2ee5bc7f1a92efecc90da7f6711a53a7be26b5b7"
+                "reference": "97fe7210def29451ec74923b27e552238defd75a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/2ee5bc7f1a92efecc90da7f6711a53a7be26b5b7",
-                "reference": "2ee5bc7f1a92efecc90da7f6711a53a7be26b5b7",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/97fe7210def29451ec74923b27e552238defd75a",
+                "reference": "97fe7210def29451ec74923b27e552238defd75a",
                 "shasum": ""
             },
             "require": {
@@ -743,7 +743,7 @@
                     "GuzzleHttp\\Promise\\": "src/"
                 },
                 "files": [
-                    "src/functions.php"
+                    "src/functions_include.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -761,20 +761,20 @@
             "keywords": [
                 "promise"
             ],
-            "time": "2015-06-24 16:16:25"
+            "time": "2015-08-15 19:37:21"
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "af0e1758de355eb113917ad79c3c0e3604bce4bd"
+                "reference": "4ef919b0cf3b1989523138b60163bbcb7ba1ff7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/af0e1758de355eb113917ad79c3c0e3604bce4bd",
-                "reference": "af0e1758de355eb113917ad79c3c0e3604bce4bd",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/4ef919b0cf3b1989523138b60163bbcb7ba1ff7e",
+                "reference": "4ef919b0cf3b1989523138b60163bbcb7ba1ff7e",
                 "shasum": ""
             },
             "require": {
@@ -798,7 +798,7 @@
                     "GuzzleHttp\\Psr7\\": "src/"
                 },
                 "files": [
-                    "src/functions.php"
+                    "src/functions_include.php"
                 ]
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -819,7 +819,7 @@
                 "stream",
                 "uri"
             ],
-            "time": "2015-06-24 19:55:15"
+            "time": "2015-08-15 19:32:36"
         },
         {
             "name": "hernandev/hipchat-laravel",
@@ -2044,16 +2044,16 @@
         },
         {
             "name": "sly/notification-pusher",
-            "version": "v2.2.10",
+            "version": "v2.2.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ph3nol/NotificationPusher.git",
-                "reference": "b7512131e6ed004e1359029248e26fd209b52585"
+                "reference": "5cfb9d4d90ab9ef2f54490a3dc0ffc558a2e846e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ph3nol/NotificationPusher/zipball/b7512131e6ed004e1359029248e26fd209b52585",
-                "reference": "b7512131e6ed004e1359029248e26fd209b52585",
+                "url": "https://api.github.com/repos/Ph3nol/NotificationPusher/zipball/5cfb9d4d90ab9ef2f54490a3dc0ffc558a2e846e",
+                "reference": "5cfb9d4d90ab9ef2f54490a3dc0ffc558a2e846e",
                 "shasum": ""
             },
             "require": {
@@ -2062,7 +2062,7 @@
                 "symfony/console": "~2.3",
                 "symfony/options-resolver": "~2.3",
                 "symfony/process": "~2.3",
-                "zendframework/zendservice-apple-apns": "1.*",
+                "zendframework/zendservice-apple-apns": "^1.1.0",
                 "zendframework/zendservice-google-gcm": "1.*"
             },
             "require-dev": {
@@ -2104,7 +2104,7 @@
                 "push",
                 "pusher"
             ],
-            "time": "2015-07-09 07:01:36"
+            "time": "2015-08-12 08:35:36"
         },
         {
             "name": "stack/builder",

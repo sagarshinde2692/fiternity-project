@@ -527,12 +527,14 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
+
 			// return "$sndInstantEmailCustomer --- $sndInstantSmsCustomer   ----  $sndInstantEmailFinder   --- $sndInstantSmsFinder ";
 			//#############  TESTING FOR 1 MIN START ##############
 			//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
 			// $sndBefore1MinEmailCustomer			= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 			// $sndBefore1MinSmsCustomer			=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
 			// $sndBefore1MinNotificationCustomer		=	$this->customernotification->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
+
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
@@ -850,11 +852,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'customer_notificationqueuedids' => $customer_notification_messageids,
 				'finder_emailqueuedids' => $finder_email_messageids, 
 				'finder_smsqueuedids' => $finer_sms_messageids
-<<<<<<< HEAD
+
 			);
-=======
-				);
->>>>>>> migration
 
 			$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
 
@@ -871,22 +870,11 @@ class SchedulebooktrialsController extends \BaseController {
 			$trialbooked 	= 	$booktrial->update($queueddata);
 		}
 
-<<<<<<< HEAD
-
-		Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
-		
-
-		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-		return Response::json($resp,200);	
-	}
-
-=======
 		Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
 		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
 		return Response::json($resp,200);	
 	}
->>>>>>> migration
 
 
 	/**
