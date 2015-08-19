@@ -44,11 +44,11 @@ public function getWorkoutsessions(){
 
 	if($date == null){
 		$weekday 				= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));
-		$date 					= 	(intval(date("H")) < 20 ) ? date('d-m-Y',strtotime( time() )) : date('d-m-Y',strtotime( '+1 day', time() )) ;
+		$date 					= 	(intval(date("H")) < 20 ) ? date('d-j-Y',strtotime( time() )) : date('d-j-Y',strtotime( '+1 day', time() )) ;
 
 	}else{
 		$weekday 				= 	(intval(date("H")) < 20 ) ? strtolower(date( "l", strtotime($date) )) : strtolower(date( "l", strtotime('+1 day', strtotime($date) ) ));
-		$date 					= 	(intval(date("H")) < 20 ) ? date('d-m-Y',strtotime($date)) : date('d-m-Y',strtotime( '+1 day', strtotime($date) )) ;
+		$date 					= 	(intval(date("H")) < 20 ) ? date('d-j-Y',strtotime($date)) : date('d-j-Y',strtotime( '+1 day', strtotime($date) )) ;
 	}
 
 	$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';
@@ -256,7 +256,7 @@ public function getWorkoutsessions(){
 		);
 
 	$search_results 	=	es_curl_request($request);
-	$response 			= 	['search_results' => json_decode($search_results,true),  'weekday' => $weekday,  'hour' => date("H"), 'min' => date("i"), 'date' => date("d-m-Y") ];
+	$response 			= 	['search_results' => json_decode($search_results,true),  'weekday' => $weekday,  'hour' => date("H"), 'min' => date("i"), 'date' => date("d-j-Y") ];
 
 	return Response::json($response);
 }
@@ -473,7 +473,7 @@ public function geoLocationService(){
 
 	$date = getdate();
 
-    //$date 					= 	date('d-m-Y',strtotime($date));
+    //$date 					= 	date('d-j-Y',strtotime($date));
 	$weekday 				= 	(intval(date("H")) < 22 ) ? strtolower(date( "l", time() )) : strtolower(date( "l", strtotime('+1 day', time() ) ));
 	$min_time = (intval(date("H")) < 21 ) ? intval(date("H")) + 2 : 0;
 	$max_time = 24;
@@ -638,7 +638,7 @@ public function geoLocationService(){
 		'search_results' => json_decode($search_results,true),
 		'weekday' => $weekday,
 		'hour' => date("H"), 'min' => date("i"),
-		'date' => date("d-m-Y") ];
+		'date' => date("d-j-Y") ];
 
 		return Response::json($response);
 	}
