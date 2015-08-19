@@ -93,7 +93,7 @@ class RankingSearchController extends \BaseController
             },"_cache" : true';
         }
 
-        $budgets_facets = '"budget": {"terms": {"field": "price_range","order":{"_term": "asc"}}},';
+        $budgets_facets = '"budget": {"terms": {"field": "price_range","size":"500","order":{"_term": "asc"}}},';
         $regions_facets = '"loccluster": {
             "terms": {
                 "field": "locationcluster"
@@ -102,6 +102,7 @@ class RankingSearchController extends \BaseController
               "region": {
                 "terms": {
                 "field": "location",
+                "size":"500",
                 "order": {
                   "_term": "asc"
                 }
@@ -110,8 +111,8 @@ class RankingSearchController extends \BaseController
               }
             }
         },';
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","order": {"_term": "asc"}}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","order": {"_term": "asc"}}},';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","size":"500","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","size":"500","order": {"_term": "asc"}}},';
         $facetsvalue = trim($regions_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
 
