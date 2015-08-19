@@ -61,6 +61,7 @@ class FindersController extends \BaseController {
 			->where('slug','=',$tslug)
 			->first();
 
+
 			if($finderarr){
 				
 				$finderarr = $finderarr->toArray();
