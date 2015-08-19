@@ -89,6 +89,9 @@ class EmailSmsApiController extends \BaseController {
 				'preferred_time' => Input::json()->get('preferred_time'),
 				'date' => date("h:i:sa")        
 				);
+
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$emaildata = array(
 			'email_template' => 'emails.callback', 
 			'email_template_data' => $data, 
@@ -145,6 +148,8 @@ class EmailSmsApiController extends \BaseController {
 
 		$this->sendSMS($smsdata);
 		
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$storecapture = Capture::create($data);
 		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
 		return Response::json($resp);		
@@ -180,6 +185,7 @@ class EmailSmsApiController extends \BaseController {
 			);
 		$this->sendSMS($smsdata);
 
+		array_set($data, 'capture_status', 'yet to connect');
 
 		$storecapture = Capture::create($data);
 		$resp = array('status' => 200,'message' => "Book a Trial");
@@ -247,6 +253,8 @@ class EmailSmsApiController extends \BaseController {
 			'location' => Input::json()->get('location'),
 			);
 
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$storecapture = Capture::create($data);
 		$resp = array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
@@ -276,6 +284,8 @@ class EmailSmsApiController extends \BaseController {
 			'phone' => Input::json()->get('phone'),
 			'refund' => 1
 			);
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$storecapture = Capture::create($data);
 		$resp = array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
@@ -301,6 +311,8 @@ class EmailSmsApiController extends \BaseController {
 		$this->sendEmail($emaildata);
 
 		$data 			= Input::json()->all();
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
@@ -332,6 +344,8 @@ class EmailSmsApiController extends \BaseController {
 
 		$this->sendSMS($smsdata);
 		$data 			= Input::json()->all();
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
@@ -363,6 +377,7 @@ class EmailSmsApiController extends \BaseController {
 			'vendor' => implode(",",Input::json()->get('vendor')),
 			'location' => Input::json()->get('location'),
 			);
+		array_set($data, 'capture_status', 'yet to connect');
 
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
@@ -419,6 +434,8 @@ class EmailSmsApiController extends \BaseController {
 
 		$this->sendSMS($smsdata);
 
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
@@ -452,6 +469,7 @@ class EmailSmsApiController extends \BaseController {
 		);
 
 		$this->sendSMS($smsdata);
+		array_set($data, 'capture_status', 'yet to connect');
 
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
@@ -480,6 +498,8 @@ class EmailSmsApiController extends \BaseController {
 			'send_bcc_status' 		=> 	1
 			);
 		$this->sendEmail($emaildata);
+		
+		array_set($data, 'capture_status', 'yet to connect');
 
 		$storecapture 	= Capture::create($data);
 		$resp 			= array('status' => 200,'message' => "Send Mail");
