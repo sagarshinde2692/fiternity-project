@@ -101,7 +101,7 @@ class RankingSearchController extends \BaseController
             },"aggs": {
               "region": {
                 "terms": {
-                "field": "locationtags",
+                "field": "location",
                 "order": {
                   "_term": "asc"
                 }
@@ -127,7 +127,7 @@ class RankingSearchController extends \BaseController
                     },
            '.$sort.'
         }';
-      
+       
         $request = array(
             'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
             //'url' => "http://localhost:9200/"."fitternity/finder/_search",
