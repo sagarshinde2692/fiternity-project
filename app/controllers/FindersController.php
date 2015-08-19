@@ -498,8 +498,8 @@ class FindersController extends \BaseController {
 		];
 
 		$finderobj = Finder::where('_id', intval($data['finder_id']))->first();
-		$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
-		clear_cache($cacheurl);
+		//$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
+		//clear_cache($cacheurl);
 
 		//if exist then update
 		$oldreview = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
