@@ -146,17 +146,19 @@ Route::get('/updatefinder', function() {
 		$finder = Service::findOrFail($data['_id']);
 		$finderratecards = [];
         foreach ($data['ratecards'] as $key => $value) {
-            $ratecard = [
-            'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
-            'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
-            'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
-            'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
-            'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
-            'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
-            'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
-            'direct_payment_enable'=> '0'
-            ];
-            array_push($finderratecards, $ratecard);
+        	if((isset($value['price']) && $value['price'] != '0')){
+	            $ratecard = [
+	            'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
+	            'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
+	            'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
+	            'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
+	            'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
+	            'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
+	            'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
+	            'direct_payment_enable'=> '0'
+	            ];
+	            array_push($finderratecards, $ratecard);
+        	}
         }
 
         array_set($finderdata, 'ratecards', array_values($finderratecards));
@@ -499,6 +501,7 @@ Route::get('getfinderleftside/', array('as' => 'finders.getfinderleftside','uses
 Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton','uses' => 'FindersController@updatefinderlocaiton'));
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
+Route::get('checkbooktrialdaliysummary/{date}', array('as' => 'finders.checkbooktrialdaliysummary','uses' => 'FindersController@checkbooktrialdaliysummary'));
 
 Route::get('reviewlisting/{finderid}/{from?}/{size?}', array('as' => 'finders.reviewlisting','uses' => 'FindersController@reviewListing'));
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));

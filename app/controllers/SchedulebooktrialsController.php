@@ -262,30 +262,22 @@ class SchedulebooktrialsController extends \BaseController {
 
 		// $dobj = new DateTime;print_r($dobj);exit;
 		$currentDateTime 	=	\Carbon\Carbon::now();
-		
 		$item 				=	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
-
 		$finderid 			= 	intval($item['finder_id']);
-
 		$noofdays 			=  	($noofdays == null) ? 1 : $noofdays;
-
 		$serviceschedules 	= 	array();
 
 		for ($j = 0; $j < $noofdays; $j++) {
 
 			$dt 			=	Carbon::createFromFormat('Y-m-d', date("Y-m-d", strtotime($date)) )->addDays(intval($j))->format('d-m-Y'); 
-
 			$timestamp 		= 	strtotime($dt);
-
 			$weekday 		= 	strtolower(date( "l", $timestamp));
 			// echo "$dt -- $weekday <br>";
 
 			$weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
-
 				if($value['weekday'] == $weekday){
 					return $value;
 				}
-
 			}));
 
 			// print_pretty($weekdayslots);
@@ -294,40 +286,27 @@ class SchedulebooktrialsController extends \BaseController {
 			$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday, 'month' => date( "M", $timestamp), 'day' => date( "d", $timestamp)); 
 			$slots = array();
 			if(count($weekdayslots['slots']) > 0){
-
 				foreach ($weekdayslots['slots'] as $slot) {
-
 					$totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
-
 					$goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
-
 					// $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();								
-
 					$slot_status 		= 	($slot['limit'] > $goingcnt) ? "available" : "full";
 
 					array_set($slot, 'totalbookcnt', $totalbookcnt);
-
 					array_set($slot, 'goingcnt', $goingcnt);
-
 					// array_set($slot, 'cancelcnt', $cancelcnt);
-
 					array_set($slot, 'status', $slot_status);
 
 					$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
-					
 					// $scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
 					// $scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
-
 					$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
-
 					array_set($slot, 'passed', $slot_datetime_pass_status); 
-
 					array_push($slots, $slot);
 				}
 			}
 
 			$service['slots'] = $slots;
-			
 			array_push($serviceschedules, $service);
 
 		}
@@ -353,12 +332,7 @@ class SchedulebooktrialsController extends \BaseController {
 	public function bookTrial(){
 
 		// send error message if any thing is missing	
-
 		$data = Input::json()->all();
-
-		if(empty($data['customer_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
-		}
 
 		if(empty($data['customer_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
@@ -430,7 +404,7 @@ class SchedulebooktrialsController extends \BaseController {
 			// return $finder['locationtags'];		
 			// echo  count($finder['locationtags']);
 
-			$customer_id 						=	Input::json()->get('customer_id'); 
+			$customer_id 						=	$this->autoRegisterCustomer($data);
 			$customer_name 						=	Input::json()->get('customer_name'); 
 			$customer_email 					=	Input::json()->get('customer_email'); 
 			$customer_phone 					=	Input::json()->get('customer_phone');
@@ -610,11 +584,6 @@ class SchedulebooktrialsController extends \BaseController {
 
 		$data = Input::json()->all();
 
-		if(!isset($data['customer_id']) || $data['customer_id'] == ''){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
-			// return Response::json($resp,500);	
-		}
-
 		if(!isset($data['customer_name']) || $data['customer_name'] == ''){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
 		}
@@ -689,7 +658,7 @@ class SchedulebooktrialsController extends \BaseController {
 			// return $finder['locationtags'];		
 			// echo  count($finder['locationtags']);
 
-			$customer_id 						=	Input::json()->get('customer_id'); 
+			$customer_id 						=	$this->autoRegisterCustomer($data);
 			$customer_name 						=	Input::json()->get('customer_name'); 
 			$customer_email 					=	Input::json()->get('customer_email'); 
 			$customer_phone 					=	Input::json()->get('customer_phone');
@@ -882,10 +851,6 @@ class SchedulebooktrialsController extends \BaseController {
 
 		$data = Input::json()->all();
 
-		if(empty($data['customer_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
-		}
-
 		if(empty($data['customer_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
 		}
@@ -910,27 +875,13 @@ class SchedulebooktrialsController extends \BaseController {
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - city_id");
 		}
 
-		// if(empty($data['preferred_location'])){
-		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_location");
-		// }
-
-		// if(empty($data['preferred_day'])){
-		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_day");
-		// }
-
-		// if(empty($data['preferred_time'])){
-		// 	return $resp 	= 	array('status' => 500,'message' => "Data Missing - preferred_time");
-		// }
-
-		// exit;
-
 		// return $data	= Input::json()->all();
 		$booktrialid 				=	Booktrial::max('_id') + 1;
 		$finder_id 					= 	(int) Input::json()->get('finder_id');
 		$city_id 					=	(int) Input::json()->get('city_id');
 		$finder_name 				=	Input::json()->get('finder_name');
 
-		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? Input::json()->get('customer_id') : "";
+		$customer_id				= 	$this->autoRegisterCustomer($data);
 		$customer_name				= 	(Input::has('customer_name') && Input::json()->get('customer_name') != '') ? Input::json()->get('customer_name') : "";
 		$customer_email				= 	(Input::has('customer_email') && Input::json()->get('customer_email') != '') ? Input::json()->get('customer_email') : "";
 		$customer_phone				= 	(Input::has('customer_phone') && Input::json()->get('customer_phone') != '') ? Input::json()->get('customer_phone') : "";
@@ -986,12 +937,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function manual2ndBookTrial() {
 
-
 		$data = Input::json()->all();
-
-		if(empty($data['customer_id'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_id");
-		}
 
 		if(empty($data['customer_name'])){
 			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
@@ -1035,7 +981,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_names 				=	Input::json()->get('finder_names');
 		$city_id 					=	(int) Input::json()->get('city_id');
 
-		$customer_id				= 	(Input::has('customer_id') && Input::json()->get('customer_id') != '') ? Input::json()->get('customer_id') : "";
+		$customer_id				= 	$this->autoRegisterCustomer($data);
 		$customer_name				= 	(Input::has('customer_name') && Input::json()->get('customer_name') != '') ? Input::json()->get('customer_name') : "";
 		$customer_email				= 	(Input::has('customer_email') && Input::json()->get('customer_email') != '') ? Input::json()->get('customer_email') : "";
 		$customer_phone				= 	(Input::has('customer_phone') && Input::json()->get('customer_phone') != '') ? Input::json()->get('customer_phone') : "";
@@ -1158,6 +1104,38 @@ class SchedulebooktrialsController extends \BaseController {
 
 		return Response::json($response,200);
 	}
+
+
+
+
+	public function autoRegisterCustomer($data){
+
+		$customerdata 	= 	$data;
+		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
+
+		if(!$customer) {
+			$inserted_id = Customer::max('_id') + 1;
+			$customer = new Customer();
+			$customer->_id = $inserted_id;
+			$customer->name = ucwords($data['customer_name']) ;
+			$customer->email = $data['customer_email'];
+			$customer->picture = "http://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
+			$customer->password = md5(time());
+			if(isset($customer['customer_phone'])){
+				$customer->contact_no = $data['customer_phone'];
+			}
+			$customer->identity = 'email';
+			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
+			$customer->status = "1";
+			$customer->ishulluser = 1;
+			$customer->save();
+
+			return $inserted_id;
+		}  
+
+		return $customer->_id;
+	}
+
 
 
 }

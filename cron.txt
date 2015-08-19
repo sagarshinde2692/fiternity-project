@@ -1,1 +1,2 @@
 * * * * * /var/www/html/fitternityapi/artisan scheduled:run 1>> /dev/null 2>&1
+* * * * * /var/www/fitadmin/artisan scheduled:run 1>> /dev/null 2>&1

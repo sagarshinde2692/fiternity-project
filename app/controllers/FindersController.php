@@ -334,7 +334,7 @@ class FindersController extends \BaseController {
 					'finder_vcc_email'				=> $finder->finder_vcc_email,	
 					'scheduletrials' 				=> $trialdata
 					);
-				// echo "<pre>";print_r($scheduledata); exit;
+				// echo "<pre>";print_r($scheduledata); 
 				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}
@@ -342,6 +342,55 @@ class FindersController extends \BaseController {
 		$resp 	= 	array('status' => 200,'message' => "Email Send");
 		return Response::json($resp);	
 	}
+
+	public function checkbooktrialdaliysummary($date){
+		//give one date before
+		$tommorowDateTime 	=	date('d-m-Y', strtotime($date));
+		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
+
+		foreach ($finders as $finderid => $trials) {
+			$finder = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
+
+			$finderarr = $finder->toArray();
+			if($finder->finder_vcc_email != ""){
+				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
+				// echo "<pre>";print_r($trials); 
+
+				$finder_name_new					= 	(isset($finderarr['title']) && $finderarr['title'] != '') ? $finderarr['title'] : "";
+				$finder_location_new				=	(isset($finderarr['location']['name']) && $finderarr['location']['name'] != '') ? $finderarr['location']['name'] : "";
+				$finder_name_base_locationtags 		= 	(count($finderarr['locationtags']) > 1) ? $finder_name_new : $finder_name_new." ".$finder_location_new;
+
+				$trialdata = array();
+				foreach ($trials as $key => $value) {
+					$trial = array('customer_name' => $value->customer_name, 
+						'schedule_date' => date('d-m-Y', strtotime($value->schedule_date) ), 
+						'schedule_slot' => $value->schedule_slot, 
+						'code' => $value->code, 
+						'service_name' => $value->service_name,
+						'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
+						);
+					array_push($trialdata, $trial);
+				}
+
+				$scheduledata = array('user_name'	=> 'sanjay sahu',
+					'user_email'					=> 'sanjay.id7@gmail',
+					'finder_name'					=> $finder->title,
+					'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
+					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
+					'finder_vcc_email'				=> $finder->finder_vcc_email,	
+					'scheduletrials' 				=> $trialdata
+					);
+				echo "====================================================================";
+				echo "<pre>";print_r($scheduledata); 
+
+				// $this->findermailer->sendBookTrialDaliySummary($scheduledata);
+			}	  
+		}
+
+		$resp 	= 	array('status' => 200,'message' => "Email Send");
+		return Response::json($resp);	
+	}
+
 
 
 	public function migrateratecards(){
