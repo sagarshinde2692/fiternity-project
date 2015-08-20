@@ -278,7 +278,7 @@ class ElasticsearchController extends \BaseController {
 		switch (strtolower($type)) {
 			case "fitternityfinder":
 			$typemapping 	=	$common_findermapping;	
-			$typeurl 		=	"http://localhost:9200/"."fitternity/finder/_mapping"; 			
+			$typeurl 		=	"ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_mapping"; 			
 			//$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
 			//return $typeurl;
 			break;
@@ -314,7 +314,7 @@ class ElasticsearchController extends \BaseController {
 
 		$request = array(
 			'url' => $typeurl,
-			'port' => 9200,//Config::get('elasticsearch.elasticsearch_port'),
+			'port' => 8050,//Config::get('elasticsearch.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => $postfields_data
 			);
