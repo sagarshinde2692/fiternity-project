@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0700defe047b2314a8859e8010328f25",
+    "hash": "af02acd36778bbe1287f2889d2b7df93",
     "packages": [
         {
             "name": "aloha/twilio",
@@ -92,16 +92,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "2.8.16",
+            "version": "2.8.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "a04ae1d37bb685ffbc1b4bc3fa435feb86f063c1"
+                "reference": "2f854073d68ee891c1e582015a423938942aa913"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/a04ae1d37bb685ffbc1b4bc3fa435feb86f063c1",
-                "reference": "a04ae1d37bb685ffbc1b4bc3fa435feb86f063c1",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/2f854073d68ee891c1e582015a423938942aa913",
+                "reference": "2f854073d68ee891c1e582015a423938942aa913",
                 "shasum": ""
             },
             "require": {
@@ -151,7 +151,7 @@
                 "s3",
                 "sdk"
             ],
-            "time": "2015-07-28 23:00:36"
+            "time": "2015-08-04 21:28:55"
         },
         {
             "name": "aws/aws-sdk-php-laravel",
@@ -1138,6 +1138,55 @@
             "time": "2015-02-12 15:38:54"
         },
         {
+            "name": "iron-io/iron_worker",
+            "version": "1.4.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iron-io/iron_worker_php.git",
+                "reference": "3fc6fbe7bce99ffd875ec9e3a7c98dba8a347bcf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iron-io/iron_worker_php/zipball/3fc6fbe7bce99ffd875ec9e3a7c98dba8a347bcf",
+                "reference": "3fc6fbe7bce99ffd875ec9e3a7c98dba8a347bcf",
+                "shasum": ""
+            },
+            "require": {
+                "iron-io/iron_core": "0.*",
+                "php": ">=5.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "IronWorker.class.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander S",
+                    "email": "alexander@iron.io",
+                    "homepage": "http://iron.io",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Client library for IronWorker (multi-language worker platform that runs tasks in the background, in parallel, and at scale.)",
+            "homepage": "http://github.com/iron-io/iron_worker_php",
+            "keywords": [
+                "background",
+                "delayed_job",
+                "iron",
+                "iron_worker",
+                "job",
+                "task",
+                "worker"
+            ],
+            "time": "2015-02-12 22:52:31"
+        },
+        {
             "name": "jenssegers/mongodb",
             "version": "v2.0.5",
             "source": {
@@ -1406,16 +1455,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "1.15.0",
+            "version": "1.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "dc5150cc608f2334c72c3b6a553ec9668a4156b0"
+                "reference": "c0c0b4bee3aabce7182876b0d912ef2595563db7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/dc5150cc608f2334c72c3b6a553ec9668a4156b0",
-                "reference": "dc5150cc608f2334c72c3b6a553ec9668a4156b0",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/c0c0b4bee3aabce7182876b0d912ef2595563db7",
+                "reference": "c0c0b4bee3aabce7182876b0d912ef2595563db7",
                 "shasum": ""
             },
             "require": {
@@ -1452,7 +1501,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.15.x-dev"
+                    "dev-master": "1.16.x-dev"
                 }
             },
             "autoload": {
@@ -1478,7 +1527,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2015-07-12 13:54:09"
+            "time": "2015-08-09 17:44:44"
         },
         {
             "name": "mtdowling/cron-expression",
@@ -1961,17 +2010,17 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/shift31/laravel-elasticsearch.git",
-                "reference": "7a4415db4cf4aae14b8a4e1a4f5ec514c4f8449c"
+                "reference": "5341998fc1d87a21ee44e44482d07de297b1b515"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/shift31/laravel-elasticsearch/zipball/7a4415db4cf4aae14b8a4e1a4f5ec514c4f8449c",
-                "reference": "7a4415db4cf4aae14b8a4e1a4f5ec514c4f8449c",
+                "url": "https://api.github.com/repos/shift31/laravel-elasticsearch/zipball/5341998fc1d87a21ee44e44482d07de297b1b515",
+                "reference": "5341998fc1d87a21ee44e44482d07de297b1b515",
                 "shasum": ""
             },
             "require": {
-                "elasticsearch/elasticsearch": "~1.0",
-                "illuminate/support": "~4",
+                "elasticsearch/elasticsearch": "~1.3",
+                "illuminate/support": "~4|~5",
                 "php": ">=5.3.0"
             },
             "type": "library",
@@ -1990,8 +2039,8 @@
                     "email": "code@shift31.com"
                 }
             ],
-            "description": "A Laravel 4 Service Provider for the Elasticsearch API client",
-            "time": "2014-03-12 01:00:35"
+            "description": "A Laravel Service Provider for the Elasticsearch API client",
+            "time": "2015-08-10 02:30:03"
         },
         {
             "name": "sly/notification-pusher",
@@ -2434,7 +2483,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/EventDispatcher.git",
@@ -2492,7 +2541,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Filesystem.git",
@@ -2715,7 +2764,7 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v2.7.2",
+            "version": "v2.7.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/OptionsResolver.git",
@@ -3142,20 +3191,20 @@
         },
         {
             "name": "zendframework/zend-http",
-            "version": "2.5.1",
+            "version": "2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-http.git",
-                "reference": "6cc6dee9a27fc07e0167d8779ab2258747108ed5"
+                "reference": "abe2e56464cd467214489672f103669957047548"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-http/zipball/6cc6dee9a27fc07e0167d8779ab2258747108ed5",
-                "reference": "6cc6dee9a27fc07e0167d8779ab2258747108ed5",
+                "url": "https://api.github.com/repos/zendframework/zend-http/zipball/abe2e56464cd467214489672f103669957047548",
+                "reference": "abe2e56464cd467214489672f103669957047548",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.23",
+                "php": ">=5.5",
                 "zendframework/zend-loader": "~2.5",
                 "zendframework/zend-stdlib": "~2.5",
                 "zendframework/zend-uri": "~2.5",
@@ -3188,24 +3237,24 @@
                 "http",
                 "zf2"
             ],
-            "time": "2015-06-03 15:32:01"
+            "time": "2015-08-05 15:47:13"
         },
         {
             "name": "zendframework/zend-json",
-            "version": "2.5.1",
+            "version": "2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zend-json.git",
-                "reference": "c74eaf17d2dd37dc1e964be8dfde05706a821ebc"
+                "reference": "4a3add6505fd8618728239d8ce35f182dfbdac02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zendframework/zend-json/zipball/c74eaf17d2dd37dc1e964be8dfde05706a821ebc",
-                "reference": "c74eaf17d2dd37dc1e964be8dfde05706a821ebc",
+                "url": "https://api.github.com/repos/zendframework/zend-json/zipball/4a3add6505fd8618728239d8ce35f182dfbdac02",
+                "reference": "4a3add6505fd8618728239d8ce35f182dfbdac02",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.23",
+                "php": ">=5.5",
                 "zendframework/zend-stdlib": "~2.5"
             },
             "require-dev": {
@@ -3242,7 +3291,7 @@
                 "json",
                 "zf2"
             ],
-            "time": "2015-06-03 15:32:01"
+            "time": "2015-08-05 14:45:17"
         },
         {
             "name": "zendframework/zend-loader",

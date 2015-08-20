@@ -19,7 +19,10 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		$label = 'BookTrial-C';
+		$priority = 1;
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority);
 	}
 
 
@@ -37,7 +40,10 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'bookTrialReminderBefore12Hour Reminder Book a Trial'
 			);
 		// return $this->sendTo($email_template, $template_data, $message_data, $delay);
-		$this->sendTo($email_template, $template_data, $message_data);
+
+		$label = 'TrialRmdBefore1Min-C';
+		
+		$this->sendToWorker($email_template, $template_data, $message_data, $label);
 
 		$email_template = 	'emails.customer.booktrialreminderafter2hour';
 		$template_data 	= 	$data;
@@ -49,7 +55,10 @@ Class CustomerMailer extends Mailer {
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'bookTrialReminderAfter2Hour Reminder Book a Trial'
 			);
-		return $this->sendTo($email_template, $template_data, $message_data);
+
+		$label = 'TrialRmdAfter2Hr-C';
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 	}
 
 
@@ -65,7 +74,11 @@ Class CustomerMailer extends Mailer {
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity'
 			);
-		return $this->sendTo($email_template, $template_data, $message_data, $delay);
+
+		$label = 'TrialRmdBefore12Hr-C';
+		$priority = 0;
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority, $delay);
 	}
 
 
@@ -81,7 +94,11 @@ Class CustomerMailer extends Mailer {
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity'
 			);
-		return $this->sendTo($email_template, $template_data, $message_data, $delay);
+
+		$label = 'TrialRmdAfter2Hr-C';
+		$priority = 0;
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority, $delay);
 	}
 
 	public function manualBookTrial ($data){
@@ -99,7 +116,10 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Request For Manual Book a Trial'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		$label = 'ManualBookTrial-C';
+		$priority = 1;
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority);
 	}
 
 	public function manual2ndBookTrial ($data){
@@ -117,7 +137,10 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Request For Manual Second Book a Trial'
 			);
 
-		return $this->sendTo($email_template, $template_data, $message_data);
+		$label = 'Manual2ndBookTrial-C';
+		$priority = 1;
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority);
 	}
 
 
@@ -142,12 +165,17 @@ Class CustomerMailer extends Mailer {
 			);
 
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		$label = 'FitcardCod-C';
+		$priority = 1;
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 		
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
+
+		$label = 'FitcardCod-Us';
 		
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 
@@ -166,12 +194,17 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Welcome mail - Welcome to the FitCard clan!'
 			);
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		$label = 'FitcardPaymentGate-C';
+		$priority = 1;
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		$label = 'FitcardPaymentGate-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 
@@ -203,13 +236,18 @@ Class CustomerMailer extends Mailer {
 			);
 
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		$label = 'SendCodOrder-C';
+		$priority = 1;
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 		
 		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 		
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		$label = 'SendCodOrder-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 
@@ -232,13 +270,18 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendTo($email_template_customer, $template_data, $message_data);
+		$label = 'SendPgOrder-C';
+		$priority = 1;
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 
 		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		$label = 'SendPgOrder-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 
@@ -257,13 +300,18 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuySrvFitmania-C';
+		$priority = 1;
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
+		$label = 'BuySrvFitmania-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 	public function buyServiceThroughFitmaniaResend1 ($data){
@@ -281,13 +329,19 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuySrvFitMResend1-C';
+		
+		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		// array_set($message_data, 'user_name', 'Fitternity');
 
-		// return $this->sendTo($email_template_mailus, $template_data, $message_data);
+		/*$label = 'BuyArsenalMembership-Us';
+		$priority = 0;
+		$delay = 0;
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label, $priority, $delay);*/
 	}
 
 	public function buyServiceMembershipThroughFitmania ($data){
@@ -305,13 +359,17 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuySrvMbrFitM-C';
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
+		$label = 'BuySrvMbrFitM-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 	public function buyServiceHealthyTiffinThroughFitmania ($data){
@@ -329,13 +387,17 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuySrvHltTifFitM-C';
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
+		$label = 'BuySrvHltTifFitM-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 
@@ -352,7 +414,10 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Your Password Reset Request for Fitternity'
 			);
 
-		return $this->sendEmail($email_template, $template_data, $message_data);
+		$label = 'ForgotPwd-C';
+		$priority = 1;
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority);
 	}
 
 	public function forgotPasswordApp ($data){
@@ -368,7 +433,10 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Your Password Reset Request for Fitternity'
 			);
 
-		return $this->sendEmail($email_template, $template_data, $message_data);
+		$label = 'ForgotPwdApp-C';
+		$priority = 1;
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority);
 	}
 
 	public function register($data){
@@ -384,7 +452,9 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => 'Welcome to Fitternity'
 			);
 
-		return $this->sendEmail($email_template, $template_data, $message_data);
+		$label = 'Register-C';
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 	}
 
 
@@ -403,13 +473,17 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		$this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'BuyArsenalMbrShip-C';
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
 		array_set($message_data, 'user_email', 'mailus@fitternity.com');
 		array_set($message_data, 'user_name', 'Fitternity');
 
-		return $this->sendEmail($email_template_mailus, $template_data, $message_data);
+		$label = 'BuyArsenalMbrShip-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
 
 
@@ -427,7 +501,9 @@ Class CustomerMailer extends Mailer {
 			'email_subject' => $subject
 			);
 
-		return $this->sendEmail($email_template_customer, $template_data, $message_data);
+		$label = 'ResendFitmania-C';
+		
+		return  $this->sendToWorker($email_template_customer, $template_data, $message_data, $label);
 
 	}
 

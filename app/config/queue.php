@@ -59,6 +59,15 @@ return array(
 			'encrypt' => true,
 		),
 
+		'ironworker' => array(
+			'host'    => 'worker-aws-us-east-1.iron.io',
+			'driver'  => 'iron',
+			'token'   => 'ZJOg-tADi_5BBKtCvAcnj_USA4U',
+			'project' => '55d5c0d498ffa7000600003c',
+			'queue'   => 'app',
+			'encrypt' => true,
+		),
+
 		'redis' => array(
 			'driver' => 'redis',
 			'queue'  => 'default',

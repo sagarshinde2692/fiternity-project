@@ -1,6 +1,6 @@
 <?PHP namespace App\Mailers;
 
-use Mail, Queue;
+use Mail, Queue, IronWorker, Config;
 
 abstract Class Mailer {
 
@@ -101,6 +101,26 @@ abstract Class Mailer {
 		return time();
 	}
 
+
+	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		$worker = new IronWorker(array(
+		    'token' => Config::get('queue.connections.ironworker.token'),
+    		'project_id' => Config::get('queue.connections.ironworker.project')
+		));
+		
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
 	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
+		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+		$queue_name = 'MailerApi';
+
+		$messageid = $worker->postTask($queue_name,$payload,$options);
+
+		return $messageid;
+
+	}
 
 }
