@@ -269,7 +269,7 @@ class CustomerController extends \BaseController {
 			//send welcome email to payment gateway customer
 
 			if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
-				$orderdata 	=	$order->update(['send_email_status'=>0]);
+				$orderdata 	=	$order->update(['email_not_sent'=>'captureOrderPayment']);
 			}else{
 				$sndWelcomeMail	= 	$this->customermailer->fitcardPaymentGateWelcomeMail($order->toArray());
 			}
