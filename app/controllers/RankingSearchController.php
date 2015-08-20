@@ -111,17 +111,11 @@ class RankingSearchController extends \BaseController
               }
             }
         },';
-<<<<<<< HEAD
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","size":"500","order": {"_term": "asc"}}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","size":"500","order": {"_term": "asc"}}},';
-        $facetsvalue = trim($regions_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
-=======
+
         $location_facets = '"locations": {"terms": {"field": "locationtags","size":"500","order": {"_term": "asc"}}},';
         $offerings_facets = '"offerings": {"terms": {"field": "offerings","size":"500","order": {"_term": "asc"}}},';
         $facilities_facets = '"facilities": {"terms": {"field": "facilities","size":"500","order": {"_term": "asc"}}},';
         $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
->>>>>>> RankGenerator
-
 
         $body = '{
             "from": '.$from.',
@@ -135,11 +129,8 @@ class RankingSearchController extends \BaseController
                     },
            '.$sort.'
         }';
-<<<<<<< HEAD
-       
-=======
        // return $body;
->>>>>>> RankGenerator
+
         $request = array(
             'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
             //'url' => "http://localhost:9200/"."fitternity/finder/_search",
