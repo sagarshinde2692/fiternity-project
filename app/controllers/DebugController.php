@@ -1,52 +1,56 @@
 <?PHP
 
 /** 
- * ControllerName : DebugController.
+ * ControllerName : OrderControllerDebugController.
  * Maintains a list of functions used for DebugController.
  *
- * @author Sanjay Sahu <sanjay.id7@gmail.com>
+ * @author Mahesh Jadhav
  */
 
 class DebugController extends \BaseController {
 
-	protected $worker;
-
 	public function __construct() {
 
-        $this->worker = new IronWorker(array(
-		    'token' => Config::get('queue.connections.iron.token'),
-    		'project_id' => Config::get('queue.connections.iron.project')
-		));
     }
 
-    
+	public function invalidFinderStats(){
 
-	//capture order status for customer
-	public function ironWorker(){
+		$finder = Finder::active()->where('finder_vcc_email', 'exists', true)->where("finder_vcc_email","!=","")->orderBy('_id', 'asc')->get(array('_id','slug','finder_vcc_email'));
+		$array = [];
+		foreach ($finder as $key => $value) {
 
-		$taskid = Queue::pushRaw("This is Hello World payload :)", 'SampleWorkerClass');
+			$finderarray = [];
+			$finderarray['id'] = $value->_id;
+			$finderarray['slug'] = $value->slug;
+			$finderarray['finder_vcc_email'] = $value->finder_vcc_email;
+			$finderarray['finder_type'] = ($value->finder_type == 0) ? 'free' : 'paid';
 
-		echo"<pre>";print_r($taskid);exit;
+			$explode = explode(',', $value->finder_vcc_email);
+			$valid = [];
+			$invalid = [];
+			foreach ($explode as $email) {
+				if (filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
+					array_push($invalid, $email);
+				}else{
+					array_push($valid, $email);
+				}
+			}
 
-		$this->worker->postMessages('ExampleLaraWorker', array(
-		        return $crypt->encrypt("This is Hello World payload_1"),
-		        return $crypt->encrypt("This is Hello World payload_2")
-		    )
-		);
+			$finderarray['valid'] = $valid;
+			$finderarray['invalid'] = $invalid;
 
-		//$taskID = $this->worker->postTask('HelloWorld');
-		//echo"<pre>";print_r($taskID);exit;
+			$array[] = $finderarray;
+		}
 
-		/*Queue::push(function fire($job){
+		foreach ($array as $key => $value) {
 
-			File::append(app.path().'/ironmq.txt',time().PHP_EOL);
-
-			$job->delete();
-
-		});*/
+			if(count($value['invalid']) > 0)
+			{
+				echo"<pre>";print_r($value);
+			}
+			
+		}
 		
 	}
-
-	
 
 }

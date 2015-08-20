@@ -399,7 +399,7 @@ Route::get('/findercsv', function() {
 
 });
 
-Route::get('/ironworker',  array('as' => 'debug.ironworker','uses' => 'DebugController@ironWorker'));
+Route::get('/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
 
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
