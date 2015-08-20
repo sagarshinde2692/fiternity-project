@@ -157,35 +157,7 @@ class HomeController extends BaseController {
 	}
 
 
-	//Get all landing page finder base on location cluster
-	public function getLandingPageFinders(){
-
-
-		$finders 				=	[];
-		$from 					=	(Input::json()->get('from')) ? intval(Input::json()->get('from')) : 0;
-		$size 					=	(Input::json()->get('size')) ? intval(Input::json()->get('size')) : 10;
-		$category 				=	(Input::json()->get('category')) ? intval(Input::json()->get('category')) : '';		
-		$locationcluster 		=	(Input::json()->get('locationcluster')) ? intval(Input::json()->get('locationcluster')) : '';	
-
-
-		$query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-					->with(array('location'=>function($query){$query->select('_id','name','slug');}));
-
-		if($locationcluster != ''){ 
-			$locations 			= 	Location::active()->where('locationcluster_id', intval($locationcluster) )->get(['_id']);
-			$locationids 		= 	array_map('intval', array_pluck($locations , '_id') );
-			$query->whereIn('location_id', $locationids); 
-		}
-
-		if($category != ''){ 
-			$query->where('category_id', $category); 
-		}	
 	
-
-		$finders 		= 	$query->whereIn('commercial_type', array(1,2,3))->take($size)->skip($from)->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact'));
-
-		return Response::json($finders);
-	}
 
 
 	public function landingzumba(){
@@ -440,5 +412,22 @@ class HomeController extends BaseController {
 	}
 
 
+
+	//Get all landing page finder base on location cluster
+	public function getLandingPageFinders($locationclusterid){
+
+		$collection 			= 	Landingpage::active()->where('locationcluster_id', intval($locationclusterid) )->first(array());
+		$finder_ids 	= 	array_map('intval', explode(",", $collection['finder_ids']));
+
+		$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->whereIn('_id', $finder_ids)
+		->remember(Config::get('app.cachetime'))
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
+		->toArray();
+
+
+		return Response::json($collection_finders);
+	}
 
 }																																																																																																																																																																																																																																																																										

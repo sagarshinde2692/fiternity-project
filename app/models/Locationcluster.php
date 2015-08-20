@@ -37,4 +37,8 @@ class Locationcluster extends \Basemodel {
 		return $this->belongsTo('City');
 	}	
 
+	public function landingpages(){
+		return $this->hasMany('Landingpage');
+	}
+
 }
