@@ -56,7 +56,7 @@ class RankingController extends \BaseController {
     public function IndexRankMongo2Elastic(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-
+        $citykist      =    array(1,2,3);
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
                             ->with(array('city'=>function($query){$query->select('name');}))
                             ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -67,17 +67,26 @@ class RankingController extends \BaseController {
                             ->with('facilities')                            
                             ->active()
                             ->orderBy('_id')
-                            //->whereIn('_id', $finderids1)
-                            ->take(4000)->skip(2000)
+                            ->whereIn('city_id', $citykist)
+                            ->take(2000)->skip(4700)
+                            ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
-                            ->get();
-                                   
+                            ->get();           
         foreach ($items as $finderdocument) {
            
                 $data = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);
-                $clusterid  = $data['location']['locationcluster_id'];                
+                $clusterid = '';
+                if(!isset($data['location']['locationcluster_id']))
+                {
+                     continue;
+                }
+                else
+                {
+                    $clusterid  = $data['location']['locationcluster_id'];
+                }
+                                
                 $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
                 $locationcluster->toArray();                            
                 $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name']);
@@ -88,10 +97,10 @@ class RankingController extends \BaseController {
                 $postfields_data = json_encode($postdata); 
                 //return $postfields_data;               
                 //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
-                //$posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
-                $posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
+                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
+                //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
-                $request = array('url' => $posturl, 'port' => 9200, 'method' => 'PUT', 'postfields' => $postfields_data );
+                $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
                 echo "<br>$posturl    ---  ".es_curl_request($request);
         }
 
@@ -152,8 +161,8 @@ class RankingController extends \BaseController {
         $orders  =  $finderDocument['orders30days'];
         $popularity = intval($finderDocument['popularity']);
 
-        $popularityScore  =  (($this->normalizingFunction($this->reviews_min, $this->reviews_max, $reviews)) + ($this->normalizingFunction($this->trials_min, $this->trials_max, $trials))
-                                + 2*($this->normalizingFunction($this->orders_min, $this->orders_max, $orders)) + 2*($this->normalizingFunction($this->popularity_min, $this->popularity_max, $popularity)))/6;
+        $popularityScore  =  (($this->normalizingFunction($this->reviews_min, $this->reviews_max, intval($reviews))) + ($this->normalizingFunction($this->trials_min, $this->trials_max, intval($trials)))
+                                + 2*($this->normalizingFunction($this->orders_min, $this->orders_max, intval($orders))) + 2*($this->normalizingFunction($this->popularity_min, $this->popularity_max, intval($popularity))))/6;
         return $popularityScore;
     }
     //tested
@@ -168,7 +177,7 @@ class RankingController extends \BaseController {
         if($Emax == 0 || $Emax==$Emin){
             return 0;
         }
-
+        
         $score  =  ($Eval-$Emin)/($Emax-$Emin);
         return $score;
     }

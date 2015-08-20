@@ -111,10 +111,11 @@ class RankingSearchController extends \BaseController
               }
             }
         },';
+
+        $location_facets = '"locations": {"terms": {"field": "locationtags","size":"500","order": {"_term": "asc"}}},';
         $offerings_facets = '"offerings": {"terms": {"field": "offerings","size":"500","order": {"_term": "asc"}}},';
         $facilities_facets = '"facilities": {"terms": {"field": "facilities","size":"500","order": {"_term": "asc"}}},';
-        $facetsvalue = trim($regions_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
-
+        $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
         $body = '{
             "from": '.$from.',
@@ -128,7 +129,8 @@ class RankingSearchController extends \BaseController
                     },
            '.$sort.'
         }';
-       
+       // return $body;
+
         $request = array(
             'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
             //'url' => "http://localhost:9200/"."fitternity/finder/_search",
@@ -195,9 +197,23 @@ class RankingSearchController extends \BaseController
                                     ->orderBy('ordering')
                                     ->get(array('_id','name','offering_header','slug','status','offerings'));
         } 
-            
-        return Response::json($categorytag_offerings);
+        
+        $meta_title = $meta_description = $meta_keywords = '';
+        if($category != ''){
+            $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
+            $meta_title         = $findercategory['meta']['title'];
+            $meta_description   = $findercategory['meta']['description'];
+            $meta_keywords      = $findercategory['meta']['keywords'];
+        }                                 
+        $resp  =    array(
+            'meta_title' => $meta_title,
+            'meta_description' => $meta_description,
+            'meta_keywords' => $meta_keywords,                                        
+            'catoff' => $categorytag_offerings
+            );
+        //return Response::json($search_results); exit;
+        return Response::json($resp);
+        
 
     }
 }
-
