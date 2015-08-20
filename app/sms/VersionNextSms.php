@@ -114,8 +114,8 @@ abstract Class VersionNextSms {
     public function sendToWorker($to, $message, $label = 'label', $priority = 0, $delay = 0){
 
         $worker = new IronWorker(array(
-            'token' => Config::get('queue.connections.iron.token'),
-            'project_id' => Config::get('queue.connections.iron.project')
+            'token' => Config::get('queue.connections.ironworker.token'),
+            'project_id' => Config::get('queue.connections.ironworker.project')
         ));
         
         if($delay !== 0){
@@ -124,7 +124,7 @@ abstract Class VersionNextSms {
     
         $payload = array('to'=>$to,'message'=>$message);
         $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-        $queue_name = 'Sms';
+        $queue_name = 'SmsApi';
 
         $messageid = $worker->postTask($queue_name,$payload,$options);
 

@@ -141,8 +141,8 @@
         <tr>
           <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
             <p>Hey {{  ucwords($customer_name) }}, <br>
-            <p style="padding-top:8px"> Basis our request - we have cancelled the following session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.  If you would like to book another session, {{ link_to('http://www.fitternity.com/', Click Here ) }} here or call us on +91 9222221131 for assistance:
- </p>  
+            <p style="padding-top:8px"> Basis our request - we have cancelled the following session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.  If you would like to book another session, <a href="http://www.fitternity.com/"> Click Here </a> here or call us on +91 9222221131 for assistance:
+ </p>
               <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
               
           </td>
