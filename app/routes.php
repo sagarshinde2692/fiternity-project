@@ -122,6 +122,7 @@ Route::get('/capturedata', function() {
 
 Route::get('/updatefinder', function() { 
 
+	
 
 
 	// $items = Finder::active()->take(3000)->skip(0)->get();
@@ -421,6 +422,8 @@ Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
+
+Route::post('getlandingpagefinders/', 'HomeController@getLandingPageFinders');
 
 
 
