@@ -451,19 +451,18 @@ class SchedulebooktrialsController extends \BaseController {
 
 			//$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
 			
+			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
 				$explode = explode(',', $finder['finder_vcc_email']);
 				$valid_finder_email = [];
 				foreach ($explode as $email) {
-					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === true){
+					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
 						$valid_finder_email[] = $email;
 					}
 				}
 				if(!empty($valid_finder_email)){
 					$finder_vcc_email = implode(",", $valid_finder_email);
 				} 
-			}else{
-				$finder_vcc_email = "";
 			}
 
 			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
@@ -728,19 +727,18 @@ class SchedulebooktrialsController extends \BaseController {
 
 			//$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
 
+			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
 				$explode = explode(',', $finder['finder_vcc_email']);
 				$valid_finder_email = [];
 				foreach ($explode as $email) {
-					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === true){
+					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
 						$valid_finder_email[] = $email;
 					}
 				}
 				if(!empty($valid_finder_email)){
 					$finder_vcc_email = implode(",", $valid_finder_email);
 				} 
-			}else{
-				$finder_vcc_email = "";
 			}
 
 			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";

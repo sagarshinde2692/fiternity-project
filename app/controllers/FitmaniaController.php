@@ -490,20 +490,21 @@ class FitmaniaController extends \BaseController {
 	public function getFinderEmail($orderData){
 
 		if(isset($orderData['finder_vcc_email']) && $orderData['finder_vcc_email'] != ""){
+
+			$finder_vcc_email = "";
 			$explode = explode(',', $orderData['finder_vcc_email']);
 			$valid_finder_email = [];
 			foreach ($explode as $email) {
-				if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === true){
+				if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
 					$valid_finder_email[] = $email;
 				}
 			}
 			if(!empty($valid_finder_email)){
-				$orderData['finder_vcc_email'] = implode(",", $valid_finder_email);
-			}else{
-				$orderData['finder_vcc_email'] = "";
+				$finder_vcc_email = implode(",", $valid_finder_email);
 			}
-		}else{
-			$orderData['finder_vcc_email'] = "";
+
+			$orderData['finder_vcc_email'] = $finder_vcc_email;
+			
 		}
 
 		return $orderData;
