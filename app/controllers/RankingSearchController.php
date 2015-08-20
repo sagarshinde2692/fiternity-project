@@ -215,4 +215,11 @@ class RankingSearchController extends \BaseController
         
 
     }
+
+    public function getcategories(){
+        $city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
+        $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+
+        return Response::json($categorytags);        
+    }
 }

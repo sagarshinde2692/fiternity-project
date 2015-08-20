@@ -563,6 +563,7 @@ Route::post('/getRankedFinder', 'RankingSearchController@getRankedFinderResults'
 Route::post('/getFinderCategory', 'RankingController@getFinderCategory');
 Route::post('/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
 Route::post('/getCategoryOfferings', 'RankingSearchController@CategoryAmenities');
+Route::post('/getcategories', 'RankingSearchController@getcategories');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
