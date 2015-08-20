@@ -146,27 +146,27 @@ class CustomerController extends \BaseController {
 		$data				=	Input::json()->all();
 
 		if(empty($data['customer_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_name");
 		}
 
 		if(empty($data['customer_email'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_email");
 		}
 
 		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-			return $resp 	= 	array('status' => 500,'message' => "Invalid Email Id");
+			return $resp 	= 	array('status' => 401,'message' => "Invalid Email Id");
 		} 
 		
 		if(empty($data['customer_identity'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_identity");
 		}
 
 		if(empty($data['customer_phone'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_phone");
 		}
 
 		if(empty($data['customer_location'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_location");
 		}
 
 		$orderid 			=	Order::max('_id') + 1;
@@ -202,23 +202,27 @@ class CustomerController extends \BaseController {
 		$data			=	Input::json()->all();
 
 		if(empty($data['customer_name'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_name");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_name");
 		}
 
 		if(empty($data['customer_email'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_email");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_email");
+		}
+
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			return $resp 	= 	array('status' => 401,'message' => "Invalid Email Id");
 		}
 
 		if(empty($data['customer_phone'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_phone");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_phone");
 		}
 
 		if(empty($data['customer_identity'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_identity");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_identity");
 		}
 
 		if(empty($data['customer_location'])){
-			return $resp 	= 	array('status' => 500,'message' => "Data Missing - customer_location");
+			return $resp 	= 	array('status' => 401,'message' => "Data Missing - customer_location");
 		}
 
 		$orderid 			=	Order::max('_id') + 1;
@@ -263,8 +267,13 @@ class CustomerController extends \BaseController {
 			$orderdata 	=	$order->update($data);
 			
 			//send welcome email to payment gateway customer
-			$sndWelcomeMail	= 	$this->customermailer->fitcardPaymentGateWelcomeMail($order->toArray());
 
+			if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
+				$orderdata 	=	$order->update(['email_not_sent'=>'captureOrderPayment']);
+			}else{
+				$sndWelcomeMail	= 	$this->customermailer->fitcardPaymentGateWelcomeMail($order->toArray());
+			}
+		
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
 			Log::info('Customer Purchase : '.json_encode(array('purchase_details' => $order)));

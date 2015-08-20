@@ -262,6 +262,10 @@ class EmailSmsApiController extends \BaseController {
 
 	public function refundfivefitnesscustomer(){
 		
+		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
+			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+		}
+
 		$emaildata = array(
 			'email_template' => 'emails.finder.refund', 
 			'email_template_data' => $data = array(
@@ -320,6 +324,10 @@ class EmailSmsApiController extends \BaseController {
 
 	public function landingpageregister(){
 		
+		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
+			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+		}
+
 		$emaildata = array(
 			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
 			'email_template_data' => $data = array(
@@ -353,6 +361,10 @@ class EmailSmsApiController extends \BaseController {
 
 	public function landingconversion(){
 		
+		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
+			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+		}
+
 		$emaildata = array(
 			'email_template' => 'emails.finder.fivefitness', 
 			'email_template_data' => $data = array(
@@ -385,6 +397,11 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 	public function registerme(){
+
+		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
+			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+		}
+
 		$emaildata = array(
 			'email_template' => 'emails.register.register',
 			'email_template_data' => $data = array(
@@ -404,6 +421,10 @@ class EmailSmsApiController extends \BaseController {
 
 	public function offeravailed(){
 		
+		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
+			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+		}
+
 		$data = array(
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
@@ -480,6 +501,10 @@ class EmailSmsApiController extends \BaseController {
 
 	public function not_able_to_find(){
 		
+		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
+			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+		}
+
 		$data = array(				
 				'name' => Input::json()->get('name'), 
 				'email' => Input::json()->get('email'), 
