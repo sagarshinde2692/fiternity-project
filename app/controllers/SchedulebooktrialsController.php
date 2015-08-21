@@ -451,11 +451,13 @@ class SchedulebooktrialsController extends \BaseController {
 			$code								=	$booktrialid.str_random(8);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+			$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
 			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
 			$booktrialdata = array(
 				'booktrialid'					=>		$booktrialid,
 				'premium_session' 				=>		$premium_session, 
+				'reminder_need_status' 			=>		$reminder_need_status, 
 
 				'customer_id' 					=>		$customer_id, 
 				'customer_name' 				=>		$customer_name, 
@@ -725,12 +727,14 @@ class SchedulebooktrialsController extends \BaseController {
 			$code								=	$booktrialid.str_random(8);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+			$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
 			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
 
 			$booktrialdata = array(
 				'booktrialid'					=>		intval($booktrialid),
 				'premium_session' 				=>		$premium_session, 
+				'reminder_need_status' 			=>		$reminder_need_status, 
 
 				'customer_id' 					=>		$customer_id, 
 				'customer_name' 				=>		$customer_name, 
