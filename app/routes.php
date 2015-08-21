@@ -58,14 +58,32 @@ Route::get('/testsms', function() {
 
 Route::get('/capturedata', function() { 
 
-	$headers = [
-	'Content-type'        => 'application/csv',   
-	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-	'Content-type'        => 'text/csv',   
-	'Content-Disposition' => 'attachment; filename=finderlist2.csv',   
-	'Expires'             => '0',   
-	'Pragma'              => 'public'
-	];
+
+	$items = Service::active()->where('trialschedules', 'size', 0)->get();
+	$fp = fopen('serviceslive1.csv', 'w');
+	$header = ["ID", "SERVICENAME", "FINDERID", "FINDERNAME", "COMMERCIALTYPE" ];
+	fputcsv($fp, $header);
+
+	foreach ($items as $value) {  
+		$finder = Finder::findOrFail(intval($value->finder_id));
+
+		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
+		$commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
+
+		$fields = [$value->_id,
+				$value->name,
+				$value->finder_id,
+				$finder->slug,
+				$commercial_type
+		];
+		// return $fields;
+		fputcsv($fp, $fields);
+		// exit();
+	}
+
+	fclose($fp);
+	return "done";
+	return Response::make(rtrim($output, "\n"), 200, $headers);
 
 	// $items = Booktrial::take(5)->skip(0)->get();
 	// $items = Finder::active()->get();
