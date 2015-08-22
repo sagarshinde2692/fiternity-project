@@ -1,7 +1,7 @@
 <?php
 return array(
     'params' => array(
-        'stack' => 'php-5.4',
+        'stack' => 'php-5.5',
         'max_concurrency' => 100,
         'set_env' => array(
             'my_laravel_env' => 'value1',
