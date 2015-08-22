@@ -420,7 +420,8 @@ Route::get('/findercsv', function() {
 
 });
 
-Route::get('/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
+Route::get('/debug/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
+Route::get('/debug/sendbooktrialdaliysummary',  array('as' => 'debug.sendbooktrialdaliysummary','uses' => 'DebugController@sendbooktrialdaliysummary'));
 
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################

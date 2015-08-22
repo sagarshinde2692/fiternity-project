@@ -214,12 +214,12 @@ img[class="image-banner"]{width: 280px!important;height:68px!important;}
 
                                         @foreach($scheduletrials as $key => $value)
                                             <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
-                                            <td style="padding:10px;"> {{ ucwords($value['customer_name']) }} </td>
-                                            <td > {{ $value['schedule_date'] }}  </td>
-                                            <td> {{ $value['schedule_slot'] }}  </td> 
-                                            <td> {{ $value['code'] }} </td> 
-                                            <td>{{ ucwords($value['service_name']) }}  </td> 
-                                            <td> {{ ucwords($value['finder_poc_for_customer_name']) }}  </td>
+                                            <td style="padding:10px;"> {{ ucwords($value->customer_name) }} </td>
+                                            <td > {{ $value->schedule_date }}  </td>
+                                            <td> {{ $value->schedule_slot }}  </td> 
+                                            <td> {{ $value->code}} </td> 
+                                            <td>{{ ucwords($value->service_name) }}  </td> 
+                                            <td> {{ ucwords($value->finder_poc_for_customer_name) }}  </td>
                                             </tr>
                                         @endforeach
 
