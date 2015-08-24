@@ -33,7 +33,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$this->customersms 				=	$customersms;
 		$this->findersms 				=	$findersms;
 		$this->customernotification 	=	$customernotification;
-		$this->fitnessforce 	=	$fitnessforce;
+		$this->fitnessforce 			=	$fitnessforce;
 	}
 
 	/**

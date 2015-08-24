@@ -472,7 +472,7 @@ class FitmaniaController extends \BaseController {
 
 		// $order_ids = [3338,3341,3345,3342,3352,3351,3356,3355,3364,3428,3430,3392];
 		// $order_ids = [3480,4536,4397];
-		$order_ids = [4710];
+		$order_ids = [3827,3860,3816,3945,3830,5337,5390];
 
 		// $order_ids = [2310];		//  sanjay.fitternity@gmail.com
 
