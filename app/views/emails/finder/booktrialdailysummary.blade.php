@@ -195,8 +195,7 @@
 
                        <tr>
                         <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                         <p style="font-weight:light">Name of the customer:   
-
+                         <p style="font-weight:light">Customer Info:   </p>
                          </td>
                          <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Scheduled Date</td>
@@ -214,7 +213,7 @@
 
                                @foreach($scheduletrials as $key => $value)
                                <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
-                                <td style="padding:10px;"> {{ ucwords($value->customer_name) }} </td>
+                                <td style="padding:10px;"> {{ ucwords($value->customer_name) }} <?php if($value->customer_phone != ''){?> <br>({{ $value->customer_phone }}) <?php } ?> </td>
                                 <td > {{ $value->schedule_date }}  </td>
                                 <td> {{ $value->schedule_slot }}  </td> 
                                 <td> {{ $value->code}} </td> 
@@ -311,7 +310,7 @@
 
                        <tr>
                         <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                         <p style="font-weight:light">Name of the customer: </p>  
+                         <p style="font-weight:light">Customer Info:   </p>
                          </td>
                          <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Scheduled Date</td>
@@ -329,7 +328,7 @@
 
                                @foreach($todaytrials as $key => $value)
                                <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
-                                <td style="padding:10px;"> {{ ucwords($value->customer_name) }} </td>
+                                <td style="padding:10px;"> {{ ucwords($value->customer_name) }} <?php if($value->customer_phone != ''){?> <br>({{ $value->customer_phone }}) <?php } ?> </td>
                                 <td > {{ $value->schedule_date }}  </td>
                                 <td> {{ $value->schedule_slot }}  </td> 
                                 <td> {{ $value->code}} </td> 
