@@ -77,6 +77,8 @@ Class FinderMailer extends Mailer {
 		$label = 'TrialDaliySummary-F';
 
 		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		// return $this->sendToWorkerTest($email_template, $template_data, $message_data, $label);
+		// return $this->sendEmail($email_template, $template_data, $message_data);
 
 	}
 
