@@ -445,7 +445,7 @@ Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
-Route::get('getlandingpagefinders/{locationclusterid}', 'HomeController@getLandingPageFinders');
+Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
 
 

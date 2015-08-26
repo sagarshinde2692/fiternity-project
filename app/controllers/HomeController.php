@@ -438,20 +438,27 @@ class HomeController extends BaseController {
 
 
 	//Get all landing page finder base on location cluster
-	public function getLandingPageFinders($locationclusterid){
+	public function getLandingPageFinders($cityid , $landingpageid, $locationclusterid = ''){
 
-		$collection 			= 	Landingpage::active()->where('locationcluster_id', intval($locationclusterid) )->first(array());
-		$finder_ids 	= 	array_map('intval', explode(",", $collection['finder_ids']));
+		$locationclusters 	= 	Locationcluster::active()->where('city_id', intval($cityid))->lists('name','_id');		
+		$collection 		= 	Landingpage::active()->find( intval($landingpageid) )->first(array());
+		$finder_ids 		= 	array_map('intval', explode(",", $collection['finder_ids']));
 
-		$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->whereIn('_id', $finder_ids)
-		->remember(Config::get('app.cachetime'))
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
-		->toArray();
+		$query =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
 
+		if($locationclusterid != ''){
+			$locations 		= 	Location::active()->where('locationcluster_id', intval($locationclusterid))->lists('name','_id');	
+			$locaitonids   	= 	array_map('intval', array_keys($locations)); 
+			// return $locaitonids;
+			$query->whereIn('location_id', $locaitonids);
+		}
 
-		return Response::json($collection_finders);
+		$collection_finders = $query->remember(Config::get('app.cachetime'))
+									->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
+									->toArray();
+
+		$responsedata = ['locationclusters' => $locationclusters, 'finders' => $collection_finders];
+		return Response::json($responsedata, 200);
 	}
 
 }																																																																																																																																																																																																																																																																										
