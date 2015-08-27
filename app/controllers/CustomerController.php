@@ -452,10 +452,12 @@ class CustomerController extends \BaseController {
 
 		        $customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
 
-		        if(!isset($customer->email) || $customer->email == ''){
-		        	$customer->email = $data['email'];
-		        	$customer->update();
-		        }
+		        if(!empty($customer)){
+			        if(!isset($customer->email) || $customer->email == ''){
+			        	$customer->email = $data['email'];
+			        	$customer->update();
+			        }
+			    }
 
 			}else{
 
