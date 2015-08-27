@@ -423,7 +423,7 @@ class HomeController extends BaseController {
 		$collection 		= 	Landingpage::active()->find( intval($landingpageid) )->first(array());
 		$finder_ids 		= 	array_map('intval', explode(",", $collection['finder_ids']));
 
-		$query 		=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
+		$query 		=	Finder::with('offerings')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
 
 		if($locationclusterid != ''){
 			$locations 		= 	Location::active()->where('locationcluster_id', intval($locationclusterid))->lists('name','_id');	
@@ -432,12 +432,44 @@ class HomeController extends BaseController {
 			$query->whereIn('location_id', $locaitonids);
 		}
 
-		$collection_finders = $query->remember(Config::get('app.cachetime'))
-									->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
-									->toArray();
+		$collection_finders = $query->remember(Config::get('app.cachetime'))->get();
 
-		$responsedata = ['locationclusters' => $locationclusters, 'finders' => $collection_finders];
+
+		$landingfinders = [];
+		foreach ($collection_finders as $key => $value) {
+			$landingdata = $this->transformLandingpageFinder($value);
+			array_push($landingfinders, $landingdata);
+		}									
+
+		$responsedata = ['locationclusters' => $locationclusters, 'finders' => $landingfinders];
 		return Response::json($responsedata, 200);
+	}
+
+
+	private function transformLandingpageFinder($finder){
+
+		$item  	   	=  	(!is_array($finder)) ? $finder->toArray() : $finder;
+
+		$data = [
+		'_id' => $item['_id'],
+		'title' => (isset($item['title']) && $item['title'] != '') ? strtolower($item['title']) : "",
+		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+		'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
+		'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
+		'finder_coverimage' => (isset($item['finder_coverimage']) && $item['finder_coverimage'] != '') ? strtolower($item['finder_coverimage']) : "",
+		'average_rating' => (isset($item['average_rating']) && $item['average_rating'] != '') ? $item['average_rating'] : "",
+		'total_rating_count' => (isset($item['total_rating_count']) && $item['total_rating_count'] != '') ? $item['total_rating_count'] : "",
+		'offerings' => (isset($item['offerings']) && !empty($item['offerings'])) ? pluck( $item['offerings'] , array('_id', 'name', 'slug') ) : "",
+		'location' => (isset($item['location']) && !empty($item['location'])) ? array_only( $item['location'] , array('_id', 'name', 'slug') ) : "",
+		'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
+		'info' => (isset($item['info']) && !empty($item['info'])) ? $item['info']  : "",
+		'contact' => (isset($item['contact']) && !empty($item['contact'])) ? $item['contact']  : "",
+		];
+
+		// echo "<pre>";print_r($data);exit();
+		return $data;
+
+
 	}
 
 }																																																																																																																																																																																																																																																																										
