@@ -413,36 +413,40 @@ class CustomerController extends \BaseController {
 			if(isset($data['email']) && !empty($data['email'])){
 
 				$rules = [
-				'email' => 'email',
-				'facebook_id' => 'required'
+				    'email' => 'email',
+				    'facebook_id' => 'required'
 				];
 
 				$validator = Validator::make($data = Input::json()->all(),$rules);
 
 				if($validator->fails()) {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-				}
+		        }
 
-				$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+		        $customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
 
-				if(!empty($customer)){
-					if(!isset($customer->email) || $customer->email == ''){
-						$customer->email = $data['email'];
-						$customer->update();
-					}
-				}
+		        if(empty($customer)){
+		        	$customer = Customer::where('email','=',$data['email'])->first();
+		        }
+
+		        if(!empty($customer)){
+			        if(!isset($customer->email) || $customer->email == ''){
+			        	$customer->email = $data['email'];
+			        	$customer->update();
+			        }
+			    }
 
 			}else{
 
 				$rules = [
-				'facebook_id' => 'required'
+			    	'facebook_id' => 'required'
 				];
 
 				$validator = Validator::make($data = Input::json()->all(),$rules);
 
 				if($validator->fails()) {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-				}else{
+		        }else{
 
 					$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
 
@@ -452,20 +456,20 @@ class CustomerController extends \BaseController {
 				}
 			}
 			
-		}else{
+	    }else{
 
-			$rules = [
-			'email' => 'required|email'
-			];
+	    	$rules = [
+				    'email' => 'required|email'
+				];
 
 			$validator = Validator::make($data = Input::json()->all(),$rules);
 
 			if($validator->fails()) {
 				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-			}
+	        }
 
-			$customer = Customer::where('email','=',$data['email'])->first();
-		}
+	        $customer = Customer::where('email','=',$data['email'])->first();
+	    }
 
 		if(empty($customer)){
 			$socialRegister = $this->socialRegister($data);
@@ -496,11 +500,12 @@ class CustomerController extends \BaseController {
 		}
 
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
-			$customer->facebook_id = $data['facebook_id'];
-		}
+        	$customer->facebook_id = $data['facebook_id'];
+        	$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
+        }
 
 		$customer->last_visited = Carbon::now();
-		$customer->update();
+       	$customer->update();
 
 		return $this->createToken($customer);
 	}
@@ -510,40 +515,41 @@ class CustomerController extends \BaseController {
 	public function socialRegister($data){
 
 		$rules = [
-		'email' => 'required|email',
-		'name' => 'required',
-		'identity' => 'required',
-		];
+			    'email' => 'required|email',
+			    'name' => 'required',
+			    'identity' => 'required',
+			];
 
 		$inserted_id = Customer::max('_id') + 1;
-		$validator = Validator::make($data, $rules);
+        $validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
-			$response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
-		}else{
-			
-			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-			$account_link[$data['identity']] = 1;
+            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+        }else{
+        	
+        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+        	$account_link[$data['identity']] = 1;
 
-			$customer = new Customer();
-			$customer->_id = $inserted_id;
-			$customer->name = ucwords($data['name']) ;
-			$customer->email = $data['email'];
-			$customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
-			$customer->identity = $data['identity'];
-			$customer->account_link = $account_link;
+	        $customer = new Customer();
+	        $customer->_id = $inserted_id;
+	        $customer->name = ucwords($data['name']) ;
+	        $customer->email = $data['email'];
+	        $customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
+	        $customer->identity = $data['identity'];
+	        $customer->account_link = $account_link;
 
-			if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
-				$customer->facebook_id = $data['facebook_id'];
-			}
+	        if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
+	        	$customer->facebook_id = $data['facebook_id'];
+	        	$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
+	        }
 
-			$customer->status = "1";
-			$customer->save();
+	        $customer->status = "1";
+	        $customer->save();
 
-			$response = array('status' => 200,'customer'=>$customer);
-		}
+	        $response = array('status' => 200,'customer'=>$customer);
+        }
 
-		return $response;
+        return $response;
 	}
 
 
