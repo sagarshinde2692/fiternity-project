@@ -24,9 +24,20 @@ class Finder extends  \Basemodel {
 	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
 	];
 
+	protected $appends = array('finder_coverimage');
+
+
 	public function setIdAttribute($value){
 		$this->attributes['_id'] = intval($value);
 	}
+
+
+	public function getFinderCoverimageAttribute(){
+
+		$finder_coverimage = (trim($this->coverimage) != '') ? trim($this->coverimage) : 'default/'.$this->category_id.'-'.rand(1, 4).'.jpg';
+		return $finder_coverimage;
+	}
+
 
 	public function user(){
 		return $this->belongsTo('User');
@@ -88,4 +99,6 @@ class Finder extends  \Basemodel {
 	public function reviews(){
 		return $this->hasMany('Review','finder_id');
 	}
+
+
 }

@@ -98,7 +98,7 @@ class FindersController extends \BaseController {
 					->where('status', '=', '1')
 					->orderBy('popularity', 'DESC')
 					->remember(Config::get('app.cachetime'))
-					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 					->take(5)->toArray();
 
 					if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; } 
@@ -111,7 +111,7 @@ class FindersController extends \BaseController {
 					->where('status', '=', '1')
 					->orderBy('popularity', 'DESC')
 					->remember(Config::get('app.cachetime'))
-					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 					->take(5)->toArray();
 
 				}else{
@@ -125,7 +125,7 @@ class FindersController extends \BaseController {
 					->where('status', '=', '1')
 					->orderBy('finder_type', 'DESC')
 					->remember(Config::get('app.cachetime'))
-					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 					->take(5)->toArray();
 
 					
@@ -138,7 +138,7 @@ class FindersController extends \BaseController {
 					->where('status', '=', '1')
 					->orderBy('finder_type', 'DESC')
 					->remember(Config::get('app.cachetime'))
-					->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+					->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
 					->take(5)->toArray();
 				}
 				
