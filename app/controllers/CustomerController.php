@@ -452,6 +452,10 @@ class CustomerController extends \BaseController {
 
 		        $customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
 
+		        if(empty($customer)){
+		        	$customer = Customer::where('email','=',$data['email'])->first();
+		        }
+
 		        if(!empty($customer)){
 			        if(!isset($customer->email) || $customer->email == ''){
 			        	$customer->email = $data['email'];
@@ -524,6 +528,7 @@ class CustomerController extends \BaseController {
 
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
         	$customer->facebook_id = $data['facebook_id'];
+        	$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
         }
 
 		$customer->last_visited = Carbon::now();
@@ -562,6 +567,7 @@ class CustomerController extends \BaseController {
 
 	        if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
 	        	$customer->facebook_id = $data['facebook_id'];
+	        	$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
 	        }
 
 	        $customer->status = "1";
