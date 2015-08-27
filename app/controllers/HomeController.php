@@ -464,6 +464,7 @@ class HomeController extends BaseController {
 		'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
 		'info' => (isset($item['info']) && !empty($item['info'])) ? $item['info']  : "",
 		'contact' => (isset($item['contact']) && !empty($item['contact'])) ? $item['contact']  : "",
+		'photos' => (isset($item['photos']) && !empty($item['photos'])) ? $item['photos']  : "",
 		];
 
 		// echo "<pre>";print_r($data);exit();
