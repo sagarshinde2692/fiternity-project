@@ -423,7 +423,7 @@ class HomeController extends BaseController {
 		$collection 		= 	Landingpage::active()->find( intval($landingpageid) )->first(array());
 		$finder_ids 		= 	array_map('intval', explode(",", $collection['finder_ids']));
 
-		$query 		=	Finder::with('city')->with('offerings')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
+		$query 		=	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('offerings')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
 
 		if($locationclusterid != ''){
 			$locations 		= 	Location::active()->where('locationcluster_id', intval($locationclusterid))->lists('name','_id');	
