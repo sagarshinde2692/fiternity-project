@@ -423,7 +423,7 @@ class HomeController extends BaseController {
 		$collection 		= 	Landingpage::active()->find( intval($landingpageid) )->first(array());
 		$finder_ids 		= 	array_map('intval', explode(",", $collection['finder_ids']));
 
-		$query 		=	Finder::with('offerings')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
+		$query 		=	Finder::with('city')->with('offerings')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
 
 		if($locationclusterid != ''){
 			$locations 		= 	Location::active()->where('locationcluster_id', intval($locationclusterid))->lists('name','_id');	
@@ -464,6 +464,7 @@ class HomeController extends BaseController {
 		'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
 		'info' => (isset($item['info']) && !empty($item['info'])) ? $item['info']  : "",
 		'contact' => (isset($item['contact']) && !empty($item['contact'])) ? $item['contact']  : "",
+		'city' => (isset($item['city']) && !empty($item['city'])) ? $item['city']  : "",
 		'photos' => (isset($item['photos']) && !empty($item['photos'])) ? $item['photos']  : "",
 		];
 
