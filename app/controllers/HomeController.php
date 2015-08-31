@@ -456,6 +456,7 @@ class HomeController extends BaseController {
 		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
 		'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
 		'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
+		'commercial_type' => (isset($item['commercial_type']) && $item['commercial_type'] != '') ? strtolower($item['commercial_type']) : "",
 		'finder_coverimage' => (isset($item['finder_coverimage']) && $item['finder_coverimage'] != '') ? strtolower($item['finder_coverimage']) : "",
 		'average_rating' => (isset($item['average_rating']) && $item['average_rating'] != '') ? $item['average_rating'] : "",
 		'total_rating_count' => (isset($item['total_rating_count']) && $item['total_rating_count'] != '') ? $item['total_rating_count'] : "",
