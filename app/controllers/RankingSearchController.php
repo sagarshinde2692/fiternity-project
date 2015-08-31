@@ -222,4 +222,23 @@ class RankingSearchController extends \BaseController
 
         return Response::json($categorytags);        
     }
+
+    public function getsearchmetadata(){
+        $category = (Input::json()->get('category')) ? Input::json()->get('category') : 'All-Fitness';
+        $meta_title = $meta_description = $meta_keywords = '';       
+        if($category != ''){
+            $findercategory     =   Findercategory::where('slug', '=', url_slug(array($category)))->first(array('meta'));
+            $meta_title         = $findercategory['meta']['title'];
+            $meta_description   = $findercategory['meta']['description'];
+            $meta_keywords      = $findercategory['meta']['keywords'];
+        } 
+
+        $resp  =    array(
+            'meta_title' => $meta_title,
+            'meta_description' => $meta_description,
+            'meta_keywords' => $meta_keywords           
+            );
+        
+        return Response::json($resp);
+    }
 }
