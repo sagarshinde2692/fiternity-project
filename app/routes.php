@@ -18,6 +18,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 Route::get('/', function() { return "laravel 4.2 goes here....";});
 
+
 Route::get('/testfinder', function() { 
 
 	for ($i=0; $i < 7 ; $i++) { 
@@ -398,6 +399,8 @@ Route::get('/findercsv', function() {
 
 });
 
+Route::get('/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
+
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
 
@@ -565,6 +568,7 @@ Route::post('/getautosuggestresults', 'GlobalSearchController@getautosuggestresu
 Route::post('/getCategoryOfferings', 'RankingSearchController@CategoryAmenities');
 Route::post('/getcategories', 'RankingSearchController@getcategories');
 Route::post('/getsearchmetadata', 'RankingSearchController@getsearchmetadata');
+
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 

@@ -1,6 +1,6 @@
 <?PHP namespace App\Sms;
 
-use Queue;
+use Queue, IronWorker, Config;
 
 abstract Class VersionNextSms {
 
@@ -109,6 +109,27 @@ abstract Class VersionNextSms {
      */
     public function getTime(){
         return time();
+    }
+
+    public function sendToWorker($to, $message, $label = 'label', $priority = 0, $delay = 0){
+
+        $worker = new IronWorker(array(
+            'token' => Config::get('queue.connections.iron.token'),
+            'project_id' => Config::get('queue.connections.iron.project')
+        ));
+        
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+    
+        $payload = array('to'=>$to,'message'=>$message);
+        $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+        $queue_name = 'Sms';
+
+        $messageid = $worker->postTask($queue_name,$payload,$options);
+
+        return $messageid;
+
     }
 
 

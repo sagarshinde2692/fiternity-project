@@ -41,7 +41,13 @@ class OrderController extends \BaseController {
 			array_set($data, 'status', '1');
 			$orderdata 	=	$order->update($data);
 			//send welcome email to payment gateway customer
-			$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+
+			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+				$order->update(['email_not_sent'=>'captureOrderStatus']);
+			}else{
+				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+			} 
+			
 			//SEND COD SMS TO CUSTOMER
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
@@ -330,7 +336,12 @@ class OrderController extends \BaseController {
 		// array_set($data, 'status', '1');
 		$buydealofday 			=	$order->update(['status' => '1']);
 		$sndsSmsCustomer		= 	$this->customersms->buyArsenalMembership($orderData);
-		$sndsEmailCustomer		= 	$this->customermailer->buyArsenalMembership($orderData);
+
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			$order->update(['email_not_sent'=>'buyArsenalMembership']);
+		}else{
+			$sndsEmailCustomer		= 	$this->customermailer->buyArsenalMembership($orderData);
+		}
 
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Arsenal Membership :)");
 

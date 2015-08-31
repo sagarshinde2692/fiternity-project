@@ -8,6 +8,7 @@
  */
 
 use App\Mailers\FinderMailer as FinderMailer;
+use App\Services\Cacheapi as Cacheapi;
 
 
 class FindersController extends \BaseController {
@@ -22,8 +23,9 @@ class FindersController extends \BaseController {
 	protected $elasticsearch_default_url    =   "";
 
 	protected $findermailer;
+	protected $cacheapi;
 
-	public function __construct(FinderMailer $findermailer) {
+	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi) {
 
 		parent::__construct();	
 		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
@@ -32,6 +34,7 @@ class FindersController extends \BaseController {
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
 		$this->findermailer						=	$findermailer;
+		$this->cacheapi						=	$cacheapi;
 	}
 
 
@@ -308,6 +311,19 @@ class FindersController extends \BaseController {
 
 			$finderarr = $finder->toArray();
 			if($finder->finder_vcc_email != ""){
+
+				$finder_vcc_email = "";
+				$explode = explode(',', $finder->finder_vcc_email);
+				$valid_finder_email = [];
+				foreach ($explode as $email) {
+					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
+						$valid_finder_email[] = $email;
+					}
+				}
+				if(!empty($valid_finder_email)){
+					$finder_vcc_email = implode(",", $valid_finder_email);
+				}
+
 				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
 				// echo "<pre>";print_r($trials); 
 
@@ -331,7 +347,7 @@ class FindersController extends \BaseController {
 					'finder_name'					=> $finder->title,
 					'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
 					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
-					'finder_vcc_email'				=> $finder->finder_vcc_email,	
+					'finder_vcc_email'				=> $finder_vcc_email,	
 					'scheduletrials' 				=> $trialdata
 					);
 				// echo "<pre>";print_r($scheduledata); exit;
@@ -468,6 +484,9 @@ class FindersController extends \BaseController {
 
 			$response = array('status' => 200, 'message' => 'Review Created Successfully.');
 		}
+
+		$this->cacheapi->flushTagKey('finder_detail',$finderobj->slug);
+		$this->cacheapi->flushTagKey('review_by_finder_list',$finderobj->slug);
 		
 		return Response::json($response, 200);  
 	}

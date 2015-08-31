@@ -211,10 +211,10 @@ return array(
 	'cachetime' 					=> 	10,
 	'perpage' 						=> 	50,
    
-	
+	'elasticsearch_port' 			=> 	9200,
 	'elasticsearch_host_new' 			=> 	'ESAdmin:fitternity2020@54.169.120.141',
-	'elasticsearch_port_new' 			=> 	8050,
-
+    'elasticsearch_port_new'        => 8050,
+    
 	//old
 	'elasticsearch_host' 			=> 	'54.179.134.14',
 	'elasticsearch_port' 			=> 	9200,
