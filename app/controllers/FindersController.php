@@ -165,6 +165,22 @@ class FindersController extends \BaseController {
 		}	
 	}
 
+	public function finderServices($finderid){
+		$finderid 	=  	(int) $finderid;
+		$finder = Finder::active()->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))->where('_id','=',$finderid)->first();
+		if($finder){
+			$finderarr = $finder->toArray();
+			$data['message'] 		= "Finder Detail With services"; 
+			$data['status'] 		= 200; 
+			$data['finder'] 		= array_only($finderarr, array('services')); 
+		}else{
+			$data['message'] 		= "Finder Does Not Exist"; 
+			$data['status'] 		= 404; 
+		}
+
+		return Response::json($data,200);
+	}
+
 	// public function ratecards($finderid){
 
 	// 	$finderid 	=  	(int) $finderid;
