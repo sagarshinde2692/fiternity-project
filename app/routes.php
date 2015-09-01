@@ -494,6 +494,7 @@ Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','us
 
 
 Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
+Route::post('buylandingpagepurchase',  array('as' => 'orders.buylandingpagepurchase','uses' => 'OrderController@buyLandingpagePurchase'));
 
 
 
