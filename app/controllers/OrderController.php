@@ -20,7 +20,7 @@ class OrderController extends \BaseController {
 
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka');
 	}
 
 
@@ -261,6 +261,24 @@ class OrderController extends \BaseController {
 			}
 		}
 
+		//Validation base on order type for sms body and email body  zumbathon','booiaka
+		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice'){
+			if( empty($data['sms_body']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - sms_body");
+				return Response::json($resp,404);				
+			}
+
+			if( empty($data['email_body1']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - email_body1");
+				return Response::json($resp,404);				
+			}
+
+			if( empty($data['email_body2']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - email_body2");
+				return Response::json($resp,404);				
+			}
+		}
+
 		$orderid 			=	Order::max('_id') + 1;
 		$data 				= 	Input::json()->all();
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
@@ -347,6 +365,37 @@ class OrderController extends \BaseController {
 
 		return Response::json($resp,200);		
 	}
+
+
+	public function buyLandingpagePurchase(){
+
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		}
+		// return Input::json()->all();
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
+
+		// array_set($data, 'status', '1');
+		$buydealofday 			=	$order->update(['status' => '1']);
+		$sndsSmsCustomer		= 	$this->customersms->buyLandingpagePurchase($orderData);
+
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			$order->update(['email_not_sent'=>'buyLandingpagePurchase']);
+		}else{
+			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
+		}
+
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Arsenal Membership :)");
+
+		return Response::json($resp,200);		
+	}
+
+
+
+
 
 
 

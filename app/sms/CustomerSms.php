@@ -264,6 +264,17 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
+	public function buyLandingpagePurchase ($data){
+
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+		$message 	=	ucwords($data['sms_body']);
+
+		$label = 'buyLandingpagePurchase-C';
+
+		return $this->sendToWorker($to, $message, $label);
+	}
+
+
 
 
 
