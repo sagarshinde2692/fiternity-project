@@ -282,9 +282,11 @@ class OrderController extends \BaseController {
 		$orderid 			=	Order::max('_id') + 1;
 		$data 				= 	Input::json()->all();
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
+		$email_body2 		=	(Input::json()->get('email_body2') != "-") ? Input::json()->get('email_body2') : '';	
 		
 		array_set($data, 'customer_id', intval($customer_id));
 		array_set($data, 'status', '0');
+		array_set($data, 'email_body2', trim($email_body2));
 		array_set($data, 'payment_mode', 'paymentgateway');
 		$order 				= 	new Order($data);
 		$order->_id 		= 	$orderid;

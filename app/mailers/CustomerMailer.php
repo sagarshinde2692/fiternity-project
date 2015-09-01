@@ -493,7 +493,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_mailus 		= 	'emails.order.pg_landingpage_mailus';
 		$template_data 				= 	$data;
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject  					=   'Regarding your purchase on Arsernal Membership by Fitternity';
+		$subject  					=   'Regarding your purchase on  Membership by Fitternity';
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
