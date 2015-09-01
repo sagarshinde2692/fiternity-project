@@ -375,6 +375,11 @@ class OrderController extends \BaseController {
 		if(empty($data['order_id'])){
 			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
 		}
+
+		if($data['status'] != "success"){
+			return Response::json(array('status' => 404,'message' => "Order Failed"),404);			
+		}
+
 		// return Input::json()->all();
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
