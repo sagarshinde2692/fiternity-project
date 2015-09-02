@@ -322,6 +322,7 @@ class FindersController extends \BaseController {
 
 	public function sendbooktrialdaliysummary(){
 
+		// $tommorowDateTime 	=	date('d-m-Y', strtotime('02-09-2015'));
 		$tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
 		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
 		// $finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->where('finder_id', '=',3305)->get()->groupBy('finder_id')->toArray();
@@ -359,7 +360,7 @@ class FindersController extends \BaseController {
 				$trialdata = array();
 				foreach ($trials as $key => $value) {
 					$trial = array('customer_name' => $value->customer_name, 
-						'customer_phone' => ($finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
+						'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
 						'schedule_date' => date('d-m-Y', strtotime($value->schedule_date) ), 
 						'schedule_slot' => $value->schedule_slot, 
 						'code' => $value->code, 
@@ -375,7 +376,7 @@ class FindersController extends \BaseController {
 				if($todaytrialarr){
 					foreach ($todaytrialarr as $key => $value) {
 						$trial = array('customer_name' => $value->customer_name, 
-							'customer_phone' => ($finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
+							'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
 							'schedule_date' => date('d-m-Y', strtotime($value->schedule_date) ), 
 							'schedule_slot' => $value->schedule_slot, 
 							'code' => $value->code, 
@@ -397,6 +398,7 @@ class FindersController extends \BaseController {
 					'todaytrials' 					=> $todaytrialdata
 					);
 				// echo "<pre>";print_r($scheduledata); 
+				
 				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}
