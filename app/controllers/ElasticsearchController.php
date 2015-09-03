@@ -17,6 +17,9 @@ class ElasticsearchController extends \BaseController {
 	protected $elasticsearch_url            =   "";
 	protected $elasticsearch_default_url    =   "";
     protected $autosuggestIndex             =   "autosuggest";
+    protected $elasticsearch_host_new 		=	"";
+    protected $elasticsearch_url_new 		= 	"";
+    protected $elasticsearch_port_new 		=	"";
 
 	public function __construct() {
 		parent::__construct();	
@@ -25,7 +28,9 @@ class ElasticsearchController extends \BaseController {
 		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
 		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
 		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
-
+		$this->elasticsearch_host_new			=	Config::get('app.elasticsearch_host_new');
+		$this->elasticsearch_port_new			=	Config::get('app.elasticsearch_port_new');
+		$this->elasticsearch_url_new			=	"http://".$this->elasticsearch_host_new.":".$this->elasticsearch_port_new."/";
 	}
 
 
@@ -270,6 +275,10 @@ class ElasticsearchController extends \BaseController {
 						            "type": "string",
 						            "index": "not_analyzed",
 						            "store": "yes"
+						        },
+						        "inputloc":{
+						        	"type": "string",
+						        	"index_analyzer": "synonymanalyzer"
 						        }
 						    }
 }';
@@ -305,10 +314,10 @@ class ElasticsearchController extends \BaseController {
 
             case "autosuggestindex":
                 $typemapping 	=	$autosuggest_mappings;
-                $typeurl 		=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/_mapping";
+                $typeurl 		=	"ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_mapping";
             break;
 		}
-
+	
 		$postfields_data 	= 	json_encode(json_decode($typemapping,true));
 		// $url 				=  	$this->elasticsearch_default_url;
 
@@ -317,8 +326,7 @@ class ElasticsearchController extends \BaseController {
 			'port' => 8050,//Config::get('elasticsearch.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => $postfields_data
-			);
-
+			);		
 		return es_curl_request($request);
 
 	}
@@ -472,7 +480,7 @@ class ElasticsearchController extends \BaseController {
         //echo $postfields_data->_id;exit;
         //echo var_dump($postfields_data);exit;
 
-    	$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+    	$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
 
     	echo "<br>$posturl    ---  ".es_curl_request($request);
 
@@ -490,11 +498,12 @@ class ElasticsearchController extends \BaseController {
                 ->with(array('location'=>function($query){$query->select('name');}))
                 ->with('offerings')
 				->with('facilities')
+				->with('categorytags')
 				->active()
-				->take(3500)->skip(3000)->get();
-                //->whereIn('_id',array(579))                
+				->take(3500)->skip(0)->get();
+                //->whereIn('_id',array(579))->get();               
                 //->take(3000)->skip(3000)->get();
-                //->take(3000)->skip(3000)->get();                
+                //->take(3000)->skip(3000)->get();                            
                 break;
 
             case 'fitternitycategories':
@@ -520,24 +529,24 @@ class ElasticsearchController extends \BaseController {
                 {
                     case 'fitternityfinders':
 
-                        $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
+                        $posturl                        =   $this->elasticsearch_url_new."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
                         //$posturl 						=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
-                        $postdata 						= 	get_elastic_autosuggest_doc($data);                                             
+                        $postdata 						= 	get_elastic_autosuggest_doc($data);                                                             
                         if(empty($postdata)) continue;
                         break;
 
                     case 'fitternitycategories':
-                        $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/C".$data['_id'];
+                        $posturl                        =   $this->elasticsearch_url_new."autosuggest_index_alllocations/autosuggestor/C".$data['_id'];
                         $postdata                       =   get_elastic_category_doc($data);
                     break;
 
                     case 'fitternitybrands':
-                        $posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/";
+                        $posturl                        =   $this->elasticsearch_url_new."autosuggest_index_alllocations/autosuggestor/";
 
                     break;
 
                     case 'fitternitylocations':
-                    	$posturl                        =   $this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/levenshtein(str1, str2)".$data['_id'];
+                    	$posturl                        =   $this->elasticsearch_url_new."autosuggest_index_alllocations/autosuggestor/levenshtein(str1, str2)".$data['_id'];
                         $postdata                       =   get_elastic_location_doc($data);       
                                                                 
                     break;
@@ -550,10 +559,10 @@ class ElasticsearchController extends \BaseController {
     public function manageAutoSuggestSetttings(){
 
         $autosuggestindex  = "autosuggest_index_alllocations";
-        $url 		= $this->elasticsearch_url."$autosuggestindex/_close";
+        $url 		= $this->elasticsearch_url_new."$autosuggestindex/_close";
         $request = array(
             'url' =>  $url,
-            'port' => $this->elasticsearch_port,
+            'port' => $this->elasticsearch_port_new,
             'method' => 'POST',
         );
 
@@ -563,6 +572,10 @@ class ElasticsearchController extends \BaseController {
         $body =	'{
                 "analysis": {
                     "analyzer": {
+                    	"synonymanalyzer":{
+                    		"tokenizer": "standard",
+                    		"filter": ["lowercase", "locationsynfilter"]
+                    	},
                         "search_analyzer": {
                             "type": "custom",
                             "filter": [
@@ -612,29 +625,68 @@ class ElasticsearchController extends \BaseController {
                         },
                         "delimiter-filter": {
                             "type": "word_delimiter"
+                        },
+                        "locationsynfilter":{
+                        	"type": "synonym",
+                        	"synonyms" : [
+                        	"Lokhandwala,Andheri west",
+							"Versova,Andheri west",
+							"Oshiwara,Andheri west",
+							"Chakala,Andheri east",
+							"JB Nagar,Andheri east",
+							"Marol,Andheri east",
+							"Sakinaka,Andheri east",
+							"Chandivali,Powai",
+							"Vidyavihar,Ghatkopar",
+							"Dharavi,Sion",
+							"Chunabatti,Sion",
+							"Deonar,Chembur",
+							"Govandi,Chembur",
+							"Anushakti Nagar,Chembur",
+							"Charkop,Kandivali",
+							"Seven Bungalows,Andheri west",
+							"Opera House,Grant road",
+							"Nana chowk,Grant road",
+							"Shivaji Park,Dadar",
+							"Lalbaug,Dadar",
+							"Walkeshwar,Malabar Hill",
+							"Tilak Nagar,Chembur",
+							"Vashi,Navi Mumbai",
+							"Sanpada,Navi Mumbai",
+							"Juinagar,Navi Mumbai",
+							"Nerul,Navi Mumbai",
+							"Seawoods,Navi Mumbai",
+							"CBD belapur,Navi Mumbai",
+							"Kharghar,Navi Mumbai",
+							"Airoli,Navi Mumbai",
+							"Kamothe,Navi Mumbai",
+							"Kopar Khairan,Navi Mumbai",
+							"Gamdevi,Hughes road",
+							"Mazgaon,Byculla"
+                        	]
                         }
                     }
                 }
             }';
 
         $index 				= $autosuggestindex;
-        $url 			 	= $this->elasticsearch_url."$autosuggestindex/_settings";
-        //$url 			 	= $this->elasticsearch_url."_settings/";
+        $url 			 	= $this->elasticsearch_url_new."$autosuggestindex/_settings";
+        //$url 			 	= $this->elasticsearch_url."_settings/";      
         $postfields_data 	= json_encode(json_decode($body,true));
 
         //var_dump($postfields_data);	exit;
         $request = array(
             'url' => $url,
-            'port' => $this->elasticsearch_port,
+            'port' => $this->elasticsearch_port_new,
             'postfields' => $postfields_data,
             'method' => 'PUT',
-        );
+        );       
         echo es_curl_request($request);
 
-        $url = $this->elasticsearch_url."$autosuggestindex/_open";
+        $url = $this->elasticsearch_url_new."$autosuggestindex/_open";
         $request = array(
             'url' =>  $url,
-            'port' => $this->elasticsearch_port,
+            'port' => $this->elasticsearch_port_new,
             'method' => 'POST',
         );
 

@@ -374,6 +374,8 @@ if (!function_exists(('get_elastic_autosuggest_doc'))){
             'inputv2'                       =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",                                                                       
             'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
             'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+            'inputloc'                      =>      strtolower((isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :""),
+            'inputcat'                      =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
             'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
             'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
             'identifier'                    =>      $data['category']['name'],

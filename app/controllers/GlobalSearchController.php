@@ -36,7 +36,10 @@ class GlobalSearchController extends \BaseController
 
         $key2_string_query  = '';
         $key2_fuzzy_query = '';
-    
+        $key2_loc_query = '';
+        $key2_cat_query = '';
+        $key3_loc_query = '';
+        $key3_cat_query = '';        
         if(count($keys) > 1)
         {
             $key2_string_query  =    '{
@@ -49,7 +52,7 @@ class GlobalSearchController extends \BaseController
                                             "query": "*'.$keys[1].'*",
                                             "fuzziness": 0,
                                             "fuzzy_prefix_length": 0,
-                                            "boost": 1
+                                            "boost": 3
                                         }
                                     },';
 
@@ -59,78 +62,177 @@ class GlobalSearchController extends \BaseController
                                     "value": "'.$keys[1].'",
                                     "fuzziness": 1,
                                     "prefix_length": 3,
-                                    "boost": 1
+                                    "boost": 4
                                 }
                             }
                         }';
 
+            $key2_loc_query    =  ',{
+                                    "query_string":{
+                                            "fields": [
+                                            "inputloc"
+                                            ],
+                                        "query": "*'.$keys[1].'*",
+                                        "fuzziness": 0,
+                                        "fuzzy_prefix_length": 0                                        
+                                    }
+                                }';
+
+            $key2_cat_query    =  '{
+                                    "query_string":{
+                                            "fields": [
+                                            "inputcat"
+                                            ],
+                                        "query": "*'.$keys[1].'*",
+                                        "fuzziness": 0,
+                                        "fuzzy_prefix_length": 0,
+                                        "boost": 3
+                                    }
+                                },';
+            if(count($keys) > 2)
+            {                
+            $key3_loc_query    =  ',{
+                                    "query_string":{
+                                            "fields": [
+                                            "inputloc"
+                                            ],
+                                        "query": "*'.$keys[2].'*",
+                                        "fuzziness": 0,
+                                        "fuzzy_prefix_length": 0                                      
+                                    }
+                                }';
+
+            $key3_cat_query    =  '{
+                                    "query_string":{
+                                            "fields": [
+                                            "inputcat"
+                                            ],
+                                        "query": "*'.$keys[2].'*",
+                                        "fuzziness": 0,
+                                        "fuzzy_prefix_length": 0,
+                                        "boost": 3
+                                    }
+                                },';
+                            }
+
         };
        
         $query          = '{
-                            "from": '.$from.',
-                            "size": 10,
-                            "fields": [
-                                "virgininput",
-                                "location",
-                                "identifier",
-                                "slug"
-                            ],
-                            "query": {
-                                "filtered": {
-                                    "query": {
-                                        "bool": {
-                                            "should": [
-                                                {
-                                                    "query_string": {
-                                                        "fields": [
-                                                            "inputv2",
-                                                            "inputv3",
-                                                            "inputv4"
-                                                        ],
-                                                        "query": "*'.$keys[0].'*",
-                                                        "fuzziness": 0,
-                                                        "fuzzy_prefix_length": 0,
-                                                        "boost": 5                                                        
+                                "from": '.$from.',
+                                "size": 10,
+                                "fields": [
+                                    "virgininput",
+                                    "location",
+                                    "identifier",
+                                    "slug"
+                                ],
+                                "query": {
+                                    "filtered": {
+                                        "query": {
+                                            "function_score": {
+                                                "query": {
+                                                    "bool": {
+                                                        "should": [
+                                                            {
+                                                                "query_string": {
+                                                                    "fields": [
+                                                                        "inputloc"
+                                                                    ],
+                                                                    "query": "*'.$keys[0].'*",
+                                                                    "fuzziness": 0,
+                                                                    "fuzzy_prefix_length": 0,
+                                                                    "boost": 2
+                                                                }
+                                                            }
+                                                            '.$key2_loc_query.$key3_loc_query.',{
+                                                                "query_string": {
+                                                                    "fields": [
+                                                                        "inputcat"
+                                                                    ],
+                                                                    "query": "*'.$keys[0].'*",
+                                                                    "fuzziness": 0,
+                                                                    "fuzzy_prefix_length": 0,
+                                                                    "boost": 2
+                                                                }
+                                                            },
+                                                            '.$key2_cat_query.$key3_cat_query.'{
+                                                                "query_string": {
+                                                                    "fields": [
+                                                                        "inputv2",
+                                                                        "inputv3",
+                                                                        "inputv4"
+                                                                    ],
+                                                                    "query": "*'.$keys[0].'*",
+                                                                    "fuzziness": 0,
+                                                                    "fuzzy_prefix_length": 0,
+                                                                    "boost": 6
+                                                                }
+                                                            },
+                                                            '.$key2_string_query.'{
+                                                                "fuzzy": {
+                                                                    "input": {
+                                                                        "value": "'.$keys[0].'",
+                                                                        "fuzziness": 1,
+                                                                        "prefix_length": 2,
+                                                                        "boost": 8
+                                                                    }
+                                                                }
+                                                            }'.$key2_fuzzy_query.'
+                                                        ]
                                                     }
-                                                },'.$key2_string_query.'
-                                                {
-                                                    "fuzzy": {
-                                                        "input": {
-                                                            "value": "'.$keys[0].'",
-                                                            "fuzziness": 1,
-                                                            "prefix_length": 2,
-                                                            "boost": 5
-                                                        }
+                                                },
+                                                "filter": {
+                                                    "bool": {
+                                                        "must": [
+                                                            {
+                                                                "term": {
+                                                                    "city": "'.$city.'",
+                                                                    "_cache": true
+                                                                }
+                                                            }
+                                                        ]
                                                     }
-                                                }'.$key2_fuzzy_query.'
-                                            ]
-                                        }
-                                    },
-                                    "filter": {
-                                        "bool": {
-                                            "must": [
-                                                {
-                                                    "term": {
-                                                        "city": "'.$city.'"
-                                                        ,"_cache": true 
-                                                    }                                                    
-                                                }
-                                            ]
+                                                },
+                                                "functions": [
+                                                    {
+                                                        "filter": {
+                                                            "query": {
+                                                                "bool": {
+                                                                    "should": [
+                                                                        {
+                                                                            "query_string": {
+                                                                                "fields": [
+                                                                                    "inputloc"
+                                                                                ],
+                                                                                "query": "*'.$keys[0].'*",
+                                                                                "fuzziness": 0,
+                                                                                "fuzzy_prefix_length": 0
+                                                                            }
+                                                                        }'.$key2_loc_query.$key3_loc_query.'
+                                                                        ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "boost_factor": 10
+                                                    }
+                                                ],
+                                                "boost_mode": "sum"
+                                            }
                                         }
                                     }
                                 }
-                            }
-}';
+                            }';
+
             //$this->elasticsearch_host.$this->elasticsearch_port.  
         $request = array(
             'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
             'port' => 8050,
             'method' => 'POST',
             'postfields' => $query
-        );
-        
+        );    
+       // return $query;
         $search_results     =   es_curl_request($request);
-
+        //return $query;
         $response       =   [
             'search_results' => json_decode($search_results,true)];
 
