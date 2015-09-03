@@ -810,7 +810,7 @@ class FindersController extends \BaseController {
 		$size 				=	($size != '') ? intval($size) : 10;
 
 		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
-		$responseData 		= 	['reviews' => $reviews,  'message' => 'List for reivews'];
+		$responseData 		= 	['reviews' => $reviews,  'message' => 'List for reviews'];
 
 		return Response::json($responseData, 200);
 	}

@@ -339,8 +339,6 @@ class CustomerController extends \BaseController {
 	}
 
 
-
-
 	public function customerLogin(){
 
 		$data = Input::json()->all();
@@ -403,8 +401,6 @@ class CustomerController extends \BaseController {
 
 		return $this->createToken($customer);
 	}
-
-
 
 	public function socialLogin($data){
 
@@ -510,8 +506,6 @@ class CustomerController extends \BaseController {
 		return $this->createToken($customer);
 	}
 
-
-
 	public function socialRegister($data){
 
 		$rules = [
@@ -551,8 +545,6 @@ class CustomerController extends \BaseController {
 
         return $response;
 	}
-
-
 
 	public function createToken($customer){
 
@@ -618,8 +610,6 @@ class CustomerController extends \BaseController {
 		return Response::json($response,$responce['status']);
 	}
 
-
-
 	public function createPasswordToken($customer){
 		$password_claim = array(
 			"iat" => Config::get('app.forgot_password.iat'),
@@ -633,8 +623,6 @@ class CustomerController extends \BaseController {
 
 		return $token;
 	}
-
-
 
 	public function forgotPasswordEmail(){
 
@@ -662,7 +650,6 @@ class CustomerController extends \BaseController {
 		}
 
 	}
-
 
 
 	public function forgotPassword(){
@@ -726,8 +713,6 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-
-
 	public function forgotPasswordEmailApp(){
 
 		$data = Input::json()->all();
@@ -771,8 +756,6 @@ class CustomerController extends \BaseController {
 
 	}
 
-
-
 	public function createOtp($email){
 		$length = 4;
 		$characters = '0123456789';
@@ -792,7 +775,6 @@ class CustomerController extends \BaseController {
 
 		return $randomString;
 	}
-
 
 
 	public function validateOtp(){
@@ -824,7 +806,6 @@ class CustomerController extends \BaseController {
 
 		return Response::json($response,$response['status']);
 	}
-
 	
 
 	public function customerLogout(){
@@ -896,5 +877,65 @@ class CustomerController extends \BaseController {
 
 		return $decodedToken;
 	}
+
+
+	public function reviewListing($customer_id, $from = '', $size = ''){
+		
+		$customer_id			= 	(int) $customer_id;	
+		$from 				=	($from != '') ? intval($from) : 0;
+		$size 				=	($size != '') ? intval($size) : 10;
+
+		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('customer_id','=',$customer_id)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$responseData 		= 	['reviews' => $reviews,  'message' => 'List for reviews'];
+
+		return Response::json($responseData, 200);
+	}
+
+
+	public function orderHistory($customer_email, $from = '', $size = ''){
+		
+		$customer_email		= 	$customer_email;	
+		$from 				=	($from != '') ? intval($from) : 0;
+		$size 				=	($size != '') ? intval($size) : 10;
+
+		$orders 			= 	Order::where('customer_email','=',$customer_email)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
+
+		return Response::json($responseData, 200);
+	}
+
+
+	public function getBookmarks($customer_id){
+		
+		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
+		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
+
+		if(empty($finderids)){
+			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+			return Response::json($responseData, 200);
+		}
+
+		$responseData 		= 	['bookmarks' => $bookmarks,  'message' => 'List for bookmarks'];
+		return Response::json($responseData, 200);
+	}
+
+	public function updateBookmarks($customer_id, $finder_id, $remove = ''){
+
+		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
+		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
+
+		array_push($finderids, int($finder_id));
+
+
+
+	}
+
+
+
+
+
+
+
+
 
 }
