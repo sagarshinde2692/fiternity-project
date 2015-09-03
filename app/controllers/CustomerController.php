@@ -915,19 +915,41 @@ class CustomerController extends \BaseController {
 			return Response::json($responseData, 200);
 		}
 
-		$responseData 		= 	['bookmarks' => $bookmarks,  'message' => 'List for bookmarks'];
+		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->whereIn('_id', $finderids)
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+
+		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
 		return Response::json($responseData, 200);
 	}
 
 	public function updateBookmarks($customer_id, $finder_id, $remove = ''){
 
 		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
-		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
+		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? array_map('intval',$customer->bookmarks) : [];
 
-		array_push($finderids, int($finder_id));
+		if($remove == ""){
+			array_push($finderids, intval($finder_id));
+			$message = 'bookmark added successfully';
+		}else{
+			if (in_array(intval($finder_id), $finderids)){
+    			unset($finderids[array_search(intval($finder_id),$finderids)]);
+			}
+			$message = 'bookmark revomed successfully';
+		}
 
+		$customer = Customer::find((int) $customer_id);
+		$bookmarksdata = ['bookmarks' => array_unique($finderids)];
+		$customer->update($bookmarksdata);
 
-
+		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->whereIn('_id', array_unique($finderids))
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
+		
+		return Response::json($responseData, 200);
 	}
 
 
