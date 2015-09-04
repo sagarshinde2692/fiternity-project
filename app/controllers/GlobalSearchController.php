@@ -31,8 +31,10 @@ class GlobalSearchController extends \BaseController
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
         $string     =         Input::json()->get('key');
         $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-       
+        
         //  $keys    =          array_diff($keys1, array(''));
+        
+        $allkeys = explode(" ", $string);
         $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
         $key1 = str_replace($stopwords, " ", $string);
         $keys   =         explode(" ", $key1); 
@@ -55,7 +57,7 @@ class GlobalSearchController extends \BaseController
                                                 "inputv3",
                                                 "inputv4"
                                             ],
-                                            "query": "*'.$keys[1].'*",
+                                            "query": "'.$keys[1].'*",
                                             "fuzziness": 0,
                                             "fuzzy_prefix_length": 0,
                                             "boost": 3
@@ -78,7 +80,7 @@ class GlobalSearchController extends \BaseController
                                             "fields": [
                                                 "input"
                                             ],
-                                            "query": "*'.$keys[1].'*",
+                                            "query": "'.$keys[1].'*",
                                             "fuzziness": 0,
                                             "fuzzy_prefix_length": 0                                           
                                         }
@@ -101,7 +103,7 @@ class GlobalSearchController extends \BaseController
                                             "fields": [
                                             "inputcat"
                                             ],
-                                        "query": "*'.$keys[1].'*",
+                                        "query": "'.$keys[1].'*",
                                         "fuzziness": 0,
                                         "fuzzy_prefix_length": 0,
                                         "boost": 3
@@ -126,7 +128,7 @@ class GlobalSearchController extends \BaseController
                                             "fields": [
                                             "inputcat"
                                             ],
-                                        "query": "*'.$keys[2].'*",
+                                        "query": "'.$keys[2].'*",
                                         "fuzziness": 0,
                                         "fuzzy_prefix_length": 0,
                                         "boost": 3
@@ -138,7 +140,7 @@ class GlobalSearchController extends \BaseController
                                             "fields": [
                                                 "input"
                                             ],
-                                            "query": "*'.$keys[2].'*",
+                                            "query": "'.$keys[2].'*",
                                             "fuzziness": 0,
                                             "fuzzy_prefix_length": 0,
                                             "boost": 3
@@ -194,7 +196,7 @@ class GlobalSearchController extends \BaseController
                                                                     "fields": [
                                                                         "inputcat"
                                                                     ],
-                                                                    "query": "*'.$keys[0].'*",
+                                                                    "query": "'.$keys[0].'*",
                                                                     "fuzziness": 0,
                                                                     "fuzzy_prefix_length": 0,
                                                                     "boost": 2
@@ -207,7 +209,7 @@ class GlobalSearchController extends \BaseController
                                                                         "inputv3",
                                                                         "inputv4"
                                                                     ],
-                                                                    "query": "*'.$keys[0].'*",
+                                                                    "query": "'.$keys[0].'*",
                                                                     "fuzziness": 0,
                                                                     "fuzzy_prefix_length": 0,
                                                                     "boost": 6
@@ -260,7 +262,7 @@ class GlobalSearchController extends \BaseController
                                                                 }
                                                             }
                                                         },
-                                                        "boost_factor": 10
+                                                        "boost_factor": 11
                                                     },
                                                     {
                                                          "filter": {
@@ -273,7 +275,7 @@ class GlobalSearchController extends \BaseController
                                                                                 "fields": [
                                                                                     "input"                                                                                    
                                                                                 ],
-                                                                                "query": "*'.$keys[0].'*",
+                                                                                "query": "'.$keys[0].'*",
                                                                                 "fuzziness": 0,
                                                                                 "fuzzy_prefix_length": 0
                                                                             }
@@ -282,7 +284,7 @@ class GlobalSearchController extends \BaseController
                                                                 }
                                                             }
                                                         },
-                                                        "boost_factor": 12
+                                                        "boost_factor": 8
                                                     }
                                                 ],
                                                 "boost_mode": "sum"
