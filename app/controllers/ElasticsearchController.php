@@ -276,7 +276,7 @@ class ElasticsearchController extends \BaseController {
 						            "index": "not_analyzed",
 						            "store": "yes"
 						        },
-						        "inputloc":{
+						        "inputloc1":{
 						        	"type": "string",
 						        	"index_analyzer": "synonymanalyzer"
 						        }
@@ -494,16 +494,17 @@ class ElasticsearchController extends \BaseController {
             case 'fitternityfinders':
                 $indexdocs = Finder::active()
                 ->with(array('category'=>function($query){$query->select('name','meta');}))
-                ->with(array('city'=>function($query){$query->select('name');}))
-                ->with(array('location'=>function($query){$query->select('name');}))
+                ->with(array('city'=>function($query){$query->select('name');}))                
+                ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
                 ->with('offerings')
 				->with('facilities')
 				->with('categorytags')
+			    ->whereIn('city_id', array(1,2,3))
 				->active()
-				->take(3500)->skip(0)->get();
+				->take(3500)->skip(3500)->get();
                 //->whereIn('_id',array(579))->get();               
                 //->take(3000)->skip(3000)->get();
-                //->take(3000)->skip(3000)->get();                            
+                //->take(3000)->skip(3000)->get();                                       
                 break;
 
             case 'fitternitycategories':
@@ -530,8 +531,23 @@ class ElasticsearchController extends \BaseController {
                     case 'fitternityfinders':
 
                         $posturl                        =   $this->elasticsearch_url_new."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
-                        //$posturl 						=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];
-                        $postdata 						= 	get_elastic_autosuggest_doc($data);                                                             
+                        //$posturl 						=	$this->elasticsearch_url."autosuggest_index_alllocations/autosuggestor/".$data['_id'];                        
+                        $clusterid = '';
+		                if(!isset($data['location']['locationcluster_id']))
+		                {
+		                     continue;
+		                }
+		                else
+		                {
+		                    $clusterid  = $data['location']['locationcluster_id'];
+		                }
+		                                
+		                $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
+		                $locationcluster->toArray();                            
+		                $postdata = get_elastic_autosuggest_doc($data, $locationcluster[0]['name']);
+                                                     		                
+		               		                                                                             
+                        //return $postdata;
                         if(empty($postdata)) continue;
                         break;
 
@@ -629,40 +645,40 @@ class ElasticsearchController extends \BaseController {
                         "locationsynfilter":{
                         	"type": "synonym",
                         	"synonyms" : [
-                        	"Lokhandwala,Andheri west",
-							"Versova,Andheri west",
-							"Oshiwara,Andheri west",
-							"Chakala,Andheri east",
-							"JB Nagar,Andheri east",
-							"Marol,Andheri east",
-							"Sakinaka,Andheri east",
-							"Chandivali,Powai",
-							"Vidyavihar,Ghatkopar",
-							"Dharavi,Sion",
-							"Chunabatti,Sion",
-							"Deonar,Chembur",
-							"Govandi,Chembur",
-							"Anushakti Nagar,Chembur",
-							"Charkop,Kandivali",
-							"Seven Bungalows,Andheri west",
-							"Opera House,Grant road",
-							"Nana chowk,Grant road",
-							"Shivaji Park,Dadar",
-							"Lalbaug,Dadar",
-							"Walkeshwar,Malabar Hill",
-							"Tilak Nagar,Chembur",
-							"Vashi,Navi Mumbai",
-							"Sanpada,Navi Mumbai",
-							"Juinagar,Navi Mumbai",
-							"Nerul,Navi Mumbai",
-							"Seawoods,Navi Mumbai",
-							"CBD belapur,Navi Mumbai",
-							"Kharghar,Navi Mumbai",
-							"Airoli,Navi Mumbai",
-							"Kamothe,Navi Mumbai",
-							"Kopar Khairan,Navi Mumbai",
-							"Gamdevi,Hughes road",
-							"Mazgaon,Byculla"
+                        	"lokhandwala,andheri west",
+							"versova,andheri west",
+							"oshiwara,andheri west",
+							"chakala,andheri east",
+							"jb nagar,andheri east",
+							"marol,andheri east",
+							"sakinaka,andheri east",
+							"chandivali,powai",
+							"vidyavihar,ghatkopar",
+							"dharavi,sion",
+							"chunabatti,sion",
+							"deonar,chembur",
+							"govandi,chembur",
+							"anushakti nagar,chembur",
+							"charkop,kandivali",
+							"seven bungalows,andheri west",
+							"opera house,grant road",
+							"nana chowk,grant road",
+							"shivaji park,dadar",
+							"lalbaug,dadar",
+							"walkeshwar,malabar hill",
+							"tilak nagar,chembur",
+							"vashi,navi mumbai",
+							"sanpada,navi mumbai",
+							"juinagar,navi mumbai",
+							"nerul,navi mumbai",
+							"seawoods,navi mumbai",
+							"cbd belapur,navi mumbai",
+							"kharghar,navi mumbai",
+							"airoli,navi mumbai",
+							"kamothe,navi mumbai",
+							"kopar khairan,navi mumbai",
+							"gamdevi,hughes road",
+							"mazgaon,byculla"
                         	]
                         }
                     }

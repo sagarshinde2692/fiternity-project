@@ -29,17 +29,23 @@ class GlobalSearchController extends \BaseController
     public function getautosuggestresults(){
 
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-        $key     =         Input::json()->get('key');
+        $string     =         Input::json()->get('key');
         $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-
-        $keys    =         explode(" ", $key);
-
+       
+        //  $keys    =          array_diff($keys1, array(''));
+        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
+        $key1 = str_replace($stopwords, " ", $string);
+        $keys   =         explode(" ", $key1); 
         $key2_string_query  = '';
         $key2_fuzzy_query = '';
         $key2_loc_query = '';
         $key2_cat_query = '';
         $key3_loc_query = '';
-        $key3_cat_query = '';        
+        $key3_cat_query = ''; 
+        $key4_loc_query = ''; 
+        $key2_input_query = '';
+        $key3_input_query = '';
+        
         if(count($keys) > 1)
         {
             $key2_string_query  =    '{
@@ -67,10 +73,22 @@ class GlobalSearchController extends \BaseController
                             }
                         }';
 
+            $key2_input_query  =    ',{
+                                        "query_string": {
+                                            "fields": [
+                                                "input"
+                                            ],
+                                            "query": "*'.$keys[1].'*",
+                                            "fuzziness": 0,
+                                            "fuzzy_prefix_length": 0                                           
+                                        }
+                                    }';
+
             $key2_loc_query    =  ',{
                                     "query_string":{
                                             "fields": [
-                                            "inputloc"
+                                            "inputloc1",
+                                            "inputloc2"
                                             ],
                                         "query": "*'.$keys[1].'*",
                                         "fuzziness": 0,
@@ -94,7 +112,8 @@ class GlobalSearchController extends \BaseController
             $key3_loc_query    =  ',{
                                     "query_string":{
                                             "fields": [
-                                            "inputloc"
+                                            "inputloc1",
+                                            "inputloc2"
                                             ],
                                         "query": "*'.$keys[2].'*",
                                         "fuzziness": 0,
@@ -113,8 +132,33 @@ class GlobalSearchController extends \BaseController
                                         "boost": 3
                                     }
                                 },';
-                            }
 
+            $key3_input_query  =    ',{
+                                        "query_string": {
+                                            "fields": [
+                                                "input"
+                                            ],
+                                            "query": "*'.$keys[2].'*",
+                                            "fuzziness": 0,
+                                            "fuzzy_prefix_length": 0,
+                                            "boost": 3
+                                        }
+                                    }';
+                            }
+            if(count($keys) > 3)
+            {
+                $key4_loc_query    =  ',{
+                                    "query_string":{
+                                            "fields": [
+                                            "inputloc1",
+                                            "inputloc2"
+                                            ],
+                                        "query": "*'.$keys[3].'*",
+                                        "fuzziness": 0,
+                                        "fuzzy_prefix_length": 0                                      
+                                    }
+                                }';
+            }
         };
        
         $query          = '{
@@ -136,7 +180,8 @@ class GlobalSearchController extends \BaseController
                                                             {
                                                                 "query_string": {
                                                                     "fields": [
-                                                                        "inputloc"
+                                                                        "inputloc1",
+                                                                        "inputloc2"
                                                                     ],
                                                                     "query": "*'.$keys[0].'*",
                                                                     "fuzziness": 0,
@@ -144,7 +189,7 @@ class GlobalSearchController extends \BaseController
                                                                     "boost": 2
                                                                 }
                                                             }
-                                                            '.$key2_loc_query.$key3_loc_query.',{
+                                                            '.$key2_loc_query.$key3_loc_query.$key4_loc_query.',{
                                                                 "query_string": {
                                                                     "fields": [
                                                                         "inputcat"
@@ -174,7 +219,7 @@ class GlobalSearchController extends \BaseController
                                                                         "value": "'.$keys[0].'",
                                                                         "fuzziness": 1,
                                                                         "prefix_length": 2,
-                                                                        "boost": 8
+                                                                        "boost": 20
                                                                     }
                                                                 }
                                                             }'.$key2_fuzzy_query.'
@@ -198,22 +243,46 @@ class GlobalSearchController extends \BaseController
                                                         "filter": {
                                                             "query": {
                                                                 "bool": {
-                                                                    "should": [
+                                                                    "should": [     
+
                                                                         {
                                                                             "query_string": {
                                                                                 "fields": [
-                                                                                    "inputloc"
+                                                                                    "inputloc1",
+                                                                                    "inputloc2"
                                                                                 ],
                                                                                 "query": "*'.$keys[0].'*",
                                                                                 "fuzziness": 0,
                                                                                 "fuzzy_prefix_length": 0
                                                                             }
-                                                                        }'.$key2_loc_query.$key3_loc_query.'
+                                                                        }'.$key2_loc_query.$key3_loc_query.$key4_loc_query.'
                                                                         ]
                                                                 }
                                                             }
                                                         },
                                                         "boost_factor": 10
+                                                    },
+                                                    {
+                                                         "filter": {
+                                                            "query": {
+                                                                "bool": {
+                                                                    "should": [     
+
+                                                                        {
+                                                                            "query_string": {
+                                                                                "fields": [
+                                                                                    "input"                                                                                    
+                                                                                ],
+                                                                                "query": "*'.$keys[0].'*",
+                                                                                "fuzziness": 0,
+                                                                                "fuzzy_prefix_length": 0
+                                                                            }
+                                                                        }'.$key2_input_query.$key3_input_query.'
+                                                                        ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "boost_factor": 12
                                                     }
                                                 ],
                                                 "boost_mode": "sum"
@@ -230,7 +299,7 @@ class GlobalSearchController extends \BaseController
             'method' => 'POST',
             'postfields' => $query
         );    
-       // return $query;
+       
         $search_results     =   es_curl_request($request);
         //return $query;
         $response       =   [
@@ -239,5 +308,12 @@ class GlobalSearchController extends \BaseController
         return Response::json($response);
        
     }
+
+    public function removeCommonWords($input){
+    
+    $commonWords = array('in','a','able','about','all','of','the','yo');
+ 
+    return preg_replace('/\b('.implode('|',$commonWords).')\b/','',$input);
+}
 
 }
