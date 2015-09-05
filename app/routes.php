@@ -10,16 +10,37 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
 });
 
-
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 
 
 
-Route::get('/', function() { return "laravel 4.2 goes here....";});
+Route::get('/', function() { 
+	return "laravel 4.2 goes here....";
+
+});
 
 
 Route::get('/testfinder', function() { 
+
+	return $items = Finder::where('status', '1')->take(10000)->skip(0)->groupBy('slug')->get(array('slug'));
+
+	$slugArr = [];
+	$duplicateSlugArr = [];
+	foreach ($items as $item) {  
+
+		Finder::destroy(intval($item->_id));
+		// if (!in_array($item->slug, $slugArr)){
+		// 	array_push($slugArr, $item->slug);
+		// }else{
+		// 	array_push($duplicateSlugArr,  $item->slug);
+		// }
+
+	}
+
+	return $duplicateSlugArr;
+
+	exit;
 
 	for ($i=0; $i < 7 ; $i++) { 
 		$skip = $i * 1000;
@@ -453,7 +474,6 @@ Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}'
 Route::get('/fitcardautobooktrials/{customeremail}',  array('as' => 'customer.fitcardautobooktrials','uses' => 'CustomerController@getFitcardAutoBookTrials'));
 Route::get('/autobooktrial/{trialid}',  array('as' => 'customer.autobooktrial','uses' => 'CustomerController@getAutoBookTrial'));
 // Route::post('capturepayment',  array('as' => 'customer.capturepayment','uses' => 'CustomerController@capturePayment'));
-Route::post('capturepayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 
 Route::post('generatefitcardcodorder',  array('as' => 'customer.generatefitcardcodorder','uses' => 'CustomerController@generateFitCardCodOrder'));
 Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardtmporder','uses' => 'CustomerController@generateFitCardTmpOrder'));
@@ -495,6 +515,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
 Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'OrderController@captureOrderStatus'));
 Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 

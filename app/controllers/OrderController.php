@@ -24,7 +24,7 @@ class OrderController extends \BaseController {
 	}
 
 
-	//capture order status for customer
+	//capture order status for customer used membership by
 	public function captureOrderStatus(){
 
 		$data		=	Input::json()->all();
