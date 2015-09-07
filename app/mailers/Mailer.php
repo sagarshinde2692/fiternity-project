@@ -123,4 +123,26 @@ abstract Class Mailer {
 
 	}
 
+
+	public function sendToWorkerTest($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		$worker = new IronWorker(array(
+		    'token' => Config::get('queue.connections.ironworker.token'),
+    		'project_id' => Config::get('queue.connections.ironworker.project')
+		));
+		
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
+		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+		$queue_name = 'TestMailerApi';
+
+		$messageid = $worker->postTask($queue_name,$payload,$options);
+
+		return $messageid;
+
+	}
+
 }

@@ -10,16 +10,37 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
 });
 
-
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 
 
 
-Route::get('/', function() { return "laravel 4.2 goes here....";});
+Route::get('/', function() { 
+	return "laravel 4.2 goes here....";
+
+});
 
 
 Route::get('/testfinder', function() { 
+
+	return $items = Finder::where('status', '1')->take(10000)->skip(0)->groupBy('slug')->get(array('slug'));
+
+	$slugArr = [];
+	$duplicateSlugArr = [];
+	foreach ($items as $item) {  
+
+		Finder::destroy(intval($item->_id));
+		// if (!in_array($item->slug, $slugArr)){
+		// 	array_push($slugArr, $item->slug);
+		// }else{
+		// 	array_push($duplicateSlugArr,  $item->slug);
+		// }
+
+	}
+
+	return $duplicateSlugArr;
+
+	exit;
 
 	for ($i=0; $i < 7 ; $i++) { 
 		$skip = $i * 1000;
@@ -55,6 +76,7 @@ Route::get('/testsms', function() {
 	return $response;
 
 });
+
 
 Route::get('/capturedata', function() { 
 
@@ -139,9 +161,6 @@ Route::get('/capturedata', function() {
 
 
 Route::get('/updatefinder', function() { 
-
-	
-
 
 	// $items = Finder::active()->take(3000)->skip(0)->get();
 	$items = Service::active()->take(3000)->skip(0)->get();
@@ -420,7 +439,9 @@ Route::get('/findercsv', function() {
 
 });
 
-Route::get('/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
+Route::get('/debug/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
+Route::get('/debug/sendbooktrialdaliysummary',  array('as' => 'debug.sendbooktrialdaliysummary','uses' => 'DebugController@sendbooktrialdaliysummary'));
+Route::get('/debug/sendbooktrialdaliysummaryv1',  array('as' => 'debug.sendbooktrialdaliysummaryv1','uses' => 'DebugController@sendbooktrialdaliysummaryv1'));
 
 /******************** DEBUG SECTION END HERE ********************/
 ##############################################################################
@@ -443,21 +464,21 @@ Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
-Route::get('getlandingpagefinders/{locationclusterid}', 'HomeController@getLandingPageFinders');
+Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
 
 
 
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
-Route::get('/autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
 Route::get('/fitcardautobooktrials/{customeremail}',  array('as' => 'customer.fitcardautobooktrials','uses' => 'CustomerController@getFitcardAutoBookTrials'));
 Route::get('/autobooktrial/{trialid}',  array('as' => 'customer.autobooktrial','uses' => 'CustomerController@getAutoBookTrial'));
-Route::post('capturepayment',  array('as' => 'customer.capturepayment','uses' => 'CustomerController@capturePayment'));
+// Route::post('capturepayment',  array('as' => 'customer.capturepayment','uses' => 'CustomerController@capturePayment'));
 
 Route::post('generatefitcardcodorder',  array('as' => 'customer.generatefitcardcodorder','uses' => 'CustomerController@generateFitCardCodOrder'));
 Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardtmporder','uses' => 'CustomerController@generateFitCardTmpOrder'));
-Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
+// Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
+Route::post('captureorderpayment', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialV2'));
 
 Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
 Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
@@ -466,12 +487,20 @@ Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpass
 Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
 Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp','uses' => 'CustomerController@validateOtp'));
 
+
+Route::get('autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
+Route::get('reviews/{customerid}/{from?}/{size?}',  array('as' => 'customer.reviews','uses' => 'CustomerController@reviewListing'));
+Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderhistory','uses' => 'CustomerController@orderHistory'));
+Route::get('bookmarks/{customerid}',  array('as' => 'customer.bookmarks','uses' => 'CustomerController@getBookmarks'));
+Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarks','uses' => 'CustomerController@updateBookmarks'));
+
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
 	Route::post('customerresetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
 	Route::get('customerlogout', array('as' => 'customer.validatetokencustomerlogout','uses' => 'CustomerController@customerLogout'));
 	Route::post('customerupdate', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
+
 
 });
 
@@ -485,11 +514,13 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
 Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'OrderController@captureOrderStatus'));
 Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
 
 Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
+Route::post('buylandingpagepurchase',  array('as' => 'orders.buylandingpagepurchase','uses' => 'OrderController@buyLandingpagePurchase'));
 
 
 
@@ -515,6 +546,7 @@ Route::get('/author/{username}', 'UsersController@getAuthor');
 /******************** FINDERS SECTION START HERE ***********************/
 //Route::get('getallfinder/', array('as' => 'finders.getallfinder','uses' => 'FindersController@getallfinder'));
 Route::get('finderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail'));
+Route::get('finderservices/{finderid}', array('as' => 'finders.finderservices','uses' => 'FindersController@finderServices'));
 // Route::get('ratecards/{finderid}', array('as' => 'finders.ratecards','uses' => 'FindersController@ratecards'));
 Route::get('ratecarddetail/{id}', array('as' => 'finders.ratecarddetail','uses' => 'FindersController@ratecarddetail'));
 Route::post('updatefinderrating/', array('as' => 'finders.updatefinderrating','uses' => 'FindersController@updatefinderrating'));

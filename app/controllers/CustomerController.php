@@ -29,30 +29,23 @@ class CustomerController extends \BaseController {
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-										->where('customer_email', '=', $customeremail)
-										->whereIn('booktrial_type', array('auto'))
-										->orderBy('_id', 'desc')
-										->get($selectfields)->toArray();
+		->where('customer_email', '=', $customeremail)
+		->whereIn('booktrial_type', array('auto'))
+		->orderBy('_id', 'desc')
+		->get($selectfields)->toArray();
 
 		if(count($trials) < 1){
-
 			$resp 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
-			
 			return Response::json($resp);
 		}
 
 		$customertrials  = 	$trial = array();
-
 		$currentDateTime =	\Carbon\Carbon::now();
 
 		foreach ($trials as $trial){
-
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
-			
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-			
 			array_set($trial, 'passed', $slot_datetime_pass_status);
-			
 			array_push($customertrials, $trial);
 		}
 
@@ -65,18 +58,15 @@ class CustomerController extends \BaseController {
 	public function getFitcardAutoBookTrials($customeremail){
 
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
-		
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-							->where('customer_email', '=', $customeremail)
-							->where('fitcard_user', 1)
-							->whereIn('booktrial_type', array('auto'))
-							->orderBy('_id', 'desc')
-							->get($selectfields)->toArray();
+		->where('customer_email', '=', $customeremail)
+		->where('fitcard_user', 1)
+		->whereIn('booktrial_type', array('auto'))
+		->orderBy('_id', 'desc')
+		->get($selectfields)->toArray();
 
 		if(count($trials) < 1){
-
 			$resp 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
-			
 			return Response::json($resp);
 		}
 
@@ -84,13 +74,9 @@ class CustomerController extends \BaseController {
 		$currentDateTime =	\Carbon\Carbon::now();
 
 		foreach ($trials as $trial){
-
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
-			
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-			
 			array_set($trial, 'passed', $slot_datetime_pass_status);
-			
 			// return $trial; 
 			array_push($customertrials, $trial);
 		}
@@ -108,14 +94,11 @@ class CustomerController extends \BaseController {
 		$trial 			=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))->where('_id', '=', intval($trialid) )->where('going_status', '=', 1)->first($selectfields);
 
 		if(!$trial){
-
 			$resp 	= 	array('status' => 200, 'trial' => $trial, 'message' => 'No trial Exist :)');
-			
 			return Response::json($resp);
 		}
 
 		$resp 	= 	array('status' => 200, 'trial' => $trial, 'message' => 'Particular Tiral of Customer');
-		
 		return Response::json($resp);
 	}
 
@@ -189,7 +172,6 @@ class CustomerController extends \BaseController {
 
 		//send welcome email to cod customer
 		$sndWelcomeMail	= 	$this->customermailer->fitcardCodWelcomeMail($order->toArray());
-
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Order Successful :)");
 
 		return Response::json($resp);
@@ -240,9 +222,7 @@ class CustomerController extends \BaseController {
 			);
 
 		$order 			= 	new Order($data);
-
 		$order->_id 		= 	$orderid;
-
 		$orderstatus   		= 	$order->save();
 
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp fitcard buy :)");
@@ -255,15 +235,11 @@ class CustomerController extends \BaseController {
 	public function captureOrderPayment(){
 
 		$data		=	Input::json()->all();
-
 		$orderid 	=	(int) Input::json()->get('orderid');
-
 		$order 		= 	Order::findOrFail($orderid);
 
 		if(Input::json()->get('status') == 'success'){
-
 			array_set($data, 'status', '1');
-
 			$orderdata 	=	$order->update($data);
 			
 			//send welcome email to payment gateway customer
@@ -273,16 +249,13 @@ class CustomerController extends \BaseController {
 			}else{
 				$sndWelcomeMail	= 	$this->customermailer->fitcardPaymentGateWelcomeMail($order->toArray());
 			}
-		
+			
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
-
 			Log::info('Customer Purchase : '.json_encode(array('purchase_details' => $order)));
-
 			return Response::json($resp);
 		}
 
 		$orderdata 		=	$order->update($data);
-
 		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
 		
 		return Response::json($resp);
@@ -294,62 +267,62 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 		$inserted_id = Customer::max('_id') + 1;
 		$rules = [
-		    'name' => 'required|max:255',
-		    'email' => 'required|email|max:255',
-		    'password' => 'required|min:6|max:20|confirmed',
-		    'password_confirmation' => 'required|min:6|max:20',
-		    'contact_no' => 'max:15',
-		    'identity' => 'required'
+		'name' => 'required|max:255',
+		'email' => 'required|email|max:255',
+		'password' => 'required|min:6|max:20|confirmed',
+		'password_confirmation' => 'required|min:6|max:20',
+		'contact_no' => 'max:15',
+		'identity' => 'required'
 		];
-        $validator = Validator::make($data,$rules);
+		$validator = Validator::make($data,$rules);
 
-     	if ($validator->fails()) {
-            return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
-        }else{
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+		}else{
 
-        	$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
+			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
 				$new_validator = Validator::make($data, Customer::$rules);
 				if ($new_validator->fails()) {
-		            return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
-		        }else{
-		        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-        			$account_link[$data['identity']] = 1;
-		        	$customer = new Customer();
-		        	$customer->_id = $inserted_id;
-			        $customer->name = ucwords($data['name']) ;
-			        $customer->email = $data['email'];
-			        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
-			        $customer->password = md5($data['password']);
-			        if(isset($data['contact_no'])){
-			        	$customer->contact_no = $data['contact_no'];
-			        }
-			        $customer->identity = $data['identity'];
-			        $customer->account_link = $account_link;
-			        $customer->status = "1";
-			        $customer->save();
+					return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+				}else{
+					$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+					$account_link[$data['identity']] = 1;
+					$customer = new Customer();
+					$customer->_id = $inserted_id;
+					$customer->name = ucwords($data['name']) ;
+					$customer->email = $data['email'];
+					$customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
+					$customer->password = md5($data['password']);
+					if(isset($data['contact_no'])){
+						$customer->contact_no = $data['contact_no'];
+					}
+					$customer->identity = $data['identity'];
+					$customer->account_link = $account_link;
+					$customer->status = "1";
+					$customer->save();
 
-			        $customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+					$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 					$this->customermailer->register($customer_data);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
-        			return Response::json($this->createToken($customer),200);
-		        }	
-	        }else{
+					return Response::json($this->createToken($customer),200);
+				}	
+			}else{
 
-	        	$account_link= $customer['account_link'];
+				$account_link= $customer['account_link'];
 				$account_link[$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
-		        $customer->email = $data['email'];
-		        $customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
-		        $customer->password = md5($data['password']);
-		        if(isset($data['contact_no'])){
-		        	$customer->contact_no = $data['contact_no'];
-		        }
-		        $customer->account_link = $account_link;
-		        $customer->status = "1";
+				$customer->email = $data['email'];
+				$customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
+				$customer->password = md5($data['password']);
+				if(isset($data['contact_no'])){
+					$customer->contact_no = $data['contact_no'];
+				}
+				$customer->account_link = $account_link;
+				$customer->status = "1";
 				$customer->update();
 
 				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
@@ -358,14 +331,12 @@ class CustomerController extends \BaseController {
 				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
 				return Response::json($this->createToken($customer),200);
-	        }
+			}
 
-	        $account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-    		$account_link[$data['identity']] = 1;
-        }
+			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+			$account_link[$data['identity']] = 1;
+		}
 	}
-
-
 
 
 	public function customerLogin(){
@@ -385,40 +356,40 @@ class CustomerController extends \BaseController {
 				return Response::json(array('status' => 400,'message' => array('identity' => 'The identity is incorrect')),400);
 			}
 
-	    }else{
+		}else{
 
-	    	return Response::json(array('status' => 400,'message' => array('identity' => 'The identity field is required')),400);
-	    }
+			return Response::json(array('status' => 400,'message' => array('identity' => 'The identity field is required')),400);
+		}
 	}
 
 	public function emailLogin($data){
 
 		$rules = [
-				    'email' => 'required|email',
-				    'password' => 'required'
-				];
+		'email' => 'required|email',
+		'password' => 'required'
+		];
 
 		$validator = Validator::make($data = Input::json()->all(),$rules);
 
 		if($validator->fails()) {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-        }
+		}
 
-        $customer = Customer::where('email','=',$data['email'])->where('status','=','1')->first();
-       	if(empty($customer)){
-       		return array('status' => 400,'message' => 'Customer is inactive');
-       	}else{
-       		if(isset($customer['hull_id']) && $customer['ishulluser'] == 1){
-       			$customer->password = md5($data['password']);
-       			$customer->ishulluser = 0;
-       		}else{
-       			if($customer['password'] != md5($data['password'])){
-       				return array('status' => 400,'message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
-       			}
-       		}
-       	}
+		$customer = Customer::where('email','=',$data['email'])->where('status','=','1')->first();
+		if(empty($customer)){
+			return array('status' => 400,'message' => 'Customer is inactive');
+		}else{
+			if(isset($customer['hull_id']) && $customer['ishulluser'] == 1){
+				$customer->password = md5($data['password']);
+				$customer->ishulluser = 0;
+			}else{
+				if($customer['password'] != md5($data['password'])){
+					return array('status' => 400,'message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
+				}
+			}
+		}
 
-       	if($customer['account_link'][$data['identity']] != 1)
+		if($customer['account_link'][$data['identity']] != 1)
 		{
 			$account_link = $customer['account_link'];
 			$account_link[$data['identity']] = 1;
@@ -426,12 +397,10 @@ class CustomerController extends \BaseController {
 		}
 
 		$customer->last_visited = Carbon::now();
-       	$customer->update();
+		$customer->update();
 
 		return $this->createToken($customer);
 	}
-
-
 
 	public function socialLogin($data){
 
@@ -537,8 +506,6 @@ class CustomerController extends \BaseController {
 		return $this->createToken($customer);
 	}
 
-
-
 	public function socialRegister($data){
 
 		$rules = [
@@ -579,25 +546,23 @@ class CustomerController extends \BaseController {
         return $response;
 	}
 
-
-
 	public function createToken($customer){
 
 		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$location = (isset($customer['location'])) ? $customer['location'] : "";
 
 		$jwt_claim = array(
-			    "iat" => Config::get('app.jwt.iat'),
-			    "nbf" => Config::get('app.jwt.nbf'),
-			    "exp" => Config::get('app.jwt.exp'),
-			    "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
+			"iat" => Config::get('app.jwt.iat'),
+			"nbf" => Config::get('app.jwt.nbf'),
+			"exp" => Config::get('app.jwt.exp'),
+			"customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
 			);
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
 
 		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
-        return array('status' => 200,'message' => 'successfull login', 'token' => $token);
+		return array('status' => 200,'message' => 'successfull login', 'token' => $token);
 	}
 
 
@@ -612,56 +577,52 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 
 		$jwt_token  = Request::header('Authorization');
-        $jwt_key = Config::get('app.jwt.key');
-        $jwt_alg = Config::get('app.jwt.alg');
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
 		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
 		$data['email'] = $decoded->customer->email;
 
 		$rules = [
-			    'email' => 'required|email|max:255',
-	    		'password' => 'required|min:6|confirmed',
-	    		'password_confirmation' => 'required|min:6',
-			];
+		'email' => 'required|email|max:255',
+		'password' => 'required|min:6|confirmed',
+		'password_confirmation' => 'required|min:6',
+		];
 
-        $validator = Validator::make($data, $rules);
+		$validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
-            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
-        }else{
-        	
-        	$customer = Customer::where('email','=',$data['email'])->first();
-        	
-        	if(empty($customer)){
+			$response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+		}else{
+			
+			$customer = Customer::where('email','=',$data['email'])->first();
+			
+			if(empty($customer)){
 				return array('status' => 400,'message' => array('email' => 'Incorrect email'));
 			}
 
 			$password['password'] = md5($data['password']);
 			$customer->update($password);
 
-	        $response = array('status' => 200,'message' => 'password reset successfull');
-        }
+			$response = array('status' => 200,'message' => 'password reset successfull');
+		}
 
-        return Response::json($response,$responce['status']);
+		return Response::json($response,$responce['status']);
 	}
-
-
 
 	public function createPasswordToken($customer){
 		$password_claim = array(
-			    "iat" => Config::get('app.forgot_password.iat'),
-			    "exp" => Config::get('app.forgot_password.exp'),
-			    "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
+			"iat" => Config::get('app.forgot_password.iat'),
+			"exp" => Config::get('app.forgot_password.exp'),
+			"customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
 			);
 		$password_key = Config::get('app.forgot_password.key');
 		$password_alg = Config::get('app.forgot_password.alg');
 
 		$token = JWT::encode($password_claim,$password_key,$password_alg);
 
-        return $token;
+		return $token;
 	}
-
-
 
 	public function forgotPasswordEmail(){
 
@@ -691,7 +652,6 @@ class CustomerController extends \BaseController {
 	}
 
 
-
 	public function forgotPassword(){
 
 		$data = Input::json()->all();
@@ -699,61 +659,59 @@ class CustomerController extends \BaseController {
 		if(isset($data['password_token']) && !empty($data['password_token'])){
 
 			$password_token = $data['password_token'];
-	        $password_key = Config::get('app.forgot_password.key');
-	        $password_alg = Config::get('app.forgot_password.alg');
-	    
-	        try{
-	        	if(Cache::tags('blacklist_forgot_password_token')->has($password_token)){
-	        		return Response::json(array('status' => 400,'message' => 'Token expired'),400);
-	        	}
+			$password_key = Config::get('app.forgot_password.key');
+			$password_alg = Config::get('app.forgot_password.alg');
+			
+			try{
+				if(Cache::tags('blacklist_forgot_password_token')->has($password_token)){
+					return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+				}
 
-	            $decoded = JWT::decode($password_token, $password_key,array($password_alg));
+				$decoded = JWT::decode($password_token, $password_key,array($password_alg));
 
-	            if(!empty($decoded)){
-	            	$rules = [
-					    'email' => 'required|email|max:255',
-			    		'password' => 'required|min:6|confirmed',
-			    		'password_confirmation' => 'required|min:6',
+				if(!empty($decoded)){
+					$rules = [
+					'email' => 'required|email|max:255',
+					'password' => 'required|min:6|confirmed',
+					'password_confirmation' => 'required|min:6',
 					];
 
-	            	$data['email'] = $decoded->customer->email;
+					$data['email'] = $decoded->customer->email;
 
-	            	$validator = Validator::make($data, $rules);
+					$validator = Validator::make($data, $rules);
 
-	            	if ($validator->fails()) {
-			           return Response::json(array('status' => 400,'message' =>$this->errorMessage($validator->errors())),400);
-			        }else{
-			        	$password['password'] = md5($data['password']);
+					if ($validator->fails()) {
+						return Response::json(array('status' => 400,'message' =>$this->errorMessage($validator->errors())),400);
+					}else{
+						$password['password'] = md5($data['password']);
 
-			        	$customer = Customer::where('email','=',$data['email'])->first();
+						$customer = Customer::where('email','=',$data['email'])->first();
 						$customer->update($password);
 
 						$expiry_time_minutes = (int)round(($decoded->exp - time())/60);
 
 						Cache::tags('blacklist_forgot_password_token')->put($password_token,$decoded->customer->email,$expiry_time_minutes);
 
-				        return $this->createToken($customer);
-			        }
-	            }else{
-	            	return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
-	            }
+						return $this->createToken($customer);
+					}
+				}else{
+					return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+				}
 
-	        }catch(DomainException $e){
-	            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
-	        }catch(ExpiredException $e){
-	            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
-	        }catch(SignatureInvalidException $e){
-	            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
-	        }catch(Exception $e){
-	            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
-	        }
+			}catch(DomainException $e){
+				return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+			}catch(ExpiredException $e){
+				return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+			}catch(SignatureInvalidException $e){
+				return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+			}catch(Exception $e){
+				return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+			}
 
-	    }else{
-	        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
-	    }
+		}else{
+			return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
+		}
 	}
-
-
 
 	public function forgotPasswordEmailApp(){
 
@@ -798,28 +756,25 @@ class CustomerController extends \BaseController {
 
 	}
 
-
-
 	public function createOtp($email){
 		$length = 4;
 		$characters = '0123456789';
 		$expiry_time_minutes = 60*24;
-	    $charactersLength = strlen($characters);
-	    $randomString = '';
-	    for ($i = 0; $i < $length; $i++) {
-	        $randomString .= $characters[rand(0, $charactersLength - 1)];
-	    }
+		$charactersLength = strlen($characters);
+		$randomString = '';
+		for ($i = 0; $i < $length; $i++) {
+			$randomString .= $characters[rand(0, $charactersLength - 1)];
+		}
 
-	    if(Cache::tags('app_customer_otp')->has($randomString)){
-	    	$randomString = $this->createOtp($customer['email']);
-	    }
-	    else{
-	    	Cache::tags('app_customer_otp')->put($randomString,$email,$expiry_time_minutes);
-	    }
+		if(Cache::tags('app_customer_otp')->has($randomString)){
+			$randomString = $this->createOtp($customer['email']);
+		}
+		else{
+			Cache::tags('app_customer_otp')->put($randomString,$email,$expiry_time_minutes);
+		}
 
-	    return $randomString;
+		return $randomString;
 	}
-
 
 
 	public function validateOtp(){
@@ -827,31 +782,30 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 
 		$rules = [
-		    'email' => 'required|email|max:255',
-    		'otp' => 'required'
+		'email' => 'required|email|max:255',
+		'otp' => 'required'
 		];
 
 		$validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
-            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
-        }else{
-        	if(Cache::tags('app_customer_otp')->has($data['otp'])){
-        		if(Cache::tags('app_customer_otp')->get($data['otp']) == $data['email']){
-        			$customer = Customer::where('email','=',$data['email'])->first();
-        			$token = $this->createPasswordToken($customer);
-        			$response = array('status' => 200,'token'=>$token,'message' =>'OTP verified successfull');
-        		}else{
-        			$response = array('status' => 400,'message' =>'OTP expired');
-        		}
-        	}else{
-        		$response = array('status' => 400,'message' =>'OTP expired');
-        	}
-        }
+			$response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+		}else{
+			if(Cache::tags('app_customer_otp')->has($data['otp'])){
+				if(Cache::tags('app_customer_otp')->get($data['otp']) == $data['email']){
+					$customer = Customer::where('email','=',$data['email'])->first();
+					$token = $this->createPasswordToken($customer);
+					$response = array('status' => 200,'token'=>$token,'message' =>'OTP verified successfull');
+				}else{
+					$response = array('status' => 400,'message' =>'OTP expired');
+				}
+			}else{
+				$response = array('status' => 400,'message' =>'OTP expired');
+			}
+		}
 
-	    return Response::json($response,$response['status']);
+		return Response::json($response,$response['status']);
 	}
-
 	
 
 	public function customerLogout(){
@@ -918,10 +872,92 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = $token;
 		$jwt_key = Config::get('app.jwt.key');
-        $jwt_alg = Config::get('app.jwt.alg');
+		$jwt_alg = Config::get('app.jwt.alg');
 		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
 		return $decodedToken;
 	}
+
+
+	public function reviewListing($customer_id, $from = '', $size = ''){
+		
+		$customer_id			= 	(int) $customer_id;	
+		$from 				=	($from != '') ? intval($from) : 0;
+		$size 				=	($size != '') ? intval($size) : 10;
+
+		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('customer_id','=',$customer_id)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$responseData 		= 	['reviews' => $reviews,  'message' => 'List for reviews'];
+
+		return Response::json($responseData, 200);
+	}
+
+
+	public function orderHistory($customer_email, $from = '', $size = ''){
+		
+		$customer_email		= 	$customer_email;	
+		$from 				=	($from != '') ? intval($from) : 0;
+		$size 				=	($size != '') ? intval($size) : 10;
+
+		$orders 			= 	Order::where('customer_email','=',$customer_email)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
+
+		return Response::json($responseData, 200);
+	}
+
+
+	public function getBookmarks($customer_id){
+		
+		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
+		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
+
+		if(empty($finderids)){
+			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+			return Response::json($responseData, 200);
+		}
+
+		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->whereIn('_id', $finderids)
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+
+		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
+		return Response::json($responseData, 200);
+	}
+
+	public function updateBookmarks($customer_id, $finder_id, $remove = ''){
+
+		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
+		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? array_map('intval',$customer->bookmarks) : [];
+
+		if($remove == ""){
+			array_push($finderids, intval($finder_id));
+			$message = 'bookmark added successfully';
+		}else{
+			if (in_array(intval($finder_id), $finderids)){
+    			unset($finderids[array_search(intval($finder_id),$finderids)]);
+			}
+			$message = 'bookmark revomed successfully';
+		}
+
+		$customer = Customer::find((int) $customer_id);
+		$bookmarksdata = ['bookmarks' => array_unique($finderids)];
+		$customer->update($bookmarksdata);
+
+		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->whereIn('_id', array_unique($finderids))
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
+		
+		return Response::json($responseData, 200);
+	}
+
+
+
+
+
+
+
+
 
 }

@@ -19,7 +19,7 @@ class HomeController extends BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
-			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->where('_id', '!=', 42)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();						
@@ -53,7 +53,7 @@ class HomeController extends BaseController {
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->whereIn('_id', $finder_ids)
 			->remember(Config::get('app.cachetime'))
-			->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+			->get(array('_id','average_rating','category_id','coverimage','finder_coverimage','slug','title','category','location_id','location','total_rating_count'))
 			->groupBy('category.name')
 			->toArray();
 
@@ -68,7 +68,7 @@ class HomeController extends BaseController {
 			->where('status', '=', '1')
 			->orderBy('_id', 'desc')
 			->remember(Config::get('app.cachetime'))
-			->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+			->get(array('_id','author_id','category_id','categorytags','coverimage','finder_coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 			->take(4)->toArray();		
 
 			$homedata 				= 	array('categorytags' => $categorytags,
@@ -111,7 +111,7 @@ class HomeController extends BaseController {
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->whereIn('_id', $finder_ids)
 			->remember(Config::get('app.cachetime'))
-			->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
+			->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
 			->groupBy('category.name')
 			->toArray();
 
@@ -164,7 +164,6 @@ class HomeController extends BaseController {
 	public function getCityLocation($city = 'mumbai',$cache = true){   
 
 		$location_by_city = $cache ? Cache::tags('location_by_city')->has($city) : false;
-
 		if(!$location_by_city){
 			$categorytags = $locations  =	array();
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
@@ -179,9 +178,6 @@ class HomeController extends BaseController {
 
 		return Response::json(Cache::tags('location_by_city')->get($city));
 	}
-
-
-	
 
 
 	public function landingzumba(){
@@ -224,15 +220,11 @@ class HomeController extends BaseController {
 		->get(array('_id','title','slug','coverimage'));
 		array_set($finders,  'bandra_vileparle_finders', array('title'=>'Bandra to Vile Parle', 'finders' => $bandra_vileparle_finders));		
 
-
-
 		$andheri_borivalii_finder_ids 		=		array(1579,1261,1705,401,561,341,1655,1513,1510,739,1514,570,1260,1261,40,1465,523,576,1332,166,1447,602,1428,224,1887,1786,604,1771,1257,1751,1523,1554,1235,1209,439,1421,625,1020,1522,1392,1667,1484,1041,1435,1694,1259,1413,45,449,1330,227,1697,1395,1511,1873,1698,1691,1389,412,1642,1480,1676,417,1682,1069,1677,1445,1424,223,1214,1688,1080,1490);
 		$andheri_borivalii_finders 			= 		Finder::whereIn('_id', $andheri_borivalii_finder_ids)
 		->remember(Config::get('app.cachetime'))
 		->get(array('_id','title','slug','coverimage'));
 		array_set($finders,  'andheri_borivalii_finders', array('title'=>'Andheri to Borivali', 'finders' => $andheri_borivalii_finders));		
-
-
 
 		$south_mumbai_finder_ids 			=		array(718,329,26,25,1603,1605,1449,328,171,1296,1327,1422,1710,1441,1293,1295,903,1835,1639,983,1851,569,1764,1823,1493,1646,1242,1563,1783,1887,984,1612,827,417,1888,1782,138,731,1,422,1122,1029,1706,1331,1333,1233);
 		$south_mumbai_finders 				= 		Finder::whereIn('_id', $south_mumbai_finder_ids)
@@ -289,7 +281,7 @@ class HomeController extends BaseController {
 		->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 		->whereIn('_id', array(1029,1030,1032,1033,1034,1035,1554,1705,1706,1870,4585))
 		->remember(Config::get('app.cachetime'))
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
+		->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
 		->toArray();
 
 		return Response::json($finders);										
@@ -300,39 +292,28 @@ class HomeController extends BaseController {
 	public function getcollecitonnames($city = 'mumbai', $cache = true){
 
 		$collection_by_city_list = $cache ? Cache::tags('collection_by_city_list')->has($city) : false;
-
 		if(!$collection_by_city_list){
-
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-			
 			$city_id		= 	(int) $citydata['_id'];	
-			
 			$collections 	= 	Findercollection::active()->where('city_id', '=', $city_id)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 
 			if(count($collections) < 1){
-
 				$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'No collections yet :)');
-
 				Cache::tags('collection_by_city_list')->put($city,$resp,Config::get('cache.cache_time'));
-
 				return Response::json(Cache::tags('collection_by_city_list')->get($city));
-
 			}
 
 			$resp 	= 	array('status' => 200,'collections' => $collections,'message' => 'List of collections names');
-
 			Cache::tags('collection_by_city_list')->put($city,$resp,Config::get('cache.cache_time'));
 		}
 		
 		return Response::json(Cache::tags('collection_by_city_list')->get($city));			
-
 	}
 
 
 	public function getcollecitonfinders($city, $slug, $cache = true){
 
 		$finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
-
 		if(!$finder_by_collection_list){
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 			$city_id		= 	(int) $citydata['_id'];	
@@ -343,7 +324,7 @@ class HomeController extends BaseController {
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->whereIn('_id', $finder_ids)
 			->remember(Config::get('app.cachetime'))
-			->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count','info'))
+			->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count','info'))
 			->toArray();
 
 			$finders = array();
@@ -361,7 +342,6 @@ class HomeController extends BaseController {
 			$data 	= 	array('status' => 200,'collection' => $collection,'collection_finders' => $finders);
 			Cache::tags('finder_by_collection_list')->put($city."_".$slug,$data,Config::get('cache.cache_time'));
 		}
-		
 		return Response::json(Cache::tags('finder_by_collection_list')->get($city."_".$slug));	
 	}
 
@@ -386,7 +366,6 @@ class HomeController extends BaseController {
 	public function fitcardfindersV1(){
 
 		$data				=	Input::json()->all();
-
 		$fitcardids = array_unique(array(3305,1664,1214,1587,147,217,417,579,596,752,825,827,878,905,1021,1031,1376,1388,1451,1493,1495,1516,1630,1650,1765,1783,1965,2211,2736,1473,741,984,1496,2810,1752,2818,1346,
 			1668,2755,2833,3109,1751,624,1692,2865,1770,677,902,1243,1623,1766,224,2808,232,566,881,900,1563,968,1704,1885,351,424,599,571,816,1588,1080,131,1606,1813,1673,1732,
 			590,1242,1431,1607,1452,1747,400,613,616,633,975,987,1309,1604,1676,1750,2207,341,1784,1656,1642,1621,575,877));
@@ -438,20 +417,62 @@ class HomeController extends BaseController {
 
 
 	//Get all landing page finder base on location cluster
-	public function getLandingPageFinders($locationclusterid){
+	public function getLandingPageFinders($cityid , $landingpageid, $locationclusterid = ''){
 
-		$collection 			= 	Landingpage::active()->where('locationcluster_id', intval($locationclusterid) )->first(array());
-		$finder_ids 	= 	array_map('intval', explode(",", $collection['finder_ids']));
+		$locationclusters 	= 	Locationcluster::active()->where('city_id', intval($cityid))->lists('name','_id');		
+		$collection 		= 	Landingpage::active()->find( intval($landingpageid) )->first(array());
+		$finder_ids 		= 	array_map('intval', explode(",", $collection['finder_ids']));
 
-		$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->whereIn('_id', $finder_ids)
-		->remember(Config::get('app.cachetime'))
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
-		->toArray();
+		$query 		=	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('offerings')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->whereIn('_id', $finder_ids);
+
+		if($locationclusterid != ''){
+			$locations 		= 	Location::active()->where('locationcluster_id', intval($locationclusterid))->lists('name','_id');	
+			$locaitonids   	= 	array_map('intval', array_keys($locations)); 
+			// return $locaitonids;
+			$query->whereIn('location_id', $locaitonids);
+		}
+
+		$collection_finders = $query->remember(Config::get('app.cachetime'))->get();
 
 
-		return Response::json($collection_finders);
+		$landingfinders = [];
+		foreach ($collection_finders as $key => $value) {
+			$landingdata = $this->transformLandingpageFinder($value);
+			array_push($landingfinders, $landingdata);
+		}									
+
+		$responsedata = ['locationclusters' => $locationclusters, 'finders' => $landingfinders];
+		return Response::json($responsedata, 200);
+	}
+
+
+	private function transformLandingpageFinder($finder){
+
+		$item  	   	=  	(!is_array($finder)) ? $finder->toArray() : $finder;
+
+		$data = [
+		'_id' => $item['_id'],
+		'title' => (isset($item['title']) && $item['title'] != '') ? strtolower($item['title']) : "",
+		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+		'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
+		'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
+		'commercial_type' => (isset($item['commercial_type']) && $item['commercial_type'] != '') ? strtolower($item['commercial_type']) : "",
+		'finder_coverimage' => (isset($item['finder_coverimage']) && $item['finder_coverimage'] != '') ? strtolower($item['finder_coverimage']) : "",
+		'average_rating' => (isset($item['average_rating']) && $item['average_rating'] != '') ? $item['average_rating'] : "",
+		'total_rating_count' => (isset($item['total_rating_count']) && $item['total_rating_count'] != '') ? $item['total_rating_count'] : "",
+		'offerings' => (isset($item['offerings']) && !empty($item['offerings'])) ? pluck( $item['offerings'] , array('_id', 'name', 'slug') ) : "",
+		'location' => (isset($item['location']) && !empty($item['location'])) ? array_only( $item['location'] , array('_id', 'name', 'slug') ) : "",
+		'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
+		'info' => (isset($item['info']) && !empty($item['info'])) ? $item['info']  : "",
+		'contact' => (isset($item['contact']) && !empty($item['contact'])) ? $item['contact']  : "",
+		'city' => (isset($item['city']) && !empty($item['city'])) ? $item['city']  : "",
+		'photos' => (isset($item['photos']) && !empty($item['photos'])) ? $item['photos']  : "",
+		];
+
+		// echo "<pre>";print_r($data);exit();
+		return $data;
+
+
 	}
 
 }																																																																																																																																																																																																																																																																										

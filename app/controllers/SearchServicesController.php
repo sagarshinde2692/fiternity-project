@@ -63,84 +63,84 @@ public function getWorkoutsessions(){
 	$weekday_filter				=   '';
 	$time_range_filter			=	'';
 
-    if( !(Input::json()->get('min_time')))
-    {
-    	$weekdaytoday 				= 	strtolower(date( "l", time() ));    	
-    	$min_time					= 	intval(date("H")) == 23 ? 0 : intval(date("H")) + 1;
-    	if($min_time + 12 >= 24)
-    	{
-    		$weekdaytom 		= 	strtolower(date( "l", strtotime('+1 day', time() ) ));    	
-    		$max_time			=	$min_time - 12 ;
-    		$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'","'.$weekdaytom.'"] } },'; 
-    		$time_range_filter 	=	'{
-                        "bool": {
-                          "should": [
-                            {
-                              "range": {
-                                "workoutsessionschedules.start_time_24_hour_format": {
-                                  "gte": '.$min_time.',
-                                  "lte": 24
-                                }
-                              }
-                            },
-                            {
-                              "range": {
-                                "workoutsessionschedules.start_time_24_hour_format": {
-                                  "gte": 0,
-                                  "lte": '.$max_time.'
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      },';
-    	}
-    	else
-    	{
-    		$max_time				=	$min_time + 12 ;
-    		$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'"] } },'; 
-    		$time_range_filter			=  ($min_time != '' && $max_time != '') ? '{"range" : {"workoutsessionschedules.start_time_24_hour_format" : { "gte" : '.$min_time.',"lte": '.$max_time.'}} },'  : '';
-    	}     	
-    }
-    else
-    {
-    	$weekdaytoday 			= 	strtolower(date( "l", time()));    	
-    	$min_time				= 	trim(strtolower(Input::json()->get('min_time'))) == 23 ? 0 : trim(strtolower(Input::json()->get('min_time'))) + 1;
-    	if($min_time + 12 >= 24)
-    	{
-    		$weekdaytom 		= 	strtolower(date( "l", strtotime('+1 day', time() ) ));    	
-    		$max_time			=	$min_time - 12 ;
-    		$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'","'.$weekdaytom.'"] } },'; 
-    		$time_range_filter 	=	'{
-                        "bool": {
-                          "should": [
-                            {
-                              "range": {
-                                "workoutsessionschedules.start_time_24_hour_format": {
-                                  "gte": '.$min_time.',
-                                  "lte": 24
-                                }
-                              }
-                            },
-                            {
-                              "range": {
-                                "workoutsessionschedules.start_time_24_hour_format": {
-                                  "gte": 0,
-                                  "lte": '.$max_time.'
-                                }
-                              }
-                            }
-                          ]
-                        }
-                      },';
-    	}
-    	else
-    	{
-    		$max_time				=	$min_time + 12 ;
-    		$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'"] } },'; 
-    		$time_range_filter			=  ($min_time != '' && $max_time != '') ? '{"range" : {"workoutsessionschedules.start_time_24_hour_format" : { "gte" : '.$min_time.',"lte": '.$max_time.'}} },'  : '';
-    	}    
-    }
+	if( !(Input::json()->get('min_time')))
+	{
+		$weekdaytoday 				= 	strtolower(date( "l", time() ));    	
+		$min_time					= 	intval(date("H")) == 23 ? 0 : intval(date("H")) + 1;
+		if($min_time + 12 >= 24)
+		{
+			$weekdaytom 		= 	strtolower(date( "l", strtotime('+1 day', time() ) ));    	
+			$max_time			=	$min_time - 12 ;
+			$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'","'.$weekdaytom.'"] } },'; 
+			$time_range_filter 	=	'{
+				"bool": {
+					"should": [
+					{
+						"range": {
+							"workoutsessionschedules.start_time_24_hour_format": {
+								"gte": '.$min_time.',
+								"lte": 24
+							}
+						}
+					},
+					{
+						"range": {
+							"workoutsessionschedules.start_time_24_hour_format": {
+								"gte": 0,
+								"lte": '.$max_time.'
+							}
+						}
+					}
+					]
+				}
+			},';
+		}
+		else
+		{
+			$max_time				=	$min_time + 12 ;
+			$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'"] } },'; 
+			$time_range_filter			=  ($min_time != '' && $max_time != '') ? '{"range" : {"workoutsessionschedules.start_time_24_hour_format" : { "gte" : '.$min_time.',"lte": '.$max_time.'}} },'  : '';
+		}     	
+	}
+	else
+	{
+		$weekdaytoday 			= 	strtolower(date( "l", time()));    	
+		$min_time				= 	trim(strtolower(Input::json()->get('min_time'))) == 23 ? 0 : trim(strtolower(Input::json()->get('min_time'))) + 1;
+		if($min_time + 12 >= 24)
+		{
+			$weekdaytom 		= 	strtolower(date( "l", strtotime('+1 day', time() ) ));    	
+			$max_time			=	$min_time - 12 ;
+			$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'","'.$weekdaytom.'"] } },'; 
+			$time_range_filter 	=	'{
+				"bool": {
+					"should": [
+					{
+						"range": {
+							"workoutsessionschedules.start_time_24_hour_format": {
+								"gte": '.$min_time.',
+								"lte": 24
+							}
+						}
+					},
+					{
+						"range": {
+							"workoutsessionschedules.start_time_24_hour_format": {
+								"gte": 0,
+								"lte": '.$max_time.'
+							}
+						}
+					}
+					]
+				}
+			},';
+		}
+		else
+		{
+			$max_time				=	$min_time + 12 ;
+			$weekday_filter				=   '{ "terms": { "workoutsessionschedules.weekday": ["'.$weekdaytoday.'"] } },'; 
+			$time_range_filter			=  ($min_time != '' && $max_time != '') ? '{"range" : {"workoutsessionschedules.start_time_24_hour_format" : { "gte" : '.$min_time.',"lte": '.$max_time.'}} },'  : '';
+		}    
+	}
 	//$min_time 					=	(Input::json()->get('min_time')) ? trim(strtolower(Input::json()->get('min_time'))) : intval(date("H")) + 2;
 	//$max_time 					=	(Input::json()->get('max_time')) ? trim(strtolower(Input::json()->get('max_time'))) : 24;
 	$min_price 					=	(Input::json()->get('min_price')) ? trim(strtolower(Input::json()->get('min_price'))) : '';		
@@ -262,13 +262,16 @@ public function getWorkoutsessions(){
 }
 
 
-// 	{ "from": 0, 
-//  "size": 10, 
-//  "city":"mumbai",
-//  "category":"gyms",
-//  "min_time": 20.3,
-// "max_time":  6.15
+// { 
+// "from": 0, 
+// "size": 10, 
+// "city":"mumbai",
+// "location":"goregaon west",
+// "category":"gym",
+// "workout_intensity": "all",
+// "workout_tags":"cardio,endurance"
 // }
+
 public function getRatecards(){
 
 	$searchParams 				= 	array();
@@ -291,7 +294,7 @@ public function getRatecards(){
 	$min_price 					=	(Input::json()->get('min_price')) ? trim(strtolower(Input::json()->get('min_price'))) : '';		
 	$max_price 					=	(Input::json()->get('max_price')) ? trim(strtolower(Input::json()->get('max_price'))) : '';		
 
-		//filters 
+	//filters 
 	$city_filter 				= 	($city != '') ? '{"terms" : {  "city": ["'.str_ireplace(',', '","', $city ).'"] }},'  : '';
 	$category_filter 			= 	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"] }},'  : '';		
 	$subcategory_filter 		= 	($subcategory != '') ? '{"terms" : {  "subcategory": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('subcategory'))).'"] }},'  : '';		
@@ -417,10 +420,29 @@ public function getRatecards(){
 		}
 	}';
 
+	// $body =	'{				
+	// 	"from": '.$from.',
+	// 	"size": '.$size.',
+	// 	"aggs": '.$aggsval.',
+	// 	"query": {
+	// 		"filtered": {
+	// 			"query": {'
+	// 			.$query.
+	// 			'}'.$filters.'
+	// 		}
+	// 	},
+	// 	"fields" : ["_id","name","finder_id","findername", "finderslug","city",
+	// 	"category",
+	// 	"subcategory",
+	// 	"geolocation",
+	// 	"location",
+	// 	"workout_intensity",
+	// 	"workout_tags","commercial_type"]
+	// }';
+
 	$body =	'{				
 		"from": '.$from.',
 		"size": '.$size.',
-		"aggs": '.$aggsval.',
 		"query": {
 			"filtered": {
 				"query": {'
@@ -437,7 +459,7 @@ public function getRatecards(){
 		"workout_tags","commercial_type"]
 	}';
 
-		// echo $body; exit;
+	// echo $body; exit;
 
 	$serachbody = $body;
 	$request = array(

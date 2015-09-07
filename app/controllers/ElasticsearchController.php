@@ -352,9 +352,15 @@ class ElasticsearchController extends \BaseController {
 							->with('facilities')
 							->active()
 							->orderBy('_id')
+<<<<<<< HEAD
                             ->take(1)
 				            // ->take(3000)->skip(0)
 				            //->take(3000)->skip(3000)
+=======
+				            // ->take(1)
+				            ->take(3000)->skip(0)
+				            // ->take(3000)->skip(3000)
+>>>>>>> remotes/origin/master
 							->get();
 			break;
 

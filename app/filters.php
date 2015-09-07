@@ -89,16 +89,15 @@ Route::filter('csrf', function()
 	}
 });
 
-Route::filter('validatetoken',function()
-{
+Route::filter('validatetoken',function(){
+
 	$data = Request::header('Authorization');
 
     if(isset($data) && !empty($data)){
+        $jwt_token  =   $data;
+        $jwt_key    =   Config::get('app.jwt.key');
+        $jwt_alg    =   Config::get('app.jwt.alg');
 
-        $jwt_token  = $data;
-        $jwt_key = Config::get('app.jwt.key');
-        $jwt_alg = Config::get('app.jwt.alg');
-    
         try{
         	if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
         		return Response::json(array('status' => 400,'message' => 'User logged out'),400);
@@ -113,8 +112,8 @@ Route::filter('validatetoken',function()
         }catch(Exception $e){
             return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
         }
-
     }else{
         return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
     }
+
 });

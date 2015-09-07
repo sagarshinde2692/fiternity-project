@@ -487,6 +487,35 @@ Class CustomerMailer extends Mailer {
 	}
 
 
+	public function buyLandingpagePurchase ($data){
+
+		$email_template_customer 	= 	'emails.order.pg_landingpage';
+		$email_template_mailus 		= 	'emails.order.pg_landingpage_mailus';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$subject  					=   'Regarding your purchase on  Membership by Fitternity';
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$label = 'buyLandingpagePurchase-C';
+		
+		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label);
+
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		array_set($message_data, 'user_email', 'mailus@fitternity.com');
+		array_set($message_data, 'user_name', 'Fitternity');
+
+		$label = 'buyLandingpagePurchase-Us';
+		
+		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
+	}
+
+
 	public function resendFitmaniaCustomerEmail ($data){
 
 		$email_template_customer 	= 	'emails.order.fitmania_customer_resend';
