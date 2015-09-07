@@ -13,4 +13,9 @@ class Capture extends \Basemodel {
 		$this->attributes['_id'] = $value;
 	}
  
+ 	public function setCaptureStatusAttribute($value){
+		
+		$this->attributes['capture_status'] = 'yet to connect';
+	}
+
 }

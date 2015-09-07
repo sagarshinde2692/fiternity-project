@@ -83,6 +83,9 @@ zumba_trials
 		// if(in_array(Input::json()->get('capture_type'), $yet_to_connect_arr)){
 		// }
 
+		//set default status
+		array_set($data, 'capture_status', 'yet to connect');
+
 		$storecapture = Capture::create($data);
 		if($storecapture){
 			if(Input::json()->get('capture_type') == 'pre-register-fitmania'){

@@ -20,7 +20,7 @@ class OrderController extends \BaseController {
 
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon');
 	}
 
 
@@ -129,7 +129,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
-		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'){
+		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'|| $data['type'] == 'zumbathon'){
 			if( empty($data['service_duration']) ){
 				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 			}

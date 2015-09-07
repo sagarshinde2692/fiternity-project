@@ -24,7 +24,6 @@ class Finder extends  \Basemodel {
 	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
 	];
 
-
 	public function setIdAttribute($value){
 		$this->attributes['_id'] = intval($value);
 	}

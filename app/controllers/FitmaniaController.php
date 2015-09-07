@@ -383,7 +383,7 @@ class FitmaniaController extends \BaseController {
 			$resp 			= 	array('status' => 404,'message' => "Order Update Fail :)");
 
 			if($buydealofday){
-				
+		
 				$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
 
 				if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
@@ -399,7 +399,6 @@ class FitmaniaController extends \BaseController {
 				$resp 	= 	array('status' => 200,'message' => "Successfully buy Serivce Membership through Fitmania :)");
 
 				return Response::json($resp,200);
-
 			}
 
 			return Response::json($resp,404);
@@ -446,7 +445,10 @@ class FitmaniaController extends \BaseController {
 				}
 			}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 			$sndsSmsCustomer		= 	$this->customersms->buyServiceHealthyTiffinThroughFitmania($orderData);
 
 			if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){

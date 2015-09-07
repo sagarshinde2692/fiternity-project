@@ -58,14 +58,32 @@ Route::get('/testsms', function() {
 
 Route::get('/capturedata', function() { 
 
-	$headers = [
-	'Content-type'        => 'application/csv',   
-	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-	'Content-type'        => 'text/csv',   
-	'Content-Disposition' => 'attachment; filename=finderlist2.csv',   
-	'Expires'             => '0',   
-	'Pragma'              => 'public'
-	];
+
+	$items = Service::active()->where('trialschedules', 'size', 0)->get();
+	$fp = fopen('serviceslive1.csv', 'w');
+	$header = ["ID", "SERVICENAME", "FINDERID", "FINDERNAME", "COMMERCIALTYPE" ];
+	fputcsv($fp, $header);
+
+	foreach ($items as $value) {  
+		$finder = Finder::findOrFail(intval($value->finder_id));
+
+		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
+		$commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
+
+		$fields = [$value->_id,
+				$value->name,
+				$value->finder_id,
+				$finder->slug,
+				$commercial_type
+		];
+		// return $fields;
+		fputcsv($fp, $fields);
+		// exit();
+	}
+
+	fclose($fp);
+	return "done";
+	return Response::make(rtrim($output, "\n"), 200, $headers);
 
 	// $items = Booktrial::take(5)->skip(0)->get();
 	// $items = Finder::active()->get();
@@ -122,6 +140,7 @@ Route::get('/capturedata', function() {
 
 Route::get('/updatefinder', function() { 
 
+	
 
 
 	// $items = Finder::active()->take(3000)->skip(0)->get();
@@ -146,17 +165,19 @@ Route::get('/updatefinder', function() {
 		$finder = Service::findOrFail($data['_id']);
 		$finderratecards = [];
         foreach ($data['ratecards'] as $key => $value) {
-            $ratecard = [
-            'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
-            'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
-            'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
-            'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
-            'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
-            'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
-            'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
-            'direct_payment_enable'=> '0'
-            ];
-            array_push($finderratecards, $ratecard);
+        	if((isset($value['price']) && $value['price'] != '0')){
+	            $ratecard = [
+	            'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
+	            'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
+	            'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
+	            'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
+	            'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
+	            'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
+	            'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
+	            'direct_payment_enable'=> '0'
+	            ];
+	            array_push($finderratecards, $ratecard);
+        	}
         }
 
         array_set($finderdata, 'ratecards', array_values($finderratecards));
@@ -422,6 +443,8 @@ Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
+Route::get('getlandingpagefinders/{locationclusterid}', 'HomeController@getLandingPageFinders');
+
 
 
 
@@ -500,6 +523,7 @@ Route::get('getfinderleftside/', array('as' => 'finders.getfinderleftside','uses
 Route::get('updatefinderlocaiton/', array('as' => 'finders.updatefinderlocaiton','uses' => 'FindersController@updatefinderlocaiton'));
 
 Route::get('finder/sendbooktrialdaliysummary/', array('as' => 'finders.sendbooktrialdaliysummary','uses' => 'FindersController@sendbooktrialdaliysummary'));
+Route::get('checkbooktrialdaliysummary/{date}', array('as' => 'finders.checkbooktrialdaliysummary','uses' => 'FindersController@checkbooktrialdaliysummary'));
 
 Route::get('reviewlisting/{finderid}/{from?}/{size?}', array('as' => 'finders.reviewlisting','uses' => 'FindersController@reviewListing'));
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));

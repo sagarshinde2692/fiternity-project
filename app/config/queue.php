@@ -51,7 +51,16 @@ return array(
 		),
 
 		'iron' => array(
+			'driver'  => 'iron',
 			'host'    => 'mq-aws-us-east-1.iron.io',
+			'token'   => 'tsFrArQmL8VS8Cx-5PDg3gij19Y',
+			'project' => '549a5af560c8e60009000030',
+			'queue'   => 'app',
+			'encrypt' => true,
+		),
+
+		'ironworker' => array(
+			'host'    => 'worker-aws-us-east-1.iron.io',
 			'driver'  => 'iron',
 			'token'   => 'ZJOg-tADi_5BBKtCvAcnj_USA4U',
 			'project' => '55d5c0d498ffa7000600003c',

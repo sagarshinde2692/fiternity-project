@@ -58,8 +58,8 @@ class UploadWorker extends Command
 
     protected function init()
     {
-        $token = Config::get('queue.connections.iron.token');
-        $project_id = Config::get('queue.connections.iron.project');
+        $token = Config::get('queue.connections.ironworker.token');
+        $project_id = Config::get('queue.connections.ironworker.project');
         $this->worker_params = Config::get('ironworker.params', null);
         if ($this->option('max_concurrency'))
             $this->worker_params['max_concurrency'] = intval($this->option('max_concurrency'));

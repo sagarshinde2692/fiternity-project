@@ -105,8 +105,8 @@ abstract Class Mailer {
 	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		$worker = new IronWorker(array(
-		    'token' => Config::get('queue.connections.iron.token'),
-    		'project_id' => Config::get('queue.connections.iron.project')
+		    'token' => Config::get('queue.connections.ironworker.token'),
+    		'project_id' => Config::get('queue.connections.ironworker.project')
 		));
 		
 		if($delay !== 0){
@@ -115,7 +115,7 @@ abstract Class Mailer {
 	
 		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
 		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-		$queue_name = 'Mailer';
+		$queue_name = 'MailerApi';
 
 		$messageid = $worker->postTask($queue_name,$payload,$options);
 
