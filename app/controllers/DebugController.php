@@ -61,7 +61,7 @@ class DebugController extends \BaseController {
 	public function sendbooktrialdaliysummary(){
 
 		$tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
-		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime('22-08-2015'))->where('finder_id', '=',3305)->get()->groupBy('finder_id')->toArray();
+		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime('20-08-2015'))->where('finder_id', '=',2420)->get()->groupBy('finder_id')->toArray();
 
 		foreach ($finders as $finderid => $trials) {
 			$finder = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();

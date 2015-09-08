@@ -730,3 +730,17 @@ Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 ##############################################################################
 /******************** FITMANIA SECTION END HERE *******************************/
 
+
+##############################################################################
+/******************** STATS SECTION START HERE *******************************/
+
+Route::get('/stats/booktrial', 'StatsController@booktrial');
+Route::get('/stats/signup', 'StatsController@signUp');
+Route::get('/stats/orders', 'StatsController@orders');
+Route::get('/stats/callback', 'StatsController@callBack');
+Route::get('/stats/orderspiechart', 'StatsController@ordersPieChart');
+Route::get('/stats/signuppiechart', 'StatsController@signUpPieChart');
+
+##############################################################################
+/******************** STATS SECTION END HERE *******************************/
+
