@@ -13,7 +13,7 @@ class StatsController extends \BaseController {
 
 	public function __construct() {
 
-		$this->days = 30;
+		$this->days = 21;
 
 	}
 
@@ -33,6 +33,7 @@ class StatsController extends \BaseController {
 			$data[$day_month] = $count;
 		}
 
+		$data = array_reverse($data);
 
 		$return = array(
 					"x_axis" => array(
@@ -66,6 +67,7 @@ class StatsController extends \BaseController {
 			$data[$day_month] = $count;
 		}
 
+		$data = array_reverse($data);
 
 		$return = array(
 					"x_axis" => array(
@@ -99,6 +101,7 @@ class StatsController extends \BaseController {
 			$data[$day_month] = $count;
 		}
 
+		$data = array_reverse($data);
 
 		$return = array(
 					"x_axis" => array(
@@ -133,6 +136,7 @@ class StatsController extends \BaseController {
 			$data[$day_month] = $count;
 		}
 
+		$data = array_reverse($data);
 
 		$return = array(
 					"x_axis" => array(
