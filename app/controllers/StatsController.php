@@ -23,7 +23,7 @@ class StatsController extends \BaseController {
 		$data = array();
 		for ($i=1; $i <= $day ; $i++) {
 			$count = 0;
-			$day_month = date('d-m', strtotime("-".$i." days"));
+			$day_month = date('Y-m-d', strtotime("-".$i." days"));
 			$to_day = $i-1;
 			
 			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
@@ -56,7 +56,7 @@ class StatsController extends \BaseController {
 		$data = array();
 		for ($i=1; $i <= $day ; $i++) {
 			$count = 0;
-			$day_month = date('d-m', strtotime("-".$i." days"));
+			$day_month = date('Y-m-d', strtotime("-".$i." days"));
 			$to_day = $i-1;
 			
 			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
@@ -89,7 +89,7 @@ class StatsController extends \BaseController {
 		$data = array();
 		for ($i=1; $i <= $day ; $i++) {
 			$count = 0;
-			$day_month = date('d-m', strtotime("-".$i." days"));
+			$day_month = date('Y-m-d', strtotime("-".$i." days"));
 			$to_day = $i-1;
 			
 			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
@@ -123,7 +123,7 @@ class StatsController extends \BaseController {
 		$data = array();
 		for ($i=1; $i <= $day ; $i++) {
 			$count = 0;
-			$day_month = date('d-m', strtotime("-".$i." days"));
+			$day_month = date('Y-m-d', strtotime("-".$i." days"));
 			$to_day = $i-1;
 			
 			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
