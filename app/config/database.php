@@ -50,7 +50,7 @@ return array(
 		'mongodb' => array(
 		    'driver'   => 'mongodb',
 		    'host'     => 'localhost',
-		    //'host'     => '52.74.103.91',
+		    'host'     => '52.74.103.91',
 		    'port'     => 27017,
 		    // 'username' => 'fituser',
 		    // 'password' => '65e4d4c196aa6229cf2ad0ff252658c7',
