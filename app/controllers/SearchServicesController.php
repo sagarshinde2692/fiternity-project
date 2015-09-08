@@ -272,6 +272,11 @@ public function getWorkoutsessions(){
 // "workout_tags":"cardio,endurance"
 // }
 
+/*
+
+
+*/
+
 public function getRatecards(){
 
 	$searchParams 				= 	array();
@@ -459,7 +464,7 @@ public function getRatecards(){
 		"workout_tags","commercial_type"]
 	}';
 
-	// echo $body; exit;
+	echo $body; exit;
 
 	$serachbody = $body;
 	$request = array(
