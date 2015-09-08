@@ -77,6 +77,57 @@ Route::get('/testsms', function() {
 
 });
 
+Route::get('updateduration', function() { 
+
+	$items = Duration::active()->get();
+	
+	foreach ($items as $value) {  
+		$duration 		=	Duration::findOrFail(intval($value->_id));
+		$durationData 	=	[];
+		$itemArr 		= 	explode('-', $value->slug);
+
+		if(str_contains($value->slug , 'day')){
+			$days 					=  head($itemArr);
+			$durationData['days'] 	=  intval($days);
+		}
+
+		if(str_contains($value->slug , 'week')){
+			$days 					=  head($itemArr) * 7;
+			$durationData['days'] 	=  intval($days);
+		}
+
+		if(str_contains($value->slug , 'month')){
+			$days			 		=  head($itemArr) * 30;
+			$durationData['days'] 	=  intval($days);
+		}
+
+		if(str_contains($value->slug , 'year')){
+			$days 					=  head($itemArr) * 30 * 12;
+			$durationData['days'] 	=  intval($days);
+		}
+
+		if(str_contains($value->slug , 'session')){
+			if(count($itemArr) > 3){
+				// echo $value->_id;
+				$sessions 					=  $itemArr[3];
+				$durationData['sessions'] 	=  intval($sessions);
+			}
+		}
+
+		if(count($itemArr) > 2){
+			if(strtolower($itemArr[1]) == 'sessions'){
+				$sessions 					=  $itemArr[0];
+				$durationData['sessions'] 	=  intval($sessions);
+				$durationData['days'] 		=  0;
+			}
+		}
+
+
+		$response = $duration->update($durationData);
+	}
+
+});
+
 
 Route::get('/capturedata', function() { 
 
@@ -93,10 +144,10 @@ Route::get('/capturedata', function() {
 		$commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
 
 		$fields = [$value->_id,
-				$value->name,
-				$value->finder_id,
-				$finder->slug,
-				$commercial_type
+		$value->name,
+		$value->finder_id,
+		$finder->slug,
+		$commercial_type
 		];
 		// return $fields;
 		fputcsv($fp, $fields);
@@ -135,16 +186,16 @@ Route::get('/capturedata', function() {
 		// $output .= "$value->_id, $value->slug, $cityname, $category, $FINDERTYPE, $commercial_type"."\n";
 
 		$fields = [$value->_id,
-				$value->slug,
-				$cityname,
-				$category,
-				$FINDERTYPE,
-				$commercial_type,
-				$value->contact['address'],
-				$value->contact['email'],
-				$value->contact['phone'],
-				$value->finder_vcc_email,
-				$value->finder_vcc_mobile
+		$value->slug,
+		$cityname,
+		$category,
+		$FINDERTYPE,
+		$commercial_type,
+		$value->contact['address'],
+		$value->contact['email'],
+		$value->contact['phone'],
+		$value->finder_vcc_email,
+		$value->finder_vcc_mobile
 		];
 		return $fields;
 		fputcsv($fp, $fields);
@@ -161,6 +212,9 @@ Route::get('/capturedata', function() {
 
 
 Route::get('/updatefinder', function() { 
+
+
+
 
 	// $items = Finder::active()->take(3000)->skip(0)->get();
 	$items = Service::active()->take(3000)->skip(0)->get();
@@ -183,23 +237,23 @@ Route::get('/updatefinder', function() {
 
 		$finder = Service::findOrFail($data['_id']);
 		$finderratecards = [];
-        foreach ($data['ratecards'] as $key => $value) {
-        	if((isset($value['price']) && $value['price'] != '0')){
-	            $ratecard = [
-	            'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
-	            'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
-	            'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
-	            'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
-	            'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
-	            'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
-	            'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
-	            'direct_payment_enable'=> '0'
-	            ];
-	            array_push($finderratecards, $ratecard);
-        	}
-        }
+		foreach ($data['ratecards'] as $key => $value) {
+			if((isset($value['price']) && $value['price'] != '0')){
+				$ratecard = [
+				'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
+				'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
+				'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
+				'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
+				'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
+				'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
+				'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
+				'direct_payment_enable'=> '0'
+				];
+				array_push($finderratecards, $ratecard);
+			}
+		}
 
-        array_set($finderdata, 'ratecards', array_values($finderratecards));
+		array_set($finderdata, 'ratecards', array_values($finderratecards));
 		$response = $finder->update($finderdata);
 
 		print_pretty($response);
@@ -423,8 +477,8 @@ Route::get('/findercsv', function() {
 						// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 						// ->skip(0)
 						// ->take(3000)
-						->where('finder_type', 1)
-						->get();
+	->where('finder_type', 1)
+	->get();
 
 	// return $finders;
 	$output = "ID, SLUG, CITY, TYPE, EMAIL, TYPE \n";

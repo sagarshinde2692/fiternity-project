@@ -853,8 +853,13 @@ class SearchController extends \BaseController {
 		$from 				=	(Input::json()->get('from')) ? Input::json()->get('from') : 0;
 		$size 				=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
-		$city 				=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
-		$city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
+		$city 				=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';
+		// $city_id			=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
+
+		$citydata 			=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$city_name 			= 	$citydata['name'];
+		$city_id			= 	(int) $citydata['_id'];	
+			
 
 		$category 				=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : '';		
 		$location 				=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : '';		
@@ -1061,52 +1066,52 @@ public function geoLocationFinder(){
 		"query": {
 			"filtered": {
 				"query": {'.$query.'
-				},
-				"filter": {
-					"geo_distance_range": {
-						"from" : "'.$from_range.'",
-						"to" : "'.$to_range.'",
-						"geolocation": {
-							"lat" : '.$lat.',
-							"lon" : '.$lon.'
-						}
+			},
+			"filter": {
+				"geo_distance_range": {
+					"from" : "'.$from_range.'",
+					"to" : "'.$to_range.'",
+					"geolocation": {
+						"lat" : '.$lat.',
+						"lon" : '.$lon.'
 					}
 				}
 			}
-		},
-		"fields": ["_source"],
-		"script_fields": {
-			"distance": {
-				"lang": "groovy",
-				"params": {
-					"lat" : '.$lat.',
-					"lon" : '.$lon.'
-				},
-				"script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
-			}
-		},"sort": [
-		{
-			"_geo_distance": {
-				"geolocation": "'.$lat.', '.$lon.'",
-				"order": "asc",
-				"unit": "km"
-			}
 		}
-		]
-	}';
+	},
+	"fields": ["_source"],
+	"script_fields": {
+		"distance": {
+			"lang": "groovy",
+			"params": {
+				"lat" : '.$lat.',
+				"lon" : '.$lon.'
+			},
+			"script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
+		}
+	},"sort": [
+	{
+		"_geo_distance": {
+			"geolocation": "'.$lat.', '.$lon.'",
+			"order": "asc",
+			"unit": "km"
+		}
+	}
+	]
+}';
 
-	$serachbody = $body;
+$serachbody = $body;
 	// return $body;
-	$request = array(
-		'url' => $this->elasticsearch_default_url."_search",
-		'port' => 9200,
-		'method' => 'POST',
-		'postfields' => $serachbody
-		);
+$request = array(
+	'url' => $this->elasticsearch_default_url."_search",
+	'port' => 9200,
+	'method' => 'POST',
+	'postfields' => $serachbody
+	);
 
-	$search_results 	=	es_curl_request($request);
-	$response 			=	json_encode(json_decode($search_results,true)); 
-	return $response;
+$search_results 	=	es_curl_request($request);
+$response 			=	json_encode(json_decode($search_results,true)); 
+return $response;
 
 }
 
