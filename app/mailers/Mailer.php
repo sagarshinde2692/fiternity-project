@@ -109,21 +109,16 @@ abstract Class Mailer {
     		'project_id' => Config::get('queue.connections.ironworker.project')
 		));
 		
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
-		$queue_name = 'MailerApi';
-
 		if($delay !== 0){
-
-			$options = array('start_at'=>$delay->toRfc3339String(),'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-			$messageid = $worker->postSchedule($queue_name,$options,$payload);
-
-		}else{
-
-			$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-			$messageid = $worker->postTask($queue_name,$payload,$options);
-
+			$delay = $this->getSeconds($delay);
 		}
 	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
+		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+		$queue_name = 'MailerApi';
+
+		$messageid = $worker->postTask($queue_name,$payload,$options);
+
 		return $messageid;
 
 	}
@@ -136,21 +131,16 @@ abstract Class Mailer {
     		'project_id' => Config::get('queue.connections.ironworker.project')
 		));
 		
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
-		$queue_name = 'TestMailerApi';
-
 		if($delay !== 0){
-
-			$options = array('start_at'=>$delay->toRfc3339String(),'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-			$messageid = $worker->postSchedule($queue_name,$options,$payload);
-
-		}else{
-
-			$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-			$messageid = $worker->postTask($queue_name,$payload,$options);
-
+			$delay = $this->getSeconds($delay);
 		}
 	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
+		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+		$queue_name = 'TestMailerApi';
+
+		$messageid = $worker->postTask($queue_name,$payload,$options);
+
 		return $messageid;
 
 	}

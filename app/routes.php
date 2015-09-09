@@ -819,6 +819,8 @@ Route::get('/stats/orders', 'StatsController@orders');
 Route::get('/stats/callback', 'StatsController@callBack');
 Route::get('/stats/orderspiechart', 'StatsController@ordersPieChart');
 Route::get('/stats/signuppiechart', 'StatsController@signUpPieChart');
+Route::get('/stats/review', 'StatsController@review');
+Route::get('/stats/smsbalance', 'StatsController@smsBalance');
 
 ##############################################################################
 /******************** STATS SECTION END HERE *******************************/

@@ -118,21 +118,16 @@ abstract Class VersionNextSms {
             'project_id' => Config::get('queue.connections.ironworker.project')
         ));
         
-        $payload = array('to'=>$to,'message'=>$message);
-        $queue_name = 'SmsApi';
-
         if($delay !== 0){
-
-            $options = array('start_at'=>$delay->toRfc3339String(),'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-            $messageid = $worker->postSchedule($queue_name,$options,$payload);
-
-        }else{
-
-            $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-            $messageid = $worker->postTask($queue_name,$payload,$options);
-
+            $delay = $this->getSeconds($delay);
         }
     
+        $payload = array('to'=>$to,'message'=>$message);
+        $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+        $queue_name = 'SmsApi';
+
+        $messageid = $worker->postTask($queue_name,$payload,$options);
+
         return $messageid;
 
     }
@@ -144,21 +139,16 @@ abstract Class VersionNextSms {
             'project_id' => Config::get('queue.connections.ironworker.project')
         ));
         
-        $payload = array('to'=>$to,'message'=>$message);
-        $queue_name = 'TestSmsApi';
-
         if($delay !== 0){
-
-            $options = array('start_at'=>$delay->toRfc3339String(),'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-            $messageid = $worker->postSchedule($queue_name,$options,$payload);
-
-        }else{
-
-            $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-            $messageid = $worker->postTask($queue_name,$payload,$options);
-
+            $delay = $this->getSeconds($delay);
         }
     
+        $payload = array('to'=>$to,'message'=>$message);
+        $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+        $queue_name = 'TestSmsApi';
+
+        $messageid = $worker->postTask($queue_name,$payload,$options);
+
         return $messageid;
 
     }

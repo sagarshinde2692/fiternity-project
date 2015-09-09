@@ -7,12 +7,17 @@
  * @author Mahesh Jadhav
  */
 
+
+use App\Services\SmsVersionNext as SmsVersionNext;
+
 class StatsController extends \BaseController {
 
 	protected $days;
+	protected $sms_version_next;
 
-	public function __construct() {
+	public function __construct(SmsVersionNext $sms_version_next) {
 
+		$this->sms_version_next = $sms_version_next;
 		$this->days = 13;
 
 	}
@@ -210,6 +215,60 @@ class StatsController extends \BaseController {
 
 		return json_encode($return);
 
+	}
+
+	public function review(){
+
+		$day = $this->days;
+		$data = array();
+		for ($i=0; $i < $day ; $i++) {
+			$count = 0;
+			$day_month = date('Y-m-d', strtotime("-".$i." days"));
+			$to_day = $i-1;
+			
+			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
+			$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$to_day." days"))));
+
+			$count = Review::whereBetween('created_at',array($from_date,$to_date))->count();
+			$data[$day_month] = $count;
+		}
+
+		$data = array_reverse($data);
+
+		$return = array(
+					"x_axis" => array(
+						"type"=>"datetime",
+						   "labels"=>array_keys($data)
+						),
+						"series" => array(
+								array(
+									"data"=>array_values($data)
+								)
+						)
+				);
+
+		return json_encode($return);
+
+	}
+
+	public function smsBalance(){
+
+		$transactionBalance  =  $this->sms_version_next->transactionBalance();
+		$promotionBalance  =  $this->sms_version_next->promotionBalance();
+
+		$return = array(
+					"item" => array(
+							array(
+								"text"=>($transactionBalance['status'] = 200) ? "Transaction ".ucwords(strtolower($transactionBalance['data'])) : "Transaction ".$transactionBalance['message'],
+							   	"type"=>0
+							),array(
+								"text"=>($promotionBalance['status'] = 200) ? "Promotion ".ucwords(strtolower($promotionBalance['data'])) : "Promotion ".$promotionBalance['message'],
+							   	"type"=>1
+							)
+						)
+				);
+
+		return json_encode($return);
 	}
 
 }
