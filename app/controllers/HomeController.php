@@ -87,7 +87,7 @@ class HomeController extends BaseController {
 	}
 
 
-	public function getHomePageDatav3($city = 'mumbai',$cache = true){   
+	public function getHomePageDatav3($city = 'mumbai',$cache = false){   
 
 		$home_by_city = $cache ? Cache::tags('home_by_city')->has($city) : false;
 
@@ -134,7 +134,6 @@ class HomeController extends BaseController {
 			array_set($footer_finders,  'footer_block3_title', (isset($homepage['footer_block3_title']) && $homepage['footer_block3_title'] != '') ? $homepage['footer_block3_title'] : '');									
 			array_set($footer_finders,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');									
 
-			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 
 			$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
@@ -146,7 +145,10 @@ class HomeController extends BaseController {
 			->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 			->take(4)->toArray();		
 
-			$homedata 				= 	array('popular_finders' => $popular_finders,    
+			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+			
+			$homedata 	= 	array(
+				'popular_finders' => $popular_finders,    
 				'footer_finders' => $footer_finders,    
 				'recent_blogs' => $recent_blogs,
 				'city_name' => $city_name,
