@@ -397,54 +397,63 @@ public function getRatecards(){
 					}
 				}
 			}
-		}
-	},
-	"categorised_subcategories": {
-		"global": {},
-		"aggs": {
-			"category_filter": {
-				"filter": {
-					"terms": {
-						"category": [
-						"'.$category.'"
-						]
+		},
+		"all_workout_intensity" : {
+			"global" : {}, 
+			"aggs" : { 
+				"city_filter": {
+					"filter": { 
+						"terms": { "city": [ "'.$city.'" ] } 
+					},
+					"aggs": {
+						"city_workout_intensity": { "terms": { "field": "workout_intensity", "size": 10000 } }
 					}
-				},
-				"aggs": {
-					"category_subcategories": {
-						"terms": {
-							"field": "subcategory",
-							"size": 10000
-						}
+				}
+			}
+		},
+		"all_workout_tags" : {
+			"global" : {}, 
+			"aggs" : { 
+				"city_filter": {
+					"filter": { 
+						"terms": { "city": [ "'.$city.'" ] } 
+					},
+					"aggs": {
+						"city_workout_tags" : { "terms": { "field": "workout_tags", "size": 10000 } }
 					}
 				}
 			}
 		}
 	}';
 
-	// $body =	'{				
-	// 	"from": '.$from.',
-	// 	"size": '.$size.',
-	// 	"aggs": '.$aggsval.',
-	// 	"query": {
-	// 		"filtered": {
-	// 			"query": {'
-	// 			.$query.
-	// 			'}'.$filters.'
+	// $aggsval	.=',
+	// "categorised_subcategories": {
+	// 	"global": {},
+	// 	"aggs": {
+	// 		"category_filter": {
+	// 			"filter": {
+	// 				"terms": {
+	// 					"category": [
+	// 					"'.$category.'"
+	// 					]
+	// 				}
+	// 			},
+	// 			"aggs": {
+	// 				"category_subcategories": {
+	// 					"terms": {
+	// 						"field": "subcategory",
+	// 						"size": 10000
+	// 					}
+	// 				}
+	// 			}
 	// 		}
-	// 	},
-	// 	"fields" : ["_id","name","finder_id","findername", "finderslug","city",
-	// 	"category",
-	// 	"subcategory",
-	// 	"geolocation",
-	// 	"location",
-	// 	"workout_intensity",
-	// 	"workout_tags","commercial_type"]
+	// 	}
 	// }';
 
 	$body =	'{				
 		"from": '.$from.',
 		"size": '.$size.',
+		"aggs": '.$aggsval.',
 		"query": {
 			"filtered": {
 				"query": {'
@@ -463,8 +472,11 @@ public function getRatecards(){
 		"geolocation",
 		"location",
 		"workout_intensity",
-		"workout_tags","commercial_type"]
+		"workout_tags",
+		"commercial_type"]
 	}';
+
+	
 
 	echo $body; exit;
 
