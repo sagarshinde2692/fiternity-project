@@ -669,4 +669,10 @@ public function geoLocationService(){
 
 		return Response::json($response);
 	}
+
+
+
+
+
+	
 }
