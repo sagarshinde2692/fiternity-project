@@ -87,7 +87,7 @@ class HomeController extends BaseController {
 	}
 
 
-	public function getHomePageDatav3($city = 'mumbai',$cache = true){   
+	public function getHomePageDatav3($city = 'mumbai',$cache = false){   
 
 		$home_by_city = $cache ? Cache::tags('home_by_city')->has($city) : false;
 
