@@ -89,7 +89,7 @@ class HomeController extends BaseController {
 
 	public function getHomePageDatav3($city = 'mumbai',$cache = true){   
 
-		$home_by_city = $cache ? Cache::tags('home_by_city')->has($city) : false;
+		$home_by_city = $cache ? Cache::tags('home_by_city_v3')->has($city) : false;
 
 		if(!$home_by_city){
 			$categorytags = $locations = $popular_finders = $footer_finders = $recent_blogs =	array();
@@ -156,10 +156,10 @@ class HomeController extends BaseController {
 				'collections' => $collections
 				);
 
-			Cache::tags('home_by_city')->put($city, $homedata, Config::get('cache.cache_time'));
+			Cache::tags('home_by_city_v3')->put($city, $homedata, Config::get('cache.cache_time'));
 		}
 
-		return Response::json(Cache::tags('home_by_city')->get($city));
+		return Response::json(Cache::tags('home_by_city_v3')->get($city));
 	}
 
 
