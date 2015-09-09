@@ -5,6 +5,7 @@ class SearchServicesController extends \BaseController {
 	protected $indice 						= 	"fitternity";
 	protected $facetssize 					=	10000;
 	protected $limit 						= 	10000;
+	protected $max_price 					= 	10000000;
 	protected $elasticsearch_host           =   "";
 	protected $elasticsearch_port           =   "";
 	protected $elasticsearch_default_index  =   "";
@@ -273,12 +274,14 @@ public function getWorkoutsessions(){
 // }
 
 /*
+{ 
 
 
 */
 
 public function getRatecards(){
 
+	// return Input::json()->all();
 	$searchParams 				= 	array();
 	$type 						= 	"finder";		    	
 	$filters 					=	"";	
@@ -287,17 +290,14 @@ public function getRatecards(){
 	$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
 	$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
-	$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
 	$category 					=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : '';		
 	$subcategory 				=	(Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : '';		
 	$location 					=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : '';	
 	$workout_intensity 			=	(Input::json()->get('workout_intensity')) ? strtolower(Input::json()->get('workout_intensity')) : '';			
 	$workout_tags 				=	(Input::json()->get('workout_tags')) ? strtolower(Input::json()->get('workout_tags')) : '';	
 
-	$min_time 					=	(Input::json()->get('min_time')) ? trim(strtolower(Input::json()->get('min_time'))) : '';		
-	$max_time 					=	(Input::json()->get('max_time')) ? trim(strtolower(Input::json()->get('max_time'))) : '';		
 	$min_price 					=	(Input::json()->get('min_price')) ? trim(strtolower(Input::json()->get('min_price'))) : '';		
-	$max_price 					=	(Input::json()->get('max_price')) ? trim(strtolower(Input::json()->get('max_price'))) : '';		
+	$max_price 					=	(Input::json()->get('max_price')) ? trim(strtolower(Input::json()->get('max_price'))) : $this->max_price;	
 
 	//filters 
 	$city_filter 				= 	($city != '') ? '{"terms" : {  "city": ["'.str_ireplace(',', '","', $city ).'"] }},'  : '';
@@ -306,9 +306,6 @@ public function getRatecards(){
 	$location_filter 			= 	($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('location'))).'"] }},'  : '';	
 	$workout_intensity_filter 	= 	($workout_intensity != '') ? '{"terms" : {  "workout_intensity": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_intensity'))).'"] }},'  : '';	
 	$workout_tags_filter 		= 	($workout_tags != '') ? '{"terms" : {  "workout_tags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_tags'))).'"] }},'  : '';
-
-
-		// $time_range_filter			=  ($min_time != '' && $max_time != '') ? '{"range" : {"ratecard.start_time_24_hour_format" : { "gte" : '.$min_time.',"lte": '.$max_time.'}} },'  : '';
 	$price_range_filter			=  ($min_price != '' && $max_price != '') ? '{"range" : {"ratecard.price" : { "gte" : '.$min_price.',"lte": '.$max_price.'}} },'  : '';
 
 	$shouldfilter = $mustfilter = $ratecardfilter = '';
@@ -400,54 +397,63 @@ public function getRatecards(){
 					}
 				}
 			}
-		}
-	},
-	"categorised_subcategories": {
-		"global": {},
-		"aggs": {
-			"category_filter": {
-				"filter": {
-					"terms": {
-						"category": [
-						"'.$category.'"
-						]
+		},
+		"all_workout_intensity" : {
+			"global" : {}, 
+			"aggs" : { 
+				"city_filter": {
+					"filter": { 
+						"terms": { "city": [ "'.$city.'" ] } 
+					},
+					"aggs": {
+						"city_workout_intensity": { "terms": { "field": "workout_intensity", "size": 10000 } }
 					}
-				},
-				"aggs": {
-					"category_subcategories": {
-						"terms": {
-							"field": "subcategory",
-							"size": 10000
-						}
+				}
+			}
+		},
+		"all_workout_tags" : {
+			"global" : {}, 
+			"aggs" : { 
+				"city_filter": {
+					"filter": { 
+						"terms": { "city": [ "'.$city.'" ] } 
+					},
+					"aggs": {
+						"city_workout_tags" : { "terms": { "field": "workout_tags", "size": 10000 } }
 					}
 				}
 			}
 		}
 	}';
 
-	// $body =	'{				
-	// 	"from": '.$from.',
-	// 	"size": '.$size.',
-	// 	"aggs": '.$aggsval.',
-	// 	"query": {
-	// 		"filtered": {
-	// 			"query": {'
-	// 			.$query.
-	// 			'}'.$filters.'
+	// $aggsval	.=',
+	// "categorised_subcategories": {
+	// 	"global": {},
+	// 	"aggs": {
+	// 		"category_filter": {
+	// 			"filter": {
+	// 				"terms": {
+	// 					"category": [
+	// 					"'.$category.'"
+	// 					]
+	// 				}
+	// 			},
+	// 			"aggs": {
+	// 				"category_subcategories": {
+	// 					"terms": {
+	// 						"field": "subcategory",
+	// 						"size": 10000
+	// 					}
+	// 				}
+	// 			}
 	// 		}
-	// 	},
-	// 	"fields" : ["_id","name","finder_id","findername", "finderslug","city",
-	// 	"category",
-	// 	"subcategory",
-	// 	"geolocation",
-	// 	"location",
-	// 	"workout_intensity",
-	// 	"workout_tags","commercial_type"]
+	// 	}
 	// }';
 
 	$body =	'{				
 		"from": '.$from.',
 		"size": '.$size.',
+		"aggs": '.$aggsval.',
 		"query": {
 			"filtered": {
 				"query": {'
@@ -455,14 +461,22 @@ public function getRatecards(){
 				'}'.$filters.'
 			}
 		},
-		"fields" : ["_id","name","finder_id","findername", "finderslug","city",
+		"fields" : ["_id",
+		"name",
+		"finder_id",
+		"findername", 
+		"finderslug",
+		"city",
 		"category",
 		"subcategory",
 		"geolocation",
 		"location",
 		"workout_intensity",
-		"workout_tags","commercial_type"]
+		"workout_tags",
+		"commercial_type"]
 	}';
+
+	
 
 	echo $body; exit;
 
@@ -669,4 +683,6 @@ public function geoLocationService(){
 
 		return Response::json($response);
 	}
+
+
 }

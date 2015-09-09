@@ -80,51 +80,76 @@ Route::get('/testsms', function() {
 Route::get('updateduration', function() { 
 
 	$items = Duration::active()->get();
+	$fp = fopen('updateduration.csv', 'w');
+	$header = ["ID", "NAME", "SLUG", "DAYS", "SESSIONS"  ];
+	
+	fputcsv($fp, $header);
 	
 	foreach ($items as $value) {  
-		$duration 		=	Duration::findOrFail(intval($value->_id));
-		$durationData 	=	[];
-		$itemArr 		= 	explode('-', $value->slug);
-
-		if(str_contains($value->slug , 'day')){
-			$days 					=  head($itemArr);
-			$durationData['days'] 	=  intval($days);
-		}
-
-		if(str_contains($value->slug , 'week')){
-			$days 					=  head($itemArr) * 7;
-			$durationData['days'] 	=  intval($days);
-		}
-
-		if(str_contains($value->slug , 'month')){
-			$days			 		=  head($itemArr) * 30;
-			$durationData['days'] 	=  intval($days);
-		}
-
-		if(str_contains($value->slug , 'year')){
-			$days 					=  head($itemArr) * 30 * 12;
-			$durationData['days'] 	=  intval($days);
-		}
-
-		if(str_contains($value->slug , 'session')){
-			if(count($itemArr) > 3){
-				// echo $value->_id;
-				$sessions 					=  $itemArr[3];
-				$durationData['sessions'] 	=  intval($sessions);
-			}
-		}
-
-		if(count($itemArr) > 2){
-			if(strtolower($itemArr[1]) == 'sessions'){
-				$sessions 					=  $itemArr[0];
-				$durationData['sessions'] 	=  intval($sessions);
-				$durationData['days'] 		=  0;
-			}
-		}
-
-
-		$response = $duration->update($durationData);
+		$fields = [$value->_id, $value->name, $value->slug, $value->days, $value->sessions];
+		// return $fields;
+		fputcsv($fp, $fields);
 	}
+	fclose($fp);
+	return 'done';
+	return Response::make(rtrim($output, "\n"), 200, $headers);
+
+	
+	// foreach ($items as $value) {  
+	// 	$duration 		=	Duration::findOrFail(intval($value->_id));
+	// 	$durationData 	=	[];
+	// 	$itemArr 		= 	explode('-', $value->slug);
+
+	// 	if(str_contains($value->slug , 'day')){
+	// 		$days 					=  head($itemArr);
+	// 		$durationData['days'] 	=  intval($days);
+	// 	}
+
+	// 	if(str_contains($value->slug , 'week')){
+	// 		$days 					=  head($itemArr) * 7;
+	// 		$durationData['days'] 	=  intval($days);
+	// 	}
+
+	// 	if(str_contains($value->slug , 'month')){
+	// 		$days			 		=  head($itemArr) * 30;
+	// 		$durationData['days'] 	=  intval($days);
+	// 	}
+
+	// 	if(str_contains($value->slug , 'year')){
+	// 		$days 					=  head($itemArr) * 30 * 12;
+	// 		$durationData['days'] 	=  intval($days);
+	// 	}
+
+	// 	if(str_contains($value->slug , 'session')){
+	// 		if(count($itemArr) > 3){
+	// 			// echo $value->_id;
+	// 			$sessions 					=  $itemArr[3];
+	// 			$durationData['sessions'] 	=  intval($sessions);
+	// 		}
+	// 	}
+
+	// 	if($key = array_search('sessions', $itemArr)){
+	// 		if($key == 1){
+	// 			echo "<br>"; print_r($key);
+	// 			$sessions 					=  $itemArr[0];
+	// 			$durationData['sessions'] 	=  intval($sessions);
+	// 			$durationData['days'] 		=  0;
+	// 		}
+
+	// 		if($key == 3){
+	// 			echo "<br>"; print_r($key);
+	// 			$sessions 					=  $itemArr[2];
+	// 			$durationData['sessions'] 	=  intval($sessions);
+	// 			// $durationData['days'] 		=  0;
+	// 		}
+
+	// 	}
+
+	// 	// $durationData['days'] 	=  0;
+	// 	// $durationData['sessions'] 	=  0;
+
+	// 	$response = $duration->update($durationData);
+	// }
 
 });
 
@@ -247,7 +272,7 @@ Route::get('/updatefinder', function() {
 				'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
 				'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
 				'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
-				'direct_payment_enable'=> '0'
+				'direct_payment_enable'=> (isset($value['direct_payment_enable']) && $value['direct_payment_enable'] != '') ? $value['direct_payment_enable'] : '0'
 				];
 				array_push($finderratecards, $ratecard);
 			}
