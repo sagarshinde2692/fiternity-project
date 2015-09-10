@@ -529,6 +529,7 @@ Route::get('/debug/sendbooktrialdaliysummaryv1',  array('as' => 'debug.sendbookt
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
 Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
+Route::get('footer/{city?}', 'HomeController@getFooterByCity');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 
