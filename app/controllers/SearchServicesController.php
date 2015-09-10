@@ -262,21 +262,16 @@ public function getWorkoutsessions(){
 	return Response::json($response);
 }
 
-
-// { 
-// "from": 0, 
-// "size": 10, 
-// "city":"mumbai",
-// "location":"goregaon west",
-// "category":"gym",
-// "workout_intensity": "all",
-// "workout_tags":"cardio,endurance"
-// }
-
 /*
 { 
-
-
+"from": 0, 
+"size": 10, 
+"city":"mumbai",
+"category":["gym"],
+"location":["goregaon west","andheri west"],
+"workout_intensity": ["all"],
+"workout_tags":["cardio"]
+}
 */
 
 public function getRatecards(){
@@ -290,30 +285,29 @@ public function getRatecards(){
 	$size 						=	(Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;		
 
 	$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';	
-	$category 					=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : '';		
-	$subcategory 				=	(Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : '';		
-	$location 					=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : '';	
-	$workout_intensity 			=	(Input::json()->get('workout_intensity')) ? strtolower(Input::json()->get('workout_intensity')) : '';			
-	$workout_tags 				=	(Input::json()->get('workout_tags')) ? strtolower(Input::json()->get('workout_tags')) : '';	
+	$category 					=	(Input::json()->get('category')) ? strtolower(implode(',',Input::json()->get('category'))) : '';		
+	$subcategory 				=	(Input::json()->get('subcategory')) ? strtolower(implode(',',Input::json()->get('subcategory'))) : '';		
+	$location 					=	(Input::json()->get('location')) ? strtolower(implode(',',Input::json()->get('location'))) : '';	
+	$workout_intensity 			=	(Input::json()->get('workout_intensity')) ? strtolower(implode(',',Input::json()->get('workout_intensity'))) : '';			
+	$workout_tags 				=	(Input::json()->get('workout_tags')) ? strtolower(implode(',',Input::json()->get('workout_tags'))) : '';	
 
 	$min_price 					=	(Input::json()->get('min_price')) ? trim(strtolower(Input::json()->get('min_price'))) : '';		
 	$max_price 					=	(Input::json()->get('max_price')) ? trim(strtolower(Input::json()->get('max_price'))) : $this->max_price;	
 
 	//filters 
 	$city_filter 				= 	($city != '') ? '{"terms" : {  "city": ["'.str_ireplace(',', '","', $city ).'"] }},'  : '';
-	$category_filter 			= 	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"] }},'  : '';		
-	$subcategory_filter 		= 	($subcategory != '') ? '{"terms" : {  "subcategory": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('subcategory'))).'"] }},'  : '';		
-	$location_filter 			= 	($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('location'))).'"] }},'  : '';	
-	$workout_intensity_filter 	= 	($workout_intensity != '') ? '{"terms" : {  "workout_intensity": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_intensity'))).'"] }},'  : '';	
-	$workout_tags_filter 		= 	($workout_tags != '') ? '{"terms" : {  "workout_tags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('workout_tags'))).'"] }},'  : '';
-	$price_range_filter			=  ($min_price != '' && $max_price != '') ? '{"range" : {"ratecard.price" : { "gte" : '.$min_price.',"lte": '.$max_price.'}} },'  : '';
+	$category_filter 			= 	($category != '') ? '{"terms" : {  "category": ["'.str_ireplace(',', '","', strtolower($category)).'"] }},'  : '';		
+	$subcategory_filter 		= 	($subcategory != '') ? '{"terms" : {  "subcategory": ["'.str_ireplace(',', '","', strtolower($subcategory)).'"] }},'  : '';		
+	$location_filter 			= 	($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","', strtolower($location)).'"] }},'  : '';	
+	$workout_intensity_filter 	= 	($workout_intensity != '') ? '{"terms" : {  "workout_intensity": ["'.str_ireplace(',', '","', strtolower($workout_intensity)).'"] }},'  : '';	
+	$workout_tags_filter 		= 	($workout_tags != '') ? '{"terms" : {  "workout_tags": ["'.str_ireplace(',', '","', strtolower($workout_tags)).'"] }},'  : '';
+	$price_range_filter			=  	($min_price != '' && $max_price != '') ? '{"range" : {"ratecard.price" : { "gte" : '.$min_price.',"lte": '.$max_price.'}} },'  : '';
 
 	$shouldfilter = $mustfilter = $ratecardfilter = '';
 
-		//used for Ratecards, 	
+	//used for Ratecards, 	
 	if($price_range_filter != ''){			
 		$ratecard_filtervalue = trim($price_range_filter,',');	
-
 		$ratecardfilter = '{
 			"nested": {
 				"filter": {
@@ -327,7 +321,7 @@ public function getRatecards(){
 		},';	
 	}
 
-		//used for category, subcategory, location, offering, facilities and workout_intensity
+	//used for category, subcategory, location, offering, facilities and workout_intensity
 	if($city_filter != '' || $category_filter != '' || $subcategory_filter != '' || $location_filter != '' || $workout_intensity_filter != '' || $workout_tags_filter != '' || $ratecardfilter != ''){
 		$must_filtervalue = trim($city_filter.$category_filter.$subcategory_filter.$location_filter.$workout_intensity_filter.$workout_tags_filter.$ratecardfilter,',');	
 		$mustfilter = '"must": ['.$must_filtervalue.']';		

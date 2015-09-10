@@ -105,6 +105,8 @@ class HomeController extends BaseController {
 			$footer_block2_ids 		= 		array_map('intval', explode(",", $homepage['footer_block2_ids'] ));
 			$footer_block3_ids 		= 		array_map('intval', explode(",", $homepage['footer_block3_ids'] ));
 			$footer_block4_ids 		= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
+			$footer_block5_ids 		= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
+			$footer_block6_ids 		= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
 
 			//return Response::json($finder_ids);
 			$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
@@ -119,6 +121,8 @@ class HomeController extends BaseController {
 			$footer_block2_finders 		=		Finder::active()->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
 			$footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
 			$footer_block4_finders 		=		Finder::active()->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();																										
+			$footer_block5_finders 		=		Finder::active()->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();																										
+			$footer_block6_finders 		=		Finder::active()->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();																										
 
 			array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
 			array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
@@ -128,11 +132,15 @@ class HomeController extends BaseController {
 			array_set($footer_finders,  'footer_block2_finders', $footer_block2_finders);									
 			array_set($footer_finders,  'footer_block3_finders', $footer_block3_finders);									
 			array_set($footer_finders,  'footer_block4_finders', $footer_block4_finders);	
+			array_set($footer_finders,  'footer_block5_finders', $footer_block5_finders);	
+			array_set($footer_finders,  'footer_block6_finders', $footer_block6_finders);	
 
 			array_set($footer_finders,  'footer_block1_title', (isset($homepage['footer_block1_title']) && $homepage['footer_block1_title'] != '') ? $homepage['footer_block1_title'] : '');									
 			array_set($footer_finders,  'footer_block2_title', (isset($homepage['footer_block2_title']) && $homepage['footer_block2_title'] != '') ? $homepage['footer_block2_title'] : '');									
 			array_set($footer_finders,  'footer_block3_title', (isset($homepage['footer_block3_title']) && $homepage['footer_block3_title'] != '') ? $homepage['footer_block3_title'] : '');									
 			array_set($footer_finders,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');									
+			array_set($footer_finders,  'footer_block5_title', (isset($homepage['footer_block5_title']) && $homepage['footer_block5_title'] != '') ? $homepage['footer_block5_title'] : '');									
+			array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');									
 
 
 			$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
