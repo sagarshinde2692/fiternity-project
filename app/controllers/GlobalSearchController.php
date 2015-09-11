@@ -88,8 +88,7 @@ class GlobalSearchController extends \BaseController
 
             $key2_loc_query    =  ',{
                                     "query_string":{
-                                            "fields": [
-                                            "inputloc1",
+                                            "fields": [                                           
                                             "inputloc2"
                                             ],
                                         "query": "*'.$keys[1].'*",
@@ -114,7 +113,7 @@ class GlobalSearchController extends \BaseController
             $key3_loc_query    =  ',{
                                     "query_string":{
                                             "fields": [
-                                            "inputloc1",
+                                           
                                             "inputloc2"
                                             ],
                                         "query": "*'.$keys[2].'*",
@@ -151,8 +150,7 @@ class GlobalSearchController extends \BaseController
             {
                 $key4_loc_query    =  ',{
                                     "query_string":{
-                                            "fields": [
-                                            "inputloc1",
+                                            "fields": [                                            
                                             "inputloc2"
                                             ],
                                         "query": "*'.$keys[3].'*",
@@ -179,11 +177,14 @@ class GlobalSearchController extends \BaseController
                                                 "query": {
                                                     "bool": {
                                                         "should": [
+                                                        {"match": {
+                                                                              "inputloc1": "'.$string.'"
+                                                                            
+                                                                            }},
                                                             {
                                                                 "query_string": {
                                                                     "fields": [
-                                                                        "inputloc1",
-                                                                        "inputloc2"
+                                                                        "inputloc2"                                                                   
                                                                     ],
                                                                     "query": "*'.$keys[0].'*",
                                                                     "fuzziness": 0,
@@ -245,19 +246,11 @@ class GlobalSearchController extends \BaseController
                                                         "filter": {
                                                             "query": {
                                                                 "bool": {
-                                                                    "should": [     
-
-                                                                        {
-                                                                            "query_string": {
-                                                                                "fields": [
-                                                                                    "inputloc1",
-                                                                                    "inputloc2"
-                                                                                ],
-                                                                                "query": "*'.$keys[0].'*",
-                                                                                "fuzziness": 0,
-                                                                                "fuzzy_prefix_length": 0
-                                                                            }
-                                                                        }'.$key2_loc_query.$key3_loc_query.$key4_loc_query.'
+                                                                    "should": [
+                                                                    {"match": {
+                                                                              "inputloc1": "'.$string.'"
+                                                                            }} 
+                                                                       
                                                                         ]
                                                                 }
                                                             }
@@ -284,7 +277,7 @@ class GlobalSearchController extends \BaseController
                                                                 }
                                                             }
                                                         },
-                                                        "boost_factor": 8
+                                                        "boost_factor": 6
                                                     }
                                                 ],
                                                 "boost_mode": "sum"
@@ -293,7 +286,7 @@ class GlobalSearchController extends \BaseController
                                     }
                                 }
                             }';
-
+                            //return $query;
             //$this->elasticsearch_host.$this->elasticsearch_port.  
         $request = array(
             'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
