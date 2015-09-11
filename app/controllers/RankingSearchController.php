@@ -96,12 +96,14 @@ class RankingSearchController extends \BaseController
         $budgets_facets = '"budget": {"terms": {"field": "price_range","size":"500","order":{"_term": "asc"}}},';
         $regions_facets = '"loccluster": {
             "terms": {
-                "field": "locationcluster"
+                "field": "locationcluster",
+                "all_terms":true
                
-            },"aggs": {
+            },"aggs": { 
               "region": {
                 "terms": {
                 "field": "location",
+                "all_terms":true,
                 "size":"500",
                 "order": {
                   "_term": "asc"
@@ -112,9 +114,9 @@ class RankingSearchController extends \BaseController
             }
         },';
 
-        $location_facets = '"locations": {"terms": {"field": "locationtags","size":"500","order": {"_term": "asc"}}},';
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","size":"500","order": {"_term": "asc"}}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","size":"500","order": {"_term": "asc"}}},';
+        $location_facets = '"locations": {"terms": {"field": "locationtags","all_terms":true,"size":"500","order": {"_term": "asc"}}},';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","all_terms":true,"size":"500","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms":true,"size":"500","order": {"_term": "asc"}}},';
         $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
         $body = '{
@@ -129,7 +131,7 @@ class RankingSearchController extends \BaseController
                     },
            '.$sort.'
         }';
-       // return $body;
+       //return $body;
 
         $request = array(
             'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",

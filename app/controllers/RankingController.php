@@ -56,7 +56,7 @@ class RankingController extends \BaseController {
     public function IndexRankMongo2Elastic(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $citykist      =    array(1,2,3);
+        $citykist      =    array(1,2,3,4);
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
                             ->with(array('city'=>function($query){$query->select('name');}))
                             ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -64,19 +64,22 @@ class RankingController extends \BaseController {
                             ->with('categorytags')
                             ->with('locationtags')
                             ->with('offerings')
-                            ->with('facilities')                            
+                            ->with('facilities')
+                            //->with('services')
                             ->active()
                             ->orderBy('_id')
+                            //->whereIn('_id', array(2828))
                             ->whereIn('city_id', $citykist)
-                            ->take(2000)->skip(4700)
+                            ->take(3500)->skip(0)
                             ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
-                            ->get();           
-        foreach ($items as $finderdocument) {
-           
+                            ->get();  
+                              
+        foreach ($items as $finderdocument) {           
                 $data = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);
+                //$trialdata = get_elastic_finder_trialschedules($data);               
                 $clusterid = '';
                 if(!isset($data['location']['locationcluster_id']))
                 {
@@ -88,8 +91,34 @@ class RankingController extends \BaseController {
                 }
                                 
                 $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
-                $locationcluster->toArray();                            
-                $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name']);
+                $locationcluster->toArray();
+                $range = (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "";
+                $rangeval = 0;
+                switch ($range) {
+                                                           case 'one':
+                                                               $rangeval = 1;
+                                                               break;
+                                                           case 'two':
+                                                               $rangeval = 2;
+                                                               break;
+                                                            case 'three':
+                                                               $rangeval = 3;
+                                                               break;
+                                                            case 'four':
+                                                               $rangeval = 4;
+                                                               break;
+                                                            case 'five':
+                                                              $rangeval = 5;
+                                                               break;
+                                                            case 'six':
+                                                              $rangeval = 6;
+                                                               break;
+                                                           default:
+                                                              $rangeval = 0;
+                                                               break;
+                                                       }                                       
+                $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);
+                //return $postdata;
                 $postdata['rank'] = $score;
                 $catval = evalBaseCategoryScore($finderdocument['category_id']);
                 $postdata['rankv1'] = $catval;
@@ -98,6 +127,7 @@ class RankingController extends \BaseController {
                 //return $postfields_data;               
                 //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
                 $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
+                //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
                 $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
@@ -185,7 +215,7 @@ class RankingController extends \BaseController {
     public function embedTrialsBooked(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $items = Finder::active()->orderBy('_id')->take(3500)->skip(3500)->get();        
+        $items = Finder::active()->orderBy('_id')->take(1000)->skip(4400)->get();        
         foreach($items as $item)
         {
             $Reviews = Review::active()->where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->get()->count();
