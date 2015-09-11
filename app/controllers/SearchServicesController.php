@@ -335,90 +335,89 @@ public function getRatecards(){
 		},"_cache" : true';
 	}
 
-	if($category == ''){
-		$query = '"match_all": {}';
-		$basecategory_score = '';		
-	}else{
-		$query = '"multi_match": {
-			"query": "'.$category.'",
-			"fields": ["category","categorytags"]
-		}';	
-		$basecategory_score	= '{
-			"script_score": { "script": "(doc[\'category\'].value == \''.$category.'\' ? 10 : 0)" }
-		},';
-	}
+	// if($category == ''){
+	// 	$query = '"match_all": {}';
+	// 	$basecategory_score = '';		
+	// }else{
+	// 	$query = '"multi_match": {
+	// 		"query": "'.$category.'",
+	// 		"fields": ["category","categorytags"]
+	// 	}';	
+	// 	$basecategory_score	= '{
+	// 		"script_score": { "script": "(doc[\'category\'].value == \''.$category.'\' ? 10 : 0)" }
+	// 	},';
+	// }
 
 	$query = '"match_all": {}';
 	$basecategory_score = '';		
 
-
-	$aggsval	= '{
-		"all_categories" : {
-			"global" : {}, 
-			"aggs" : { 
-				"city_filter": {
-					"filter": { 
-						"terms": { "city": [ "'.$city.'" ] } 
-					},
-					"aggs": {
-						"city_categories": { "terms": { "field": "category", "size": 10000 } }
-					}
-				}
-			}
-		},
-		"all_subcategories" : {
-			"global" : {}, 
-			"aggs" : { 
-				"city_filter": {
-					"filter": { 
-						"terms": { "city": [ "'.$city.'" ] } 
-					},
-					"aggs": {
-						"city_subcategories": { "terms": { "field": "subcategory", "size": 10000 } }
-					}
-				}
-			}
-		},
-		"all_locations" : {
-			"global" : {}, 
-			"aggs" : { 
-				"city_filter": {
-					"filter": { 
-						"terms": { "city": [ "'.$city.'" ] } 
-					},
-					"aggs": {
-						"city_locations": { "terms": { "field": "location", "size": 10000 } }
-					}
-				}
-			}
-		},
-		"all_workout_intensity" : {
-			"global" : {}, 
-			"aggs" : { 
-				"city_filter": {
-					"filter": { 
-						"terms": { "city": [ "'.$city.'" ] } 
-					},
-					"aggs": {
-						"city_workout_intensity": { "terms": { "field": "workout_intensity", "size": 10000 } }
-					}
-				}
-			}
-		},
-		"all_workout_tags" : {
-			"global" : {}, 
-			"aggs" : { 
-				"city_filter": {
-					"filter": { 
-						"terms": { "city": [ "'.$city.'" ] } 
-					},
-					"aggs": {
-						"city_workout_tags" : { "terms": { "field": "workout_tags", "size": 10000 } }
-					}
-				}
-			}
-		}
-	}';
+	// $aggsval	= '{
+	// 	"all_categories" : {
+	// 		"global" : {}, 
+	// 		"aggs" : { 
+	// 			"city_filter": {
+	// 				"filter": { 
+	// 					"terms": { "city": [ "'.$city.'" ] } 
+	// 				},
+	// 				"aggs": {
+	// 					"city_categories": { "terms": { "field": "category", "size": 10000 } }
+	// 				}
+	// 			}
+	// 		}
+	// 	},
+	// 	"all_subcategories" : {
+	// 		"global" : {}, 
+	// 		"aggs" : { 
+	// 			"city_filter": {
+	// 				"filter": { 
+	// 					"terms": { "city": [ "'.$city.'" ] } 
+	// 				},
+	// 				"aggs": {
+	// 					"city_subcategories": { "terms": { "field": "subcategory", "size": 10000 } }
+	// 				}
+	// 			}
+	// 		}
+	// 	},
+	// 	"all_locations" : {
+	// 		"global" : {}, 
+	// 		"aggs" : { 
+	// 			"city_filter": {
+	// 				"filter": { 
+	// 					"terms": { "city": [ "'.$city.'" ] } 
+	// 				},
+	// 				"aggs": {
+	// 					"city_locations": { "terms": { "field": "location", "size": 10000 } }
+	// 				}
+	// 			}
+	// 		}
+	// 	},
+	// 	"all_workout_intensity" : {
+	// 		"global" : {}, 
+	// 		"aggs" : { 
+	// 			"city_filter": {
+	// 				"filter": { 
+	// 					"terms": { "city": [ "'.$city.'" ] } 
+	// 				},
+	// 				"aggs": {
+	// 					"city_workout_intensity": { "terms": { "field": "workout_intensity", "size": 10000 } }
+	// 				}
+	// 			}
+	// 		}
+	// 	},
+	// 	"all_workout_tags" : {
+	// 		"global" : {}, 
+	// 		"aggs" : { 
+	// 			"city_filter": {
+	// 				"filter": { 
+	// 					"terms": { "city": [ "'.$city.'" ] } 
+	// 				},
+	// 				"aggs": {
+	// 					"city_workout_tags" : { "terms": { "field": "workout_tags", "size": 10000 } }
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }';
 
 	// $aggsval	.=',
 	// "categorised_subcategories": {
@@ -443,6 +442,24 @@ public function getRatecards(){
 	// 		}
 	// 	}
 	// }';
+
+	$aggsval	= '{
+		"all_categories" : {
+			"terms": { "field": "category", "size": 10000 } 
+		},
+		"all_subcategories" : {
+			"terms": { "field": "subcategory", "size": 10000 } 
+		},
+		"all_locations" : {
+			"terms": { "field": "location", "size": 10000 } 
+		},
+		"all_workout_intensity" : {
+			"terms": { "field": "workout_intensity", "size": 10000 }
+		},
+		"all_workout_tags" : {
+			"terms": { "field": "workout_tags", "size": 10000 }
+		}
+	}';
 
 	$body =	'{				
 		"from": '.$from.',

@@ -988,7 +988,7 @@ class SearchController extends \BaseController {
 		
 		$search_results 	=	es_curl_request($request);
 
-		$finder_leftside = array('categorytag_offerings' => Findercategorytag::active()->whereIn('cities',array($city_id))->where('_id', '!=', 42)->with('offerings')->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
+		$finder_leftside = array('categorytag_offerings' => Findercategorytag::active()->whereIn('cities',array($city_id))->with('offerings')->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings')),
 			'locations' => Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug')),
 			'price_range' => array(
 				array("slug" =>"one","name" => "less than 1000"),
