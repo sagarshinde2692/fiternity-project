@@ -501,7 +501,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
 }
 
 if (!function_exists('get_elastic_finder_documentv2')) {
-    function get_elastic_finder_documentv2($finderdata = array(), $locationcluster='') {
+    function get_elastic_finder_documentv2($finderdata = array(), $locationcluster='', $rangeval =0) {
 
         $data = $finderdata;
         
@@ -513,6 +513,7 @@ if (!function_exists('get_elastic_finder_documentv2')) {
                 'membership_discount'           =>      "",
                 'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
                 'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
+                'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1, 
                 'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
                 'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
@@ -548,6 +549,8 @@ if (!function_exists('get_elastic_finder_documentv2')) {
                 'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
                 'photos'                        =>      (isset($data['photos']) && $data['photos'] != '') ? array_map('strtolower', array_pluck($data['photos'],'url')) : "",
                 'locationcluster'               =>      $locationcluster,
+                'price_rangeval'                =>      $rangeval
+                //'trialschedules'                =>      $trialdata,
                 );
 
                 return $postfields_data;
@@ -558,6 +561,40 @@ if (!function_exists('get_elastic_finder_documentv2')) {
 
     }
 }
+
+if (!function_exists('get_elastic_finder_trialschedules')) {
+    function get_elastic_finder_trialschedules($finderdata = array()) {
+
+        $data = $finderdata;
+        $trialdata =[];        
+        try {
+            
+            if(!isset($data['services']))
+            {
+                return [];
+            }
+            else
+            {
+                foreach ($data['services'] as $service) {  
+                    $trialservice = [];                  
+                    $id = $service['_id'];
+                    $city_id = $service['city_id'];
+                    $trial = (isset($service['trialschedules']) ? $service['trialschedules'] : []); 
+                                   
+                    //$traslservice;                   
+                 
+                    array_push($trialdata, array("service_id" => $id, "city_id" => $city_id, "trials" => $trial));                    
+                }
+            }
+                return $trialdata;
+        }catch(Swift_RfcComplianceException $exception){
+            Log::error($exception);
+            return [];
+        }
+
+    }
+}
+
 
 
 ?>

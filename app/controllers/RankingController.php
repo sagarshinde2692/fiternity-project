@@ -75,7 +75,7 @@ class RankingController extends \BaseController {
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
                             ->get();  
-                              
+                 
         foreach ($items as $finderdocument) {           
                 $data = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);
@@ -117,13 +117,13 @@ class RankingController extends \BaseController {
                                                               $rangeval = 0;
                                                                break;
                                                        }                                       
-                $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);
-                //return $postdata;
+                $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);             
                 $postdata['rank'] = $score;
                 $catval = evalBaseCategoryScore($finderdocument['category_id']);
                 $postdata['rankv1'] = $catval;
                 $postdata['rankv2'] = $score + $catval;
                 $postfields_data = json_encode($postdata); 
+
                 //return $postfields_data;               
                 //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
                 $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];

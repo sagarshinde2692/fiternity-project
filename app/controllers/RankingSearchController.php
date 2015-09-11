@@ -93,17 +93,17 @@ class RankingSearchController extends \BaseController
             },"_cache" : true';
         }
 
-        $budgets_facets = '"budget": {"terms": {"field": "price_range","size":"500","order":{"_term": "asc"}}},';
+        $budgets_facets = '"budget": {"terms": {"field": "price_range","min_doc_count":0,"size":"500","order":{"_term": "asc"}}},';
         $regions_facets = '"loccluster": {
             "terms": {
                 "field": "locationcluster",
-                "all_terms":true
+                "min_doc_count":1
                
-            },"aggs": { 
+            },"aggs": {
               "region": {
                 "terms": {
                 "field": "location",
-                "all_terms":true,
+               "min_doc_count":1,
                 "size":"500",
                 "order": {
                   "_term": "asc"
@@ -114,9 +114,9 @@ class RankingSearchController extends \BaseController
             }
         },';
 
-        $location_facets = '"locations": {"terms": {"field": "locationtags","all_terms":true,"size":"500","order": {"_term": "asc"}}},';
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","all_terms":true,"size":"500","order": {"_term": "asc"}}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","all_terms":true,"size":"500","order": {"_term": "asc"}}},';
+        $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
         $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
         $body = '{
