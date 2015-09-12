@@ -560,7 +560,6 @@ Route::post('generatefitcardtmporder',  array('as' => 'customer.generatefitcardt
 // Route::post('captureorderpayment',  array('as' => 'customer.captureorderpayment','uses' => 'CustomerController@captureOrderPayment'));
 Route::post('captureorderpayment', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialV2'));
 
-
 Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
 Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
 Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgotpasswordemail','uses' => 'CustomerController@forgotPasswordEmail'));
@@ -642,6 +641,7 @@ Route::get('reviewlisting/{finderid}/{from?}/{size?}', array('as' => 'finders.re
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
+Route::get('findertopreview/{slug}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -672,7 +672,10 @@ Route::get('createtype/{type}', array('as' => 'elasticsearch.createtype','uses' 
 Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','uses' => 'ElasticsearchController@checkMapping'));
 Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
 Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
-
+Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexautosuggestdata','uses' => 'ElasticsearchController@indexautosuggestdata'));
+Route::get('IndexRankMongo2Elastic', array('as' => 'elasticsearch.IndexRankMongo2Elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
+Route::get('manageAutoSuggestSetttings', array('as' => 'elasticsearch.manageAutoSuggestSetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
+Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -695,6 +698,13 @@ Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
 Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
 Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
 Route::post('/getnearbytrials', 'SearchServicesController@geoLocationService');
+Route::post('/getRankedFinder', 'RankingSearchController@getRankedFinderResults');
+Route::post('/getFinderCategory', 'RankingController@getFinderCategory');
+Route::post('/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+Route::post('/getCategoryOfferings', 'RankingSearchController@CategoryAmenities');
+Route::post('/getcategories', 'RankingSearchController@getcategories');
+Route::post('/getsearchmetadata', 'RankingSearchController@getsearchmetadata');
+
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
@@ -727,7 +737,7 @@ Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
-/*Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));*/
+// Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/
@@ -811,6 +821,7 @@ Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 /******************** FITMANIA SECTION END HERE *******************************/
 
 
+
 ##############################################################################
 /******************** STATS SECTION START HERE *******************************/
 
@@ -825,4 +836,23 @@ Route::get('/stats/smsbalance', 'StatsController@smsBalance');
 
 ##############################################################################
 /******************** STATS SECTION END HERE *******************************/
+
+##############################################################################
+/******************** ORDERS SECTION START HERE ***********************/
+
+Route::get('/callvendor',  array('as' => 'ozonetel.callvendor','uses' => 'OzonetelController@callVendor'));
+
+
+/******************** ORDERS SECTION END HERE ********************/
+##############################################################################
+
+
+
+##############################################################################
+/******************** BRAND SECTION START HERE *******************************/
+
+Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'BrandsController@brandDetail'));
+
+##############################################################################
+/******************** BRAND SECTION END HERE *******************************/
 

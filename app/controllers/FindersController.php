@@ -633,7 +633,6 @@ class FindersController extends \BaseController {
 		$data 					=	$review;
 		$total_rating_count 	=	round(floatval(Input::json()->get('total_rating_count')),1);
 		$average_rating 		=	round(floatval(Input::json()->get('average_rating')),1);
-		
 		$finderdata 			=	array();
 		$finderid 				=	(int) $data['finder_id'];
 		$finder 				=	Finder::findOrFail($finderid);
@@ -738,7 +737,6 @@ class FindersController extends \BaseController {
 			if(!empty($finder_by_slug)){
 
 				$finder_id 	= (int) $finder_by_slug['_id'];
-
 				$reviews = Review::where('status', '!=', '1')
 				->where('finder_id','=',$finder_id)
 				->orderBy('_id', 'desc')
@@ -800,6 +798,82 @@ class FindersController extends \BaseController {
 		];
 		
 		return $data;
+	}
+
+	public function finderTopReview($slug,$cache=false){
+
+		$finder_detail_with_top_review = $cache ? Cache::tags('finder_detail_with_top_review')->has($slug) : false;
+
+		if(!$finder_detail_with_top_review){
+
+			$finder = array();
+			$review = array();
+
+			try {
+
+				$finder = Finder::where('slug','=',(string)$slug)
+						->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+						->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						->first(array('title','photos','city_id','location_id','info','contact','total_rating_count','detail_rating_summary_average','detail_rating_summary_count'));
+
+			} catch (Exception $error) {
+
+				return $errorMessage = $this->errorMessage($error);
+			}
+			
+
+			if(!is_null($finder) || !empty($finder) && isset($finder->_id)){
+
+				try {
+
+					$review = Review::where('finder_id','=',$finder->_id)
+					->orderBy('created_at', 'desc')
+					->orderBy('rating', 'desc')
+					->take(2)->get();
+
+				} catch (Exception $error) {
+
+					return $errorMessage = $this->errorMessage($error);
+
+				}
+
+				if(is_null($review)){
+					$review = array();
+				}
+				
+			}else{
+				$finder = array();
+			}
+
+			$data = [
+				'finder' => $finder,
+				'review' => $review
+			];
+
+			$response = array('status' => 200,'data'=>$data);
+
+			if(!empty($finder) && !empty($review)){
+
+				Cache::tags('finder_detail_with_top_review')->put($slug,$response,Config::get('app.cachetime'));
+			}
+
+		}else{
+
+			$response = Cache::tags('finder_detail_with_top_review')->get($slug);
+		}
+
+		return Response::json($response,200);
+	}
+
+
+	public function errorMessage($error){
+
+		$message = $error->getMessage().' in '.$error->getFile().' : '.$error->getLine();
+		$status = 400;
+
+		$response = array('status'=>$status,'message'=>$message);
+		
+		return Response::json($response,$status);
 	}
 
 

@@ -16,7 +16,7 @@ class DebugController extends \BaseController {
 
 		$this->findermailer						=	$findermailer;
 
-	}
+    }
 
 	public function invalidFinderStats(){
 
