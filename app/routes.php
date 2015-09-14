@@ -673,8 +673,8 @@ Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','us
 Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
 Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
 Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexautosuggestdata','uses' => 'ElasticsearchController@indexautosuggestdata'));
-Route::get('IndexRankMongo2Elastic', array('as' => 'elasticsearch.IndexRankMongo2Elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
-Route::get('manageAutoSuggestSetttings', array('as' => 'elasticsearch.manageAutoSuggestSetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
+Route::get('indexrankmongo2elastic', array('as' => 'elasticsearch.indexrankmongo2elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
+Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageautosuggestsetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
 Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
