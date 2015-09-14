@@ -1,8 +1,8 @@
 <?PHP
 
 /** 
- * ControllerName : CustomerController.
- * Maintains a list of functions used for CustomerController.
+ * ControllerName : OzonetelController.
+ * Maintains a list of functions used for OzonetelController.
  *
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */

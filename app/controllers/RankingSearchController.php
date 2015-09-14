@@ -67,16 +67,16 @@ class RankingSearchController extends \BaseController
             if($category_filter != '') {
                 $factor = evalBaseCategoryScore($category);
                 $sort = '"sort":
-                        {"_script" : {
-                            "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
-                            "type" : "number",
-                            "params" : {
+                {"_script" : {
+                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+                    "type" : "number",
+                    "params" : {
 
-                                "factor" : 11
+                        "factor" : 11
 
-                            },
-                            "order" : "' . $order . '"
-                        }}';
+                    },
+                    "order" : "' . $order . '"
+                }}';
             }
             else{
                 $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
@@ -98,150 +98,143 @@ class RankingSearchController extends \BaseController
             "terms": {
                 "field": "locationcluster",
                 "min_doc_count":1
-               
+                
             },"aggs": {
               "region": {
                 "terms": {
-                "field": "location",
-               "min_doc_count":1,
-                "size":"500",
-                "order": {
-                  "_term": "asc"
-                }
-               
-            }
+                    "field": "location",
+                    "min_doc_count":1,
+                    "size":"500",
+                    "order": {
+                      "_term": "asc"
+                  }
+                  
               }
-            }
-        },';
+          }
+      }
+  },';
 
-        $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
-        $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-        $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-        $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
+  $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+  $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+  $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+  $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
-        $body = '{
-            "from": '.$from.',
-            "size": '.$size.',
-            "aggs": {'.$facetsvalue.'},
-            "query": {
+  $body = '{
+    "from": '.$from.',
+    "size": '.$size.',
+    "aggs": {'.$facetsvalue.'},
+    "query": {
 
-                    "filtered": {
-                            '.$filters.'
-                        }
-                    },
-           '.$sort.'
-        }';
+        "filtered": {
+            '.$filters.'
+        }
+    },
+    '.$sort.'
+}';
        //return $body;
 
-        $request = array(
-            'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
-            //'url' => "http://localhost:9200/"."fitternity/finder/_search",
-            'port' => 8050,
-            'method' => 'POST',
-            'postfields' => $body
-        );
+$request = array(
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+    'port' => 8050,
+    'method' => 'POST',
+    'postfields' => $body
+    );
 
 
-        $search_results     =   es_curl_request($request);
+$search_results     =   es_curl_request($request);
 
-        $response       =   [
+$response       =   [
 
-            'search_results' => json_decode($search_results,true)];
+'search_results' => json_decode($search_results,true)];
 
-        return Response::json($response);
+return Response::json($response);
 
-        /*$eSQuery = json_decode($body,true);
-        $searchParams['index'] = $this->indice;
-        $searchParams['type']  = $type;
-        $searchParams['body'] = $eSQuery;
-        $results =  Es::search($searchParams);
-        return $results;*/
+}
+
+public function CategoryAmenities()
+{
+    $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
+    $city     =  (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+    $city_id = 0;
+    switch ($city) {
+        case 'mumbai':
+        $city_id = 1;
+        break;
+        case 'pune':
+        $city_id = 2;
+        break;
+        case 'bangalore':
+        $city_id = 3;
+        break;
+        case 'delhi':
+        $city_id = 4;
+        break;
+        case 'hyderabad':
+        $city_id = 5;
+        break;
+        case 'ahmedabad':
+        $city_id = 6;
+        break; 
+        case 'gurgaon':
+        $city_id = 8;
+        break;           
+        default:                
+        break;
     }
-
-    public function CategoryAmenities()
+    
+    $categorytag_offerings = '';
+    if($category != '')
     {
-        $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
-        $city     =  (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
-        $city_id = 0;
-        switch ($city) {
-            case 'mumbai':
-                $city_id = 1;
-                break;
-            case 'pune':
-                $city_id = 2;
-                break;
-            case 'bangalore':
-                $city_id = 3;
-                break;
-            case 'delhi':
-                $city_id = 4;
-                break;
-            case 'hyderabad':
-                $city_id = 5;
-                break;
-            case 'ahmedabad':
-                $city_id = 6;
-                break; 
-            case 'gurgaon':
-                $city_id = 8;
-                break;           
-            default:                
-                break;
-        }
-        
-        $categorytag_offerings = '';
-        if($category != '')
-        {
-            $categorytag_offerings = Findercategorytag::active()
-                                    ->where('name', $category)
-                                    ->whereIn('cities',array($city_id))
-                                    ->with('offerings')
-                                    ->orderBy('ordering')
-                                    ->get(array('_id','name','offering_header','slug','status','offerings'));
-        } 
-        
-        $meta_title = $meta_description = $meta_keywords = '';
-        if($category != ''){
-            $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
-            $meta_title         = $findercategory['meta']['title'];
-            $meta_description   = $findercategory['meta']['description'];
-            $meta_keywords      = $findercategory['meta']['keywords'];
-        }                                 
-        $resp  =    array(
-            'meta_title' => $meta_title,
-            'meta_description' => $meta_description,
-            'meta_keywords' => $meta_keywords,                                        
-            'catoff' => $categorytag_offerings
-            );
+        $categorytag_offerings = Findercategorytag::active()
+        ->where('name', $category)
+        ->whereIn('cities',array($city_id))
+        ->with('offerings')
+        ->orderBy('ordering')
+        ->get(array('_id','name','offering_header','slug','status','offerings'));
+    } 
+    
+    $meta_title = $meta_description = $meta_keywords = '';
+    if($category != ''){
+        $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
+        $meta_title         = $findercategory['meta']['title'];
+        $meta_description   = $findercategory['meta']['description'];
+        $meta_keywords      = $findercategory['meta']['keywords'];
+    }                                 
+    $resp  =    array(
+        'meta_title' => $meta_title,
+        'meta_description' => $meta_description,
+        'meta_keywords' => $meta_keywords,                                        
+        'catoff' => $categorytag_offerings
+        );
         //return Response::json($search_results); exit;
-        return Response::json($resp);
-        
+    return Response::json($resp);
+    
 
-    }
+}
 
-     public function getcategories(){
-        $city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
-        $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+public function getcategories(){
+    $city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
+    $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 
-        return Response::json($categorytags);        
-    }
+    return Response::json($categorytags);        
+}
 
-    public function getsearchmetadata(){
-        $category = (Input::json()->get('category')) ? Input::json()->get('category') : 'All-Fitness';
-        $meta_title = $meta_description = $meta_keywords = '';       
-        if($category != ''){
-            $findercategory     =   Findercategory::where('slug', '=', url_slug(array($category)))->first(array('meta'));
-            $meta_title         = $findercategory['meta']['title'];
-            $meta_description   = $findercategory['meta']['description'];
-            $meta_keywords      = $findercategory['meta']['keywords'];
-        } 
+public function getsearchmetadata(){
+    $category = (Input::json()->get('category')) ? Input::json()->get('category') : 'All-Fitness';
+    $meta_title = $meta_description = $meta_keywords = '';       
+    if($category != ''){
+        $findercategory     =   Findercategory::where('slug', '=', url_slug(array($category)))->first(array('meta'));
+        $meta_title         = $findercategory['meta']['title'];
+        $meta_description   = $findercategory['meta']['description'];
+        $meta_keywords      = $findercategory['meta']['keywords'];
+    } 
 
-        $resp  =    array(
-            'meta_title' => $meta_title,
-            'meta_description' => $meta_description,
-            'meta_keywords' => $meta_keywords           
-            );
-        
-        return Response::json($resp);
-    }
+    $resp  =    array(
+        'meta_title' => $meta_title,
+        'meta_description' => $meta_description,
+        'meta_keywords' => $meta_keywords           
+        );
+    
+    return Response::json($resp);
+}
 }
