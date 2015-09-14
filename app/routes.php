@@ -154,7 +154,7 @@ Route::get('updateduration', function() {
 });
 
 
-Route::get('/capturedata', function() { 
+Route::get('capturedata', function() { 
 
 
 	$items = Service::active()->where('trialschedules', 'size', 0)->get();
@@ -684,26 +684,26 @@ Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'R
 
 ##############################################################################
 /******************** SEARCH SECTION START HERE ********************/
-Route::post('/search', 'SearchController@getGlobal');
-Route::post('/search/finders', 'SearchController@getFinders');
-Route::post('/findersearchv3', 'SearchController@getFindersv3');
-Route::post('/globalsearch', 'SearchController@getGlobalv2');
-Route::post('/findersearch', 'SearchController@getFindersv4');
-Route::post('/geolocationfindersearch', 'SearchController@geoLocationFinder');
+Route::post('search', 'SearchController@getGlobal');
+Route::post('search/finders', 'SearchController@getFinders');
+Route::post('findersearchv3', 'SearchController@getFindersv3');
+Route::post('globalsearch', 'SearchController@getGlobalv2');
+Route::post('findersearch', 'SearchController@getFindersv4');
+Route::post('geolocationfindersearch', 'SearchController@geoLocationFinder');
 
-Route::get('/categoryfinders', 'SearchController@categoryfinders');
-Route::post('/fitmaniafinders', 'SearchController@getFitmaniaFinders');
-Route::post('/fitcardfinders', 'SearchController@getFitcardFinders');
+Route::get('categoryfinders', 'SearchController@categoryfinders');
+Route::post('fitmaniafinders', 'SearchController@getFitmaniaFinders');
+Route::post('fitcardfinders', 'SearchController@getFitcardFinders');
 
-Route::post('/workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
-Route::post('/ratcardsearch', 'SearchServicesController@getRatecards');
-Route::post('/getnearbytrials', 'SearchServicesController@geoLocationService');
-Route::post('/getRankedFinder', 'RankingSearchController@getRankedFinderResults');
-Route::post('/getFinderCategory', 'RankingController@getFinderCategory');
-Route::post('/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
-Route::post('/getCategoryOfferings', 'RankingSearchController@CategoryAmenities');
-Route::post('/getcategories', 'RankingSearchController@getcategories');
-Route::post('/getsearchmetadata', 'RankingSearchController@getsearchmetadata');
+Route::post('workoutsessionsearch', 'SearchServicesController@getWorkoutsessions');
+Route::post('ratcardsearch', 'SearchServicesController@getRatecards');
+Route::post('getnearbytrials', 'SearchServicesController@geoLocationService');
+Route::post('getrankedfinder', 'RankingSearchController@getRankedFinderResults');
+Route::post('getfindercategory', 'RankingController@getFinderCategory');
+Route::post('getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities');
+Route::post('getcategories', 'RankingSearchController@getcategories');
+Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
@@ -747,32 +747,32 @@ Route::get('updateappointmentstatus', array('as' => 'customer.updateappointments
 
 ##############################################################################
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
-Route::post('/notify/{notifytype}','EmailSmsApiController@triggerNotify');
-Route::post('/email/requestcallback','EmailSmsApiController@RequestCallback');
-// Route::post('/email/booktrial','EmailSmsApiController@BookTrial');
-// Route::post('/email/extrabooktrial','EmailSmsApiController@extraBookTrial');
-Route::post('/email/finderlead','EmailSmsApiController@FinderLead');
-Route::post('/email/emailfinder','EmailSmsApiController@EmailSmsFinder');
-// Route::post('/email/newfinder','EmailSmsApiController@findercreated');
-// Route::post('/email/finderreview','EmailSmsApiController@ReviewOnfinder');
-// Route::post('/email/createcommunity','EmailSmsApiController@CreateCommunity');
-// Route::post('/email/joincommuntiy','EmailSmsApiController@JoinCommunity');
-// Route::post('/email/interestcommunity','EmailSmsApiController@InterestCommunity');
-Route::post('/email/commentonblog','EmailSmsApiController@CommentOnBlog');
-Route::post('/subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
-// Route::post('/email/joinevent','EmailSmsApiController@JoinEvent');
-// Route::post('/email/createevent','EmailSmsApiController@CreateEvent');
-Route::post('/landing', 'CaptureController@postCapture');
-Route::post('/fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
-Route::post('/fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
-Route::post('/registerme', 'EmailSmsApiController@registerme');
-Route::post('/landingpage/conversion', 'EmailSmsApiController@landingconversion');
-Route::post('/landingpage/callback', 'EmailSmsApiController@landingpagecallback');
-Route::post('/landingpage/register', 'EmailSmsApiController@landingpageregister');
-Route::post('/offeravailed', 'EmailSmsApiController@offeravailed');
-Route::post('/fitcardbuy', 'EmailSmsApiController@fitcardbuy');
-Route::post('/not_able_to_find', 'EmailSmsApiController@not_able_to_find');
-Route::get('/email/testemail','EmailSmsApiController@testemail');
+Route::post('notify/{notifytype}','EmailSmsApiController@triggerNotify');
+Route::post('email/requestcallback','EmailSmsApiController@RequestCallback');
+// Route::post('email/booktrial','EmailSmsApiController@BookTrial');
+// Route::post('email/extrabooktrial','EmailSmsApiController@extraBookTrial');
+Route::post('email/finderlead','EmailSmsApiController@FinderLead');
+Route::post('email/emailfinder','EmailSmsApiController@EmailSmsFinder');
+// Route::post('email/newfinder','EmailSmsApiController@findercreated');
+// Route::post('email/finderreview','EmailSmsApiController@ReviewOnfinder');
+// Route::post('email/createcommunity','EmailSmsApiController@CreateCommunity');
+// Route::post('email/joincommuntiy','EmailSmsApiController@JoinCommunity');
+// Route::post('email/interestcommunity','EmailSmsApiController@InterestCommunity');
+Route::post('email/commentonblog','EmailSmsApiController@CommentOnBlog');
+Route::post('subscribenewsletter','EmailSmsApiController@SubscribeNewsletter');
+// Route::post('email/joinevent','EmailSmsApiController@JoinEvent');
+// Route::post('email/createevent','EmailSmsApiController@CreateEvent');
+Route::post('landing', 'CaptureController@postCapture');
+Route::post('fivefitness/customer', 'EmailSmsApiController@fivefitnesscustomer');
+Route::post('fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitnesscustomer');
+Route::post('registerme', 'EmailSmsApiController@registerme');
+Route::post('landingpage/conversion', 'EmailSmsApiController@landingconversion');
+Route::post('landingpage/callback', 'EmailSmsApiController@landingpagecallback');
+Route::post('landingpage/register', 'EmailSmsApiController@landingpageregister');
+Route::post('offeravailed', 'EmailSmsApiController@offeravailed');
+Route::post('fitcardbuy', 'EmailSmsApiController@fitcardbuy');
+Route::post('not_able_to_find', 'EmailSmsApiController@not_able_to_find');
+Route::get('email/testemail','EmailSmsApiController@testemail');
 
 
 Route::post('/queue/push', function(){
@@ -787,9 +787,9 @@ Route::post('/queue/push', function(){
 ##############################################################################
 /******************** CACHE SECTION START HERE *******************************/
 
-Route::get('/flushtag/{tag}', 'CacheApiController@flushTag');
-Route::get('/flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
-Route::get('/flushall', 'CacheApiController@flushAll');
+Route::get('flushtag/{tag}', 'CacheApiController@flushTag');
+Route::get('flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
+Route::get('flushall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
@@ -825,14 +825,14 @@ Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 ##############################################################################
 /******************** STATS SECTION START HERE *******************************/
 
-Route::get('/stats/booktrial', 'StatsController@booktrial');
-Route::get('/stats/signup', 'StatsController@signUp');
-Route::get('/stats/orders', 'StatsController@orders');
-Route::get('/stats/callback', 'StatsController@callBack');
-Route::get('/stats/orderspiechart', 'StatsController@ordersPieChart');
-Route::get('/stats/signuppiechart', 'StatsController@signUpPieChart');
-Route::get('/stats/review', 'StatsController@review');
-Route::get('/stats/smsbalance', 'StatsController@smsBalance');
+Route::get('stats/booktrial', 'StatsController@booktrial');
+Route::get('stats/signup', 'StatsController@signUp');
+Route::get('stats/orders', 'StatsController@orders');
+Route::get('stats/callback', 'StatsController@callBack');
+Route::get('stats/orderspiechart', 'StatsController@ordersPieChart');
+Route::get('stats/signuppiechart', 'StatsController@signUpPieChart');
+Route::get('stats/review', 'StatsController@review');
+Route::get('stats/smsbalance', 'StatsController@smsBalance');
 
 ##############################################################################
 /******************** STATS SECTION END HERE *******************************/
