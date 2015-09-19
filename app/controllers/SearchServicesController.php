@@ -301,7 +301,7 @@ public function getRatecards(){
 	$location_filter 			= 	($location != '') ? '{"terms" : {  "location": ["'.str_ireplace(',', '","', strtolower($location)).'"] }},'  : '';	
 	$workout_intensity_filter 	= 	($workout_intensity != '') ? '{"terms" : {  "workout_intensity": ["'.str_ireplace(',', '","', strtolower($workout_intensity)).'"] }},'  : '';	
 	$workout_tags_filter 		= 	($workout_tags != '') ? '{"terms" : {  "workout_tags": ["'.str_ireplace(',', '","', strtolower($workout_tags)).'"] }},'  : '';
-	$price_range_filter			=  	($min_price != '' && $max_price != '') ? '{"range" : {"ratecard.price" : { "gte" : '.$min_price.',"lte": '.$max_price.'}} },'  : '';
+	$price_range_filter			=  	($min_price != '' && $max_price != '') ? '{"range" : {"ratecards.price" : { "gte" : '.$min_price.',"lte": '.$max_price.'}} },'  : '';
 
 	$shouldfilter = $mustfilter = $ratecardfilter = '';
 
@@ -310,12 +310,12 @@ public function getRatecards(){
 		$ratecard_filtervalue = trim($price_range_filter,',');	
 		$ratecardfilter = '{
 			"nested": {
-				"filter": {
+				"query": {
 					"bool": {
 						"must": ['.$ratecard_filtervalue.']
 					}
 				},
-				"path": "ratecard",
+				"path": "ratecards",
 				"inner_hits":{}
 			}
 		},';	
@@ -465,6 +465,9 @@ public function getRatecards(){
 		"from": '.$from.',
 		"size": '.$size.',
 		"aggs": '.$aggsval.',
+		"_source": {
+    		"exclude": ["*_snow", "workoutsessionschedules"]
+  		},
 		"query": {
 			"filtered": {
 				"query": {'
@@ -477,6 +480,7 @@ public function getRatecards(){
 		"finder_id",
 		"findername", 
 		"finderslug",
+		"commercial_type",
 		"city",
 		"category",
 		"subcategory",
@@ -662,7 +666,8 @@ public function geoLocationService(){
 		"geolocation",
 		"location",
 		"workout_intensity",
-		"workout_tags","commercial_type"],
+		"workout_tags",
+		"commercial_type"],
 		"sort": [
 		{
 			"_geo_distance": {

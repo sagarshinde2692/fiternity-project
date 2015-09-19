@@ -69,7 +69,7 @@ class FindersController extends \BaseController {
 				$finder 		= 	array_except($finderarr, array('coverimage','categorytags','locationtags','offerings','facilities','services')); 
 				$coverimage  	=	($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
-				array_set($finder, 'services', pluck( $finderarr['services'] , array('_id', 'name', 'lat', 'lon', 'ratecards', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags') ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , array('_id', 'name', 'lat', 'lon', 'ratecards', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos') ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
