@@ -140,7 +140,12 @@ Class CustomerSms extends VersionNextSms{
 	public function manualBookTrial ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to book a trial at ".ucwords($data['finder_name']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
+
+		if($data['finder_category_id'] == 45){
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to avail the healthy food trial pack. We will set in touch with you shortly. Team Fitternity.";
+		}else{
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to book a trial at ".ucwords($data['finder_name']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
+		}
 
 		$label = 'ManualBookTrial-C';
 		$priority = 1;

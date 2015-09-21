@@ -48,7 +48,7 @@ class OrderController extends \BaseController {
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
 			} 
 			
-			//SEND COD SMS TO CUSTOMER
+			//SEND payment gateway SMS TO CUSTOMER
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 			return Response::json($resp);
@@ -58,6 +58,8 @@ class OrderController extends \BaseController {
 		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
 		return Response::json($resp);
 	}
+
+
 
 	//create cod order for customer
 	public function generateCodOrder(){

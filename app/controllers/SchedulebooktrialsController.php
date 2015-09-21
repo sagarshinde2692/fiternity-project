@@ -931,7 +931,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_id 					= 	(int) Input::json()->get('finder_id');
 		$city_id 					=	(int) Input::json()->get('city_id');
 		$finder_name 				=	Input::json()->get('finder_name');
-
+		$finder						=	Finder::active()->where('_id','=',intval($finder_id))->first();
 		$customer_id				= 	$this->autoRegisterCustomer($data);
 		$customer_name				= 	(Input::has('customer_name') && Input::json()->get('customer_name') != '') ? Input::json()->get('customer_name') : "";
 		$customer_email				= 	(Input::has('customer_email') && Input::json()->get('customer_email') != '') ? Input::json()->get('customer_email') : "";
@@ -952,6 +952,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'finder_id' 			=>		$finder_id,
 			'city_id'				=>		$city_id, 
 			'finder_name' 			=>		$finder_name,
+			'finder_category_id' 	=>		intval($finder->category_id),
 
 			'customer_id' 			=>		$customer_id, 
 			'customer_name' 		=>		$customer_name, 
