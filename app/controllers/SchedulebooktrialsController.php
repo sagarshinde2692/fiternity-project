@@ -771,6 +771,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'booktrial_type'				=>		'auto',
 				'booktrial_actions'				=>		'call to confirm trial',
 				'source'						=>		'website',
+				'origin'						=>		'auto',
 				'additional_info'				=>		$additional_info	
 				);
 
@@ -971,6 +972,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'booktrial_type'		=>		'manual',
 			'booktrial_actions'		=>		'call to set up trial',
 			'source'				=>		'website',	
+			'origin'				=>		'manual',
 			'additional_info'		=>		$additional_info
 			);
 
