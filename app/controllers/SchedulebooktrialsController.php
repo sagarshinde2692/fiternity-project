@@ -315,6 +315,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 	}
 
+
 	public function getBookTrial($finderid,$date = null){
 		$finderid 	= 	(int) $finderid;
 		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
@@ -493,6 +494,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'booktrial_type'				=>		'auto',
 				'booktrial_actions'				=>		'call to confirm trial',
 				'source'						=>		'website',
+				'origin'						=>		'auto',
 				'additional_info'				=>		$additional_info	
 				);
 
