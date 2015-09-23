@@ -29,7 +29,7 @@
    a[href^="tel"], a[href^="sms"] {
      text-decoration: none;
      color: #ffffff; /* or whatever your want */
-      
+
      cursor: default;
    }
    .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
@@ -56,7 +56,7 @@
    a[href^="tel"], a[href^="sms"] {
      text-decoration: none;
      color: #ffffff; /* or whatever your want */
-      
+
      cursor: default;
    }
    .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
@@ -98,7 +98,7 @@
           <tr>
             <td><!-- logo -->
               <table width="280" cellpadding="0" cellspacing="0" border="0" align="left" class="devicewidth">
-               
+
               </table>
               <!-- End of logo -->
               <!-- menu -->
@@ -117,8 +117,8 @@
         </table></td>
       </tr>
       <tr>
-          <td height="10" bgcolor="#ffffff"></td>
-        </tr>
+        <td height="10" bgcolor="#ffffff"></td>
+      </tr>
     </tbody>
   </table>
   <!-- end of header -->
@@ -132,48 +132,48 @@
     <td align="center">
      <table bgcolor="#fff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
       <tbody>
-      
-      <tr>
-        <td>
-         <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
-          <tbody>
-          
+
         <tr>
-          <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; color:#666; text-align:left;line-height: 18px; padding:5px 5px;" st-content="fulltext-paragraph">
-            <p style="padding-top:13px">Hey {{ ucwords($customer_name) }}, <br>
-            <p style="padding-top:13px"> This is regarding the workout session booked on Fitternity for {{ ucwords($finder_name) }}@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif on 
-      {{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }} </p>
+          <td>
+           <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+            <tbody>
 
- <p style="padding-top:13px">Incase if you have queries, would like to reschedule or cancel your session - please call us on +91 92222 21131 or reply to this mail. </p>
+              <tr>
+                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; color:#666; text-align:left;line-height: 18px; padding:5px 5px;" st-content="fulltext-paragraph">
+                  <p style="padding-top:13px">Hey {{ ucwords($customer_name) }}, <br>
+                    <p style="padding-top:13px"> This is regarding the workout session booked on Fitternity for {{ ucwords($finder_name) }}@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif on 
+                      {{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }} </p>
 
-Here are some quick tips for your session:
-</p>  
-<p style="padding-top:13px; font-weight:bold">What to carry?</p>
-<p style="padding-top:13px">Gym bag with water bottle and sweat towel
-Additionals (if required): yoga mat, music, face wash, spare clothes/socks, deodorant, post workout snack (protein / granola bar)</p>
+                      <p style="padding-top:13px">Incase if you have queries, would like to reschedule or cancel your session - please call us on +91 92222 21131 or reply to this mail. </p>
 
-<p style="padding-top:13px; font-weight:bold">What to wear?</p>
-Comfortable workout wear, Sport shoes and socks (tailor your attire to the specific fitness activity)
+                      Here are some quick tips for your session:
+                    </p>  
+                    <p style="padding-top:13px; font-weight:bold">What to carry?</p>
+                    <p style="padding-top:13px">Gym bag with water bottle and sweat towel
+                      Additionals (if required): yoga mat, music, face wash, spare clothes/socks, deodorant, post workout snack (protein / granola bar)</p>
 
-We will reach out to you post your session and help you with the membership or provide other options (basis your feedback).
-<p style="padding-top:13px"> Please note we have awesome insider discounts available only for Fitternity members. So stay connected before you make a purchase. </p>
-              <p style="padding-top:15px; font-size:15px;">Here are the details:</p>
-              
-          </td>
-       </tr>
-        <tr>
-  <td style="background-color:#666" width="100%" height="3"></td>
-</tr>
-       
-      <!-- Spacing -->
-    </tbody>
-  </table>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
-</tr>
+                      <p style="padding-top:13px; font-weight:bold">What to wear?</p>
+                      Comfortable workout wear, Sport shoes and socks (tailor your attire to the specific fitness activity)
+
+                      We will reach out to you post your session and help you with the membership or provide other options (basis your feedback).
+                      <p style="padding-top:13px"> Please note we have awesome insider discounts available only for Fitternity members. So stay connected before you make a purchase. </p>
+                      <p style="padding-top:15px; font-size:15px;">Here are the details:</p>
+
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="background-color:#666" width="100%" height="3"></td>
+                  </tr>
+
+                  <!-- Spacing -->
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
 </tbody>
 </table>
 </div>
@@ -186,168 +186,168 @@ We will reach out to you post your session and help you with the membership or p
         <tbody>
           <!-- Title -->
           
-         
-        <tr>
-          <td>
-           <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-            <tbody>
-             <tr>
-              <td>
-               <!-- col 1 -->
-               <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                <tbody>
-                 <!-- image 2 -->
-                
-                <!-- end of image2 -->
-                <tr>
-                  <td>
-                   <!-- start of text content table -->  
-                   <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
-                    <tbody>
-                     <!-- Spacing -->
-                     <tr>
-                      <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-                    </tr>
-                    <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Session booked for:   
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($customer_name) }}</td>
-                      </tr>
-                    <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Name of the service provider:
-                     
-                       </td>
-                      </tr>
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($finder_name) }}
-                      
-                       </td>
-                      </tr>
-                      
-                      <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">Date:
-                     
-                       </td>
-                      </tr>
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight: 500" st-title="3col-title1">
-                     {{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}
-                      
-                       </td>
-                      </tr>
-                      <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Time:
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ date(' g\.i A', strtotime($schedule_date_time) ) }}
-                      
-                       </td>
-                      </tr>
-                      
-                      
-                      <tr>
-  <td width="100%" height="5"></td>
-</tr>
 
-                                 
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-              <!-- end of text content table -->
-            </tbody>
-          </table>
-          <!-- spacing -->
-          
-        <!-- end of spacing -->
-        <!-- col 2 -->
-        <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-          <tbody>
-           <!-- image 2 -->
-           
-          <!-- end of image2 -->
           <tr>
             <td>
-             <!-- start of text content table -->  
-             <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+             <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
               <tbody>
-               <!-- Spacing -->
                <tr>
-                <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-              </tr>
-              <!-- Spacing -->
-              <!-- title2 -->
-               <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Workout form : 
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($service_name)  }}</td>
-                      </tr> 
-                     
-                       <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">  Subscription Code:  
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ $code }} (please flash this code at the service provider location)
-</td>
-                      </tr>
-                  
-               
+                <td>
+                 <!-- col 1 -->
+                 <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                  <tbody>
+                   <!-- image 2 -->
 
-                                 <tr>
-  <td width="100%" height="20"></td>
-</tr>
+                   <!-- end of image2 -->
+                   <tr>
+                    <td>
+                     <!-- start of text content table -->  
+                     <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                      <tbody>
+                       <!-- Spacing -->
+                       <tr>
+                        <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                         <p style="font-weight:light">  Session booked for:   
+
+                         </td>
+                       </tr>
+
+
+                       <tr>
+                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                           {{ ucwords($customer_name) }}</td>
+                         </tr>
+                         <tr>
+                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                           <p style="font-weight:light">  Name of the service provider:
+
+                           </td>
+                         </tr>
+
+                         <tr>
+                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                             {{ ucwords($finder_name) }}
+
+                           </td>
+                         </tr>
+
+                         <tr>
+                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                           <p style="font-weight:light">Date:
+
+                           </td>
+                         </tr>
+
+                         <tr>
+                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight: 500" st-title="3col-title1">
+                             {{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}
+
+                           </td>
+                         </tr>
+                         <tr>
+                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                           <p style="font-weight:light">  Time:
+
+                           </td>
+                         </tr>
+
+
+                         <tr>
+                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                             {{ date(' g\.i A', strtotime($schedule_date_time) ) }}
+
+                           </td>
+                         </tr>
+
+
+                         <tr>
+                          <td width="100%" height="5"></td>
+                        </tr>
+
+
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+                <!-- end of text content table -->
               </tbody>
             </table>
-          </td>
+            <!-- spacing -->
+
+            <!-- end of spacing -->
+            <!-- col 2 -->
+            <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+              <tbody>
+               <!-- image 2 -->
+
+               <!-- end of image2 -->
+               <tr>
+                <td>
+                 <!-- start of text content table -->  
+                 <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                  <tbody>
+                   <!-- Spacing -->
+                   <tr>
+                    <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                  </tr>
+                  <!-- Spacing -->
+                  <!-- title2 -->
+                  <tr>
+                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                     <p style="font-weight:light">  Workout form : 
+
+                     </td>
+                   </tr>
+
+
+                   <tr>
+                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                       {{ ucwords($service_name)  }}</td>
+                     </tr> 
+                     
+                     <tr>
+                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                       <p style="font-weight:light">  Subscription Code:  
+
+                       </td>
+                     </tr>
+                     
+                     
+                     <tr>
+                       <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                         {{ $code }} (please flash this code at the service provider location)
+                       </td>
+                     </tr>
+
+
+
+                     <tr>
+                      <td width="100%" height="20"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <!-- end of text content table -->
+          </tbody>
+        </table>
+        <!-- end of col 2 -->
+        <!-- spacing --><!-- end of spacing -->
+        <!-- col 3 -->
+
+
+        <tr>
+          <td width="100%" height="20"></td>
         </tr>
-        <!-- end of text content table -->
+        <!-- end of spacing -->
+
+
       </tbody>
     </table>
-    <!-- end of col 2 -->
-    <!-- spacing --><!-- end of spacing -->
-  <!-- col 3 -->
-  
-
-<tr>
-  <td width="100%" height="20"></td>
-</tr>
-<!-- end of spacing -->
-
-
-</tbody>
-</table>
-</td>
+  </td>
 </tr>
 </tbody>
 </table></td></tr></tbody></table>
@@ -360,59 +360,59 @@ We will reach out to you post your session and help you with the membership or p
       <td align="center">
        <table bgcolor="#fff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
         <tr>
-                      <td height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
-                       How do I get there?
-                       </td>
-                      </tr>
-                       <tr>
-  <td style="background-color:#999" width="100%" height="5"></td>
-</tr>
-        <tbody>
-          <!-- Title -->
-          
-         
+          <td height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
+           How do I get there?
+         </td>
+       </tr>
+       <tr>
+        <td style="background-color:#999" width="100%" height="5"></td>
+      </tr>
+      <tbody>
+        <!-- Title -->
+
+
         <tr>
           <td>
            <table bgcolor="#f3f3f3" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
             <tbody>
-                         <tr>
+             <tr>
               <td>
                <!-- col 1 -->
                <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
                 <tbody>
-                
-                <tr>
-                  <td>
-                   <!-- start of text content table -->  
-                   <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
-                    <tbody>
-                     <!-- Spacing -->
-                   <tr>
-                <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-              </tr>
-                    <!-- Spacing -->
-                    <!-- title2 -->
-                   
-                   <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">Address:   
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($finder_address) }}
-</td>
-                      </tr>
-                  
-                      
-                      <tr>
-  <td width="100%" height="10"></td>
-</tr>
 
-                                 
+                  <tr>
+                    <td>
+                     <!-- start of text content table -->  
+                     <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                      <tbody>
+                       <!-- Spacing -->
+                       <tr>
+                        <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                      </tr>
+                      <!-- Spacing -->
+                      <!-- title2 -->
+
+                      <tr>
+                        <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                         <p style="font-weight:light">Address:   
+
+                         </td>
+                       </tr>
+
+
+                       <tr>
+                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                           {{ ucwords($finder_address) }}
+                         </td>
+                       </tr>
+
+
+                       <tr>
+                        <td width="100%" height="10"></td>
+                      </tr>
+
+
                     </tbody>
                   </table>
                 </td>
@@ -422,77 +422,77 @@ We will reach out to you post your session and help you with the membership or p
           </table>
           <!-- spacing -->
           
-        <!-- end of spacing -->
-        <!-- col 2 -->
-        <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-          <tbody>
-           <!-- image 2 -->
-           
-          <!-- end of image2 -->
-          <tr>
-            <td>
-             <!-- start of text content table -->  
-             <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
-              <tbody>
-               <!-- Spacing -->
-               <tr>
-                <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-              </tr>
-            <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">Contact Person :    
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     {{ ucwords($finder_poc_for_customer_name) }}</td>
-                      </tr>
-              <!-- <tr>
-                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                     <p style="font-weight:light">Directions:   
-                     
-                       </td>
-                      </tr>
-                     
-                     
-                     <tr>
-                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                     View on Google Map</td>
-                      </tr> -->
-               
+          <!-- end of spacing -->
+          <!-- col 2 -->
+          <table width="290" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+            <tbody>
+             <!-- image 2 -->
 
-                                 <tr>
-  <td width="100%" height="20"></td>
-</tr>
-              </tbody>
-            </table>
+             <!-- end of image2 -->
+             <tr>
+              <td>
+               <!-- start of text content table -->  
+               <table width="266" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                <tbody>
+                 <!-- Spacing -->
+                 <tr>
+                  <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
+                </tr>
+                <tr>
+                  <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                  <p style="font-weight:light">Contact Person :    </p>
+
+                   </td>
+                 </tr>
+
+
+                 <tr>
+                   <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                     {{ ucwords($finder_poc_for_customer_name) }}</td>
+                   </tr>
+
+                   <tr>
+                    <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                     <p style="font-weight:light">Contact No :    </p>
+
+                     </td>
+                   </tr>
+                   
+                   <tr>
+                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                       {{ ucwords($finder_poc_for_customer_no) }}</td>
+                     </tr>
+
+
+                     <tr>
+                      <td width="100%" height="20"></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+            <!-- end of text content table -->
+          </tbody>
+        </table>
+        <!-- end of col 2 -->
+        <!-- spacing --><!-- end of spacing -->
+        <!-- col 3 -->
+
+
+        <tr>
+          <td width="100%" height="20"></td>
+        </tr>
+        <tr>
+          <td bgcolor="#FFFFFF" height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
+            Regards<br />
+            TEAM FITTERNITY
+
           </td>
         </tr>
-        <!-- end of text content table -->
+
       </tbody>
     </table>
-    <!-- end of col 2 -->
-    <!-- spacing --><!-- end of spacing -->
-  <!-- col 3 -->
-  
-
-<tr>
-  <td width="100%" height="20"></td>
-</tr>
- <tr>
-                      <td bgcolor="#FFFFFF" height="25" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color:#666; padding-left:5px; padding-top:10px;" st-title="3col-title1">
-                      Regards<br />
-TEAM FITTERNITY
-
-                       </td>
-                      </tr>
-
-</tbody>
-</table>
-</td>
+  </td>
 </tr>
 </tbody>
 </table></td></tr></tbody></table>

@@ -24,7 +24,7 @@ Class FinderMailer extends Mailer {
 			'user_email' => Config::get('mail.to_mailus'),
 			'user_name' =>  $data['finder_poc_for_customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Session request from customer '.ucwords($data['customer_name']).' has been confirmed | Fitternity'
+			'email_subject' => 'Session request from customer '.ucwords($data['customer_name']).' at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
 			);
 
 		$label = 'BookTrial-F';

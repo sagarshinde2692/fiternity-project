@@ -303,7 +303,7 @@
                      <tr>
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                      {{ $code }} (please flash this code at the service provider location)
-</td>
+                      </td>
                       </tr>
                   
                
@@ -434,8 +434,18 @@
                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                      {{ ucwords($finder_poc_for_customer_name) }}</td>
                       </tr>
-               
 
+                       <tr>
+                      <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
+                     <p style="font-weight:light">Contact No :    
+                     
+                       </td>
+                      </tr>
+                     
+                     <tr>
+                     <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
+                     {{ ucwords($finder_poc_for_customer_no) }}</td>
+                      </tr>
                                  <tr>
   <td width="100%" height="20"></td>
 </tr>

@@ -9,9 +9,9 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please flash this subscription code for the session: ".$data['code'].". For address refer to http://www.fitternity.com/".$data['finder_slug'] .". Thank you for using Fitternity.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please flash this subscription code for the session: ".$data['code'].". For address refer to http://www.fitternity.com/".$data['finder_slug'] .". Thank you for using Fitternity.";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Please flash this subscription code for the session: ".$data['code'].". For address refer to http://www.fitternity.com/".$data['finder_slug'] .". Thank you for using Fitternity.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name']).". Please flash this subscription code for the session: ".$data['code'].". For address refer to http://www.fitternity.com/".$data['finder_slug'] .". Thank you for using Fitternity.";
 		}
 		
 		$label = 'BookTrial-C';
@@ -58,7 +58,7 @@ Class CustomerSms extends VersionNextSms{
 
 		//testing for bookTrialReminderAfter2Hour template
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message 	=	"Hope you had a good session. We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
+		$message 	=	"Hope you had a good session at ".ucwords($data['finder_name']).". We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
 		
 		$label = 'TrialRmdAfter2Hr-C';
 
@@ -107,9 +107,9 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
 		if($data['show_location_flag']){
-			$message 	=	"Hope you had a good session. We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'];
+			$message 	=	"Hope you had a good session at ".ucwords($data['finder_name']).". We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'];
 		}else{
-			$message 	=	"Hope you had a good session. We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
+			$message 	=	"Hope you had a good session at ".ucwords($data['finder_name']).". We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
 		}
 		
 		$label = 'TrialRmdAfter2Hr-C';
@@ -142,9 +142,9 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
 		if($data['finder_category_id'] == 45){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to avail the healthy food trial pack. We will set in touch with you shortly. Team Fitternity.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for your request to avail the healthy food trial pack. We will get in touch with you shortly. Team Fitternity.";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for the request to book a trial at ".ucwords($data['finder_name']).". We will call you shortly to arrange a time. Regards - Team Fitternity.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity.";
 		}
 
 		$label = 'ManualBookTrial-C';

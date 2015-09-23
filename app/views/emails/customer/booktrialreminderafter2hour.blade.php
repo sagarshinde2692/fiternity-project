@@ -29,7 +29,7 @@
    a[href^="tel"], a[href^="sms"] {
      text-decoration: none;
      color: #ffffff; /* or whatever your want */
-      
+     
      cursor: default;
    }
    .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
@@ -56,7 +56,7 @@
    a[href^="tel"], a[href^="sms"] {
      text-decoration: none;
      color: #ffffff; /* or whatever your want */
-      
+     
      cursor: default;
    }
    .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
@@ -117,8 +117,8 @@
         </table></td>
       </tr>
       <tr>
-          <td height="10" bgcolor="#ffffff"></td>
-        </tr>
+        <td height="10" bgcolor="#ffffff"></td>
+      </tr>
     </tbody>
   </table>
   <!-- end of header -->
@@ -132,36 +132,36 @@
     <td align="center">
      <table bgcolor="#fff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
       <tbody>
-      
-      <tr>
-        <td>
-         <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
-          <tbody>
-          
+        
         <tr>
-          <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666;" st-content="fulltext-paragraph">
-            <p style="padding-top:8px">Hey {{ ucwords($customer_name) }}, <br>
-            <p style="padding-top:13px"> Hope you had a good experience at your trial session with {{ ucwords($finder_name) }}. We’ll call you afterwards to hear all about it and share some exclusive discounts in case you wish to subscribe! </p>  
-              <p style="padding-top:13px; font-size:15px;">We would urge you to review {{ ucwords($finder_name) }} on our website - it will take your 2 minutes to rate and share your experience with other fitness enthusiasts. You also get eligible to our 'Review to Win' Contest and stand a chance to win I-phone 6, organic food hampers and other goodies. </p>
-             <p style="padding-top:13px; font-size:15px;">Please access this link to review: {{ link_to('http://www.fitternity.com/'.$finder_slug, ucwords($finder_name), array("style"=>"text-decoration:none; color:#F60") ) }}</p>
-             <p style="padding-top:13px; font-size:15px;">Request you to please share feedback about your experience with Fitternity. If there is anything we could do to improve your interaction - we would like to know.</p> <p style="padding-top:10px; font-size:15px;">You could just reply to this mail or call me us on +91 9222221131.</p>
+          <td>
+           <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+            <tbody>
+              
+              <tr>
+                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666;" st-content="fulltext-paragraph">
+                  <p style="padding-top:8px">Hey {{ ucwords($customer_name) }}, <br>
+                    <p style="padding-top:13px"> Hope you had a good experience at your session with {{ ucwords($finder_name) }}. We’ll call you afterwards to hear all about it and share some exclusive discounts in case you wish to subscribe! </p>  
+                    <p style="padding-top:13px; font-size:15px;">We would urge you to review {{ ucwords($finder_name) }} on our website. </p>
+                    <p style="padding-top:13px; font-size:15px;">Please access this link to review: {{ link_to('http://www.fitternity.com/'.$finder_slug, ucwords($finder_name), array("style"=>"text-decoration:none; color:#F60") ) }}</p>
+                    <p style="padding-top:10px; font-size:15px;">You could just reply to this mail or call me us on +91 9222221131.</p>
 
-             <p style="padding-top:10px; font-size:15px;"> Regards,</p>
-             <p>TEAM FITTERNITY</p>
+                    <p style="padding-top:10px; font-size:15px;"> Regards,</p>
+                    <p>TEAM FITTERNITY</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td sidth="100%" height="20"></td>
+                </tr>
+                
+                <!-- Spacing -->
+              </tbody>
+            </table>
           </td>
-       </tr>
-        <tr>
-  <td sidth="100%" height="20"></td>
-</tr>
-       
-      <!-- Spacing -->
-    </tbody>
-  </table>
-</td>
-</tr>
-</tbody>
-</table>
-</td>
+        </tr>
+      </tbody>
+    </table>
+  </td>
 </tr>
 </tbody>
 </table>
