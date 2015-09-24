@@ -504,7 +504,24 @@ if (!function_exists('get_elastic_finder_documentv2')) {
     function get_elastic_finder_documentv2($finderdata = array(), $locationcluster='', $rangeval =0) {
 
         $data = $finderdata;
-        
+        $flag = false;
+        $picslist = array();            
+        if(($data['category_id'] == 42) || ($data['category_id'] == 45))
+                { 
+                $flag = true;                   
+                    $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
+                     foreach ($service as $doc1) { 
+                         $doc = $doc1->toArray();
+                        if( isset($doc['photos']) && !empty($doc['photos'])){                                            
+                        $photos = $doc['photos'];                       
+                        foreach ($photos as $key => $value) {                           
+                            if(!empty($photos[$key])){                               
+                                array_push($picslist, strtolower($value['url']));
+                        }
+                    }
+                     }
+                }
+            }        
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
@@ -551,8 +568,9 @@ if (!function_exists('get_elastic_finder_documentv2')) {
                 'locationcluster'               =>      $locationcluster,
                 'price_rangeval'                =>      $rangeval
                 //'trialschedules'                =>      $trialdata,
-                );
-
+                );                
+                    $postfields_data['servicephotos'] = $picslist;
+                             
                 return $postfields_data;
         }catch(Swift_RfcComplianceException $exception){
             Log::error($exception);

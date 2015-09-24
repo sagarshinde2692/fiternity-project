@@ -68,7 +68,8 @@ class RankingController extends \BaseController {
                             //->with('services')
                             ->active()
                             ->orderBy('_id')
-                            //->whereIn('_id', array(2828))
+                            //->whereIn('category_id', array(42,45))
+                            //->whereIn('_id', array(3296))
                             ->whereIn('city_id', $citykist)
                             ->take(3500)->skip(0)
                             ->timeout(400000000)
@@ -116,16 +117,18 @@ class RankingController extends \BaseController {
                                                            default:
                                                               $rangeval = 0;
                                                                break;
-                                                       }                                       
+                                                       }                                                   
                 $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);             
                 $postdata['rank'] = $score;
                 $catval = evalBaseCategoryScore($finderdocument['category_id']);
                 $postdata['rankv1'] = $catval;
                 $postdata['rankv2'] = $score + $catval;
                 $postfields_data = json_encode($postdata); 
-
+                //echo pretty($postfields_data['rank']);exit;
+                //var_dump($postfields_data['rank']);exit;
                 //return $postfields_data;               
                 //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
+                //$posturl = "";
                 $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
