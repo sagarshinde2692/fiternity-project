@@ -4,6 +4,9 @@ class Order extends \Basemodel {
 
 	protected $collection = "orders";
 
+	protected $dates = array('preferred_starting_date');
+
+	
 	public function setIdAttribute($value){
 		
 		$this->attributes['_id'] = intval($value);

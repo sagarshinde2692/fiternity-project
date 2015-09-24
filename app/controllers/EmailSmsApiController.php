@@ -80,15 +80,15 @@ class EmailSmsApiController extends \BaseController {
 		}
 
 		$data = array(
-				'capture_type' 	=>		'request_callback',	
-				'city_id' => Input::json()->get('city_id'),
-				'vendor' => Input::json()->get('vendor'), 
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'preferred_time' => Input::json()->get('preferred_time'),
-				'date' => date("h:i:sa")        
-				);
+			'capture_type' 	=>		'request_callback',	
+			'city_id' => Input::json()->get('city_id'),
+			'vendor' => Input::json()->get('vendor'), 
+			'name' => Input::json()->get('name'), 
+			'email' => Input::json()->get('email'), 
+			'phone' => Input::json()->get('phone'),
+			'preferred_time' => Input::json()->get('preferred_time'),
+			'date' => date("h:i:sa")        
+			);
 
 		array_set($data, 'capture_status', 'yet to connect');
 
@@ -318,6 +318,18 @@ class EmailSmsApiController extends \BaseController {
 		array_set($data, 'capture_status', 'yet to connect');
 
 		$storecapture 	= Capture::create($data);
+
+		if(Input::json()->get('capture_type') == 'FakeBuy'){
+
+			// $smsdata = array( 
+			// 'send_to' => Input::json()->get('phone'),
+			// 	'message_body'=>'Hi '.Input::json()->get('name').', Your registration code is '.$code
+			// 	);
+
+			// $this->sendSMS($smsdata);
+		}
+
+
 		$resp 			= array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
@@ -426,14 +438,14 @@ class EmailSmsApiController extends \BaseController {
 		}
 
 		$data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'location' => Input::json()->get('location'),
-				'vendor' => Input::json()->get('vendor'),
-				'finder_offer' => Input::json()->get('finder_offer'),
-				'capture_type' => Input::json()->get('capture_type')
-				);
+			'name' => Input::json()->get('name'), 
+			'email' => Input::json()->get('email'), 
+			'phone' => Input::json()->get('phone'),
+			'location' => Input::json()->get('location'),
+			'vendor' => Input::json()->get('vendor'),
+			'finder_offer' => Input::json()->get('finder_offer'),
+			'capture_type' => Input::json()->get('capture_type')
+			);
 
 		$capture_type_subject =  ucfirst(str_replace("-"," ",Input::json()->get('capture_type'))); 
 		
@@ -466,13 +478,13 @@ class EmailSmsApiController extends \BaseController {
 	public function fitcardbuy(){
 		
 		$data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'location' => Input::json()->get('location'),
-				'capture_type' => 'fitcardbuy',
-				'date' => date("h:i:sa")  
-				);
+			'name' => Input::json()->get('name'), 
+			'email' => Input::json()->get('email'), 
+			'phone' => Input::json()->get('phone'),
+			'location' => Input::json()->get('location'),
+			'capture_type' => 'fitcardbuy',
+			'date' => date("h:i:sa")  
+			);
 
 		$emaildata = array(
 			'email_template' 		=> 	'emails.finder.fitcardbuy', 
@@ -487,7 +499,7 @@ class EmailSmsApiController extends \BaseController {
 		$smsdata = array(
 			'send_to' => Input::json()->get('phone'),
 			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for purchasing FitCard. You will be receiving a call and email from us to kickstart your fitness journey.'
-		);
+			);
 
 		$this->sendSMS($smsdata);
 		array_set($data, 'capture_status', 'yet to connect');
@@ -506,13 +518,13 @@ class EmailSmsApiController extends \BaseController {
 		}
 
 		$data = array(				
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'), 
-				'msg' => Input::json()->get('msg'), 
-				'capture_type' => 'not_able_to_find',
-				'date' => date("h:i:sa")  
-				);
+			'name' => Input::json()->get('name'), 
+			'email' => Input::json()->get('email'), 
+			'phone' => Input::json()->get('phone'), 
+			'msg' => Input::json()->get('msg'), 
+			'capture_type' => 'not_able_to_find',
+			'date' => date("h:i:sa")  
+			);
 
 		$emaildata = array(
 			'email_template' 		=> 	'emails.finder.customerlookingfor', 
