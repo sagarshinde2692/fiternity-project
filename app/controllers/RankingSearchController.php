@@ -186,7 +186,7 @@ public function CategoryAmenities()
     if($category != '')
     {
         $categorytag_offerings = Findercategorytag::active()
-        ->where('name', $category)
+        ->where('slug', '=', url_slug(array($category)))
         ->whereIn('cities',array($city_id))
         ->with('offerings')
         ->orderBy('ordering')
