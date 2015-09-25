@@ -193,6 +193,7 @@ public function CategoryAmenities()
         ->get(array('_id','name','offering_header','slug','status','offerings'));
     } 
     
+    
     $meta_title = $meta_description = $meta_keywords = '';
     if($category != ''){
         $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
