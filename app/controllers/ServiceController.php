@@ -147,4 +147,103 @@ class ServiceController extends \BaseController {
 
 
 
+	public function getServiceHomePageDataV1($city = 'mumbai',$cache = false){   
+
+		$home_by_city = $cache ? Cache::tags('servicehome_by_city_v3')->has($city) : false;
+
+		if(!$home_by_city){
+			$categorys = $locations = $popular_finders = $footer_finders = $recent_blogs =	array();
+			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			$city_name 		= 	$citydata['name'];
+			$city_id		= 	(int) $citydata['_id'];	
+
+			$homepage 		= 		Servicehomepage::where('city_id', '=', $city_id)->get()->first();						
+
+
+			$feature_services  = $this->feature_services($homepage);
+			$footer_services  = $this->footer_services($homepage);
+
+			return $homedata 	= 	array(
+				'city_name' => $city_name,
+				'city_id' => $city_id,
+				'feature_services' => $feature_services,    
+				'footer_services' => $footer_services,    
+				);
+
+			Cache::tags('home_by_city_v3')->put($city, $homedata, Config::get('cache.cache_time'));
+		}
+
+		return Response::json(Cache::tags('home_by_city_v3')->get($city));
+	}
+
+
+
+	private function feature_services($homepage){
+
+		$feature_block1_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block1'] ));
+		$feature_block2_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block2'] ));
+		$feature_block3_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block3'] ));
+		$feature_block4_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block4'] ));
+		$feature_block5_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block5'] ));
+		$feature_block6_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block6'] ));
+
+		$feature_block1_services 		=		Service::active()->whereIn('_id', $feature_block1_ids)->lists('name','_id');
+		$feature_block2_services 		=		Service::active()->whereIn('_id', $feature_block2_ids)->lists('name','_id');
+		$feature_block3_services 		=		Service::active()->whereIn('_id', $feature_block3_ids)->lists('name','_id');
+		$feature_block4_services 		=		Service::active()->whereIn('_id', $feature_block4_ids)->lists('name','_id');																										
+		$feature_block5_services 		=		Service::active()->whereIn('_id', $feature_block5_ids)->lists('name','_id');																										
+		$feature_block6_services 		=		Service::active()->whereIn('_id', $feature_block6_ids)->lists('name','_id');																										
+
+		array_set($feature_services,  'feature_block1_services', $feature_block1_services);									
+		array_set($feature_services,  'feature_block2_services', $feature_block2_services);									
+		array_set($feature_services,  'feature_block3_services', $feature_block3_services);									
+		array_set($feature_services,  'feature_block4_services', $feature_block4_services);	
+		array_set($feature_services,  'feature_block5_services', $feature_block5_services);	
+		array_set($feature_services,  'feature_block6_services', $feature_block6_services);	
+
+		array_set($feature_services,  'footer_block1_title', (isset($homepage['footer_block1_title']) && $homepage['footer_block1_title'] != '') ? $homepage['footer_block1_title'] : '');									
+		array_set($feature_services,  'footer_block2_title', (isset($homepage['footer_block2_title']) && $homepage['footer_block2_title'] != '') ? $homepage['footer_block2_title'] : '');									
+		array_set($feature_services,  'footer_block3_title', (isset($homepage['footer_block3_title']) && $homepage['footer_block3_title'] != '') ? $homepage['footer_block3_title'] : '');									
+		array_set($feature_services,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');									
+		array_set($feature_services,  'footer_block5_title', (isset($homepage['footer_block5_title']) && $homepage['footer_block5_title'] != '') ? $homepage['footer_block5_title'] : '');									
+		array_set($feature_services,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
+
+		return $feature_services;
+	}
+
+
+
+	private function footer_services($homepage){
+
+		$footer_block1_ids 		= 		array_map('intval', explode(",", $homepage['footer_block1_ids'] ));
+		$footer_block2_ids 		= 		array_map('intval', explode(",", $homepage['footer_block2_ids'] ));
+		$footer_block3_ids 		= 		array_map('intval', explode(",", $homepage['footer_block3_ids'] ));
+		$footer_block4_ids 		= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
+		$footer_block5_ids 		= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
+		$footer_block6_ids 		= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
+
+		$footer_block1_services 		=		Service::active()->whereIn('_id', $footer_block1_ids)->lists('name','_id');
+		$footer_block2_services 		=		Service::active()->whereIn('_id', $footer_block2_ids)->lists('name','_id');
+		$footer_block3_services 		=		Service::active()->whereIn('_id', $footer_block3_ids)->lists('name','_id');
+		$footer_block4_services 		=		Service::active()->whereIn('_id', $footer_block4_ids)->lists('name','_id');																										
+		$footer_block5_services 		=		Service::active()->whereIn('_id', $footer_block5_ids)->lists('name','_id');																										
+		$footer_block6_services 		=		Service::active()->whereIn('_id', $footer_block6_ids)->lists('name','_id');																										
+
+		array_set($footer_services,  'footer_block1_services', $footer_block1_services);									
+		array_set($footer_services,  'footer_block2_services', $footer_block2_services);									
+		array_set($footer_services,  'footer_block3_services', $footer_block3_services);									
+		array_set($footer_services,  'footer_block4_services', $footer_block4_services);	
+		array_set($footer_services,  'footer_block5_services', $footer_block5_services);	
+		array_set($footer_services,  'footer_block6_services', $footer_block6_services);	
+
+		array_set($footer_services,  'footer_block1_title', (isset($homepage['footer_block1_title']) && $homepage['footer_block1_title'] != '') ? $homepage['footer_block1_title'] : '');									
+		array_set($footer_services,  'footer_block2_title', (isset($homepage['footer_block2_title']) && $homepage['footer_block2_title'] != '') ? $homepage['footer_block2_title'] : '');									
+		array_set($footer_services,  'footer_block3_title', (isset($homepage['footer_block3_title']) && $homepage['footer_block3_title'] != '') ? $homepage['footer_block3_title'] : '');									
+		array_set($footer_services,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');									
+		array_set($footer_services,  'footer_block5_title', (isset($homepage['footer_block5_title']) && $homepage['footer_block5_title'] != '') ? $homepage['footer_block5_title'] : '');									
+		array_set($footer_services,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
+
+		return $footer_services;
+	}
+
 }
