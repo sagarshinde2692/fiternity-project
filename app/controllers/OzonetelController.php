@@ -108,7 +108,7 @@ class OzonetelController extends \BaseController {
 
 		if($data['status'] != 'answered'){
 
-			$ozonetel_capture->call_status = "not answered";
+			$ozonetel_capture->call_status = "not_answered";
 			$ozonetel_capture->message = $data['message'];
 			$ozonetel_capture->telco_code = $data['telco_code'];
 			
