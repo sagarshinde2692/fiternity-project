@@ -185,6 +185,12 @@
                          <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e;"><span style="color:#ec8601; font-weight:600;" href="mailto:info@fitternity.com">Subscription ID:</span> {{ $_id }}<hr />
                          </p>
 
+
+                          <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
+                          <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e;"><span style="color:#ec8601; font-weight:600;" href="mailto:info@fitternity.com">Prefered Starting Date:</span> {{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) ) }}<hr />
+                         </p>
+                         <?php }?>
+
                          <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e">Please flash the Subscription ID at {{ ucwords($finder_name) }} to avail your purchase. We will be sending across an invoice copy shortly. </p>
                          
                          <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span> or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>

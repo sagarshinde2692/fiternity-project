@@ -29,7 +29,7 @@
    a[href^="tel"], a[href^="sms"] {
      text-decoration: none;
      color: #ffffff; /* or whatever your want */
-      
+
      cursor: default;
    }
    .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
@@ -56,7 +56,7 @@
    a[href^="tel"], a[href^="sms"] {
      text-decoration: none;
      color: #ffffff; /* or whatever your want */
-      
+
      cursor: default;
    }
    .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
@@ -97,30 +97,30 @@
         <tbody>
           <tr>
             <td><!-- logo -->
-              
+
               <!-- End of logo -->
               <!-- menu -->
               <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
                 <tbody>
                   <tr>
                     <td width="100%"  align="left" class="menu" st-content="menu"><a href="http://www.fitternity.com" target="_blank"><div class="imgpop"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></div></a></td>
-                   
+
                   </tr>
                   
                 </tbody>
               </table>
               
               
-           </td>
-            </tr>
-          </tbody>
-          
-        </table></td>
-      </tr>
-     
-    </tbody>
-  </table>
-  <!-- end of header -->
+            </td>
+          </tr>
+        </tbody>
+
+      </table></td>
+    </tr>
+
+  </tbody>
+</table>
+<!-- end of header -->
 
 </div>
 <div class="block" style="background-color:#f9a91e"> 
@@ -132,17 +132,17 @@
         <tbody>
           <!-- Title -->
           
-      <tr>
-                      <td width="100%" height="3px" bgcolor="#f9a91e"></td>
-                    </tr>
-         
-              <!-- end of text content table -->
-            </tbody>
-          </table>
-         
-        
-              </tbody>
-            </table>
+          <tr>
+            <td width="100%" height="3px" bgcolor="#f9a91e"></td>
+          </tr>
+
+          <!-- end of text content table -->
+        </tbody>
+      </table>
+
+
+    </tbody>
+  </table>
 
 
 </div>
@@ -154,41 +154,46 @@
     <td align="center">
      <table width="580px" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
       <tbody>
-      
-      <tr>
-        <td>
-         <table width="100%" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
-          <tbody>
-          
+
         <tr>
-          <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:left;line-height: 35px; padding:5px 10px;" st-content="fulltext-paragraph">
-             
+          <td>
+           <table width="100%" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+            <tbody>
 
-              
-               
-         <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
-Hi {{  ucwords($customer_name) }}!</span></p>      
-                
-             
-              <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e">Thank you for requesting purchase of {{  ucwords($service_name) }} - {{ ucwords($service_duration) }} at {{  ucwords($finder_name) }}. 
-
-<p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">Our team will reach out to you to get the cash pick up details. Once the cash has been collected, you will receive a purchase confirmation.</p>
+              <tr>
+                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:left;line-height: 35px; padding:5px 10px;" st-content="fulltext-paragraph">
 
 
-<p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
- 
- <p style="padding-top:15px; padding-bottom:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Cheers, <br />Team Fitternity</p>
-          </td>
-       </tr>
-     <tr>
-                      <td width="100%"><hr /></td>
-                    </tr>
+
+
+                 <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
+                  Hi {{  ucwords($customer_name) }}!</span></p>      
+
+
+                  <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e">Thank you for requesting purchase of {{  ucwords($service_name) }} - {{ ucwords($service_duration) }} at {{  ucwords($finder_name) }}. </p>
+
+                  <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
+                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e;"><span style="color:#ec8601; font-weight:100;" href="mailto:info@fitternity.com">Prefered Starting Date:</span> {{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) ) }}
+                  </p>
+                  <?php }?>
+
+
+                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">Our team will reach out to you to get the cash pick up details. Once the cash has been collected, you will receive a purchase confirmation.</p>
+
+                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
+
+                  <p style="padding-top:15px; padding-bottom:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Cheers, <br />Team Fitternity</p>
+                </td>
+              </tr>
+              <tr>
+                <td width="100%"><hr /></td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
     </tbody>
   </table>
-</td>
-</tr>
-</tbody>
-</table>
 </td>
 </tr>
 </tbody>
@@ -196,7 +201,7 @@ Hi {{  ucwords($customer_name) }}!</span></p>
 </div>
 
 
-  
+
 
 
 
@@ -204,21 +209,21 @@ Hi {{  ucwords($customer_name) }}!</span></p>
  <!-- Start of preheader -->
  <table width="100%"  cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
   <tbody>
- 
+
    <tr>
     <td align="center"><table width="580" cellspacing="0" align="center" class="devicewidth">
       <tbody>
-       
+
         <tr>
-          
+
           <td align="center" style="color:#808080; font-family:Arial, sans serif; font-size:15px; font-weight:500; line-height:25px; padding-bottom:10px;" width="100%">Connect with us on</td>
           
         </tr>
       </tbody>
       <tbody>
         <tr>
-          
-         
+
+
           <td width="100%" style="text-align:center; padding-bottom:10px;"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="35" height="33" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="35" height="35" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/pinterest.png" width="35" height="35" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="35" height="35" alt="Instagram" title="Instagram" border="0"></a></td>
         </tr>
       </tbody>

@@ -143,6 +143,11 @@ class OrderController extends \BaseController {
 		
 		array_set($data, 'customer_id', intval($customer_id));
 		
+		if(Input::json()->get('preferred_starting_date')){
+			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( Input::json()->get('preferred_starting_date') ));
+			array_set($data, 'preferred_starting_date', $preferred_starting_date);
+		}
+
 		array_set($data, 'status', '0');
 		array_set($data, 'payment_mode', 'cod');
 		$order 				= 	new Order($data);
@@ -287,6 +292,12 @@ class OrderController extends \BaseController {
 		$email_body2 		=	(Input::json()->get('email_body2') != "-") ? Input::json()->get('email_body2') : '';	
 		
 		array_set($data, 'customer_id', intval($customer_id));
+		
+		if(Input::json()->get('preferred_starting_date')){
+			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( Input::json()->get('preferred_starting_date') ));
+			array_set($data, 'preferred_starting_date', $preferred_starting_date);
+		}
+
 		array_set($data, 'status', '0');
 		array_set($data, 'email_body2', trim($email_body2));
 		array_set($data, 'payment_mode', 'paymentgateway');
