@@ -856,7 +856,8 @@ Route::get('stats/smsbalance', 'StatsController@smsBalance');
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
 
-Route::get('/callvendor',  array('as' => 'ozonetel.callvendor','uses' => 'OzonetelController@callVendor'));
+Route::get('/ozontel/freevendor',  array('as' => 'ozonetel.freevendor','uses' => 'OzonetelController@freeVendor'));
+Route::get('/ozontel/paidvendor',  array('as' => 'ozonetel.paidvendor','uses' => 'OzonetelController@paidVendor'));
 
 
 /******************** ORDERS SECTION END HERE ********************/
