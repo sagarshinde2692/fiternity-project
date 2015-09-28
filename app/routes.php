@@ -17,7 +17,6 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 Route::get('/', function() { 
 	return "laravel 4.2 goes here....";
-
 });
 
 
