@@ -408,7 +408,7 @@ class OrderController extends \BaseController {
 			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
 		}
 
-		$resp 	= 	array('status' => 200,'message' => "Successfully buy Arsenal Membership :)");
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
 
 		return Response::json($resp,200);		
 	}
