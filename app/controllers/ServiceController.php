@@ -149,7 +149,7 @@ class ServiceController extends \BaseController {
 
 	public function getServiceHomePageDataV1($city = 'mumbai',$cache = false){   
 
-		$home_by_city = $cache ? Cache::tags('servicehome_by_city_v3')->has($city) : false;
+		$home_by_city = $cache ? Cache::tags('servicehome_by_city_v1')->has($city) : false;
 
 		if(!$home_by_city){
 			$categorys = $locations = $popular_finders = $footer_finders = $recent_blogs =	array();
@@ -170,10 +170,10 @@ class ServiceController extends \BaseController {
 				'footer_services' => $footer_services,    
 				);
 
-			Cache::tags('home_by_city_v3')->put($city, $homedata, Config::get('cache.cache_time'));
+			Cache::tags('servicehome_by_city_v1')->put($city, $homedata, Config::get('cache.cache_time'));
 		}
 
-		return Response::json(Cache::tags('home_by_city_v3')->get($city));
+		return Response::json(Cache::tags('servicehome_by_city_v1')->get($city));
 	}
 
 
