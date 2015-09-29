@@ -119,6 +119,9 @@ class OzonetelController extends \BaseController {
 
 	}
 
+
+	
+
 	public function addCapture($data,$finder_id){
 		
 		$ozonetel_capture = new Ozonetelcapture();
