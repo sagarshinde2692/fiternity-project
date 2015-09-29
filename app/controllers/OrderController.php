@@ -175,8 +175,9 @@ class OrderController extends \BaseController {
 	 */
 
 	public function generateTmpOrder(){
+		// $userdata	=	array_except(Input::all(), array());
 
-		$data			=	Input::json()->all();
+		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
 
 		// $required_fiels = ['customer_name', ];
 
@@ -285,19 +286,23 @@ class OrderController extends \BaseController {
 				return Response::json($resp,404);				
 			}
 		}
+		// return $data;
 
 		$orderid 			=	Order::max('_id') + 1;
-		$data 				= 	Input::json()->all();
+		// $data 				= 	Input::json()->all();
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
 		$email_body2 		=	(Input::json()->get('email_body2') != "-") ? Input::json()->get('email_body2') : '';	
 		
 		array_set($data, 'customer_id', intval($customer_id));
 		
-		if(trim(Input::json()->get('preferred_starting_date')) != '' || trim(Input::json()->get('preferred_starting_date')) != '-' ){
+		// return $data;
+		// return Input::json()->get('preferred_starting_date');
+		if(trim(Input::json()->get('preferred_starting_date')) != '-' ){
+			// return Input::json()->get('preferred_starting_date');
 			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( Input::json()->get('preferred_starting_date') ));
 			array_set($data, 'preferred_starting_date', $preferred_starting_date);
 		}
-
+		// return $data;
 		array_set($data, 'status', '0');
 		array_set($data, 'email_body2', trim($email_body2));
 		array_set($data, 'payment_mode', 'paymentgateway');
