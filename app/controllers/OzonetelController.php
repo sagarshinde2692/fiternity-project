@@ -20,8 +20,47 @@ class OzonetelController extends \BaseController {
 
 	}
 
-    // Listing Schedule Tirals for Normal Customer
-	public function callVendor(){	
+	public function freeVendor(){	
+
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+
+		    $this->ozonetel->addPlayText("This call is recorderd for quality purpose");
+
+		    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
+		   
+	    	if($finderDetails){
+	    		$this->ozonetel->addDial($finderDetails->finder_contact_no,"true");
+	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder_id);
+	    	}else{
+	    		$this->ozonetel->addHangup();
+	    	}
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+
+		    $update_capture = $this->updateCapture($_REQUEST);
+		    $this->ozonetel->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
+
+		    $update_capture = $this->updateCapture($_REQUEST);
+		    $this->ozonetel->addHangup();
+
+		}else {
+
+		    if ($_REQUEST['status'] == 'answered') {
+
+				$update_capture = $this->updateCapture($_REQUEST);
+
+		    }
+
+		    $this->ozonetel->addHangup();
+		}
+		
+		$this->ozonetel->send();
+
+	}
+
+	public function paidVendor(){	
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
