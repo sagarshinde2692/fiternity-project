@@ -78,8 +78,41 @@ class ServiceController extends \BaseController {
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
 			return Response::json($resp, 400);
 		}
+
 		$servicedata = $this->transform($service);
-		$resp 	= 	array('status' => 200, 'service' => $servicedata, 'message' => 'Particular Service Info');
+		// dd($servicedata);
+		// $servicedata = '';
+		$servicecategoryid = intval($servicedata['servicecategory_id']);
+		$servicelocationid = intval($servicedata['location_id']);
+		$nearby_same_category = $nearby_other_category = [];
+
+		//same service form same location and same category
+		$nearby_same_category 		=		Service::active()
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->where('servicecategory_id', '=', $servicecategoryid)
+												->where('location_id', '=' ,$servicelocationid)
+												->where('_id', '!=', intval($serviceid))
+												->remember(Config::get('app.cachetime'))
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags'])
+												->take(5)->toArray();												
+
+		//different service form same location and same category
+		$nearby_other_category 		=		Service::active()
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->where('servicecategory_id', '!=', $servicecategoryid)
+												->where('location_id','=',$servicelocationid)
+												->where('_id', '!=', intval($serviceid))
+												->remember(Config::get('app.cachetime'))
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags'])
+												->take(5)->toArray();												
+
+		$resp 	= 	array('status' => 200, 'service' => $servicedata, 'nearby_same_category' => $nearby_same_category, 'nearby_other_category' => $nearby_other_category, 'message' => 'Particular Service Info');
 		return Response::json($resp, 200);
 	}
 
@@ -96,6 +129,8 @@ class ServiceController extends \BaseController {
 
 		$data = array(
 			'_id' => $item['_id'],
+			'servicecategory_id' => $item['servicecategory_id'],
+			'location_id' => $item['location_id'],
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
@@ -122,22 +157,13 @@ class ServiceController extends \BaseController {
 		// return $data;
 
 		if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
-
 			$servicetrainer = Servicetrainer::remember(Config::get('app.cachetime'))->findOrFail( intval($item['trainer_id']) );
-
 			if($servicetrainer){
-
 				$trainerdata = $servicetrainer->toArray();
-
 				$data['trainer'] = array_only($trainerdata, array('_id', 'name', 'bio', 'trainer_pic'));
 			}
-
-			// return $data;
-			
 		}else{
-
 			$data['trainer'] = NULL;
-			
 		}
 
 		return $data;

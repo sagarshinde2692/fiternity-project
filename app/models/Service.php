@@ -71,6 +71,10 @@ class Service extends \Basemodel{
 		return $this->belongsTo('Finder');
 	}
 
+	public function location(){
+		return $this->belongsTo('Location');
+	}
+
 	public function trainer(){
 		return $this->belongsTo('Servicetrainer','trainer_id');
 	}	
