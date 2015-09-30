@@ -72,7 +72,7 @@ class ServiceController extends \BaseController {
 
 	public function serviceDetail($serviceid){
 
-		$service = Service::with('category')->with('subcategory')->with('finder')->where('_id', (int) $serviceid)->first();
+		$service = Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->where('_id', (int) $serviceid)->first();
 		// return $service;
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
@@ -82,9 +82,22 @@ class ServiceController extends \BaseController {
 		$servicedata = $this->transform($service);
 		// dd($servicedata);
 		// $servicedata = '';
-		$servicecategoryid = intval($servicedata['servicecategory_id']);
-		$servicelocationid = intval($servicedata['location_id']);
-		$nearby_same_category = $nearby_other_category = [];
+		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
+		$servicelocationid 	= intval($servicedata['location_id']);
+		$servicefinderid 	= intval($servicedata['finder_id']);
+		$same_vendor_service = $nearby_same_category = $nearby_other_category = [];
+
+		//same service form same location and same category
+		$same_vendor_service		=		Service::active()
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->where('finder_id', '=', $servicefinderid)
+												->where('_id', '!=', intval($serviceid))
+												->remember(Config::get('app.cachetime'))
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags'])
+												->take(5)->toArray();	
 
 		//same service form same location and same category
 		$nearby_same_category 		=		Service::active()
@@ -97,7 +110,7 @@ class ServiceController extends \BaseController {
 												->where('_id', '!=', intval($serviceid))
 												->remember(Config::get('app.cachetime'))
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags'])
-												->take(5)->toArray();												
+												->take(5)->toArray();																								
 
 		//different service form same location and same category
 		$nearby_other_category 		=		Service::active()
@@ -112,7 +125,7 @@ class ServiceController extends \BaseController {
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags'])
 												->take(5)->toArray();												
 
-		$resp 	= 	array('status' => 200, 'service' => $servicedata, 'nearby_same_category' => $nearby_same_category, 'nearby_other_category' => $nearby_other_category, 'message' => 'Particular Service Info');
+		$resp 	= 	array('status' => 200, 'service' => $servicedata, 'same_vendor_service' => $same_vendor_service, 'nearby_same_category' => $nearby_same_category, 'nearby_other_category' => $nearby_other_category, 'message' => 'Particular Service Info');
 		return Response::json($resp, 200);
 	}
 
@@ -121,16 +134,12 @@ class ServiceController extends \BaseController {
 	private function transform($service){
 
 		$item  	   	=  	(!is_array($service)) ? $service->toArray() : $service;
-		$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-							->where('_id', (int) $service['finder_id'])
-							->first();
-		// return $finderarr;
-
+	
 		$data = array(
 			'_id' => $item['_id'],
 			'servicecategory_id' => $item['servicecategory_id'],
 			'location_id' => $item['location_id'],
+			'finder_id' => $item['finder_id'],
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
 			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
@@ -144,17 +153,27 @@ class ServiceController extends \BaseController {
 			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
 			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
-			'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect')),
-			'city' => (isset($finderarr->city->name) && $finderarr->city->name != '') ? strtolower($finderarr->city->name) : "",
-			'location' => (isset($finderarr->location->name) && $finderarr->location->name != '') ? strtolower($finderarr->location->name) : "",
+			'location' =>  array_only($item['location'], array('_id', 'name', 'slug')) ,
+			'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
 			'active_weekdays' => (isset($item['active_weekdays']) && $item['active_weekdays'] != '') ? array_map('strtolower',$item['active_weekdays']) : "",
 			'workoutsession_active_weekdays' => (isset($item['workoutsession_active_weekdays']) && $item['workoutsession_active_weekdays'] != '') ? array_map('strtolower',$item['workoutsession_active_weekdays']) : ""
 
 			// 'workoutsessionschedules' => (isset($item['workoutsessionschedules']) && !empty($item['workoutsessionschedules'])) ? $item['workoutsessionschedules'] : "",
 			// 'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 		);
-
+		
 		// return $data;
+						
+		if(isset($item['finder']) && $item['finder'] != ''){
+			$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->where('_id', (int) $service['finder_id'])
+							->first();
+			// return $finderarr;
+			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect'));
+		}else{
+			$data['finder'] = NULL;
+		}
 
 		if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
 			$servicetrainer = Servicetrainer::remember(Config::get('app.cachetime'))->findOrFail( intval($item['trainer_id']) );
@@ -167,7 +186,6 @@ class ServiceController extends \BaseController {
 		}
 
 		return $data;
-
 	}
 
 

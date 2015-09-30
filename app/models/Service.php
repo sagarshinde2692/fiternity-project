@@ -75,6 +75,10 @@ class Service extends \Basemodel{
 		return $this->belongsTo('Location');
 	}
 
+	public function city(){
+		return $this->belongsTo('City');
+	}
+
 	public function trainer(){
 		return $this->belongsTo('Servicetrainer','trainer_id');
 	}	
