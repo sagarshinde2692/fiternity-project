@@ -297,18 +297,7 @@ Route::get('/updatefinder', function() {
 		print_pretty($response);
 	}
 
-
-	// $items = Finder::active()->orderBy('_id')->whereIn('category_id',array(22))->get();
-	// 	//exit;				
-	// $finderdata = array();
-	// foreach ($items as $item) {  
-	// 	$data 	= $item->toArray();
-	// 		//print_pretty($data);
-	// 	array_set($finderdata, 'status', '0');
-	// 	$finder = Finder::findOrFail($data['_id']);
-	// 	$response = $finder->update($finderdata);
-	// 	print_pretty($response);
-	// }
+	
 });
 
 
@@ -436,13 +425,9 @@ Route::get('/testpushqueue', function() {
 class WriteFile {
 
 	public function fire($job, $data){
-
 		$job_id = $job->getJobId(); 
-
 		File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); 
-		
 		$job->delete();  
-		
 	}
 
 }
