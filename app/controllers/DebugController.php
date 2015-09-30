@@ -9,6 +9,8 @@
 
 // use Response;
 use App\Mailers\FinderMailer as FinderMailer;
+use Queue;
+
 
 class DebugController extends \BaseController {
 
@@ -200,6 +202,81 @@ class DebugController extends \BaseController {
 
 		$resp 	= 	array('status' => 200,'message' => "Email Send");
 		return Response::json($resp);	
+	}
+
+	public function vendorStats(){
+
+
+		$mumbai = array('gyms','yoga','pilates','zumba','cross-functional-training','kick-boxing','dance','martial-arts','spinning-and-indoor-cycling','crossfit','marathon-training','swimming','dietitians-and-nutritionists','healthy-tiffins','fitness-studios','healthy-snacks-and-beverages');
+		$pune = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','cross-functional-training','aerobics','fitness-studios');
+		$banglore = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','fitness-studios');
+		$delhi = array('gyms','yoga','pilates','zumba','cross-functional-training','dance','martial-arts','spinning-and-indoor-cycling','crossfit');
+		$commercial = array(0,1,2,3);
+
+		$city = array('1'=>$mumbai,'2'=>$pune,'3'=>$banglore,'4'=>$delhi);
+		$cities = array('1'=>'mumbai','2'=>'pune','3'=>'banglore','4'=>'delhi');
+		$commercialType = array('0'=>'free','1'=>'paid','2'=>'free special','3'=>'COS');
+		$result = array();
+		$data = '';
+
+		foreach ($city as $city_id => $city_value) {
+			$category = Findercategory::active()->whereIn('slug',$city_value)->lists('_id','slug');
+
+			foreach ($category as $category_value => $category_id ) {
+
+				foreach ($commercial as $commercial_type) {
+
+					$total = Finder::active()->where('city_id',(int)$city_id)->where('category_id',(int)$category_id)->where('commercial_type',(int)$commercial_type)->count();
+					$with_contact = Finder::active()->where('contact.phone','!=','')->where('city_id',(int)$city_id)->where('category_id',(int)$category_id)->where('commercial_type',(int)$commercial_type)->count();
+					$with_no_contact = Finder::active()->where('contact.phone','')->where('city_id',(int)$city_id)->where('category_id',(int)$category_id)->where('commercial_type',(int)$commercial_type)->lists('_id');
+					$with_no_contact = '"('.implode(',', $with_no_contact).')"';
+
+					$result[$cities[$city_id]][$category_value][$commercialType[$commercial_type]] = $total;
+					$data .= $cities[$city_id].' : '.$category_value.' : '.$commercialType[$commercial_type].' : '.$total.' : '.$with_contact.' : '.$with_no_contact.' , ';
+
+				}	
+			}	
+		}
+
+		return $data;
+	}
+
+	public function getVendors(){
+
+
+		$mumbai = array('gyms','yoga','pilates','zumba','cross-functional-training','kick-boxing','dance','martial-arts','spinning-and-indoor-cycling','crossfit','marathon-training','healthy-tiffins','fitness-studios','healthy-snacks-and-beverages');
+		$pune = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','cross-functional-training','aerobics','fitness-studios');
+		$banglore = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','fitness-studios');
+		$delhi = array('gyms','yoga','pilates','zumba','cross-functional-training','dance','martial-arts','spinning-and-indoor-cycling','crossfit');
+		$commercial = array(0,1,2,3);
+
+		$city = array('1'=>$mumbai,'2'=>$pune,'3'=>$banglore,'4'=>$delhi);
+		$cities = array('1'=>'MUM','2'=>'PUN','3'=>'BLR','4'=>'DEL');
+		$commercialType = array('0'=>'free','1'=>'paid','2'=>'free special','3'=>'COS');
+		$result = array();
+		//$data = '';
+
+		foreach ($city as $city_id => $city_value) {
+			$category = Findercategory::active()->whereIn('slug',$city_value)->lists('_id','slug');
+
+			//foreach ($category as $category_value => $category_id ) {
+
+				foreach ($commercial as $commercial_type) {
+
+					//$total = Finder::active()->where('city_id',(int)$city_id)->where('category_id',(int)$category_id)->where('commercial_type',(int)$commercial_type)->count();
+					$data = Finder::active()->where('contact.phone','!=','')->where('city_id',(int)$city_id)->where('commercial_type',(int)$commercial_type)->orderBy('_id','ASC')->lists('_id');
+					//$with_no_contact = Finder::active()->where('contact.phone','')->where('city_id',(int)$city_id)->where('category_id',(int)$category_id)->where('commercial_type',(int)$commercial_type)->lists('_id');
+					//$with_no_contact = '"('.implode(',', $with_no_contact).')"';
+
+					$result[$cities[$city_id]][$commercial_type] = $data;
+					//$data .= $cities[$city_id].' : '.$category_value.' : '.$commercialType[$commercial_type].' : '.$total.' : '.$with_contact.' : '.$with_no_contact.' , ';
+
+				}	
+			//}	
+		}
+
+		return $result;
+
 	}
 
 }
