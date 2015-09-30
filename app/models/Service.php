@@ -28,28 +28,34 @@ class Service extends \Basemodel{
 	public function getActiveWeekdaysAttribute(){
 
 		$activedays 		= 	array();
-		$trialschedules  	=	$this->trialschedules;
+		if(!empty($this->trialschedules) && isset($this->trialschedules)){
 
-		foreach ($trialschedules as $key => $schedule) {
-			if(!empty($schedule['slots'])){
-				array_push($activedays, $schedule['weekday']);
+			$trialschedules  	=	$this->trialschedules;
+
+			foreach ($trialschedules as $key => $schedule) {
+				if(!empty($schedule['slots'])){
+					array_push($activedays, $schedule['weekday']);
+				}
 			}
+			// $activedays 		= pluck( $this->trialschedules , array('weekday') );
 		}
-		// $activedays 		= pluck( $this->trialschedules , array('weekday') );
+
 		return $activedays;
 	}
 
 	public function getWorkoutsessionActiveWeekdaysAttribute(){
 
 		$activedays 	= 	array();
-		$schedules  	=	$this->workoutsessionschedules;
+		if(!empty($this->workoutsessionschedules) && isset($this->workoutsessionschedules)){
+			$schedules  	=	$this->workoutsessionschedules;
 
-		foreach ($schedules as $key => $schedule) {
-			if(!empty($schedule['slots'])){
-				array_push($activedays, $schedule['weekday']);
+			foreach ($schedules as $key => $schedule) {
+				if(!empty($schedule['slots'])){
+					array_push($activedays, $schedule['weekday']);
+				}
 			}
+			// $activedays 		= pluck( $this->schedules , array('weekday') );
 		}
-		// $activedays 		= pluck( $this->schedules , array('weekday') );
 		return $activedays;
 	}
 

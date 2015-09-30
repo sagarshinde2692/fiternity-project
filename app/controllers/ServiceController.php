@@ -152,23 +152,19 @@ class ServiceController extends \BaseController {
 		$home_by_city = $cache ? Cache::tags('servicehome_by_city_v1')->has($city) : false;
 
 		if(!$home_by_city){
-			$categorys = $locations = $popular_finders = $footer_finders = $recent_blogs =	array();
-			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-			$city_name 		= 	$citydata['name'];
-			$city_id		= 	(int) $citydata['_id'];	
+			$categorys = $locations = $feature_services = $footer_services = [];
 
+			$citydata 		=		City::where('slug', '=', $city)->first(array('name','slug'));
+			$city_name 		= 		$citydata['name'];
+			$city_id		= 		(int) $citydata['_id'];	
 			$homepage 		= 		Servicehomepage::where('city_id', '=', $city_id)->get()->first();						
 
+			$feature_services  	= 	$this->feature_services($homepage);
+			$footer_services  	= 	$this->footer_services($homepage);
+			$locations			= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+			$categorys	 		= 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
 
-			$feature_services  = $this->feature_services($homepage);
-			$footer_services  = $this->footer_services($homepage);
-
-			return $homedata 	= 	array(
-				'city_name' => $city_name,
-				'city_id' => $city_id,
-				'feature_services' => $feature_services,    
-				'footer_services' => $footer_services,    
-				);
+			$homedata 			= 	['city_name' => $city_name, 'city_id' => $city_id, 'categorys' => $categorys, 'locations' => $locations, 'feature_services' => $feature_services, 'footer_services' => $footer_services];
 
 			Cache::tags('servicehome_by_city_v1')->put($city, $homedata, Config::get('cache.cache_time'));
 		}
@@ -187,12 +183,48 @@ class ServiceController extends \BaseController {
 		$feature_block5_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block5'] ));
 		$feature_block6_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block6'] ));
 
-		$feature_block1_services 		=		Service::active()->whereIn('_id', $feature_block1_ids)->lists('name','_id');
-		$feature_block2_services 		=		Service::active()->whereIn('_id', $feature_block2_ids)->lists('name','_id');
-		$feature_block3_services 		=		Service::active()->whereIn('_id', $feature_block3_ids)->lists('name','_id');
-		$feature_block4_services 		=		Service::active()->whereIn('_id', $feature_block4_ids)->lists('name','_id');																										
-		$feature_block5_services 		=		Service::active()->whereIn('_id', $feature_block5_ids)->lists('name','_id');																										
-		$feature_block6_services 		=		Service::active()->whereIn('_id', $feature_block6_ids)->lists('name','_id');																										
+		$feature_block1_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_block1_ids)
+												->get(['name','_id','finder_id','servicecategory_id','servicesubcategory_id','workout_tags']);
+
+		$feature_block2_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_block2_ids)
+												->get(['name','_id','finder_id','servicecategory_id','servicesubcategory_id','workout_tags']);
+
+		$feature_block3_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_block3_ids)
+												->get(['name','_id','finder_id','servicecategory_id','servicesubcategory_id','workout_tags']);
+
+		$feature_block4_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_block4_ids)
+												->get(['name','_id','finder_id','servicecategory_id','servicesubcategory_id','workout_tags']);																										
+
+		$feature_block5_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_block5_ids)
+												->get(['name','_id','finder_id','servicecategory_id','servicesubcategory_id','workout_tags']);																										
+
+		$feature_block6_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_block6_ids)
+												->get(['name','_id','finder_id','servicecategory_id','servicesubcategory_id','workout_tags']);																										
+
 
 		array_set($feature_services,  'feature_block1_services', $feature_block1_services);									
 		array_set($feature_services,  'feature_block2_services', $feature_block2_services);									
