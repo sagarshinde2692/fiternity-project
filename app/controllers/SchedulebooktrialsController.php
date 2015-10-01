@@ -1375,7 +1375,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktrialid = $data['booktrialid'];
 		$data = $data['data'];
 
-		$slot_times 						=	explode('-',$data['schedule_slot']));
+		$slot_times 						=	explode('-',$data['schedule_slot']);
 		$schedule_slot_start_time 			=	$slot_times[0];
 		$schedule_slot_end_time 			=	$slot_times[1];
 		$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
@@ -1637,7 +1637,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktrialid = $data['booktrialid'];
 		$data = $data['data'];
 
-		$slot_times 						=	explode('-',$data['schedule_slot']));
+		$slot_times 						=	explode('-',$data['schedule_slot']);
 		$schedule_slot_start_time 			=	$slot_times[0];
 		$schedule_slot_end_time 			=	$slot_times[1];
 		$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
