@@ -1243,6 +1243,13 @@ class SchedulebooktrialsController extends \BaseController {
 
 		try {
 
+			$slot_times 						=	explode('-',$data['schedule_slot']);
+			$schedule_slot_start_time 			=	$slot_times[0];
+			$schedule_slot_end_time 			=	$slot_times[1];
+			$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+			$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
+			$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+
 			$booktrialid 						=	Booktrial::max('_id') + 1;
 			$finderid 							= 	(int) Input::json()->get('finder_id');
 			$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
@@ -1358,7 +1365,7 @@ class SchedulebooktrialsController extends \BaseController {
 		if($trialbooked = true){
 
 			$orderid = (int) Input::json()->get('order_id');
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid), 'booktrial');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
 			$booktrial->update(array('redis_id'=>$redisid));
 					
 		}
@@ -1471,7 +1478,9 @@ class SchedulebooktrialsController extends \BaseController {
 			}
 		}
 
-		return $trialbooked 	= 	$booktrial->update($queueddata);
+		$trialbooked 	= 	$booktrial->update($queueddata);
+
+		$job->delete();
 
 	}
 
@@ -1514,6 +1523,15 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 
 		try {
+
+			$slot_times 						=	explode('-',$data['schedule_slot']);
+			$schedule_slot_start_time 			=	$slot_times[0];
+			$schedule_slot_end_time 			=	$slot_times[1];
+			$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+			$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
+			$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+			$currentDateTime 					=	\Carbon\Carbon::now();
 
 			$booktrialid 						=	Booktrial::max('_id') + 1;
 			$finderid 							= 	(int) Input::json()->get('finder_id');
@@ -1622,7 +1640,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($trialbooked = true){
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrialFree');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
 			$booktrial->update(array('redis_id'=>$redisid));
 		}
 
@@ -1680,7 +1698,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 		}
 
-		if($device_id != ''){
+		if(isset($data['device_id']) && $data['device_id'] != ''){
 			if($fiveHourDiffInMin >= (5 * 60)){
 				$sndBefore5HourNotificationCustomer					=	'';
 				$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
@@ -1724,7 +1742,9 @@ class SchedulebooktrialsController extends \BaseController {
 			}
 		}
 		
-		return $trialbooked = $booktrial->update($queueddata);
+		$trialbooked = $booktrial->update($queueddata);
+
+		$job->delete();
 
 	}
 

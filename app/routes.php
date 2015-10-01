@@ -15,7 +15,31 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 
 
+Route::get('/hesh', function() { 
+	/* Queue:push(function($job) use ($data){ $data['string']; $job->delete();  }); */
+	Queue::connection('redis')->push('LogFile', array( 'string' => 'new testpushqueue instantly -- '.time()));
+	//Queue::later(Carbon::now()->addMinutes(1),'WriteFile', array( 'string' => 'new testpushqueue delay by 1 min time -- '.time()));
+	//Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'new testpushqueue delay by 2 min time -- '.time()));
+	return "successfully test push queue with dealy job as well....";
+});
+
+class LogFile {
+
+	public function fire($job, $data){
+
+		/*$job_id = $job->getJobId(); 
+
+		File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); */
+		
+		$job->delete();  
+		
+	}
+
+}
+
+
 Route::get('/', function() {  return "laravel 4.2 goes here...."; });
+
 
 
 Route::get('/testfinder', function() { 

@@ -16,7 +16,7 @@ return array(
 	*/
 
 	'default' => 'iron',
-	// 'default' => 'redis',
+	//'default' => 'redis',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -70,7 +70,7 @@ return array(
 
 		'redis' => array(
 			'driver' => 'redis',
-			'queue'  => 'default',
+			'queue'  => 'booktrial',
 		),
 
 	),
