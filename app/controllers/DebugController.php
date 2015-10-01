@@ -243,7 +243,6 @@ class DebugController extends \BaseController {
 
 	public function getVendors(){
 
-
 		$mumbai = array('gyms','yoga','pilates','zumba','cross-functional-training','kick-boxing','dance','martial-arts','spinning-and-indoor-cycling','crossfit','marathon-training','healthy-tiffins','fitness-studios','healthy-snacks-and-beverages');
 		$pune = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','cross-functional-training','aerobics','fitness-studios');
 		$banglore = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','fitness-studios');
@@ -276,6 +275,60 @@ class DebugController extends \BaseController {
 		}
 
 		return $result;
+
+	}
+
+	public function vendorsByMonth($from,$to){
+
+		$cities = array('1'=>'Mumbai','2'=>'Pune','3'=>'Banglore','4'=>'Delhi');
+		
+        $finder = '"City","Month","Count";';
+
+
+
+		foreach ($cities as $city_id => $city) {
+
+			for ($i=4; $i < 10; $i++) { 
+				$from_date = date( "1-".$i."-2015");
+				$to_date = date( "1-".($i+1)."-2015");
+				
+				$count = Finder::active()->where('city_id',(int)$city_id)->where('created_at', '>',new DateTime($from_date))->where('created_at', '<',new DateTime($to_date))->orderBy('_id','ASC')->count();
+
+				$month_year = date('M-Y', strtotime($from_date));
+				$result[$cities[$city_id]][$month_year] = $count;
+				$finder .= '"'.$cities[$city_id].'","'.$month_year.'","'.$count.'";';
+
+				/*foreach ($data as $key => $value) {
+					$hesh['finder'] = $value->slug;
+					$hesh['month_year'] = date('M-Y', strtotime($value->created_at));
+					$result[$cities[$city_id]][] = $hesh;
+					$finder .= '"'.$cities[$city_id].'","'.date('M-Y', strtotime($value->created_at)).'","'.$value->slug.'";';
+
+				}*/
+			}
+
+			/*foreach ($data as $key => $value) {
+					$hesh['finder'] = $value->slug;
+					$hesh['month_year'] = date('M-Y', strtotime($value->created_at));
+					$result[$cities[$city_id]][] = $hesh;
+					$finder .= '"'.$cities[$city_id].'","'.date('M-Y', strtotime($value->created_at)).'","'.$value->slug.'";';
+
+				}*/
+
+			//echo"<pre>";print_r($city_id);exit;
+			//$data = Finder::active()->where('city_id',(int)$city_id)->where('created_at', '>',new DateTime($from_date))->where('created_at', '<',new DateTime($to_date))->orderBy('_id','ASC')->get();
+
+			//echo"<pre>";print_r($data);exit;
+
+				
+
+			
+		}
+
+		return $finder;
+
+		
+
 
 	}
 
