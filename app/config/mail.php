@@ -137,7 +137,7 @@ return array(
 	'bcc_emailds_mailus' 							=> 	array('mailus@fitternity.com','sanjay.id7@gmail.com'),
 
 	
-	'bcc_emailds_review' 							=> 	array('pranjalisalvi@fitternity.com','sailismart@fitternity.com'),
+	'bcc_emailds_review' 							=> 	array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','sanjaysahu@fitternity.com'),
 
 	'bcc_emailds_request_callback' 					=> 	array('info@fitternity.com','mailus@fitternity.com'),
 	'bcc_emailds_book_trial' 						=> 	array('info@fitternity.com','mailus@fitternity.com'),
