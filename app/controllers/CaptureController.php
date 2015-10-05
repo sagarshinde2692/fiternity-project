@@ -65,35 +65,45 @@ zumba_party
 zumba_trials
 */
 
-	public function postCapture(){
-		
-		// $data = array(
-		// 		'capture_type' => Input::json()->get('capture_type'),
-		// 		'name' => Input::json()->get('name'), 
-		// 		'email' => Input::json()->get('email'),
-		// 		'mobile' => Input::json()->get('mobile'),
-		// 		'mobile' => Input::json()->get('mobile'),
-		// 		'created_at' => date('Y-m-d H:i:s')
-		// 	);
-		
-		$data 			= Input::json()->all();
+public function sendSMS($smsdata){
 
+	$to = $smsdata['send_to'];
+	$message = $smsdata['message_body'];
+	$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $live_url);
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	$response = curl_exec($ch);
+	curl_close($ch);
+}
 
-		$yet_to_connect_arr = array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy');
-		// if(in_array(Input::json()->get('capture_type'), $yet_to_connect_arr)){
-		// }
+public function postCapture(){
 
-		//set default status
-		array_set($data, 'capture_status', 'yet to connect');
+	$data 			= Input::json()->all();
+	$yet_to_connect_arr = array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy');
+	// if(in_array(Input::json()->get('capture_type'), $yet_to_connect_arr)){
+	// }
 
-		$storecapture = Capture::create($data);
-		if($storecapture){
-			if(Input::json()->get('capture_type') == 'pre-register-fitmania'){
-				$sndInstantSmsFinder	=	$this->customersms->fitmaniaPreRegister($data);
-			}
+	//set default status
+	array_set($data, 'capture_status', 'yet to connect');
+
+	$storecapture = Capture::create($data);
+	if($storecapture){
+		if(Input::json()->get('capture_type') == 'pre-register-fitmania'){
+			$sndInstantSmsFinder	=	$this->customersms->fitmaniaPreRegister($data);
 		}
 
-		return Response::json($storecapture);
-	}	
+		if(Input::json()->get('capture_type') == 'FakeBuy' && Input::json()->get('mobile') != ''){
+			$smsdata = [
+			'send_to' => Input::json()->get('mobile'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to purchase the membership at '.Input::json()->get('vendor').'. We will get in touch with you shortly. Regards - Team Fitternity.',
+			];
+			$this->sendSMS($smsdata);
+		}
+	}
+
+	return Response::json($storecapture);
+}	
 
 }
