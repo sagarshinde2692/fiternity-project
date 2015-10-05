@@ -716,6 +716,8 @@ Route::get('updateserviceslug/', array('as' => 'service.updateserviceslug','uses
 Route::get('servicedetail/{id}', array('as' => 'service.servicedetail','uses' => 'ServiceController@serviceDetail'));
 Route::get('servicecategorys', array('as' => 'service.servicecategorys','uses' => 'ServiceController@getServiceCategorys'));
 Route::get('servicemarketv1/{city?}', array('as' => 'service.servicemarket','uses' => 'ServiceController@getServiceHomePageDataV1'));
+Route::get('servicemarketv1/{city?}', array('as' => 'service.servicemarket','uses' => 'ServiceController@getServiceHomePageDataV1'));
+Route::get('servicemarketfooter/{city?}', 'HomeController@getFooterByCity');
 
 
 
