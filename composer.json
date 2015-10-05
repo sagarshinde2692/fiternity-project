@@ -32,7 +32,8 @@
 			"app/sms",
 			"app/notification",
 			"app/services",
-			"app/workers"
+			"app/workers",
+			"app/queue"
 		]
 	},
 	"scripts": {
