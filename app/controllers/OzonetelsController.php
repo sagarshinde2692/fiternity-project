@@ -10,7 +10,7 @@
 use App\Services\Ozonetel as OzonetelResponce;
 use Guzzle\Http\Client;
 
-class OzonetelController extends \BaseController {
+class OzonetelsController extends \BaseController {
 
 	protected $ozonetel;
 
@@ -67,10 +67,12 @@ class OzonetelController extends \BaseController {
 		    $this->ozonetel->addPlayText("This call is recorderd for quality purpose");
 
 		    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
-		   
+   
 	    	if($finderDetails){
-	    		$this->ozonetel->addDial($finderDetails->finder_contact_no,"true");
-	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder_id);
+	    		$phone = $finderDetails->finder->contact['phone'];
+	    		$phone = explode(',', $phone);
+	    		$this->ozonetel->addDial($phone[0],"true");
+	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder->_id);
 	    	}else{
 	    		$this->ozonetel->addHangup();
 	    	}
@@ -100,15 +102,20 @@ class OzonetelController extends \BaseController {
 
 	}
 
-	public function getFinderDetails($ozonetel_no){
+	public function getFinderDetails($phone_number,$extension = false){
 
-		$ozonetel = array();
+		$ozonetelno = array();
 
 		try {
-			$ozonetel = Ozonetel::where('ozonetel_no','=',(string) $ozonetel_no)->first();
 
-			if(!empty($ozonetel)){
-				return $ozonetel;
+			if(!$extension){
+				$ozonetelno = Ozonetelno::with('finder')->where('phone_number','=',(string) $phone_number)->first();
+			}else{
+				$ozonetelno = Ozonetelno::with('finder')->where('phone_number','=',(string) $phone_number)->where('extension','=',(string) $extension)->first();
+			}
+
+			if(!empty($ozonetelno)){
+				return $ozonetelno;
 			}else{
 				return false;
 			}
