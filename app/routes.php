@@ -98,6 +98,31 @@ Route::get('/testsms', function() {
 
 });
 
+
+Route::get('export', function() { 
+
+	$headers = [
+	'Content-type'        => 'application/csv'
+	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+	,   'Content-type'        => 'text/csv'
+	,   'Content-Disposition' => 'attachment; filename=export_finder.csv'
+	,   'Expires'             => '0'
+	,   'Pragma'              => 'public'
+	];
+
+	$output = "ID,  NAME, COMMERCIALTYPE Type, EMAIL, No of TICKETS BOOKED, TICKET RATE, ORDER TOTAL\n";
+	$items = Finder::where('status', '1')->take(10000)->skip(0)->groupBy('slug')->get(array('slug'));
+
+	foreach ($orders as $key => $value) {
+
+		$output .= "$value[id], $value[first_name] $value[last_name], $value[contact], $value[email], $value[quantity], $value[price], $value[total]\n";
+	}
+
+	return Response::make(rtrim($output, "\n"), 200, $headers);
+});
+
+
+
 Route::get('updateduration', function() { 
 
 	$orderids = [3811,3813,3815,3816,3819,3821,3830,3836,3837,3839,3841,3847,3848,3860,3861,3866,3867,3868,3870,3871,3874,3886,3891,3903,3906,3908,3911,3919,3923,3928,3932,3940,3941,3945,3948,3952,3964,3965,3967,3968,3972,3974,3980,3983,3991,3995,3997,4004,4006,4008,4013,4015,4024,4028,4042,4055,4067,4069,4073,4077,4081,4082,4083,4084,4106,4107,4108,4112,4173,4181,4194,4202,4233,4283,4301,4590,4705,4710,4757,4802,4844,4862,4868,4871,4872,4873,4878,4884,4896,4913,4924,4937,4981,4987,4991,4992,4997,5003,5014,5017,5019,5022,5024,5035,5044,5053,5058,5102,5109,5112,5113,5172,5188,5196,5281,5283,5288,5289,5290,5292,5293,5295,5296,5297,5298,5299,5300,5302,5303,5306,5308,5309,5310,5314,5315,5328,5330,5335,5337,5340,5343,5344,5345,5346,5347,5352,5354,5355,5359,5362,5363,5364,5365,5370,5372,5373,5374,5375,5377,5379,5381,5382,5383,5390,5392,5393,5394,5396,5397,5400,5401,5403,5410,5412,5419,5420,5421,5429,5434,5436,5437,5439,5440,5445,5450,5454,5458,5459,5460,5461,5463,5464,5465,5468,5469,5470,5471,5472,5473,5476,5486,5487,5488,5491,5496,5499,5500,5501,5502,5503,5504,5506,5512,5513,5516,5517,5522,5532,5559,5569,5570,5571,5572,5574,5578,5581,5582,5585,5587,5588,5589,5590,5591,5592,5594,5597,5598,5608,5609,5610,5611,5612,5613,5615,5616,5617,5619,5620,5622,5623,5625,5627,5628,5630,5632,5633,5634,5644,5645,5646,5647,5648,5652,5653,5655,5659,5660,5661,5669,5670,5675,5678,5679,5681,5682,5683,5685,5687,5688,5689,5693,5695,5696,5697,5700,5702,5703,5708,5710,5713,5718,5721,5724,5727,5728,5736,5740,5741];
@@ -194,63 +219,62 @@ Route::get('updateduration', function() {
 Route::get('capturedata', function() { 
 
 
-	$items = Service::active()->where('trialschedules', 'size', 0)->get();
-	$fp = fopen('serviceslive1.csv', 'w');
-	$header = ["ID", "SERVICENAME", "FINDERID", "FINDERNAME", "COMMERCIALTYPE" ];
-	fputcsv($fp, $header);
+	// $items = Service::active()->where('trialschedules', 'size', 0)->get();
+	// $fp = fopen('serviceslive1.csv', 'w');
+	// $header = ["ID", "SERVICENAME", "FINDERID", "FINDERNAME", "COMMERCIALTYPE" ];
+	// fputcsv($fp, $header);
 
-	foreach ($items as $value) {  
-		$finder = Finder::findOrFail(intval($value->finder_id));
+	// foreach ($items as $value) {  
+	// 	$finder = Finder::findOrFail(intval($value->finder_id));
 
-		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
-		$commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
+	// 	$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
+	// 	$commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
 
-		$fields = [$value->_id,
-		$value->name,
-		$value->finder_id,
-		$finder->slug,
-		$commercial_type
-		];
-		// return $fields;
-		fputcsv($fp, $fields);
-		// exit();
-	}
+	// 	$fields = [$value->_id,
+	// 	$value->name,
+	// 	$value->finder_id,
+	// 	$finder->slug,
+	// 	$commercial_type
+	// 	];
+	// 	// return $fields;
+	// 	fputcsv($fp, $fields);
+	// 	// exit();
+	// }
 
-	fclose($fp);
-	return "done";
-	return Response::make(rtrim($output, "\n"), 200, $headers);
+	// fclose($fp);
+	// return "done";
+	// return Response::make(rtrim($output, "\n"), 200, $headers);
 
 	// $items = Booktrial::take(5)->skip(0)->get();
 	// $items = Finder::active()->get();
 	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
-	$items = Finder::active()->with('city')->with('category')->orderBy('_id')->take(3000)->skip(3000)->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','contact'));
+	$items = Finder::active()->with('city')->with('location')->with('category')
+				->whereIn('category_id',array(5,6,7,8,9,11,12,13,14,32,35,36,43))
+				->whereIn('locationtags',array(28,29,27,35,135,26,51,52,43,44,8,31,59,60,21,50,6,63,23))
+				->orderBy('_id')->take(3000)->skip(0)
+				->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','location_id','contact','locationtags'));
 
 	$data = array();
-	$output = "ID, SLUG, CITY, CATEGORY, FINDERTYPE, COMMERCIALTYPE \n";
 
-	$fp = fopen('finder2.csv', 'w');
-
-	$header = ["ID", "SLUG", "CITY", "CATEGORY", "FINDERTYPE", "COMMERCIALTYPE", "Contact-address", "Contact-email", "Contact-phone", "finder_vcc_email", "finder_vcc_mobile"  ];
-	
+	$fp = fopen('finder1.csv', 'w');
+	$header = ["ID", "SLUG", "CITY", "CATEGORY",  "LOCAITONTAG", "FINDERTYPE", "COMMERCIALTYPE", "Contact-address", "Contact-email", "Contact-phone", "finder_vcc_email", "finder_vcc_mobile"  ];
 	fputcsv($fp, $header);
 
 	foreach ($items as $value) {  
-
-		// $data = $item->toArray();
-		// $finderobj = Finder::with('city')->findOrFail((int)$value->finder_id);
-		// $finder = $finderobj->toArray();
-		// echo $response = $capture->update($data);
 		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
 		$FINDERTYPE 		= ($value->finder_type == 1) ? 'paid' : 'free';
 		$commercial_type 	= $commercial_type_arr[intval($value->commercial_type)];
 		$cityname 			= $value->city->name;
 		$category 			= $value->category->name;
+		$location 			= $value->location->name;
 		// $output .= "$value->_id, $value->slug, $cityname, $category, $FINDERTYPE, $commercial_type"."\n";
 
-		$fields = [$value->_id,
+		$fields = [
+		$value->_id,
 		$value->slug,
 		$cityname,
 		$category,
+		$location,
 		$FINDERTYPE,
 		$commercial_type,
 		$value->contact['address'],
@@ -259,7 +283,7 @@ Route::get('capturedata', function() {
 		$value->finder_vcc_email,
 		$value->finder_vcc_mobile
 		];
-		return $fields;
+		// return $fields;
 		fputcsv($fp, $fields);
 		// exit();
 	}
