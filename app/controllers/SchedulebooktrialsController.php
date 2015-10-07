@@ -124,7 +124,7 @@ class SchedulebooktrialsController extends \BaseController {
 				
 				// echo "<br> count -- ".count($weekdayslots['slots']);
 
-				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'trialschedules' => $item['trialschedules']); 
+				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday); 
 
 				$slots = array();
 
@@ -153,6 +153,7 @@ class SchedulebooktrialsController extends \BaseController {
 				}
 
 				$service['slots'] = $slots;
+				$service['trialschedules']['slots'] = $slots;
 
 				array_push($scheduleservices, $service);
 
@@ -201,7 +202,7 @@ class SchedulebooktrialsController extends \BaseController {
 				
 				// echo "<br> count -- ".count($weekdayslots['slots']);
 
-				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'workoutsessionschedules' => $item['workoutsessionschedules']); 
+				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday); 
 
 				$slots = array();
 
@@ -230,6 +231,8 @@ class SchedulebooktrialsController extends \BaseController {
 				}
 
 				$service['slots'] = $slots;
+				$service['workoutsessionschedules']['slots'] = $slots;
+
 
 				array_push($scheduleservices, $service);
 
