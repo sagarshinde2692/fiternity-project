@@ -359,7 +359,7 @@ class ElasticsearchController extends \BaseController {
 			break;
 
 			case "fitternityservice":
-			$items = Service::with('category')->with('subcategory')->active()->take(10000)->skip(0)->latest()->get();
+			$items = Service::with('category')->with('subcategory')->active()->take(5000)->skip(0)->latest()->get();
 			break;
 
 			case "fittestfinder":
