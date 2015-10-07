@@ -10,6 +10,9 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
 });
 
+
+
+
 ##############################################################################
 /******************** DEBUG SECTION START HERE /********************/
 
