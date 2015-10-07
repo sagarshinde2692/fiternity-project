@@ -124,7 +124,7 @@ class SchedulebooktrialsController extends \BaseController {
 				
 				// echo "<br> count -- ".count($weekdayslots['slots']);
 
-				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday); 
+				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'trialschedules' => $item['trialschedules']); 
 
 				$slots = array();
 
@@ -139,11 +139,8 @@ class SchedulebooktrialsController extends \BaseController {
 					$slot_status 		= 	($slot['limit'] > $goingcnt) ? "available" : "full";
 
 					array_set($slot, 'totalbookcnt', $totalbookcnt);
-
 					array_set($slot, 'goingcnt', $goingcnt);
-
 					array_set($slot, 'cancelcnt', $cancelcnt);
-
 					array_set($slot, 'status', $slot_status);
 
 					$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
@@ -204,7 +201,7 @@ class SchedulebooktrialsController extends \BaseController {
 				
 				// echo "<br> count -- ".count($weekdayslots['slots']);
 
-				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday); 
+				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'workoutsessionschedules' => $item['workoutsessionschedules']); 
 
 				$slots = array();
 
@@ -219,11 +216,8 @@ class SchedulebooktrialsController extends \BaseController {
 					$slot_status 		= 	($slot['limit'] > $goingcnt) ? "available" : "full";
 
 					array_set($slot, 'totalbookcnt', $totalbookcnt);
-
 					array_set($slot, 'goingcnt', $goingcnt);
-
 					array_set($slot, 'cancelcnt', $cancelcnt);
-
 					array_set($slot, 'status', $slot_status);
 
 					$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
