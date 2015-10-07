@@ -294,7 +294,7 @@ class ElasticsearchController extends \BaseController {
 
 			case "fitternityservice":
 			$typemapping 	=	$serivcesmapping;
-			$typeurl 		=	$this->elasticsearch_url."fitternity/service/_mapping"; 	
+			$typeurl 		=	"ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/service/_mapping"; 	
 			break;
 
 			case "fittest":
@@ -359,7 +359,7 @@ class ElasticsearchController extends \BaseController {
 			break;
 
 			case "fitternityservice":
-			$items = Service::with('category')->with('subcategory')->active()->latest()->get();
+			$items = Service::with('category')->with('subcategory')->active()->take(10000)->skip(0)->latest()->get();
 			break;
 
 			case "fittestfinder":
@@ -439,7 +439,7 @@ class ElasticsearchController extends \BaseController {
 				array_set($data, 'finder', $finder);
             	// return Response::json($data);
 
-				$posturl 						=	$this->elasticsearch_url."fitternity/service/".$data['_id'];	
+				$posturl 						=	"http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/service/".$data['_id'];	
 				$postdata 						= 	get_elastic_service_document($data);
 				break;
 
