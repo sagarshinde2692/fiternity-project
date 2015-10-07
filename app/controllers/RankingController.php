@@ -218,7 +218,7 @@ class RankingController extends \BaseController {
     public function embedTrialsBooked(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $items = Finder::active()->orderBy('_id')->take(1000)->skip(4400)->get();        
+        $items = Finder::active()->orderBy('_id')->take(100000)->skip(0)->get();        
         foreach($items as $item)
         {
             $Reviews = Review::active()->where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->get()->count();
