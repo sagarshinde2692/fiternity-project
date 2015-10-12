@@ -7,16 +7,19 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
-use App\Services\Ozonetel as OzonetelResponce;
+use App\Services\OzonetelResponse as OzonetelResponse;
+use App\Services\OzonetelCollectDtmf as OzonetelCollectDtmf;
 use Guzzle\Http\Client;
 
 class OzonetelsController extends \BaseController {
 
-	protected $ozonetel;
+	protected $ozonetelResponse;
+	protected $ozonetelCollectDtmf;
 
-	public function __construct(OzonetelResponce $ozonetel) {
+	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf) {
 
-		$this->ozonetel	=	$ozonetel;
+		$this->ozonetelResponse	=	$ozonetelResponse;
+		$this->ozonetelCollectDtmf	=	$ozonetelCollectDtmf;
 
 	}
 
@@ -24,39 +27,91 @@ class OzonetelsController extends \BaseController {
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
-		    $this->ozonetel->addPlayText("This call is recorderd for quality purpose");
+			$this->addCapture($_REQUEST);
+		    $this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    $this->ozonetelCollectDtmf->addPlayText("Please dial the extension number");
+		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
-		    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
+	    	if (isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
+
+	    		$extension = (int)$_REQUEST['data'];
+
+	    		if($extension < 1 || $extension > 25){
+
+	    			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    		$this->ozonetelCollectDtmf->addPlayText("You have dailed wrong extension number please dial correct extension number");
+		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+		 
+	    		}else{
+
+	    			$extension = (string) $extension;
+
+	    			$finderDetails = $this->getFinderDetails($_REQUEST['called_number'],$extension);
 		   
-	    	if($finderDetails){
-	    		$this->ozonetel->addDial($finderDetails->finder_contact_no,"true");
-	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder_id);
-	    	}else{
-	    		$this->ozonetel->addHangup();
+			    	if($finderDetails){
+			    		$phone = $finderDetails->finder->contact['phone'];
+			    		$phone = explode(',', $phone);
+			    		$contact_no = (string)trim($phone[0]);
+			    		$this->ozonetelResponse->addDial($contact_no,"true");
+			    		$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true);
+			    	}else{
+			    		$this->ozonetelResponse->addPlayText("You have dailed wrong extension number");
+			    		$this->ozonetelResponse->addHangup();
+			    	}
+	    		}
+
 	    	}
+    	}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
 
-		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+		    if (isset($_REQUEST['status']) && $_REQUEST['status'] == 'not_answered') {
 
-		    $update_capture = $this->updateCapture($_REQUEST);
-		    $this->ozonetel->addHangup();
+				$capture = $this->getCapture($_REQUEST['sid']);
+
+				if($capture->count > 1){
+					$this->ozonetelResponse->addHangup();
+				}else{
+					$this->ozonetelResponse->addPlayText("Call diverted to another number");
+
+				    $finder = Finder::findOrFail($capture->finder_id);
+		   
+			    	if($finder){
+			    		$phone = $finder->contact['phone'];
+			    		$phone = explode(',', $phone);
+			    		$contact_no = (string)trim($phone[1]);
+			    		$this->ozonetelResponse->addDial($contact_no,"true");
+			    		$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+			    	}else{
+			    		$this->ozonetelResponse->addHangup();
+			    	}
+				}
+
+			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
+
+				$update_capture = $this->updateCapture($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+		    	
+			}else{
+
+				$this->ozonetelResponse->addHangup();
+			}
 
 		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
 
 		    $update_capture = $this->updateCapture($_REQUEST);
-		    $this->ozonetel->addHangup();
+		    $this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Disconnect') {
+
+		    $update_capture = $this->updateCapture($_REQUEST);
 
 		}else {
 
-		    if ($_REQUEST['status'] == 'answered') {
-
-				$update_capture = $this->updateCapture($_REQUEST);
-
-		    }
-
-		    $this->ozonetel->addHangup();
+		    $this->ozonetelResponse->addHangup();
 		}
 		
-		$this->ozonetel->send();
+		$this->ozonetelResponse->send();
 
 	}
 
@@ -64,41 +119,69 @@ class OzonetelsController extends \BaseController {
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
-		    $this->ozonetel->addPlayText("This call is recorderd for quality purpose");
+		    $this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
 
 		    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
    
 	    	if($finderDetails){
 	    		$phone = $finderDetails->finder->contact['phone'];
 	    		$phone = explode(',', $phone);
-	    		$this->ozonetel->addDial($phone[0],"true");
-	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder->_id);
+	    		$contact_no = (string)trim($phone[0]);
+	    		$this->ozonetelResponse->addDial($contact_no,"true");
+	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
 	    	}else{
-	    		$this->ozonetel->addHangup();
+	    		$this->ozonetelResponse->addHangup();
 	    	}
 
 		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
 
-		    $update_capture = $this->updateCapture($_REQUEST);
-		    $this->ozonetel->addHangup();
+			if (isset($_REQUEST['status']) && $_REQUEST['status'] == 'not_answered') {
+
+				$capture = $this->getCapture($_REQUEST['sid']);
+
+				if($capture->count > 1){
+					$this->ozonetelResponse->addHangup();
+				}else{
+					$this->ozonetelResponse->addPlayText("Call diverted to another number");
+
+				    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
+		   
+			    	if($finderDetails){
+			    		$phone = $finderDetails->finder->contact['phone'];
+			    		$phone = explode(',', $phone);
+			    		$contact_no = (string)trim($phone[1]);
+			    		$this->ozonetelResponse->addDial($contact_no,"true");
+			    		$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+			    	}else{
+			    		$this->ozonetelResponse->addHangup();
+			    	}
+				}
+
+			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
+
+				$update_capture = $this->updateCapture($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+		    	
+			}else{
+
+				$this->ozonetelResponse->addHangup();
+			}
 
 		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
 
 		    $update_capture = $this->updateCapture($_REQUEST);
-		    $this->ozonetel->addHangup();
+		    $this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Disconnect') {
+
+		    $update_capture = $this->updateCapture($_REQUEST);
 
 		}else {
 
-		    if ($_REQUEST['status'] == 'answered') {
-
-				$update_capture = $this->updateCapture($_REQUEST);
-
-		    }
-
-		    $this->ozonetel->addHangup();
+		    $this->ozonetelResponse->addHangup();
 		}
 		
-		$this->ozonetel->send();
+		$this->ozonetelResponse->send();
 
 	}
 
@@ -127,9 +210,7 @@ class OzonetelsController extends \BaseController {
 	}
 
 
-	
-
-	public function addCapture($data,$finder_id){
+	public function addCapture($data,$finder_id = false,$add_count = false){
 		
 		$ozonetel_capture = new Ozonetelcapture();
 		$ozonetel_capture->_id = Ozonetelcapture::max('_id') + 1;
@@ -140,7 +221,15 @@ class OzonetelsController extends \BaseController {
 		$ozonetel_capture->customer_contact_operator = (string)$data['operator'];
 		$ozonetel_capture->customer_contact_type = (string)$data['cid_type'];
 		$ozonetel_capture->customer_cid = (string)$data['cid'];
-		$ozonetel_capture->finder_id = $finder_id;
+
+		if($finder_id){
+			$ozonetel_capture->finder_id = (int) $finder_id;
+		}
+
+		if($add_count){
+			$ozonetel_capture->count = 1;
+		}
+
 		$ozonetel_capture->call_status = "called";
 		$ozonetel_capture->status = "1";
 		$ozonetel_capture->save();
@@ -148,33 +237,70 @@ class OzonetelsController extends \BaseController {
 		return $ozonetel_capture;
 	}
 
-	public function updateCapture($data){
+	public function updateCapture($data,$finder_id = false,$extension = false,$add_count = false){
 
 		$ozonetel_capture = Ozonetelcapture::where('ozonetel_unique_id','=',$data['sid'])->first();
-		$ozonetel_capture->call_status = $data['status'];
-		$ozonetel_capture->rec_md5_checksum = (string) $data['rec_md5_checksum'];
-		$ozonetel_capture->pick_duration = $data['pickduration'];
 
-		if($data['status'] != 'answered'){
+		if($finder_id){
+			$ozonetel_capture->finder_id = (int) $finder_id;
+			$ozonetel_capture->count = 0;
+		}
 
-			$ozonetel_capture->call_status = "not_answered";
-			$ozonetel_capture->message = $data['message'];
-			$ozonetel_capture->telco_code = $data['telco_code'];
-			
-		}else{
-			
-			$ozonetel_capture->call_status = "answered";
-			$ozonetel_capture->call_duration = $data['callduration'];
-			$ozonetel_capture->ozone_url_record = $data['data'];
-			
-			/*$aws_filename = time().$data['sid'].'.wav';
-			$ozonetel_capture->aws_file_name = $aws_filename;
-			$this->addToAws($data['data'],$aws_filename);*/
+		if($extension){
+			$ozonetel_capture->extension = $extension;
+		}
+
+		if($add_count){
+			$ozonetel_capture->count += 1;
+		}
+
+
+		if(isset($data['status']) && $data['status'] != ''){
+			if($data['status'] != 'answered'){
+
+				$ozonetel_capture->call_status = "not_answered";
+				$ozonetel_capture->message = $data['message'];
+				$ozonetel_capture->telco_code = $data['telco_code'];
+				$ozonetel_capture->rec_md5_checksum = $data['rec_md5_checksum'];
+				$ozonetel_capture->pickduration = $data['pickduration'];
+				
+			}else{
+				
+				$ozonetel_capture->call_status = "answered";
+				$ozonetel_capture->call_duration = $data['callduration'];
+				$ozonetel_capture->ozone_url_record = $data['data'];
+				$ozonetel_capture->message = $data['message'];
+				$ozonetel_capture->telco_code = $data['telco_code'];
+				$ozonetel_capture->rec_md5_checksum = $data['rec_md5_checksum'];
+				$ozonetel_capture->pickduration = $data['pickduration'];
+				
+				/*$aws_filename = time().$data['sid'].'.wav';
+				$ozonetel_capture->aws_file_name = $aws_filename;
+				$this->addToAws($data['data'],$aws_filename);*/
+			}
 		}
 
 		$ozonetel_capture->update();
 
 		return $ozonetel_capture;
+	}
+
+	public function getCapture($sid){
+
+		try {
+
+			$ozonetel_capture = Ozonetelcapture::where('ozonetel_unique_id','=',$sid)->first();
+
+			if(!empty($ozonetel_capture)){
+				return $ozonetel_capture;
+			}else{
+				return false;
+			}
+
+		} catch (Exception $e) {
+			return false;
+		}
+
 	}
 
 	public function addToAws($ozone_fileurl,$aws_filename){
