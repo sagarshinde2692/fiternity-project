@@ -100,5 +100,9 @@ class Finder extends  \Basemodel {
 		return $this->hasMany('Review','finder_id');
 	}
 
+	public function ozonetelno(){
+		return $this->hasOne('Ozonetelno','finder_id');
+	}
+
 
 }
