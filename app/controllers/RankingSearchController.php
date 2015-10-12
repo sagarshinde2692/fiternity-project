@@ -238,4 +238,40 @@ public function getsearchmetadata(){
     
     return Response::json($resp);
 }
+
+public function CategoryAmenitiesv2()
+{
+    $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
+    $city_id     =  (Input::json()->get('city')) ? Input::json()->get('city') : 1;
+       
+    $categorytag_offerings = '';
+    if($category != '')
+    {
+        $categorytag_offerings = Findercategorytag::active()
+        ->where('slug', '=', url_slug(array($category)))
+        ->whereIn('cities',array($city_id))
+        ->with('offerings')
+        ->orderBy('ordering')
+        ->get(array('_id','name','offering_header','slug','status','offerings'));
+    } 
+    
+    
+    $meta_title = $meta_description = $meta_keywords = '';
+    if($category != ''){
+        $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
+        $meta_title         = $findercategory['meta']['title'];
+        $meta_description   = $findercategory['meta']['description'];
+        $meta_keywords      = $findercategory['meta']['keywords'];
+    }                                 
+    $resp  =    array(
+        'meta_title' => $meta_title,
+        'meta_description' => $meta_description,
+        'meta_keywords' => $meta_keywords,                                        
+        'catoff' => $categorytag_offerings
+        );
+        //return Response::json($search_results); exit;
+    return Response::json($resp);
+    
+
+}
 }

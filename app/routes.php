@@ -751,6 +751,7 @@ Route::post('getrankedfinder', 'RankingSearchController@getRankedFinderResults')
 Route::post('getfindercategory', 'RankingController@getFinderCategory');
 Route::post('getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
 Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities');
+Route::post('getcategoryofferingsv2', 'RankingSearchController@CategoryAmenitiesv2');
 Route::post('getcategories', 'RankingSearchController@getcategories');
 Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
 
