@@ -72,16 +72,22 @@ class OzonetelsController extends \BaseController {
 				if($capture->count > 1){
 					$this->ozonetelResponse->addHangup();
 				}else{
-					$this->ozonetelResponse->addPlayText("Call diverted to another number");
-
+			
 				    $finder = Finder::findOrFail($capture->finder_id);
 		   
 			    	if($finder){
 			    		$phone = $finder->contact['phone'];
 			    		$phone = explode(',', $phone);
-			    		$contact_no = (string)trim($phone[1]);
-			    		$this->ozonetelResponse->addDial($contact_no,"true");
-			    		$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+
+			    		if(isset($phone[1]) && $phone[1] != ''){
+			    			$contact_no = (string)trim($phone[1]);
+			    			$this->ozonetelResponse->addPlayText("Call diverted to another number");
+			    			$this->ozonetelResponse->addDial($contact_no,"true");
+			    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+						}else{
+			    			$this->ozonetelResponse->addHangup();
+			    		}
+			    		
 			    	}else{
 			    		$this->ozonetelResponse->addHangup();
 			    	}
@@ -142,16 +148,22 @@ class OzonetelsController extends \BaseController {
 				if($capture->count > 1){
 					$this->ozonetelResponse->addHangup();
 				}else{
-					$this->ozonetelResponse->addPlayText("Call diverted to another number");
 
 				    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
 		   
 			    	if($finderDetails){
 			    		$phone = $finderDetails->finder->contact['phone'];
 			    		$phone = explode(',', $phone);
-			    		$contact_no = (string)trim($phone[1]);
-			    		$this->ozonetelResponse->addDial($contact_no,"true");
-			    		$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+			    		
+			    		if(isset($phone[1]) && $phone[1] != ''){
+			    			$contact_no = (string)trim($phone[1]);
+			    			$this->ozonetelResponse->addPlayText("Call diverted to another number");
+			    			$this->ozonetelResponse->addDial($contact_no,"true");
+			    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+			    		}else{
+			    			$this->ozonetelResponse->addHangup();
+			    		}
+			    		
 			    	}else{
 			    		$this->ozonetelResponse->addHangup();
 			    	}
