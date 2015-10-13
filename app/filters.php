@@ -117,3 +117,30 @@ Route::filter('validatetoken',function(){
     }
 
 });
+
+Route::filter('jwt',function(){
+    $data = Request::header('Authorization');
+    $client = Request::header('Client');
+    if(isset($client) && !empty($client)){
+        if(isset($data) && !empty($data)){
+            $jwt_token  =   $data;
+            $jwt_key    =   (Config::get('jwt.'.$client.'.key') != '') ? Config::get('jwt.'.$client.'.key') : 'notfound';
+            $jwt_alg    =   (Config::get('jwt.'.$client.'.alg') != '') ? Config::get('jwt.'.$client.'.alg') : 'notfound';
+            try{
+                JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            }catch(DomainException $e){
+                return Response::json(array('status' => 400),400);
+            }catch(ExpiredException $e){
+                return Response::json(array('status' => 401),401);
+            }catch(SignatureInvalidException $e){
+                return Response::json(array('status' => 402),402);
+            }catch(Exception $e){
+                return Response::json(array('status' => 403),403);
+            }
+        }else{
+            return Response::json(array('status' => 404),404);
+        }
+    }else{
+        return Response::json(array('status' => 405),405);
+    }
+});
