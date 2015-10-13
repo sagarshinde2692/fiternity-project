@@ -1,6 +1,7 @@
 <?PHP namespace App\Sms;
 
-use Queue, IronWorker, Config, Sidekiq;
+use Queue, IronWorker, Config;
+use App\Services\Sidekiq as Sidekiq;
 
 abstract Class VersionNextSms {
 

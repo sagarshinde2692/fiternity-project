@@ -2,6 +2,7 @@
 
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
+use \Log;
 
 Class Sidekiq {
 
@@ -12,7 +13,7 @@ Class Sidekiq {
 
     public function __construct() {
 
-        $this->$route_type = array('email'=>'sendgenericemail','sms'=>'sendgenericesms');
+        $this->route_type = array('email'=>'sendgenericemail','sms'=>'sendgenericesms');
         $this->initClient();
     }
 
@@ -26,7 +27,7 @@ Class Sidekiq {
 
     public function sendToQueue($payload,$type){
 
-        $route = $this->$route_type[$type];
+        $route = $this->route_type[$type];
 
         try {
             $response = json_decode($this->client->post($route,['json'=>$payload])->getBody()->getContents());

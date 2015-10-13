@@ -1,6 +1,7 @@
 <?PHP namespace App\Mailers;
 
-use Mail, Queue, IronWorker, Config , Sidekiq;
+use Mail, Queue, IronWorker, Config;
+use App\Services\Sidekiq as Sidekiq;
 
 abstract Class Mailer {
 
