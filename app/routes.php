@@ -915,40 +915,40 @@ Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'B
 ##############################################################################
 /******************** SECURITY SECTION START HERE *******************************/
 
-Route::group(array('prefix' => 's','before' => 'jwt'), function() {
+Route::group(array('before' => 'jwt'), function() {
 	
 	//finder info
-	Route::get('finderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail')); 
+	Route::get('sfinderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail')); 
 
 	//booktrial
-	Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
-	Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
-	Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
-	Route::post('captureorderpayment', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+	Route::post('sbooktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
+	Route::post('smanualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
+	Route::post('sstorebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+	Route::post('scaptureorderpayment', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
 
 	//home
-	Route::get('/home', 'HomeController@getHomePageData');
-	Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
-	Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
-	Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
-	Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
+	Route::get('shome', 'HomeController@getHomePageData');
+	Route::get('shomev2/{city?}', 'HomeController@getHomePageDatav2');
+	Route::get('shomev3/{city?}', 'HomeController@getHomePageDatav3');
+	Route::get('sgetcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
+	Route::get('sgetcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 
 	//captures
-	Route::post('landing', 'CaptureController@postCapture');
-	Route::post('email/requestcallback','EmailSmsApiController@RequestCallback');
-	Route::post('landingpage/callback', 'EmailSmsApiController@landingpagecallback');
+	Route::post('slanding', 'CaptureController@postCapture');
+	Route::post('semail/requestcallback','EmailSmsApiController@RequestCallback');
+	Route::post('slandingpage/callback', 'EmailSmsApiController@landingpagecallback');
 
 	//order
-	Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
-	Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+	Route::post('sgeneratecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
+	Route::post('sgeneratetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
 
 	//search
-	Route::post('getrankedfinder', 'RankingSearchController@getRankedFinderResults');
-	Route::post('getfindercategory', 'RankingController@getFinderCategory');
-	Route::post('getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
-	Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities');
-	Route::post('getcategories', 'RankingSearchController@getcategories');
-	Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
+	Route::post('sgetrankedfinder', 'RankingSearchController@getRankedFinderResults');
+	Route::post('sgetfindercategory', 'RankingController@getFinderCategory');
+	Route::post('sgetautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+	Route::post('sgetcategoryofferings', 'RankingSearchController@CategoryAmenities');
+	Route::post('sgetcategories', 'RankingSearchController@getcategories');
+	Route::post('sgetsearchmetadata', 'RankingSearchController@getsearchmetadata');
 
 });
 
