@@ -102,7 +102,7 @@ abstract Class Mailer {
 	}
 
 
-	public function sendToWorkerbk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		$worker = new IronWorker(array(
 		    'token' => Config::get('queue.connections.ironworker.token'),
@@ -122,14 +122,6 @@ abstract Class Mailer {
 		return $messageid;
 
 	}
-
-
-	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
-
-		// fsa
-
-	}
-
 
 
 	public function sendToWorkerTest($email_template, $etmplate_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
