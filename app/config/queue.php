@@ -59,11 +59,20 @@ return array(
 			'encrypt' => true,
 		),
 
+		// 'ironworker' => array(
+		// 	'host'    => 'worker-aws-us-east-1.iron.io',
+		// 	'driver'  => 'iron',
+		// 	'token'   => 'ZJOg-tADi_5BBKtCvAcnj_USA4U',
+		// 	'project' => '55d5c0d498ffa7000600003c',
+		// 	'queue'   => 'app',
+		// 	'encrypt' => true,
+		// ),
+
 		'ironworker' => array(
 			'host'    => 'worker-aws-us-east-1.iron.io',
 			'driver'  => 'iron',
-			'token'   => 'ZJOg-tADi_5BBKtCvAcnj_USA4U',
-			'project' => '55d5c0d498ffa7000600003c',
+			'token'   => 'OM44ZCKbATXCKEfesv_5F2748gI',
+			'project' => '561d23e4c8477c000600008b',
 			'queue'   => 'app',
 			'encrypt' => true,
 		),
