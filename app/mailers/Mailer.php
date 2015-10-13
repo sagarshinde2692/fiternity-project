@@ -136,7 +136,7 @@ abstract Class Mailer {
 			$delay = $this->getSeconds($delay);
 		}
 	
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 
 		$route	= 'email';
 		$result  = $this->sidekiq->sendToQueue($payload,$route);
