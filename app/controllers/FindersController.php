@@ -915,8 +915,6 @@ class FindersController extends \BaseController {
 		return Response::json($response,$status);
 	}
 
-
-
 	public function reviewListing($finder_id, $from = '', $size = ''){
 		
 		$finder_id			= 	(int) $finder_id;	
