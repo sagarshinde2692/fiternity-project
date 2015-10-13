@@ -912,3 +912,45 @@ Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'B
 ##############################################################################
 /******************** BRAND SECTION END HERE *******************************/
 
+##############################################################################
+/******************** SECURITY SECTION START HERE *******************************/
+
+Route::group(array('prefix' => 's','before' => 'jwt'), function() {
+	
+	//finder info
+	Route::get('finderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail')); 
+
+	//booktrial
+	Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
+	Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
+	Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+	Route::post('captureorderpayment', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+
+	//home
+	Route::get('/home', 'HomeController@getHomePageData');
+	Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
+	Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
+	Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
+	Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
+
+	//captures
+	Route::post('landing', 'CaptureController@postCapture');
+	Route::post('email/requestcallback','EmailSmsApiController@RequestCallback');
+	Route::post('landingpage/callback', 'EmailSmsApiController@landingpagecallback');
+
+	//order
+	Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
+	Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+
+	//search
+	Route::post('getrankedfinder', 'RankingSearchController@getRankedFinderResults');
+	Route::post('getfindercategory', 'RankingController@getFinderCategory');
+	Route::post('getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+	Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities');
+	Route::post('getcategories', 'RankingSearchController@getcategories');
+	Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
+
+});
+
+##############################################################################
+/******************** SECURITY SECTION END HERE *******************************/
