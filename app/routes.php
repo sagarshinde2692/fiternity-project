@@ -952,8 +952,7 @@ Route::group(array('before' => 'jwt'), function() {
 
 });
 
-
-Route::get('/jwt/create', function() { 
+/*Route::get('/jwt/create', function() { 
 	$password_claim = array(
 			"iat" => Config::get('jwt.web.iat'),
 			"exp" => Config::get('jwt.web.exp'),
@@ -970,7 +969,7 @@ Route::group(array('before' => 'jwt'), function() {
 		return "security is working";
 	});
 	
-});
+});*/
 
 ##############################################################################
 /******************** SECURITY SECTION END HERE *******************************/
