@@ -912,3 +912,65 @@ Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'B
 ##############################################################################
 /******************** BRAND SECTION END HERE *******************************/
 
+##############################################################################
+/******************** SECURITY SECTION START HERE *******************************/
+
+Route::group(array('before' => 'jwt'), function() {
+	
+	//finder info
+	Route::get('sfinderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail')); 
+
+	//booktrial
+	Route::post('sbooktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
+	Route::post('smanualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
+	Route::post('sstorebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+	Route::post('scaptureorderpayment', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+
+	//home
+	Route::get('shome', 'HomeController@getHomePageData');
+	Route::get('shomev2/{city?}', 'HomeController@getHomePageDatav2');
+	Route::get('shomev3/{city?}', 'HomeController@getHomePageDatav3');
+	Route::get('sgetcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
+	Route::get('sgetcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
+
+	//captures
+	Route::post('slanding', 'CaptureController@postCapture');
+	Route::post('semail/requestcallback','EmailSmsApiController@RequestCallback');
+	Route::post('slandingpage/callback', 'EmailSmsApiController@landingpagecallback');
+
+	//order
+	Route::post('sgeneratecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
+	Route::post('sgeneratetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+
+	//search
+	Route::post('sgetrankedfinder', 'RankingSearchController@getRankedFinderResults');
+	Route::post('sgetfindercategory', 'RankingController@getFinderCategory');
+	Route::post('sgetautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+	Route::post('sgetcategoryofferings', 'RankingSearchController@CategoryAmenities');
+	Route::post('sgetcategories', 'RankingSearchController@getcategories');
+	Route::post('sgetsearchmetadata', 'RankingSearchController@getsearchmetadata');
+
+});
+
+
+Route::get('/jwt/create', function() { 
+	$password_claim = array(
+			"iat" => Config::get('jwt.web.iat'),
+			"exp" => Config::get('jwt.web.exp'),
+			"data" => 'data'
+			);
+	$password_key = Config::get('jwt.web.key');
+	$password_alg = Config::get('jwt.web.alg');
+	$token = JWT::encode($password_claim,$password_key,$password_alg);
+	return $token;
+});
+
+Route::group(array('before' => 'jwt'), function() {
+	Route::get('/jwt/check', function() { 
+		return "security is working";
+	});
+	
+});
+
+##############################################################################
+/******************** SECURITY SECTION END HERE *******************************/
