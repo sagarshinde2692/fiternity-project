@@ -69,7 +69,7 @@ public function sendSMS($smsdata){
 
 	$to = $smsdata['send_to'];
 	$message = $smsdata['message_body'];
-	$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+	$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=fitter12&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $live_url);
 	curl_setopt($ch, CURLOPT_HEADER, 0);

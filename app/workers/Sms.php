@@ -17,7 +17,7 @@ function fire($payload)
 
     foreach ($to as $number) {
         // echo $number;
-        $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($message);
+        $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=fitter12&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($message);
         $ci = curl_init();
         curl_setopt($ci, CURLOPT_URL, $sms_url);
         curl_setopt($ci, CURLOPT_HEADER, 0);
