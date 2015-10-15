@@ -72,8 +72,12 @@ class OzonetelsController extends \BaseController {
 				if($capture->count > 1){
 					$this->ozonetelResponse->addHangup();
 				}else{
-			
-				    $finder = Finder::findOrFail($capture->finder_id);
+
+					$this->ozonetelResponse->addPlayText("Call diverted to another number");
+	    			$this->ozonetelResponse->addDial('02261222225',"true");
+	    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+
+				    /*$finder = Finder::findOrFail($capture->finder_id);
 		   
 			    	if($finder){
 			    		$phone = $finder->contact['phone'];
@@ -90,7 +94,7 @@ class OzonetelsController extends \BaseController {
 			    		
 			    	}else{
 			    		$this->ozonetelResponse->addHangup();
-			    	}
+			    	}*/
 				}
 
 			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
@@ -149,7 +153,11 @@ class OzonetelsController extends \BaseController {
 					$this->ozonetelResponse->addHangup();
 				}else{
 
-				    $finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
+					$this->ozonetelResponse->addPlayText("Call diverted to another number");
+	    			$this->ozonetelResponse->addDial('02261222225',"true");
+	    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+
+				    /*$finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
 		   
 			    	if($finderDetails){
 			    		$phone = $finderDetails->finder->contact['phone'];
@@ -166,7 +174,7 @@ class OzonetelsController extends \BaseController {
 			    		
 			    	}else{
 			    		$this->ozonetelResponse->addHangup();
-			    	}
+			    	}*/
 				}
 
 			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
