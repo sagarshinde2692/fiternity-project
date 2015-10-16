@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays');
+	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage');
 
 	public function setIdAttribute($value){
 		$this->attributes['_id'] = intval($value);
@@ -57,6 +57,20 @@ class Service extends \Basemodel{
 			// $activedays 		= pluck( $this->schedules , array('weekday') );
 		}
 		return $activedays;
+	}
+
+
+	public function getServiceCoverimageAttribute(){
+
+		$service_coverimage = '';
+
+		if(!empty($this->coverimage) && isset($this->coverimage)){
+			$service_coverimage = 's/ct/'.$service_coverimage;
+		}else{
+			$finder  	=	Finder::findOrFail(intval($this->finder_id));
+			$service_coverimage = (trim($finder->coverimage) != '') ? 'f/ct/'.trim($finder->coverimage) : 'default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
+		}
+		return $service_coverimage ;
 	}
 
 	public function category(){
