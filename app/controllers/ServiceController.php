@@ -188,7 +188,7 @@ class ServiceController extends \BaseController {
 
 
 
-	public function getServiceHomePageDataV1($city = 'mumbai',$cache = false){   
+	public function getServiceHomePageDataV1($city = 'mumbai',$cache = true){   
 
 		$home_by_city = $cache ? Cache::tags('servicehome_by_city_v1')->has($city) : false;
 
@@ -201,7 +201,7 @@ class ServiceController extends \BaseController {
 			$homepage 		= 		Servicehomepage::where('city_id', '=', $city_id)->get()->first();						
 
 			$feature_services  	= 	$this->feature_services($homepage);
-			$footer_services  	= 	$this->footer_services($homepage);
+			// $footer_services  	= 	$this->footer_services($homepage);
 			$locations			= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 			$categorys	 		= 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
 
@@ -300,12 +300,13 @@ class ServiceController extends \BaseController {
 		$footer_block4_ids 		= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
 		$footer_block5_ids 		= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
 		$footer_block6_ids 		= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
-		$footer_block1_services 		=		Service::active()->whereIn('_id', $footer_block1_ids)->get(['name','_id','slug']);
-		$footer_block2_services 		=		Service::active()->whereIn('_id', $footer_block2_ids)->get(['name','_id','slug']);
-		$footer_block3_services 		=		Service::active()->whereIn('_id', $footer_block3_ids)->get(['name','_id','slug']);
-		$footer_block4_services 		=		Service::active()->whereIn('_id', $footer_block4_ids)->get(['name','_id','slug']);																										
-		$footer_block5_services 		=		Service::active()->whereIn('_id', $footer_block5_ids)->get(['name','_id','slug']);																										
-		$footer_block6_services 		=		Service::active()->whereIn('_id', $footer_block6_ids)->get(['name','_id','slug']);																										
+
+		$footer_block1_services 		=		Service::active()->whereIn('_id', $footer_block1_ids)->get(['name','finder_id','_id','slug']);
+		$footer_block2_services 		=		Service::active()->whereIn('_id', $footer_block2_ids)->get(['name','finder_id','_id','slug']);
+		$footer_block3_services 		=		Service::active()->whereIn('_id', $footer_block3_ids)->get(['name','finder_id','_id','slug']);
+		$footer_block4_services 		=		Service::active()->whereIn('_id', $footer_block4_ids)->get(['name','finder_id','_id','slug']);																										
+		$footer_block5_services 		=		Service::active()->whereIn('_id', $footer_block5_ids)->get(['name','finder_id','_id','slug']);																										
+		$footer_block6_services 		=		Service::active()->whereIn('_id', $footer_block6_ids)->get(['name','finder_id','_id','slug']);																										
 
 		array_set($footer_services,  'footer_block1_services', $footer_block1_services);									
 		array_set($footer_services,  'footer_block2_services', $footer_block2_services);									

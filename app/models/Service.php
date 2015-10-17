@@ -68,7 +68,9 @@ class Service extends \Basemodel{
 			$service_coverimage = 's/ct/'.$service_coverimage;
 		}else{
 			$finder  	=	Finder::findOrFail(intval($this->finder_id));
-			$service_coverimage = (trim($finder->coverimage) != '') ? 'f/ct/'.trim($finder->coverimage) : 'default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
+			if($finder){
+				$service_coverimage = (trim($finder->coverimage) != '') ? 'f/ct/'.trim($finder->coverimage) : 'default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
+			}
 		}
 		return $service_coverimage ;
 	}
