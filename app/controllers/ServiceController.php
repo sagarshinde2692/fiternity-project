@@ -188,12 +188,12 @@ class ServiceController extends \BaseController {
 
 
 
-	public function getServiceHomePageDataV1($city = 'mumbai',$cache = true){   
+	public function getServiceHomePageDataV1($city = 'mumbai',$cache = false){   
 
 		$home_by_city = $cache ? Cache::tags('servicehome_by_city_v1')->has($city) : false;
 
 		if(!$home_by_city){
-			$categorys = $locations = $feature_services = $footer_services = [];
+			$banners = $categorys = $locations = $feature_services = $footer_services = [];
 
 			$citydata 		=		City::where('slug', '=', $city)->first(array('name','slug'));
 			$city_name 		= 		$citydata['name'];
@@ -202,10 +202,11 @@ class ServiceController extends \BaseController {
 
 			$feature_services  	= 	$this->feature_services($homepage);
 			// $footer_services  	= 	$this->footer_services($homepage);
+			$banners			= 	Servicehomepagebanner::active()->whereIn('city_id',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('_id','caption','banner_link','banner_image','ordering'));
 			$locations			= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 			$categorys	 		= 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
 
-			$homedata 			= 	['city_name' => $city_name, 'city_id' => $city_id, 'categorys' => $categorys, 'locations' => $locations, 'feature_services' => $feature_services, 'footer_services' => $footer_services];
+			$homedata 			= 	['city_name' => $city_name, 'city_id' => $city_id, 'banners' => $banners, 'categorys' => $categorys, 'locations' => $locations, 'feature_services' => $feature_services, 'footer_services' => $footer_services];
 
 			Cache::tags('servicehome_by_city_v1')->put($city, $homedata, Config::get('cache.cache_time'));
 		}
