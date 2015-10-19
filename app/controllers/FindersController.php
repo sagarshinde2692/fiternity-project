@@ -56,7 +56,6 @@ class FindersController extends \BaseController {
 			->with('facilities')
 			->with('servicerates')
 			->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-			// ->with('services')
 			->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 			->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 			->where('slug','=',$tslug)
