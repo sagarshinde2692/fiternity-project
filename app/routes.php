@@ -696,7 +696,7 @@ Route::get('reviewlisting/{finderid}/{from?}/{size?}', array('as' => 'finders.re
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
-Route::get('findertopreview/{slug}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
+Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################

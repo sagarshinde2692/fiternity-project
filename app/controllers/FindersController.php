@@ -838,41 +838,30 @@ class FindersController extends \BaseController {
 		return $data;
 	}
 
-	public function finderTopReview($slug,$cache=false){
+	public function finderTopReview($slug, $limit = '', $cache=false){
 
+		$limit 	=	($limit != '') ? intval($limit) : 10;
 		$finder_detail_with_top_review = $cache ? Cache::tags('finder_detail_with_top_review')->has($slug) : false;
 
 		if(!$finder_detail_with_top_review){
-
 			$finder = array();
 			$review = array();
 
 			try {
-
 				$finder = Finder::where('slug','=',(string)$slug)
 				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 				->first(array('title','photos','city_id','location_id','info','contact','total_rating_count','detail_rating_summary_average','detail_rating_summary_count'));
-
 			} catch (Exception $error) {
-
 				return $errorMessage = $this->errorMessage($error);
 			}
 			
 
 			if(!is_null($finder) || !empty($finder) && isset($finder->_id)){
-
 				try {
-
-					$review = Review::where('finder_id','=',$finder->_id)
-					->orderBy('created_at', 'desc')
-					->orderBy('rating', 'desc')
-					->take(2)->get();
-
+					$review = Review::where('finder_id','=',$finder->_id)->orderBy('created_at', 'desc')->orderBy('rating', 'desc')->take($limit)->get();
 				} catch (Exception $error) {
-
 					return $errorMessage = $this->errorMessage($error);
-
 				}
 
 				if(is_null($review)){
@@ -883,20 +872,14 @@ class FindersController extends \BaseController {
 				$finder = array();
 			}
 
-			$data = [
-			'finder' => $finder,
-			'review' => $review
-			];
-
+			$data = [ 'finder' => $finder, 'review' => $review ];
 			$response = array('status' => 200,'data'=>$data);
 
 			if(!empty($finder) && !empty($review)){
-
 				Cache::tags('finder_detail_with_top_review')->put($slug,$response,Config::get('app.cachetime'));
 			}
 
 		}else{
-
 			$response = Cache::tags('finder_detail_with_top_review')->get($slug);
 		}
 
