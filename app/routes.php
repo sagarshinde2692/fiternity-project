@@ -1005,6 +1005,7 @@ Route::get('/cleandata', function() {
 
 Route::get('/cleandata1', function() { 
 	//Danzo Fit clean up
+	//delete servicecategory 120
 	$service = Service::with('category')
 						->with('subcategory')
 						->with('location')
@@ -1021,12 +1022,12 @@ Route::get('/cleandata1', function() {
         array_set($servicedata,'servicecategory_id', 2);
         array_set($servicedata,'servicesubcategory_id', 122);       
         $resp = $item->update($servicedata);
-	}
-	
+	}	
 });
 
 Route::get('/cleandata2', function() { 
 	//Aerobics in dance
+	//delete servicecategory 152
 	$service = Service::with('category')
 						->with('subcategory')
 						->with('location')
@@ -1049,6 +1050,7 @@ Route::get('/cleandata2', function() {
 
 Route::get('/cleandata3', function() {
 	//Zumba classes, 
+	//delete servicesubcategory 141
 	$service = Service::with('category')
 						->with('subcategory')
 						->with('location')
@@ -1067,8 +1069,8 @@ Route::get('/cleandata3', function() {
         $resp = $item->update($servicedata);
 	}	
 });
-
-Route::get('/cleandata4', function() { 
+//dont his this route ,not sure about the categories
+Route::get('/cleandata4', function() {
 	//kids gym
 	$service = Service::with('category')
 						->with('subcategory')
@@ -1091,6 +1093,7 @@ Route::get('/cleandata4', function() {
 
 Route::get('/cleandata5', function() { 
 	//functional training (64, 75)
+	//delete servicesubcategory _id 75
 	$service = Service::with('category')
 						->with('subcategory')
 						->with('location')
@@ -1112,6 +1115,7 @@ Route::get('/cleandata5', function() {
 
 Route::get('/cleandata6', function() {
 	//matt pilates (89, 99)
+	// delete servicesubcategory 89, 99
 	$service = Service::with('category')
 						->with('subcategory')
 						->with('location')
