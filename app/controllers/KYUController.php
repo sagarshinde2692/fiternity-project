@@ -81,14 +81,14 @@ class KYUController extends \BaseController
                       }
                     }';
 
-        $url        = "$http://fitternityelk:admin@52.74.67.151:8060/"."kyulogs";
+        $url        = "http://fitternityelk:admin@52.74.67.151:8060/"."kyulogs";
         $request = array(
             'url' =>  $url,
             'port' => 8060,
             'method' => 'POST',
             );
 
-        echo es_curl_request($request); 
+        echo es_curl_request($request);
         $postfields_data    = json_encode(json_decode($body,true));
 
         //var_dump($postfields_data);   exit;
@@ -100,4 +100,61 @@ class KYUController extends \BaseController
             );       
         echo es_curl_request($request); 
     }
+
+  public function getvendorviewcount(){
+    $vendor_slug = (Input::json()->get('vendor_slug')) ? Input::json()->get('vendor_slug') : '';
+    $body = '{"size": 0,
+                  "query": {
+                    "filtered": {
+                      "query": {
+                        "query_string": {
+                          "query": "vendor :('.$vendor_slug.')",
+                          "analyze_wildcard": true
+                        }
+                      },
+                      "filter": {
+                        "bool": {
+                          "must": [
+                            {
+                              "range": {
+                                "timestamp": {
+                                  "gte": 1413904497799                                 
+                                }
+                              }
+                            }
+                          ],
+                          "must_not": []
+                        }
+                      }
+                    }
+                  },
+                  "aggs": {
+                    "2": {
+                      "terms": {
+                        "field": "vendor",
+                        "size": 5,
+                        "order": {
+                          "_count": "desc"
+                        }
+                      }
+                    }
+                  }
+                }
+';
+
+$request = array(
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/clicklogs/searchlogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $body
+    );
+
+
+$search_results     =   es_curl_request($request);
+
+$response       =   ['search_results' => json_decode($search_results,true)];
+
+return Response::json($response);
+
+  }
 }

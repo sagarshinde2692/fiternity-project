@@ -738,6 +738,7 @@ Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'R
 ########################################################################################
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
+Route::post('getvendorview','KYUController@getvendorviewcount');
 
 /************************KYU SECTION END HERE******************************************/
 ########################################################################################
