@@ -101,8 +101,8 @@ class KYUController extends \BaseController
         echo es_curl_request($request); 
     }
 
-  public function getvendorviewcount(){
-    $vendor_slug = (Input::json()->get('vendor_slug')) ? Input::json()->get('vendor_slug') : '';
+  public function getvendorviewcount($vendor_slug = ''){
+    $vendor_slug = ($vendor_slug != '') ? $vendor_slug : '';
     $body = '{"size": 0,
                   "query": {
                     "filtered": {
