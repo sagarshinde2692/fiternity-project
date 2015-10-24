@@ -252,10 +252,10 @@ Route::get('capturedata', function() {
 	// $items = Finder::active()->get();
 	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
 	$items = Finder::active()->with('city')->with('location')->with('category')
-				->whereIn('category_id',array(5,6,7,8,9,11,12,13,14,32,35,36,43))
-				->whereIn('locationtags',array(28,29,27,35,135,26,51,52,43,44,8,31,59,60,21,50,6,63,23))
-				->orderBy('_id')->take(3000)->skip(0)
-				->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','location_id','contact','locationtags'));
+	->whereIn('category_id',array(5,6,7,8,9,11,12,13,14,32,35,36,43))
+	->whereIn('locationtags',array(28,29,27,35,135,26,51,52,43,44,8,31,59,60,21,50,6,63,23))
+	->orderBy('_id')->take(3000)->skip(0)
+	->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','location_id','contact','locationtags'));
 
 	$data = array();
 
@@ -985,21 +985,21 @@ Route::group(array('before' => 'jwt'), function() {
 /******************** SECURITY SECTION END HERE *******************************/
 Route::get('/cleandata', function() { 
 	$service = Service::with('category')
-						->with('subcategory')
-						->with('location')
-						->with('city')
-						->with('finder')
-						->where('servicecategory_id', 161)
-						->get();
+	->with('subcategory')
+	->with('location')
+	->with('city')
+	->with('finder')
+	->where('servicecategory_id', 161)
+	->get();
 
 	$service_list = $service;
 	foreach ($service_list as $item) {
 		//Altitude Training is 151 as sub
 		//Cross Functional Training as root 5
 		$servicedata = array();
-        array_set($servicedata,'servicecategory_id', 5);
-        array_set($servicedata,'servicesubcategory_id', 151);       
-        $resp = $item->update($servicedata);
+		array_set($servicedata,'servicecategory_id', 5);
+		array_set($servicedata,'servicesubcategory_id', 151);       
+		$resp = $item->update($servicedata);
 	}	
 });
 
@@ -1007,21 +1007,21 @@ Route::get('/cleandata1', function() {
 	//Danzo Fit clean up
 	//delete servicecategory 120
 	$service = Service::with('category')
-						->with('subcategory')
-						->with('location')
-						->with('city')
-						->with('finder')
-						->where('servicecategory_id', 120)
-						->get();
+	->with('subcategory')
+	->with('location')
+	->with('city')
+	->with('finder')
+	->where('servicecategory_id', 120)
+	->get();
 
 	$service_list = $service;
 	foreach ($service_list as $item) {
 		//Danzo-Fit is 122 as sub
 		//Cross Functional Training as root 5
 		$servicedata = array();
-        array_set($servicedata,'servicecategory_id', 2);
-        array_set($servicedata,'servicesubcategory_id', 122);       
-        $resp = $item->update($servicedata);
+		array_set($servicedata,'servicecategory_id', 2);
+		array_set($servicedata,'servicesubcategory_id', 122);       
+		$resp = $item->update($servicedata);
 	}	
 });
 
@@ -1029,21 +1029,21 @@ Route::get('/cleandata2', function() {
 	//Aerobics in dance
 	//delete servicecategory 152
 	$service = Service::with('category')
-						->with('subcategory')
-						->with('location')
-						->with('city')
-						->with('finder')
-						->where('servicecategory_id', 152)
-						->get();
+	->with('subcategory')
+	->with('location')
+	->with('city')
+	->with('finder')
+	->where('servicecategory_id', 152)
+	->get();
 
 	$service_list = $service;
 	foreach ($service_list as $item) {
 		//Danzo-Fit is 122 as sub
 		//Cross Functional Training as root 5
 		$servicedata = array();
-        array_set($servicedata,'servicecategory_id', 2);
-        array_set($servicedata,'servicesubcategory_id', 85);       
-        $resp = $item->update($servicedata);
+		array_set($servicedata,'servicecategory_id', 2);
+		array_set($servicedata,'servicesubcategory_id', 85);       
+		$resp = $item->update($servicedata);
 	}
 	
 });
@@ -1052,42 +1052,42 @@ Route::get('/cleandata3', function() {
 	//Zumba classes, 
 	//delete servicesubcategory 141
 	$service = Service::with('category')
-						->with('subcategory')
-						->with('location')
-						->with('city')
-						->with('finder')
-						->where('servicecategory_id', 19)
-						->where('servicesubcategory_id',141 )
-						->get();
+	->with('subcategory')
+	->with('location')
+	->with('city')
+	->with('finder')
+	->where('servicecategory_id', 19)
+	->where('servicesubcategory_id',141 )
+	->get();
 
 	$service_list = $service;
 	foreach ($service_list as $item) {
 		//Danzo-Fit is 122 as sub
 		//Cross Functional Training as root 5
 		$servicedata = array();        
-        array_set($servicedata,'servicesubcategory_id', 20);       
-        $resp = $item->update($servicedata);
+		array_set($servicedata,'servicesubcategory_id', 20);       
+		$resp = $item->update($servicedata);
 	}	
 });
 //dont his this route ,not sure about the categories
 Route::get('/cleandata4', function() {
 	//kids gym
 	$service = Service::with('category')
-						->with('subcategory')
-						->with('location')
-						->with('city')
-						->with('finder')
-						->where('servicecategory_id', 65)
-						->where('servicesubcategory_id',66 )
-						->get();
+	->with('subcategory')
+	->with('location')
+	->with('city')
+	->with('finder')
+	->where('servicecategory_id', 65)
+	->where('servicesubcategory_id',66 )
+	->get();
 
 	$service_list = $service;
 	foreach ($service_list as $item) {
 		//Danzo-Fit is 122 as sub
 		//Cross Functional Training as root 5
 		$servicedata = array();        
-        array_set($servicedata,'servicesubcategory_id', 67);       
-        $resp = $item->update($servicedata);
+		array_set($servicedata,'servicesubcategory_id', 67);       
+		$resp = $item->update($servicedata);
 	}	
 });
 
@@ -1095,21 +1095,21 @@ Route::get('/cleandata5', function() {
 	//functional training (64, 75)
 	//delete servicesubcategory _id 75
 	$service = Service::with('category')
-						->with('subcategory')
-						->with('location')
-						->with('city')
-						->with('finder')
-						->where('servicecategory_id', 5)
-						->where('servicesubcategory_id',75 )
-						->get();
+	->with('subcategory')
+	->with('location')
+	->with('city')
+	->with('finder')
+	->where('servicecategory_id', 5)
+	->where('servicesubcategory_id',75 )
+	->get();
 
 	$service_list = $service;
 	foreach ($service_list as $item) {
 		//Danzo-Fit is 122 as sub
 		//Cross Functional Training as root 5
 		$servicedata = array();        
-        array_set($servicedata,'servicesubcategory_id', 64);       
-        $resp = $item->update($servicedata);
+		array_set($servicedata,'servicesubcategory_id', 64);       
+		$resp = $item->update($servicedata);
 	}	
 });
 
@@ -1117,20 +1117,40 @@ Route::get('/cleandata6', function() {
 	//matt pilates (89, 99)
 	// delete servicesubcategory 89, 99
 	$service = Service::with('category')
-						->with('subcategory')
-						->with('location')
-						->with('city')
-						->with('finder')
-						->where('servicecategory_id', 4)
-						->whereIn('servicesubcategory_id',array(89,99) )
-						->get();
+	->with('subcategory')
+	->with('location')
+	->with('city')
+	->with('finder')
+	->where('servicecategory_id', 4)
+	->whereIn('servicesubcategory_id',array(89,99) )
+	->get();
 
 	$service_list = $service;
 	foreach ($service_list as $item) {
 		//Danzo-Fit is 122 as sub
 		//Cross Functional Training as root 5
 		$servicedata = array();        
-        array_set($servicedata,'servicesubcategory_id', 13);       
-        $resp = $item->update($servicedata);
+		array_set($servicedata,'servicesubcategory_id', 13);       
+		$resp = $item->update($servicedata);
 	}	
+});
+
+Route::get('/customercleanup', function() {
+	//matt pilates (89, 99)
+	// delete servicesubcategory 89, 99
+	$customer = Customer::where('picture','like' ,'%http:%')
+	->where('identity','email')					
+	->get();
+	
+	foreach ($customer as $item) {
+
+		$picture = $item['picture'];		
+		$newpic = str_replace("http:", "https:", $picture);
+		$newpic2 = str_replace("http%", "https%", $newpic);	
+		array_set($customerdata,'picture', $newpic2);
+
+		echo $resp = $item->update($customerdata);
+	}				
+	
+	
 });

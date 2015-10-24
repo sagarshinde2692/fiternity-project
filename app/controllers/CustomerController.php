@@ -293,7 +293,7 @@ class CustomerController extends \BaseController {
 					$customer->_id = $inserted_id;
 					$customer->name = ucwords($data['name']) ;
 					$customer->email = $data['email'];
-					$customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
+					$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 					$customer->password = md5($data['password']);
 					if(isset($data['contact_no'])){
 						$customer->contact_no = $data['contact_no'];
@@ -316,7 +316,7 @@ class CustomerController extends \BaseController {
 				$account_link[$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
 				$customer->email = $data['email'];
-				$customer->picture = "http://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
+				$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 				$customer->password = md5($data['password']);
 				if(isset($data['contact_no'])){
 					$customer->contact_no = $data['contact_no'];
