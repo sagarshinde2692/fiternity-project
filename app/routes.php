@@ -1139,7 +1139,7 @@ Route::get('/customercleanup', function() {
 	//matt pilates (89, 99)
 	// delete servicesubcategory 89, 99
 	$customer = Customer::where('picture','like' ,'%http:%')
-	->where('identity','email')					
+	->where('identity','facebook')					
 	->get();
 	
 	foreach ($customer as $item) {
