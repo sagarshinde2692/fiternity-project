@@ -768,6 +768,10 @@ Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities')
 Route::post('getcategoryofferingsv2', 'RankingSearchController@CategoryAmenitiesv2');
 Route::post('getcategories', 'RankingSearchController@getcategories');
 Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
+Route::post('getrankedservices', 'ServiceRankingSearchController@searchrankedservices');
+Route::get('getservicecategories','ServiceRankingSearchController@getservicecategories');
+Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice');
+
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
