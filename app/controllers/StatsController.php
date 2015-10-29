@@ -22,144 +22,378 @@ class StatsController extends \BaseController {
 
 	}
 
-	public function booktrial(){
+	public function booktrial($days){
 
-		$day = $this->days;
 		$data = array();
-		for ($i=0; $i <$day ; $i++) {
-			$count = 0;
-			$day_month = date('Y-m-d', strtotime("-".$i." days"));
-			$to_day = $i-1;
-			
-			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
-			$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$to_day." days"))));
 
-			$count = Booktrial::whereBetween('created_at',array($from_date,$to_date))->count();
-			$data[$day_month] = $count;
+		$from_date = new MongoDate(strtotime(date('Y-m-d', strtotime("-".$days." days"))));
+        $match['$match']['created_at']['$gte'] = $from_date;
+
+		$to_date = new MongoDate(strtotime(date('Y-m-d')));
+        $match['$match']['created_at']['$lte'] = $to_date;
+
+		$trialRequest = DB::collection('booktrials')->raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            if(!empty($match)){
+               $aggregate[] = $match;
+            }
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'day' => array('$dayOfMonth'=> '$created_at'),
+                                'month' => array('$month'=> '$created_at'),
+                                'year' => array('$year'=> '$created_at'),
+                                'booktrial_type' => '$booktrial_type'
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+		$result = [];
+		foreach ($trialRequest['result'] as $key => $value) {
+
+			$date = $value['_id']['day'].'-'.$value['_id']['month'].'-'.$value['_id']['year'];
+			$unix = strtotime($date);
+
+			$result[$unix][$value['_id']['booktrial_type']] =  $value['count'];
+			$result[$unix]['date'] =  date('d M Y',$unix);
 		}
 
-		$data = array_reverse($data);
+		ksort($result);
+		$scope = [];
+		$scope['series'] = ['Total','Auto','Manual'];
 
-		$return = array(
-					"x_axis" => array(
-						"type"=>"datetime",
-						   "labels"=>array_keys($data)
-						),
-						"series" => array(
-								array(
-									"data"=>array_values($data)
-								)
-						)
-				);
+		foreach ($result as $key => $value) {
 
-		return json_encode($return);
+			$scope['labels'][] = $value['date'];
+
+			if(!isset($value['auto'])){
+				$result[$key]['auto'] = 0;
+			}
+		
+			if(!isset($value['manual'])){
+				$result[$key]['manual'] = 0;
+			}
+			
+			$scope['data'][0][] = (int)$result[$key]['auto'] + (int)$result[$key]['manual'];
+			$scope['data'][1][] = $result[$key]['auto'];
+			$scope['data'][2][] = $result[$key]['manual'];
+			 
+		}
+
+		return json_encode($scope);
 
 	}
 
-	public function signUp(){
+	public function signUp($days){
 
-		$day = $this->days;
 		$data = array();
-		for ($i=0; $i < $day ; $i++) {
-			$count = 0;
-			$day_month = date('Y-m-d', strtotime("-".$i." days"));
-			$to_day = $i-1;
-			
-			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
-			$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$to_day." days"))));
 
-			$count = Customer::whereBetween('created_at',array($from_date,$to_date))->count();
-			$data[$day_month] = $count;
+		$from_date = new MongoDate(strtotime(date('Y-m-d', strtotime("-".$days." days"))));
+        $match['$match']['created_at']['$gte'] = $from_date;
+
+		$to_date = new MongoDate(strtotime(date('Y-m-d')));
+        $match['$match']['created_at']['$lte'] = $to_date;
+
+		$signup = DB::collection('customers')->raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            if(!empty($match)){
+               $aggregate[] = $match;
+            }
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'day' => array('$dayOfMonth'=> '$created_at'),
+                                'month' => array('$month'=> '$created_at'),
+                                'year' => array('$year'=> '$created_at'),
+                                'identity' => '$identity'
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+		$result = [];
+		foreach ($signup['result'] as $key => $value) {
+
+			$date = $value['_id']['day'].'-'.$value['_id']['month'].'-'.$value['_id']['year'];
+			$unix = strtotime($date);
+
+			$result[$unix][$value['_id']['identity']] =  $value['count'];
+			$result[$unix]['date'] =  date('d M Y',$unix);
 		}
 
-		$data = array_reverse($data);
+		ksort($result);
+		$scope = [];
+		$scope['series'] = ['Total','Facebook','Email'];
 
-		$return = array(
-					"x_axis" => array(
-						"type"=>"datetime",
-						   "labels"=>array_keys($data)
-						),
-						"series" => array(
-								array(
-									"data"=>array_values($data)
-								)
-						)
-				);
+		foreach ($result as $key => $value) {
 
-		return json_encode($return);
+			$scope['labels'][] = $value['date'];
+
+			if(!isset($value['facebook'])){
+				$result[$key]['facebook'] = 0;
+			}
+		
+			if(!isset($value['email'])){
+				$result[$key]['email'] = 0;
+			}
+			
+			$scope['data'][0][] = (int)$result[$key]['facebook'] + (int)$result[$key]['email'];
+			$scope['data'][1][] = $result[$key]['facebook'];
+			$scope['data'][2][] = $result[$key]['email'];
+			 
+		}
+
+		return json_encode($scope);
 
 	}
 
-	public function orders(){
+	public function orders($days){
 
-		$day = $this->days;
 		$data = array();
-		for ($i=0; $i < $day ; $i++) {
-			$count = 0;
-			$day_month = date('Y-m-d', strtotime("-".$i." days"));
-			$to_day = $i-1;
-			
-			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
-			$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$to_day." days"))));
 
-			$count = Order::whereBetween('created_at',array($from_date,$to_date))->count();
-			$data[$day_month] = $count;
+		$from_date = new MongoDate(strtotime(date('Y-m-d', strtotime("-".$days." days"))));
+        $match['$match']['created_at']['$gte'] = $from_date;
+
+		$to_date = new MongoDate(strtotime(date('Y-m-d')));
+        $match['$match']['created_at']['$lte'] = $to_date;
+
+		$total = DB::collection('orders')->raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            if(!empty($match)){
+               $aggregate[] = $match;
+            }
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'day' => array('$dayOfMonth'=> '$created_at'),
+                                'month' => array('$month'=> '$created_at'),
+                                'year' => array('$year'=> '$created_at'),
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        $success = DB::collection('orders')->raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            $match['$match']['$or'] = array(array('status'=>'1'),array('order_action'=>'bought'));
+
+            $aggregate[] = $match;
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'day' => array('$dayOfMonth'=> '$created_at'),
+                                'month' => array('$month'=> '$created_at'),
+                                'year' => array('$year'=> '$created_at'),
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+
+		$result = [];
+		foreach ($total['result'] as $key => $value) {
+
+			$date = $value['_id']['day'].'-'.$value['_id']['month'].'-'.$value['_id']['year'];
+			$unix = strtotime($date);
+
+			$result[$unix]['total'] =  $value['count'];
+			$result[$unix]['date'] =  date('d M Y',$unix);
 		}
 
-		$data = array_reverse($data);
+		foreach ($success['result'] as $key => $value) {
 
-		$return = array(
-					"x_axis" => array(
-						"type"=>"datetime",
-						   "labels"=>array_keys($data)
-						),
-						"series" => array(
-								array(
-									"data"=>array_values($data)
-								)
-						)
-				);
+			$date = $value['_id']['day'].'-'.$value['_id']['month'].'-'.$value['_id']['year'];
+			$unix = strtotime($date);
 
-		return json_encode($return);
+			$result[$unix]['success'] =  $value['count'];
+			$result[$unix]['date'] =  date('d M Y',$unix);
+		}
+
+		ksort($result);
+
+		$scope = [];
+		$scope['series'] = ['Total','Success','Fail'];
+
+		foreach ($result as $key => $value) {
+
+			$scope['labels'][] = $value['date'];
+
+			if(!isset($value['total'])){
+				$result[$key]['total'] = 0;
+			}
+			
+			if(!isset($value['success'])){
+				$result[$key]['success'] = 0;
+			}
+
+			$scope['data'][0][] = $result[$key]['total'];
+			$scope['data'][1][] = $result[$key]['success'];
+			$scope['data'][2][] = (int)$result[$key]['total'] - (int)$result[$key]['success'];
+			 
+		}
+
+		return json_encode($scope);
 
 	}
 
 
-	public function callBack(){
+	public function callBack($days){
 
-		$day = $this->days;
 		$data = array();
-		for ($i=0; $i < $day ; $i++) {
-			$count = 0;
-			$day_month = date('Y-m-d', strtotime("-".$i." days"));
-			$to_day = $i-1;
-			
-			$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$i." days"))));
-			$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$to_day." days"))));
 
-			$count = Capture::whereBetween('created_at',array($from_date,$to_date))->where('capture_type', '=', 'request_callback')->count();
-			$data[$day_month] = $count;
+		$from_date = new MongoDate(strtotime(date('Y-m-d', strtotime("-".$days." days"))));
+        $match['$match']['created_at']['$gte'] = $from_date;
+
+		$to_date = new MongoDate(strtotime(date('Y-m-d')));
+        $match['$match']['created_at']['$lte'] = $to_date;
+
+		$total = DB::collection('captures')->raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            $match['$match']['capture_type'] = 'request_callback';
+
+            $aggregate[] = $match;
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'day' => array('$dayOfMonth'=> '$created_at'),
+                                'month' => array('$month'=> '$created_at'),
+                                'year' => array('$year'=> '$created_at'),
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        $homepage = DB::collection('captures')->raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            $match['$match']['capture_type'] = 'request_callback';
+            $match['$match']['vendor'] = 'other pages';
+
+            $aggregate[] = $match;
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'day' => array('$dayOfMonth'=> '$created_at'),
+                                'month' => array('$month'=> '$created_at'),
+                                'year' => array('$year'=> '$created_at'),
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+
+		$result = [];
+		foreach ($total['result'] as $key => $value) {
+
+			$date = $value['_id']['day'].'-'.$value['_id']['month'].'-'.$value['_id']['year'];
+			$unix = strtotime($date);
+
+			$result[$unix]['total'] =  $value['count'];
+			$result[$unix]['date'] =  date('d M Y',$unix);
 		}
 
-		$data = array_reverse($data);
+		foreach ($homepage['result'] as $key => $value) {
 
-		$return = array(
-					"x_axis" => array(
-						"type"=>"datetime",
-						   "labels"=>array_keys($data)
-						),
-						"series" => array(
-								array(
-									"data"=>array_values($data)
-								)
-						)
-				);
+			$date = $value['_id']['day'].'-'.$value['_id']['month'].'-'.$value['_id']['year'];
+			$unix = strtotime($date);
 
-		return json_encode($return);
+			$result[$unix]['homepage'] =  $value['count'];
+			$result[$unix]['date'] =  date('d M Y',$unix);
+		}
 
+		ksort($result);
+		
+		$scope = [];
+		$scope['series'] = ['Total','Homepage','Vendor'];
+
+		foreach ($result as $key => $value) {
+
+			$scope['labels'][] = $value['date'];
+
+			if(!isset($value['total'])){
+				$result[$key]['total'] = 0;
+			}
+			$scope['data'][0][] = $result[$key]['total'];
+
+			if(!isset($value['homepage'])){
+				$result[$key]['homepage'] = 0;
+			}
+			$scope['data'][1][] = $result[$key]['homepage'];
+
+			$scope['data'][2][] = (int)$result[$key]['total'] - (int)$result[$key]['homepage'];
+			 
+		}
+
+		return json_encode($scope);
 	}
 
-	public function ordersPieChart(){
+	public function ordersPieChart($days){
 
 		$from_day = $this->days-1;
 		$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$from_day." days"))));
@@ -188,7 +422,7 @@ class StatsController extends \BaseController {
 
 	}
 
-	public function signUpPieChart(){
+	public function signUpPieChart($days){
 
 		$from_day = $this->days-1;
 		$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("-".$from_day." days"))));
@@ -217,11 +451,10 @@ class StatsController extends \BaseController {
 
 	}
 
-	public function review(){
+	public function review($days){
 
-		$day = $this->days;
 		$data = array();
-		for ($i=0; $i < $day ; $i++) {
+		for ($i=0; $i < $days ; $i++) {
 			$count = 0;
 			$day_month = date('Y-m-d', strtotime("-".$i." days"));
 			$to_day = $i-1;
@@ -251,7 +484,7 @@ class StatsController extends \BaseController {
 
 	}
 
-	public function smsBalance(){
+	public function smsBalance($days){
 
 		$transactionBalance  =  $this->sms_version_next->transactionBalance();
 		$promotionBalance  =  $this->sms_version_next->promotionBalance();

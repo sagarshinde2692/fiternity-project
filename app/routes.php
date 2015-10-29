@@ -895,14 +895,14 @@ Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 ##############################################################################
 /******************** STATS SECTION START HERE *******************************/
 
-Route::get('stats/booktrial', 'StatsController@booktrial');
-Route::get('stats/signup', 'StatsController@signUp');
-Route::get('stats/orders', 'StatsController@orders');
-Route::get('stats/callback', 'StatsController@callBack');
-Route::get('stats/orderspiechart', 'StatsController@ordersPieChart');
-Route::get('stats/signuppiechart', 'StatsController@signUpPieChart');
-Route::get('stats/review', 'StatsController@review');
-Route::get('stats/smsbalance', 'StatsController@smsBalance');
+Route::get('stats/booktrial/{day}', 'StatsController@booktrial');
+Route::get('stats/signup/{day}', 'StatsController@signUp');
+Route::get('stats/orders/{day}', 'StatsController@orders');
+Route::get('stats/callback/{day}', 'StatsController@callBack');
+Route::get('stats/orderspiechart/{day}', 'StatsController@ordersPieChart');
+Route::get('stats/signuppiechart/{day}', 'StatsController@signUpPieChart');
+Route::get('stats/review/{day}', 'StatsController@review');
+Route::get('stats/smsbalance/{day}', 'StatsController@smsBalance');
 
 ##############################################################################
 /******************** STATS SECTION END HERE *******************************/
