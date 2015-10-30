@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb');
+	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
 		$this->attributes['_id'] = intval($value);
@@ -29,9 +29,7 @@ class Service extends \Basemodel{
 
 		$activedays 		= 	array();
 		if(!empty($this->trialschedules) && isset($this->trialschedules)){
-
 			$trialschedules  	=	$this->trialschedules;
-
 			foreach ($trialschedules as $key => $schedule) {
 				if(!empty($schedule['slots'])){
 					array_push($activedays, $schedule['weekday']);
@@ -74,6 +72,7 @@ class Service extends \Basemodel{
 		}
 		return $service_coverimage ;
 	}
+
 	public function getServiceCoverimageThumbAttribute(){
 
 		$service_coverimage = '';
@@ -88,6 +87,47 @@ class Service extends \Basemodel{
 		}
 		return $service_coverimage ;
 	}
+
+
+	public function getServiceRatecardsAttribute(){
+
+		$ratecards 	= 	[];
+		// dd($this->ratecards);exit();
+		if(!empty($this->ratecards) && isset($this->ratecards)){
+
+			foreach ($this->ratecards as $key => $value) {
+				// dd($value);exit();
+
+				$days = $sessions = '';
+				if(isset($value['duration']) && $value['duration'] != ''){
+					$durationObj 	=	Duration::active()->where('slug', url_slug(array($value['duration'])))->first();
+					$days 			=	(isset($durationObj->days)) ? $durationObj->days : "";
+					$sessions 		= 	(isset($durationObj->sessions)) ? $durationObj->sessions : "";
+				}
+
+				$ratecard = [
+				'order'=> (isset($value['order'])) ? $value['order'] : '0',
+				'type'=> (isset($value['type'])) ? $value['type'] : '',
+				'duration'=> (isset($value['duration'])) ? $value['duration'] : '',
+				'days'=> (isset($days)) ? intval($days) : '',
+				'sessions'=> (isset($sessions)) ? intval($sessions) : '',
+				'price'=> (isset($value['price'])) ? $value['price'] : '',
+				'special_price'=> (isset($value['special_price'])) ? $value['special_price'] : '',
+				'remarks'=> (isset($value['remarks'])) ? $value['remarks'] : '',
+				'show_on_fitmania'=> (isset($value['show_on_fitmania'])) ? $value['show_on_fitmania'] : '',
+				'direct_payment_enable'=> (isset($value['direct_payment_enable'])) ? $value['direct_payment_enable'] : '0'
+				];
+				// dd($ratecard);exit();
+
+
+				array_push($ratecards, $ratecard);
+			}		
+		}
+
+		return $ratecards ;
+	}
+
+	
 
 	public function category(){
 		return $this->belongsTo('Servicecategory','servicecategory_id');
