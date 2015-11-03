@@ -270,7 +270,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type for sms body and email body  zumbathon','booiaka
-		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub'){
+		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon'){
 			if( empty($data['sms_body']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - sms_body");
 				return Response::json($resp,404);				
