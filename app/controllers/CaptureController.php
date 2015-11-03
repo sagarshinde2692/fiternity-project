@@ -101,8 +101,16 @@ public function postCapture(){
 			];
 			$this->sendSMS($smsdata);
 		}
-	}
 
+		if(Input::json()->get('capture_type') == 'kutchi-minithon' && Input::json()->get('mobile') != ''){
+			$smsdata = [
+			'send_to' => Input::json()->get('mobile'),
+			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamond Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').". Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
+			];
+			$this->sendSMS($smsdata);
+		}
+
+	}
 	return Response::json($storecapture);
 }	
 
