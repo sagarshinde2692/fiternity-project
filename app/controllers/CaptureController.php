@@ -69,11 +69,11 @@ public function sendSMS($smsdata){
 
 	$to = $smsdata['send_to'];
 	$message = $smsdata['message_body'];
-	// $live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=fitter12&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
-    $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=fitter12&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+	$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=fitter12&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+    // $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=fitter12&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
 
 	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, $sms_url);
+	curl_setopt($ch, CURLOPT_URL, $live_url);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	$response = curl_exec($ch);
