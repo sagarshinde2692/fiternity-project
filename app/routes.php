@@ -389,6 +389,14 @@ Route::get('/testtwilio', function() {
 
 
 Route::get('/testemail', function() { 
+
+	if(filter_var(trim('ut.mehrotra@gmail.com'), FILTER_VALIDATE_EMAIL) === false){
+		echo 'not vaild';
+	}else{
+		echo ' vaild';
+	}
+
+	exit();
 	// return "email send succuess";
 	$m1 = Queue::push('WriteClass', array( 'string' => 'new delete function form local -- '.time()),'pullapp');
 	$m2 = Queue::later(Carbon::now()->addMinutes(3),'WriteClass', array( 'string' => 'new delete function 3 min time -- '.time()),'pullapp');

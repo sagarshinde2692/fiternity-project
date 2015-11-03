@@ -407,7 +407,7 @@ class OrderController extends \BaseController {
 		$buydealofday 			=	$order->update(['status' => '1']);
 		$sndsSmsCustomer		= 	$this->customersms->buyLandingpagePurchase($orderData);
 
-		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+		if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
 			$order->update(['email_not_sent'=>'buyLandingpagePurchase']);
 		}else{
 			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);

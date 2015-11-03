@@ -107,7 +107,7 @@ public function postCapture(){
 		if(Input::json()->get('capture_type') == 'kutchi-minithon' && Input::json()->get('phone') != ''){
 			$smsdata = [
 			'send_to' => Input::json()->get('phone'),
-			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamond Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').". Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
+			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamonds Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').". Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
 			];
 			$this->sendSMS($smsdata);
 		}
