@@ -89,8 +89,8 @@ public function postCapture(){
 
 	//set default status
 	array_set($data, 'capture_status', 'yet to connect');
-	$order_id = random_numbers(6);
-	array_set($data, 'order_id', $order_id);
+	$uuid = random_numbers(6);
+	array_set($data, 'uuid', $uuid);
 
 	$storecapture = Capture::create($data);
 	if($storecapture){
@@ -110,7 +110,7 @@ public function postCapture(){
 
 			$smsdata = [
 			'send_to' => Input::json()->get('phone'),
-			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamonds Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').".Your unique registration ID is $order_id. Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
+			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamonds Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').".Your unique registration ID is $uuid. Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
 			];
 			$this->sendSMS($smsdata);
 		}
