@@ -110,7 +110,7 @@ public function postCapture(){
 
 			$smsdata = [
 			'send_to' => Input::json()->get('phone'),
-			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamonds Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').".Your unique registration ID is $uuid. Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
+			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamonds Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').".Your unique registration ID is "$uuid.". Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
 			];
 			$this->sendSMS($smsdata);
 		}
