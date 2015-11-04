@@ -34,6 +34,14 @@ if (!function_exists('clear_cache')) {
     }
 }
 
+if (!function_exists('random_numbers')) {
+    function random_numbers($digits) {
+        $min = pow(10, $digits - 1);
+        $max = pow(10, $digits) - 1;
+        return mt_rand($min, $max);
+    }
+}
+
 
 /**
  * URL Slug
