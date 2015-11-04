@@ -70,13 +70,16 @@ class HomeController extends BaseController {
 			->get(array('_id','author_id','category_id','categorytags','coverimage','finder_coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 			->take(4)->toArray();		
 
+			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+			
 			$homedata 				= 	array('categorytags' => $categorytags,
 				'locations' => $locations,
 				'popular_finders' => $popular_finders,       
 				'footer_finders' => $footer_finders,    
 				'recent_blogs' => $recent_blogs,
 				'city_name' => $city_name,
-				'city_id' => $city_id
+				'city_id' => $city_id,
+				'collections' => $collections
 				);
 
 			Cache::tags('home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
