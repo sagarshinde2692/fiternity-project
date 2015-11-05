@@ -584,7 +584,7 @@ Route::get('/debug/vendorstats',  array('as' => 'debug.vendorstats','uses' => 'D
 Route::get('/debug/getvendors',  array('as' => 'debug.getvendors','uses' => 'DebugController@getVendors'));
 Route::get('/debug/vendorsbymonth',  array('as' => 'debug.vendorsByMonth','uses' => 'DebugController@vendorsByMonth'));
 Route::get('/debug/gurgaonmigration',  array('as' => 'debug.gurgaonmigration','uses' => 'DebugController@gurgaonmigration'));
-
+Route::get('/debug/movekickboxing',  array('as' => 'debug.movekickboxing','uses' => 'DebugController@movekickboxing'));
 
 
 /******************** DEBUG SECTION END HERE ********************/
@@ -975,7 +975,6 @@ Route::group(array('before' => 'jwt'), function() {
 	Route::post('sgetcategories', 'RankingSearchController@getcategories');
 	Route::post('sgetsearchmetadata', 'RankingSearchController@getsearchmetadata');
 	Route::post('sgetrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
-
 });
 
 /*Route::get('/jwt/create', function() { 
