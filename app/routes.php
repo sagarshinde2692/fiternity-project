@@ -781,7 +781,7 @@ Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
 Route::post('getrankedservices', 'ServiceRankingSearchController@searchrankedservices');
 Route::get('getservicecategories','ServiceRankingSearchController@getservicecategories');
 Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice');
-
+Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
@@ -974,6 +974,7 @@ Route::group(array('before' => 'jwt'), function() {
 	Route::post('sgetcategoryofferings', 'RankingSearchController@CategoryAmenities');
 	Route::post('sgetcategories', 'RankingSearchController@getcategories');
 	Route::post('sgetsearchmetadata', 'RankingSearchController@getsearchmetadata');
+	Route::post('sgetrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
 
 });
 
