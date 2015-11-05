@@ -162,7 +162,8 @@ class HomeController extends BaseController {
 				'recent_blogs' => $recent_blogs,
 				'city_name' => $city_name,
 				'city_id' => $city_id,
-				'collections' => $collections
+				'collections' => $collections,
+				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
 				);
 
 			Cache::tags('home_by_city_v3')->put($city, $homedata, Config::get('cache.cache_time'));

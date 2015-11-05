@@ -322,7 +322,7 @@ class DebugController extends \BaseController {
 
 				
 
-				
+
 			}
 
 			return $finder;
@@ -343,7 +343,7 @@ class DebugController extends \BaseController {
 				array_push($gurgaonfinderlist, $localloc);
 				array_push($findertaglocation, array('locationtag' => $loctag, 'finders' => $localloc));
 			}
-			
+
 	//gurgaon city locationclusterid - 20
 	//gurgaon city id 8
 	//update Finder location update city and location cluster
@@ -358,7 +358,7 @@ class DebugController extends \BaseController {
 				}
 			}
 	// //update Finder location tags with new city(id) and city(name)
-			$finderlocationtags = Locationtag::whereIn('_id', array(409,401,391,386,387,390,392,395,394,39,410,406,407,404,400,405,398,399,397,402,389,403))->get();
+			$finderlocationtags = Locationtag::whereIn('_id', array(409,401,391,386,387,390,392,395,394,396,410,406,407,404,400,405,398,399,397,402,389,403))->get();
 			if(isset($finderlocation)&&(!empty($finderlocation))){
 				foreach ($finderlocationtags as $val1) {
 					$loctagdata = array();	
@@ -415,7 +415,7 @@ class DebugController extends \BaseController {
 				array_set($finddata,'city_id', 8);		
 				$resp = $val2->update($finddata);
 			}
-			
+
 			foreach ($gurgaonfinderlist as $value) {
 				$service = Service::whereIn('finder_id', $value)->get();
 				foreach ($service as $p) {
@@ -447,4 +447,13 @@ class DebugController extends \BaseController {
 			$respv2 = $delhicity->update($delhicityup);
 		}
 
+		public function movekickboxing(){
+			$finder = Finder::where('categorytags',8)->get();
+
+			foreach ($finder as $value) {
+				$finderdata = array();
+				array_set($finderdata, 'category_id', 8);
+				$value->update($finderdata);
+			}
+		}
 	}
