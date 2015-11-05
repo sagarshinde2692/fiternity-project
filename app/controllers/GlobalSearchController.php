@@ -165,7 +165,7 @@ class GlobalSearchController extends \BaseController
             "from": '.$from.',
             "size": 10,
             "fields": [
-            "virgininput",
+            "input",
             "location",
             "identifier",
             "slug"
