@@ -131,7 +131,7 @@ class RankingSearchController extends \BaseController
     },
     '.$sort.'
 }';
-       //return $body;
+     
 
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
@@ -272,6 +272,140 @@ public function CategoryAmenitiesv2()
         //return Response::json($search_results); exit;
     return Response::json($resp);
     
+}
+
+public function getRankedFinderResultsMobile()
+    {
+        $searchParams = array();
+        $facetssize =  $this->facetssize;
+        $rankField = 'rankv2';
+        $type = "finder";
+        $filters = "";
+        $from =  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
+        $size =  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;
+        $location = (Input::json()->get('location')) ? Input::json()->get('location') : 'mumbai';
+        $orderfield  = (Input::json()->get('sort')) ? Input::json()->get('sort') : '';
+        $order = (Input::json()->get('order')) ? Input::json()->get('order') : '';
+        $lat = (Input::json()->get('lat')) ? Input::json()->get('lat') : 0 ;
+        $lon = (Input::json()->get('lon')) ? Input::json()->get('lon') : 0 ; 
+        //input filters
+        $category = Input::json()->get('category');
+
+
+
+        $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+        $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+
+        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+        $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
+        $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+
+        $filtervalue = trim($shouldfilter.$mustfilter,',');
+
+
+
+        if($orderfield == 'popularity')
+        {
+            if($category_filter != '') {
+                $factor = evalBaseCategoryScore($category);
+                $sort = '"sort":
+                {"_script" : {
+                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+                    "type" : "number",
+                    "params" : {
+
+                        "factor" : 11
+
+                    },
+                    "order" : "' . $order . '"
+                }}';
+            }
+            else{
+                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+            }
+
+        }
+        else
+        {
+            $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
+        }
+        if($shouldfilter != '' || $mustfilter != ''){
+            $filters = '"filter": {
+                "bool" : {'.$filtervalue.'}
+            },"_cache" : true';
+        }
+
+        $budgets_facets = '"budget": {"terms": {"field": "price_range","min_doc_count":0,"size":"500","order":{"_term": "asc"}}},';
+        $regions_facets = '"loccluster": {
+            "terms": {
+                "field": "locationcluster",
+                "min_doc_count":1
+                
+            },"aggs": {
+              "region": {
+                "terms": {
+                    "field": "location",
+                    "min_doc_count":1,
+                    "size":"500",
+                    "order": {
+                      "_term": "asc"
+                  }
+                  
+              }
+          }
+      }
+  },';
+
+  $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+  $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+  $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+  $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
+
+  $body = '{
+    "fields": ["_source"],
+    "script_fields":{
+        "distance": {
+              "params": {
+                "lat": '.$lat.',
+                "lon": '.$lon.'
+              },
+      "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
+        }
+    },
+    "from": '.$from.',
+    "size": '.$size.',
+    "aggs": {'.$facetsvalue.'},
+    "query": {
+
+        "filtered": {
+            '.$filters.'
+        }
+    },
+    '.$sort.'
+}';
+      // return $body;
+
+$request = array(
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+    'port' => 8050,
+    'method' => 'POST',
+    'postfields' => $body
+    );
+
+
+$search_results     =   es_curl_request($request);
+
+$response       =   [
+
+'search_results' => json_decode($search_results,true)];
+
+return Response::json($response);
 
 }
 }

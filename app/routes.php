@@ -781,7 +781,7 @@ Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
 Route::post('getrankedservices', 'ServiceRankingSearchController@searchrankedservices');
 Route::get('getservicecategories','ServiceRankingSearchController@getservicecategories');
 Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice');
-
+Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
