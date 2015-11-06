@@ -365,6 +365,7 @@ class FindersController extends \BaseController {
 		$start_time = time();
 		$cron = new Cron;
 		$flag = true;
+		$message = '';
 
 		try{
 
@@ -449,11 +450,22 @@ class FindersController extends \BaseController {
 				}	  
 			}
 
-			Log::info('Trial Daily Summary Cron : success', );
+			Log::info('Trial Daily Summary Cron : success');
+			$message = 'Email Send';
+			$resp 	= 	array('status' => 200,'message' => "Email Send");
+			return Response::json($resp);
 
 		}catch(Exception $e){
 
-			Log::info('Trial Daily Summary Cron : fial', $e);
+
+			$message = array(
+            	'type'    => get_class($e),
+               	'message' => $e->getMessage(),
+               	'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+			Log::info('Trial Daily Summary Cron : fial',$message);
 			$flag = false;
 		}
 
@@ -462,13 +474,12 @@ class FindersController extends \BaseController {
 		$data['label'] = 'OzonetelTagFinder';
 		$data['start_time'] = $start_time;
 		$data['end_time'] = $end_time;
-		$data['status'] = '1';
-		$data['message'] = 'success';
+		$data['status'] = ($flag) ? '1' : '0';
+		$data['message'] = $message;
 
 		$cron = $cron->cronLog($data);
 
-		$resp 	= 	array('status' => 200,'message' => "Email Send");
-		return Response::json($resp);	
+			
 	}
 
 	public function checkbooktrialdaliysummary($date){
