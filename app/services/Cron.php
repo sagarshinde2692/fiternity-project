@@ -6,7 +6,7 @@ use \Response;
 
 Class Cron {
 
-    protected $base_uri = 'http://fitapi.com/cron/';
+    protected $base_uri = 'https://a1.fitternity.com/cron/';
     protected $debug = false;
     protected $client;
 
