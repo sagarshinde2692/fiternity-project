@@ -982,6 +982,7 @@ Route::group(array('before' => 'jwt'), function() {
 /******************** CRONS SECTION START HERE ***********************/
 
 Route::post('cron/cronlog',  array('as' => 'cron.cronlog','uses' => 'CronController@cronLog'));
+Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronController@monitor'));
 
 
 /******************** CRONS SECTION END HERE ********************/
