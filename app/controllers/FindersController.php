@@ -96,6 +96,7 @@ class FindersController extends \BaseController {
 
 				$finderdata 		=	$finder;
 				$finderid 			= (int) $finderdata['_id'];
+				$finder_cityid 		= (int) $finderdata['city_id'];
 				$findercategoryid 	= (int) $finderdata['category_id'];
 				$finderlocationid 	= (int) $finderdata['location_id'];	
 
@@ -134,6 +135,7 @@ class FindersController extends \BaseController {
 					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 					->where('_id','!=',$finderid)
 					->where('category_id','=', 45)
+					->where('city_id','=', $finder_cityid)
 					->where('status', '=', '1')
 					->orderBy('popularity', 'DESC')
 					->remember(Config::get('app.cachetime'))
