@@ -9,6 +9,7 @@
 
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Cacheapi as Cacheapi;
+use App\Services\Cron as Cron;
 
 
 class FindersController extends \BaseController {
@@ -361,59 +362,49 @@ class FindersController extends \BaseController {
 
 	public function sendbooktrialdaliysummary(){
 
-		// $tommorowDateTime 	=	date('d-m-Y', strtotime('02-09-2015'));
-		$tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
-		$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
-		// $finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->where('finder_id', '=',3305)->get()->groupBy('finder_id')->toArray();
+		$start_time = time();
+		$cron = new Cron;
+		$flag = true;
 
-		// echo $todayDateTime 		=	date('d-m-Y', strtotime(Carbon::now()) );
-		// return $todaytrialarr 		=	Booktrial::where('going_status', 1)
-		// ->where('schedule_date', '>=', new DateTime( date("d-m-Y", strtotime( $todayDateTime )) ))
-		// ->where('schedule_date', '<=', new DateTime( date("d-m-Y", strtotime( $todayDateTime )) ))
-		// ->where('finder_id', 3305 )->get();
+		try{
 
-		foreach ($finders as $finderid => $trials) {
-			$finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
-			$finderarr 	= 	$finder->toArray();
+			// $tommorowDateTime 	=	date('d-m-Y', strtotime('02-09-2015'));
+			$tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
+			$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
+			// $finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->where('finder_id', '=',3305)->get()->groupBy('finder_id')->toArray();
 
-			if($finder->finder_vcc_email != ""){
-				$finder_vcc_email = "";
-				$explode = explode(',', $finder->finder_vcc_email);
-				$valid_finder_email = [];
-				foreach ($explode as $email) {
-					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
-						$valid_finder_email[] = $email;
+			// echo $todayDateTime 		=	date('d-m-Y', strtotime(Carbon::now()) );
+			// return $todaytrialarr 		=	Booktrial::where('going_status', 1)
+			// ->where('schedule_date', '>=', new DateTime( date("d-m-Y", strtotime( $todayDateTime )) ))
+			// ->where('schedule_date', '<=', new DateTime( date("d-m-Y", strtotime( $todayDateTime )) ))
+			// ->where('finder_id', 3305 )->get();
+
+			foreach ($finders as $finderid => $trials) {
+				$finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
+				$finderarr 	= 	$finder->toArray();
+
+				if($finder->finder_vcc_email != ""){
+					$finder_vcc_email = "";
+					$explode = explode(',', $finder->finder_vcc_email);
+					$valid_finder_email = [];
+					foreach ($explode as $email) {
+						if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
+							$valid_finder_email[] = $email;
+						}
 					}
-				}
-				if(!empty($valid_finder_email)){
-					$finder_vcc_email = implode(",", $valid_finder_email);
-				}
+					if(!empty($valid_finder_email)){
+						$finder_vcc_email = implode(",", $valid_finder_email);
+					}
 
-				// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
-				// echo "<pre>";print_r($trials); 
+					// echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
+					// echo "<pre>";print_r($trials); 
 
-				$finder_name_new					= 	(isset($finderarr['title']) && $finderarr['title'] != '') ? $finderarr['title'] : "";
-				$finder_location_new				=	(isset($finderarr['location']['name']) && $finderarr['location']['name'] != '') ? $finderarr['location']['name'] : "";
-				$finder_name_base_locationtags 		= 	(count($finderarr['locationtags']) > 1) ? $finder_name_new : $finder_name_new." ".$finder_location_new;
+					$finder_name_new					= 	(isset($finderarr['title']) && $finderarr['title'] != '') ? $finderarr['title'] : "";
+					$finder_location_new				=	(isset($finderarr['location']['name']) && $finderarr['location']['name'] != '') ? $finderarr['location']['name'] : "";
+					$finder_name_base_locationtags 		= 	(count($finderarr['locationtags']) > 1) ? $finder_name_new : $finder_name_new." ".$finder_location_new;
 
-				$trialdata = array();
-				foreach ($trials as $key => $value) {
-					$trial = array('customer_name' => $value->customer_name, 
-						'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
-						'schedule_date' => date('d-m-Y', strtotime($value->schedule_date) ), 
-						'schedule_slot' => $value->schedule_slot, 
-						'code' => $value->code, 
-						'service_name' => $value->service_name,
-						'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
-						);
-					array_push($trialdata, $trial);
-				}
-
-				$todayDateTime 		=	date('d-m-Y', strtotime(Carbon::now()) );
-				$todaytrialarr 		=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($todayDateTime))->where('finder_id', intval($finder->_id) )->get();
-				$todaytrialdata = array();
-				if($todaytrialarr){
-					foreach ($todaytrialarr as $key => $value) {
+					$trialdata = array();
+					foreach ($trials as $key => $value) {
 						$trial = array('customer_name' => $value->customer_name, 
 							'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
 							'schedule_date' => date('d-m-Y', strtotime($value->schedule_date) ), 
@@ -422,25 +413,59 @@ class FindersController extends \BaseController {
 							'service_name' => $value->service_name,
 							'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
 							);
-						array_push($todaytrialdata, $trial);
+						array_push($trialdata, $trial);
 					}
-				}
+
+					$todayDateTime 		=	date('d-m-Y', strtotime(Carbon::now()) );
+					$todaytrialarr 		=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($todayDateTime))->where('finder_id', intval($finder->_id) )->get();
+					$todaytrialdata = array();
+					if($todaytrialarr){
+						foreach ($todaytrialarr as $key => $value) {
+							$trial = array('customer_name' => $value->customer_name, 
+								'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
+								'schedule_date' => date('d-m-Y', strtotime($value->schedule_date) ), 
+								'schedule_slot' => $value->schedule_slot, 
+								'code' => $value->code, 
+								'service_name' => $value->service_name,
+								'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
+								);
+							array_push($todaytrialdata, $trial);
+						}
+					}
 
 
-				$scheduledata = array('user_name'	=> 'sanjay sahu',
-					'user_email'					=> 'sanjay.id7@gmail',
-					'finder_name'					=> $finder->title,
-					'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
-					'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
-					'finder_vcc_email'				=> $finder_vcc_email,	
-					'scheduletrials' 				=> $trialdata,
-					'todaytrials' 					=> $todaytrialdata
-					);
-				// echo "<pre>";print_r($scheduledata); 
-				
-				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
-			}	  
+					$scheduledata = array('user_name'	=> 'sanjay sahu',
+						'user_email'					=> 'sanjay.id7@gmail',
+						'finder_name'					=> $finder->title,
+						'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
+						'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
+						'finder_vcc_email'				=> $finder_vcc_email,	
+						'scheduletrials' 				=> $trialdata,
+						'todaytrials' 					=> $todaytrialdata
+						);
+					// echo "<pre>";print_r($scheduledata); 
+					
+					$this->findermailer->sendBookTrialDaliySummary($scheduledata);
+				}	  
+			}
+
+			Log::info('Trial Daily Summary Cron : success', );
+
+		}catch(Exception $e){
+
+			Log::info('Trial Daily Summary Cron : fial', $e);
+			$flag = false;
 		}
+
+		$end_time = time();
+		$data = [];
+		$data['label'] = 'OzonetelTagFinder';
+		$data['start_time'] = $start_time;
+		$data['end_time'] = $end_time;
+		$data['status'] = '1';
+		$data['message'] = 'success';
+
+		$cron = $cron->cronLog($data);
 
 		$resp 	= 	array('status' => 200,'message' => "Email Send");
 		return Response::json($resp);	
