@@ -677,7 +677,7 @@ class FindersController extends \BaseController {
 		'rating' => intval($data['rating']),
 		'detail_rating' => array_map('intval',$data['detail_rating']),
 		'description' => $data['description'],
-		'uploads' => ($data['uploads']) ? $data['uploads'] : [],
+		'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
 		'status' => '1'
 		];
 
