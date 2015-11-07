@@ -1636,8 +1636,9 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 
 		if($trialbooked = true){
-			
+
 			//if vendor type is free special dont send communication
+			Log::info('finder commercial_type  -- '. $finder['commercial_type']);
 			if($finder['commercial_type'] != '2'){
 				$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
 				$booktrial->update(array('redis_id'=>$redisid));
