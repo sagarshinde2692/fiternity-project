@@ -1636,9 +1636,12 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 
 		if($trialbooked = true){
-
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
-			$booktrial->update(array('redis_id'=>$redisid));
+			
+			//if vendor type is free special dont send communication
+			if($finder['commercial_type'] != '2'){
+				$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+				$booktrial->update(array('redis_id'=>$redisid));
+			}
 		}
 
 		Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
