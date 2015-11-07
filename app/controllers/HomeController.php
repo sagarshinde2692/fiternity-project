@@ -72,6 +72,15 @@ class HomeController extends BaseController {
 
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
+			$feature_service_ids 	= 		array_map('intval', explode(",", $homepage['service_ids'] ));
+			$feature_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_service_ids)
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);
+
 			$homedata 				= 	array('categorytags' => $categorytags,
 				'locations' => $locations,
 				'popular_finders' => $popular_finders,       
@@ -79,7 +88,9 @@ class HomeController extends BaseController {
 				'recent_blogs' => $recent_blogs,
 				'city_name' => $city_name,
 				'city_id' => $city_id,
-				'collections' => $collections
+				'collections' => $collections,
+				'feature_services' => $feature_services,
+				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
 				);
 
 			Cache::tags('home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
@@ -163,6 +174,7 @@ class HomeController extends BaseController {
 				'city_name' => $city_name,
 				'city_id' => $city_id,
 				'collections' => $collections
+
 				);
 
 			Cache::tags('home_by_city_v3')->put($city, $homedata, Config::get('cache.cache_time'));

@@ -479,8 +479,8 @@ class EmailSmsApiController extends \BaseController {
 
 		$data = array(
 			'capture_type' 	=>		'request_callback',	
-			'city_id' => Input::json()->get('city_id'),
 			'vendor' => Input::json()->get('vendor'), 
+			'city_id' => (Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : '', 
 			'finder_id' => (Input::json()->get('finder_id')) ? intval(Input::json()->get('finder_id')) : '', 
 			'name' => Input::json()->get('name'), 
 			'email' => Input::json()->get('email'), 
