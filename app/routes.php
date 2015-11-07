@@ -789,6 +789,7 @@ Route::post('getrankedservices', 'ServiceRankingSearchController@searchrankedser
 Route::get('getservicecategories','ServiceRankingSearchController@getservicecategories');
 Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice');
 Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
+Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
@@ -982,6 +983,7 @@ Route::group(array('before' => 'jwt'), function() {
 	Route::post('sgetcategories', 'RankingSearchController@getcategories');
 	Route::post('sgetsearchmetadata', 'RankingSearchController@getsearchmetadata');
 	Route::post('sgetrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
+	Route::post('skeywordsearchweb', 'GlobalSearchController@keywordSearch');
 });
 
 ##############################################################################
