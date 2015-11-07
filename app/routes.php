@@ -918,13 +918,13 @@ Route::get('stats/smsbalance/{day}', 'StatsController@smsBalance');
 /******************** STATS SECTION END HERE *******************************/
 
 ##############################################################################
-/******************** ORDERS SECTION START HERE ***********************/
+/******************** OZONETELS SECTION START HERE ***********************/
 
 Route::get('ozonetel/freevendor',  array('as' => 'ozonetel.freevendor','uses' => 'OzonetelsController@freeVendor'));
 Route::get('ozonetel/paidvendor',  array('as' => 'ozonetel.paidvendor','uses' => 'OzonetelsController@paidVendor'));
 
 
-/******************** ORDERS SECTION END HERE ********************/
+/******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################
 
 
@@ -976,6 +976,16 @@ Route::group(array('before' => 'jwt'), function() {
 	Route::post('sgetsearchmetadata', 'RankingSearchController@getsearchmetadata');
 	Route::post('sgetrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
 });
+
+##############################################################################
+/******************** CRONS SECTION START HERE ***********************/
+
+Route::post('cron/cronlog',  array('as' => 'cron.cronlog','uses' => 'CronController@cronLog'));
+Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronController@monitor'));
+
+
+/******************** CRONS SECTION END HERE ********************/
+##############################################################################
 
 /*Route::get('/jwt/create', function() { 
 	$password_claim = array(
