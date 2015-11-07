@@ -638,6 +638,7 @@ class FindersController extends \BaseController {
 		'rating' => intval($data['rating']),
 		'detail_rating' => array_map('intval',$data['detail_rating']),
 		'description' => $data['description'],
+		'uploads' => ($data['uploads']) ? $data['uploads'] : [],
 		'status' => '1'
 		];
 
@@ -761,8 +762,7 @@ class FindersController extends \BaseController {
 
 			//sending response
 			$rating  = 	array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count);
-			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
-			
+			$resp 	 = 	array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");			
 			return Response::json($resp);
 		}
 	}
