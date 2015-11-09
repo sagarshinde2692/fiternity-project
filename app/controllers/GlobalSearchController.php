@@ -286,7 +286,7 @@ class GlobalSearchController extends \BaseController
     }
 }
 }';
-                            return $query;exit;
+                           
             //$this->elasticsearch_host.$this->elasticsearch_port.  
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
