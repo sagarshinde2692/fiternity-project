@@ -203,17 +203,13 @@ class SchedulebooktrialsController extends \BaseController {
 				// echo "<br> count -- ".count($weekdayslots['slots']);
 
 				$service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday); 
-
 				$slots = array();
 
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					$totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
-
 					$goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
-
 					$cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();								
-
 					$slot_status 		= 	($slot['limit'] > $goingcnt) ? "available" : "full";
 
 					array_set($slot, 'totalbookcnt', $totalbookcnt);
@@ -222,18 +218,13 @@ class SchedulebooktrialsController extends \BaseController {
 					array_set($slot, 'status', $slot_status);
 
 					$scheduleDateTime 				=	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-
 					$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
-
 					array_set($slot, 'passed', $slot_datetime_pass_status); 
-
 					array_push($slots, $slot);
 				}
 
 				$service['slots'] = $slots;
 				$service['workoutsessionschedules']['slots'] = $slots;
-
-
 				array_push($scheduleservices, $service);
 
 			}
@@ -241,7 +232,6 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 
 		return $scheduleservices;
-
 	}
 
 
@@ -368,6 +358,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			//return $data	= Input::json()->all();
 			//its helpful to send any kind for dateformat date time as srting or iso formate timezond
+			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 			$slot_times 						=	explode('-',Input::json()->get('schedule_slot'));
 			$schedule_slot_start_time 			=	$slot_times[0];
 			$schedule_slot_end_time 			=	$slot_times[1];
@@ -416,14 +407,35 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
-			$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-			$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
-			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
-
+			
+			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+			// $finder_address					= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 			//$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+
+			if($service_id != ''){
+				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id','=', intval($service_id))->first()->toArray();
+				if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
+					$finder_location					=	$serviceArr['location']['name'];
+					$show_location_flag 				=   true;
+				}else{
+					$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+					$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+				}
+				if((isset($serviceArr['address']) && $serviceArr['address'] != '')){
+					$finder_address						= 	$serviceArr['address'];
+				}else{
+					$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				}
+			}else{
+				$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+				$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+			}
+
 			
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
@@ -481,6 +493,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'show_location_flag'			=> 		$show_location_flag,
 				'share_customer_no'				=> 		$share_customer_no,
 
+				'service_id'					=>		$service_id,
 				'service_name'					=>		$service_name,
 				'schedule_slot_start_time'		=>		$schedule_slot_start_time,
 				'schedule_slot_end_time'		=>		$schedule_slot_end_time,
@@ -1240,6 +1253,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		try {
 
+			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 			$slot_times 						=	explode('-',$data['schedule_slot']);
 			$schedule_slot_start_time 			=	$slot_times[0];
 			$schedule_slot_end_time 			=	$slot_times[1];
@@ -1260,14 +1274,34 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
-			$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-			$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
-			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 
-	
+			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+			// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+
+			if($service_id != ''){
+				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id','=', intval($service_id))->first()->toArray();
+				if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
+					$finder_location					=	$serviceArr['location']['name'];
+					$show_location_flag 				=   true;
+				}else{
+					$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+					$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+				}
+				if((isset($serviceArr['address']) && $serviceArr['address'] != '')){
+					$finder_address						= 	$serviceArr['address'];
+				}else{
+					$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				}
+			}else{
+				$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+				$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+			}
+
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
 				$explode = explode(',', $finder['finder_vcc_email']);
@@ -1326,6 +1360,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'show_location_flag'			=> 		$show_location_flag,
 				'share_customer_no'				=> 		$share_customer_no,
 
+				'service_id'					=>		$service_id,
 				'service_name'					=>		$service_name,
 				'schedule_slot_start_time'		=>		$schedule_slot_start_time,
 				'schedule_slot_end_time'		=>		$schedule_slot_end_time,
@@ -1521,6 +1556,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		try {
 
+			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 			$slot_times 						=	explode('-',$data['schedule_slot']);
 			$schedule_slot_start_time 			=	$slot_times[0];
 			$schedule_slot_end_time 			=	$slot_times[1];
@@ -1544,12 +1580,33 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
-			$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-			$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
-			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+
+			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+			// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+
+			if($service_id != ''){
+				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id','=', intval($service_id))->first()->toArray();
+				if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
+					$finder_location					=	$serviceArr['location']['name'];
+					$show_location_flag 				=   true;
+				}else{
+					$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+					$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+				}
+				if((isset($serviceArr['address']) && $serviceArr['address'] != '')){
+					$finder_address						= 	$serviceArr['address'];
+				}else{
+					$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				}
+			}else{
+				$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+				$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+			}
 
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
@@ -1607,6 +1664,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'show_location_flag'			=> 		$show_location_flag,
 				'share_customer_no'				=> 		$share_customer_no,
 
+				'service_id'					=>		$service_id,
 				'service_name'					=>		$service_name,
 				'schedule_slot_start_time'		=>		$schedule_slot_start_time,
 				'schedule_slot_end_time'		=>		$schedule_slot_end_time,
