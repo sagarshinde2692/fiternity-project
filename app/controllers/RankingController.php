@@ -65,18 +65,18 @@ class RankingController extends \BaseController {
                             ->with('locationtags')
                             ->with('offerings')
                             ->with('facilities')
-                            //->with('services')
+                            ->with('services')
                             ->active()
                             ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
-                            //->whereIn('_id', array(3296))
+                            //->whereIn('_id', array(1623))
                             ->whereIn('city_id', $citykist)
                             ->take(10000)->skip(0)
                             ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
                             ->get();  
-                 
+      
         foreach ($items as $finderdocument) {           
                 $data = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);
@@ -123,12 +123,7 @@ class RankingController extends \BaseController {
                 $catval = evalBaseCategoryScore($finderdocument['category_id']);
                 $postdata['rankv1'] = $catval;
                 $postdata['rankv2'] = $score + $catval;
-                $postfields_data = json_encode($postdata); 
-                //echo pretty($postfields_data['rank']);exit;
-                //var_dump($postfields_data['rank']);exit;
-                //return $postfields_data;               
-                //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
-                //$posturl = "";
+                $postfields_data = json_encode($postdata);                               
                 $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];

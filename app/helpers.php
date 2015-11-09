@@ -389,6 +389,7 @@ if (!function_exists(('get_elastic_autosuggest_doc'))){
             'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
             'identifier'                    =>      $data['category']['name'],
             'slug'                          =>      $data['slug'],
+            'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon'])
             );
 return $postfields_data;
 }
@@ -529,7 +530,13 @@ if (!function_exists(('evalBaseCategoryScore'))){
                     }
                 }
             }
-        }        
+        }
+        $servicenamelist = array();
+        if(isset($data['services']) && !empty($data['services'])){
+            foreach ($data['services'] as $serv) {
+                array_push($servicenamelist, strtolower($serv['name']));
+            }
+        }
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
@@ -540,6 +547,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
                 'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1, 
                 'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
+                'info_service_snow'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
                 'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 // 'category_metatitle'            =>      (isset($data['category']['meta']['title']) && $data['category']['meta']['title'] != '') ? strtolower($data['category']['meta']['title']) : "", 
@@ -553,6 +561,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
                 'fitternityno'                  =>      (isset($data['fitternityno'])) ? $data['fitternityno'] : '',
                 'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+                'facilities_snow'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
                 'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
                 'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
                 'location_snow'                 =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
@@ -560,6 +569,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'locationtags_snow'             =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
                 'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
                 'offerings'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+                'offerings_snow'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
                 'price_range'                   =>      (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
                 'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
                 'special_offer_title'           =>      (isset($data['special_offer_title']) && $data['special_offer_title'] != '') ? $data['special_offer_title'] : "",
@@ -574,7 +584,9 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
                 'photos'                        =>      (isset($data['photos']) && $data['photos'] != '') ? array_map('strtolower', array_pluck($data['photos'],'url')) : "",
                 'locationcluster'               =>      $locationcluster,
-                'price_rangeval'                =>      $rangeval
+                'locationcluster_snow'          =>      $locationcluster,
+                'price_rangeval'                =>      $rangeval,
+                'servicelist'                   =>      $servicenamelist
                 //'trialschedules'                =>      $trialdata,
                 );                
 $postfields_data['servicephotos'] = $picslist;
