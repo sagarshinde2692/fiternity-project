@@ -29,11 +29,13 @@ class OrderController extends \BaseController {
 
 		$data		=	Input::json()->all();
 		if(empty($data['order_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['status'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
+			return  Response::json($resp, 400);
 		}
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
@@ -67,73 +69,90 @@ class OrderController extends \BaseController {
 		$data				=	Input::json()->all();
 
 		if(empty($data['customer_name'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['customer_email'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_email");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_email");
+			return  Response::json($resp, 400);
 		}
 
 		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-			return $resp 	= 	array('status' => 404,'message' => "Invalid Email Id");
+			$resp 	= 	array('status' => 400,'message' => "Invalid Email Id");
+			return  Response::json($resp, 400);
 		} 
 		
 		if(empty($data['customer_identity'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_identity");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['customer_phone'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_phone");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['customer_source'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_source");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_source");
+			return  Response::json($resp, 400);
 		}
 		
 		if(empty($data['customer_location'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_location");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['city_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
+			return  Response::json($resp, 400);
 		}	
 
 		if(empty($data['finder_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['finder_name'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_name");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
+			return  Response::json($resp, 400);
 		}	
 
 		if(empty($data['finder_address'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_address");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_address");
+			return  Response::json($resp, 400);
 		}	
 
 		if(empty($data['service_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_id");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['service_name'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
+			return  Response::json($resp, 400);
 		}
 		
 		if(empty($data['service_duration'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_duration");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['type'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing Order Type - type");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing Order Type - type");
+			return  Response::json($resp, 400);
 		}
 
 		if (!in_array($data['type'], $this->ordertypes)) {
-			return $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
+			$resp 	= 	array('status' => 400,'message' => "Invalid Order Type");
+			return  Response::json($resp, 400);
 		}
 
 		//Validation base on order type
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'|| $data['type'] == 'zumbathon'){
 			if( empty($data['service_duration']) ){
-				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
+				$resp 	= 	array('status' => 400,'message' => "Data Missing - service_duration");
+				return  Response::json($resp, 400);
 			}
 		}
 
@@ -318,10 +337,12 @@ class OrderController extends \BaseController {
 
 		$data		=	Input::json()->all();
 		if(empty($data['order_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
+			return  Response::json($resp, 400);
 		}
 		if(empty($data['status'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
+			return  Response::json($resp, 400);
 		}
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
