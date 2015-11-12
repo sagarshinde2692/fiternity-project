@@ -320,6 +320,10 @@ public function keywordSearch(){
         $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
         $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
         $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
+        $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
+        $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
+
+        $sort_clause = '';
 
         $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter = '{"term" : { "city" : "'.$city.'" } },';
@@ -433,6 +437,16 @@ $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budget
 
 $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
 $string = str_replace($stopwords, " ", $key);
+
+if(!empty($sort)){
+    $sort_clause = ',"sort": [
+      {
+        "'.$sort.'": {
+          "order": "'.$order.'"
+        }
+      }
+    ]';
+}
 
 $query = '{
     "from": '.$from.',
@@ -599,7 +613,7 @@ $query = '{
         },
         '.$filters.'
     }
-}
+}'.$sort_clause.'
 }';
 
 $request = array(
