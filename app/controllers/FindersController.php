@@ -243,7 +243,7 @@ class FindersController extends \BaseController {
 		}else{
 			$resp 	= 	array('status' => 200,'message' => 'No Ratecard exist :)');
 		}
-		return Response::json($resp);
+		return Response::json($resp,200);
 	}
 
 
@@ -260,7 +260,7 @@ class FindersController extends \BaseController {
 				),
 			'facilities' => Facility::active()->orderBy('name')->get(array('name','_id','slug'))	
 			);
-		return Response::json($data);
+		return Response::json($data,200);
 	}
 
 
