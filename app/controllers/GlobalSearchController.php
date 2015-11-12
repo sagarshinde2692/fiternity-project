@@ -410,7 +410,7 @@ $offerings_facets = ' "filtered_offerings": {
         "offerings": {
             "terms": {
                 "field": "offerings",
-                "min_doc_count": 0,
+                "min_doc_count": 1,
                 "size": 500,
                 "order":{"_term": "asc"}
             }
