@@ -435,6 +435,8 @@ $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
 $string = str_replace($stopwords, " ", $key);
 
 $query = '{
+    "from": '.$from.',
+    "size":10,
     "aggs" :{
         '.$facetsvalue.'
     },
