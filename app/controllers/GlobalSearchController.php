@@ -29,11 +29,16 @@ class GlobalSearchController extends \BaseController
     public function getautosuggestresults(){
 
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-        $string     =         Input::json()->get('key');
+        $string  =         Input::json()->get('key');
         $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-        
+        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
+        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
         //  $keys    =          array_diff($keys1, array(''));
-        
+        $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+        $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
+
+        $query_filter = trim($geo_location_filter.$city_filter,',');
+
         $allkeys = explode(" ", $string);
         $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
         $key1 = str_replace($stopwords, " ", $string);
@@ -232,12 +237,7 @@ class GlobalSearchController extends \BaseController
                         "filter": {
                             "bool": {
                                 "must": [
-                                {
-                                    "term": {
-                                        "city": "'.$city.'",
-                                        "_cache": true
-                                    }
-                                }
+                                    '.$query_filter.'
                                 ]
                             }
                         },
@@ -286,7 +286,7 @@ class GlobalSearchController extends \BaseController
     }
 }
 }';
-                           
+
             //$this->elasticsearch_host.$this->elasticsearch_port.  
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
@@ -313,198 +313,308 @@ public function removeCommonWords($input){
 
 public function keywordSearch(){
 
+    try {
 
-    $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-    $key  =         Input::json()->get('keyword');
-    $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
+        $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
+        $key     =         Input::json()->get('key');
+        $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
+        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
+        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
 
-    $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
-    $string = str_replace($stopwords, " ", $key);
-   
-    $query = '{
+        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+        $city_filter = '{"term" : { "city" : "'.$city.'" } },';
+        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';   
+        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+
+        $must_filtervalue = trim($city_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter,',');
+
+    $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+
+    $filtervalue = trim($mustfilter,',');
+
+    if($mustfilter != ''){
+        $filters = '"filter": {
+            "bool" : {'.$filtervalue.'}
+        },"_cache" : true';
+    }
+
+    $location_facets_filter = trim($geo_location_filter,',');
+    $facilities_facets_filter = trim($regions_filter.$geo_location_filter, ',');
+    $offerings_facets_filter = trim($regions_filter.$facilities_filter.$geo_location_filter, ',');
+    $budgets_facets_filter = trim($regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter, ',');
+
+    $facilities_bool = '"filter": {
+        "bool" : { "must":['.$facilities_facets_filter.']}
+    }';
+
+    $offering_bool = '"filter": {
+        "bool" : {"must":['.$offerings_facets_filter.']}
+    }';
+
+    $budgets_bool = '"filter": {
+        "bool" : {"must":['.$budgets_facets_filter.']}
+    }';
+
+    $location_bool = '"filter": {
+        "bool" : {"must":['.$location_facets_filter.']}
+    }';
+
+    $regions_facets = '
+    "filtered_locations": { '.$location_bool.', 
+    "aggs":
+    { "loccluster": {
+        "terms": {
+            "field": "locationcluster",
+            "min_doc_count":1
+
+        },"aggs": {
+          "region": {
+            "terms": {
+                "field": "location",
+                "min_doc_count":1,
+                "size":"500",
+                "order": {
+                  "_term": "asc"
+              }
+
+          }
+      }
+  }}}
+},';
+
+$facilities_facets = ' "filtered_facilities": {
+    '.$facilities_bool.',
+    "aggs": {
+        "facilities": {
+            "terms": {
+                "field": "facilities",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$offerings_facets = ' "filtered_offerings": {
+    '.$offering_bool.',
+    "aggs": {
+        "offerings": {
+            "terms": {
+                "field": "offerings",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$budgets_facets = ' "filtered_budgets": {
+    '.$budgets_bool.',
+    "aggs": {
+        "budgets": {
+            "terms": {
+                "field": "price_range",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+
+
+$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets,',');
+
+$stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
+$string = str_replace($stopwords, " ", $key);
+
+$query = '{
+    "aggs" :{
+        '.$facetsvalue.'
+    },
+    "query": {
+        "filtered": {
+            "query": {
+                "function_score": {
                     "query": {
-                        "filtered": {
-                            "query": {
-                                "function_score": {
-                                    "query": {
-                                        "bool": {
-                                            "should": [
-                                                {
-                                                    "match": {
-                                                        "categorytags_snow": "'.$string.'"
-                                                    }
-                                                },
-                                                {
-                                                    "match": {
-                                                        "locationtags_snow": "'.$string.'"
-                                                    }
-                                                },
-                                                {
-                                                    "match": {
-                                                        "offerings_snow": "'.$string.'"
-                                                    }
-                                                },
-                                                {
-                                                    "match": {
-                                                        "title_snow": "'.$string.'"
-                                                    }
-                                                },
-                                                {
-                                                    "match": {
-                                                        "locationcluster_snow": "'.$string.'"
-                                                    }
-                                                },
-                                                {
-                                                    "match": {
-                                                        "facilities_snow": "'.$string.'"
-                                                    }
-                                                },
-                                                {
-                                                    "match": {
-                                                        "info_service_snow": "'.$string.'"
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    },
-                                    "functions": [
-                                        {
-                                            "filter": {
-                                                "query": {
-                                                    "bool": {"should": [
-                                                      {"match": {
-                                                        "categorytags_snow": "'.$string.'"
-                                                      }}
-                                                    ]}
-                                                }
-                                            },
-                                            "boost_factor": 8
-                                        },
-                                        {
-                                            "filter": {
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {"match": {
-                                                              "locationtags_snow": "'.$string.'"
-                                                            }}
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "boost_factor": 10
-                                        },
-                                        {
-                                            "filter": {
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {
-                                                                "match": {
-                                                                    "offerings_snow": "'.$string.'"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "boost_factor": 4
-                                        },
-                                        {
-                                            "filter": {
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {
-                                                                "match": {
-                                                                    "title_snow": "'.$string.'"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "boost_factor": 12
-                                        },
-                                        {
-                                            "filter": {
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {
-                                                                "match": {
-                                                                    "locationcluster_snow": "'.$string.'"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "boost_factor": 2
-                                        },
-                                        {
-                                            "filter": {
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {
-                                                                "match": {
-                                                                    "facilities_snow": "'.$string.'"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "boost_factor": 2
-                                        },
-                                        {
-                                            "filter": {
-                                                "query": {
-                                                    "bool": {
-                                                        "should": [
-                                                            {
-                                                                "match": {
-                                                                    "info_service_snow": "'.$string.'"
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            "boost_factor": 6
-                                        }
-                                    ],
-                                    "boost_mode": "sum"
+                        "bool": {
+                            "should": [
+                            {
+                                "match": {
+                                    "categorytags_snow": "'.$string.'"
                                 }
                             },
-                            "filter": {
-                                "bool": {
-                                    "must": [
-                                        {
-                                            "term": {
-                                                "city": "'.$city.'"
-                                            }
-                                        }
-                                    ]
+                            {
+                                "match": {
+                                    "locationtags_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "offerings_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "title_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "locationcluster_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "facilities_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "info_service_snow": "'.$string.'"
                                 }
                             }
+                            ]
                         }
-                    }
-                }';
-               
-    $request = array(
-        'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
-        'port' => 8050,
-        'method' => 'POST',
-        'postfields' => $query
-        );    
-
-    $search_results     =   es_curl_request($request);       
-    $response       =   [
-    'search_results' => json_decode($search_results,true)];
-
-    return Response::json($response);
+                    },
+                    "functions": [
+                    {
+                        "filter": {
+                            "query": {
+                                "bool": {"should": [
+                                {"match": {
+                                    "categorytags_snow": "'.$string.'"
+                                }}
+                                ]}
+                            }
+                        },
+                        "boost_factor": 8
+                    },
+                    {
+                        "filter": {
+                            "query": {
+                                "bool": {
+                                    "should": [
+                                    {"match": {
+                                      "locationtags_snow": "'.$string.'"
+                                  }}
+                                  ]
+                              }
+                          }
+                      },
+                      "boost_factor": 10
+                  },
+                  {
+                    "filter": {
+                        "query": {
+                            "bool": {
+                                "should": [
+                                {
+                                    "match": {
+                                        "offerings_snow": "'.$string.'"
+                                    }
+                                }
+                                ]
+                            }
+                        }
+                    },
+                    "boost_factor": 4
+                },
+                {
+                    "filter": {
+                        "query": {
+                            "bool": {
+                                "should": [
+                                {
+                                    "match": {
+                                        "title_snow": "'.$string.'"
+                                    }
+                                }
+                                ]
+                            }
+                        }
+                    },
+                    "boost_factor": 12
+                },
+                {
+                    "filter": {
+                        "query": {
+                            "bool": {
+                                "should": [
+                                {
+                                    "match": {
+                                        "locationcluster_snow": "'.$string.'"
+                                    }
+                                }
+                                ]
+                            }
+                        }
+                    },
+                    "boost_factor": 2
+                },
+                {
+                    "filter": {
+                        "query": {
+                            "bool": {
+                                "should": [
+                                {
+                                    "match": {
+                                        "facilities_snow": "'.$string.'"
+                                    }
+                                }
+                                ]
+                            }
+                        }
+                    },
+                    "boost_factor": 2
+                },
+                {
+                    "filter": {
+                        "query": {
+                            "bool": {
+                                "should": [
+                                {
+                                    "match": {
+                                        "info_service_snow": "'.$string.'"
+                                    }
+                                }
+                                ]
+                            }
+                        }
+                    },
+                    "boost_factor": 6
+                }
+                ],
+                "boost_mode": "max",
+                "score_mode": "sum"
+            }
+        },
+        '.$filters.'
+    }
 }
+}';
 
+$request = array(
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+    'port' => 8050,
+    'method' => 'POST',
+    'postfields' => $query
+    );    
+
+$search_results     =   es_curl_request($request);       
+$response       =   [
+'search_results' => json_decode($search_results,true)];
+
+return Response::json($response);
+}
+catch(Exception $e){
+     throw $e;
+      }
+   }
 }
