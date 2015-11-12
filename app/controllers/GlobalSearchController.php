@@ -345,10 +345,10 @@ public function keywordSearch(){
         },"_cache" : true';
     }
 
-    $location_facets_filter = trim($geo_location_filter,',');
-    $facilities_facets_filter = trim($regions_filter.$geo_location_filter, ',');
-    $offerings_facets_filter = trim($regions_filter.$facilities_filter.$geo_location_filter, ',');
-    $budgets_facets_filter = trim($regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter, ',');
+    $location_facets_filter = trim($geo_location_filter.$category_filter,',');
+    $facilities_facets_filter = trim($regions_filter.$geo_location_filter.$category_filter, ',');
+    $offerings_facets_filter = trim($regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
+    $budgets_facets_filter = trim($regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
 
     $facilities_bool = '"filter": {
         "bool" : { "must":['.$facilities_facets_filter.']}
@@ -395,6 +395,7 @@ $facilities_facets = ' "filtered_facilities": {
         "facilities": {
             "terms": {
                 "field": "facilities",
+                "include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open",
                 "min_doc_count": 0,
                 "size": 500,
                 "order":{"_term": "asc"}
@@ -615,6 +616,7 @@ $query = '{
     }
 }'.$sort_clause.'
 }';
+
 
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
