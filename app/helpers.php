@@ -520,8 +520,8 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 $flag = true;                   
                 $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
                 foreach ($service as $doc1) { 
-                   $doc = $doc1->toArray();
-                   if( isset($doc['photos']) && !empty($doc['photos'])){                                            
+                 $doc = $doc1->toArray();
+                 if( isset($doc['photos']) && !empty($doc['photos'])){                                            
                     $photos = $doc['photos'];                       
                     foreach ($photos as $key => $value) {                           
                         if(!empty($photos[$key])){                               
@@ -537,6 +537,12 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 array_push($servicenamelist, strtolower($serv['name']));
             }
         }
+        $info_service_list = array();
+        if(isset($data['info']['service'])&& !empty($data['info']['service'])){
+            $key1 = str_replace(array("<ul><li>","</li></ul>"), " ", $data['info']['service']);
+            $key3 = trim($key1," ");
+            $info_service_list = explode("</li><li>", $key3);
+        }
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
@@ -547,7 +553,8 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
                 'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1, 
                 'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
-                'info_service_snow'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
+                'info_service_snow'             =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
+                'info_service_list'             =>      $info_service_list,
                 'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 // 'category_metatitle'            =>      (isset($data['category']['meta']['title']) && $data['category']['meta']['title'] != '') ? strtolower($data['category']['meta']['title']) : "", 
@@ -606,7 +613,7 @@ if (!function_exists('get_elastic_finder_trialschedules')) {
         $data = $finderdata;
         $trialdata =[];        
         try {
-            
+
             if(!isset($data['services']))
             {
                 return [];
