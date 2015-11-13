@@ -29,6 +29,7 @@ class GlobalSearchController extends \BaseController
     public function getautosuggestresults(){
 
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
+        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
         $string  =         Input::json()->get('key');
         $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
         $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
@@ -168,7 +169,7 @@ class GlobalSearchController extends \BaseController
         
         $query          = '{
             "from": '.$from.',
-            "size": 10,
+            "size": '.$size.',
             "fields": [
             "input",
             "location",
@@ -316,6 +317,7 @@ public function keywordSearch(){
     try {
 
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
+        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
         $key     =         Input::json()->get('key');
         $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
         $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
@@ -451,7 +453,7 @@ if(!empty($sort)){
 
 $query = '{
     "from": '.$from.',
-    "size":10,
+     "size": '.$size.',
     "aggs" :{
         '.$facetsvalue.'
     },
