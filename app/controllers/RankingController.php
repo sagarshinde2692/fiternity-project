@@ -56,7 +56,7 @@ class RankingController extends \BaseController {
     public function IndexRankMongo2Elastic(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $citykist      =    array(1,2,3,4);
+        $citykist      =    array(1,3,4,5);
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
                             ->with(array('city'=>function($query){$query->select('name');}))
                             ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -65,18 +65,18 @@ class RankingController extends \BaseController {
                             ->with('locationtags')
                             ->with('offerings')
                             ->with('facilities')
-                            //->with('services')
+                            ->with('services')
                             ->active()
                             ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
-                            //->whereIn('_id', array(3296))
+                            //->whereIn('_id', array(1623))
                             ->whereIn('city_id', $citykist)
                             ->take(10000)->skip(0)
                             ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
                             ->get();  
-                 
+      
         foreach ($items as $finderdocument) {           
                 $data = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);
@@ -123,12 +123,7 @@ class RankingController extends \BaseController {
                 $catval = evalBaseCategoryScore($finderdocument['category_id']);
                 $postdata['rankv1'] = $catval;
                 $postdata['rankv2'] = $score + $catval;
-                $postfields_data = json_encode($postdata); 
-                //echo pretty($postfields_data['rank']);exit;
-                //var_dump($postfields_data['rank']);exit;
-                //return $postfields_data;               
-                //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];
-                //$posturl = "";
+                $postfields_data = json_encode($postdata);                                             
                 $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
@@ -189,9 +184,9 @@ class RankingController extends \BaseController {
 
     public function evalPopularity($finderDocument = ''){
 
-        $reviews =  $finderDocument['reviews'];
-        $trials  =  $finderDocument['trialsBooked'];
-        $orders  =  $finderDocument['orders30days'];
+        $reviews =  isset($finderDocument['reviews']) ? $finderDocument['reviews'] : 0;
+        $trials  =  isset($finderDocument['trialsBooked']) ? $finderDocument['trialsBooked'] : 0;
+        $orders  =  isset($finderDocument['orders30days']) ? $finderDocument['orders30days'] : 0;
         $popularity = intval($finderDocument['popularity']);
 
         $popularityScore  =  (($this->normalizingFunction($this->reviews_min, $this->reviews_max, intval($reviews))) + ($this->normalizingFunction($this->trials_min, $this->trials_max, intval($trials)))

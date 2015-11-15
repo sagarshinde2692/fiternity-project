@@ -15,13 +15,22 @@ class HomeController extends BaseController {
 		if(!$home_by_city){
 			$categorytags = $locations = $popular_finders =	$recent_blogs =	array();
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
 			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->where('_id', '!=', 42)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 
-			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();						
+			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
+			if(!$homepage){
+				return $this->responseNotFound('homepage does not exist');
+			}
+
 			$str_finder_ids 		= 		$homepage['gym_finders'].",".$homepage['yoga_finders'].",".$homepage['zumba_finders'];
 			$finder_ids 			= 		array_map('intval', explode(",",$str_finder_ids));
 
@@ -72,6 +81,15 @@ class HomeController extends BaseController {
 
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
+			$feature_service_ids 	= 		array_map('intval', explode(",", $homepage['service_ids'] ));
+			$feature_services 		=		Service::active()
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+												->whereIn('_id', $feature_service_ids)
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);
+
 			$homedata 				= 	array('categorytags' => $categorytags,
 				'locations' => $locations,
 				'popular_finders' => $popular_finders,       
@@ -80,6 +98,7 @@ class HomeController extends BaseController {
 				'city_name' => $city_name,
 				'city_id' => $city_id,
 				'collections' => $collections,
+				'feature_services' => $feature_services,
 				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
 				);
 
@@ -96,10 +115,18 @@ class HomeController extends BaseController {
 		if(!$home_by_city){
 			$categorytags = $locations = $popular_finders = $footer_finders = $recent_blogs =	array();
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();						
+			if(!$homepage){
+				return $this->responseNotFound('homepage does not exist');
+			}
+
 			$str_finder_ids 		= 		$homepage['gym_finders'].",".$homepage['yoga_finders'].",".$homepage['zumba_finders'];
 			$finder_ids 			= 		array_map('intval', explode(",",$str_finder_ids));
 
@@ -181,9 +208,16 @@ class HomeController extends BaseController {
 		if(!$footer_by_city){
 			$footer_finders 			=		array();
 			$citydata 					=		City::where('slug', '=', $city)->first(array('name','slug'));
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
 			$city_name 					= 		$citydata['name'];
 			$city_id					= 		(int) $citydata['_id'];	
-			$homepage 					= 		Homepage::where('city_id', '=', $city_id)->get()->first();						
+			$homepage 					= 		Homepage::where('city_id', '=', $city_id)->get()->first();		
+			if(!$homepage){
+				return $this->responseNotFound('footer blocks does not exist');
+			}				
 
 			$footer_block1_ids 			= 		array_map('intval', explode(",", $homepage['footer_block1_ids'] ));
 			$footer_block2_ids 			= 		array_map('intval', explode(",", $homepage['footer_block2_ids'] ));
@@ -227,6 +261,11 @@ class HomeController extends BaseController {
 		if(!$location_by_city){
 			$categorytags = $locations  =	array();
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
@@ -354,6 +393,10 @@ class HomeController extends BaseController {
 		$collection_by_city_list = $cache ? Cache::tags('collection_by_city_list')->has($city) : false;
 		if(!$collection_by_city_list){
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
 			$city_id		= 	(int) $citydata['_id'];	
 			$collections 	= 	Findercollection::active()->where('city_id', '=', $city_id)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 
@@ -376,6 +419,11 @@ class HomeController extends BaseController {
 		$finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
 		if(!$finder_by_collection_list){
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+			
 			$city_id		= 	(int) $citydata['_id'];	
 			$collection 	= 	Findercollection::where('slug', '=', trim($slug))->where('city_id', '=', $city_id)->first(array());
 			$finder_ids 	= 	array_map('intval', explode(",", $collection['finder_ids']));
