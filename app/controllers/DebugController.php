@@ -459,7 +459,7 @@ class DebugController extends \BaseController {
 
 		public function updateOrderAmount(){
 
-			$order = Order::where('amount', 'exists', true)->where('_id', 6577)->orderBy('_id', 'desc')->get();
+			$order = Order::where('amount', 'exists', true)->orderBy('_id', 'desc')->get();
 
 			$hesh = array();
 
