@@ -456,4 +456,25 @@ class DebugController extends \BaseController {
 				$value->update($finderdata);
 			}
 		}
+
+		public function updateOrderAmount(){
+
+			$order = Order::where('amount', 'exists', true)->where('_id', 6577)->orderBy('_id', 'desc')->get();
+
+			$hesh = array();
+
+			foreach ($order as $value) {
+
+				$amout = (int) $value->amount;
+				$orderdata = array();
+				$hesh[$value->_id]['old'] = gettype($value->amount);
+				array_set($orderdata, 'amount', '' );
+				$value->update($orderdata);
+				array_set($orderdata, 'amount', $amout );
+				$value->update($orderdata);
+				$hesh[$value->_id]['new'] = gettype($value->amount);
+			}
+
+			return $hesh;
+		}
 	}
