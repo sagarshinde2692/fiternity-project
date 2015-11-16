@@ -5,6 +5,10 @@
  * Date: 23/7/15
  * Time: 1:09 PM
  */
+
+use App\Services\Translator;
+use App\Responsemodels\AutocompleteResponse;
+
 class GlobalSearchController extends \BaseController
 {
     protected $indice = "autosuggest_index_alllocations";
@@ -287,8 +291,7 @@ class GlobalSearchController extends \BaseController
         }
     }
 }';
-
-            //$this->elasticsearch_host.$this->elasticsearch_port.  
+             
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
     'port' => 8050,
@@ -297,9 +300,15 @@ $request = array(
     );    
 
 $search_results     =   es_curl_request($request);
-        //return $query;
+$search_results1    =   json_decode($search_results, true);
+
+$autocompleteresponse = Translator::translate_autocomplete($search_results1);
+$autocompleteresponse->from = $from;
+$autocompleteresponse->size = $size;
+$autocompleteresponse1 = json_encode($autocompleteresponse, true);
+
 $response       =   [
-'search_results' => json_decode($search_results,true)];
+'search_results' => json_decode($autocompleteresponse1,true)];
 
 return Response::json($response);
 
