@@ -419,6 +419,7 @@ Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronC
 ##############################################################################
 /******************** Campaign SECTION START HERE ***********************/
 Route::get('/getcampaigncategories/{campaignid}', 'CampaignsController@getcampaigncategories');
+Route::get('/featuredcampaign/{campaignid}', 'CampaignsController@featuredcampaign');
 Route::post('campaignsearch', 'CampaignsController@campaignsearch');
 /******************** Campaign SECTION END HERE ********************/
 ##############################################################################
