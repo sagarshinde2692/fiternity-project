@@ -38,6 +38,7 @@ Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
+Route::get('/offers/{from?}/{size?}', 'HomeController@getOffers');
 
 
 ##############################################################################
@@ -413,6 +414,15 @@ Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronC
 
 
 /******************** CRONS SECTION END HERE ********************/
+##############################################################################
+
+
+##############################################################################
+/******************** Campaign SECTION START HERE ***********************/
+Route::get('/getcampaigncategories/{campaignid}', 'CampaignsController@getcampaigncategories');
+Route::get('/featuredcampaign/{campaignid}', 'CampaignsController@featuredcampaign');
+Route::post('campaignsearch', 'CampaignsController@campaignsearch');
+/******************** Campaign SECTION END HERE ********************/
 ##############################################################################
 
 
