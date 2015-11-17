@@ -32,20 +32,19 @@ class GlobalSearchController extends \BaseController
 
     public function getautosuggestresults(){
 
-        $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
-        $string  =         Input::json()->get('key');
-        $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
-        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
+        $from    =         Input::json()->get('offset')['from'];
+        $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+        $string  =         Input::json()->get('keyword');
+        $city    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+        $lat     =         Input::json()->get('location')['lat'] ? Input::json()->get('location')['lat'] : '';
+        $lon     =         Input::json()->get('location')['long'] ? Input::json()->get('location')['long'] : '';
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-        $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
-
+        $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';      
         $query_filter = trim($geo_location_filter.$city_filter,',');
 
         $allkeys = explode(" ", $string);
-        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
+        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with ");
         $key1 = str_replace($stopwords, " ", $string);
         $keys   =         explode(" ", $key1); 
         $key2_string_query  = '';
@@ -179,7 +178,9 @@ class GlobalSearchController extends \BaseController
             "location",
             "identifier",
             "type",
-            "slug"
+            "slug",
+            "inputcat1",
+            "inputcat"        
             ],
             "query": {
                 "filtered": {
@@ -303,13 +304,12 @@ $request = array(
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
-$autocompleteresponse = Translator::translate_autocomplete($search_results1);
-$autocompleteresponse->from = $from;
-$autocompleteresponse->size = $size;
+$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city);
+$autocompleteresponse->meta->number_of_records = $size;
+$autocompleteresponse->meta->from = $from;
 $autocompleteresponse1 = json_encode($autocompleteresponse, true);
 
-$response       =   [
-'search_results' => json_decode($autocompleteresponse1,true)];
+$response       =   json_decode($autocompleteresponse1,true);
 
 return Response::json($response);
 
