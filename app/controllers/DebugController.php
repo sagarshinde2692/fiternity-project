@@ -494,7 +494,7 @@ class DebugController extends \BaseController {
 
 				foreach ($finders as $key => $value) 
 				{
-					$data .= $city_name.'","'.$value->title.'","'.$value->location->name.'","'.$value->category->name.'","('.$value->meta["title"].')","('.$value->meta["description"].');';		
+					$data .= $city_name.'|'.$value->title.'|'.$value->location->name.'|'.$value->category->name.'|'.$value->meta["title"].'|'.$value->meta["description"].')||';		
 				}			
 				
 			}
