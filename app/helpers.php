@@ -375,22 +375,26 @@ if (!function_exists(('get_elastic_autosuggest_doc'))){
 
     function get_elastic_autosuggest_doc($source='', $cluster){
 
+
         $data = $source;
         $postfields_data = array(
             'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
-            'virgininput'                   =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
+            'autosuggestvalue'              =>       ucwords($data['title'])." in ".ucwords($data['location']['name']),
             'inputv2'                       =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",                                                                       
             'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
             'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
             'inputloc1'                     =>      strtolower((isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :""),
             'inputloc2'                     =>      ($cluster == '' ? '': strtolower($cluster)),
             'inputcat'                      =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+            'inputcat1'                     =>      strtolower($data['category']['name']),
             'city'                          =>      (isset($data['city']) && $data['city'] != '') ? $data['city']['name'] :"",
             'location'                      =>      (isset($data['location']) && $data['location'] != '') ? $data['location']['name'] :"",
             'identifier'                    =>      $data['category']['name'],
+            'type'                          =>      'vendor',
             'slug'                          =>      $data['slug'],
             'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon'])
             );
+
 return $postfields_data;
 }
 }
@@ -568,7 +572,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
                 'fitternityno'                  =>      (isset($data['fitternityno'])) ? $data['fitternityno'] : '',
                 'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
-                'facilities_snow'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+                'facilities_snow'               =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
                 'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
                 'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
                 'location_snow'                 =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
@@ -576,7 +580,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'locationtags_snow'             =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
                 'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
                 'offerings'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
-                'offerings_snow'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+                'offerings_snow'                =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
                 'price_range'                   =>      (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
                 'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
                 'special_offer_title'           =>      (isset($data['special_offer_title']) && $data['special_offer_title'] != '') ? $data['special_offer_title'] : "",
@@ -784,4 +788,149 @@ return $postfields_data;
 
 }
 }
+
+if (!function_exists(('get_global_catloc_doc'))){
+
+    function get_global_catloc_doc($source='', $string, $city, $loc){
+
+        $data = $source;
+        $postfields_data = array(
+            'input'                         =>      $string,
+            'inputv2'                       =>      '',
+            'inputv3'                       =>      '',
+            'inputv4'                       =>      '',
+            'city'                          =>      $city,
+            'location'                      =>      '',
+            'identifier'                    =>      'catloc',
+            //'slug'                          =>      $city.'/'.,
+            );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
+
+    function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster){
+        
+        $postfields_data = array(
+            'input'                         =>      $string,
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      "",
+            'inputv4'                       =>      "",
+            'inputloc1'                     =>      strtolower($loc['name']),
+            'inputloc2'                     =>      $cluster,
+            'inputcat'                      =>      $cat['name'],
+            'inputcat1'                     =>      $cat['name'],
+            'city'                          =>      $city,
+            'location'                      =>      (isset($loc['name']) && $loc['name'] != '') ? $loc['name'] :"",
+            'identifier'                    =>      $cat['name'],            
+            'type'                          =>      'categorylocation',
+            'slug'                          =>      "",
+            'geolocation'                   =>      array('lat' => 0.0,'lon' => 0.0)
+            );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_autosuggest_catfac_doc'))){
+
+    function get_elastic_autosuggest_catfac_doc($cat, $fac, $string, $city){
+      
+        $postfields_data = array(
+            'input'                         =>      $cat['name'],
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      "",
+            'inputv4'                       =>      strtolower($fac),
+            'inputloc1'                     =>      "",
+            'inputloc2'                     =>      "",
+            'inputcat'                      =>      $cat['name'],
+            'inputcat1'                     =>      $cat['name'],
+            'city'                          =>      $city,
+            'location'                      =>      "",
+            'identifier'                    =>      $cat['name'],
+            'type'                          =>      'categoryfacility',
+            'slug'                          =>      "",
+            'geolocation'                   =>      array('lat' => 0,'lon' => 0)
+            );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_autosuggest_catoffer_doc'))){
+
+    function get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $city){
+       
+        $postfields_data = array(
+            'input'                         =>      $cat['name'],
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      $off['name'],
+            'inputv4'                       =>      "",
+            'inputloc1'                     =>      "",
+            'inputloc2'                     =>      "",
+            'inputcat'                      =>      $cat['name'],
+            'inputcat1'                     =>      $cat['name'],
+            'city'                          =>      $city,
+            'location'                      =>      "",
+            'identifier'                    =>      $cat['name'],
+            'type'                          =>      'categoryoffering',
+            'slug'                          =>      "",
+            'geolocation'                   =>      array('lat' => 0,'lon' => 0)
+            );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
+
+    function get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $city, $cluster){
+       
+        $postfields_data = array(
+            'input'                         =>      $cat['name'],
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      strtolower($off['name']),
+            'inputv4'                       =>      "",
+            'inputloc1'                     =>      strtolower($loc['name']),
+            'inputloc2'                     =>      $cluster,
+            'inputcat'                      =>      $cat['name'],
+            'inputcat1'                     =>      $cat['name'],
+            'city'                          =>      $city,
+            'location'                      =>      strtolower($loc['name']),
+            'identifier'                    =>      $cat['name'],
+            'type'                          =>      'categorylocationoffering',
+            'slug'                          =>      "",
+            'geolocation'                   =>      array('lat' => 0,'lon' => 0)
+            );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_autosuggest_catlocfac_doc'))){
+
+    function get_elastic_autosuggest_catlocfac_doc($cat, $fac, $loc, $string, $city, $cluster){
+       
+        $postfields_data = array(
+            'input'                         =>      $cat['name'],
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      "",
+            'inputv4'                       =>      strtolower($fac),
+            'inputloc1'                     =>      strtolower($loc['name']),
+            'inputloc2'                     =>      $cluster,
+            'inputcat'                      =>      $cat['name'],
+            'inputcat1'                     =>      $cat['name'],
+            'city'                          =>      $city,
+            'location'                      =>      strtolower($loc['name']),
+            'identifier'                    =>      $cat['name'],
+            'type'                          =>      'categorylocationfacilities',
+            'slug'                          =>      "",
+            'geolocation'                   =>      array('lat' => 0,'lon' => 0)
+            );
+        return $postfields_data;
+    }
+}
+
 ?>

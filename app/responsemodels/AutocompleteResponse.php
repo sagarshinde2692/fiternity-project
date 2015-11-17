@@ -5,25 +5,35 @@ class AutocompleteResponse {
 	public  function __construct(){
 		$this->results = array();		
 	}
-
-	public $total;
+	
 	public $results;
-	public $status;
-	public $size;
-	public $from;
+	public $meta;
 
 }
 
 class AutocompleteResult{
 
 	public function __construct(){
+		$this->object = new Autoobject();		
+	}
+
+	public $keyword;
+	public $object;
+	public $object_type;
+	
+}
+
+class Autoobject {
+
+	public function __construct(){		
 		//empty constructor
 	}
 
-	public $name;
-	public $location;
-	public $type;
+	public $id;
 	public $slug;
+	public $location;
+	public $category;
+	public $tag;
 }
 
 ?>
