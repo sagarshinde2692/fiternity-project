@@ -20,7 +20,7 @@ class AutocompleteResult{
 		//empty constructor
 	}
 
-	public $name;
+	public $autosuggestvalue;
 	public $location;
 	public $type;
 	public $slug;

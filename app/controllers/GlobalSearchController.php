@@ -175,9 +175,10 @@ class GlobalSearchController extends \BaseController
             "from": '.$from.',
             "size": '.$size.',
             "fields": [
-            "input",
+            "autosuggestvalue",
             "location",
             "identifier",
+            "type",
             "slug"
             ],
             "query": {
@@ -266,7 +267,7 @@ class GlobalSearchController extends \BaseController
                          "filter": {
                             "query": {
                                 "bool": {
-                                    "should": [     
+                                    "should": [
 
                                     {
                                         "query_string": {

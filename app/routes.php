@@ -199,7 +199,7 @@ Route::post('ratcardsearch', 'SearchServicesController@getRatecards');
 Route::post('getnearbytrials', 'SearchServicesController@geoLocationService');
 Route::post('getrankedfinder', 'RankingSearchController@getRankedFinderResults');
 Route::post('getfindercategory', 'RankingController@getFinderCategory');
-Route::post('getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+Route::post('search/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
 Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities');
 Route::post('getcategoryofferingsv2', 'RankingSearchController@CategoryAmenitiesv2');
 Route::post('getcategories', 'RankingSearchController@getcategories');
@@ -419,3 +419,11 @@ Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronC
 ##############################################################################
 /******************** SECURITY SECTION END HERE *******************************/
 
+##################################################################################################
+/*******************  GLOBALSEARCH BULK PUSH HERE ************************************************/
+
+Route::get('pushcategorylocations', 'GlobalPushController@pushcategorylocations');
+Route::get('pushfinders', 'GlobalPushController@pushFinders');
+
+/******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
+#####################################################################################################

@@ -16,14 +16,13 @@ class Translator {
 			$autcomplete_response->status = 400;
 			return $autcomplete_response;
 		}
-		else{
-			$autcomplete_response->status = 200;			
+		else{					
 			$autcomplete_response->total = $es_autocomplete_response['hits']['total'];
 			foreach ($es_autocomplete_response['hits']['hits'] as $value) {
-				$automodel = new AutocompleteResult();				
-				$automodel->name = $value['fields']['input'][0];
+				$automodel = new AutocompleteResult();					
+				$automodel->autosuggestvalue = $value['fields']['autosuggestvalue'][0];
 				$automodel->location = $value['fields']['location'][0];
-				$automodel->type = $value['fields']['identifier'][0];
+				$automodel->type = $value['fields']['type'][0];
 				$automodel->slug = $value['fields']['slug'][0];
 				array_push($autcomplete_response->results, $automodel);				
 			}			
