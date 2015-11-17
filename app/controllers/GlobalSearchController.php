@@ -5,6 +5,10 @@
  * Date: 23/7/15
  * Time: 1:09 PM
  */
+
+use App\Services\Translator;
+use App\Responsemodels\AutocompleteResponse;
+
 class GlobalSearchController extends \BaseController
 {
     protected $indice = "autosuggest_index_alllocations";
@@ -28,20 +32,19 @@ class GlobalSearchController extends \BaseController
 
     public function getautosuggestresults(){
 
-        $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
-        $string  =         Input::json()->get('key');
-        $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
-        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
+        $from    =         Input::json()->get('offset')['from'];
+        $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+        $string  =         Input::json()->get('keyword');
+        $city    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+        $lat     =         Input::json()->get('location')['lat'] ? Input::json()->get('location')['lat'] : '';
+        $lon     =         Input::json()->get('location')['long'] ? Input::json()->get('location')['long'] : '';
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-        $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
-
+        $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';      
         $query_filter = trim($geo_location_filter.$city_filter,',');
 
         $allkeys = explode(" ", $string);
-        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
+        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with ");
         $key1 = str_replace($stopwords, " ", $string);
         $keys   =         explode(" ", $key1); 
         $key2_string_query  = '';
@@ -171,10 +174,13 @@ class GlobalSearchController extends \BaseController
             "from": '.$from.',
             "size": '.$size.',
             "fields": [
-            "input",
+            "autosuggestvalue",
             "location",
             "identifier",
-            "slug"
+            "type",
+            "slug",
+            "inputcat1",
+            "inputcat"        
             ],
             "query": {
                 "filtered": {
@@ -238,7 +244,7 @@ class GlobalSearchController extends \BaseController
                         "filter": {
                             "bool": {
                                 "must": [
-                                    '.$query_filter.'
+                                '.$query_filter.'
                                 ]
                             }
                         },
@@ -259,36 +265,35 @@ class GlobalSearchController extends \BaseController
                           "boost_factor": 11
                       },
                       {
-                       "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [     
+                         "filter": {
+                            "query": {
+                                "bool": {
+                                    "should": [
 
-                                {
-                                    "query_string": {
-                                        "fields": [
-                                        "input"                                                                                    
-                                        ],
-                                        "query": "'.$keys[0].'*",
-                                        "fuzziness": 0,
-                                        "fuzzy_prefix_length": 0
-                                    }
-                                }'.$key2_input_query.$key3_input_query.'
-                                ]
+                                    {
+                                        "query_string": {
+                                            "fields": [
+                                            "input"                                                                                    
+                                            ],
+                                            "query": "'.$keys[0].'*",
+                                            "fuzziness": 0,
+                                            "fuzzy_prefix_length": 0
+                                        }
+                                    }'.$key2_input_query.$key3_input_query.'
+                                    ]
+                                }
                             }
-                        }
-                    },
-                    "boost_factor": 6
+                        },
+                        "boost_factor": 6
+                    }
+                    ],
+                    "boost_mode": "sum"
                 }
-                ],
-                "boost_mode": "sum"
             }
         }
     }
-}
 }';
-
-            //$this->elasticsearch_host.$this->elasticsearch_port.  
+             
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
     'port' => 8050,
@@ -297,9 +302,14 @@ $request = array(
     );    
 
 $search_results     =   es_curl_request($request);
-        //return $query;
-$response       =   [
-'search_results' => json_decode($search_results,true)];
+$search_results1    =   json_decode($search_results, true);
+
+$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city);
+$autocompleteresponse->meta->number_of_records = $size;
+$autocompleteresponse->meta->from = $from;
+$autocompleteresponse1 = json_encode($autocompleteresponse, true);
+
+$response       =   json_decode($autocompleteresponse1,true);
 
 return Response::json($response);
 
@@ -316,36 +326,44 @@ public function keywordSearch(){
 
     try {
 
-        $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
-        $key     =         Input::json()->get('key');
-        $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
-        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
-        $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
-        $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
+    $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
+    $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
+    $key     =         Input::json()->get('key');
+    $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
+    $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
+    $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
+    $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
+    $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
 
-        $sort_clause = '';
+    $sort_clause = '';
 
-        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-        $city_filter = '{"term" : { "city" : "'.$city.'" } },';
-        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
-        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
-        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';   
-        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
-        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+    $city_filter = '{"term" : { "city" : "'.$city.'" } },';
+    $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+    $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';   
+    $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+    $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
 
-        $must_filtervalue = trim($city_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter,',');
-
+    $must_filtervalue = trim($city_filter,',');
+    $must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter,',');
     $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
-
+    $mustfilter_post = '"must": ['.$must_filtervalue_post.']';
     $filtervalue = trim($mustfilter,',');
+    $filtervalue_post = trim($mustfilter_post,',');
 
     if($mustfilter != ''){
         $filters = '"filter": {
             "bool" : {'.$filtervalue.'}
         },"_cache" : true';
     }
+
+    if($mustfilter_post != ''){
+        $filters_post = ',"post_filter": {
+            "bool" : {'.$filtervalue_post.'}
+        }';
+    }
+
 
     $location_facets_filter = trim($geo_location_filter.$category_filter,',');
     $facilities_facets_filter = trim($regions_filter.$geo_location_filter.$category_filter, ',');
@@ -443,17 +461,17 @@ $string = str_replace($stopwords, " ", $key);
 
 if(!empty($sort)){
     $sort_clause = ',"sort": [
-      {
+    {
         "'.$sort.'": {
           "order": "'.$order.'"
-        }
       }
-    ]';
+  }
+  ]';
 }
 
 $query = '{
     "from": '.$from.',
-     "size": '.$size.',
+    "size": '.$size.',
     "aggs" :{
         '.$facetsvalue.'
     },
@@ -559,7 +577,7 @@ $query = '{
                             }
                         }
                     },
-                    "boost_factor": 12
+                    "boost_factor": 50
                 },
                 {
                     "filter": {
@@ -616,9 +634,10 @@ $query = '{
         },
         '.$filters.'
     }
-}'.$sort_clause.'
+}'.$filters_post.$sort_clause.'
 }';
 
+return $query;exit;
 
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
@@ -634,7 +653,7 @@ $response       =   [
 return Response::json($response);
 }
 catch(Exception $e){
-     throw $e;
-      }
-   }
+   throw $e;
+}
+}
 }

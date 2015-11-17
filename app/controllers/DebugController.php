@@ -456,4 +456,50 @@ class DebugController extends \BaseController {
 				$value->update($finderdata);
 			}
 		}
+
+		public function updateOrderAmount(){
+
+			$order = Order::where('amount', 'exists', true)->orderBy('_id', 'desc')->get();
+
+			$hesh = array();
+
+			foreach ($order as $value) {
+
+				$amout = (int) $value->amount;
+				$orderdata = array();
+				$hesh[$value->_id]['old'] = gettype($value->amount);
+				array_set($orderdata, 'amount', '' );
+				$value->update($orderdata);
+				array_set($orderdata, 'amount', $amout );
+				$value->update($orderdata);
+				$hesh[$value->_id]['new'] = gettype($value->amount);
+			}
+
+			return $hesh;
+		}
+
+		public function vendorStatsMeta(){
+
+			$cities = array('1'=>'Mumbai','2'=>'Pune','3'=>'Banglore','4'=>'Delhi','8'=>'Gurgaon');
+
+			$data = '';
+
+			foreach ($cities as $city_id => $city_name) {
+
+				$finders = Finder::active()->where('city_id',(int)$city_id)
+							->with(array('category'=>function($query){$query->select('_id','name','slug');}))	 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->orderBy('_id', 'desc')
+							->get();
+
+				foreach ($finders as $key => $value) 
+				{
+					$data .= $city_name.'","'.$value->title.'","'.$value->location->name.'","'.$value->category->name.'","('.$value->meta["title"].')","('.$value->meta["description"].');';		
+				}			
+				
+			}
+
+			return $data;
+		}
+
 	}
