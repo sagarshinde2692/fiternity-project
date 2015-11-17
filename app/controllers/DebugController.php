@@ -477,4 +477,29 @@ class DebugController extends \BaseController {
 
 			return $hesh;
 		}
+
+		public function vendorStatsMeta(){
+
+			$cities = array('1'=>'Mumbai','2'=>'Pune','3'=>'Banglore','4'=>'Delhi','8'=>'Gurgaon');
+
+			$data = '';
+
+			foreach ($cities as $city_id => $city_name) {
+
+				$finders = Finder::active()->where('city_id',(int)$city_id)
+							->with(array('category'=>function($query){$query->select('_id','name','slug');}))	 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->orderBy('_id', 'desc')
+							->get();
+
+				foreach ($finders as $key => $value) 
+				{
+					$data .= $city_name.'","'.$value->title.'","'.$value->location->name.'","'.$value->category->name.'","('.$value->meta["title"].')","('.$value->meta["description"].');';		
+				}			
+				
+			}
+
+			return $data;
+		}
+
 	}
