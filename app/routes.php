@@ -422,11 +422,13 @@ Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronC
 ##################################################################################################
 /*******************  GLOBALSEARCH BULK PUSH HERE ************************************************/
 
+Route::get('buildglobalindex', 'GlobalPushController@buildglobalindex');
 Route::get('pushcategorylocations', 'GlobalPushController@pushcategorylocations');
 Route::get('pushfinders', 'GlobalPushController@pushFinders');
 Route::get('pushcategorywithfacilities', 'GlobalPushController@pushcategorywithfacilities');
 Route::get('pushcategoryoffering', 'GlobalPushController@pushcategoryoffering');
 Route::get('pushcategoryofferinglocation', 'GlobalPushController@pushcategoryofferinglocation');
 Route::get('pushcategoryfacilitieslocation', 'GlobalPushController@pushcategoryfacilitieslocation');
+
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
