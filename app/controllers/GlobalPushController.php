@@ -4,7 +4,7 @@
 
 class GlobalPushController extends \BaseController
 {
-	protected $indice = "autosuggest_index_alllocations";
+	protected $indice = "autosuggest_index_alllocations1";
 	protected $type   = "autosuggestor";	
 	protected $elasticsearch_port = "";
 	protected $elasticsearch_default_index = "";
@@ -12,13 +12,13 @@ class GlobalPushController extends \BaseController
 	protected $elasticsearch_default_url = "";
 	protected $elasticsearch_host = "";
 	protected $citylist = array(1,2,3,4,8);
-
+	protected $citynames = array('1' => 'mumbai','2' => 'pune', '3' => 'bangalore', '4' => 'delhi', '8' => 'gurgaon');
 	public function __construct()
 	{
 		parent::__construct();		
 		$this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
 		$this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
-		$this->elasticsearch_url  = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations/autosuggestor/';
+		$this->elasticsearch_url  = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations1/autosuggestor/';
 	}
 
 	public function pushfinders(){
@@ -69,7 +69,7 @@ class GlobalPushController extends \BaseController
 		foreach ($this->citylist as $city) {
 			$categorytags = Findercategorytag::active()
 			->with('cities')
-			->where('cities', $city)
+			->where('cities', $city)			
 			->get();
 
 			$locationtags = Locationtag::where('cities', $city)
@@ -77,53 +77,122 @@ class GlobalPushController extends \BaseController
 
 			foreach ($categorytags as $cat) {
 				foreach ($locationtags as $loc) {	
-					$cluster = '';						
-					$string = $cat['name'].' in '.strtolower($loc['name']);					
-						$postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster);
-						$request = array('url' => $this->elasticsearch_url."C".$cat['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $string);
-						return $request;exit;
-						echo "<br>$posturl    ---  ".es_curl_request($request);					
-					}
-				}						   
+					$cluster = '';										
+					$string = ucwords($cat['name']).' in '.ucwords($loc['name']);					
+					$postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['city'], $cluster);
+					$postfields_data = json_encode($postdata);						
+					$request = array('url' => $this->elasticsearch_url."C".$cat['_id'].$loc['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);						
+					echo "<br>    ---  ".es_curl_request($request);					
+				}
+			}						   
 
-			}					
-		}
+		}					
+	}
 	
 
 	public function pushcategorywithfacilities(){
 		$facilitieslist = array('Free Trial', 'Group Classes', 'Locker and Shower Facility', 'Parking', 'Personal Training', 'Sunday Open');
 
-		foreach ($this->citylist as $city) {
+		foreach ($this->citylist as $key => $city) {			
+			$cityname = $this->citynames[strval($city)];
+
 			$categorytags = Findercategorytag::active()
 			->with('cities')
 			->where('cities', $city)
 			->get();
+			
 			foreach ($categorytags as $cat) {
-				foreach ($facilitieslist as $fal) {									
-					$string = $cat['name'].' with '.$fal;
-					$postdata =  get_elastic_autosuggest_catfac_doc($cat, $string);
-					$request = array('url' => $this->elasticsearch_url."CF".$cat['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $string);
-					return $request;exit;
-					echo "<br>$posturl    ---  ".es_curl_request($request);	
+				foreach ($facilitieslist as $key1 => $fal) {									
+					$string = ucwords($cat['name']).' with '.ucwords($fal);									
+					$postdata =  get_elastic_autosuggest_catfac_doc($cat, $fal, $string, $cityname);
+					$postfields_data = json_encode($postdata);					
+					$request = array('url' => $this->elasticsearch_url."CF".$cat['_id'].$key1, 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);		
+					echo "<br> ---  ".es_curl_request($request);	
 				}
 			}			
 		}
 	}
 
 	public function pushcategoryoffering(){
-		$categorytags = Findercategorytag::active()
-		->with('cities')
-		->where('cities', $city)
-		->get();
+		foreach ($this->citylist as $city) {
+			
+			$cityname = $this->citynames[strval($city)];
 
-		foreach ($categorytags as $cat) {
-			return $cat;exit;
-		// $categorytag_offerings = Findercategorytag::active()
-		//         ->where('slug', '=', url_slug(array($category)))
-		//         ->whereIn('cities',array($city_id))
-		//         ->with('offerings')
-		//         ->orderBy('ordering')
-		//         ->get(array('_id','name','offering_header','slug','status','offerings'));
+			$categorytag_offerings = Findercategorytag::active()				
+			->whereIn('cities',array($city))
+			->with('offerings')
+			->orderBy('ordering')
+			->get(array('_id','name','offering_header','slug','status','offerings'));
+
+			foreach ($categorytag_offerings as $cat) {
+				$offerings = $cat['offerings'];
+				foreach ($offerings as $off) {					
+					$string = ucwords($cat['name']).' with '.ucwords($off['name']);
+					$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname);					
+					$postfields_data = json_encode($postdata);					
+					$request = array('url' => $this->elasticsearch_url."CF".$cat['_id'].$off['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);		
+					echo "<br> ---  ".es_curl_request($request);					
+				}								
+			}
+		}
+	}
+
+	public function pushcategoryofferinglocation(){
+		foreach ($this->citylist as $city) {
+			
+			$cityname = $this->citynames[strval($city)];
+
+			$locationtags = Locationtag::where('cities', $city)
+			->get();
+
+			$categorytag_offerings = Findercategorytag::active()				
+			->whereIn('cities',array($city))
+			->with('offerings')
+			->orderBy('ordering')
+			->get(array('_id','name','offering_header','slug','status','offerings'));
+
+			foreach ($categorytag_offerings as $cat) {
+				$offerings = $cat['offerings'];
+				foreach ($offerings as $off) {	
+					foreach ($locationtags as $loc) {
+						$cluster = '';
+						$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);						
+						$postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster);			
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url."CLF".$cat['_id'].$off['_id'].$loc['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);	
+						echo "<br> ---  ".es_curl_request($request);					
+					}			
+				}					
+			}
+		}
+	}
+
+	public function pushcategoryfacilitieslocation(){
+		$facilitieslist = array('Free Trial', 'Group Classes', 'Locker and Shower Facility', 'Parking', 'Personal Training', 'Sunday Open');
+
+		foreach ($this->citylist as $key => $city) {			
+			$cityname = $this->citynames[strval($city)];
+
+			$locationtags = Locationtag::where('cities', $city)
+			->get();
+
+			$categorytags = Findercategorytag::active()
+			->with('cities')
+			->where('cities', $city)
+			->get();
+			
+			foreach ($categorytags as $cat) {
+				foreach ($facilitieslist as $key1 => $fal) {
+					foreach ($locationtags as $loc) {
+						$cluster ='';
+						$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($fal);														
+						$postdata =  get_elastic_autosuggest_catlocfac_doc($cat, $fal, $loc, $string, $cityname, $cluster);		
+						$postfields_data = json_encode($postdata);					
+						$request = array('url' => $this->elasticsearch_url."CFL".$cat['_id'].$loc['_id'].$key1, 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);	
+					}
+				}
+			}			
 		}
 	}
 }
