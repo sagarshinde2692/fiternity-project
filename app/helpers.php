@@ -609,7 +609,8 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'locationcluster_snow'          =>      $locationcluster,
                 'price_rangeval'                =>      $rangeval,
                 'servicelist'                   =>      $servicenamelist,
-                'show_offers'                   =>      $offer_counter
+                'show_offers'                   =>      $offer_counter,
+                'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0)
                 //'trialschedules'                =>      $trialdata,
                 );                
 $postfields_data['servicephotos'] = $picslist;
