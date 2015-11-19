@@ -211,6 +211,8 @@ Route::get('getservicecategories','ServiceRankingSearchController@getservicecate
 Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice');
 Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
 Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
+Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderResultsApp');
+
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################

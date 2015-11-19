@@ -6,6 +6,9 @@
  * Time: 7:41 PM
  */
 
+use App\Services\Translator;
+use App\Responsemodels\FinderresultResponse;
+
 class RankingSearchController extends \BaseController
 {
 
@@ -30,6 +33,7 @@ class RankingSearchController extends \BaseController
 
     public function getRankedFinderResults()
     {
+
         $searchParams = array();
         $facetssize =  $this->facetssize;
         $rankField = 'rankv2';
@@ -131,7 +135,6 @@ class RankingSearchController extends \BaseController
     },
     '.$sort.'
 }';
-     
 
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
@@ -193,7 +196,7 @@ public function CategoryAmenities()
         ->get(array('_id','name','offering_header','slug','status','offerings'));
     } 
     
-    
+
     $meta_title = $meta_description = $meta_keywords = '';
     if($category != ''){
         $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
@@ -243,7 +246,7 @@ public function CategoryAmenitiesv2()
 {
     $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
     $city_id     =  (Input::json()->get('city')) ? Input::json()->get('city') : 1;
-       
+
     $categorytag_offerings = '';
     if($category != '')
     {
@@ -275,34 +278,34 @@ public function CategoryAmenitiesv2()
 }
 
 public function getRankedFinderResultsMobile()
-    {
-        $searchParams = array();
-        $facetssize =  $this->facetssize;
-        $rankField = 'rankv2';
-        $type = "finder";
-        $filters = "";
-        $from =  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
-        $size =  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;
-        $location = (Input::json()->get('location')) ? Input::json()->get('location') : 'mumbai';
-        $orderfield  = (Input::json()->get('sort')) ? Input::json()->get('sort') : '';
-        $order = (Input::json()->get('order')) ? Input::json()->get('order') : '';
-        $lat = (Input::json()->get('lat')) ? Input::json()->get('lat') : 0 ;
-        $lon = (Input::json()->get('lon')) ? Input::json()->get('lon') : 0 ; 
+{
+    $searchParams = array();
+    $facetssize =  $this->facetssize;
+    $rankField = 'rankv2';
+    $type = "finder";
+    $filters = "";
+    $from =  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
+    $size =  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;
+    $location = (Input::json()->get('location')) ? Input::json()->get('location') : 'mumbai';
+    $orderfield  = (Input::json()->get('sort')) ? Input::json()->get('sort') : '';
+    $order = (Input::json()->get('order')) ? Input::json()->get('order') : '';
+    $lat = (Input::json()->get('lat')) ? Input::json()->get('lat') : 0 ;
+    $lon = (Input::json()->get('lon')) ? Input::json()->get('lon') : 0 ; 
         //input filters
-        $category = Input::json()->get('category');
+    $category = Input::json()->get('category');
 
 
 
-        $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
-        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
-        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
-        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
-        $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
-        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
-        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+    $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+    $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+    $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+    $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+    $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+    $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
 
-        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+    $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+    $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -371,25 +374,24 @@ public function getRankedFinderResultsMobile()
     "fields": ["_source"],
     "script_fields":{
         "distance": {
-              "params": {
-                "lat": '.$lat.',
-                "lon": '.$lon.'
-              },
-      "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
-        }
-    },
-    "from": '.$from.',
-    "size": '.$size.',
-    "aggs": {'.$facetsvalue.'},
-    "query": {
+          "params": {
+            "lat": '.$lat.',
+            "lon": '.$lon.'
+        },
+        "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
+    }
+},
+"from": '.$from.',
+"size": '.$size.',
+"aggs": {'.$facetsvalue.'},
+"query": {
 
-        "filtered": {
-            '.$filters.'
-        }
-    },
-    '.$sort.'
+    "filtered": {
+        '.$filters.'
+    }
+},
+'.$sort.'
 }';
-      // return $body;
 
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
@@ -404,6 +406,139 @@ $search_results     =   es_curl_request($request);
 $response       =   [
 
 'search_results' => json_decode($search_results,true)];
+
+return Response::json($response);
+
+}
+
+public function getRankedFinderResultsApp()
+{
+   
+    $searchParams = array();
+    $facetssize =  $this->facetssize;
+    $rankField = 'rankv2';
+    $type = "finder";
+    $filters = "";
+    $from    =         Input::json()->get('offset')['from'];
+    $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+    $location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+    $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
+    $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
+    $city    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+    $locat = Input::json()->get('location');
+    $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
+    $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
+        //input filters
+
+    $category = Input::json()->get('category');
+
+    //return Input::json()->get('offset')['from'];
+
+    $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+    $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
+    $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
+    $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
+    
+
+    $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+    $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+        $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
+        $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+
+        $filtervalue = trim($shouldfilter.$mustfilter,',');
+
+        if($orderfield == 'popularity')
+        {
+            if($category_filter != '') {
+                $factor = evalBaseCategoryScore($category);
+                $sort = '"sort":
+                {"_script" : {
+                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+                    "type" : "number",
+                    "params" : {
+
+                        "factor" : 11
+
+                    },
+                    "order" : "' . $order . '"
+                }}';
+            }
+            else{
+                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+            }
+
+        }
+        else
+        {
+            $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
+        }
+        if($shouldfilter != '' || $mustfilter != ''){
+            $filters = '"filter": {
+                "bool" : {'.$filtervalue.'}
+            },"_cache" : true';
+        }
+
+        $budgets_facets = '"budget": {"terms": {"field": "price_range","min_doc_count":0,"size":"500","order":{"_term": "asc"}}},';
+        $regions_facets = '"loccluster": {
+            "terms": {
+                "field": "locationcluster",
+                "min_doc_count":1
+                
+            },"aggs": {
+              "region": {
+                "terms": {
+                    "field": "location",
+                    "min_doc_count":1,
+                    "size":"500",
+                    "order": {
+                      "_term": "asc"
+                  }
+                  
+              }
+          }
+      }
+  },';
+
+  $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+  $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+  $facilities_facets = '"facilities": {"terms": {"field": "facilities","include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+  $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
+
+  $body = '{
+    "from": '.$from.',
+    "size": '.$size.',
+    "aggs": {'.$facetsvalue.'},
+    "query": {
+
+        "filtered": {
+            '.$filters.'
+        }
+    },
+    '.$sort.'
+}';
+
+$request = array(
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+    'port' => 8050,
+    'method' => 'POST',
+    'postfields' => $body
+    );
+
+$search_results     =   es_curl_request($request);
+$search_results1    =   json_decode($search_results, true);
+
+$searchresulteresponse = Translator::translate_searchresults($search_results1);
+$searchresulteresponse->meta->number_of_records = $size;
+$searchresulteresponse->meta->from = $from;
+$searchresulteresponse->meta->sortfield = $orderfield;
+$searchresulteresponse->meta->sortorder = $order;
+
+$searchresulteresponse1 = json_encode($searchresulteresponse, true);
+
+$response       =   json_decode($searchresulteresponse1,true);
 
 return Response::json($response);
 

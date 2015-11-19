@@ -541,12 +541,17 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 }
             }
         }
+        $offer_counter = 0;
         $servicenamelist = array();
         if(isset($data['services']) && !empty($data['services'])){
             foreach ($data['services'] as $serv) {
                 array_push($servicenamelist, strtolower($serv['name']));
+                if(isset($serv['show_in_offers'])){
+                    ++$offer_counter;
+                }
             }
         }
+
         $info_service_list = array();
         if(isset($data['info']['service'])&& !empty($data['info']['service'])){
             $key1 = str_replace(array("<ul><li>","</li></ul>"), " ", $data['info']['service']);
@@ -603,7 +608,9 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'locationcluster'               =>      $locationcluster,
                 'locationcluster_snow'          =>      $locationcluster,
                 'price_rangeval'                =>      $rangeval,
-                'servicelist'                   =>      $servicenamelist
+                'servicelist'                   =>      $servicenamelist,
+                'show_offers'                   =>      $offer_counter,
+                'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0)
                 //'trialschedules'                =>      $trialdata,
                 );                
 $postfields_data['servicephotos'] = $picslist;
