@@ -459,6 +459,17 @@ class OrderController extends \BaseController {
 
 
 
+	public function getOrderDetail($orderid){
 
+		$orderdata 		=	Order::find(intval($orderid));
+
+		if(!$orderdata){
+			return $this->responseNotFound('Order does not exist');
+		}
+
+		$responsedata 	= ['orderdata' => $orderdata,  'message' => 'Order Detial'];
+		return Response::json($responsedata, 200);
+
+	}
 
 }
