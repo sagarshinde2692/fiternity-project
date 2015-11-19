@@ -413,7 +413,7 @@ return Response::json($response);
 
 public function getRankedFinderResultsApp()
 {
-    
+   
     $searchParams = array();
     $facetssize =  $this->facetssize;
     $rankField = 'rankv2';
@@ -425,19 +425,23 @@ public function getRankedFinderResultsApp()
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
     $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
     $city    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
-    $lat     =         Input::json()->get('location')['lat'] ? Input::json()->get('location')['lat'] : '';
-    $lon     =         Input::json()->get('location')['long'] ? Input::json()->get('location')['long'] : '';
+    $locat = Input::json()->get('location');
+    $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
+    $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
         //input filters
 
     $category = Input::json()->get('category');
 
+    //return Input::json()->get('offset')['from'];
+
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
-    $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
-    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
-    $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
-    $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
-    $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
-    $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+    $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
+    $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
+    $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
+    
 
     $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
     $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
@@ -445,8 +449,6 @@ public function getRankedFinderResultsApp()
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
         $filtervalue = trim($shouldfilter.$mustfilter,',');
-
-
 
         if($orderfield == 'popularity')
         {
