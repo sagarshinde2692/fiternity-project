@@ -851,7 +851,7 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$decodedToken = $this->customerTokenDecode($jwt_token);
-		$variable = ['name','email','contact_no','location'];
+		$variable = ['name','email','contact_no','location','sex','shipping_address','billing_address','address','interest'];
 
 		$data = Input::json()->all();
 		$validator = Validator::make($data, Customer::$update_rules);

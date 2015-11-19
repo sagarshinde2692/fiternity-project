@@ -247,6 +247,7 @@ Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'service
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
+Route::get('booktrials/cancel/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
 
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/
 ##############################################################################
