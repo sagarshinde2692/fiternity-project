@@ -666,17 +666,12 @@ class HomeController extends BaseController {
 		}
 		$city_name 		= 	$citydata['name'];
 		$city_id		= 	(int) $citydata['_id'];	
-
-		$from 					=	($from != '') ? intval($from) : 0;
-		$size 					=	($size != '') ? intval($size) : 10;
-
-		$offertabs 				= 		Offer::where('city_id', '=', $city_id)->get()->first();			
+		$offertabs 		= 	Offer::where('city_id', '=', $city_id)->get();			
 		if(!$offertabs){
 			return $this->responseNotFound('offertabs does not exist');
 		}
 			
 		$responsedata 	= ['offertabs' => $offertabs,  'message' => 'List for offertabs'];
-
 		return Response::json($responsedata, 200);
 
 	}
