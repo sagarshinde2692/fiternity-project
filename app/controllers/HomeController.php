@@ -82,13 +82,43 @@ class HomeController extends BaseController {
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
 			$feature_service_ids 	= 		array_map('intval', explode(",", $homepage['service_ids'] ));
-			$feature_services 		=		Service::active()
-												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->whereIn('_id', $feature_service_ids)
-												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);
+			$services 		=		Service::active()
+			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+			->whereIn('_id', $feature_service_ids)
+			->get();
+
+			$feature_services = [];
+			foreach ($services as $key => $value) {
+				$item  	   	=  	(!is_array($value)) ? $value->toArray() : $value;
+				$data = [
+				'_id' => $item['_id'],
+				'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+				'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+				'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+				'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+				'show_in_offers' => (isset($item['show_in_offers']) && $item['show_in_offers'] != '') ? strtolower($item['show_in_offers']) : "",
+				'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
+				'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
+				'location' => (isset($item['location']) && !empty($item['location'])) ? array_only( $item['location'] , array('_id', 'name', 'slug') ) : "",
+				'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
+				'subcategory' => (isset($item['subcategory']) && !empty($item['subcategory'])) ? array_only( $item['subcategory'] , array('_id', 'name', 'slug') ) : "",
+				];
+
+				if(isset($item['show_in_offers']) && $item['show_in_offers'] == '1' && isset($item['service_ratecards']) && !empty($item['service_ratecards'])){
+					$ratecards = [];
+					foreach ($item['service_ratecards'] as $key => $v) {
+						if($v['featured_offer'] == '1'){
+							array_push($ratecards, $v);
+						}
+					}
+					$data['service_ratecards'] =  $ratecards;
+				}else{
+					$data['service_ratecards'] =  (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards']  : [];
+				}
+			}
 
 			$homedata 				= 	array('categorytags' => $categorytags,
 				'locations' => $locations,
@@ -346,16 +376,12 @@ class HomeController extends BaseController {
 
 	public function specialoffers_finder(){
 		$finders		= 		array();
-
 		$findersrs 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 		->where('finder_type', '=', 1)
 		->where('status', '=', '1')
-														//->whereIn('_id', array(570))
 		->get(array('_id','title','slug','category_id','category','special_offer_title'))
-														//->take(1)
 		->toArray();
-
 
 		foreach ($findersrs as $key => $value) {
 			$postdata = array(
@@ -366,11 +392,8 @@ class HomeController extends BaseController {
 				'special_offer_title' => (isset($value['special_offer_title']) && $value['special_offer_title'] != '') ? $value['special_offer_title'] : ""
 				);
 			array_push($finders, $postdata);         
-
 		}
-
 		return Response::json($finders);
-
 	}
 
 	public function yfc_finders(){
@@ -382,7 +405,6 @@ class HomeController extends BaseController {
 		->remember(Config::get('app.cachetime'))
 		->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
 		->toArray();
-
 		return Response::json($finders);										
 	}
 
@@ -541,8 +563,6 @@ class HomeController extends BaseController {
 		}
 
 		$collection_finders = $query->remember(Config::get('app.cachetime'))->get();
-
-
 		$landingfinders = [];
 		foreach ($collection_finders as $key => $value) {
 			$landingdata = $this->transformLandingpageFinder($value);
@@ -582,6 +602,86 @@ class HomeController extends BaseController {
 
 
 	}
+
+
+	public function getOffers($city = 'mumbai', $from = '', $size = ''){
+
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 		= 	$citydata['name'];
+		$city_id		= 	(int) $citydata['_id'];	
+
+		$from 					=	($from != '') ? intval($from) : 0;
+		$size 					=	($size != '') ? intval($size) : 10;
+		$offers_colleciton 		= 	Service::active()->with('finder')->with('category')->with('location')->with('subcategory')->where('finder_id', 'exists', true)->where('city_id', $city_id)->where('show_in_offers','1')->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		
+		$offers = [];
+		foreach ($offers_colleciton as $key => $value) {
+			$offerdata = $this->transformOffer($value);
+			array_push($offers, $offerdata);
+		}		
+		$responsedata 	= ['offers' => $offers,  'message' => 'List for offers'];
+
+		return Response::json($responsedata, 200);
+
+	}
+
+
+
+	private function transformOffer($service){
+
+		$item  	   	=  	(!is_array($service)) ? $service->toArray() : $service;
+
+		$data = [
+		'_id' => $item['_id'],
+		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+		'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
+		'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
+		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+		'show_in_offers' => (isset($item['show_in_offers']) && $item['show_in_offers'] != '') ? strtolower($item['show_in_offers']) : "",
+		'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
+		'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
+		'service_ratecards' => (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards']  : "",
+		'location' => (isset($item['location']) && !empty($item['location'])) ? array_only( $item['location'] , array('_id', 'name', 'slug') ) : "",
+		'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
+		'subcategory' => (isset($item['subcategory']) && !empty($item['subcategory'])) ? array_only( $item['subcategory'] , array('_id', 'name', 'slug') ) : "",
+		];
+
+		// echo "<pre>";print_r($data);exit();
+		return $data;
+
+
+	}
+
+
+	public function getOffersTabs($city = 'mumbai'){
+
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 		= 	$citydata['name'];
+		$city_id		= 	(int) $citydata['_id'];	
+		$offertabs 		= 	Offer::where('city_id', '=', $city_id)->get();			
+		if(!$offertabs){
+			return $this->responseNotFound('offertabs does not exist');
+		}
+			
+		$responsedata 	= ['offertabs' => $offertabs,  'message' => 'List for offertabs'];
+		return Response::json($responsedata, 200);
+
+	}
+
+
+
+
+
+
+
 
 
 }																																																																																																																																																																																																																																																																										

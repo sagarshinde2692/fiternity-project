@@ -38,6 +38,8 @@ Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
+Route::get('/offers/{city?}{from?}/{size?}', 'HomeController@getOffers');
+Route::get('/offertabs/{city?}', 'HomeController@getOffersTabs');
 
 
 ##############################################################################
@@ -82,6 +84,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
+
+Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
 
 Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
 Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
@@ -199,7 +203,7 @@ Route::post('ratcardsearch', 'SearchServicesController@getRatecards');
 Route::post('getnearbytrials', 'SearchServicesController@geoLocationService');
 Route::post('getrankedfinder', 'RankingSearchController@getRankedFinderResults');
 Route::post('getfindercategory', 'RankingController@getFinderCategory');
-Route::post('getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+Route::post('search/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
 Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities');
 Route::post('getcategoryofferingsv2', 'RankingSearchController@CategoryAmenitiesv2');
 Route::post('getcategories', 'RankingSearchController@getcategories');
@@ -209,6 +213,8 @@ Route::get('getservicecategories','ServiceRankingSearchController@getservicecate
 Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice');
 Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
 Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
+Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderResultsApp');
+
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
@@ -238,8 +244,8 @@ Route::get('booktrial/{finderid?}/{date?}', array('as' => 'finders.getbooktrial'
 Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
 Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
 Route::post('manual2ndbooktrial', array('as' => 'finders.storemanual2ndbooktrial','uses' => 'SchedulebooktrialsController@manual2ndBookTrial'));
-
 Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+Route::post('rescheduledbooktrial', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
@@ -430,4 +436,16 @@ Route::post('campaign/registercustomer', 'CampaignsController@registercustomer')
 ##############################################################################
 /******************** SECURITY SECTION END HERE *******************************/
 
+##################################################################################################
+/*******************  GLOBALSEARCH BULK PUSH HERE ************************************************/
 
+Route::get('buildglobalindex', 'GlobalPushController@buildglobalindex');
+Route::get('pushcategorylocations', 'GlobalPushController@pushcategorylocations');
+Route::get('pushfinders', 'GlobalPushController@pushFinders');
+Route::get('pushcategorywithfacilities', 'GlobalPushController@pushcategorywithfacilities');
+Route::get('pushcategoryoffering', 'GlobalPushController@pushcategoryoffering');
+Route::get('pushcategoryofferinglocation', 'GlobalPushController@pushcategoryofferinglocation');
+Route::get('pushcategoryfacilitieslocation', 'GlobalPushController@pushcategoryfacilitieslocation');
+
+/******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
+#####################################################################################################

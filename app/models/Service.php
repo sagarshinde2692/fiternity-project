@@ -97,9 +97,8 @@ class Service extends \Basemodel{
 		if(!empty($this->ratecards) && isset($this->ratecards)){
 
 			foreach ($this->ratecards as $key => $value) {
-				// dd($value);exit();
-
 				$days = $sessions = '';
+				
 				if(isset($value['duration']) && $value['duration'] != ''){
 					$durationObj 	=	Duration::active()->where('slug', url_slug(array($value['duration'])))->first();
 					$days 			=	(isset($durationObj->days)) ? $durationObj->days : "";
@@ -116,10 +115,10 @@ class Service extends \Basemodel{
 				'special_price'=> (isset($value['special_price'])) ? $value['special_price'] : '',
 				'remarks'=> (isset($value['remarks'])) ? $value['remarks'] : '',
 				'show_on_fitmania'=> (isset($value['show_on_fitmania'])) ? $value['show_on_fitmania'] : '',
-				'direct_payment_enable'=> (isset($value['direct_payment_enable'])) ? $value['direct_payment_enable'] : '0'
+				'direct_payment_enable'=> (isset($value['direct_payment_enable'])) ? $value['direct_payment_enable'] : '0',
+				'featured_offer'=> (isset($value['featured_offer'])) ? $value['featured_offer'] : '0'
 				];
 				// dd($ratecard);exit();
-
 
 				array_push($ratecards, $ratecard);
 			}		

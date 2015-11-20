@@ -27,7 +27,6 @@ class Order extends \Basemodel {
 		$this->attributes['service_id'] = intval($value);
 	}
 
-
 	public function setFinderIdAttribute($value){
 		
 		$this->attributes['finder_id'] = intval($value);
@@ -38,6 +37,8 @@ class Order extends \Basemodel {
 		$this->attributes['customer_source'] = strtolower($value);
 	}
 
-	
-
+	public function setAmountAttribute($value){
+		$this->attributes['amount'] = intval($value);
+	}
+    
 }
