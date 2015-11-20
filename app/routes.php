@@ -73,6 +73,11 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customerlogout', array('as' => 'customer.validatetokencustomerlogout','uses' => 'CustomerController@customerLogout'));
 	Route::post('customerupdate', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
 
+	Route::get('customer/getalltrials',  array('as' => 'customer.getalltrials','uses' => 'CustomerController@getAllTrials'));
+	Route::get('customer/getallreviews/{offset?}/{limit?}',  array('as' => 'customer.getallreviews','uses' => 'CustomerController@getAllReviews'));
+	Route::get('customer/getallorders/{offset?}/{limit?}',  array('as' => 'customer.getallorders','uses' => 'CustomerController@getAllOrders'));
+	Route::get('customer/getallbookmarks',  array('as' => 'customer.getallbookmarks','uses' => 'CustomerController@getAllBookmarks'));
+	Route::get('customer/editbookmarks/{finderid}/{remove?}',  array('as' => 'customer.editbookmarks','uses' => 'CustomerController@editBookmarks'));
 
 });
 
