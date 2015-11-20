@@ -162,12 +162,6 @@ Class CustomerMailer extends Mailer {
 		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority);
 	}
 
-
-	public function cancelBookTrial(){
-
-	}
-
-
 	public function fitcardCodWelcomeMail ($data){
 
 		// $email_template = 'emails.test';
@@ -553,6 +547,24 @@ Class CustomerMailer extends Mailer {
 		
 		return  $this->sendToWorker($email_template_customer, $template_data, $message_data, $label);
 
+	}
+
+	public function cancelBookTrial($data){
+		
+		$email_template = 	'emails.customer.cancelbooktrial';
+		$template_data 	= 	$data;
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been cancelled | Fitternity'
+			);
+
+		$label = 'CancelTrial-C';
+		
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
 	}
 
 }
