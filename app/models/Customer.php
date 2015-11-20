@@ -38,6 +38,21 @@ class Customer extends  \Basemodel {
 		
 		return $this->hasMany('Customer', 'customer_id');
 	}
+	protected $appends = array('uber_trial');
+	public function getUberTrialAttribute(){
 
+		$finders 	= 	[];
+		// dd($this->campaign_finders);exit();
+		if(!empty($this->uber_trials) && isset($this->uber_trials)){
+
+			$trialObj 	=	Booktrial::whereIn('_id', array_map('intval', explode(",",$this->uber_trials)))->get();
+			foreach ($trialObj as $key => $value) {
+				// dd($value);exit();
+				array_push($finders, $value);
+			}		
+		}
+
+		return $finders;
+	}
 
 }
