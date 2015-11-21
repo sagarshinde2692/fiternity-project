@@ -805,27 +805,28 @@ public function newglobalsearch(){
     },';
 }
 
-if (strpos($string,'in') !== false){
+if (strpos($string,'in') !== false){  
     $indelimterscript = '{
         "script_score": {            
                 "params": {
                     "boost": 50,
                     "param2": 20
                 },
-                "script": "((doc[\'type\'].value == \'categorylocation\') || (doc[\'type\'].value == \'categorylocationoffering\') || ((doc[\'type\'].value == \'categorylocationfacilities\')) ? '.$indelimeterboost.' : 0)"
+                "script": "(doc[\'type\'].value == \'categorylocation\') ? 10 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0)"
             }                                           
     },';
 }
 
-if ((strpos($string,'in') !== true) && (strpos($string,'with') !== true))
+if ((strpos($string,'in') === true) && (strpos($string,'with') === true))
 {
+    return 'here';exit;
     $indelimterscript = '{
         "script_score": {            
                 "params": {
                     "boost": 1,
                     "param2": 20
                 },
-                "script": "((doc[\'type\'].value == \'categorylocation\') || (doc[\'type\'].value == \'categorylocationoffering\') || (doc[\'type\'].value == \'categorylocationfacilities\') ? '.$categorylocationscriptboost.' : 0)"
+                "script": "((doc[\'type\'].value == \'categorylocation\') || (doc[\'type\'].value == \'categorylocationoffering\') || (doc[\'type\'].value == \'categorylocationfacilities\') ? '.$categorylocationscriptboost.' : 0"
             }                                           
     },';
 }
@@ -1027,7 +1028,7 @@ $request = array(
     'method' => 'POST',
     'postfields' => $query
     );    
-
+return $query;exit;
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
