@@ -756,9 +756,6 @@ class SchedulebooktrialsController extends \BaseController {
 				'reminder_need_status' 			=>		$reminder_need_status, 
 
 				'customer_id' 					=>		$customer_id, 
-				'customer_name' 				=>		$customer_name, 
-				'customer_email' 				=>		$customer_email, 
-				'customer_phone' 				=>		$customer_phone,
 				'fitcard_user'					=>		$fitcard_user,
 				'type'							=>		$type,
 
@@ -819,6 +816,9 @@ class SchedulebooktrialsController extends \BaseController {
 
 	}
 
+	if($trialbooked = true && $campaign != ''){
+		$this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
+	}
 	Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
 	$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
@@ -1131,6 +1131,10 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 	}
 
+	if($trialbooked = true && $campaign != ''){
+		$this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
+	}
+	
 	Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
 	$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
@@ -1862,6 +1866,17 @@ class SchedulebooktrialsController extends \BaseController {
 		return $booktrial->update($queueddata);
 	}
 
+
+	public function attachTrialCampaignToCustomer($cid, $campaign, $trialid){
+
+		$data 		= [];
+		$customer 	= Customer::find(intval($cid));
+		if($campaign == 'uber'){
+			$data['uber_trials'] = $customer->uber_trials.','$trialid;
+		}
+
+		return $customer->update($data);
+	}
 
 
 

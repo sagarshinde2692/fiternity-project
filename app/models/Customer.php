@@ -11,6 +11,7 @@ class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
 	protected $dates = array('last_visited');
+	protected $appends = array('uber_trial');
 	
 	// Add your validation rules here
 	public static $rules = [
@@ -29,16 +30,6 @@ class Customer extends  \Basemodel {
 	    'location' => 'max:255'
 	];
 
-	public function reviews(){
-
-		return $this->hasMany('Customer', 'customer_id');
-	}
-
-	public function comments(){
-		
-		return $this->hasMany('Customer', 'customer_id');
-	}
-	protected $appends = array('uber_trial');
 	public function getUberTrialAttribute(){
 
 		$finders 	= 	[];
@@ -54,5 +45,18 @@ class Customer extends  \Basemodel {
 
 		return $finders;
 	}
+
+
+
+	public function reviews(){
+
+		return $this->hasMany('Customer', 'customer_id');
+	}
+
+	public function comments(){
+		
+		return $this->hasMany('Customer', 'customer_id');
+	}
+	
 
 }
