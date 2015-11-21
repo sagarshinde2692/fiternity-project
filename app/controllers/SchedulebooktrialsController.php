@@ -671,6 +671,7 @@ class SchedulebooktrialsController extends \BaseController {
 		try {
 
 			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
+			$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
 			$slot_times 						=	explode('-',$data['schedule_slot']);
 			$schedule_slot_start_time 			=	$slot_times[0];
 			$schedule_slot_end_time 			=	$slot_times[1];
@@ -752,6 +753,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$booktrialdata = array(
 				'booktrialid'					=>		intval($booktrialid),
+				'campaign' 						=>		$campaign, 
 				'premium_session' 				=>		$premium_session, 
 				'reminder_need_status' 			=>		$reminder_need_status, 
 
@@ -982,6 +984,8 @@ public function bookTrialFree(){
 	try {
 
 		$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
+		$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
+
 		$slot_times 						=	explode('-',$data['schedule_slot']);
 		$schedule_slot_start_time 			=	$slot_times[0];
 		$schedule_slot_end_time 			=	$slot_times[1];
@@ -1064,6 +1068,7 @@ public function bookTrialFree(){
 
 		$booktrialdata = array(
 			'booktrialid'					=>		$booktrialid,
+			'campaign' 						=>		$campaign, 
 			'premium_session' 				=>		$premium_session, 
 			'reminder_need_status' 			=>		$reminder_need_status, 
 
