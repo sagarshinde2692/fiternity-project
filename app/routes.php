@@ -70,10 +70,15 @@ Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => '
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
-	Route::post('customerresetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
 	Route::get('customerlogout', array('as' => 'customer.validatetokencustomerlogout','uses' => 'CustomerController@customerLogout'));
-	Route::post('customerupdate', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
 
+	Route::post('customer/resetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
+	Route::post('customer/update', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
+	Route::get('customer/getalltrials',  array('as' => 'customer.getalltrials','uses' => 'CustomerController@getAllTrials'));
+	Route::get('customer/getallreviews/{offset?}/{limit?}',  array('as' => 'customer.getallreviews','uses' => 'CustomerController@getAllReviews'));
+	Route::get('customer/getallorders/{offset?}/{limit?}',  array('as' => 'customer.getallorders','uses' => 'CustomerController@getAllOrders'));
+	Route::get('customer/getallbookmarks',  array('as' => 'customer.getallbookmarks','uses' => 'CustomerController@getAllBookmarks'));
+	Route::get('customer/editbookmarks/{finder_id}/{remove?}',  array('as' => 'customer.editbookmarks','uses' => 'CustomerController@editBookmarks'));
 
 });
 
@@ -253,6 +258,14 @@ Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => '
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 
+Route::group(array('before' => 'validatetoken'), function() {
+
+	Route::get('booktrials/cancel/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
+	Route::post('booktrials/reschedule', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
+
+});
+
+
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/
 ##############################################################################
 
@@ -425,8 +438,10 @@ Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronC
 ##############################################################################
 /******************** Campaign SECTION START HERE ***********************/
 Route::get('/getcampaigncategories/{campaignid}', 'CampaignsController@getcampaigncategories');
-Route::get('/featuredcampaign/{campaignid}', 'CampaignsController@featuredcampaign');
+Route::get('/getcampaigntrials/{campaignid}/{email}', 'CampaignsController@getcampaigntrials');
+// Route::get('/featuredcampaign/{campaignid}', 'CampaignsController@featuredcampaign');
 Route::post('campaignsearch', 'CampaignsController@campaignsearch');
+Route::post('campaign/registercustomer', 'CampaignsController@registercustomer');
 /******************** Campaign SECTION END HERE ********************/
 ##############################################################################
 

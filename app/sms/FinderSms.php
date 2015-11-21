@@ -85,8 +85,8 @@ Class FinderSms extends VersionNextSms{
 		}
 
 		$label = 'CancelBookTrial-F';
-		$priority = 0;
-		return $this->sendToWorker($to, $message, $label, $priority);
+
+		return $this->sendToWorker($to, $message, $label);
 	}
 
 
