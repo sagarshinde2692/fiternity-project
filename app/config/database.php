@@ -49,7 +49,7 @@ return array(
 
 		'mongodb' => array(
 		    'driver'   => 'mongodb',
-		    // 'host'     => 'localhost',
+		    //'host'     => 'localhost',
 		    'host'     => '54.255.173.1',
 		    'port'     => 27017,
 		    // 'username' => 'fituser',
@@ -130,7 +130,10 @@ return array(
 			'port'     => 6379,
 			'database' => 0,
 			),
-
+		'newredis' => array(
+			'host'	   => '54.169.133.240',
+			'port'	   => 6379,
+			'database' => 0,
+			),
 		),
-
 	);

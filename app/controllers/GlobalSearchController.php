@@ -8,6 +8,7 @@
 
 use App\Services\Translator;
 use App\Responsemodels\AutocompleteResponse;
+use \Redis;
 
 
 class GlobalSearchController extends \BaseController
@@ -20,6 +21,7 @@ class GlobalSearchController extends \BaseController
     protected $elasticsearch_default_index = "";
     protected $elasticsearch_url = "";
     protected $elasticsearch_default_url = "";
+    protected $redis;
 
     public function __construct()
     {
@@ -29,6 +31,7 @@ class GlobalSearchController extends \BaseController
         $this->elasticsearch_url = "http://" . Config::get('app.elasticsearch_host_new') . ":" . Config::get('app.elasticsearch_port_new') . '/';
         $this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
         $this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
+        $this->redis = Redis::connection('newredis');
     }
 
     public function getautosuggestresults(){
@@ -39,6 +42,7 @@ class GlobalSearchController extends \BaseController
         $city    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
         $lat     =         Input::json()->get('location')['lat'] ? Input::json()->get('location')['lat'] : '';
         $lon     =         Input::json()->get('location')['long'] ? Input::json()->get('location')['long'] : '';
+
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';      
@@ -669,7 +673,13 @@ public function newglobalsearch(){
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
-
+        $redisdata=$this->redis->get('autocomplete:'.strval($from.$size.$lat.$lon).$string.$city);
+        if(isset($redisdata)){           
+        $response       =   json_decode($redisdata,true);
+        return Response::json($response);
+        }
+        else{
+                   
         $string1 = $this->removeCommonWords($string);
 
         $keylist = explode(" ", $string1);
@@ -1038,6 +1048,8 @@ $autocompleteresponse1 = json_encode($autocompleteresponse, true);
 
 $response       =   json_decode($autocompleteresponse1,true);
 
+$this->redis->set('autocomplete:'.strval($from.$size.$lat.$lon).$string.$city, json_encode($autocompleteresponse));
 return Response::json($response);
+}
 }
 }
