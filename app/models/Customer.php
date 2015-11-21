@@ -11,6 +11,7 @@ class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
 	protected $dates = array('last_visited');
+	protected $appends = array('uber_trial');
 	
 	// Add your validation rules here
 	public static $rules = [
@@ -29,6 +30,24 @@ class Customer extends  \Basemodel {
 	    'location' => 'max:255'
 	];
 
+	public function getUberTrialAttribute(){
+
+		$finders 	= 	[];
+		// dd($this->campaign_finders);exit();
+		if(!empty($this->uber_trials) && isset($this->uber_trials)){
+
+			$trialObj 	=	Booktrial::whereIn('_id', array_map('intval', explode(",",$this->uber_trials)))->get();
+			foreach ($trialObj as $key => $value) {
+				// dd($value);exit();
+				array_push($finders, $value);
+			}		
+		}
+
+		return $finders;
+	}
+
+
+
 	public function reviews(){
 
 		return $this->hasMany('Customer', 'customer_id');
@@ -38,6 +57,6 @@ class Customer extends  \Basemodel {
 		
 		return $this->hasMany('Customer', 'customer_id');
 	}
-
+	
 
 }

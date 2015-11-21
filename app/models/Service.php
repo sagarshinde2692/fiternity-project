@@ -20,6 +20,7 @@ class Service extends \Basemodel{
 		);
 
 	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
+	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
 		$this->attributes['_id'] = intval($value);
@@ -65,7 +66,7 @@ class Service extends \Basemodel{
 		if(!empty($this->coverimage) && isset($this->coverimage)){
 			$service_coverimage = 's/c/'.$service_coverimage;
 		}else{
-			$finder  	=	Finder::findOrFail(intval($this->finder_id));
+			$finder  	=	Finder::find(intval($this->finder_id));
 			if($finder){
 				$service_coverimage = (trim($finder->coverimage) != '') ? 'f/c/'.trim($finder->coverimage) : 'default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
 			}
@@ -80,7 +81,7 @@ class Service extends \Basemodel{
 		if(!empty($this->coverimage) && isset($this->coverimage)){
 			$service_coverimage = 's/ct/'.$service_coverimage;
 		}else{
-			$finder  	=	Finder::findOrFail(intval($this->finder_id));
+			$finder  	=	Finder::find(intval($this->finder_id));
 			if($finder){
 				$service_coverimage = (trim($finder->coverimage) != '') ? 'f/ct/'.trim($finder->coverimage) : 'default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
 			}
