@@ -797,445 +797,441 @@ class SchedulebooktrialsController extends \BaseController {
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
-$booktrial = new Booktrial($booktrialdata);
-$booktrial->_id = $booktrialid;
-$trialbooked = $booktrial->save();
+		$booktrial = new Booktrial($booktrialdata);
+		$booktrial->_id = $booktrialid;
+		$trialbooked = $booktrial->save();
 
-} catch(ValidationException $e){
+		} catch(ValidationException $e){
 
-			// If booktrial query fail updates error message
-	$orderid 	=	(int) Input::json()->get('order_id');
-	$order 		= 	Order::findOrFail($orderid);
-	array_set($data, 'message', $e->getMessage());
-	$orderdata 	=	$order->update($data);
-	return array('status' => 500,'message' => $e->getMessage());
-}
-
-if($trialbooked = true){
-
-	$orderid = (int) Input::json()->get('order_id');
-	$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
-	$booktrial->update(array('redis_id'=>$redisid));
-
-}
-
-Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
-
-$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-return Response::json($resp,200);	
-}
-
-public function toQueueBookTrialPaid($job,$data){
-
-	$orderid = $data['orderid'];
-	$booktrialid = $data['booktrialid'];
-	$data = $data['data'];
-
-	$slot_times 						=	explode('-',$data['schedule_slot']);
-	$schedule_slot_start_time 			=	$slot_times[0];
-	$schedule_slot_end_time 			=	$slot_times[1];
-	$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
-
-	$slot_date 							=	date('d-m-Y', strtotime($data['schedule_date']));
-	$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
-	$currentDateTime 					=	\Carbon\Carbon::now();
-	$scheduleDateTime 					=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
-	$delayReminderTimeBefore1Min 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
-	$delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
-	$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
-	$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
-	$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
-	$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
-	$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false); 
-	$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
-	$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore5Hour, false);  
-	$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false);
-	$finderid 							= 	(int) $data['finder_id'];
-
-	$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
-	$order = Order::findOrFail($orderid);
-	$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
-
-	array_set($data, 'status', '1');
-	array_set($data, 'booktrial_id', (int)$booktrialid);
-	$orderdata 	=	$order->update($data);
-
-	$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
-
-		//Send Instant (Email) To Customer & Finder
-	$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
-	$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
-	$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
-	$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
-
-	$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
-	$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
-	$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
-	$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
-
-
-		//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-	if($twelveHourDiffInMin >= (12 * 60)){
-		$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-		$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-	}
-
-	if(isset($data['device_id']) && $data['device_id'] != ''){
-		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	'';
-			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
+					// If booktrial query fail updates error message
+			$orderid 	=	(int) Input::json()->get('order_id');
+			$order 		= 	Order::findOrFail($orderid);
+			array_set($data, 'message', $e->getMessage());
+			$orderdata 	=	$order->update($data);
+			return array('status' => 500,'message' => $e->getMessage());
 		}
+
+	if($trialbooked = true){
+
+		$orderid = (int) Input::json()->get('order_id');
+		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+		$booktrial->update(array('redis_id'=>$redisid));
+
 	}
 
-		//Send Reminder Notiication (Sms) Before 1 Hour To Customer
-	if($oneHourDiffInMin >= 60){
-		$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-		$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-		$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
-		$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
-	}
+	Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
-		//Send Post Trial Notificaiton After 2 Hours Need to Write
-	$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
-	$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
-	$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
-
-
-		//update queue ids for booktiral
-	$booktrial 		= 	Booktrial::findOrFail($booktrialid);
-
-	$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
-		'customer_smsqueuedids' => $customer_sms_messageids,
-		'customer_notificationqueuedids' => $customer_notification_messageids,
-		'finder_emailqueuedids' => $finder_email_messageids, 
-		'finder_smsqueuedids' => $finer_sms_messageids
-
-		);
-
-	$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
-
-	if($fitness_force){
-		if($fitness_force['status'] == 200){
-			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
-			$queueddata['fitness_force_appointment']['status'] = 200;
-			$queueddata['fitness_force_appointment'] = $fitness_force['data'];
-		}else{
-			$queueddata['fitness_force_appointment'] = $fitness_force;
-		}
-	}
-
-	$trialbooked 	= 	$booktrial->update($queueddata);
-
-	$job->delete();
-
+	$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+	return Response::json($resp,200);	
 }
 
+	public function toQueueBookTrialPaid($job,$data){
 
-public function bookTrialFree(){
+		$orderid = $data['orderid'];
+		$booktrialid = $data['booktrialid'];
+		$data = $data['data'];
 
-		// send error message if any thing is missing	
-	$data = Input::json()->all();
-
-	if(empty($data['customer_name'])){
-		$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
-		return  Response::json($resp, 400);
-	}
-
-	if(empty($data['customer_email'])){
-		$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_email");
-		return  Response::json($resp, 400);
-	}
-
-	if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-		$resp 	= 	array('status' => 400,'message' => "Invalid Email Id");
-		return  Response::json($resp, 400);
-	}
-
-	if(empty($data['customer_phone'])){
-		$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_phone");
-		return  Response::json($resp, 400);
-	}
-
-	if(empty($data['finder_id'])){
-		$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
-		return  Response::json($resp, 400);
-	}
-
-	if(empty($data['service_name'])){
-		$resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
-		return  Response::json($resp, 400);
-	}
-
-	if(empty($data['schedule_date'])){
-		$resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_date");
-		return  Response::json($resp, 400);
-	}
-
-	if(empty($data['schedule_slot'])){
-		$resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_slot");
-		return  Response::json($resp, 400);
-	}
-
-	try {
-
-		$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 		$slot_times 						=	explode('-',$data['schedule_slot']);
 		$schedule_slot_start_time 			=	$slot_times[0];
 		$schedule_slot_end_time 			=	$slot_times[1];
 		$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
 
-		$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
+		$slot_date 							=	date('d-m-Y', strtotime($data['schedule_date']));
 		$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
 		$currentDateTime 					=	\Carbon\Carbon::now();
+		$scheduleDateTime 					=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
+		$delayReminderTimeBefore1Min 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
+		$delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
+		$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
+		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
+		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
+		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false); 
+		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
+		$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore5Hour, false);  
+		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false);
+		$finderid 							= 	(int) $data['finder_id'];
 
-		$booktrialid 						=	Booktrial::max('_id') + 1;
-		$finderid 							= 	(int) Input::json()->get('finder_id');
-		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+		$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
+		$order = Order::findOrFail($orderid);
+		$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
-		$customer_id 						=	$this->autoRegisterCustomer($data);
-		$customer_name 						=	Input::json()->get('customer_name'); 
-		$customer_email 					=	Input::json()->get('customer_email'); 
-		$customer_phone 					=	Input::json()->get('customer_phone');
-		$fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
-		$type								= 	(Input::json()->get('type')) ? intval(Input::json()->get('type')) : '';
+		array_set($data, 'status', '1');
+		array_set($data, 'booktrial_id', (int)$booktrialid);
+		$orderdata 	=	$order->update($data);
+
+		$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
+
+			//Send Instant (Email) To Customer & Finder
+		$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
+		$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
+		$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
+		$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
+
+		$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
+		$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+		$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
+		$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 
-		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
-		$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
-		$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
-		$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
-		$city_id 							=	(int) $finder['city_id'];
-
-			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-			// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
-			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
-
-		if($service_id != ''){
-			$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id','=', intval($service_id))->first()->toArray();
-			if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
-				$finder_location					=	$serviceArr['location']['name'];
-				$show_location_flag 				=   true;
-			}else{
-				$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
-			}
-			if((isset($serviceArr['address']) && $serviceArr['address'] != '')){
-				$finder_address						= 	$serviceArr['address'];
-			}else{
-				$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
-			}
-		}else{
-			$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-			$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
-			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
+		if($twelveHourDiffInMin >= (12 * 60)){
+			$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+			$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 		}
 
-		$finder_vcc_email = "";
-		if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
-			$explode = explode(',', $finder['finder_vcc_email']);
-			$valid_finder_email = [];
-			foreach ($explode as $email) {
-				if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
-					$valid_finder_email[] = $email;
-				}
+		if(isset($data['device_id']) && $data['device_id'] != ''){
+			if($fiveHourDiffInMin >= (5 * 60)){
+				$sndBefore5HourNotificationCustomer					=	'';
+				$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
 			}
-			if(!empty($valid_finder_email)){
-				$finder_vcc_email = implode(",", $valid_finder_email);
-			} 
 		}
 
-		$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
-		$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
-		$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
-		$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
+		if($oneHourDiffInMin >= 60){
+			$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+			$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+			$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
+			$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
+		}
 
-		$service_name						=	strtolower(Input::json()->get('service_name'));
-		$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
-		$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+			//Send Post Trial Notificaiton After 2 Hours Need to Write
+		$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+		$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+		$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+		$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
+		$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
+		$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
 
-		$code								=	$booktrialid.str_random(8);
-		$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
-		$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
-		$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
-		$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
-		$booktrialdata = array(
-			'booktrialid'					=>		$booktrialid,
-			'premium_session' 				=>		$premium_session, 
-			'reminder_need_status' 			=>		$reminder_need_status, 
+			//update queue ids for booktiral
+		$booktrial 		= 	Booktrial::findOrFail($booktrialid);
 
-			'customer_id' 					=>		$customer_id, 
-			'customer_name' 				=>		$customer_name, 
-			'customer_email' 				=>		$customer_email, 
-			'customer_phone' 				=>		$customer_phone,
-			'fitcard_user'					=>		$fitcard_user,
-			'type'							=>		$type,
+		$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
+			'customer_smsqueuedids' => $customer_sms_messageids,
+			'customer_notificationqueuedids' => $customer_notification_messageids,
+			'finder_emailqueuedids' => $finder_email_messageids, 
+			'finder_smsqueuedids' => $finer_sms_messageids
 
-			'finder_id' 					=>		$finderid,
-			'finder_name' 					=>		$finder_name,
-			'finder_slug' 					=>		$finder_slug,
-			'finder_location' 				=>		$finder_location,
-			'finder_address' 				=>		$finder_address,
-			'finder_lat'		 			=>		$finder_lat,
-			'finder_lon'		 			=>		$finder_lon,
-			'city_id'						=>		$city_id,
-			'finder_vcc_email' 				=>		$finder_vcc_email,
-			'finder_vcc_mobile' 			=>		$finder_vcc_mobile,
-			'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
-			'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
-			'show_location_flag'			=> 		$show_location_flag,
-			'share_customer_no'				=> 		$share_customer_no,
-
-			'service_id'					=>		$service_id,
-			'service_name'					=>		$service_name,
-			'schedule_slot_start_time'		=>		$schedule_slot_start_time,
-			'schedule_slot_end_time'		=>		$schedule_slot_end_time,
-			'schedule_date'					=>		$schedule_date,
-			'schedule_date_time'			=>		$schedule_date_time,
-			'schedule_slot'					=>		$schedule_slot,
-			'going_status'					=>		1,
-			'going_status_txt'				=>		'going',
-			'code'							=>		$code,
-			'device_id'						=>		$device_id,
-			'booktrial_type'				=>		'auto',
-			'booktrial_actions'				=>		'call to confirm trial',
-			'source'						=>		'website',
-			'origin'						=>		'auto',
-			'additional_info'				=>		$additional_info	
 			);
 
-			// return $this->customersms->bookTrial($booktrialdata);
-			// return $booktrialdata;
-$booktrial = new Booktrial($booktrialdata);
-$booktrial->_id = $booktrialid;
-$trialbooked = $booktrial->save();
+		$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
 
-} catch(ValidationException $e){
+		if($fitness_force){
+			if($fitness_force['status'] == 200){
+				$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+				$queueddata['fitness_force_appointment']['status'] = 200;
+				$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+			}else{
+				$queueddata['fitness_force_appointment'] = $fitness_force;
+			}
+		}
 
-	return array('status' => 500,'message' => $e->getMessage());
-}
+		$trialbooked 	= 	$booktrial->update($queueddata);
 
-if($trialbooked = true){
+		$job->delete();
 
-			//if vendor type is free special dont send communication
-	Log::info('finder commercial_type  -- '. $finder['commercial_type']);
-	if($finder['commercial_type'] != '2'){
-		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
-		$booktrial->update(array('redis_id'=>$redisid));
 	}
-}
 
-Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
-$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-return Response::json($resp,200);	
-}
+	public function bookTrialFree(){
 
-public function toQueueBookTrialFree($job,$data){
+			// send error message if any thing is missing	
+		$data = Input::json()->all();
 
-	$booktrialid = $data['booktrialid'];
-	$data = $data['data'];
+		if(empty($data['customer_name'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
+			return  Response::json($resp, 400);
+		}
 
-	$slot_times 						=	explode('-',$data['schedule_slot']);
-	$schedule_slot_start_time 			=	$slot_times[0];
-	$schedule_slot_end_time 			=	$slot_times[1];
-	$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+		if(empty($data['customer_email'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_email");
+			return  Response::json($resp, 400);
+		}
 
-	$slot_date 							=	date('d-m-Y', strtotime($data['schedule_date']));
-	$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
-	$currentDateTime 					=	\Carbon\Carbon::now();
-	$scheduleDateTime 					=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
-	$delayReminderTimeBefore1Min 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
-	$delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
-	$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
-	$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
-	$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
-	$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
-	$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false); 
-	$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
-	$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore5Hour, false);  
-	$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false);  
-	$finderid 							= 	(int) $data['finder_id'];
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			$resp 	= 	array('status' => 400,'message' => "Invalid Email Id");
+			return  Response::json($resp, 400);
+		}
 
-	$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
-	$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+		if(empty($data['customer_phone'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_phone");
+			return  Response::json($resp, 400);
+		}
 
-	$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
+		if(empty($data['finder_id'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
+			return  Response::json($resp, 400);
+		}
 
-		//Send Instant (Email) To Customer & Finder
-	$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
-	$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
-	$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
-	$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
+		if(empty($data['service_name'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
+			return  Response::json($resp, 400);
+		}
 
-	$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
-	$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
-	$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
-	$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
+		if(empty($data['schedule_date'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_date");
+			return  Response::json($resp, 400);
+		}
+
+		if(empty($data['schedule_slot'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_slot");
+			return  Response::json($resp, 400);
+		}
+
+		try {
+
+			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
+			$slot_times 						=	explode('-',$data['schedule_slot']);
+			$schedule_slot_start_time 			=	$slot_times[0];
+			$schedule_slot_end_time 			=	$slot_times[1];
+			$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+			$slot_date 							=	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
+			$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+			$currentDateTime 					=	\Carbon\Carbon::now();
+
+			$booktrialid 						=	Booktrial::max('_id') + 1;
+			$finderid 							= 	(int) Input::json()->get('finder_id');
+			$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+
+			$customer_id 						=	$this->autoRegisterCustomer($data);
+			$customer_name 						=	Input::json()->get('customer_name'); 
+			$customer_email 					=	Input::json()->get('customer_email'); 
+			$customer_phone 					=	Input::json()->get('customer_phone');
+			$fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
+			$type								= 	(Input::json()->get('type')) ? intval(Input::json()->get('type')) : '';
+
+
+			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
+			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+			$city_id 							=	(int) $finder['city_id'];
+
+				// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+				// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+
+			if($service_id != ''){
+				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id','=', intval($service_id))->first()->toArray();
+				if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
+					$finder_location					=	$serviceArr['location']['name'];
+					$show_location_flag 				=   true;
+				}else{
+					$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+					$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+				}
+				if((isset($serviceArr['address']) && $serviceArr['address'] != '')){
+					$finder_address						= 	$serviceArr['address'];
+				}else{
+					$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				}
+			}else{
+				$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+				$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+			}
+
+			$finder_vcc_email = "";
+			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
+				$explode = explode(',', $finder['finder_vcc_email']);
+				$valid_finder_email = [];
+				foreach ($explode as $email) {
+					if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
+						$valid_finder_email[] = $email;
+					}
+				}
+				if(!empty($valid_finder_email)){
+					$finder_vcc_email = implode(",", $valid_finder_email);
+				} 
+			}
+
+			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
+			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
+			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
+			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+
+			$service_name						=	strtolower(Input::json()->get('service_name'));
+			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
+			$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+
+			$code								=	$booktrialid.str_random(8);
+			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
+			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
+			$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
+			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+
+			$booktrialdata = array(
+				'booktrialid'					=>		$booktrialid,
+				'premium_session' 				=>		$premium_session, 
+				'reminder_need_status' 			=>		$reminder_need_status, 
+
+				'customer_id' 					=>		$customer_id, 
+				'customer_name' 				=>		$customer_name, 
+				'customer_email' 				=>		$customer_email, 
+				'customer_phone' 				=>		$customer_phone,
+				'fitcard_user'					=>		$fitcard_user,
+				'type'							=>		$type,
+
+				'finder_id' 					=>		$finderid,
+				'finder_name' 					=>		$finder_name,
+				'finder_slug' 					=>		$finder_slug,
+				'finder_location' 				=>		$finder_location,
+				'finder_address' 				=>		$finder_address,
+				'finder_lat'		 			=>		$finder_lat,
+				'finder_lon'		 			=>		$finder_lon,
+				'city_id'						=>		$city_id,
+				'finder_vcc_email' 				=>		$finder_vcc_email,
+				'finder_vcc_mobile' 			=>		$finder_vcc_mobile,
+				'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
+				'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
+				'show_location_flag'			=> 		$show_location_flag,
+				'share_customer_no'				=> 		$share_customer_no,
+
+				'service_id'					=>		$service_id,
+				'service_name'					=>		$service_name,
+				'schedule_slot_start_time'		=>		$schedule_slot_start_time,
+				'schedule_slot_end_time'		=>		$schedule_slot_end_time,
+				'schedule_date'					=>		$schedule_date,
+				'schedule_date_time'			=>		$schedule_date_time,
+				'schedule_slot'					=>		$schedule_slot,
+				'going_status'					=>		1,
+				'going_status_txt'				=>		'going',
+				'code'							=>		$code,
+				'device_id'						=>		$device_id,
+				'booktrial_type'				=>		'auto',
+				'booktrial_actions'				=>		'call to confirm trial',
+				'source'						=>		'website',
+				'origin'						=>		'auto',
+				'additional_info'				=>		$additional_info	
+				);
+
+				// return $this->customersms->bookTrial($booktrialdata);
+				// return $booktrialdata;
+	$booktrial = new Booktrial($booktrialdata);
+	$booktrial->_id = $booktrialid;
+	$trialbooked = $booktrial->save();
+
+	} catch(ValidationException $e){
+
+		return array('status' => 500,'message' => $e->getMessage());
+	}
+
+	if($trialbooked = true){
+
+		//if vendor type is free special dont send communication
+		Log::info('finder commercial_type  -- '. $finder['commercial_type']);
+		if($finder['commercial_type'] != '2'){
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+			$booktrial->update(array('redis_id'=>$redisid));
+		}
+	}
+
+	Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
+
+	$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+	return Response::json($resp,200);	
+	}
+
+	public function toQueueBookTrialFree($job,$data){
+
+		$booktrialid = $data['booktrialid'];
+		$data = $data['data'];
+
+		$slot_times 						=	explode('-',$data['schedule_slot']);
+		$schedule_slot_start_time 			=	$slot_times[0];
+		$schedule_slot_end_time 			=	$slot_times[1];
+		$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+		$slot_date 							=	date('d-m-Y', strtotime($data['schedule_date']));
+		$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+		$currentDateTime 					=	\Carbon\Carbon::now();
+		$scheduleDateTime 					=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
+		$delayReminderTimeBefore1Min 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
+		$delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
+		$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
+		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
+		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
+		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false); 
+		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
+		$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore5Hour, false);  
+		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false);  
+		$finderid 							= 	(int) $data['finder_id'];
+
+		$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
+		$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+
+		$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
+
+			//Send Instant (Email) To Customer & Finder
+		$sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
+		$sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
+		$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
+		$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
+
+		$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
+		$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+		$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
+		$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 		//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-	if($twelveHourDiffInMin >= (12 * 60)){
-		$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-		$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-	}
-
-	if(isset($data['device_id']) && $data['device_id'] != ''){
-		if($fiveHourDiffInMin >= (5 * 60)){
-			$sndBefore5HourNotificationCustomer					=	'';
-			$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
+		if($twelveHourDiffInMin >= (12 * 60)){
+			$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+			$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 		}
-	}
+
+		if(isset($data['device_id']) && $data['device_id'] != ''){
+			if($fiveHourDiffInMin >= (5 * 60)){
+				$sndBefore5HourNotificationCustomer					=	'';
+				$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
+			}
+		}
 
 		//Send Reminder Notiication (Sms) Before 1 Hour To Customer
-	if($oneHourDiffInMin >= 60){
-		$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-		$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-		$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
-		$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
-	}
+		if($oneHourDiffInMin >= 60){
+			$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+			$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+			$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
+			$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
+		}
 
 		//Send Post Trial Notificaiton After 2 Hours Need to Write
-	$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
-	$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
-	$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
+		$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+		$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+		$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+		$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
+		$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
+		$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
 
 		//update queue ids for booktiral
-	$booktrial 		= 	Booktrial::findOrFail($booktrialid);
-	$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
-		'customer_smsqueuedids' => $customer_sms_messageids,
-		'customer_notificationqueuedids' => $customer_notification_messageids,
-		'finder_emailqueuedids' => $finder_email_messageids, 
-		'finder_smsqueuedids' => $finer_sms_messageids
-		);
+		$booktrial 		= 	Booktrial::findOrFail($booktrialid);
+		$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
+			'customer_smsqueuedids' => $customer_sms_messageids,
+			'customer_notificationqueuedids' => $customer_notification_messageids,
+			'finder_emailqueuedids' => $finder_email_messageids, 
+			'finder_smsqueuedids' => $finer_sms_messageids
+			);
 
-	$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
+		$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
 
-	if($fitness_force){
-		if($fitness_force['status'] == 200){
-			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
-			$queueddata['fitness_force_appointment']['status'] = 200;
-			$queueddata['fitness_force_appointment'] = $fitness_force['data'];
-		}else{
-			$queueddata['fitness_force_appointment'] = $fitness_force;
+		if($fitness_force){
+			if($fitness_force['status'] == 200){
+				$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+				$queueddata['fitness_force_appointment']['status'] = 200;
+				$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+			}else{
+				$queueddata['fitness_force_appointment'] = $fitness_force;
+			}
 		}
+
+		$trialbooked = $booktrial->update($queueddata);
+
+		$job->delete();
+
 	}
 
-	$trialbooked = $booktrial->update($queueddata);
-
-	$job->delete();
-
-}
-
-
-	/**
-	 * rescheduledBookTrial booktrial in storage.
-	 */
 
 	public function rescheduledBookTrial(){
 
@@ -1288,6 +1284,7 @@ public function toQueueBookTrialFree($job,$data){
 
 
 		try {
+
 			$id 		= 	(int) $data['booktrial_id'];	
 			$booktrial 	= 	Booktrial::findOrFail($id);
 			$old_going_status	 						=	(isset($booktrial->going_status) && $booktrial->going_status != '') ? $booktrial->going_status : "";
@@ -1304,16 +1301,11 @@ public function toQueueBookTrialFree($job,$data){
 			$send_purchase_communication		=	(isset($data['send_purchase_communication']) && $data['send_purchase_communication'] != '') ? $data['send_purchase_communication'] : "";
 			$deadbooktrial						=	(isset($data['deadbooktrial']) && $data['deadbooktrial'] != '') ? $data['deadbooktrial'] : "";
 
-
-		//its helpful to send any kind for dateformat date time as srting or iso formate timezond
+			//its helpful to send any kind for dateformat date time as srting or iso formate timezond
 			$slot_times 						=	explode('-',$data['schedule_slot']);
 			$schedule_slot_start_time 			=	$slot_times[0];
 			$schedule_slot_end_time 			=	$slot_times[1];
 			$schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
-
-			// $schedule_slot_start_time 			=	$data['schedule_slot_start_time'];
-			// $schedule_slot_end_time 			=	$data['schedule_slot_end_time'];
-			// $schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
 
 			$slot_date 							=	date('d-m-Y', strtotime($data['schedule_date']));
 			$schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
@@ -1328,21 +1320,9 @@ public function toQueueBookTrialFree($job,$data){
 			$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
 			$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false); 
 
-		// echo "<br>currentDateTime : $currentDateTime, 
-		// 		<br>scheduleDateTime : $scheduleDateTime, 
-		// 		<br>Before1Min : $delayReminderTimeBefore1Min, 
-		// 		<br>Before1Hour : $delayReminderTimeBefore1Hour, 
-		// 		<br>Before12Hour : $delayReminderTimeBefore12Hour,
-		// 		<br><br>oneHourDiff  -- $oneHourDiff   ,  
-		// 		<br>twelveHourDiff  -- $twelveHourDiff 
-		// 		<br>oneHourDiffInMin  -- $oneHourDiffInMin
-		// 		<br>twelveHourDiffInMin  -- $twelveHourDiffInMin";
-		// exit;
-
 			$booktrialid 						=	(int) $data['booktrial_id'];
 			$finderid 							= 	(int) $data['finder_id'];
 			$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
-		//return var_dump($finder)	;				
 
 			$customer_id 						=	$data['customer_id']; 
 			$customer_name 						=	$data['customer_name']; 
@@ -1376,7 +1356,6 @@ public function toQueueBookTrialFree($job,$data){
 				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 			}
 
-			//$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
 
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
@@ -1475,226 +1454,395 @@ public function toQueueBookTrialFree($job,$data){
 				'device_id'						=>		$device_id,
 				);
 
+			if($update_only_info == ''){
+				array_set($booktrialdata, 'schedule_slot_start_time', $schedule_slot_start_time);
+				array_set($booktrialdata, 'schedule_slot_end_time', $schedule_slot_end_time);
+				array_set($booktrialdata, 'schedule_date', $schedule_date);
+				array_set($booktrialdata, 'schedule_date_time', $schedule_date_time);
+				array_set($booktrialdata, 'schedule_slot', $schedule_slot);
+				array_set($booktrialdata, 'code', $code);
+				array_set($booktrialdata, 'going_status', 1);
+				array_set($booktrialdata, 'going_status_txt', 'rescheduled');
+				array_set($booktrialdata, 'booktrial_type', 'auto');
+			}
 
+			$trialbooked = $booktrial->update($booktrialdata);
 
-		if($update_only_info == ''){
-			array_set($booktrialdata, 'schedule_slot_start_time', $schedule_slot_start_time);
-			array_set($booktrialdata, 'schedule_slot_end_time', $schedule_slot_end_time);
-			array_set($booktrialdata, 'schedule_date', $schedule_date);
-			array_set($booktrialdata, 'schedule_date_time', $schedule_date_time);
-			array_set($booktrialdata, 'schedule_slot', $schedule_slot);
-			array_set($booktrialdata, 'code', $code);
-			array_set($booktrialdata, 'going_status', 1);
-			array_set($booktrialdata, 'going_status_txt', 'rescheduled');
-			array_set($booktrialdata, 'booktrial_type', 'auto');
-		}
+			$payload = array(
+				'booktrialid'=>$booktrialid,
+				'send_alert'=>$send_alert,
+				'update_only_info'=>$update_only_info,
+				'send_post_reminder_communication'=>$send_post_reminder_communication,
+				'booktrialdata'=>$booktrialdata,
+				'delayReminderTimeBefore12Hour'=>$delayReminderTimeBefore12Hour,
+				'twelveHourDiffInMin'=>$twelveHourDiffInMin,
+				'oneHourDiffInMin'=>$oneHourDiffInMin,
+				'delayReminderTimeBefore1Hour'=>$delayReminderTimeBefore1Hour,
+				'delayReminderTimeAfter2Hour'=>$delayReminderTimeAfter2Hour,
+				'finder'=>$finder,
+				'old_going_status'=>$old_going_status,
+				'old_schedule_date'=>$old_schedule_date,
+				'old_schedule_slot_start_time'=>$old_schedule_slot_start_time,
+				'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
+			);
 
-		// return $booktrialdata;
-		$trialbooked = $booktrial->update($booktrialdata);
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
+			$booktrial->update(array('reschedule_redis_id'=>$redisid));
 
-} catch(ValidationException $e){
+			$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
+			return Response::json($resp,200);
 
-	return array('status' => 500,'message' => $e->getMessage());
-}
+		} catch(ValidationException $e){
 
-//***************** hit fitness force api start here
-if($trialbooked == true && isset($finder['fitnessforce_key']) && $finder['fitnessforce_key'] != ''){
-	if($old_going_status == 6){
-		$trialbooked = $this->bookTrialFintnessForce ($booktrial,$finder);
-	}elseif($old_schedule_date != $booktrial->schedule_date || $old_schedule_slot_start_time != $booktrial->schedule_slot_start_time || $old_schedule_slot_start_time != $booktrial->schedule_slot_end_time && isset($booktrial->fitness_force_appointment['appointmentid']) && $booktrial->fitness_force_appointment['appointmentid'] != ''){
-		$trialbooked = $this->updateBookTrialFintnessForce($id);
-	}
-}
-	//***************** hit fitness force api end here
-
-
-	//Delete Exiting queue
-if($trialbooked == true && $send_alert != '' && $update_only_info == ''){
-	if((isset($booktrial->customer_emailqueuedids['before12hour']) && $booktrial->customer_emailqueuedids['before12hour'] != '')){
-		try {
-			//Queue::deleteMessage('pullapp',$booktrial->customer_emailqueuedids['before12hour']);
-			$this->worker->deleteTask($booktrial->customer_emailqueuedids['before12hour']);
-		}catch(\Exception $exception){
-			Log::error($exception);
-		}
-	}
-
-	if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
-		try {
-			//Queue::deleteMessage('pullapp',$booktrial->customer_emailqueuedids['after2hour']);
-			$this->worker->deleteTask($booktrial->customer_emailqueuedids['after2hour']);
-		}catch(\Exception $exception){
-			Log::error($exception);
+			return array('status' => 500,'message' => $e->getMessage());
 		}
 
 	}
 
-	if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
-		try{
-			//Queue::deleteMessage('pullapp',$booktrial->customer_smsqueuedids['before1hour']);
-			$this->worker->deleteTask($booktrial->customer_smsqueuedids['before1hour']);
-		}catch(\Exception $exception){
-			Log::error($exception);
+	public function toQueueRescheduledBookTrial($job,$data){
+
+		$booktrialid = (int) $data['booktrialid'];
+		$send_alert = $data['send_alert'];
+		$update_only_info = $data['update_only_info'];
+		$send_post_reminder_communication = $data['send_post_reminder_communication'];
+		$booktrialdata = $data['booktrialdata'];
+		$delayReminderTimeBefore12Hour = $data['delayReminderTimeBefore12Hour'];
+		$twelveHourDiffInMin = $data['twelveHourDiffInMin'];
+		$oneHourDiffInMin = $data['oneHourDiffInMin'];
+		$delayReminderTimeBefore1Hour = $data['delayReminderTimeBefore1Hour'];
+		$delayReminderTimeAfter2Hour = $data['delayReminderTimeAfter2Hour'];
+		$finder = $data['finder'];
+		$old_going_status = $data['old_going_status'];
+		$old_schedule_date = $data['old_schedule_date'];
+		$old_schedule_slot_start_time = $data['old_schedule_slot_start_time'];
+		$old_schedule_slot_end_time = $data['old_schedule_slot_end_time'];
+
+		$booktrial = Booktrial::find($booktrialid);
+		
+		//hit fitness force api start here
+		if(isset($finder['fitnessforce_key']) && $finder['fitnessforce_key'] != ''){
+			if($old_going_status == 6){
+				$this->bookTrialFintnessForce ($booktrial,$finder);
+			}elseif($old_schedule_date != $booktrial->schedule_date || $old_schedule_slot_start_time != $booktrial->schedule_slot_start_time || $old_schedule_slot_start_time != $booktrial->schedule_slot_end_time && isset($booktrial->fitness_force_appointment['appointmentbooktrialid']) && $booktrial->fitness_force_appointment['appointmentid'] != ''){
+				$this->updateBookTrialFintnessForce($id);
+			}
 		}
-	}
+			
+		if($send_alert != '' && $update_only_info == ''){
+			if((isset($booktrial->customer_emailqueuedids['before12hour']) && $booktrial->customer_emailqueuedids['before12hour'] != '')){
+				try {
+					$this->worker->deleteTask($booktrial->customer_emailqueuedids['before12hour']);
+				}catch(\Exception $exception){
+					Log::error($exception);
+				}
+			}
 
-	if((isset($booktrial->customer_smsqueuedids['after2hour']) && $booktrial->customer_smsqueuedids['after2hour'] != '')){
-		try{
-				//Queue::deleteMessage('pullapp',$booktrial->customer_smsqueuedids['after2hour']);
-			$this->worker->deleteTask($booktrial->customer_smsqueuedids['after2hour']);
-		}catch(\Exception $exception){
-			Log::error($exception);
+			if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
+				try {
+					$this->worker->deleteTask($booktrial->customer_emailqueuedids['after2hour']);
+				}catch(\Exception $exception){
+					Log::error($exception);
+				}
+
+			}
+
+			if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
+				try{	
+					$this->worker->deleteTask($booktrial->customer_smsqueuedids['before1hour']);
+				}catch(\Exception $exception){
+					Log::error($exception);
+				}
+			}
+
+			if((isset($booktrial->customer_smsqueuedids['after2hour']) && $booktrial->customer_smsqueuedids['after2hour'] != '')){
+				try{
+					$this->worker->deleteTask($booktrial->customer_smsqueuedids['after2hour']);
+				}catch(\Exception $exception){
+					Log::error($exception);
+				}
+			}
+
+			if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
+				try{
+					$this->worker->deleteTask($booktrial->finder_smsqueuedids['before1hour']);
+				}catch(\Exception $exception){
+					Log::error($exception);
+				}
+			}
 		}
-	}
 
-	if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
-		try{
-			//Queue::deleteMessage('pullapp',$booktrial->finder_smsqueuedids['before1hour']);
-			$this->worker->deleteTask($booktrial->finder_smsqueuedids['before1hour']);
-		}catch(\Exception $exception){
-			Log::error($exception);
+
+		if($send_post_reminder_communication != '' && $update_only_info == ''){
+			$sndInstantPostReminderStatusSmsFinder	=	$this->findersms->postReminderStatusSmsFinder($booktrialdata);
 		}
+
+
+		if($send_alert != '' && $update_only_info == ''){
+
+			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  = array();
+
+			//Send Instant (Email) To Customer & Finder
+			$sndInstantEmailCustomer				= 	$this->customermailer->rescheduledBookTrial($booktrialdata);
+			$sndInstantSmsCustomer					=	$this->customersms->rescheduledBookTrial($booktrialdata);
+			$sndInstantEmailFinder					= 	$this->findermailer->rescheduledBookTrial($booktrialdata);
+			$sndInstantSmsFinder					=	$this->findersms->rescheduledBookTrial($booktrialdata);
+
+			$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
+			$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
+			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
+
+			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
+			if($twelveHourDiffInMin >= (12 * 60)){
+				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+			}
+
+			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
+			if($oneHourDiffInMin >= 60){
+				$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+				$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+				$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
+				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
+			}
+
+			//Send Post Trial Notificaiton After 2 Hours Need to Write
+			$sndAfter2HourEmailCustomer					= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+			$sndAfter2HourSmsCustomer					= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+			$customer_email_messageids['after2hour'] 	= 	$sndAfter2HourEmailCustomer;
+			$customer_sms_messageids['after2hour'] 		= 	$sndAfter2HourSmsCustomer;
+
+			//update queue ids for booktiral
+			$booktrial 		= 	Booktrial::findOrFail($booktrialid);
+			$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
+				'customer_smsqueuedids' => $customer_sms_messageids,
+				'finder_emailqueuedids' => $finder_email_messageids, 
+				'finder_smsqueuedids' => $finer_sms_messageids);
+
+			$booktrial->update($queueddata);
+
+		}
+
+		$job->delete();	
+
 	}
-}
 
 
-if($trialbooked == true && $send_post_reminder_communication != '' && $update_only_info == ''){
-	$sndInstantPostReminderStatusSmsFinder	=	$this->findersms->postReminderStatusSmsFinder($booktrialdata);
-}
+	public function cancel($id){
 
+		$id 				= 	(int) $id;	
+		$bookdata 			= 	array();
+		$booktrial 			= 	Booktrial::findOrFail($id);
+		array_set($bookdata, 'going_status', 2);
+		array_set($bookdata, 'going_status_txt', 'cancel');
+		array_set($bookdata, 'booktrial_actions', '');
+		array_set($bookdata, 'followup_date', '');
+		array_set($bookdata, 'followup_date_time', '');
+		$trialbooked 		= 	$booktrial->update($bookdata);
 
-if($trialbooked == true && $send_alert != '' && $update_only_info == ''){
+		if($trialbooked == true ){
 
-	$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  = $customer_sms_messageids  = $finer_sms_messageids  = array();
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+			$booktrial->update(array('cancel_redis_id'=>$redisid));
 
-	//Send Instant (Email) To Customer & Finder
-	$sndInstantEmailCustomer				= 	$this->customermailer->rescheduledBookTrial($booktrialdata);
-	$sndInstantSmsCustomer					=	$this->customersms->rescheduledBookTrial($booktrialdata);
-	$sndInstantEmailFinder					= 	$this->findermailer->rescheduledBookTrial($booktrialdata);
-	$sndInstantSmsFinder					=	$this->findersms->rescheduledBookTrial($booktrialdata);
+			$resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
+			return Response::json($resp,200);
 
-	$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
-	$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
-	$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
-	$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
-
-	//#############  TESTING FOR 1 MIN START ##############
-	//Send Reminder Notiication (Email) Before 1 Min To Customer used for testing
-	// $sndBefore1MinEmailCustomer		= 	$this->customermailer->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
-	// $sndBefore1MinSmsCustomer		=	$this->customersms->bookTrialReminderBefore1Min($booktrialdata, $delayReminderTimeBefore1Min);
-
-	//#############  TESTING FOR 1 MIN END ##############
-
-	//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-	if($twelveHourDiffInMin >= (12 * 60)){
-		$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-		$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-		// $sndBefore12HourSmsCustomer			=	$this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-		// $sms_messageids['before12hour'] 	= 	$sndBefore12HourSmsCustomer;
-	}
-
-	//Send Reminder Notiication (Sms) Before 1 Hour To Customer
-	if($oneHourDiffInMin >= 60){
-		$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-		$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-		$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
-		$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
-	}
-
-	//Send Post Trial Notificaiton After 2 Hours Need to Write
-	$sndAfter2HourEmailCustomer					= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$sndAfter2HourSmsCustomer					= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-	$customer_email_messageids['after2hour'] 	= 	$sndAfter2HourEmailCustomer;
-	$customer_sms_messageids['after2hour'] 		= 	$sndAfter2HourSmsCustomer;
-
-	//update queue ids for booktiral
-	$booktrial 		= 	Booktrial::findOrFail($booktrialid);
-	$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids, 
-		'customer_smsqueuedids' => $customer_sms_messageids,
-		'finder_emailqueuedids' => $finder_email_messageids, 
-		'finder_smsqueuedids' => $finer_sms_messageids);
-
-	$trialbooked 	= 	$booktrial->update($queueddata);
-
-	
-}
-
-
-$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-return Response::json($resp,200);	
-
-}
-
-
-
-
-
-
-public function bookTrialFintnessForce($booktrial,$finder){
-
-	$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
-
-	if($fitness_force){
-		if($fitness_force['status'] == 200){
-			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
-			$queueddata['fitness_force_appointment'] = $fitness_force['data'];
 		}else{
-			$queueddata['fitness_force_appointment'] = $fitness_force;
+
+			$resp 	= 	array('status' => 400, 'message' => "Error");
+			return Response::json($resp,400);
+
 		}
+
 	}
 
-	return $booktrial->update($queueddata);
-}
+	public function toQueueBookTrialCancel($job,$data){
 
+		$id = $data['id'];
+		$booktrial = Booktrial::find($id);
 
-
-
-public function cancelBookTrialFintnessForce($id){
-
-	$booktrial = Booktrial::with('finder')->where('_id','=',$id)->first();
-	$fitness_force  = 	$this->fitnessforce->cancelAppointment($booktrial);
-
-	if($fitness_force){
-		if($fitness_force['status'] == 200){
-			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
-			$queueddata['fitness_force_appointment'] = $booktrial->fitness_force_appointment;
-			$queueddata['fitness_force_appointment']['appointmentstatus'] = $fitness_force['data']['appointmentstatus'];
-		}else{
-			$queueddata['fitness_force_appointment_cancel'] = $fitness_force;
+		//hit fitness force api to cancel trial
+		if(isset($booktrial->fitness_force_appointment['appointmentid']) && $booktrial->fitness_force_appointment['appointmentid'] != ''){
+			$trialbooked = $this->cancelBookTrialFintnessForce($id);
 		}
+		
+		if((isset($booktrial->customer_emailqueuedids['before12hour']) && $booktrial->customer_emailqueuedids['before12hour'] != '')){
+			try {
+				$this->worker->deleteTask($booktrial->customer_emailqueuedids['before12hour']);
+			}catch(\Exception $exception){
+				Log::error($exception);
+			}
+		}
+
+		if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
+			try {
+				$this->worker->deleteTask($booktrial->customer_emailqueuedids['after2hour']);
+			}catch(\Exception $exception){
+				Log::error($exception);
+			}
+
+		}
+
+		if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
+			try{
+				$this->worker->deleteTask($booktrial->customer_smsqueuedids['before1hour']);
+			}catch(\Exception $exception){
+				Log::error($exception);
+			}
+		}
+
+		if((isset($booktrial->customer_smsqueuedids['after2hour']) && $booktrial->customer_smsqueuedids['after2hour'] != '')){
+			try{
+				$this->worker->deleteTask($booktrial->customer_smsqueuedids['after2hour']);
+			}catch(\Exception $exception){
+				Log::error($exception);
+			}
+		}
+
+		if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
+			try{
+				$this->worker->deleteTask($booktrial->finder_smsqueuedids['before1hour']);
+			}catch(\Exception $exception){
+				Log::error($exception);
+			}
+		}
+	 
+		$booktrialdata      =	$booktrial;
+
+		$finderid 							= 	(int) $booktrialdata['finder_id'];
+		$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+		
+		$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
+		$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+		$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+		$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+		$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+		$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+		$city_id 							=	(int) $finder['city_id'];
+		
+		$finder_vcc_email = "";
+		if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
+			$explode = explode(',', $finder['finder_vcc_email']);
+			$valid_finder_email = [];
+			foreach ($explode as $email) {
+				if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
+					$valid_finder_email[] = $email;
+				}
+			}
+			if(!empty($valid_finder_email)){
+				$finder_vcc_email = implode(",", $valid_finder_email);
+			} 
+		}
+
+		$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
+		$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
+		$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != '') ? $finder['finder_poc_for_customer_no'] : "";
+		$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+		$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+
+		$emaildata = array(
+			'customer_name' 				=>		$booktrialdata->customer_name,
+			'customer_email' 				=>		$booktrialdata->customer_email, 
+			'customer_phone' 				=>		$booktrialdata->customer_phone, 
+
+			'finder_id' 					=>		$finderid,
+			'finder_name' 					=>		$finder_name,
+			'finder_slug' 					=>		$finder_slug,
+			'finder_location' 				=>		$finder_location,
+			'finder_address' 				=>		$finder_address,
+			'finder_lat'		 			=>		$finder_lat,
+			'finder_lon'		 			=>		$finder_lon,
+			'city_id'						=>		$city_id,
+			'finder_vcc_email' 				=>		$finder_vcc_email,
+			'finder_vcc_mobile' 			=>		$finder_vcc_mobile,
+			'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
+			'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
+			'show_location_flag'			=> 		$show_location_flag,
+			'share_customer_no'				=> 		$share_customer_no,
+
+			'service_name'					=>		$booktrialdata->service_name,
+			'schedule_slot_start_time'		=>		$booktrialdata->schedule_slot_start_time,
+			'schedule_slot_end_time'		=>		$booktrialdata->schedule_slot_end_time,
+			'schedule_date'					=>		$booktrialdata->schedule_date,
+			'schedule_date_time'			=>		$booktrialdata->schedule_date_time,
+			'schedule_slot'					=>		$booktrialdata->schedule_slot,
+
+			'code'							=>		$booktrialdata->code,
+			'booktrial_actions'				=>		"",
+			'followup_date'					=>		"",
+			'followup_date_time'			=>		""
+		);
+
+		$this->customermailer->cancelBookTrial($emaildata);
+		$this->findermailer->cancelBookTrial($emaildata);
+		$this->customersms->cancelBookTrial($emaildata);
+		$this->findersms->cancelBookTrial($emaildata);
+
+		$job->delete();
+
 	}
 
-	return $booktrial->update($queueddata);
-}
+	public function bookTrialFintnessForce($booktrial,$finder){
 
+		$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
 
-
-public function updateBookTrialFintnessForce($id){
-
-	$booktrial = Booktrial::with('finder')->where('_id','=',$id)->first();
-	$fitness_force  = 	$this->fitnessforce->updateAppointment($booktrial);
-
-	if($fitness_force){
-		if($fitness_force['status'] == 200){
-			$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
-			$queueddata['fitness_force_appointment'] = $booktrial->fitness_force_appointment;
-			$queueddata['fitness_force_appointment']['appointmentid'] = $fitness_force['data']['appointmentid'];
-			$queueddata['fitness_force_appointment']['status'] = $fitness_force['data']['status'];
-			$queueddata['fitness_force_appointment']['appointmentstatus'] = $fitness_force['data']['appointmentstatus'];
-			$queueddata['fitness_force_appointment']['appointmentwith'] = $fitness_force['data']['appointmentwith'];
-			$queueddata['fitness_force_appointment']['startdate'] = $fitness_force['data']['startdate'];
-			$queueddata['fitness_force_appointment']['enddate'] = $fitness_force['data']['enddate'];
-			$queueddata['fitness_force_appointment']['starttime'] = $fitness_force['data']['starttime'];
-			$queueddata['fitness_force_appointment']['endtime'] = $fitness_force['data']['endtime'];
-		}else{
-			$queueddata['fitness_force_appointment_update'] = $fitness_force;
+		if($fitness_force){
+			if($fitness_force['status'] == 200){
+				$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+				$queueddata['fitness_force_appointment'] = $fitness_force['data'];
+			}else{
+				$queueddata['fitness_force_appointment'] = $fitness_force;
+			}
 		}
+
+		return $booktrial->update($queueddata);
 	}
 
-	return $booktrial->update($queueddata);
-}
+	public function cancelBookTrialFintnessForce($id){
+
+		$booktrial = Booktrial::with('finder')->where('_id','=',$id)->first();
+		$fitness_force  = 	$this->fitnessforce->cancelAppointment($booktrial);
+
+		if($fitness_force){
+			if($fitness_force['status'] == 200){
+				$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+				$queueddata['fitness_force_appointment'] = $booktrial->fitness_force_appointment;
+				$queueddata['fitness_force_appointment']['appointmentstatus'] = $fitness_force['data']['appointmentstatus'];
+			}else{
+				$queueddata['fitness_force_appointment_cancel'] = $fitness_force;
+			}
+		}
+
+		return $booktrial->update($queueddata);
+	}
 
 
+
+	public function updateBookTrialFintnessForce($id){
+
+		$booktrial = Booktrial::with('finder')->where('_id','=',$id)->first();
+		$fitness_force  = 	$this->fitnessforce->updateAppointment($booktrial);
+
+		if($fitness_force){
+			if($fitness_force['status'] == 200){
+				$queueddata['fitness_force_appointment_status'] = strtolower($fitness_force['data']['appointmentstatus']);
+				$queueddata['fitness_force_appointment'] = $booktrial->fitness_force_appointment;
+				$queueddata['fitness_force_appointment']['appointmentid'] = $fitness_force['data']['appointmentid'];
+				$queueddata['fitness_force_appointment']['status'] = $fitness_force['data']['status'];
+				$queueddata['fitness_force_appointment']['appointmentstatus'] = $fitness_force['data']['appointmentstatus'];
+				$queueddata['fitness_force_appointment']['appointmentwith'] = $fitness_force['data']['appointmentwith'];
+				$queueddata['fitness_force_appointment']['startdate'] = $fitness_force['data']['startdate'];
+				$queueddata['fitness_force_appointment']['enddate'] = $fitness_force['data']['enddate'];
+				$queueddata['fitness_force_appointment']['starttime'] = $fitness_force['data']['starttime'];
+				$queueddata['fitness_force_appointment']['endtime'] = $fitness_force['data']['endtime'];
+			}else{
+				$queueddata['fitness_force_appointment_update'] = $fitness_force;
+			}
+		}
+
+		return $booktrial->update($queueddata);
+	}
 
 
 }
