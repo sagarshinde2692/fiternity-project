@@ -812,21 +812,20 @@ if (strpos($string,'in') !== false){
                     "boost": 50,
                     "param2": 20
                 },
-                "script": "(doc[\'type\'].value == \'categorylocation\') ? 10 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0)"
+                "script": "(doc[\'type\'].value == \'categorylocation\') ? 10 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
 
-if ((strpos($string,'in') === true) && (strpos($string,'with') === true))
-{
-    return 'here';exit;
+if ((strpos($string,'in') === false) && (strpos($string,'with') === false))
+{    
     $indelimterscript = '{
         "script_score": {            
                 "params": {
                     "boost": 1,
                     "param2": 20
                 },
-                "script": "((doc[\'type\'].value == \'categorylocation\') || (doc[\'type\'].value == \'categorylocationoffering\') || (doc[\'type\'].value == \'categorylocationfacilities\') ? '.$categorylocationscriptboost.' : 0"
+                "script": "(doc[\'type\'].value == \'categorylocation\') ? 10 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
@@ -838,7 +837,7 @@ $withdelimeterscript = '{
                 "boost": 50,
                 "param2": 20
             },
-            "script": "((doc[\'type\'].value != \'categorylocation\') ? '.$withdelimeterboost.' : 0)"
+            "script": "((doc[\'type\'].value != \'categorylocation\') || (doc[\'type\'].value != \'vendor\') ? '.$withdelimeterboost.' : 0)"
 }                                
 },';
 
