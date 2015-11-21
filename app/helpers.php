@@ -806,6 +806,8 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster){
         
+            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
+            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -820,7 +822,7 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
             'location'                      =>      (isset($loc['name']) && $loc['name'] != '') ? $loc['name'] :"",                        
             'type'                          =>      'categorylocation',
             'slug'                          =>      "",
-            'geolocation'                   =>      array('lat' => 0.0,'lon' => 0.0)
+            'geolocation'                   =>      array('lat' => $lat,'lon' => $lon)
             );
         return $postfields_data;
     }
@@ -878,6 +880,8 @@ if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
 
     function get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $city, $cluster){
        
+            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
+            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -892,7 +896,7 @@ if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
             'location'                      =>      strtolower($loc['name']),            
             'type'                          =>      'categorylocationoffering',
             'slug'                          =>      "",
-            'geolocation'                   =>      array('lat' => 0,'lon' => 0)
+            'geolocation'                   =>       array('lat' => $lat,'lon' => $lon)
             );
         return $postfields_data;
     }
@@ -902,6 +906,8 @@ if (!function_exists(('get_elastic_autosuggest_catlocfac_doc'))){
 
     function get_elastic_autosuggest_catlocfac_doc($cat, $fac, $loc, $string, $city, $cluster){
        
+            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
+            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -916,7 +922,7 @@ if (!function_exists(('get_elastic_autosuggest_catlocfac_doc'))){
             'location'                      =>      strtolower($loc['name']),            
             'type'                          =>      'categorylocationfacilities',
             'slug'                          =>      "",
-            'geolocation'                   =>      array('lat' => 0,'lon' => 0)
+            'geolocation'                   =>       array('lat' => $lat,'lon' => $lon)
             );
         return $postfields_data;
     }
