@@ -1870,6 +1870,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function attachTrialCampaignToCustomer($cid, $campaign, $trialid){
 
+
+
 		$data 		= [];
 		$customer 	= Customer::find(intval($cid));
 		if($campaign == 'uber'){
