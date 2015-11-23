@@ -1867,6 +1867,7 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 
+
 	public function attachTrialCampaignToCustomer($cid, $campaign, $trialid){
 
 		$data 		= [];
