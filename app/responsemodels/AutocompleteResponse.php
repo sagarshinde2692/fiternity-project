@@ -3,7 +3,8 @@
 class AutocompleteResponse {
 
 	public  function __construct(){
-		$this->results = array();		
+		$this->results = array();
+		$this->meta = new \stdClass();		
 	}
 	
 	public $results;

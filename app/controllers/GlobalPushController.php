@@ -36,8 +36,8 @@ class GlobalPushController extends \BaseController
 		->with('services')
 		->active()
 		->orderBy('_id')         
-        ->whereIn('_id', array(1623))
-		->whereIn('city_id', array(1,2,3,4,8))
+        //->whereIn('_id', array(1623))
+		->whereIn('city_id', array(1))
 		->take(10000)->skip(0)
 		->timeout(400000000)
         // ->take(3000)->skip(0)                          
@@ -58,7 +58,7 @@ class GlobalPushController extends \BaseController
 			$locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
 			$locationcluster->toArray();                            
 			$postdata = get_elastic_autosuggest_doc($data, $locationcluster[0]['name']);	
-			$postfields_data = json_encode($postdata);	 			
+			$postfields_data = json_encode($postdata);			 			
 			$request = array('url' => $this->elasticsearch_url.$data['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);
 			echo es_curl_request($request);
 		}		
@@ -72,7 +72,7 @@ class GlobalPushController extends \BaseController
 			->where('cities', $city)			
 			->get();
 
-			$locationtags = Locationtag::where('cities', $city)
+			$locationtags = Location::where('cities', $city)
 			->get();
 
 			foreach ($categorytags as $cat) {
@@ -81,7 +81,7 @@ class GlobalPushController extends \BaseController
 					$string = ucwords($cat['name']).' in '.ucwords($loc['name']);					
 					$postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['city'], $cluster);
 					$postfields_data = json_encode($postdata);						
-					$request = array('url' => $this->elasticsearch_url."C".$cat['_id'].$loc['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);						
+					$request = array('url' => $this->elasticsearch_url."C".$cat['_id'].$loc['_id'], 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);											
 					echo "<br>    ---  ".es_curl_request($request);					
 				}
 			}						   
@@ -142,7 +142,7 @@ class GlobalPushController extends \BaseController
 			
 			$cityname = $this->citynames[strval($city)];
 
-			$locationtags = Locationtag::where('cities', $city)
+			$locationtags = Location::where('cities', $city)
 			->get();
 
 			$categorytag_offerings = Findercategorytag::active()				
@@ -173,7 +173,7 @@ class GlobalPushController extends \BaseController
 		foreach ($this->citylist as $key => $city) {			
 			$cityname = $this->citynames[strval($city)];
 
-			$locationtags = Locationtag::where('cities', $city)
+			$locationtags = Location::where('cities', $city)
 			->get();
 
 			$categorytags = Findercategorytag::active()
@@ -187,7 +187,7 @@ class GlobalPushController extends \BaseController
 						$cluster ='';
 						$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($fal);														
 						$postdata =  get_elastic_autosuggest_catlocfac_doc($cat, $fal, $loc, $string, $cityname, $cluster);		
-						$postfields_data = json_encode($postdata);					
+						$postfields_data = json_encode($postdata);											
 						$request = array('url' => $this->elasticsearch_url."CFL".$cat['_id'].$loc['_id'].$key1, 'port' => $this->elasticsearch_port, 'method' => 'PUT', 'postfields' => $postfields_data);		
 						echo "<br> ---  ".es_curl_request($request);	
 					}
@@ -400,6 +400,12 @@ class GlobalPushController extends \BaseController
 				"inputcat1":{
 					"type": "string",
 					"index_analyzer": "index_analyzerV2"
+				},
+				"geolocation" : {
+					"type" : "geo_point",
+					"geohash": true,
+					"geohash_prefix": true,
+					"geohash_precision": 10
 				}
 			}
 		}';
