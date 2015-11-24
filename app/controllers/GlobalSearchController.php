@@ -1043,7 +1043,6 @@ $autocompleteresponse1 = json_encode($autocompleteresponse, true);
 
 $response       =   json_decode($autocompleteresponse1,true);
 
-$this->redis->set('autocomplete:'.strval($from.$size.$lat.$lon).$string.$city, json_encode($autocompleteresponse));
 return Response::json($response);
 //}
 }
