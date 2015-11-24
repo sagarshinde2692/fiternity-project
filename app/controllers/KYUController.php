@@ -167,4 +167,68 @@ class KYUController extends \BaseController
     return Response::json($response);
   }  
 }
+
+
+public function getcitywiseviews(){
+
+$datefrom = Input::get('datefrom');
+$dateto = Input::get('dateto');
+
+$query = '{
+              "query": {
+                "filtered": {
+                  "filter": {
+                    "bool": {
+                      "must": [
+                        {
+                          "exists": {
+                            "field": "city"
+                          }
+                        },
+                        {
+                          "range": {
+                            "timestamp": {
+                              "gte": "'.$datefrom.'",
+                              "lte": "'.$dateto.'"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              "aggs": {
+                "cityname": {
+                  "terms": {
+                    "field": "city",
+                    "size": 100
+                  },
+                  "aggs": {
+                    "eventtype": {
+                      "terms": {
+                        "field": "event_id",
+                        "size": 100
+                      }
+                    }
+                  }
+                }
+              }
+            }';
+           
+    $request = array( 
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $query
+    );
+
+  $search_results1     =   es_curl_request($request);
+  $search_results = json_decode($search_results1, true);  
+  $response = array();
+  foreach ($search_results['aggregations']['cityname']['buckets'] as $agg) {
+     array_push($response, array($agg['key'] => $agg['eventtype']['buckets']));
+  }
+  return $response;
+}
 }

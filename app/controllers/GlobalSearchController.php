@@ -664,29 +664,24 @@ catch(Exception $e){
 
 public function newglobalsearch(){
 
-   $from    =         Input::json()->get('offset')['from'];
-   $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
-   $string  =         Input::json()->get('keyword');
-   $city    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
-   $lat     =         Input::json()->get('location')['lat'] ? Input::json()->get('location')['lat'] : '';
-   $lon     =         Input::json()->get('location')['long'] ? Input::json()->get('location')['long'] : '';
+   $from     =         Input::json()->get('offset')['from'];
+   $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+   $string   =         Input::json()->get('keyword');
+   $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+   $location =         Input::json()->get('location');
+   $lat      =         isset($location['lat']) ? $location['lat'] : '';
+   $lon      =         isset($location['long']) ? $location['long'] : '';
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
-        $redisdata=$this->redis->get('autocomplete:'.strval($from.$size.$lat.$lon).$string.$city);
-        if(isset($redisdata)){           
-        $response       =   json_decode($redisdata,true);
-        return Response::json($response);
-        }
-        else{
-                   
-        $string1 = $this->removeCommonWords($string);
-
-        $keylist = explode(" ", $string1);
         
+        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with ");
+        $string1 = str_replace($stopwords, " ", $string);
+        $keylist   =         explode(" ", $string1); 
+                
         $geofunction = 50;
         $geo_boost = 20;
-        $inputboost = 100;
+        $inputboost = 150;
         $inputv2boost = 25;
         $inputv3boost = 50;
         $inputv4boost = 40;
@@ -835,7 +830,7 @@ if ((strpos($string,'in') === false) && (strpos($string,'with') === false))
                     "boost": 1,
                     "param2": 20
                 },
-                "script": "(doc[\'type\'].value == \'categorylocation\') ? 10 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+                "script": "(doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
@@ -1020,7 +1015,7 @@ $query = '{
             "type",
             "slug",
             "inputcat1",
-            "inputcat"        
+            "inputcat"
             ],
     "from": '.$from.',
     "size": '.$size.',
@@ -1048,8 +1043,7 @@ $autocompleteresponse1 = json_encode($autocompleteresponse, true);
 
 $response       =   json_decode($autocompleteresponse1,true);
 
-$this->redis->set('autocomplete:'.strval($from.$size.$lat.$lon).$string.$city, json_encode($autocompleteresponse));
 return Response::json($response);
-}
+//}
 }
 }
