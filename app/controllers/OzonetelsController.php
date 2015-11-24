@@ -378,5 +378,22 @@ class OzonetelsController extends \BaseController {
 		return $path;
 	}
 
+	public function outbound(){
+
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+
+			$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+
+		}else {
+
+			$this->ozonetelResponse->addPlayText("This call is recorderd for response");
+
+		    $this->ozonetelResponse->addHangup();
+		}
+		
+		$this->ozonetelResponse->send();
+
+	}
+
 
  }
