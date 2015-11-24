@@ -9,17 +9,21 @@
 
 use App\Services\OzonetelResponse as OzonetelResponse;
 use App\Services\OzonetelCollectDtmf as OzonetelCollectDtmf;
+use App\Services\OzontelOutboundCall as OzontelOutboundCall;
+
 use Guzzle\Http\Client;
 
 class OzonetelsController extends \BaseController {
 
 	protected $ozonetelResponse;
 	protected $ozonetelCollectDtmf;
+	protected $ozontelOutboundCall;
 
-	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf) {
+	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall) {
 
 		$this->ozonetelResponse	=	$ozonetelResponse;
 		$this->ozonetelCollectDtmf	=	$ozonetelCollectDtmf;
+		$this->ozontelOutboundCall	=	$ozontelOutboundCall;
 
 	}
 
@@ -378,7 +382,13 @@ class OzonetelsController extends \BaseController {
 		return $path;
 	}
 
-	public function outbound(){
+	public function outboundCallSend(){
+
+		$this->ozonetelResponse->call();
+
+	}
+
+	public function outboundCallRecive(){
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
