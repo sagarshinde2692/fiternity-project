@@ -1867,12 +1867,13 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 
-	public function attachTrialCampaignToCustomer($cid, $campaign, $trialid){
+
+	public function attachTrialCampaignToCustomer($cid, $campaign, $trialid = ''){
 
 		$data 		= [];
 		$customer 	= Customer::find(intval($cid));
-		if($campaign == 'uber'){
-			$data['uber_trials'] = $customer->uber_trials.','$trialid;
+		if($campaign == 'uber' && $trialid != ''){
+			$data['uber_trials'] = $customer->uber_trials.','.$trialid;
 		}
 
 		return $customer->update($data);

@@ -38,8 +38,8 @@ Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
-Route::get('/offers/{city?}{from?}/{size?}', 'HomeController@getOffers');
-Route::get('/offertabs/{city?}', 'HomeController@getOffersTabs');
+Route::get('offers/{city?}/{from?}/{size?}', 'HomeController@getOffers');
+Route::get('offertabs/{city?}', 'HomeController@getOffersTabs');
 
 
 ##############################################################################
