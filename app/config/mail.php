@@ -84,7 +84,7 @@ return array(
 	*/
 
 	//'username' => 'AKIAIXLA3VSY4HJ4TAKQ',
-	'username' => 'AKIAJEDRETUNAAFNJ5YA',
+	'username' => 'AKIAIJGBNFVTKGSWNRQQ',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -98,7 +98,7 @@ return array(
 	*/
 
 	// 'password' => 'AsIHtNFlhfep4qutkJqMcQcxrb6sYBkCoTlINuZE13U6',
-	'password' => 'AtvqKHulVqOUR3MhzDjxrKkbarYWreggUcQsav8tEz5r',
+	'password' => 'AgZFYm2ERCE5a4P6LbAeMP/hOnlz4Th2hJe9E+I1tuZ8',
 
 	/*
 	|--------------------------------------------------------------------------

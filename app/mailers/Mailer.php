@@ -102,25 +102,29 @@ abstract Class Mailer {
 	}
 
 
+	//scheduled/inprocess/done
+	//email_template,template_data,message_data,delay_time,status,_id,type,to,message,delay_time,status,_is,type
+
 	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
-		$worker = new IronWorker(array(
-		    'token' => Config::get('queue.connections.ironworker.token'),
-    		'project_id' => Config::get('queue.connections.ironworker.project')
-		));
-		
 		if($delay !== 0){
-			$delay = $this->getSeconds($delay);
+			$delay = strtotime($delay);
 		}
-	
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
-		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-		$queue_name = 'MailerApi';
 
-		$messageid = $worker->postTask($queue_name,$payload,$options);
+        $scheduler  = new \Schedulerjob();
+		$scheduler->_id = \Schedulerjob::max('_id') + 1;        
+		$scheduler->email_template = $email_template;
+        $scheduler->template_data = $template_data;
+        $scheduler->message_data = $message_data;
+        $scheduler->delay = $delay;
+        $scheduler->priority = $priority;
+        $scheduler->label = $label;
+        $scheduler->type = 'email';
+        $scheduler->status = 'scheduled';
 
-		return $messageid;
+        $scheduler->save();
 
+        return $scheduler->_id;
 	}
 
 
@@ -144,5 +148,28 @@ abstract Class Mailer {
 		return $messageid;
 
 	}
+
+	public function sendToWorkerBk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		$worker = new IronWorker(array(
+		    'token' => Config::get('queue.connections.ironworker.token'),
+    		'project_id' => Config::get('queue.connections.ironworker.project')
+		));
+		
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
+		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+		$queue_name = 'MailerApi';
+
+		$messageid = $worker->postTask($queue_name,$payload,$options);
+
+		return $messageid;
+
+	}
+
+
 
 }

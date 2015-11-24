@@ -112,24 +112,28 @@ abstract Class VersionNextSms {
         return time();
     }
 
+    //scheduled/inprocess/done
+    //email_template,template_data,message_data,delay_time,status,_id,type,to,message,delay_time,status,_is,type
+
     public function sendToWorker($to, $message, $label = 'label', $priority = 0, $delay = 0){
 
-        $worker = new IronWorker(array(
-            'token' => Config::get('queue.connections.ironworker.token'),
-            'project_id' => Config::get('queue.connections.ironworker.project')
-        ));
-        
         if($delay !== 0){
-            $delay = $this->getSeconds($delay);
+            $delay = strtotime($delay);
         }
-    
-        $payload = array('to'=>$to,'message'=>$message);
-        $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-        $queue_name = 'SmsApi';
 
-        $messageid = $worker->postTask($queue_name,$payload,$options);
+        $scheduler  = new \Schedulerjob();
+        $scheduler->_id = \Schedulerjob::max('_id') + 1;       
+        $scheduler->to = $to;
+        $scheduler->message = $message;
+        $scheduler->delay = $delay;
+        $scheduler->priority = $priority;
+        $scheduler->label = $label;
+        $scheduler->type = 'sms';
+        $scheduler->status = 'scheduled';
 
-        return $messageid;
+        $scheduler->save();
+
+        return $scheduler->_id;
 
     }
 
@@ -147,6 +151,27 @@ abstract Class VersionNextSms {
         $payload = array('to'=>$to,'message'=>$message);
         $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
         $queue_name = 'TestSmsApi';
+
+        $messageid = $worker->postTask($queue_name,$payload,$options);
+
+        return $messageid;
+
+    }
+
+    public function sendToWorkerBk($to, $message, $label = 'label', $priority = 0, $delay = 0){
+
+        $worker = new IronWorker(array(
+            'token' => Config::get('queue.connections.ironworker.token'),
+            'project_id' => Config::get('queue.connections.ironworker.project')
+        ));
+        
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+    
+        $payload = array('to'=>$to,'message'=>$message);
+        $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+        $queue_name = 'SmsApi';
 
         $messageid = $worker->postTask($queue_name,$payload,$options);
 
