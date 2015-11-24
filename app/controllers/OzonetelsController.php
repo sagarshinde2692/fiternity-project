@@ -384,7 +384,9 @@ class OzonetelsController extends \BaseController {
 
 	public function outboundCallSend(){
 
-		$this->ozonetelResponse->call();
+		$result = $this->ozontelOutboundCall->call();
+
+		echo"<pre>";print_r($result);exit;
 
 	}
 
