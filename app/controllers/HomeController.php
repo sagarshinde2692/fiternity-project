@@ -118,6 +118,8 @@ class HomeController extends BaseController {
 				}else{
 					$data['service_ratecards'] =  (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards']  : [];
 				}
+
+				array_push($feature_services, $data);
 			}
 
 			$homedata 				= 	array('categorytags' => $categorytags,
