@@ -185,6 +185,7 @@ Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexse
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
 Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
+Route::post('getcitywiseviews','KYUController@getcitywiseviews');
 
 /************************KYU SECTION END HERE******************************************/
 ########################################################################################
