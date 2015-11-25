@@ -63,7 +63,7 @@ Route::get('/updateservices', function() {
 			array_set($Servicedata, 'trialschedules', $service_trialschedules);
 			$response = $Service->update($Servicedata);
 			echo "<br>$response";
-			if($val == 4){ exit(); }
+			// if($val == 4){ exit(); }
 			// exit();
 		}
 	}
