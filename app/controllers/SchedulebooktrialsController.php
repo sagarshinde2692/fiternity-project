@@ -109,7 +109,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function getTrialSchedule($finderid,$date = null){
 
-		$dobj = new DateTime;print_r($dobj);
+		// $dobj = new DateTime;print_r($dobj);
 
 		$currentDateTime 		=	\Carbon\Carbon::now();
 		$finderid 				= 	(int) $finderid;
