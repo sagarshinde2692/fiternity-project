@@ -183,10 +183,11 @@ Route::get('export', function() {
 	];
 
 	$output = "ID,  NAME, COMMERCIALTYPE Type, EMAIL, No of TICKETS BOOKED, TICKET RATE, ORDER TOTAL\n";
-	$items = Finder::where('status', '1')->take(10000)->skip(0)->groupBy('slug')->get(array('slug'));
+	$items = Finder::where('status', '1')->where('status', '1')->take(10000)->skip(0)->get();
 
 	foreach ($orders as $key => $value) {
 
+		// $output .= "$value[id], $value[first_name] $value[last_name], $value[contact], $value[email], $value[quantity], $value[price], $value[total]\n";
 		$output .= "$value[id], $value[first_name] $value[last_name], $value[contact], $value[email], $value[quantity], $value[price], $value[total]\n";
 	}
 
@@ -328,14 +329,13 @@ Route::get('capturedata', function() {
 	// $items = Finder::active()->get();
 	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
 	$items = Finder::active()->with('city')->with('location')->with('category')
-	->whereIn('category_id',array(5,6,7,8,9,11,12,13,14,32,35,36,43))
-	->whereIn('locationtags',array(28,29,27,35,135,26,51,52,43,44,8,31,59,60,21,50,6,63,23))
+	->whereIn('category_id',array(41))
 	->orderBy('_id')->take(3000)->skip(0)
 	->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','location_id','contact','locationtags'));
 
 	$data = array();
 
-	$fp = fopen('finder1.csv', 'w');
+	$fp = fopen('newfinder.csv', 'w');
 	$header = ["ID", "SLUG", "CITY", "CATEGORY",  "LOCAITONTAG", "FINDERTYPE", "COMMERCIALTYPE", "Contact-address", "Contact-email", "Contact-phone", "finder_vcc_email", "finder_vcc_mobile"  ];
 	fputcsv($fp, $header);
 
@@ -369,7 +369,7 @@ Route::get('capturedata', function() {
 
 	fclose($fp);
 	
-	return "done";
+	return "newfinder";
 	return Response::make(rtrim($output, "\n"), 200, $headers);
 
 });

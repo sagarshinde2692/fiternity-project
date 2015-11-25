@@ -308,6 +308,34 @@ class SchedulebooktrialsController extends \BaseController {
 
 
 	/**
+	 * Update Book A Trial.
+	 *
+	 */
+
+	public function updateBookTrial() {
+
+		$data = Input::json()->all();
+
+		if(empty($data['booktrial_id'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - booktrial_id");
+			return  Response::json($resp, 400);
+		}
+
+		$booktrial_id = intval(Input::json()->get('booktrial_id'));
+		$customer_reminder_need_status = Input::json()->get('customer_reminder_need_status');
+		$booktrialdata = array(
+			'customer_reminder_need_status' 		=>		$customer_reminder_need_status
+
+		}
+		$booktiral 				= 	Booktrial::findOrFail($booktrial_id);
+		$booktiral_response 	=	$booktiral->update($booktrialdata);
+
+		$resp 	= 	array('status' => 200,'message' => "Book Trial Update Sucessfully");
+		return Response::json($resp,200);
+
+	}
+
+	/**
 	 * Booked Manual Book A Trial.
 	 *
 	 */
