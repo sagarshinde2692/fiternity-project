@@ -25,9 +25,9 @@ Route::get('/updateservices', function() {
 					$weekwiseslot['slots']		=	[];
 					foreach ($trials['slots'] as $k => $val) {
 						$newslot = ['start_time' => $val['start_time'], 
-						'start_time_24_hour_format' => $val['start_time_24_hour_format'], 
+						'start_time_24_hour_format' => (string)$val['start_time_24_hour_format'], 
 						'end_time' => $val['end_time'], 
-						'end_time_24_hour_format' => $val['end_time_24_hour_format'], 
+						'end_time_24_hour_format' => (string) $val['end_time_24_hour_format'], 
 						'slot_time' => $val['slot_time'], 
 						'limit' => (intval($val['limit'])) ? intval($val['limit']) : 0,
 						'price' => (intval($val['price']) == 100) ? 0 : intval($val['price']) 
