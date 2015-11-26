@@ -325,8 +325,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer_reminder_need_status = Input::json()->get('customer_reminder_need_status');
 		$booktrialdata = array(
 			'customer_reminder_need_status' 		=>		$customer_reminder_need_status
-
-		}
+		);
 		$booktiral 				= 	Booktrial::findOrFail($booktrial_id);
 		$booktiral_response 	=	$booktiral->update($booktrialdata);
 
