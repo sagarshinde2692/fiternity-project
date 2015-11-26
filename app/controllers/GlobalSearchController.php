@@ -666,7 +666,7 @@ public function newglobalsearch(){
 
    $from     =         Input::json()->get('offset')['from'];
    $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
-   $string   =         Input::json()->get('keyword');
+   $string   =         strtolower(Input::json()->get('keyword'));
    $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
    $location =         Input::json()->get('location');
    $lat      =         isset($location['lat']) ? $location['lat'] : '';
@@ -675,7 +675,7 @@ public function newglobalsearch(){
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
         
-        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with "," - ");
+        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with "," - ","class", "classes");
         $string1 = str_replace($stopwords, " ", $string);
         $keylist   = explode(" ", $string1); 
                 
