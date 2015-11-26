@@ -130,7 +130,10 @@ return array(
 			'port'     => 6379,
 			'database' => 0,
 			),
-
+		'newredis' => array(
+			'host'	   => '54.169.133.240',
+			'port'	   => 6379,
+			'database' => 0,
+			),
 		),
-
 	);

@@ -22,7 +22,7 @@ Class SmsVersionNext {
         $base_uri = ($base_uri) ? $base_uri : $this->base_uri;
         $this->client = new Client( ['debug' => $debug, 'base_uri' => $base_uri] );
         $this->username_fitternity = 'vnt-fitternity';
-        $this->password_fitternity = 'india123';
+        $this->password_fitternity = 'vishwas1';
         $this->username_fitpromo = 'vnt-fitpromo';
         $this->password_fitpromo = 'india123';
     }

@@ -1,13 +1,14 @@
+ServiceRankkingController.php
 <?php
 /**
  * Controller to generate rankings for finder docs
  * Created by PhpStorm.
  * User: ajay
- * Date: 14/7/15
+ * Date: 25/9/15
  * Time: 11:22 AM
  */
 
-class RankingController extends \BaseController {
+class ServiceRankingController extends \BaseController {
 
     protected  $gauss_decay     =   0.30;
     protected  $gauss_scale     =   5;
@@ -53,10 +54,10 @@ class RankingController extends \BaseController {
         $this->popularity_min                   =   0;
     }
 
-    public function IndexRankMongo2Elastic(){
+    public function IndexServiceRankMongo2Elastic(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $citykist      =    array(1,3,4,8);
+        $citykist      =    array(1,2,3,4);
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
                             ->with(array('city'=>function($query){$query->select('name');}))
                             ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -64,81 +65,62 @@ class RankingController extends \BaseController {
                             ->with('categorytags')
                             ->with('locationtags')
                             ->with('offerings')
-                            ->with('facilities')
-                            ->with('services')
+                            ->with('facilities')                            
                             ->active()
-                            ->orderBy('_id')
-                            //->whereIn('category_id', array(42,45))
-                            //->whereIn('_id', array(1))
+                            ->orderBy('_id')                            
+                            //->whereIn('_id', array(1664))
                             ->whereIn('city_id', $citykist)
                             ->take(10000)->skip(0)
-                            ->timeout(400000000)
-                            // ->take(3000)->skip(0)
-                            //->take(3000)->skip(3000)
-                            ->get();  
-      
-        foreach ($items as $finderdocument) {           
-                $data = $finderdocument->toArray();
-                $score = $this->generateRank($finderdocument);
-                //$trialdata = get_elastic_finder_trialschedules($data);               
-                $clusterid = '';
-                if(!isset($data['location']['locationcluster_id']))
+                            ->timeout(4000000000000)
+                            ->get(); 
+            
+        foreach ($items as $finderdocument) {          
+                $finderdata = $finderdocument->toArray();
+                $score = $this->generateRank($finderdocument);                
+                $serviceitems = Service::with('category')
+                                    ->with('subcategory')
+                                    ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+                                    ->where('finder_id',$finderdata['_id'])                                    ->active()
+                                    ->latest()
+                                    ->get();
+                if(isset($serviceitems) && (!empty($serviceitems))){                                   
+                foreach ($serviceitems as $servicedocument) {                                 
+                $servicedata = $servicedocument->toArray();
+                $clusterid = '';             
+                if(!isset($servicedata['location']['locationcluster_id']))
                 {
                      continue;
                 }
                 else
                 {
-                    $clusterid  = $data['location']['locationcluster_id'];
+                    $clusterid  = $servicedata['location']['locationcluster_id'];
                 }
-                                
-                $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
-                $locationcluster->toArray();
-                $range = (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "";
-                $rangeval = 0;
-                switch ($range) {
-                                                           case 'one':
-                                                               $rangeval = 1;
-                                                               break;
-                                                           case 'two':
-                                                               $rangeval = 2;
-                                                               break;
-                                                            case 'three':
-                                                               $rangeval = 3;
-                                                               break;
-                                                            case 'four':
-                                                               $rangeval = 4;
-                                                               break;
-                                                            case 'five':
-                                                              $rangeval = 5;
-                                                               break;
-                                                            case 'six':
-                                                              $rangeval = 6;
-                                                               break;
-                                                           default:
-                                                              $rangeval = 0;
-                                                               break;
-                                                       }                                                   
-                $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);             
+                             
+                $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();                
+                $locationcluster->toArray(); 
+
+                $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);             
                 $postdata['rank'] = $score;
-                $catval = evalBaseCategoryScore($finderdocument['category_id']);
+                $catval = evalBaseCategoryScore($finderdata['category_id']);
                 $postdata['rankv1'] = $catval;
-                $postdata['rankv2'] = $score + $catval;
-                $postfields_data = json_encode($postdata);
-                //return $postfields_data;exit;                                                  
-                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
+                $postdata['rankv2'] = $score + $catval;                      
+                $postfields_data = json_encode($postdata);                                     
+                //echo pretty($postfields_data['rank']);exit;
+                //var_dump($postfields_data['rank']);exit;
+                //return $postfields_data;               
+                //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];              
+                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."servicemarketplace1/service/" . $servicedata['_id'];
                 //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
                 $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
                 echo "<br>$posturl    ---  ".es_curl_request($request);
         }
-
-
+    }
+    }
     }
     public function generateRank($finderDocument = ''){
-
         //$finderCategory = $finderDocument['category'];
-
         $score = (8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/13;
         return $score;
 
@@ -214,7 +196,7 @@ class RankingController extends \BaseController {
     public function embedTrialsBooked(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $items = Finder::active()->orderBy('_id')->take(100000)->skip(0)->get();        
+        $items = Finder::active()->orderBy('_id')->take(1000)->skip(4400)->get();        
         foreach($items as $item)
         {
             $Reviews = Review::active()->where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->get()->count();

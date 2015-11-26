@@ -69,7 +69,9 @@ public function sendSMS($smsdata){
 
 	$to = $smsdata['send_to'];
 	$message = $smsdata['message_body'];
-	$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+	$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+    // $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $live_url);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -87,6 +89,8 @@ public function postCapture(){
 
 	//set default status
 	array_set($data, 'capture_status', 'yet to connect');
+	$uuid = random_numbers(6);
+	array_set($data, 'uuid', $uuid);
 
 	$storecapture = Capture::create($data);
 	if($storecapture){
@@ -101,9 +105,18 @@ public function postCapture(){
 			];
 			$this->sendSMS($smsdata);
 		}
-	}
 
-	return Response::json($storecapture);
+		if(Input::json()->get('capture_type') == 'kutchi-minithon' && Input::json()->get('phone') != ''){
+
+			$smsdata = [
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=> "Dear ".Input::json()->get('name').". You have successfully registered for Royal Diamonds Kutchi Minithon 2016 under category of ".Input::json()->get('participation_category').".Your unique registration ID is ".$uuid.". Don't delete this message. This message is important for collecting Race BIB and Goodie Bag."
+			];
+			$this->sendSMS($smsdata);
+		}
+
+	}
+	return Response::json($storecapture, 200);
 }	
 
 }

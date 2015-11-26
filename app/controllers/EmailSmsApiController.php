@@ -11,7 +11,8 @@ class EmailSmsApiController extends \BaseController {
 
 		$to = $smsdata['send_to'];
 		$message = $smsdata['message_body'];
-		$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+		// $live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
+		$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $live_url);
 		curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -30,21 +31,13 @@ class EmailSmsApiController extends \BaseController {
 		$email_subject 			= 	ucfirst($emaildata['email_subject']);		
 		$send_bcc_status 		= 	$emaildata['send_bcc_status'];
 		
-		//array_push($email_lists,$reciver_email);
-		// foreach ($email_lists as $email){			
-		// 	Mail::queue($email_template, $email_template_data, function($message) use ($email,$reciver_name,$email_subject){
-		// 		$message->to($email, $reciver_name)->subject($email_subject);
-		// 	});
-		// }
-
-		//return "$to";exit;
 
 		if($send_bcc_status == 1){
-			Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
 				$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
 			});			
 		}else{
-			Mail::queue($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
+			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
 				$message->to($to, $reciver_name)->subject($email_subject);
 			});			
 		}
@@ -69,51 +62,6 @@ class EmailSmsApiController extends \BaseController {
 		/* Queue:push(function($job) use ($data){ $data['string']; $job->delete();  }); */
 	}
 
-	public function RequestCallback() {
-		
-		$vendor = Input::json()->get('vendor');
-
-		if($vendor != ''){
-			$subject = 'Request A Callback '.$vendor;
-		}else{
-			$subject = 'Request A Callback';
-		}
-
-		$data = array(
-			'capture_type' 	=>		'request_callback',	
-			'city_id' => Input::json()->get('city_id'),
-			'vendor' => Input::json()->get('vendor'), 
-			'name' => Input::json()->get('name'), 
-			'email' => Input::json()->get('email'), 
-			'phone' => Input::json()->get('phone'),
-			'preferred_time' => Input::json()->get('preferred_time'),
-			'date' => date("h:i:sa")        
-			);
-
-		array_set($data, 'capture_status', 'yet to connect');
-
-		$emaildata = array(
-			'email_template' => 'emails.callback', 
-			'email_template_data' => $data, 
-			'to'				=> 	Config::get('mail.to_neha'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
-			'email_subject' 	=> $subject,
-			'send_bcc_status' 	=> 1
-			);
-
-		$this->sendEmail($emaildata);
-		
-		$smsdata = array(
-			'send_to' => Input::json()->get('phone'),
-			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
-			);
-		$this->sendSMS($smsdata);
-
-		$storecapture = Capture::create($data);
-
-		$resp = array('status' => 200,'message' => "Recieved the Request");
-		return Response::json($resp);
-	}
 
 	public function BookTrial() {
 
@@ -263,7 +211,7 @@ class EmailSmsApiController extends \BaseController {
 	public function refundfivefitnesscustomer(){
 		
 		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
-			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+			return Response::json(array('status' => 400,'message' => "Invalid Email Id"),400);			
 		}
 
 		$emaildata = array(
@@ -295,49 +243,11 @@ class EmailSmsApiController extends \BaseController {
 		return Response::json($resp);
 	}
 
-	public function landingpagecallback(){
-		
-		$emaildata = array(
-			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
-			'email_template_data' => $data = array(
-				'name' => Input::json()->get('name'), 
-				'email' => Input::json()->get('email'), 
-				'phone' => Input::json()->get('phone'),
-				'findertitle' => Input::json()->get('title'),
-				'location' => Input::json()->get('location'),
-				'date' => date("h:i:sa")        
-				), 
-			'to'				=> 	Config::get('mail.to_neha'), 
-			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'), 
-			'email_subject' 	=> Input::json()->get('subject'),
-			'send_bcc_status' 	=> 1 
-			);
-		$this->sendEmail($emaildata);
-
-		$data 			= Input::json()->all();
-		array_set($data, 'capture_status', 'yet to connect');
-
-		$storecapture 	= Capture::create($data);
-
-		if(Input::json()->get('capture_type') == 'FakeBuy'){
-
-			// $smsdata = array( 
-			// 'send_to' => Input::json()->get('phone'),
-			// 	'message_body'=>'Hi '.Input::json()->get('name').', Your registration code is '.$code
-			// 	);
-
-			// $this->sendSMS($smsdata);
-		}
-
-
-		$resp 			= array('status' => 200,'message' => "Recieved the Request");
-		return Response::json($resp);
-	}
 
 	public function landingpageregister(){
 		
 		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
-			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+			return Response::json(array('status' => 400,'message' => "Invalid Email Id"),400);			
 		}
 
 		$emaildata = array(
@@ -374,7 +284,7 @@ class EmailSmsApiController extends \BaseController {
 	public function landingconversion(){
 		
 		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
-			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+			return Response::json(array('status' => 400,'message' => "Invalid Email Id"),400);			
 		}
 
 		$emaildata = array(
@@ -411,7 +321,7 @@ class EmailSmsApiController extends \BaseController {
 	public function registerme(){
 
 		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
-			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+			return Response::json(array('status' => 400,'message' => "Invalid Email Id"),400);			
 		}
 
 		$emaildata = array(
@@ -434,7 +344,7 @@ class EmailSmsApiController extends \BaseController {
 	public function offeravailed(){
 		
 		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
-			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+			return Response::json(array('status' => 400,'message' => "Invalid Email Id"),400);			
 		}
 
 		$data = array(
@@ -511,10 +421,105 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 
+
+
+
+
+
+
+	public function landingpagecallback(){
+		
+		$emaildata = array(
+			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
+			'email_template_data' => $data = array(
+				'name' => Input::json()->get('name'), 
+				'email' => Input::json()->get('email'), 
+				'phone' => Input::json()->get('phone'),
+				'findertitle' => Input::json()->get('title'),
+				'location' => Input::json()->get('location'),
+				'date' => date("h:i:sa")        
+				), 
+			'to'				=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'), 
+			'email_subject' 	=> Input::json()->get('subject'),
+			'send_bcc_status' 	=> 1 
+			);
+		$this->sendEmail($emaildata);
+
+		$data 			= Input::json()->all();
+		array_set($data, 'capture_status', 'yet to connect');
+
+		$storecapture 	= Capture::create($data);
+
+		if(Input::json()->get('capture_type') == 'FakeBuy'){
+
+			// $smsdata = array( 
+			// 'send_to' => Input::json()->get('phone'),
+			// 	'message_body'=>'Hi '.Input::json()->get('name').', Your registration code is '.$code
+			// 	);
+
+			// $this->sendSMS($smsdata);
+		}
+
+
+		$resp 			= array('status' => 200,'message' => "Recieved the Request");
+		return Response::json($resp);
+	}
+
+	
+	public function RequestCallback() {
+		
+		$vendor = Input::json()->get('vendor');
+
+		if($vendor != ''){
+			$subject = 'Request A Callback '.$vendor;
+		}else{
+			$subject = 'Request A Callback';
+		}
+
+		$data = array(
+			'capture_type' 	=>		'request_callback',	
+			'vendor' => Input::json()->get('vendor'), 
+			'city_id' => (Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : '', 
+			'finder_id' => (Input::json()->get('finder_id')) ? intval(Input::json()->get('finder_id')) : '', 
+			'name' => Input::json()->get('name'), 
+			'email' => Input::json()->get('email'), 
+			'phone' => Input::json()->get('phone'),
+			'preferred_time' => Input::json()->get('preferred_time'),
+			'date' => date("h:i:sa")        
+			);
+
+		array_set($data, 'capture_status', 'yet to connect');
+
+		$emaildata = array(
+			'email_template' => 'emails.callback', 
+			'email_template_data' => $data, 
+			'to'				=> 	Config::get('mail.to_neha'), 
+			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
+			'email_subject' 	=> $subject,
+			'send_bcc_status' 	=> 1
+			);
+
+		$this->sendEmail($emaildata);
+		
+		$smsdata = array(
+			'send_to' => Input::json()->get('phone'),
+			'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
+			);
+		$this->sendSMS($smsdata);
+
+		$storecapture = Capture::create($data);
+
+		$resp = array('status' => 200,'message' => "Recieved the Request");
+		return Response::json($resp);
+	}
+
+
+
 	public function not_able_to_find(){
 		
 		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
-			return Response::json(array('status' => 404,'message' => "Invalid Email Id"),404);			
+			return Response::json(array('status' => 400,'message' => "Invalid Email Id"),400);			
 		}
 
 		$data = array(				

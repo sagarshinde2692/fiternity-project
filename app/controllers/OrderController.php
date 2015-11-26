@@ -29,11 +29,13 @@ class OrderController extends \BaseController {
 
 		$data		=	Input::json()->all();
 		if(empty($data['order_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['status'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
+			return  Response::json($resp, 400);
 		}
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
@@ -67,73 +69,90 @@ class OrderController extends \BaseController {
 		$data				=	Input::json()->all();
 
 		if(empty($data['customer_name'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['customer_email'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_email");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_email");
+			return  Response::json($resp, 400);
 		}
 
 		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-			return $resp 	= 	array('status' => 404,'message' => "Invalid Email Id");
+			$resp 	= 	array('status' => 400,'message' => "Invalid Email Id");
+			return  Response::json($resp, 400);
 		} 
 		
 		if(empty($data['customer_identity'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_identity");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['customer_phone'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_phone");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['customer_source'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_source");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_source");
+			return  Response::json($resp, 400);
 		}
 		
 		if(empty($data['customer_location'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_location");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['city_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
+			return  Response::json($resp, 400);
 		}	
 
 		if(empty($data['finder_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['finder_name'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_name");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
+			return  Response::json($resp, 400);
 		}	
 
 		if(empty($data['finder_address'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_address");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - finder_address");
+			return  Response::json($resp, 400);
 		}	
 
 		if(empty($data['service_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_id");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['service_name'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
+			return  Response::json($resp, 400);
 		}
 		
 		if(empty($data['service_duration'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_duration");
+			return  Response::json($resp, 400);
 		}
 
 		if(empty($data['type'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing Order Type - type");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing Order Type - type");
+			return  Response::json($resp, 400);
 		}
 
 		if (!in_array($data['type'], $this->ordertypes)) {
-			return $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
+			$resp 	= 	array('status' => 400,'message' => "Invalid Order Type");
+			return  Response::json($resp, 400);
 		}
 
 		//Validation base on order type
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'|| $data['type'] == 'zumbathon'){
 			if( empty($data['service_duration']) ){
-				return $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
+				$resp 	= 	array('status' => 400,'message' => "Data Missing - service_duration");
+				return  Response::json($resp, 400);
 			}
 		}
 
@@ -178,7 +197,7 @@ class OrderController extends \BaseController {
 		// $userdata	=	array_except(Input::all(), array());
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
-
+		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
 		// $required_fiels = ['customer_name', ];
 
 		if(empty($data['customer_name'])){
@@ -270,7 +289,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type for sms body and email body  zumbathon','booiaka
-		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub'){
+		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon'){
 			if( empty($data['sms_body']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - sms_body");
 				return Response::json($resp,404);				
@@ -318,10 +337,12 @@ class OrderController extends \BaseController {
 
 		$data		=	Input::json()->all();
 		if(empty($data['order_id'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - order_id");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
+			return  Response::json($resp, 400);
 		}
 		if(empty($data['status'])){
-			return $resp 	= 	array('status' => 404,'message' => "Data Missing - status");
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
+			return  Response::json($resp, 400);
 		}
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
@@ -342,7 +363,7 @@ class OrderController extends \BaseController {
 			$customer->_id = $inserted_id;
 			$customer->name = ucwords($data['customer_name']) ;
 			$customer->email = $data['customer_email'];
-			$customer->picture = "http://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=http%3A%2F%2Fb.fitn.in%2Favatar.png";
+			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
 			if(isset($customer['customer_phone'])){
 				$customer->contact_no = $data['customer_phone'];
@@ -407,7 +428,7 @@ class OrderController extends \BaseController {
 		$buydealofday 			=	$order->update(['status' => '1']);
 		$sndsSmsCustomer		= 	$this->customersms->buyLandingpagePurchase($orderData);
 
-		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+		if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
 			$order->update(['email_not_sent'=>'buyLandingpagePurchase']);
 		}else{
 			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
@@ -419,9 +440,36 @@ class OrderController extends \BaseController {
 	}
 
 
+	public function exportorders() {
+
+		$order_ids 	=	[5754,5783,5786,5789,5791,5800,5806,5823,5826,5827,5881,5801,5807,5809,5822,5831,5835,5837,5839,5857,5890,5891,5892,5896,5897,5903,5925,5947,5984,5985,5996,5998,6000,6006,6007,6008,6011,6014,6019,6021,6023,6035,6044,6045,6056,6066,6068,6071,6073,6074,6077,6097,6102,6103,6105,6107,6110,6111,6122,6124,6126,6127,6129,6131,6132,6135,6137,6138,6139,6142,6146,6152,6164,6170,6171,6172,6175,6178,6199,6203,6206,6214,6216,6218,6223,6224,6226,6227,6237,6239,6267,6277,6278,6279,6281,6285,6291,6295,6306,6312,6316,6317,6318,6320,6332,6344,6346,6348,6351,6354,6361,6364,6366,6367,6370,6390,6375,6372,6371];
+		$orders 	= 	Order::whereIn('_id', $order_ids)->get();
+
+		$fp = fopen('orderlatest.csv', 'w');
+		$header = ["ID", "NAME", "EMAIL", "NUMBER", "TYPE" , "AMOUNT" , "ADDRESS"   ];
+		fputcsv($fp, $header);
+
+		foreach ($orders as $value) {  
+			$fields = [$value->_id, $value->customer_name, $value->customer_email, $value->customer_phone,  $value->payment_mode, $value->amount, $value->customer_location];
+			fputcsv($fp, $fields);
+		}
+
+
+	}
 
 
 
+	public function getOrderDetail($orderid){
 
+		$orderdata 		=	Order::find(intval($orderid));
+
+		if(!$orderdata){
+			return $this->responseNotFound('Order does not exist');
+		}
+
+		$responsedata 	= ['orderdata' => $orderdata,  'message' => 'Order Detial'];
+		return Response::json($responsedata, 200);
+
+	}
 
 }

@@ -11,572 +11,12 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 });
 
 
+require __DIR__.'/debug_routes.php';
+
 
 
 ##############################################################################
-/******************** DEBUG SECTION START HERE /********************/
-
-
-
-Route::get('/hesh', function() { 
-	/* Queue:push(function($job) use ($data){ $data['string']; $job->delete();  }); */
-	Queue::connection('redis')->push('LogFile', array( 'string' => 'new testpushqueue instantly -- '.time()));
-	//Queue::later(Carbon::now()->addMinutes(1),'WriteFile', array( 'string' => 'new testpushqueue delay by 1 min time -- '.time()));
-	//Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'new testpushqueue delay by 2 min time -- '.time()));
-	return "successfully test push queue with dealy job as well....";
-});
-
-class LogFile {
-
-	public function fire($job, $data){
-
-		/*$job_id = $job->getJobId(); 
-
-		File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); */
-		
-		$job->delete();  
-		
-	}
-
-}
-
-
-Route::get('/', function() {  return "laravel 4.2 goes here...."; });
-
-
-
-Route::get('/testfinder', function() { 
-
-	return $items = Finder::where('status', '1')->take(10000)->skip(0)->groupBy('slug')->get(array('slug'));
-
-	$slugArr = [];
-	$duplicateSlugArr = [];
-	foreach ($items as $item) {  
-
-		Finder::destroy(intval($item->_id));
-		// if (!in_array($item->slug, $slugArr)){
-		// 	array_push($slugArr, $item->slug);
-		// }else{
-		// 	array_push($duplicateSlugArr,  $item->slug);
-		// }
-
-	}
-
-	return $duplicateSlugArr;
-
-	exit;
-
-	for ($i=0; $i < 7 ; $i++) { 
-		$skip = $i * 1000;
-		$items = Finder::active()->take(1000)->skip(0)->get(array('slug'));
-		foreach ($items as $item) {  
-			$data = $item->toArray();
-			$fid = $data['_id'];
-			$url =  "http://a1.fitternity.com/finderdetail/".$data['slug'];
-			// $fid = 579;
-			// $url =  "http://a1.fitternity.com/finderdetail/golds-gym-bandra-west";
-			$handlerr = curl_init($url);
-			curl_setopt($handlerr,  CURLOPT_RETURNTRANSFER, TRUE);
-			$resp = curl_exec($handlerr);
-			$ht = curl_getinfo($handlerr, CURLINFO_HTTP_CODE);
-			if ($ht == '404'){ echo "\n\n isssue in : fid - $fid url -$url";}
-		}
-		exit;
-	}
-
-});
-
-Route::get('/testsms', function() { 
-
-	$number = '9773348762';
-	$msg 	= 'test msg';
-	$sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
-	$ci = curl_init();
-	curl_setopt($ci, CURLOPT_URL, $sms_url);
-	curl_setopt($ci, CURLOPT_HEADER, 0);
-	curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
-	$response = curl_exec($ci);
-	curl_close($ci);
-	return $response;
-
-});
-
-
-Route::get('export', function() { 
-
-	$headers = [
-	'Content-type'        => 'application/csv'
-	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
-	,   'Content-type'        => 'text/csv'
-	,   'Content-Disposition' => 'attachment; filename=export_finder.csv'
-	,   'Expires'             => '0'
-	,   'Pragma'              => 'public'
-	];
-
-	$output = "ID,  NAME, COMMERCIALTYPE Type, EMAIL, No of TICKETS BOOKED, TICKET RATE, ORDER TOTAL\n";
-	$items = Finder::where('status', '1')->take(10000)->skip(0)->groupBy('slug')->get(array('slug'));
-
-	foreach ($orders as $key => $value) {
-
-		$output .= "$value[id], $value[first_name] $value[last_name], $value[contact], $value[email], $value[quantity], $value[price], $value[total]\n";
-	}
-
-	return Response::make(rtrim($output, "\n"), 200, $headers);
-});
-
-
-
-Route::get('updateduration', function() { 
-
-	$orderids = [3811,3813,3815,3816,3819,3821,3830,3836,3837,3839,3841,3847,3848,3860,3861,3866,3867,3868,3870,3871,3874,3886,3891,3903,3906,3908,3911,3919,3923,3928,3932,3940,3941,3945,3948,3952,3964,3965,3967,3968,3972,3974,3980,3983,3991,3995,3997,4004,4006,4008,4013,4015,4024,4028,4042,4055,4067,4069,4073,4077,4081,4082,4083,4084,4106,4107,4108,4112,4173,4181,4194,4202,4233,4283,4301,4590,4705,4710,4757,4802,4844,4862,4868,4871,4872,4873,4878,4884,4896,4913,4924,4937,4981,4987,4991,4992,4997,5003,5014,5017,5019,5022,5024,5035,5044,5053,5058,5102,5109,5112,5113,5172,5188,5196,5281,5283,5288,5289,5290,5292,5293,5295,5296,5297,5298,5299,5300,5302,5303,5306,5308,5309,5310,5314,5315,5328,5330,5335,5337,5340,5343,5344,5345,5346,5347,5352,5354,5355,5359,5362,5363,5364,5365,5370,5372,5373,5374,5375,5377,5379,5381,5382,5383,5390,5392,5393,5394,5396,5397,5400,5401,5403,5410,5412,5419,5420,5421,5429,5434,5436,5437,5439,5440,5445,5450,5454,5458,5459,5460,5461,5463,5464,5465,5468,5469,5470,5471,5472,5473,5476,5486,5487,5488,5491,5496,5499,5500,5501,5502,5503,5504,5506,5512,5513,5516,5517,5522,5532,5559,5569,5570,5571,5572,5574,5578,5581,5582,5585,5587,5588,5589,5590,5591,5592,5594,5597,5598,5608,5609,5610,5611,5612,5613,5615,5616,5617,5619,5620,5622,5623,5625,5627,5628,5630,5632,5633,5634,5644,5645,5646,5647,5648,5652,5653,5655,5659,5660,5661,5669,5670,5675,5678,5679,5681,5682,5683,5685,5687,5688,5689,5693,5695,5696,5697,5700,5702,5703,5708,5710,5713,5718,5721,5724,5727,5728,5736,5740,5741];
-	
-	$items = Order::whereIn('_id', $orderids)->get();
-
-	$fp = fopen('orderlatest.csv', 'w');
-	$header = ["ID", "NAME", "EMAIL", "NUMBER", "TYPE" , "ADDRESS"  ];
-	fputcsv($fp, $header);
-	
-	foreach ($items as $value) {  
-		$fields = [$value->_id, $value->customer_name, $value->customer_email, $value->customer_phone,  $value->payment_mode, $value->customer_location];
-		fputcsv($fp, $fields);
-	}
-	fclose($fp);
-	return 'done';
-	
-
-	$items = Duration::active()->get();
-	$fp = fopen('updateduration.csv', 'w');
-	$header = ["ID", "NAME", "SLUG", "DAYS", "SESSIONS"  ];
-	
-	fputcsv($fp, $header);
-	
-	foreach ($items as $value) {  
-		$fields = [$value->_id, $value->name, $value->slug, $value->days, $value->sessions];
-		// return $fields;
-		fputcsv($fp, $fields);
-	}
-	fclose($fp);
-	return 'done';
-	return Response::make(rtrim($output, "\n"), 200, $headers);
-
-	
-	// foreach ($items as $value) {  
-	// 	$duration 		=	Duration::findOrFail(intval($value->_id));
-	// 	$durationData 	=	[];
-	// 	$itemArr 		= 	explode('-', $value->slug);
-
-	// 	if(str_contains($value->slug , 'day')){
-	// 		$days 					=  head($itemArr);
-	// 		$durationData['days'] 	=  intval($days);
-	// 	}
-
-	// 	if(str_contains($value->slug , 'week')){
-	// 		$days 					=  head($itemArr) * 7;
-	// 		$durationData['days'] 	=  intval($days);
-	// 	}
-
-	// 	if(str_contains($value->slug , 'month')){
-	// 		$days			 		=  head($itemArr) * 30;
-	// 		$durationData['days'] 	=  intval($days);
-	// 	}
-
-	// 	if(str_contains($value->slug , 'year')){
-	// 		$days 					=  head($itemArr) * 30 * 12;
-	// 		$durationData['days'] 	=  intval($days);
-	// 	}
-
-	// 	if(str_contains($value->slug , 'session')){
-	// 		if(count($itemArr) > 3){
-	// 			// echo $value->_id;
-	// 			$sessions 					=  $itemArr[3];
-	// 			$durationData['sessions'] 	=  intval($sessions);
-	// 		}
-	// 	}
-
-	// 	if($key = array_search('sessions', $itemArr)){
-	// 		if($key == 1){
-	// 			echo "<br>"; print_r($key);
-	// 			$sessions 					=  $itemArr[0];
-	// 			$durationData['sessions'] 	=  intval($sessions);
-	// 			$durationData['days'] 		=  0;
-	// 		}
-
-	// 		if($key == 3){
-	// 			echo "<br>"; print_r($key);
-	// 			$sessions 					=  $itemArr[2];
-	// 			$durationData['sessions'] 	=  intval($sessions);
-	// 			// $durationData['days'] 		=  0;
-	// 		}
-
-	// 	}
-
-	// 	// $durationData['days'] 	=  0;
-	// 	// $durationData['sessions'] 	=  0;
-
-	// 	$response = $duration->update($durationData);
-	// }
-
-});
-
-
-Route::get('capturedata', function() { 
-
-
-	// $items = Service::active()->where('trialschedules', 'size', 0)->get();
-	// $fp = fopen('serviceslive1.csv', 'w');
-	// $header = ["ID", "SERVICENAME", "FINDERID", "FINDERNAME", "COMMERCIALTYPE" ];
-	// fputcsv($fp, $header);
-
-	// foreach ($items as $value) {  
-	// 	$finder = Finder::findOrFail(intval($value->finder_id));
-
-	// 	$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
-	// 	$commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
-
-	// 	$fields = [$value->_id,
-	// 	$value->name,
-	// 	$value->finder_id,
-	// 	$finder->slug,
-	// 	$commercial_type
-	// 	];
-	// 	// return $fields;
-	// 	fputcsv($fp, $fields);
-	// 	// exit();
-	// }
-
-	// fclose($fp);
-	// return "done";
-	// return Response::make(rtrim($output, "\n"), 200, $headers);
-
-	// $items = Booktrial::take(5)->skip(0)->get();
-	// $items = Finder::active()->get();
-	// $items = Finder::active()->orderBy('_id')->whereIn('city_id',array(1,2))->get()->count();
-	$items = Finder::active()->with('city')->with('location')->with('category')
-				->whereIn('category_id',array(5,6,7,8,9,11,12,13,14,32,35,36,43))
-				->whereIn('locationtags',array(28,29,27,35,135,26,51,52,43,44,8,31,59,60,21,50,6,63,23))
-				->orderBy('_id')->take(3000)->skip(0)
-				->get(array('_id','finder_type','slug','city_id','commercial_type','city','category','category_id','location_id','contact','locationtags'));
-
-	$data = array();
-
-	$fp = fopen('finder1.csv', 'w');
-	$header = ["ID", "SLUG", "CITY", "CATEGORY",  "LOCAITONTAG", "FINDERTYPE", "COMMERCIALTYPE", "Contact-address", "Contact-email", "Contact-phone", "finder_vcc_email", "finder_vcc_mobile"  ];
-	fputcsv($fp, $header);
-
-	foreach ($items as $value) {  
-		$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
-		$FINDERTYPE 		= ($value->finder_type == 1) ? 'paid' : 'free';
-		$commercial_type 	= $commercial_type_arr[intval($value->commercial_type)];
-		$cityname 			= $value->city->name;
-		$category 			= $value->category->name;
-		$location 			= $value->location->name;
-		// $output .= "$value->_id, $value->slug, $cityname, $category, $FINDERTYPE, $commercial_type"."\n";
-
-		$fields = [
-		$value->_id,
-		$value->slug,
-		$cityname,
-		$category,
-		$location,
-		$FINDERTYPE,
-		$commercial_type,
-		$value->contact['address'],
-		$value->contact['email'],
-		$value->contact['phone'],
-		$value->finder_vcc_email,
-		$value->finder_vcc_mobile
-		];
-		// return $fields;
-		fputcsv($fp, $fields);
-		// exit();
-	}
-
-	fclose($fp);
-	
-	return "done";
-	return Response::make(rtrim($output, "\n"), 200, $headers);
-
-});
-
-
-
-Route::get('/updatefinder', function() { 
-
-
-
-
-	// $items = Finder::active()->take(3000)->skip(0)->get();
-	$items = Service::active()->take(3000)->skip(0)->get();
-
-	$finderdata = array();
-	foreach ($items as $item) {  
-		$data 	= $item->toArray();
-
-		// $august_available_dates = $data['august_available_dates'];
-		// $august_available_dates_new = [];
-
-		// foreach ($august_available_dates as $day){
-		// 	$date = explode('-', $day);
-		// 	// return ucfirst( date("l", strtotime("$date[0]-08-2015") )) ;
-		// 	array_push($august_available_dates_new, $date[0].'-'.ucfirst( date("l", strtotime("$date[0]-08-2015") )) );
-
-		// }
-		// // return $august_available_dates_new;
-		// array_set($finderdata, 'august_available_dates', $august_available_dates_new);
-
-		$finder = Service::findOrFail($data['_id']);
-		$finderratecards = [];
-		foreach ($data['ratecards'] as $key => $value) {
-			if((isset($value['price']) && $value['price'] != '0')){
-				$ratecard = [
-				'order'=> (isset($value['order']) && $value['order'] != '') ? $value['order'] : '0',
-				'type'=> (isset($value['type']) && $value['type'] != '') ? $value['type'] : '',
-				'duration'=> (isset($value['duration']) && $value['duration'] != '') ? $value['duration'] : '',
-				'price'=> (isset($value['price']) && $value['price'] != '') ? $value['price'] : '',
-				'special_price'=> (isset($value['special_price']) && $value['special_price'] != '') ? $value['special_price'] : '',
-				'remarks'=> (isset($value['remarks']) && $value['remarks'] != '') ? $value['remarks'] : '',
-				'show_on_fitmania'=> (isset($value['show_on_fitmania']) && $value['show_on_fitmania'] != '') ? $value['show_on_fitmania'] : 'no',
-				'direct_payment_enable'=> (isset($value['direct_payment_enable']) && $value['direct_payment_enable'] != '') ? $value['direct_payment_enable'] : '0'
-				];
-				array_push($finderratecards, $ratecard);
-			}
-		}
-
-		array_set($finderdata, 'ratecards', array_values($finderratecards));
-		$response = $finder->update($finderdata);
-
-		print_pretty($response);
-	}
-
-	
-});
-
-
-Route::get('/testdate', function() { 
-
-	return Carbon::now();
-	$isodate = '2015-03-10T13:00:00.000Z';
-	$actualdate =  \Carbon\Carbon::now();
-	return \Carbon\Carbon::now();
-	return Finder::findOrFail(1)->toArray();
-	return  date( "Y-m-d H:i:s", strtotime("2015-03-10T13:00:00.000Z"));
-	//convert iso date to php datetime
-	return "laravel 4.2 goes here ....";
-
-});
-
-Route::get('/testpushnotification', function() { 
-
-	// PushNotification::app('appNameAndroid')
-	// 				->to('APA91bG_gkVGxr6atdmGbMGGHWLP82U2o91HjU-UKu27gtEFy1a-9TVXYg7gVr0Q_DLEPEtpE-0z6K5f2nuL9i_SPeRySLy0Typtt7ZjQRi4yHc49R5EQg44gAGuovNpP76UbC8wuIL8VCjgNVXD2UEXmwnVFvQJDw')
-	// 				->send('Hello World, i`m a push message');
-
-	$response = PushNotification::app('appNameAndroid')
-	->to('APA91bF5pPDQbftrS4SppKxrgZWsBUhHrtCkjdfwZXXrazVD9c-qvGvo8MejFGnZ3iHrhOoKyMQKeX3yHrtY_N4xC0ZHVYfHFmgHdaxw_WWOKP5YTdUdDv0Enr-1CBO2q411M33YKiHYl6PJB5z12W3WNbu2Pphz8A')
-	->send('This is a simple message, takes use to homepage',array( 
-		'title' => "Fitternity",
-		'type' => "generic"
-		));	
-	return Response::json($response,200);	
-
-
-});
-
-Route::get('/testtwilio', function() { 
-
-	return Twilio::message('+919773348762', 'Pink Customer Elephants and Happy Rainbows');
-});
-
-
-Route::get('/testemail', function() { 
-	// return "email send succuess";
-	$m1 = Queue::push('WriteClass', array( 'string' => 'new delete function form local -- '.time()),'pullapp');
-	$m2 = Queue::later(Carbon::now()->addMinutes(3),'WriteClass', array( 'string' => 'new delete function 3 min time -- '.time()),'pullapp');
-	$m3 = Queue::later(Carbon::now()->addMinutes(5),'WriteClass', array( 'string' => 'new delete function 5 min time -- '.time()),'pullapp');
-	echo "$m1 -- $m2 -- $m3";
-	// 	$url ='https://mq-aws-us-east-1.iron.io/1/projects/549a5af560c8e60009000030/queues/pullapp/messages/'.$m2.'?oauth=tsFrArQmL8VS8Cx-5PDg3gij19Y';
-	//    $ch = curl_init();
-	//    curl_setopt($ch, CURLOPT_URL,$url);
-	//    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
-	//    $result = curl_exec($ch);
-	//    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-	//    curl_close($ch);
-	$deleteid = Queue::deleteMessage('pullapp',$m2);
-});
-
-class WriteClass {
-
-	public function fire($job, $data){
-
-		$job_id = $job->getJobId(); 
-
-		// File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); 
-		$email_template = 'emails.test';
-		$email_template_data = array();
-		$email_message_data = array(
-			'string' => 'Hello World from array with time -- '.time(),
-			'to' => 'sanjay.id7@gmail.com',
-			'reciver_name' => 'sanjay sahu',
-			'bcc_emailids' => array('sanjay.fitternity@gmail.com'),
-			'email_subject' => $data['string'].' -- Testemail with queue using ngrok from local ' .time()
-			);
-
-		Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
-			$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-			->bcc($email_message_data['bcc_emailids'])
-			->subject($email_message_data['email_subject'].' send email from instant -- '.date( "Y-m-d H:i:s", time()));
-		});
-		$job->delete();  
-		return $job_id;	
-	}
-
-}
-
-
-Route::get('/testpushemail', function() { 
-
-	$email_template = 'emails.testemail1';
-	$email_template_data = array();
-	$email_message_data = array(
-		'string' => 'Hello World from array with time -- '.time(),
-		'to' => 'sanjay.id7@gmail.com',
-		'reciver_name' => 'sanjay sahu',
-		'bcc_emailids' => array('chaithanyapadi@fitternity.com'),
-		'bcc_emailids' => array(),
-		'email_subject' => 'Testemail using loop ' .time()
-		);
-
-	// $messageid1 =  Mail::queue($email_template, $email_template_data, function($message) use ($email_message_data){
-	// 		$message->to($email_message_data['to'], $email_message_data['reciver_name'])
-	// 		->bcc($email_message_data['bcc_emailids'])
-	// 		->subject($email_message_data['email_subject'].' from instant -- '.date( "Y-m-d H:i:s", time()));
-	// 	});
-	// return var_dump($messageid1);
-
-	// echo $deleteid = Queue::deleteReserved('default',$messageid1);
-
-});
-
-
-Route::get('/testhipchat', function() { 
-	HipChat::setRoom('Teamfitternity');
-	HipChat::sendMessage('My Message to room Teamfitternity', 'green');
-	// HipChat::sendMessage('My Message', 'red', true);
-	return "successfully test hipchat ....";
-});
-
-Route::get('/testpushqueue', function() { 
-	/* Queue:push(function($job) use ($data){ $data['string']; $job->delete();  }); */
-	Queue::push('WriteFile', array( 'string' => 'new testpushqueue instantly -- '.time()));
-	Queue::later(Carbon::now()->addMinutes(1),'WriteFile', array( 'string' => 'new testpushqueue delay by 1 min time -- '.time()));
-	Queue::later(Carbon::now()->addMinutes(2),'WriteFile', array( 'string' => 'new testpushqueue delay by 2 min time -- '.time()));
-	return "successfully test push queue with dealy job as well....";
-});
-
-class WriteFile {
-
-	public function fire($job, $data){
-		$job_id = $job->getJobId(); 
-		File::append(app_path().'/queue.txt', $data['string']." ------ $job_id".PHP_EOL); 
-		$job->delete();  
-	}
-
-}
-
-Route::get('migrateratecards/', array('as' => 'finders.migrateratecards','uses' => 'FindersController@migrateratecards'));
-
-Route::get('updatepopularity/', array('as' => 'finders.updatepopularity','uses' => 'FindersController@updatepopularity'));
-
-
-
-
-Route::get('/trialcsv', function() { 
-
-	$headers = [
-	'Content-type'        => 'application/csv',   
-	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-	'Content-type'        => 'text/csv',   
-	'Content-Disposition' => 'attachment; filename=trialsdiff.csv',   
-	'Expires'             => '0',   
-	'Pragma'              => 'public'
-	];
-
-	$booktrialslotcnt = Booktrial::where('booktrial_type', 'auto')->where('source', 'website')->skip(0)->take(3000)->get();
-
-	// return $booktrialslotcnt;
-	// return $finders;sourceja
-	$output = "ID, customer name,customer email, Created At, Updated At, Schedule Date, Diff date \n";
-	$emails = ['chaithanya.padi@gmail.com','chaithanyapadi@fitternity.com','sanjay.id7@gmail.com','sanjay.fitternity@gmail.com','utkarsh2arsh@gmail.com','ut.mehrotra@gmail.com','neha@fitternity.com','jayamvora@fitternity.com'];
-	foreach ($booktrialslotcnt as $key => $value) {
-		$dStart = strtotime($value->created_at);
-		$dEnd  = strtotime($value->schedule_date);
-		$dDiff = $dEnd - $dStart;
-		// $dDiff = $dStart->diff($dEnd);
-		if(floor($dDiff/(60*60*24)) > 0 && floor($dDiff/(60*60*24)) < 50){
-			if(!in_array($value->customer_email, $emails)){
-				$output .= "$value->_id,$value->customer_name,$value->customer_email, $value->created_at, $value->updated_at, ".$value->schedule_date.", ".floor($dDiff/(60*60*24))."\n";
-			}
-		}
-	}
-	
-	return Response::make(rtrim($output, "\n"), 200, $headers);
-
-});
-
-Route::get('/findercsv', function() { 
-
-	$headers = [
-	'Content-type'        => 'application/csv',   
-	'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',   
-	'Content-type'        => 'text/csv',   
-	'Content-Disposition' => 'attachment; filename=freefinders.csv',   
-	'Expires'             => '0',   
-	'Pragma'              => 'public'
-	];
-
-	$finders 		= 	Blog::active()->get();
-
-	// return $finders;
-	$output = "ID, URL, \n";
-
-	foreach ($finders as $key => $value) {
-		$output .= "$value->_id, http://www.fitternity.com/article/$value->slug, "."\n";
-	}
-	
-	return Response::make(rtrim($output, "\n"), 200, $headers);
-
-	$finders 		= 	Finder::active()
-						// ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-						// ->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-						// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-						// ->skip(0)
-						// ->take(3000)
-	->where('finder_type', 1)
-	->get();
-
-	// return $finders;
-	$output = "ID, SLUG, CITY, TYPE, EMAIL, TYPE \n";
-
-	foreach ($finders as $key => $value) {
-		$type = ($value->finder_type == '0') ? 'Free' : 'Paid';
-		$output .= "$value->_id, $value->slug, ".$value->city->name.", ".$type.", ".$value->finder_vcc_email ."\n";
-	}
-
-	
-	return Response::make(rtrim($output, "\n"), 200, $headers);
-
-});
-
-Route::get('/debug/invalidfinderstats',  array('as' => 'debug.invalidfinderstats','uses' => 'DebugController@invalidFinderStats'));
-Route::get('/debug/sendbooktrialdaliysummary',  array('as' => 'debug.sendbooktrialdaliysummary','uses' => 'DebugController@sendbooktrialdaliysummary'));
-Route::get('/debug/sendbooktrialdaliysummaryv1',  array('as' => 'debug.sendbooktrialdaliysummaryv1','uses' => 'DebugController@sendbooktrialdaliysummaryv1'));
-Route::get('/debug/vendorstats',  array('as' => 'debug.vendorstats','uses' => 'DebugController@vendorStats'));
-Route::get('/debug/getvendors',  array('as' => 'debug.getvendors','uses' => 'DebugController@getVendors'));
-Route::get('/debug/vendorsbymonth',  array('as' => 'debug.vendorsByMonth','uses' => 'DebugController@vendorsByMonth'));
-
-/******************** DEBUG SECTION END HERE ********************/
-##############################################################################
-
+/******************** HOME SECTION START HERE ***********************/
 
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
@@ -598,7 +38,8 @@ Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
-
+Route::get('offers/{city?}/{from?}/{size?}', 'HomeController@getOffers');
+Route::get('offertabs/{city?}', 'HomeController@getOffersTabs');
 
 
 ##############################################################################
@@ -629,10 +70,15 @@ Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => '
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
-	Route::post('customerresetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
 	Route::get('customerlogout', array('as' => 'customer.validatetokencustomerlogout','uses' => 'CustomerController@customerLogout'));
-	Route::post('customerupdate', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
 
+	Route::post('customer/resetpassword', array('as' => 'customer.customerresetpassword','uses' => 'CustomerController@resetPassword'));
+	Route::post('customer/update', array('as' => 'customer.customerupdate','uses' => 'CustomerController@customerUpdate'));
+	Route::get('customer/getalltrials',  array('as' => 'customer.getalltrials','uses' => 'CustomerController@getAllTrials'));
+	Route::get('customer/getallreviews/{offset?}/{limit?}',  array('as' => 'customer.getallreviews','uses' => 'CustomerController@getAllReviews'));
+	Route::get('customer/getallorders/{offset?}/{limit?}',  array('as' => 'customer.getallorders','uses' => 'CustomerController@getAllOrders'));
+	Route::get('customer/getallbookmarks',  array('as' => 'customer.getallbookmarks','uses' => 'CustomerController@getAllBookmarks'));
+	Route::get('customer/editbookmarks/{finder_id}/{remove?}',  array('as' => 'customer.editbookmarks','uses' => 'CustomerController@editBookmarks'));
 
 });
 
@@ -643,6 +89,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
+
+Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
 
 Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
 Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
@@ -693,7 +141,7 @@ Route::get('reviewlisting/{finderid}/{from?}/{size?}', array('as' => 'finders.re
 Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersController@addReview'));
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
-Route::get('findertopreview/{slug}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
+Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -728,10 +176,20 @@ Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexaut
 Route::get('indexrankmongo2elastic', array('as' => 'elasticsearch.indexrankmongo2elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
 Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageautosuggestsetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
 Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
+Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexservicerankmongo2elastic','uses' => 'ServiceRankingController@IndexServiceRankMongo2Elastic'));
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
 
+########################################################################################
+/************************KYU SECTION START HERE****************************************/
+Route::post('pushkyuevent', 'KYUController@pushkyuevent');
+Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
+Route::post('getcitywiseviews','KYUController@getcitywiseviews');
+//Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
+
+/************************KYU SECTION END HERE******************************************/
+########################################################################################
 
 
 ##############################################################################
@@ -752,11 +210,18 @@ Route::post('ratcardsearch', 'SearchServicesController@getRatecards');
 Route::post('getnearbytrials', 'SearchServicesController@geoLocationService');
 Route::post('getrankedfinder', 'RankingSearchController@getRankedFinderResults');
 Route::post('getfindercategory', 'RankingController@getFinderCategory');
-Route::post('getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+Route::post('search/getautosuggestresults', 'GlobalSearchController@getautosuggestresults');
 Route::post('getcategoryofferings', 'RankingSearchController@CategoryAmenities');
 Route::post('getcategoryofferingsv2', 'RankingSearchController@CategoryAmenitiesv2');
 Route::post('getcategories', 'RankingSearchController@getcategories');
 Route::post('getsearchmetadata', 'RankingSearchController@getsearchmetadata');
+Route::post('getrankedservices', 'ServiceRankingSearchController@searchrankedservices');
+Route::get('getservicecategories','ServiceRankingSearchController@getservicecategories');
+Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice');
+Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
+Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
+Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderResultsApp');
+
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
@@ -784,16 +249,25 @@ Route::get('servicemarketfooterv1/{city?}', array('as' => 'service.servicemarket
 Route::get('getschedulebooktrial/{finderid?}/{date?}', array('as' => 'finders.getschedulebooktrial','uses' => 'SchedulebooktrialsController@getScheduleBookTrial'));
 Route::get('booktrial/{finderid?}/{date?}', array('as' => 'finders.getbooktrial','uses' => 'SchedulebooktrialsController@getBookTrial'));
 Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
+Route::post('updatebooktrial', array('as' => 'finders.updatebooktrial','uses' => 'SchedulebooktrialsController@updateBookTrial'));
 Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
 Route::post('manual2ndbooktrial', array('as' => 'finders.storemanual2ndbooktrial','uses' => 'SchedulebooktrialsController@manual2ndBookTrial'));
-
 Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+Route::post('rescheduledbooktrial', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
+
+Route::group(array('before' => 'validatetoken'), function() {
+
+	Route::get('booktrials/cancel/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
+	Route::post('booktrials/reschedule', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
+
+});
+
 
 /******************** SCHEDULE BOOK TRIAL SECTION END HERE ********************/
 ##############################################################################
@@ -880,26 +354,26 @@ Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 ##############################################################################
 /******************** STATS SECTION START HERE *******************************/
 
-Route::get('stats/booktrial', 'StatsController@booktrial');
-Route::get('stats/signup', 'StatsController@signUp');
-Route::get('stats/orders', 'StatsController@orders');
-Route::get('stats/callback', 'StatsController@callBack');
-Route::get('stats/orderspiechart', 'StatsController@ordersPieChart');
-Route::get('stats/signuppiechart', 'StatsController@signUpPieChart');
-Route::get('stats/review', 'StatsController@review');
-Route::get('stats/smsbalance', 'StatsController@smsBalance');
+Route::get('stats/booktrial/{day}', 'StatsController@booktrial');
+Route::get('stats/signup/{day}', 'StatsController@signUp');
+Route::get('stats/orders/{day}', 'StatsController@orders');
+Route::get('stats/callback/{day}', 'StatsController@callBack');
+Route::get('stats/orderspiechart/{day}', 'StatsController@ordersPieChart');
+Route::get('stats/signuppiechart/{day}', 'StatsController@signUpPieChart');
+Route::get('stats/review/{day}', 'StatsController@review');
+Route::get('stats/smsbalance/{day}', 'StatsController@smsBalance');
 
 ##############################################################################
 /******************** STATS SECTION END HERE *******************************/
 
 ##############################################################################
-/******************** ORDERS SECTION START HERE ***********************/
+/******************** OZONETELS SECTION START HERE ***********************/
 
 Route::get('ozonetel/freevendor',  array('as' => 'ozonetel.freevendor','uses' => 'OzonetelsController@freeVendor'));
 Route::get('ozonetel/paidvendor',  array('as' => 'ozonetel.paidvendor','uses' => 'OzonetelsController@paidVendor'));
 
 
-/******************** ORDERS SECTION END HERE ********************/
+/******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################
 
 
@@ -912,3 +386,91 @@ Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'B
 ##############################################################################
 /******************** BRAND SECTION END HERE *******************************/
 
+##############################################################################
+/******************** SECURITY SECTION START HERE *******************************/
+
+Route::group(array('before' => 'jwt'), function() {
+	
+	//finder info
+	Route::get('sfinderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail')); 
+
+	//booktrial
+	Route::post('sbooktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
+	Route::post('smanualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
+	Route::post('sstorebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+	Route::post('scaptureorderpayment', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
+
+	//home
+	Route::get('shome', 'HomeController@getHomePageData');
+	Route::get('shomev2/{city?}', 'HomeController@getHomePageDatav2');
+	Route::get('shomev3/{city?}', 'HomeController@getHomePageDatav3');
+	Route::get('sgetcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
+	Route::get('sgetcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
+
+	//captures
+	Route::post('slanding', 'CaptureController@postCapture');
+	Route::post('semail/requestcallback','EmailSmsApiController@RequestCallback');
+	Route::post('slandingpage/callback', 'EmailSmsApiController@landingpagecallback');
+
+	//order
+	Route::post('sgeneratecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
+	Route::post('sgeneratetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
+
+	//search
+	Route::post('sgetrankedfinder', 'RankingSearchController@getRankedFinderResults');
+	Route::post('sgetfindercategory', 'RankingController@getFinderCategory');
+	Route::post('sgetautosuggestresults', 'GlobalSearchController@getautosuggestresults');
+	Route::post('sgetcategoryofferings', 'RankingSearchController@CategoryAmenities');
+	Route::post('sgetcategories', 'RankingSearchController@getcategories');
+	Route::post('sgetsearchmetadata', 'RankingSearchController@getsearchmetadata');
+	Route::post('sgetrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
+	Route::post('skeywordsearchweb', 'GlobalSearchController@keywordSearch');
+});
+
+##############################################################################
+/******************** CRONS SECTION START HERE ***********************/
+
+Route::post('cron/cronlog',  array('as' => 'cron.cronlog','uses' => 'CronController@cronLog'));
+Route::get('cron/monitor/{days}',  array('as' => 'cron.monitor','uses' => 'CronController@monitor'));
+
+
+/******************** CRONS SECTION END HERE ********************/
+##############################################################################
+
+
+##############################################################################
+/******************** Campaign SECTION START HERE ***********************/
+Route::get('/getcampaigncategories/{campaignid}', 'CampaignsController@getcampaigncategories');
+Route::get('/getcampaigntrials/{campaignid}/{email}', 'CampaignsController@getcampaigntrials');
+// Route::get('/featuredcampaign/{campaignid}', 'CampaignsController@featuredcampaign');
+Route::post('campaignsearch', 'CampaignsController@campaignsearch');
+Route::post('campaign/registercustomer', 'CampaignsController@registercustomer');
+/******************** Campaign SECTION END HERE ********************/
+##############################################################################
+
+
+##############################################################################
+/******************** SECURITY SECTION END HERE *******************************/
+
+##################################################################################################
+/*******************  GLOBALSEARCH BULK PUSH HERE ************************************************/
+
+Route::get('buildglobalindex', 'GlobalPushController@buildglobalindex');
+Route::get('pushcategorylocations', 'GlobalPushController@pushcategorylocations');
+Route::get('pushfinders', 'GlobalPushController@pushFinders');
+Route::get('pushcategorywithfacilities', 'GlobalPushController@pushcategorywithfacilities');
+Route::get('pushcategoryoffering', 'GlobalPushController@pushcategoryoffering');
+Route::get('pushcategoryofferinglocation', 'GlobalPushController@pushcategoryofferinglocation');
+Route::get('pushcategoryfacilitieslocation', 'GlobalPushController@pushcategoryfacilitieslocation');
+Route::get('pushcategorycity', 'GlobalPushController@pushcategorycity');
+
+/******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
+#####################################################################################################
+
+##################################################################################################
+/*******************  New Search for APP ************************************************/
+
+Route::post('search/getautosuggestresults1', 'GlobalSearchController@newglobalsearch');
+
+/******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
+#####################################################################################################

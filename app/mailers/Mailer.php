@@ -110,6 +110,28 @@ abstract Class Mailer {
 	}
 
 
+	/*public function sendToWorkerBk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		if($delay !== 0){
+			$delay = strtotime($delay);
+		}
+
+        $scheduler  = new \Schedulerjob();
+		$scheduler->_id = \Schedulerjob::max('_id') + 1;        
+		$scheduler->email_template = $email_template;
+        $scheduler->template_data = $template_data;
+        $scheduler->message_data = $message_data;
+        $scheduler->delay = $delay;
+        $scheduler->priority = $priority;
+        $scheduler->label = $label;
+        $scheduler->type = 'email';
+        $scheduler->status = 'scheduled';
+
+        $scheduler->save();
+
+        return $scheduler->_id;
+	}
+
 	public function sendToWorkerBk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		$worker = new IronWorker(array(
@@ -129,7 +151,7 @@ abstract Class Mailer {
 
 		return $messageid;
 
-	}
+	}*/
 
 	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
@@ -150,8 +172,7 @@ abstract Class Mailer {
 
 	}
 
-
-	public function sendToWorkerTest($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+	/*public function sendToWorkerTest($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		$worker = new IronWorker(array(
 		    'token' => Config::get('queue.connections.ironworker.token'),
@@ -170,6 +191,6 @@ abstract Class Mailer {
 
 		return $messageid;
 
-	}
+	}*/
 
 }

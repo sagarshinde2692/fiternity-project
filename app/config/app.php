@@ -241,14 +241,14 @@ return array(
 	),
 
 	'aws' => array(
-		'key' 								=> 'AKIAICYM2D37EEMAW6XQ',
-		'secret' 							=> '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',
+		'key' 								=> 'AKIAIKHRGMOPJIKFIAMQ',
+		'secret' 							=> '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',
 		'region' 							=> 'ap-southeast-1',
 		'bucket'							=> 'b.fitn.in',
 		'ozonetel' =>array(
 			'path'							=> 'ozonetel/',
 			'url'							=> 'http://b.fitn.in/ozonetel/',
 		),
-	),
+	),	
 
 );

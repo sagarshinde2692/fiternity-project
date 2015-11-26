@@ -123,18 +123,15 @@ Class CustomerSms extends VersionNextSms{
 	public function cancelBookTrial ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". has been cancelled basis your request. Thank you for using Fitternity.com. For any queries call us on +91 92222 21131 or reply to this message";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on +91 92222 21131 or reply to this message";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity.com. For any queries call us on +91 92222 21131 or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on +91 92222 21131 or reply to this message.";
 		}
 		
-		$label = 'CancelBookTrial-C';
-
+		$label = 'CancelTrial-C';
 		return $this->sendToWorker($to, $message, $label);
 	}
-
 
 
 	public function manualBookTrial ($data){

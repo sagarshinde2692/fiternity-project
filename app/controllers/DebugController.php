@@ -18,7 +18,7 @@ class DebugController extends \BaseController {
 
 		$this->findermailer						=	$findermailer;
 
-    }
+	}
 
 	public function invalidFinderStats(){
 
@@ -196,7 +196,7 @@ class DebugController extends \BaseController {
 					'todaytrials' 					=> $todaytrialdata
 					);
 					// echo "<pre>";print_r($scheduledata); exit;
-					$this->findermailer->sendBookTrialDaliySummary($scheduledata);
+				$this->findermailer->sendBookTrialDaliySummary($scheduledata);
 			}	  
 		}
 
@@ -260,17 +260,17 @@ class DebugController extends \BaseController {
 
 			//foreach ($category as $category_value => $category_id ) {
 
-				foreach ($commercial as $commercial_type) {
+			foreach ($commercial as $commercial_type) {
 
 					//$total = Finder::active()->where('city_id',(int)$city_id)->where('category_id',(int)$category_id)->where('commercial_type',(int)$commercial_type)->count();
-					$data = Finder::active()->where('contact.phone','!=','')->where('city_id',(int)$city_id)->where('commercial_type',(int)$commercial_type)->orderBy('_id','ASC')->lists('_id');
+				$data = Finder::active()->where('contact.phone','!=','')->where('city_id',(int)$city_id)->where('commercial_type',(int)$commercial_type)->orderBy('_id','ASC')->lists('_id');
 					//$with_no_contact = Finder::active()->where('contact.phone','')->where('city_id',(int)$city_id)->where('category_id',(int)$category_id)->where('commercial_type',(int)$commercial_type)->lists('_id');
 					//$with_no_contact = '"('.implode(',', $with_no_contact).')"';
 
-					$result[$cities[$city_id]][$commercial_type] = $data;
+				$result[$cities[$city_id]][$commercial_type] = $data;
 					//$data .= $cities[$city_id].' : '.$category_value.' : '.$commercialType[$commercial_type].' : '.$total.' : '.$with_contact.' : '.$with_no_contact.' , ';
 
-				}	
+			}	
 			//}	
 		}
 
@@ -282,7 +282,7 @@ class DebugController extends \BaseController {
 
 		$cities = array('1'=>'Mumbai','2'=>'Pune','3'=>'Banglore','4'=>'Delhi');
 		
-        $finder = '"City","Month","Count";';
+		$finder = '"City","Month","Count";';
 
 
 
@@ -322,14 +322,184 @@ class DebugController extends \BaseController {
 
 				
 
-			
+
+			}
+
+			return $finder;
 		}
 
-		return $finder;
+		public function gurgaonmigration(){
+			$locationlist = array(411,403,393,388,389,392,394,397,396,398,412,408,409,406,402,407,400,401,399,404,391,405);
+			$findertaglocation = array();
+			$gurgaonfinderid = array();
+			$gurgaonfinderlist = array();
+			$locationtaglist = array(409,401,391,386,387,390,392,395,394,396,410,406,407,404,400,405,398,399,397,402,389,403);
+			foreach ($locationtaglist as $loctag) {
+				$tagfinder = Finder::where('locationtags', $loctag)->select('_id')->get();
+				$localloc = array();
+				foreach ($tagfinder as $x) {
+					array_push($localloc, $x['_id']);
+				}				
+				array_push($gurgaonfinderlist, $localloc);
+				array_push($findertaglocation, array('locationtag' => $loctag, 'finders' => $localloc));
+			}
 
-		
+	//gurgaon city locationclusterid - 20
+	//gurgaon city id 8
+	//update Finder location update city and location cluster
+			$finderlocation = Location::whereIn('_id', array(411,403,393,388,389,392,394,397,396,398,412,408,409,406,402,407,400,401,399,404,391,405))->get();
+			if(isset($finderlocation)&&(!empty($finderlocation))){
+				foreach ($finderlocation as $val) {
+					$locdata = array();
+					array_set($locdata,'cities', array(8));
+					array_set($locdata,'locationcluster_id', 20);
+					array_set($locdata,'city', 'gurgaon');
+					$resp = $val->update($locdata);
+				}
+			}
+	// //update Finder location tags with new city(id) and city(name)
+			$finderlocationtags = Locationtag::whereIn('_id', array(409,401,391,386,387,390,392,395,394,396,410,406,407,404,400,405,398,399,397,402,389,403))->get();
+			if(isset($finderlocation)&&(!empty($finderlocation))){
+				foreach ($finderlocationtags as $val1) {
+					$loctagdata = array();	
+					$key = array();
+					foreach ($findertaglocation as $t) {
+						if($t['locationtag'] === $val1['_id']){
+							$key = $t['finders'];
+						}						
+					}				
+					//$key = array_search($val1['_id'], $findertaglocation);
+					//$finderembed = $findertaglocation[$key];
+					array_set($loctagdata, 'finders', $key);
 
+					array_set($loctagdata,'city', 'gurgaon');
+					array_set($loctagdata,'cities', array(8));
+					$resp = $val1->update($loctagdata);
+				}
+			}
+
+			$gurgaoncity = City::where('_id',8)->get();
+
+			$delhicity = City::where('_id',4)->first();
+			foreach ($gurgaoncity as $city) {
+				$citydata = array();
+				array_set($citydata, 'locations', $locationlist);
+				array_set($citydata, 'locationtags', $locationtaglist);
+				array_set($citydata, 'categorytags', $delhicity['categorytags']);
+				array_set($citydata, 'findercategorys', $delhicity['findercategorys']);
+				$resp = $city->update($citydata);				
+			}
+
+			$findercategories = FinderCategory::where('cities', 4)->get();
+			foreach ($findercategories as $y) {
+				$cities = $y['cities'];
+				array_push($cities, 8);
+				$findercatdata = array();
+				array_set($findercatdata,'cities', $cities);	
+				$resp = $y->update($findercatdata);				
+			}
+
+			$findercategorytags = Findercategorytag::where('cities', 4)->get();
+			foreach ($findercategorytags as $z) {
+				$cities1 = $z['cities'];
+				array_push($cities1, 8);
+				$findercattagdata = array();
+				array_set($findercattagdata, 'cities', $cities1);
+				$resp = $z->update($findercattagdata);
+			}
+
+			$gurgaonfinder = Finder::whereIn('location_id',$locationlist)->where('city_id', 4)->get();
+			foreach ($gurgaonfinder as $val2) {
+				$finddata = array();
+				array_push($gurgaonfinderid, $val2['_id']);
+				array_set($finddata,'city_id', 8);		
+				$resp = $val2->update($finddata);
+			}
+
+			foreach ($gurgaonfinderlist as $value) {
+				$service = Service::whereIn('finder_id', $value)->get();
+				foreach ($service as $p) {
+					$servicedata = array();
+					array_set($servicedata, 'city_id', 8);
+					$resp = $p->update($servicedata);
+				}
+			}
+
+			$delhicity = City::where('_id',4)->first();
+			$locationarray = $delhicity['locations'];
+			$locationtagarray = $delhicity['locationtags'];
+			$newlocationarray = array();
+			$newlocationtagarray = array();	
+			$newlocationarray1 = array();
+			$newlocationtagarray1 = array();			
+			$newlocationarray = array_diff($locationarray, $locationlist);
+			$newlocationtagarray = array_diff($locationtagarray, $locationtaglist);
+			foreach($newlocationarray as $r){
+				array_push($newlocationarray1, $r);				
+			}
+			foreach($newlocationtagarray as $o){
+				array_push($newlocationtagarray1, $o);				
+			}
+
+			$delhicityup = array();			
+			array_set($delhicityup,'locations', $newlocationarray1);
+			array_set($delhicityup,'locationtags', $newlocationtagarray1);
+			$respv2 = $delhicity->update($delhicityup);
+		}
+
+		public function movekickboxing(){
+			$finder = Finder::where('categorytags',8)->get();
+
+			foreach ($finder as $value) {
+				$finderdata = array();
+				array_set($finderdata, 'category_id', 8);
+				$value->update($finderdata);
+			}
+		}
+
+		public function updateOrderAmount(){
+
+			$order = Order::where('amount', 'exists', true)->orderBy('_id', 'desc')->get();
+
+			$hesh = array();
+
+			foreach ($order as $value) {
+
+				$amout = (int) $value->amount;
+				$orderdata = array();
+				$hesh[$value->_id]['old'] = gettype($value->amount);
+				array_set($orderdata, 'amount', '' );
+				$value->update($orderdata);
+				array_set($orderdata, 'amount', $amout );
+				$value->update($orderdata);
+				$hesh[$value->_id]['new'] = gettype($value->amount);
+			}
+
+			return $hesh;
+		}
+
+		public function vendorStatsMeta(){
+
+			$cities = array('1'=>'Mumbai','2'=>'Pune','3'=>'Banglore','4'=>'Delhi','8'=>'Gurgaon');
+
+			$data = '';
+
+			foreach ($cities as $city_id => $city_name) {
+
+				$finders = Finder::active()->where('city_id',(int)$city_id)
+							->with(array('category'=>function($query){$query->select('_id','name','slug');}))	 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->orderBy('_id', 'desc')
+							->get();
+
+				foreach ($finders as $key => $value) 
+				{
+					$data .= $city_name.';'.$value->title.';'.$value->location->name.';'.$value->category->name.';'.$value->meta["title"].';'.$value->meta["description"].' | ';		
+				}			
+				
+			}
+
+			return $data;
+		}
 
 	}
-
-}
