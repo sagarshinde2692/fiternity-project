@@ -33,13 +33,21 @@ class Customer extends  \Basemodel {
 	public function getUberTrialAttribute(){
 
 		$finders 	= 	[];
+		$passed = [];
+		$upcoming = [];
 		// dd($this->campaign_finders);exit();
 		if(!empty($this->uber_trials) && isset($this->uber_trials)){
 
 			$trialObj 	=	Booktrial::whereIn('_id', array_map('intval', explode(",",$this->uber_trials)))->get();
 			foreach ($trialObj as $key => $value) {
 				// dd($value);exit();
-				array_push($finders, $value);
+				if(strtotime(date($value->schedule_date_time)) < time()){
+					array_push($passed,$value);
+				}
+				else{
+					array_push($upcoming,$value);	
+				}
+				$finders = array('passed_trial' => $passed, 'upcoming_trial' => $upcoming);
 			}		
 		}
 
