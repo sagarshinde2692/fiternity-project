@@ -10,7 +10,7 @@
 class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
-	protected $dates = array('last_visited');
+	protected $dates = array('last_visited','birthday');
 	protected $appends = array('uber_trial');
 	
 	// Add your validation rules here

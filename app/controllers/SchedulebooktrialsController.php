@@ -321,13 +321,33 @@ class SchedulebooktrialsController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
+		if(empty($data['customer_id'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_id");
+			return  Response::json($resp, 400);
+		}
+
 		$booktrial_id = intval(Input::json()->get('booktrial_id'));
 		$customer_reminder_need_status = Input::json()->get('customer_reminder_need_status');
+		$comment_reason = Input::json()->get('comment_reason');
+		$trainer_comment = Input::json()->get('trainer_comment');
 		$booktrialdata = array(
-			'customer_reminder_need_status' 		=>		$customer_reminder_need_status
+			'customer_reminder_need_status' 	=>		$customer_reminder_need_status,
+			'comment_reason' 					=>		$comment_reason,
+			'trainer_comment' 					=>		$trainer_comment
 		);
 		$booktiral 				= 	Booktrial::findOrFail($booktrial_id);
 		$booktiral_response 	=	$booktiral->update($booktrialdata);
+
+		$customer_id 	= intval(Input::json()->get('customer_id'));
+		$customer_sex 	= Input::json()->get('customer_sex');
+		$birthday 	= Input::json()->get('birthday');
+		
+		$customerdata = array(
+			'customer_sex' 		=>		$customer_sex,
+			'birthday' 		=>		date("Y-m-d 00:00:00", strtotime(trim($birthday)))
+		);
+		$customer 			= 	Customer::findOrFail($customer_id);
+		$customer_response 	=	$customer->update($customerdata);
 
 		$resp 	= 	array('status' => 200,'message' => "Book Trial Update Sucessfully");
 		return Response::json($resp,200);
