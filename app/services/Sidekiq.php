@@ -32,14 +32,14 @@ Class Sidekiq {
         try {
             $response = json_decode($this->client->post($route,['json'=>$payload])->getBody()->getContents());
             $return  = ['status'=>200,
-                        'task_id'=>(array) $response->job_id
+                        'task_id'=>$response->jid
             ];
             return $return;
         }catch (RequestException $e) {
             
-            $responce = $e->getResponse();
-            $error = [  'status'=>$responce->getStatusCode(),
-                        'reason'=>$responce->getReasonPhrase()
+            $response = $e->getResponse();
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
             ];
 
             Log::info('Sidekiq Email Error : '.json_encode($error));
@@ -66,21 +66,22 @@ Class Sidekiq {
 
         if($id){
 
-            $type = 'delete'
+            $id = array($id);
+            $type = 'delete';
             $route = $this->route_type[$type];
-            $payload = array('id'=>$id);
+            $payload = array('jid'=>$id);
 
             try {
                     $response = json_decode($this->client->post($route,['json'=>$payload])->getBody()->getContents());
                     $return  = ['status'=>200,
-                                'task_id'=>(array) $response->job_id
+                                'message'=>$response->message
                     ];
                     return $return;
             }catch (RequestException $e) {
                 
-                $responce = $e->getResponse();
-                $error = [  'status'=>$responce->getStatusCode(),
-                            'reason'=>$responce->getReasonPhrase()
+                $response = $e->getResponse();
+                $error = [  'status'=>$response->getStatusCode(),
+                            'reason'=>$response->getReasonPhrase()
                 ];
 
                 Log::info('Sidekiq Email Error : '.json_encode($error));
@@ -104,7 +105,7 @@ Class Sidekiq {
         }else{
 
             $response = array('status'=>400,'reason'=>'atach id');
-            Log::info('Sidekiq Email Error : attach id';
+            Log::info('Sidekiq Email Error : attach id');
         }
 
         return Response::json($response,$response['status']); 
