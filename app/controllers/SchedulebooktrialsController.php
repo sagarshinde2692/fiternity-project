@@ -141,6 +141,8 @@ class SchedulebooktrialsController extends \BaseController {
 					$goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
 					$cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();								
 					$slot_status 		= 	($slot['limit'] > $goingcnt) ? "available" : "full";
+					array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
+					array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
 					array_set($slot, 'totalbookcnt', $totalbookcnt);
 					array_set($slot, 'goingcnt', $goingcnt);
 					array_set($slot, 'cancelcnt', $cancelcnt);
@@ -304,6 +306,33 @@ class SchedulebooktrialsController extends \BaseController {
 		return $items;
 	}
 
+
+	/**
+	 * Update Book A Trial.
+	 *
+	 */
+
+	public function updateBookTrial() {
+
+		$data = Input::json()->all();
+
+		if(empty($data['booktrial_id'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - booktrial_id");
+			return  Response::json($resp, 400);
+		}
+
+		$booktrial_id = intval(Input::json()->get('booktrial_id'));
+		$customer_reminder_need_status = Input::json()->get('customer_reminder_need_status');
+		$booktrialdata = array(
+			'customer_reminder_need_status' 		=>		$customer_reminder_need_status
+		);
+		$booktiral 				= 	Booktrial::findOrFail($booktrial_id);
+		$booktiral_response 	=	$booktiral->update($booktrialdata);
+
+		$resp 	= 	array('status' => 200,'message' => "Book Trial Update Sucessfully");
+		return Response::json($resp,200);
+
+	}
 
 	/**
 	 * Booked Manual Book A Trial.

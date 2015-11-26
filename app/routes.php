@@ -185,6 +185,8 @@ Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexse
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
 Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
+Route::post('getcitywiseviews','KYUController@getcitywiseviews');
+//Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
 
 /************************KYU SECTION END HERE******************************************/
 ########################################################################################
@@ -247,6 +249,7 @@ Route::get('servicemarketfooterv1/{city?}', array('as' => 'service.servicemarket
 Route::get('getschedulebooktrial/{finderid?}/{date?}', array('as' => 'finders.getschedulebooktrial','uses' => 'SchedulebooktrialsController@getScheduleBookTrial'));
 Route::get('booktrial/{finderid?}/{date?}', array('as' => 'finders.getbooktrial','uses' => 'SchedulebooktrialsController@getBookTrial'));
 Route::post('booktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));
+Route::post('updatebooktrial', array('as' => 'finders.updatebooktrial','uses' => 'SchedulebooktrialsController@updateBookTrial'));
 Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','uses' => 'SchedulebooktrialsController@manualBookTrial'));
 Route::post('manual2ndbooktrial', array('as' => 'finders.storemanual2ndbooktrial','uses' => 'SchedulebooktrialsController@manual2ndBookTrial'));
 Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
@@ -461,6 +464,7 @@ Route::get('pushcategorywithfacilities', 'GlobalPushController@pushcategorywithf
 Route::get('pushcategoryoffering', 'GlobalPushController@pushcategoryoffering');
 Route::get('pushcategoryofferinglocation', 'GlobalPushController@pushcategoryofferinglocation');
 Route::get('pushcategoryfacilitieslocation', 'GlobalPushController@pushcategoryfacilitieslocation');
+Route::get('pushcategorycity', 'GlobalPushController@pushcategorycity');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################

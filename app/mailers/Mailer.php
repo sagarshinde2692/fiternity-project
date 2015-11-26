@@ -1,9 +1,17 @@
 <?PHP namespace App\Mailers;
 
 use Mail, Queue, IronWorker, Config;
+use App\Services\Sidekiq as Sidekiq;
 
 abstract Class Mailer {
 
+	protected $sidekiq;
+
+    public function __construct(Sidekiq $sidekiq) {
+
+        $this->sidekiq = $sidekiq;
+    }
+    
 	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
 
 		if($delay == null){
@@ -102,7 +110,29 @@ abstract Class Mailer {
 	}
 
 
-	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+	/*public function sendToWorkerBk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		if($delay !== 0){
+			$delay = strtotime($delay);
+		}
+
+        $scheduler  = new \Schedulerjob();
+		$scheduler->_id = \Schedulerjob::max('_id') + 1;        
+		$scheduler->email_template = $email_template;
+        $scheduler->template_data = $template_data;
+        $scheduler->message_data = $message_data;
+        $scheduler->delay = $delay;
+        $scheduler->priority = $priority;
+        $scheduler->label = $label;
+        $scheduler->type = 'email';
+        $scheduler->status = 'scheduled';
+
+        $scheduler->save();
+
+        return $scheduler->_id;
+	}
+
+	public function sendToWorkerBk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		$worker = new IronWorker(array(
 		    'token' => Config::get('queue.connections.ironworker.token'),
@@ -121,10 +151,28 @@ abstract Class Mailer {
 
 		return $messageid;
 
+	}*/
+
+	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+		$route	= 'email';
+		$result  = $this->sidekiq->sendToQueue($payload,$route);
+
+		if($result['status'] == 200){
+			return $result['task_id'];
+		}else{
+			return $result['status'].':'.$result['reason'];
+		}
+
 	}
 
-
-	public function sendToWorkerTest($email_template, $etmplate_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+	/*public function sendToWorkerTest($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		$worker = new IronWorker(array(
 		    'token' => Config::get('queue.connections.ironworker.token'),
@@ -143,6 +191,6 @@ abstract Class Mailer {
 
 		return $messageid;
 
-	}
+	}*/
 
 }

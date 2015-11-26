@@ -812,7 +812,7 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
-            'inputv3'                       =>      "",
+            'inputv3'                       =>      $cat['name'],
             'inputv4'                       =>      "",
             'inputloc1'                     =>      strtolower($loc['name']),
             'inputloc2'                     =>      $cluster,
@@ -854,13 +854,13 @@ if (!function_exists(('get_elastic_autosuggest_catfac_doc'))){
 
 if (!function_exists(('get_elastic_autosuggest_catoffer_doc'))){
 
-    function get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $city){
+    function get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $city, $offrank){
        
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
-            'inputv3'                       =>      $off['name'],
+            'inputv3'                       =>      strtolower($off['name'].' '.$cat['name']),
             'inputv4'                       =>      "",
             'inputloc1'                     =>      "",
             'inputloc2'                     =>      "",
@@ -870,7 +870,8 @@ if (!function_exists(('get_elastic_autosuggest_catoffer_doc'))){
             'location'                      =>      "",            
             'type'                          =>      'categoryoffering',
             'slug'                          =>      "",
-            'geolocation'                   =>      array('lat' => 0,'lon' => 0)
+            'geolocation'                   =>      array('lat' => 0,'lon' => 0),
+            'offeringrank'                  =>      $offrank
             );
         return $postfields_data;
     }
@@ -878,7 +879,7 @@ if (!function_exists(('get_elastic_autosuggest_catoffer_doc'))){
 
 if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
 
-    function get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $city, $cluster){
+    function get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $city, $cluster, $offrank){
        
             $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
             $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
@@ -886,7 +887,7 @@ if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
-            'inputv3'                       =>      strtolower($off['name']),
+            'inputv3'                       =>      strtolower($off['name'].' '.$cat['name']),
             'inputv4'                       =>      "",
             'inputloc1'                     =>      strtolower($loc['name']),
             'inputloc2'                     =>      $cluster,
@@ -896,7 +897,8 @@ if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
             'location'                      =>      strtolower($loc['name']),            
             'type'                          =>      'categorylocationoffering',
             'slug'                          =>      "",
-            'geolocation'                   =>       array('lat' => $lat,'lon' => $lon)
+            'geolocation'                   =>       array('lat' => $lat,'lon' => $lon),
+            'offeringrank'                  =>      $offrank
             );
         return $postfields_data;
     }
@@ -928,4 +930,27 @@ if (!function_exists(('get_elastic_autosuggest_catlocfac_doc'))){
     }
 }
 
+if (!function_exists(('get_elastic_autosuggest_catcity_doc'))){
+
+    function get_elastic_autosuggest_catcity_doc($cat, $city, $string){
+                   
+        $postfields_data = array(
+            'input'                         =>      $cat['name'],
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      $cat['name'],
+            'inputv4'                       =>      "",
+            'inputloc1'                     =>      $city,
+            'inputloc2'                     =>      "",
+            'inputcat'                      =>      $cat['name'],
+            'inputcat1'                     =>      $cat['name'],
+            'city'                          =>      $city,
+            'location'                      =>      strtolower($city),            
+            'type'                          =>      'categorycity',
+            'slug'                          =>      "",
+            'geolocation'                   =>       array('lat' => 0.0,'lon' => 0.0)
+            );
+        return $postfields_data;
+    }
+}
 ?>
