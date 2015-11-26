@@ -675,9 +675,9 @@ public function newglobalsearch(){
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
         
-        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with ");
+        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with "," - ");
         $string1 = str_replace($stopwords, " ", $string);
-        $keylist   =         explode(" ", $string1); 
+        $keylist   = explode(" ", $string1); 
                 
         $geofunction = 50;
         $geo_boost = 20;
@@ -797,32 +797,33 @@ public function newglobalsearch(){
         if(!empty($lat)&&!empty($lon)){
             $geofunction = '{
               "weight": '.$geo_boost.',            
-              "linear": {
+              "exp": {
                 "geolocation": {
                   "origin": {
                     "lat":19.113259,
                     "lon": 72.858496
                 },
-                "scale": "5km",
-                "offset": "0km"
+                "scale": "0.5km",
+                "offset": "0km",
+                "decay" : 0.5
             }
         }                          
     },';
 }
 
-if (strpos($string,'in') !== false){  
+if (strpos($string,'in') !== false){
     $indelimterscript = '{
         "script_score": {            
                 "params": {
                     "boost": 50,
                     "param2": 20
                 },
-                "script": "(doc[\'type\'].value == \'categorylocation\') ? 10 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+                "script": "(doc[\'type\'].value == \'categorylocation\') ? 30 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
 
-if ((strpos($string,'in') === false) && (strpos($string,'with') === false))
+if ((strpos($string,'in') === false) && (strpos($string,'with') === false) && (strpos($string, '-') === false))
 {    
     $indelimterscript = '{
         "script_score": {            
@@ -830,12 +831,12 @@ if ((strpos($string,'in') === false) && (strpos($string,'with') === false))
                     "boost": 1,
                     "param2": 20
                 },
-                "script": "(doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+                "script": "(doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
 
-if (strpos($string, 'with') !== false){
+if ((strpos($string, 'with') !== false)||(strpos($string, '-') !== false)){
 $withdelimeterscript = '{
     "script_score": {       
             "params": {
@@ -985,7 +986,16 @@ $inputcat1function = $inputcat1function.$inputcat1function1;
             }                                           
     },';
 
-$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript,',');
+ $offeringpriorityscript = '{
+        "script_score": {            
+                "params": {
+                    "boost": 50
+                },
+                "script": "doc[\'type\'].value == \'categorylocationoffering\' ? doc[\'offeringrank\'].value : 0"
+            }                                           
+    },';
+
+$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript,',');
 
 $filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter.$city_filter,',');
 
@@ -1032,7 +1042,7 @@ $request = array(
     'method' => 'POST',
     'postfields' => $query
     );    
-
+//return $query;exit;
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 

@@ -186,6 +186,7 @@ Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexse
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
 Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
 Route::post('getcitywiseviews','KYUController@getcitywiseviews');
+//Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
 
 /************************KYU SECTION END HERE******************************************/
 ########################################################################################
@@ -460,6 +461,7 @@ Route::get('pushcategorywithfacilities', 'GlobalPushController@pushcategorywithf
 Route::get('pushcategoryoffering', 'GlobalPushController@pushcategoryoffering');
 Route::get('pushcategoryofferinglocation', 'GlobalPushController@pushcategoryofferinglocation');
 Route::get('pushcategoryfacilitieslocation', 'GlobalPushController@pushcategoryfacilitieslocation');
+Route::get('pushcategorycity', 'GlobalPushController@pushcategorycity');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
