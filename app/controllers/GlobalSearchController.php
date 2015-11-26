@@ -8,6 +8,7 @@
 
 use App\Services\Translator;
 use App\Responsemodels\AutocompleteResponse;
+use App\Responsemodels\FinderresultResponse;
 use \Redis;
 
 
@@ -652,8 +653,17 @@ $request = array(
     );    
 
 $search_results     =   es_curl_request($request);       
-$response       =   [
-'search_results' => json_decode($search_results,true)];
+$search_results     =   es_curl_request($request);
+$search_results1    =   json_decode($search_results, true);
+$searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);
+$searchresulteresponse->meta->number_of_records = $size;
+$searchresulteresponse->meta->from = $from;
+$searchresulteresponse->meta->sortfield = $sort;
+$searchresulteresponse->meta->sortorder = $order;
+
+$searchresulteresponse1 = json_encode($searchresulteresponse, true);
+
+$response       =   json_decode($searchresulteresponse1,true);
 
 return Response::json($response);
 }
