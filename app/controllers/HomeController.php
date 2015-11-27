@@ -681,6 +681,25 @@ class HomeController extends BaseController {
 
 
 
+	public function getCategorytagsOfferings($city = 'mumbai'){
+
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 		= 	$citydata['name'];
+		$city_id		= 	(int) $citydata['_id'];	
+		$categorytag_offerings = Findercategorytag::active()->with('offerings')->whereIn('cities', [$city_id])->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings'));
+
+		$responsedata 	= ['categorytag_offerings' => $categorytag_offerings,  'message' => 'List for Finder categorytags'];
+		return Response::json($responsedata, 200);
+
+
+	}
+
+
+
+
 
 
 
