@@ -685,10 +685,11 @@ public function newglobalsearch(){
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
         
-        $stopwords = array(" in "," the "," and "," of "," off "," by "," for ", " with "," - ","class", "classes");
-        $string1 = str_replace($stopwords, " ", $string);
-        $keylist   = explode(" ", $string1); 
-                
+        $stopwords = array("in","the","and","of","off","by","for", "with","-","class", "classes");
+        $string1 = str_replace($stopwords, "", $string);
+        
+        $keylist   = array_filter(explode(" ", $string1));
+          
         $geofunction = 50;
         $geo_boost = 20;
         $inputboost = 150;
@@ -828,7 +829,7 @@ if (strpos($string,'in') !== false){
                     "boost": 50,
                     "param2": 20
                 },
-                "script": "(doc[\'type\'].value == \'categorylocation\') ? 30 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+                "script": "(doc[\'type\'].value == \'categorycity\') ? 40 : (doc[\'type\'].value == \'categorylocation\') ? 30 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
@@ -841,7 +842,7 @@ if ((strpos($string,'in') === false) && (strpos($string,'with') === false) && (s
                     "boost": 1,
                     "param2": 20
                 },
-                "script": "(doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+                "script": "(doc[\'type\'].value == \'categorycity\') ? 70 : (doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
