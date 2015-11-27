@@ -23,7 +23,7 @@ class Campaign extends \Basemodel {
 		// dd($this->campaign_finders);exit();
 		if(!empty($this->featured_finders) && isset($this->featured_finders)){
 
-			$findersObj 	=	Finder::active()->whereIn('_id', array_map('intval', explode(",",$this->featured_finders)))->get();
+			$findersObj 	=	Finder::active()->with('location')->whereIn('_id', array_map('intval', explode(",",$this->featured_finders)))->get();
 			foreach ($findersObj as $key => $value) {
 				// dd($value);exit();
 				array_push($finders, $value);
