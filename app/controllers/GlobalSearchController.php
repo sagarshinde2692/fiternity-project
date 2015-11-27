@@ -712,7 +712,7 @@ public function newglobalsearch(){
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
-                        "prefix_length": 3,
+                        "prefix_length": 6,
                         "max_expansions": 100
                     }
                 }
@@ -726,7 +726,7 @@ public function newglobalsearch(){
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
-                        "prefix_length": 3,
+                        "prefix_length": 6,
                         "max_expansions": 100
                     }
                 }
@@ -740,7 +740,7 @@ public function newglobalsearch(){
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
-                        "prefix_length": 3,
+                        "prefix_length": 6,
                         "max_expansions": 100
                     }
                 }
@@ -754,7 +754,7 @@ public function newglobalsearch(){
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
-                        "prefix_length": 3,
+                        "prefix_length": 6,
                         "max_expansions": 100
                     }
                 }
@@ -768,7 +768,7 @@ public function newglobalsearch(){
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
-                        "prefix_length": 3,
+                        "prefix_length": 6,
                         "max_expansions": 100
                     }
                 }
@@ -782,7 +782,7 @@ public function newglobalsearch(){
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
-                        "prefix_length": 3,
+                        "prefix_length": 6,
                         "max_expansions": 100
                     }
                 }
@@ -796,7 +796,7 @@ public function newglobalsearch(){
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
-                        "prefix_length": 3,
+                        "prefix_length": 6,
                         "max_expansions": 100
                     }
                 }
@@ -878,7 +878,7 @@ $inputfunction1 = '{
                     "query": "'.$key.'",
                     "fuzziness": "2",
                     "operator": "or",
-                    "prefix_length": 3,
+                    "prefix_length": 6,
                     "max_expansions": 100
                 }
             }
@@ -897,7 +897,7 @@ $inputv2function1 = '{
                     "query": "'.$key.'",
                     "fuzziness": "2",
                     "operator": "or",
-                    "prefix_length": 3,
+                    "prefix_length": 6,
                     "max_expansions": 100
                 }
             }
@@ -916,7 +916,7 @@ $inputv3function1 = '{
                     "query": "'.$key.'",
                     "fuzziness": "2",
                     "operator": "or",
-                    "prefix_length": 3,
+                    "prefix_length": 6,
                     "max_expansions": 100
                 }
             }
@@ -935,7 +935,7 @@ $inputv4function1 = '{
                     "query": "'.$key.'",
                     "fuzziness": "2",
                     "operator": "or",
-                    "prefix_length": 3,
+                    "prefix_length": 6,
                     "max_expansions": 100
                 }
             }
@@ -954,7 +954,7 @@ $inputloc1function1 = '{
                     "query": "'.$key.'",
                     "fuzziness": "2",
                     "operator": "or",
-                    "prefix_length": 3,
+                    "prefix_length": 6,
                     "max_expansions": 100
                 }
             }
@@ -973,7 +973,7 @@ $inputcat1function1 = '{
                     "query": "'.$key.'",
                     "fuzziness": "2",
                     "operator": "or",
-                    "prefix_length": 3,
+                    "prefix_length": 6,
                     "max_expansions": 100
                 }
             }
