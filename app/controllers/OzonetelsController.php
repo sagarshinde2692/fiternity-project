@@ -382,9 +382,9 @@ class OzonetelsController extends \BaseController {
 		return $path;
 	}
 
-	public function outboundCallSend(){
+	public function outboundCallSend($phone_number){
 
-		$result = $this->ozontelOutboundCall->call();
+		$result = $this->ozontelOutboundCall->call($phone_number);
 
 		echo"<pre>";print_r($result);exit;
 
@@ -392,13 +392,49 @@ class OzonetelsController extends \BaseController {
 
 	public function outboundCallRecive(){
 
-		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
 
-			$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+			if (isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
+
+				$input = (int)$_REQUEST['data'];
+
+				$input_data = array(1,2,3,4);
+
+				if(in_array($input, $input_data))
+				{
+					switch ($input) {
+						case 1:
+							$this->ozonetelResponse->addPlayText("You trial in confirmed");
+							break;
+						case 1:
+							$this->ozonetelResponse->addPlayText("You trial in cancelled");
+							break;
+						default:
+							$this->ozonetelResponse->addHangup();
+							break;
+					}
+				}else{
+
+					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    		$this->ozonetelCollectDtmf->addPlayText("You have dailed wrong extension number please dial correct extension number");
+		    		$this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm");
+		    		$this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel");
+		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+				}
+	    	}else{
+
+	    		$this->ozonetelResponse->addHangup();
+	    	}
 
 		}else {
 
-			$this->ozonetelResponse->addPlayText("This call is recorderd for response");
+			$this->ozonetelResponse->addPlayText("Thank you for booking trial");
+
+			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+
+		    $this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm");
+		    $this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel");
+		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		    $this->ozonetelResponse->addHangup();
 		}

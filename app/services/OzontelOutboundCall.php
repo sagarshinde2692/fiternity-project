@@ -6,7 +6,7 @@ use \Response;
 
 Class OzontelOutboundCall {
 
-    protected $base_uri = 'http://www.kookoo.in/outbound/outbound.php?';
+    protected $base_uri = 'http://www.kookoo.in/outbound/';
     protected $debug = false;
     protected $client;
 
@@ -23,15 +23,15 @@ Class OzontelOutboundCall {
 
     }
 
-    public function call(){
+    public function call($phone_no){
 
         $api_key = 'KK6cb3903e3d2c428bb60c0cfaa212009e';
-        $phone_no = '9920864894';
+        //$phone_no = '9920864894';
         $outbound_version = '2';
         $extra_data = '<response><playtext>Welcome To Fitternity</playtext></response>';
         $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive';
 
-        $url_pass = 'api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&extra_data='.$extra_data.'&url='.$url;
+        $url_pass = 'outbound.php?api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&extra_data='.$extra_data.'&url='.$url;
 
         try {
             $response = $this->client->get($url_pass)->getBody()->getContents();
@@ -41,6 +41,8 @@ Class OzontelOutboundCall {
             return $return;
         }catch (RequestException $e) {
             $response = $e->getResponse();
+
+            //echo"<pre>";print_r($response);exit;
             $error = [  'status'=>$response->getStatusCode(),
                         'message'=>$response->getReasonPhrase()
             ];
