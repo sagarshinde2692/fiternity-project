@@ -680,7 +680,6 @@ class HomeController extends BaseController {
 
 
 
-
 	public function getCategorytagsOfferings($city = 'mumbai'){
 
 		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
