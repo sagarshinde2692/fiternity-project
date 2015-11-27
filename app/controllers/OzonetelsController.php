@@ -405,9 +405,11 @@ class OzonetelsController extends \BaseController {
 					switch ($input) {
 						case 1:
 							$this->ozonetelResponse->addPlayText("You trial in confirmed");
+							$this->ozonetelResponse->addHangup();
 							break;
-						case 3:
+						case 2:
 							$this->ozonetelResponse->addPlayText("You trial in cancelled");
+							$this->ozonetelResponse->addHangup();
 							break;
 						default:
 							$this->ozonetelResponse->addHangup();
@@ -417,8 +419,8 @@ class OzonetelsController extends \BaseController {
 
 					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    		$this->ozonetelCollectDtmf->addPlayText("wrong extension, please dial correct extension number");
-		    		$this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm");
-		    		$this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel");
+		    		$this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm Trial");
+		    		$this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel Trial");
 		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 				}
 	    	}else{
