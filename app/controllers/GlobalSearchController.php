@@ -1007,7 +1007,7 @@ $inputcat1function = $inputcat1function.$inputcat1function1;
 
 $functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript,',');
 
-$filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter.$city_filter,',');
+$filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter,',');
 
 $functionquery =  '"query": {
     "function_score": {
@@ -1021,8 +1021,8 @@ $functionquery =  '"query": {
 
 $functionfilters =  ' "filter": {
     "bool": {
-        "should": [
-        '.$filterlist.'
+        "must": [{"bool":{"should" :['.$filterlist.']}},
+        {"term":{"city":"'.$city.'"}}
         ]
     }
 }'; 
