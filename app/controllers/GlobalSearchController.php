@@ -842,7 +842,7 @@ if ((strpos($string,'in') === false) && (strpos($string,'with') === false) && (s
                     "boost": 1,
                     "param2": 20
                 },
-                "script": "(doc[\'type\'].value == \'categorycity\') ? 70 : (doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+                "script": "(doc[\'type\'].value == \'categorycity\') ? 80 : (doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
             }                                           
     },';
 }
