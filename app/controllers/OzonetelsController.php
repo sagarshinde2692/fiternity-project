@@ -406,7 +406,7 @@ class OzonetelsController extends \BaseController {
 						case 1:
 							$this->ozonetelResponse->addPlayText("You trial in confirmed");
 							break;
-						case 1:
+						case 3:
 							$this->ozonetelResponse->addPlayText("You trial in cancelled");
 							break;
 						default:
@@ -416,7 +416,7 @@ class OzonetelsController extends \BaseController {
 				}else{
 
 					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
-		    		$this->ozonetelCollectDtmf->addPlayText("You have dailed wrong extension number please dial correct extension number");
+		    		$this->ozonetelCollectDtmf->addPlayText("wrong extension, please dial correct extension number");
 		    		$this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm");
 		    		$this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel");
 		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
@@ -432,8 +432,8 @@ class OzonetelsController extends \BaseController {
 
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 
-		    $this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm");
-		    $this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel");
+		    $this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm Trial");
+		    $this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel Trial");
 		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		    $this->ozonetelResponse->addHangup();
