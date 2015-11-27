@@ -810,8 +810,8 @@ public function newglobalsearch(){
               "exp": {
                 "geolocation": {
                   "origin": {
-                    "lat":19.113259,
-                    "lon": 72.858496
+                    "lat":'.$lat.',
+                    "lon": '.$lon.'
                 },
                 "scale": "0.5km",
                 "offset": "0km",
@@ -1052,7 +1052,7 @@ $request = array(
     'method' => 'POST',
     'postfields' => $query
     );    
-//return $query;exit;
+
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 

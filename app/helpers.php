@@ -806,8 +806,8 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster){
         
-            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
-            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
+             $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+            $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -881,8 +881,8 @@ if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
 
     function get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $city, $cluster, $offrank){
        
-            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
-            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
+            $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+            $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -908,8 +908,8 @@ if (!function_exists(('get_elastic_autosuggest_catlocfac_doc'))){
 
     function get_elastic_autosuggest_catlocfac_doc($cat, $fac, $loc, $string, $city, $cluster){
        
-            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
-            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
+            $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+            $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
