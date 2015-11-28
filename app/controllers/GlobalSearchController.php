@@ -779,7 +779,7 @@ public function newglobalsearch(){
         $inputloc1filter = '{
             "query": {
                 "match": {
-                    "inputv2": {
+                    "inputloc1": {
                         "query": "'.$string.'",
                         "fuzziness": "2",
                         "operator": "or",
