@@ -14,7 +14,7 @@ use \Redis;
 
 class GlobalSearchController extends \BaseController
 {
-    protected $indice = "autosuggest_index_alllocations";
+    protected $indice = "autosuggest_index_alllocations1";
     protected $type   = "autosuggestor";
     protected $facetssize = 10000;
     protected $limit = 10;
@@ -693,7 +693,7 @@ public function newglobalsearch(){
         $geofunction = 50;
         $geo_boost = 20;
         $inputboost = 150;
-        $inputv2boost = 25;
+        $inputv2boost = 5;
         $inputv3boost = 50;
         $inputv4boost = 40;
         $inputloc1boost = 50;
