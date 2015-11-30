@@ -1,6 +1,6 @@
 <?PHP namespace App\Mailers;
 
-use Mail, Queue, IronWorker, Config;
+use Mail, Queue, IronWorker, Config, View;
 use App\Services\Sidekiq as Sidekiq;
 
 abstract Class Mailer {
@@ -159,7 +159,8 @@ abstract Class Mailer {
 			$delay = $this->getSeconds($delay);
 		}
 	
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+		$email_html = View::make($email_template, $template_data)->render();
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 
 		$route	= 'email';
 		$result  = $this->sidekiq->sendToQueue($payload,$route);
