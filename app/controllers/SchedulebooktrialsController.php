@@ -321,6 +321,7 @@ class SchedulebooktrialsController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
+
 		$booktrial_id = intval(Input::json()->get('booktrial_id'));
 		$customer_reminder_need_status = Input::json()->get('customer_reminder_need_status');
 		$comment_reason = Input::json()->get('comment_reason');
