@@ -77,7 +77,7 @@ class GlobalPushController extends \BaseController
 			->get();
 
 			$locationtags = Location::where('cities', $city)
-			->whereIn('locationcluster_id', array(3))
+			//->whereIn('locationcluster_id', array(3))
 			->get();			
 			foreach ($categorytags as $cat) {
 				foreach ($locationtags as $loc) {	
