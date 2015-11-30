@@ -231,4 +231,54 @@ $query = '{
   }
   return $response;
 }
+
+public function getfacebookUTM(){
+  $fromdate = Input::json()->get('fromdate');
+  $todate = Input::json()->get('todate');
+
+  $query = '{
+  "from": 0,
+  "size": 500,
+  "query": {
+    "filtered": {
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "event_id": "bookingconfirm"
+              }
+            },
+            {
+              "term": {
+                "city": "mumbai"
+              }
+            },
+            {
+              "range": {
+                "timestamp": {
+                  "gte": "2015-11-01",
+                  "lte": "2015-11-30"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}';
+
+$request = array( 
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $query
+    );
+
+  $search_results1     =   es_curl_request($request);
+  $search_results = json_decode($search_results1, true);
+  return $search_results;exit;
+
+}
 }
