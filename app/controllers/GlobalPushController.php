@@ -77,10 +77,11 @@ class GlobalPushController extends \BaseController
 			->get();
 
 			$locationtags = Location::where('cities', $city)
-			//->whereIn('locationcluster_id', array(3))
+			->with('cities')
 			->get();			
 			foreach ($categorytags as $cat) {
-				foreach ($locationtags as $loc) {	
+				foreach ($locationtags as $loc) {
+				$loc = $loc->toArray();	
 					$cluster = '';
 					$string = '';
 					switch ($cat['name']) {
@@ -96,8 +97,8 @@ class GlobalPushController extends \BaseController
 						default:
 						$string = ucwords($cat['name']).' in '.ucwords($loc['name']);
 						break;															}						
-
-						$postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['city'], $cluster);
+						
+						$postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
 						$postfields_data = json_encode($postdata);	
 
 					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);			//return $request;exit;							
