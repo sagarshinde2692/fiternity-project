@@ -41,8 +41,8 @@ class GlobalPushController extends \BaseController
 		->active()
 		->orderBy('_id')         
         //->whereIn('_id', array(1623))
-		->whereIn('city_id', $citylist)
-		->take(50000)->skip(0)
+		->whereIn('city_id', array(1))
+		->take(2000)->skip(500)
 		->timeout(400000000)
         // ->take(3000)->skip(0)                          
 		->get()->toArray(); 
@@ -85,21 +85,21 @@ class GlobalPushController extends \BaseController
 					$string = '';
 					switch ($cat['name']) {
 						case 'yoga':
-							$string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-							break;
+						$string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
+						break;
 						case 'zumba':
-							$string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-							break;
+						$string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
+						break;
 						case 'dance':
-							$string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
-							break;						
+						$string = ucwords($cat['name']).' classes in '.ucwords($loc['name']);
+						break;						
 						default:
-							$string = ucwords($cat['name']).' in '.ucwords($loc['name']);
-							break;															}						
-											
-					$postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['city'], $cluster);
-					$postfields_data = json_encode($postdata);	
-									
+						$string = ucwords($cat['name']).' in '.ucwords($loc['name']);
+						break;															}						
+
+						$postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['city'], $cluster);
+						$postfields_data = json_encode($postdata);	
+
 					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);			//return $request;exit;							
 					echo "<br>    ---  ".es_curl_request($request);					
 				}
@@ -182,8 +182,8 @@ class GlobalPushController extends \BaseController
 
 					case 'cross functional training':
 					foreach ($offerings as $off) {						
-						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;				
-						$string = ucwords($cat['name']).' - '.ucwords($off['name']);				
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
+						$string = ucwords($off['name']).' - '.ucwords($cat['name']);														
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -315,8 +315,8 @@ class GlobalPushController extends \BaseController
 							case 'cross functional training':
 							$cluster = '';
 							$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
-							$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);
-							$string = ucwords($cat['name']).' - '.ucwords($off['name']).' in '.ucwords($loc['name']);					
+							//$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);
+							$string = ucwords($off['name']).' - '.ucwords($cat['name']).' in '.ucwords($loc['name']);					
 							$postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);			
 							$postfields_data = json_encode($postdata);											
 							$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);								
@@ -431,7 +431,7 @@ class GlobalPushController extends \BaseController
 					$string = ucwords($cat['name']).' classes in '.ucwords($cityname);
 					$postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);			
 					$postfields_data = json_encode($postdata);											
-					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);							
+					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);											
 					echo "<br> ---  ".es_curl_request($request);	
 					break;
 					
@@ -439,8 +439,7 @@ class GlobalPushController extends \BaseController
 					$string = ucwords($cat['name']).' classes in '.ucwords($cityname);
 					$postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);			
 					$postfields_data = json_encode($postdata);											
-					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);	
-					return $postdata;exit;	
+					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);						
 					echo "<br> ---  ".es_curl_request($request);	
 					break;
 
@@ -448,8 +447,7 @@ class GlobalPushController extends \BaseController
 					$string = ucwords($cat['name']).' in '.ucwords($cityname);
 					$postdata = get_elastic_autosuggest_catcity_doc($cat, $cityname, $string);			
 					$postfields_data = json_encode($postdata);											
-					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);	
-					return $postdata;exit;	
+					$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);						
 					echo "<br> ---  ".es_curl_request($request);
 					break;
 				}
@@ -687,9 +685,9 @@ class GlobalPushController extends \BaseController
 
 	public function updatelatlon(){
 		$locationtags = Location::whereIn('cities', array(8))
-			->with('cities')
-			->take(20)->skip(0)	
-			->get();
+		->with('cities')
+		->take(20)->skip(0)	
+		->get();
 		$url = 'https://maps.googleapis.com/maps/api/geocode/json?address=';
 		foreach ($locationtags as $loc) {
 			$locparams = urlencode($loc['name']);
@@ -709,6 +707,142 @@ class GlobalPushController extends \BaseController
 			array_set($locdata, 'lon', $location['lng']);				
 			$done = $loc->update($locdata);		
 			echo "<br> ---  ".$loc['_id'];			            
+		}
+	}
+
+	public function pushofferingcity(){
+		foreach ($citylist as $city) {
+			$cityname = $this->citynames[strval($city)];
+			$categorytag_offerings = Findercategorytag::active()				
+			->whereIn('cities',array($city))
+			->with('offerings')
+			->orderBy('ordering')
+				//->whereIn('_id',array(32))
+			->get(array('_id','name','offering_header','slug','status','offerings'));
+
+			foreach ($categorytag_offerings as $cat) {				
+				$offerings = $cat['offering'];		
+				foreach ($offerings as $off) {
+					switch ($cat['name']) {
+						case 'gyms':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
+						$string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($cityname);						
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						case 'yoga':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;										
+						$string = ucwords($off['name']).'- '.ucwords($cat['name']).' classes in '.ucwords($cityname);				
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						case 'zumba':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
+						$string = ucwords($off['name']).' classes in '.ucwords($cityname);				
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						case 'cross functional training':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
+							//$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);
+						$string = ucwords($off['name']).' - '.ucwords($cat['name']).' in '.ucwords($cityname);					
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);								
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						case 'dance':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;							
+						$string = ucwords($off['name']).'- '.ucwords($cat['name']).' classes in '.ucwords($cityname);				
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						case 'fitness studios':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
+						$string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($cityname);						
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;	
+
+						case 'crossfit':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
+						$string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($cityname);						
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						case 'pilates':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
+						$string = ucwords($cat['name']).' '.ucwords($off['name']).' in '.ucwords($cityname);						
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						case 'mma & kickboxing':
+						$cluster = '';
+						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;		
+						$string = ucwords($cat['name']).' '.ucwords($off['name']).' in '.ucwords($cityname);
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);		
+						break;
+
+						default:
+						$cluster = '';
+						$offeringrank =  0;	
+						$string = ucwords($cat['name']).' in '.ucwords($cityname).' with '.ucwords($off['name']);						
+						$postdata = get_elastic_autosuggest_catcityoffer_doc($cat, $off, $string, $cityname, $cluster, $offeringrank);		
+						$postfields_data = json_encode($postdata);											
+						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+						echo "<br> ---  ".es_curl_request($request);
+						break;
+					}
+				}	
+			}
+		}
+	}
+
+	public function pushallfittnesslocation(){
+		foreach ($this->citylist as $city) {
+			$cityname = $this->citynames[strval($city)];
+			$locations = Location::whereIn('cities', array($city))
+			->with('cities')			
+			->get();
+			foreach ($locations as $loc) {
+				$string = 'All Fitness options in '.ucwords($loc['name']);
+				$postdata = get_elastic_autosuggest_allfitness_doc($loc, $cityname, $string);
+				$postfields_data = json_encode($postdata);											
+				$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);						
+				echo "<br> ---  ".es_curl_request($request);
+			}
 		}
 	}
 }

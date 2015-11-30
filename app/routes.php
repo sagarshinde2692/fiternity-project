@@ -465,6 +465,7 @@ Route::get('pushcategoryofferinglocation', 'GlobalPushController@pushcategoryoff
 Route::get('pushcategoryfacilitieslocation', 'GlobalPushController@pushcategoryfacilitieslocation');
 Route::get('pushcategorycity', 'GlobalPushController@pushcategorycity');
 Route::get('updatelatlon', 'GlobalPushController@updatelatlon');
+Route::get('pushallfittnesslocation', 'GlobalPushController@pushallfittnesslocation');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
