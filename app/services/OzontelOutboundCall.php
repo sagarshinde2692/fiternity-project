@@ -28,10 +28,17 @@ Class OzontelOutboundCall {
         $api_key = 'KK6cb3903e3d2c428bb60c0cfaa212009e';
         //$phone_no = '9920864894';
         $outbound_version = '2';
+<<<<<<< HEAD
         //$extra_data = '<response><playtext>Hello</playtext></response>';
         $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive/1';
 
         $url_pass = 'outbound.php?api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&url='.$url;
+=======
+        //$extra_data = '<response><playtext>Welcome To Fitternity</playtext></response>';
+        $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive/13333';
+
+        $url_pass = 'api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&url='.$url;
+>>>>>>> outbound
 
         try {
             $response = $this->client->get($url_pass)->getBody()->getContents();

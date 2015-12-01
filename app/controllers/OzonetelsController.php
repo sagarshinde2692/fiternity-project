@@ -390,7 +390,7 @@ class OzonetelsController extends \BaseController {
 
 	}
 
-	public function outboundCallRecive(){
+	public function outboundCallRecive($tiral_id){
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
 
@@ -411,6 +411,16 @@ class OzonetelsController extends \BaseController {
 							$this->ozonetelResponse->addPlayText("You trial in cancelled");
 							$this->ozonetelResponse->addHangup();
 							break;
+						case 3:
+							$this->ozonetelResponse->addDial('02261222225',"true");
+							$this->ozonetelResponse->addHangup();
+							break;
+						case 4:
+							$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    				$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
+		    				$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+							$this->ozonetelResponse->addHangup();
+							break;
 						default:
 							$this->ozonetelResponse->addHangup();
 							break;
@@ -419,8 +429,7 @@ class OzonetelsController extends \BaseController {
 
 					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    		$this->ozonetelCollectDtmf->addPlayText("wrong extension, please dial correct extension number");
-		    		$this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm Trial");
-		    		$this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel Trial");
+		    		$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
 		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 				}
 	    	}else{
@@ -430,12 +439,15 @@ class OzonetelsController extends \BaseController {
 
 		}else {
 
-			$this->ozonetelResponse->addPlayText("Thank you for booking trial");
+			$this->ozonetelResponse->addPlayText($tiral_id);
+
+			$booktrial = Booktrial::find((int) $tiral_id);
+
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date_time");
 
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 
-		    $this->ozonetelCollectDtmf->addPlayText("Press 1, Confirm Trial");
-		    $this->ozonetelCollectDtmf->addPlayText("Press 2, Cancel Trial");
+		    
 		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		    $this->ozonetelResponse->addHangup();
@@ -443,6 +455,21 @@ class OzonetelsController extends \BaseController {
 		
 		$this->ozonetelResponse->send();
 
+	}
+
+
+	public function outboundIvr(){
+
+		
+		$ivr = 'press 1, to confirm if you are going,
+
+				press 2, to cancel the booking,
+
+				press 3, to reschedule or for any query,
+
+				Press 4, to repeat';
+
+		return $ivr;
 	}
 
 

@@ -374,7 +374,6 @@ Route::get('ozonetel/paidvendor',  array('as' => 'ozonetel.paidvendor','uses' =>
 Route::get('ozonetel/outboundcallsend/{phone_number}',  array('as' => 'ozonetel.outboundCallSend','uses' => 'OzonetelsController@outboundCallSend'));
 Route::get('ozonetel/outboundcallrecive/{id}',  array('as' => 'ozonetel.outboundCallRecive','uses' => 'OzonetelsController@outboundCallRecive'));
 
-
 /******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################
 
