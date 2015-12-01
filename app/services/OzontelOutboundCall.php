@@ -23,12 +23,11 @@ Class OzontelOutboundCall {
 
     }
 
-    public function call(){
+    public function call($phone_no,$trial_id){
 
         $api_key = 'KK6cb3903e3d2c428bb60c0cfaa212009e';
-        $phone_no = '9920864894';
         $outbound_version = '2';
-        $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive/13333';
+        $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive/'.$trial_id;
 
         $url_pass = '?api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&url='.$url;
 

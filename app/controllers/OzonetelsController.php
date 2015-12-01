@@ -382,9 +382,10 @@ class OzonetelsController extends \BaseController {
 		return $path;
 	}
 
-	public function outboundCallSend($phone_number){
+	public function outboundCallSend($phone_no){
 
-		$result = $this->ozontelOutboundCall->call($phone_number);
+		$trial_id = 13333;
+		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
 
 		echo"<pre>";print_r($result);exit;
 
@@ -392,7 +393,23 @@ class OzonetelsController extends \BaseController {
 
 	public function outboundCallRecive($trial_id){
 
-		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+
+			$booktrial = Booktrial::find((int) $trial_id);
+
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time",3);
+
+			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+
+			$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),3);
+
+		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+
+		   	$add_outbound = $this->addOutbound($_REQUEST,$booktrial->finder_id);
+
+		   	$this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
 
 			if (isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
 
@@ -413,7 +430,7 @@ class OzonetelsController extends \BaseController {
 							break;
 						case 3:
 							$this->ozonetelResponse->addPlayText("Please hold, your call is being transfer to our fitness concierge",3);
-							$this->ozonetelResponse->addDial('02261222225',"true");
+							$this->ozonetelResponse->addDial('09773348762',"true");
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 4:
@@ -430,6 +447,8 @@ class OzonetelsController extends \BaseController {
 					$booktrial = Booktrial::find((int) $trial_id);
 					$booktrial->update(array('ivr_status'=>$input));
 
+					$update_outbound = $this->updateOutbound($_REQUEST);
+
 				}else{
 
 					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
@@ -442,17 +461,34 @@ class OzonetelsController extends \BaseController {
 	    		$this->ozonetelResponse->addHangup();
 	    	}
 
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+
+			if (isset($_REQUEST['status']) && $_REQUEST['status'] == 'not_answered') {
+
+				$update_outbound = $this->updateOutbound($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+
+			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
+
+				$update_outbound = $this->updateOutbound($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+		    	
+			}else{
+
+				$this->ozonetelResponse->addHangup();
+			}
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
+
+		    $update_outbound = $this->updateOutbound($_REQUEST);
+		    $this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Disconnect') {
+
+		    $update_outbound = $this->updateOutbound($_REQUEST);
+		    $this->ozonetelResponse->addHangup();
+
 		}else {
-
-			$booktrial = Booktrial::find((int) $trial_id);
-
-			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time",3);
-
-			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
-
-			$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),3);
-
-		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		    $this->ozonetelResponse->addHangup();
 		}
@@ -474,6 +510,76 @@ class OzonetelsController extends \BaseController {
 				Press 4, to repeat';
 
 		return $ivr;
+	}
+
+	public function addOutbound($data,$finder_id = false){
+		
+		$ozonetel_outbound = new Ozoneteloutbound();
+		$ozonetel_outbound->_id = Ozoneteloutbound::max('_id') + 1;
+		$ozonetel_outbound->ozonetel_unique_id = $data['sid'];
+		$ozonetel_outbound->ozonetel_no = (string) $data['called_number'];
+		$ozonetel_outbound->customer_contact_no = (string)$data['cid_e164'];
+		$ozonetel_outbound->customer_contact_circle = (string)$data['circle'];
+		$ozonetel_outbound->customer_contact_operator = (string)$data['operator'];
+		$ozonetel_outbound->customer_contact_type = (string)$data['cid_type'];
+		$ozonetel_outbound->customer_cid = (string)$data['cid'];
+		$ozonetel_outbound->outbound_sid = (string)$data['outbound_sid'];
+
+		if($finder_id){
+			$ozonetel_outbound->finder_id = (int) $finder_id;
+		}
+
+		$ozonetel_outbound->call_status = "called";
+		$ozonetel_outbound->status = "1";
+		$ozonetel_outbound->save();
+
+		return $ozonetel_outbound;
+	}
+
+	public function updateOutbound($data){
+
+		$ozonetel_outbound = Ozoneteloutbound::where('ozonetel_unique_id','=',$data['sid'])->first();
+
+		if($ozonetel_outbound){
+
+			if(isset($data['status']) && $data['status'] != ''){
+				if($data['status'] != 'answered'){
+
+					$ozonetel_outbound->call_status = "not_answered";
+					$ozonetel_outbound->message = $data['message'];
+					$ozonetel_outbound->telco_code = $data['telco_code'];
+					$ozonetel_outbound->rec_md5_checksum = $data['rec_md5_checksum'];
+					$ozonetel_outbound->call_duration = $data['callduration'];
+					$ozonetel_outbound->pickduration = $data['pickduration'];
+					
+				}else{
+					
+					$ozonetel_outbound->call_status = "answered";
+					$ozonetel_outbound->call_duration = $data['callduration'];
+					$ozonetel_outbound->ozone_url_record = $data['data'];
+					$ozonetel_outbound->message = $data['message'];
+					$ozonetel_outbound->telco_code = $data['telco_code'];
+					$ozonetel_outbound->rec_md5_checksum = $data['rec_md5_checksum'];
+					$ozonetel_outbound->pickduration = $data['pickduration'];
+				}
+			}
+
+			if( isset($data['event']) && $data['event'] == 'GotDTMF' && isset($data['data']) && $data['data'] != ''){
+				$ozonetel_outbound->ivr_status = (int) $data['data'];
+			}
+
+			if( isset($data['event']) && $data['event'] == 'Hangup' && isset($data['total_call_duration']) && $total_call_duration['data'] != ''){
+				$ozonetel_outbound->total_call_duration = (int) $data['total_call_duration'];
+			}
+
+			$ozonetel_outbound->update();
+
+			return $ozonetel_outbound;
+
+		}else{
+
+			return false;
+		}
 	}
 
 
