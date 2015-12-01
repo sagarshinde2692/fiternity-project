@@ -390,7 +390,7 @@ class OzonetelsController extends \BaseController {
 
 	}
 
-	public function outboundCallRecive($tiral_id){
+	public function outboundCallRecive($trial_id){
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
 
@@ -398,21 +398,22 @@ class OzonetelsController extends \BaseController {
 
 				$input = (int)$_REQUEST['data'];
 
-				$input_data = array(1,2,3,4);
+				$ivr_status = array(1 =>'confirm',2 =>'cancel',3 =>'reschedule',4 =>'repeat');
 
-				if(in_array($input, $input_data))
+				if(array_key_exists($input, $ivr_status))
 				{
 					switch ($input) {
 						case 1:
-							$this->ozonetelResponse->addPlayText("your trial in confirmed",3);
+							$this->ozonetelResponse->addPlayText("Thank you for your confirmation, we hope you have a great workout",3);
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 2:
-							$this->ozonetelResponse->addPlayText("your trial in cancelled",3);
+							$this->ozonetelResponse->addPlayText("Thank you for your request, your session is now cancel",3);
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 3:
-							$this->ozonetelResponse->addDial('09773348762',"true");
+							$this->ozonetelResponse->addPlayText("Please hold, your call is being transfer to our fitness concierge",3);
+							$this->ozonetelResponse->addDial('02261222225',"true");
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 4:
@@ -425,6 +426,10 @@ class OzonetelsController extends \BaseController {
 							$this->ozonetelResponse->addHangup();
 							break;
 					}
+
+					$booktrial = Booktrial::find((int) $trial_id);
+					$booktrial->update(array('ivr_status'=>$input));
+
 				}else{
 
 					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
@@ -439,7 +444,7 @@ class OzonetelsController extends \BaseController {
 
 		}else {
 
-			$booktrial = Booktrial::find((int) $tiral_id);
+			$booktrial = Booktrial::find((int) $trial_id);
 
 			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time",3);
 
