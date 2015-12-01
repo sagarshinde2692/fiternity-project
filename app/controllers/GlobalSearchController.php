@@ -685,7 +685,7 @@ public function newglobalsearch(){
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
         
-        $stopwords = array(" in"," the","of","off","by","for", "with","-","class", "classes", " and ");
+        $stopwords = array(" in "," the","of","off","by","for", "with","-","class", "classes", " and ");
         $string1 = str_replace($stopwords, "", $string);
         
         $keylist   = array_filter(explode(" ", $string1));
