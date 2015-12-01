@@ -412,7 +412,7 @@ class OzonetelsController extends \BaseController {
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 3:
-							$this->ozonetelResponse->addDial('02261222225',"true");
+							$this->ozonetelResponse->addDial('09773348762',"true");
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 4:
