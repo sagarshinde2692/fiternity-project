@@ -382,27 +382,94 @@ class OzonetelsController extends \BaseController {
 		return $path;
 	}
 
-	public function outboundCallSend(){
+	public function outboundCallSend($phone_number){
 
-		$this->ozonetelResponse->call();
+		$result = $this->ozontelOutboundCall->call($phone_number);
+
+		echo"<pre>";print_r($result);exit;
 
 	}
 
-	public function outboundCallRecive(){
+	public function outboundCallRecive($tiral_id){
 
-		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
 
-			$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+			if (isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
+
+				$input = (int)$_REQUEST['data'];
+
+				$input_data = array(1,2,3,4);
+
+				if(in_array($input, $input_data))
+				{
+					switch ($input) {
+						case 1:
+							$this->ozonetelResponse->addPlayText("You trial in confirmed");
+							$this->ozonetelResponse->addHangup();
+							break;
+						case 2:
+							$this->ozonetelResponse->addPlayText("You trial in cancelled");
+							$this->ozonetelResponse->addHangup();
+							break;
+						case 3:
+							$this->ozonetelResponse->addDial('02261222225',"true");
+							$this->ozonetelResponse->addHangup();
+							break;
+						case 4:
+							$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    				$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
+		    				$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+							$this->ozonetelResponse->addHangup();
+							break;
+						default:
+							$this->ozonetelResponse->addHangup();
+							break;
+					}
+				}else{
+
+					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    		$this->ozonetelCollectDtmf->addPlayText("wrong extension, please dial correct extension number");
+		    		$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
+		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+				}
+	    	}else{
+
+	    		$this->ozonetelResponse->addHangup();
+	    	}
 
 		}else {
 
-			$this->ozonetelResponse->addPlayText("This call is recorderd for response");
+			$this->ozonetelResponse->addPlayText($tiral_id);
+
+			$booktrial = Booktrial::find((int) $tiral_id);
+
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date_time");
+
+			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+
+		    
+		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		    $this->ozonetelResponse->addHangup();
 		}
 		
 		$this->ozonetelResponse->send();
 
+	}
+
+
+	public function outboundIvr(){
+
+		
+		$ivr = 'press 1, to confirm if you are going,
+
+				press 2, to cancel the booking,
+
+				press 3, to reschedule or for any query,
+
+				Press 4, to repeat';
+
+		return $ivr;
 	}
 
 

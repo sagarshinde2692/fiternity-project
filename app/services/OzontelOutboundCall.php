@@ -29,7 +29,7 @@ Class OzontelOutboundCall {
         $phone_no = '9920864894';
         $outbound_version = '2';
         $extra_data = '<response><playtext>Welcome To Fitternity</playtext></response>';
-        $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive';
+        $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive/13333';
 
         $url_pass = 'api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&extra_data='.$extra_data.'&url='.$url;
 
