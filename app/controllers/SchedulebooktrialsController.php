@@ -321,10 +321,6 @@ class SchedulebooktrialsController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
-		if(empty($data['customer_id'])){
-			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_id");
-			return  Response::json($resp, 400);
-		}
 
 		$booktrial_id = intval(Input::json()->get('booktrial_id'));
 		$customer_reminder_need_status = Input::json()->get('customer_reminder_need_status');
@@ -338,16 +334,18 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktiral 				= 	Booktrial::findOrFail($booktrial_id);
 		$booktiral_response 	=	$booktiral->update($booktrialdata);
 
-		$customer_id 	= intval(Input::json()->get('customer_id'));
-		$customer_sex 	= Input::json()->get('customer_sex');
-		$birthday 	= Input::json()->get('birthday');
-		
-		$customerdata = array(
-			'customer_sex' 		=>		$customer_sex,
-			'birthday' 		=>		date("Y-m-d 00:00:00", strtotime(trim($birthday)))
-			);
-		$customer 			= 	Customer::findOrFail($customer_id);
-		$customer_response 	=	$customer->update($customerdata);
+		if(isset($booktiral->customer_id) && $booktiral->customer_id != ""){
+			$customer_id 	= intval($booktiral->customer_id);
+			$customer_sex 	= Input::json()->get('customer_sex');
+			$birthday 	= Input::json()->get('birthday');
+			
+			$customerdata = array(
+				'customer_sex' 		=>		$customer_sex,
+				'birthday' 		=>		date("Y-m-d 00:00:00", strtotime(trim($birthday)))
+				);
+			$customer 			= 	Customer::findOrFail($customer_id);
+			$customer_response 	=	$customer->update($customerdata);			
+		}
 
 		$resp 	= 	array('status' => 200,'message' => "Book Trial Update Sucessfully");
 		return Response::json($resp,200);
@@ -456,7 +454,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$sndInstantSmsCustomer			=	$this->customersms->manualBookTrial($booktrialdata);
 		}
 
-		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
+		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
 		return Response::json($resp,200);		
 	}
 
@@ -575,7 +573,7 @@ class SchedulebooktrialsController extends \BaseController {
 		
 		$sndInstantEmailCustomer	= 	$this->customermailer->manual2ndBookTrial($booktrialdata);
 		$sndInstantSmsCustomer		=	$this->customersms->manual2ndBookTrial($booktrialdata);
-		$resp 						= 	array('status' => 200,'message' => "Second Book a Trial");
+		$resp 						= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Second Book a Trial");
 		return Response::json($resp,200);          
 
 	}
