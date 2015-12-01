@@ -404,11 +404,11 @@ class OzonetelsController extends \BaseController {
 				{
 					switch ($input) {
 						case 1:
-							$this->ozonetelResponse->addPlayText("You trial in confirmed",3);
+							$this->ozonetelResponse->addPlayText("your trial in confirmed",3);
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 2:
-							$this->ozonetelResponse->addPlayText("You trial in cancelled",3);
+							$this->ozonetelResponse->addPlayText("your trial in cancelled",3);
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 3:
