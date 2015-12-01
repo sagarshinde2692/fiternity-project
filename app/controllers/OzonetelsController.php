@@ -568,7 +568,7 @@ class OzonetelsController extends \BaseController {
 				$ozonetel_outbound->ivr_status = (int) $data['data'];
 			}
 
-			if( isset($data['event']) || $data['event'] == 'Hangup' || $data['event'] == 'Disconnect' && isset($data['total_call_duration']) && $data['total_call_duration'] != ''){
+			if( isset($data['event']) && $data['event'] == 'Hangup' || $data['event'] == 'Disconnect' && isset($data['total_call_duration']) && $data['total_call_duration'] != ''){
 				$ozonetel_outbound->total_call_duration = (int) $data['total_call_duration'];
 			}
 
