@@ -404,11 +404,11 @@ class OzonetelsController extends \BaseController {
 				{
 					switch ($input) {
 						case 1:
-							$this->ozonetelResponse->addPlayText("You trial in confirmed");
+							$this->ozonetelResponse->addPlayText("You trial in confirmed",4);
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 2:
-							$this->ozonetelResponse->addPlayText("You trial in cancelled");
+							$this->ozonetelResponse->addPlayText("You trial in cancelled",4);
 							$this->ozonetelResponse->addHangup();
 							break;
 						case 3:
@@ -417,7 +417,7 @@ class OzonetelsController extends \BaseController {
 							break;
 						case 4:
 							$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
-		    				$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
+		    				$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),4);
 		    				$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 							$this->ozonetelResponse->addHangup();
 							break;
@@ -428,8 +428,8 @@ class OzonetelsController extends \BaseController {
 				}else{
 
 					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
-		    		$this->ozonetelCollectDtmf->addPlayText("wrong extension, please dial correct extension number");
-		    		$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
+		    		$this->ozonetelCollectDtmf->addPlayText("wrong extension, please dial correct extension number",4);
+		    		$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),4);
 		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 				}
 	    	}else{
@@ -439,15 +439,15 @@ class OzonetelsController extends \BaseController {
 
 		}else {
 
-			$this->ozonetelResponse->addPlayText($tiral_id);
+			$this->ozonetelResponse->addPlayText($tiral_id,4);
 
 			$booktrial = Booktrial::find((int) $tiral_id);
 
-			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time");
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time",4);
 
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 
-			$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
+			$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),4);
 
 		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
