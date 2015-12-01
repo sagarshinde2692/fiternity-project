@@ -6,7 +6,7 @@ use \Response;
 
 Class OzontelOutboundCall {
 
-    protected $base_uri = 'http://www.kookoo.in/outbound/outbound.php?';
+    protected $base_uri = 'http://www.kookoo.in/outbound/outbound.php';
     protected $debug = false;
     protected $client;
 
@@ -30,7 +30,7 @@ Class OzontelOutboundCall {
         $outbound_version = '2';
         $url = 'http://apistg.fitn.in/ozonetel/outboundcallrecive/13333';
 
-        $url_pass = 'api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&url='.$url;
+        $url_pass = '?api_key='.$api_key.'&phone_no='.$phone_no.'&outbound_version='.$outbound_version.'&url='.$url;
 
         try {
             $response = $this->client->get($url_pass)->getBody()->getContents();

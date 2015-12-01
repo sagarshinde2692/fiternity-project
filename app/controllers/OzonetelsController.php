@@ -443,11 +443,12 @@ class OzonetelsController extends \BaseController {
 
 			$booktrial = Booktrial::find((int) $tiral_id);
 
-			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date_time");
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time");
 
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 
-		    
+			$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr());
+
 		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		    $this->ozonetelResponse->addHangup();
