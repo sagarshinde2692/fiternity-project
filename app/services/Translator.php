@@ -300,6 +300,15 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 		$offval->count = $off['doc_count'];
 		array_push($finderresult_response->results->aggregationlist->offerings, $offval);
 	}
+
+	$finderresult_response->results->aggregationlist->locationtags = array();
+	foreach ($aggs['filtered_locationtags']['locationstags']['buckets'] as $locs){
+		$locval = new \stdClass();
+		$locval->key = $locs['key'];
+		$locval->count = $locs['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->locationtags, $locval);
+	}
+
 	return $finderresult_response;
 }
 }

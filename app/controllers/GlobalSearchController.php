@@ -392,6 +392,20 @@ public function keywordSearch(){
         "bool" : {"must":['.$location_facets_filter.']}
     }';
 
+    $location_facets = ' "filtered_locationtags": {
+    '.$location_bool.',
+        "aggs": {
+            "locationstags": {
+                "terms": {
+                    "field": "locationtags",                    
+                    "min_doc_count": 1,
+                    "size": 500,
+                    "order":{"_term": "asc"}
+                }
+            }
+        }
+    },';
+
     $regions_facets = '
     "filtered_locations": { '.$location_bool.', 
     "aggs":
@@ -460,7 +474,7 @@ $budgets_facets = ' "filtered_budgets": {
 
 
 
-$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets,',');
+$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$location_facets,',');
 
 $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
 $string = str_replace($stopwords, " ", $key);
