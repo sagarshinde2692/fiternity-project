@@ -571,6 +571,18 @@ $query = '{
                                 ]}
                             }
                         },
+                        "boost_factor": 15
+                    },
+                    {
+                        "filter": {
+                            "query": {
+                                "bool": {"should": [
+                                {"match": {
+                                    "category_snow": "'.$string.'"
+                                }}
+                                ]}
+                            }
+                        },
                         "boost_factor": 25
                     },
                     {
@@ -586,6 +598,20 @@ $query = '{
                           }
                       },
                       "boost_factor": 10
+                  },
+                  {
+                        "filter": {
+                            "query": {
+                                "bool": {
+                                    "should": [
+                                    {"match": {
+                                      "location_snow": "'.$string.'"
+                                  }}
+                                  ]
+                              }
+                          }
+                      },
+                      "boost_factor": 15
                   },
                   {
                     "filter": {
