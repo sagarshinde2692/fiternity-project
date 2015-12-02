@@ -309,6 +309,14 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 		array_push($finderresult_response->results->aggregationlist->locationtags, $locval);
 	}
 
+	$finderresult_response->results->aggregationlist->category = array();	
+	foreach ($aggs['category']['buckets'] as $cat){
+		$catval = new \stdClass();
+		$catval->key = $cat['key'];
+		$catval->count = $cat['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->category, $catval);
+	}
+
 	return $finderresult_response;
 }
 }

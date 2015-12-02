@@ -492,9 +492,9 @@ $budgets_facets = ' "filtered_budgets": {
     }
 },';
 
+$category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
 
-
-$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$location_facets,',');
+$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$location_facets.$category_facets,',');
 
 $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
 $string = str_replace($stopwords, " ", $key);
@@ -556,8 +556,19 @@ $query = '{
                                 "match": {
                                     "info_service_snow": "'.$string.'"
                                 }
+                            },
+                            {
+                                "match": {
+                                    "location_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "category_snow": "'.$string.'"
+                                }
                             }
-                            ]
+                            ],
+                         "minimum_number_should_match": 2
                         }
                     },
                     "functions": [
@@ -571,7 +582,7 @@ $query = '{
                                 ]}
                             }
                         },
-                        "boost_factor": 15
+                        "boost_factor": 20
                     },
                     {
                         "filter": {
@@ -583,7 +594,7 @@ $query = '{
                                 ]}
                             }
                         },
-                        "boost_factor": 25
+                        "boost_factor": 40
                     },
                     {
                         "filter": {
@@ -611,7 +622,7 @@ $query = '{
                               }
                           }
                       },
-                      "boost_factor": 15
+                      "boost_factor": 10
                   },
                   {
                     "filter": {
@@ -704,7 +715,7 @@ $query = '{
 }';
 
 
-//return $query;exit;
+
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
     'port' => 8050,
