@@ -1,6 +1,72 @@
 <?php
 
 
+Route::get('/migrateratecards', function() { 
+
+	$items = Service::active()->orderBy('_id')->lists('_id');
+
+	$Servicedata = array();
+
+	foreach ($items as $key => $item) {
+
+		$service_id = intval($item);
+		$Service 	=	Service::find($service_id);
+
+		if($Service){
+			$data 		=	$Service->toArray();
+
+			if(count($data['ratecards']) > 0 && isset($data['ratecards'])){
+
+				foreach ($data['ratecards'] as $key => $value) {
+
+					if(isset($value['featured_offer']) && $value['featured_offer'] == '1'){
+						$show_in_offers = '1';
+					}
+
+					$ratecard = [
+					'service_id'=> $service_id,
+					'offers'=> [],
+					'order'=> (isset($value['order'])) ? $value['order'] : '0',
+					'type'=> (isset($value['type'])) ? $value['type'] : '',
+					'price'=> (isset($value['price'])) ? $value['price'] : '',
+					'special_price'=> (isset($value['special_price'])) ? $value['special_price'] : '',
+					'remarks'=> (isset($value['remarks'])) ? $value['remarks'] : '',
+
+					
+
+					
+					'duration'=> (isset($value['duration'])) ? $value['duration'] : '',
+					'days'=> intval($days),
+					'sessions'=> intval($sessions),
+					'show_on_fitmania'=> (isset($value['show_on_fitmania'])) ? $value['show_on_fitmania'] : '',
+					'direct_payment_enable'=> (isset($value['direct_payment_enable'])) ? $value['direct_payment_enable'] : '0',
+					'featured_offer'=> (isset($value['featured_offer'])) ? $value['featured_offer'] : '0'
+					];
+					array_push($finderratecards, $ratecard);
+
+				}
+
+				$ratecard = [
+				'order'=> (isset($value['order'])) ? $value['order'] : '0',
+				'type'=> (isset($value['type'])) ? $value['type'] : '',
+				'duration'=> (isset($value['duration'])) ? $value['duration'] : '',
+				'days'=> intval($days),
+				'sessions'=> intval($sessions),
+				'price'=> (isset($value['price'])) ? $value['price'] : '',
+				'special_price'=> (isset($value['special_price'])) ? $value['special_price'] : '',
+				'remarks'=> (isset($value['remarks'])) ? $value['remarks'] : '',
+				'show_on_fitmania'=> (isset($value['show_on_fitmania'])) ? $value['show_on_fitmania'] : '',
+				'direct_payment_enable'=> (isset($value['direct_payment_enable'])) ? $value['direct_payment_enable'] : '0',
+				'featured_offer'=> (isset($value['featured_offer'])) ? $value['featured_offer'] : '0'
+				];
+
+			}
+		}
+	}
+});
+
+
+
 Route::get('/updateservices', function() { 
 
 	$items = Service::active()->orderBy('_id')->lists('_id');
