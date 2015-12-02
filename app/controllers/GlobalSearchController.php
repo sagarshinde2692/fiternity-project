@@ -571,7 +571,7 @@ $query = '{
                                 ]}
                             }
                         },
-                        "boost_factor": 8
+                        "boost_factor": 25
                     },
                     {
                         "filter": {
@@ -601,7 +601,7 @@ $query = '{
                             }
                         }
                     },
-                    "boost_factor": 4
+                    "boost_factor": 15
                 },
                 {
                     "filter": {
@@ -678,7 +678,7 @@ $query = '{
 }';
 
 
-
+//return $query;exit;
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
     'port' => 8050,
