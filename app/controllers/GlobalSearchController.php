@@ -332,32 +332,52 @@ public function keywordSearch(){
 
     try {
 
-        $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
-        $key     =         Input::json()->get('key');
-        $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
-        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
-        $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
-        $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
+    $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
+    $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
+    $key     =         Input::json()->get('key');
+    $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
+    $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
+    $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
+    $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
+    $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
 
-        $sort_clause = '';
+    $sort_clause = '';
 
-        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-        $city_filter = '{"term" : { "city" : "'.$city.'" } },';
-        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
-        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
-        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';   
-        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
-        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+    $city_filter = '{"term" : { "city" : "'.$city.'" } },';
+    $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+    $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';   
+    $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+    $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
 
-        $must_filtervalue = trim($city_filter,',');
-        $must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter,',');
-    $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+        
+    $must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter,',');
+    
+
+    $keylist = explode(' ', $key);
+    $locations_new_filter =' {"terms" : { "locationtags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+    $category_new_filter =' {"terms" : { "categorytags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+    $title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+    $offering_new_filter =' {"terms" : { "offerings_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+    $city_new_filter =' {"terms" : { "city" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+    
+    //return $locations_new_filter;exit;
+    // foreach ($keylist as $keyval) {
+    //    {"terms" : { "locationtags" : "'.$city.'" } },
+    // }
+           //used for offering and facilities
+    $loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
+
+    $loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
     $mustfilter_post = '"must": ['.$must_filtervalue_post.']';
-    $filtervalue = trim($mustfilter,',');
+   
     $filtervalue_post = trim($mustfilter_post,',');
+    $must_filtervalue = trim($city_filter.$loccatshould,',');
+    $mustfilter = '"must": ['.$must_filtervalue.']'; 
+     $filtervalue = trim($mustfilter,',');
 
+   
     if($mustfilter != ''){
         $filters = '"filter": {
             "bool" : {'.$filtervalue.'}
