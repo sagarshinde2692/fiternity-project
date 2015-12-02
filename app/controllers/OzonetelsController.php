@@ -405,7 +405,7 @@ class OzonetelsController extends \BaseController {
 
 		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
-		   	$add_outbound = $this->addOutbound($_REQUEST,$booktrial->finder_id);
+		   	$add_outbound = $this->addOutbound($_REQUEST,$booktrial->finder_id,$trial_id);
 
 		   	$this->ozonetelResponse->addHangup();
 
@@ -512,11 +512,13 @@ class OzonetelsController extends \BaseController {
 		return $ivr;
 	}
 
-	public function addOutbound($data,$finder_id = false){
+	public function addOutbound($data,$finder_id,$trial_id){
 		
 		$ozonetel_outbound = new Ozoneteloutbound();
 		$ozonetel_outbound->_id = Ozoneteloutbound::max('_id') + 1;
 		$ozonetel_outbound->ozonetel_unique_id = $data['sid'];
+		$ozonetel_outbound->finder_id = (int) $finder_id;
+		$ozonetel_outbound->trial_id = (int) $trial_id;
 		$ozonetel_outbound->ozonetel_no = (string) $data['called_number'];
 		$ozonetel_outbound->customer_contact_no = (string)$data['cid_e164'];
 		$ozonetel_outbound->customer_contact_circle = (string)$data['circle'];
@@ -524,10 +526,6 @@ class OzonetelsController extends \BaseController {
 		$ozonetel_outbound->customer_contact_type = (string)$data['cid_type'];
 		$ozonetel_outbound->customer_cid = (string)$data['cid'];
 		$ozonetel_outbound->outbound_sid = (string)$data['outbound_sid'];
-
-		if($finder_id){
-			$ozonetel_outbound->finder_id = (int) $finder_id;
-		}
 
 		$ozonetel_outbound->call_status = "called";
 		$ozonetel_outbound->status = "1";
