@@ -732,7 +732,7 @@ $request = array(
     'method' => 'POST',
     'postfields' => $query
     );    
-return $query;exit;
+
 $search_results     =   es_curl_request($request);       
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
