@@ -384,7 +384,27 @@ class OzonetelsController extends \BaseController {
 
 	public function outboundCallSend($phone_no){
 
-		$trial_id = 13333;
+		$trial_id = 14665;
+
+	/*	$booktrial = Booktrial::find((int) $trial_id);
+
+		$slot_date 							=	date('d-m-Y', strtotime($booktrial->schedule_date));
+		$schedule_date_starttime 			=	strtoupper($slot_date ." ".$booktrial->schedule_slot_start_time);
+
+		echo"<pre>";print_r($schedule_date_starttime);
+
+		$date = '';//\Carbon\Carbon::createFromFormat('j F Y', $schedule_date_starttime);
+		$hour = \Carbon\Carbon::createFromFormat('g', $schedule_date_starttime);
+		$min = \Carbon\Carbon::createFromFormat('i', $schedule_date_starttime);
+		$ante = \Carbon\Carbon::createFromFormat('a', $schedule_date_starttime);
+
+		$ante = ($ante == 'am') ? 'a m' : 'p m';
+		$min = ($min == 00) ? ' ' : $min;
+		
+		$datetime = $date.' ,'.$hour.' '.$min.' '.$ante;
+
+		echo"<pre>";print_r($datetime);exit;*/
+
 		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
 
 		return  Response::json($result, $result['status']);
@@ -406,7 +426,7 @@ class OzonetelsController extends \BaseController {
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
 			$booktrial = Booktrial::find((int) $trial_id);
-
+/*
 			$date = \Carbon\Carbon::createFromFormat('j F Y', $booktrial->schedule_date_time);
 			$hour = \Carbon\Carbon::createFromFormat('g', $booktrial->schedule_date_time);
 			$min = \Carbon\Carbon::createFromFormat('i', $booktrial->schedule_date_time);
@@ -415,7 +435,10 @@ class OzonetelsController extends \BaseController {
 			$ante = ($ante == 'am') ? 'a m' : 'p m';
 			$min = ($min == 00) ? ' ' : $min;
 			
-			$datetime = $date.' ,'.$hour.' '.$min.' '.$ante;
+			$datetime = $date.' ,'.$hour.' '.$min.' '.$ante;*/
+
+			$slot_date 			=	date('d-m-Y', strtotime($booktrial->schedule_date));
+			$datetime 			=	strtoupper($slot_date ." ".$booktrial->schedule_slot_start_time);
 
 			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name."on ".$datetime." , ",3);
 
