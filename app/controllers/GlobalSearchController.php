@@ -742,7 +742,7 @@ $query = '{
 
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity1/finder/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv1/finder/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query
