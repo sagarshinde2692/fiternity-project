@@ -501,13 +501,13 @@ class OzonetelsController extends \BaseController {
 	public function outboundIvr(){
 
 		
-		$ivr = 'press 1, to confirm if you are going,
+		$ivr = 'to confirm if you are going,press 1,
 
-				press 2, to cancel the booking,
+				to cancel the booking,press 2,
 
-				press 3, to reschedule or for any query,
+				to reschedule or for any query,press 3,
 
-				Press 4, to repeat';
+				to repeat,Press 4';
 
 		return $ivr;
 	}
