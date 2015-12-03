@@ -1223,6 +1223,38 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
+			/*$created_date = new MongoDate(strtotime(date('Y-m-d H:m:s', strtotime($booktrialdata->created_at))));
+			$schedule_date = \Carbon\Carbon::createFromFormat('Y-m-d H:m:s', $schedule_date_starttime);
+
+			$created_sec = strtotime($created_date);
+			$scheduled_sec = strtotime($scheduleDateTime);
+			$diff_sec = (int) $created_sec - $scheduled_sec;
+			$hour48 = 60*60*48 ;
+
+			if($diff_sec >= $hour48){
+
+				$post18 = date("Y-m-d H:m:s", strtotime('+18 hours', $created_date));
+				$post18hour = (int) date("G", strtotime($post18));
+
+				if($post18hour < 9 || $post18hour > 21){
+
+					$date = date("Y-m-d H:m:s", strtotime('+18 hours', $created_date));	
+					
+				}else{
+
+					$date = $post18;
+
+				}
+
+
+			}else{
+
+
+
+			}
+*/
+			
+
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
