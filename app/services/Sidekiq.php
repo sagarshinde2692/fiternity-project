@@ -6,14 +6,14 @@ use \Log;
 
 Class Sidekiq {
 
-    protected $base_uri = 'http://ec2-54-169-206-158.ap-southeast-1.compute.amazonaws.com/';
+    protected $base_uri = 'http://nw.fitn.in/';
     protected $debug = false;
     protected $client;
     protected $route_type;
 
     public function __construct() {
 
-        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg');
+        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg','outbound'=>'trial/outbound');
         $this->initClient();
     }
 

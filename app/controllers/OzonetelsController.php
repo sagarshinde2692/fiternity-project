@@ -386,8 +386,18 @@ class OzonetelsController extends \BaseController {
 
 		$trial_id = 13333;
 		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
+		
+		return  Response::json($result, $result['status']);
 
-		echo"<pre>";print_r($result);exit;
+	}
+
+	public function outbound($trial_id){
+
+		$booktrial = Booktrial::find((int) $trial_id);
+		$phone_no = $booktrial->customer_phone;
+		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
+
+		return  Response::json($result, $result['status']);
 
 	}
 

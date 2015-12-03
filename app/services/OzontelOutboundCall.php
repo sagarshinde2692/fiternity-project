@@ -3,15 +3,18 @@
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 use \Response;
+use App\Services\Sidekiq as Sidekiq;
 
 Class OzontelOutboundCall {
 
     protected $base_uri = 'http://www.kookoo.in/outbound/outbound.php';
     protected $debug = false;
     protected $client;
+    protected $sidekiq;
 
-    public function __construct() {
+    public function __construct(Sidekiq $sidekiq) {
 
+        $this->sidekiq = $sidekiq;
         $this->initClient();
     }
 
@@ -53,5 +56,41 @@ Class OzontelOutboundCall {
         }
 
     }
+
+    public function sidekiq($trial_id,$phone_no,$label = 'label', $priority = 0, $delay = 0){
+
+        $url = 'http://apistg.fitn.in/ozonetel/outbound/'.$trial_id;
+
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+    
+        $payload = array('url'=>$url,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+        
+        $route  = 'outbound';
+        $result  = $this->sidekiq->sendToQueue($payload,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+
+    }
+
+    protected function getSeconds($delay){
+
+        if ($delay instanceof DateTime){
+            return max(0, $delay->getTimestamp() - $this->getTime());
+        }
+
+        if ($delay instanceof \Carbon\Carbon){
+            return max(0, $delay->timestamp - $this->getTime());
+        }
+        // echo (int) $delay; exit;
+        return (int) $delay;
+    }
+
+
 
 }                                       
