@@ -2046,7 +2046,7 @@ public function attachTrialCampaignToCustomer($cid, $campaign, $trialid = ''){
 		switch($campaign){
 			case 'uber': $data['uber_trials'] = $customer->uber_trials.','.$trialid;	
 						break;
-			case 'ttt': $data['ttt_trials'] = $customer->uber_trials.','.$trialid;	
+			case 'ttt': $data['ttt_trials'] = $customer->ttt_trials.','.$trialid;	
 						break;
 
 		}
