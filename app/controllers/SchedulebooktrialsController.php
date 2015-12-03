@@ -16,7 +16,7 @@ use App\Services\Fitnessforce as Fitnessforce;
 use Carbon\Carbon;
 use \IronWorker; 
 use App\Services\Sidekiq as Sidekiq;
-use App\Services\OzontelOutboundCall as OzontelOutboundCall
+use App\Services\OzontelOutboundCall as OzontelOutboundCall;
 
 
 class SchedulebooktrialsController extends \BaseController {
