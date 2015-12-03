@@ -130,7 +130,7 @@ class Service extends \Basemodel{
 
 	public function getServiceTrainerAttribute(){
 
-		$trainer 	= 	[];
+		$trainer 	= 	new stdClass();
 		if(!empty($this->trainer_id) && isset($this->trainer_id) && intval($this->trainer_id) != 0){
 			$trainerObj 	=	Servicetrainer::find(intval($this->trainer_id));
 			$trainer   = $trainerObj;
