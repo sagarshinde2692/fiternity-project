@@ -594,7 +594,7 @@ foreach ($keylist as $keyval) {
                             }
                         }
                     },
-                    "boost_factor": 50
+                    "boost_factor": 30
                 },
                 {
                     "filter": {
@@ -670,12 +670,27 @@ $query = '{
                             },
                             {
                                 "match": {
+                                    "categorytags_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "locationtags_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
                                     "locationtags_snow": "'.$string.'"
                                 }
                             },
                             {
                                 "match": {
                                     "offerings_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "title_snow": "'.$string.'"
                                 }
                             },
                             {
