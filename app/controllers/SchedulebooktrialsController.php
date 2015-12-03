@@ -31,7 +31,7 @@ class SchedulebooktrialsController extends \BaseController {
 	protected $sidekiq;
 	protected $ozontelOutboundCall;
 
-	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification, Fitnessforce $fitnessforce,Sidekiq $sidekiq,,OzontelOutboundCall $ozontelOutboundCall) {
+	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification, Fitnessforce $fitnessforce,Sidekiq $sidekiq,OzontelOutboundCall $ozontelOutboundCall) {
 		//parent::__construct();	
 		date_default_timezone_set("Asia/Kolkata");
 		$this->customermailer			=	$customermailer;
