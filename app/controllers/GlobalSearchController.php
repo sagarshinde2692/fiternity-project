@@ -361,12 +361,6 @@ public function keywordSearch(){
     $title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
     $offering_new_filter =' {"terms" : { "offerings_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
     $city_new_filter =' {"terms" : { "city" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-    
-    //return $locations_new_filter;exit;
-    // foreach ($keylist as $keyval) {
-    //    {"terms" : { "locationtags" : "'.$city.'" } },
-    // }
-           //used for offering and facilities
     $loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
 
     $loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
@@ -377,6 +371,7 @@ public function keywordSearch(){
     $mustfilter = '"must": ['.$must_filtervalue.']'; 
      $filtervalue = trim($mustfilter,',');
 
+     //$locationarray = array('andheri, juhu, bandra, ')
    
     if($mustfilter != ''){
         $filters = '"filter": {
@@ -562,7 +557,7 @@ foreach ($keylist as $keyval) {
                               }
                           }
                       },
-                      "boost_factor": 10
+                      "boost_factor": 20
                   },
                   {
                     "filter": {
@@ -655,7 +650,8 @@ $query = '{
     "size": '.$size.',
     "aggs" :{
         '.$facetsvalue.'
-    },
+    },   
+    "min_score": 20,
     "query": {
         "filtered": {
             "query": {
