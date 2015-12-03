@@ -386,7 +386,7 @@ class OzonetelsController extends \BaseController {
 
 		$trial_id = 13333;
 		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
-		
+
 		return  Response::json($result, $result['status']);
 
 	}
@@ -407,7 +407,17 @@ class OzonetelsController extends \BaseController {
 
 			$booktrial = Booktrial::find((int) $trial_id);
 
-			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name."on date and time , ",3);
+			$date = \Carbon\Carbon::createFromFormat('j F Y', $booktrial->schedule_date_time);
+			$hour = \Carbon\Carbon::createFromFormat('g', $booktrial->schedule_date_time);
+			$min = \Carbon\Carbon::createFromFormat('i', $booktrial->schedule_date_time);
+			$ante = \Carbon\Carbon::createFromFormat('a', $booktrial->schedule_date_time);
+
+			$ante = ($ante == 'am') ? 'a m' : 'p m';
+			$min = ($min == 00) ? ' ' : $min;
+			
+			$datetime = $date.' ,'.$hour.' '.$min.' '.$ante;
+
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name."on ".$datetime." , ",3);
 
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 
