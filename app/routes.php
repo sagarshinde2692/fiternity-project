@@ -446,6 +446,8 @@ Route::get('/getcampaigntrials/{campaignid}/{email}', 'CampaignsController@getca
 // Route::get('/featuredcampaign/{campaignid}', 'CampaignsController@featuredcampaign');
 Route::post('campaignsearch', 'CampaignsController@campaignsearch');
 Route::post('campaign/registercustomer', 'CampaignsController@registercustomer');
+Route::post('campaign/campaignregistercustomer', 'CampaignsController@campaignregistercustomer');
+
 /******************** Campaign SECTION END HERE ********************/
 ##############################################################################
 

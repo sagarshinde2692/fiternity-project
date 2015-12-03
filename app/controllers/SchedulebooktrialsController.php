@@ -716,7 +716,7 @@ class SchedulebooktrialsController extends \BaseController {
 		try {
 
 			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
-			$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? intval($data['campaign']) : "";
+			$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
 			$slot_times 						=	explode('-',$data['schedule_slot']);
 			$schedule_slot_start_time 			=	$slot_times[0];
 			$schedule_slot_end_time 			=	$slot_times[1];
@@ -1072,7 +1072,7 @@ public function bookTrialFree(){
 	try {
 
 		$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
-		$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? intval($data['campaign']) : "";
+		$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
 		$slot_times 						=	explode('-',$data['schedule_slot']);
 		$schedule_slot_start_time 			=	$slot_times[0];
 		$schedule_slot_end_time 			=	$slot_times[1];
@@ -1432,7 +1432,7 @@ public function rescheduledBookTrial(){
 
 
 		$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
-		$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? intval($data['campaign']) : "";
+		$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
 		$send_alert	 						=	(isset($data['send_alert']) && $data['send_alert'] != '') ? $data['send_alert'] : "";
 
 		$update_only_info	 				=	(isset($data['update_only_info']) && $data['update_only_info'] != '') ? $data['update_only_info'] : "";
@@ -2042,8 +2042,18 @@ public function attachTrialCampaignToCustomer($cid, $campaign, $trialid = ''){
 
 	$data 		= [];
 	$customer 	= Customer::find(intval($cid));
-	if($campaign == 'uber' && $trialid != ''){
-		$data['uber_trials'] = $customer->uber_trials.','.$trialid;
+	if($trialid != ''){
+		switch($campaign){
+			case 'uber': $data['uber_trials'] = $customer->uber_trials.','.$trialid;	
+						break;
+			case 'ttt': $data['ttt_trials'] = $customer->ttt_trials.','.$trialid;	
+						break;
+
+		}
+		if($campaign == 'uber'){
+			
+		}
+		
 	}
 
 	return $customer->update($data);

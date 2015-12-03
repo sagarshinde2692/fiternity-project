@@ -11,7 +11,7 @@ class Customer extends  \Basemodel {
 
 	protected $collection = "customers";
 	protected $dates = array('last_visited','birthday');
-	protected $appends = array('uber_trial');
+	protected $appends = array('uber_trial','ttt_trial');
 	
 	// Add your validation rules here
 	public static $rules = [
@@ -39,6 +39,29 @@ class Customer extends  \Basemodel {
 		if(!empty($this->uber_trials) && isset($this->uber_trials)){
 
 			$trialObj 	=	Booktrial::whereIn('_id', array_map('intval', explode(",",$this->uber_trials)))->get();
+			foreach ($trialObj as $key => $value) {
+				// dd($value);exit();
+				if(strtotime(date($value->schedule_date_time)) < time()){
+					array_push($passed,$value);
+				}
+				else{
+					array_push($upcoming,$value);	
+				}
+				$finders = array('passed_trial' => $passed, 'upcoming_trial' => $upcoming);
+			}		
+		}
+
+		return $finders;
+	}
+	public function getTttTrialAttribute(){
+
+		$finders 	= 	[];
+		$passed = [];
+		$upcoming = [];
+		// dd($this->campaign_finders);exit();
+		if(!empty($this->ttt_trials) && isset($this->ttt_trials)){
+
+			$trialObj 	=	Booktrial::whereIn('_id', array_map('intval', explode(",",$this->ttt_trials)))->get();
 			foreach ($trialObj as $key => $value) {
 				// dd($value);exit();
 				if(strtotime(date($value->schedule_date_time)) < time()){
