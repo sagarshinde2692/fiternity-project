@@ -397,7 +397,7 @@ class OzonetelsController extends \BaseController {
 
 			$booktrial = Booktrial::find((int) $trial_id);
 
-			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time",3);
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name."on date and time , ",3);
 
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 
