@@ -2101,7 +2101,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$pre2 = date("Y-m-d H:m:s", strtotime('-2 hours', $schedule_date));
 			$pre2hour = (int) date("G", strtotime($pre2));
 
-			if(($diff_sec < 2){
+			if($diff_sec < 2){
 
 				$ozonetel_date = date("Y-m-d H:m:s", strtotime('+20 min', $created_date));
 
