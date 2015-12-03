@@ -911,7 +911,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 
-			$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+			$customer_ozonetel_outbound = '';//$this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
@@ -1229,7 +1229,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 			//ozonetel outbound calls
-			$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+			$customer_ozonetel_outbound = '';//$this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
