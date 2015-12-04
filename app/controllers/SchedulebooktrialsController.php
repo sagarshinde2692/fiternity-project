@@ -846,7 +846,7 @@ class SchedulebooktrialsController extends \BaseController {
 	if($trialbooked = true){
 
 		$orderid = (int) Input::json()->get('order_id');
-		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+		$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
 		$booktrial->update(array('redis_id'=>$redisid));
 
 	}
@@ -911,7 +911,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 
-			$customer_ozonetel_outbound = '';//$this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+			$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
@@ -1169,7 +1169,7 @@ class SchedulebooktrialsController extends \BaseController {
 		//if vendor type is free special dont send communication
 		Log::info('finder commercial_type  -- '. $finder['commercial_type']);
 		if($finder['commercial_type'] != '2'){
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
 			$booktrial->update(array('redis_id'=>$redisid));
 		}
 	}
@@ -1229,7 +1229,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 			//ozonetel outbound calls
-			$customer_ozonetel_outbound = '';//$this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+			$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
@@ -1548,7 +1548,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
 			);
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
+			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
 			$booktrial->update(array('reschedule_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -1770,7 +1770,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($trialbooked == true ){
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
 			$booktrial->update(array('cancel_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -2063,7 +2063,11 @@ class SchedulebooktrialsController extends \BaseController {
 	public function ozonetelOutbound($booktrialdata,$schedule_date_starttime){
 
 		$created_date = new MongoDate(strtotime(date('Y-m-d H:m:s', strtotime($booktrialdata['created_at']))));
-		$schedule_date = \Carbon\Carbon::createFromFormat('Y-m-d H:m:s', $schedule_date_starttime);
+		$schedule_date = strtotime(\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString());
+
+		//$schedule_date = Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+
+			//echo"<pre>";print_r(strtotime($schedule_date));exit;
 
 		$created_sec = strtotime($created_date);
 		$scheduled_sec = strtotime($schedule_date);
