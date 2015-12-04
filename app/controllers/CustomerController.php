@@ -45,21 +45,15 @@ class CustomerController extends \BaseController {
 
 		$customertrials  = 	$trial = array();
 		$currentDateTime =	\Carbon\Carbon::now();
-		$upcomingtrials = [];
-		$passedtrials = [];
+
 		foreach ($trials as $trial){
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
 			array_set($trial, 'passed', $slot_datetime_pass_status);
-			if($slot_datetime_pass_status){
-				array_push($passedtrials, $trial);
-			}else{
-				array_push($upcomingtrials, $trial);	
-			}
+			array_push($customertrials, $trial);
 		}
-		// array_push($customertrials, $trial);
 
-		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'message' => 'List of scheduled trials');
+		$resp 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
 		return Response::json($resp,200);
 	}
 
@@ -886,7 +880,8 @@ class CustomerController extends \BaseController {
 		if(!empty($customer_data)){
 			$customer->update($customer_data);
 			$message = implode(', ', array_keys($customer_data)) ;
-			return Response::json(array('status' => 200,'message' => $message.' updated successfull'),200);
+			$token = $this->createToken($customer);
+			return Response::json(array('status' => 200,'message' => $message.' updated successfull','token'=>$token),200);
 		}
 		
 		return Response::json(array('status' => 400,'message' => 'customer data empty'),400);
