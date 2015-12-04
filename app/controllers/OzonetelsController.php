@@ -384,10 +384,40 @@ class OzonetelsController extends \BaseController {
 
 	public function outboundCallSend($phone_no){
 
-		$trial_id = 13333;
+		$trial_id = 15961;
+
+	/*	$booktrial = Booktrial::find((int) $trial_id);
+
+		$slot_date 							=	date('d-m-Y', strtotime($booktrial->schedule_date));
+		$schedule_date_starttime 			=	strtoupper($slot_date ." ".$booktrial->schedule_slot_start_time);
+
+		echo"<pre>";print_r($schedule_date_starttime);
+
+		$date = '';//\Carbon\Carbon::createFromFormat('j F Y', $schedule_date_starttime);
+		$hour = \Carbon\Carbon::createFromFormat('g', $schedule_date_starttime);
+		$min = \Carbon\Carbon::createFromFormat('i', $schedule_date_starttime);
+		$ante = \Carbon\Carbon::createFromFormat('a', $schedule_date_starttime);
+
+		$ante = ($ante == 'am') ? 'a m' : 'p m';
+		$min = ($min == 00) ? ' ' : $min;
+		
+		$datetime = $date.' ,'.$hour.' '.$min.' '.$ante;
+
+		echo"<pre>";print_r($datetime);exit;*/
+
 		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
 
-		echo"<pre>";print_r($result);exit;
+		return  Response::json($result, $result['status']);
+
+	}
+
+	public function outbound($trial_id){
+
+		$booktrial = Booktrial::find((int) $trial_id);
+		$phone_no = $booktrial->customer_phone;
+		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
+
+		return  Response::json($result, $result['status']);
 
 	}
 
@@ -397,7 +427,10 @@ class OzonetelsController extends \BaseController {
 
 			$booktrial = Booktrial::find((int) $trial_id);
 
-			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name." on date time",3);
+			$slot_date 			=	date('d-m-Y', strtotime($booktrial->schedule_date));
+			$datetime 			=	strtoupper($slot_date ." ".$booktrial->schedule_slot_start_time);
+
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name."on ".$datetime." , ",3);
 
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 
@@ -501,13 +534,13 @@ class OzonetelsController extends \BaseController {
 	public function outboundIvr(){
 
 		
-		$ivr = 'press 1, to confirm if you are going,
+		$ivr = 'to confirm if you are going,press 1,
 
-				press 2, to cancel the booking,
+				to cancel the booking,press 2,
 
-				press 3, to reschedule or for any query,
+				to reschedule or for any query,press 3,
 
-				Press 4, to repeat';
+				to repeat,Press 4';
 
 		return $ivr;
 	}

@@ -5,6 +5,7 @@ use \GuzzleHttp\Client;
 use \Log;
 
 Class Sidekiq {
+    
     protected $base_uri = 'http://nw.fitn.in/';
     protected $debug = false;
     protected $client;
@@ -12,7 +13,7 @@ Class Sidekiq {
 
     public function __construct() {
 
-        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg');
+        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg','outbound'=>'trig/outbound');
         $this->initClient();
     }
 
