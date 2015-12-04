@@ -361,12 +361,6 @@ public function keywordSearch(){
     $title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
     $offering_new_filter =' {"terms" : { "offerings_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
     $city_new_filter =' {"terms" : { "city" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-    
-    //return $locations_new_filter;exit;
-    // foreach ($keylist as $keyval) {
-    //    {"terms" : { "locationtags" : "'.$city.'" } },
-    // }
-           //used for offering and facilities
     $loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
 
     $loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
@@ -377,6 +371,7 @@ public function keywordSearch(){
     $mustfilter = '"must": ['.$must_filtervalue.']'; 
      $filtervalue = trim($mustfilter,',');
 
+     //$locationarray = array('andheri, juhu, bandra, ')
    
     if($mustfilter != ''){
         $filters = '"filter": {
@@ -562,7 +557,7 @@ foreach ($keylist as $keyval) {
                               }
                           }
                       },
-                      "boost_factor": 10
+                      "boost_factor": 20
                   },
                   {
                     "filter": {
@@ -655,7 +650,8 @@ $query = '{
     "size": '.$size.',
     "aggs" :{
         '.$facetsvalue.'
-    },
+    },   
+    "min_score": 20,
     "query": {
         "filtered": {
             "query": {
@@ -1110,7 +1106,17 @@ $inputcat1function = $inputcat1function.$inputcat1function1;
             }                                           
     },';
 
-$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript,',');
+$allfitnessscript = '{
+        "script_score": {            
+                "params": {
+                    "terms": 50
+                },
+                "script": "doc[\'type\'].value == \'allfitnesslocation\' ? -70 : 0"
+            }                                           
+    },';
+
+
+$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript,',');
 
 $filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter,',');
 
@@ -1152,7 +1158,7 @@ $query = '{
 }';    
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations1/autosuggestor/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations2/autosuggestor/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query

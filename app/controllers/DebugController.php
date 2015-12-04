@@ -502,4 +502,33 @@ class DebugController extends \BaseController {
 			return $data;
 		}
 
+		public function movepostnatal(){
+			$finders = Finder::where('offerings', 360)->get();
+			$movingfinder_id = array();
+			foreach ($finders as $finder) {
+				array_push($movingfinder_id, $finder['_id']);
+				$finderofferings = $finder['offerings'];
+				$key = array_search(360, $finderofferings);
+				array_splice($finderofferings, $key);
+				array_push($finderofferings, 310);
+				$totalfinderofferings = array();
+				array_set($totalfinderofferings,'offerings', $finderofferings);
+				$finder->update($totalfinderofferings);
+			}
+
+			$liveoffering = Offering::where('_id', 310)->first();				
+			$oldfinders = $liveoffering['finders'];			
+			
+			$newfinders = array_unique(array_merge($oldfinders, $movingfinder_id));
+			$updatenewoffering = array();
+			array_set($updatenewoffering, 'finders', $newfinders);			
+			$liveoffering->update($updatenewoffering);
+
+			$deadoffering = Offering::where('_id', 360)->first();
+			$allfinder = array();
+			$updateoldoffering = array();
+			array_set($updateoldoffering, 'finders', $allfinder);
+			$deadoffering->update($updateoldoffering);
+		}
+
 	}

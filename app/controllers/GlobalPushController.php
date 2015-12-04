@@ -4,7 +4,7 @@
 
 class GlobalPushController extends \BaseController
 {
-	protected $indice = "autosuggest_index_alllocations1";
+	protected $indice = "autosuggest_index_alllocations2";
 	protected $type   = "autosuggestor";	
 	protected $elasticsearch_port = "";
 	protected $elasticsearch_default_index = "";
@@ -22,8 +22,8 @@ class GlobalPushController extends \BaseController
 		parent::__construct();		
 		$this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
 		$this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
-		$this->elasticsearch_url  = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations1/autosuggestor/';
-		$this->build_elasticsearch_url = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations1';
+		$this->elasticsearch_url  = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations2/autosuggestor/';
+		$this->build_elasticsearch_url = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations2';
 		//'http://localhost:9200/autosuggest_index_alllocations1';
 	}
 
@@ -42,7 +42,7 @@ class GlobalPushController extends \BaseController
 		->orderBy('_id')         
         //->whereIn('_id', array(1623))
 		->whereIn('city_id', array(1))
-		->take(2000)->skip(500)
+		->take(2500)->skip(0)
 		->timeout(400000000)
         // ->take(3000)->skip(0)                          
 		->get()->toArray(); 
@@ -477,7 +477,7 @@ class GlobalPushController extends \BaseController
 					"locationanalyzer":{
 						"type": "custom",
 						"tokenizer": "standard",
-						"filter": ["standard", "locationsynfilter", "lowercase"],
+						"filter": ["standard", "locationsynfilter", "lowercase","delimiter-filter"],
 						"tokenizer": "my_ngram_tokenizer" 					 
 					},
 					"search_analyzer": {
@@ -528,7 +528,8 @@ class GlobalPushController extends \BaseController
 						"language": "english"
 					},
 					"delimiter-filter": {
-						"type": "word_delimiter"
+						"type": "word_delimiter",
+						"preserve_original" : true
 					},
 					"locationsynfilter":{
 						"type": "synonym",
