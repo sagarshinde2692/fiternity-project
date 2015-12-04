@@ -678,8 +678,16 @@ class FindersController extends \BaseController {
 		'detail_rating' => array_map('intval',$data['detail_rating']),
 		'description' => $data['description'],
 		'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
+		'booktrial_id' => (isset($data['booktrialid'])) ? $data['booktrialid'] : '',
 		'status' => '1'
 		];
+
+		if(issest(Input::json()->get('booktrialid') &&  Input::json()->get('booktrialid') != ''){
+			$booktrial_id 	=	(int) Input::json()->get('booktrialid');
+			$trial 			= 	Booktrial::find($booktrial_id);
+			$trialdata 	=	$trial->update(['had_review' => '1');
+		}
+
 
 		$finderobj = Finder::where('_id', intval($data['finder_id']))->first();
 		//$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
