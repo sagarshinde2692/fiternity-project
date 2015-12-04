@@ -233,9 +233,12 @@ public function getcitywiseviews(){
 }
 
 public function getfacebookUTM(){
-  $fromdate = Input::json()->get('fromdate');
-  $todate = Input::json()->get('todate');
-  $city = Input::json()->get('city');
+  // $fromdate = Input::json()->get('fromdate');
+  // $todate = Input::json()->get('todate');
+  // $city = Input::json()->get('city');
+  $city = 'delhi';
+  $fromdate = '2015-11-01';
+  $todate = '2015-11-30';
 
   $query = '{ 
   "from":0,
@@ -281,7 +284,7 @@ public function getfacebookUTM(){
   $search_results = json_decode($search_results1, true);
   $bookingconfirm = $search_results['hits']['hits'];
   $fp = fopen('delhitrialsbook.csv', 'w');
-  $header =    ["TrialType","UserEmail", "Vendor", "Service", "Slot","City","Date" ,"TrailDate", "Device",
+  $header =    ["TrialType","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
   "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign"];
   fputcsv($fp, $header);
 
@@ -421,10 +424,14 @@ public function getfacebookUTM(){
     $slot = isset($bc1['slot']) ? $bc1['slot'] : 'n/a';
     $TrailDate = isset($bc1['date']) ? $bc1['date'] : 'n/a';
     $vendor = isset($bc1['vendor']) ? $bc1['vendor'] : 'n/a';
-    
- 
-    $fields = [$bc1['type'], $bc1['email'], $bc1['vendor'], $service, $slot, $city, $bc1['timestamp'], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign];
+    $finder = Finder::where('slug', $vendor)->with('category')->with('location')->timeout(40000000000)->first();
 
+    $category = isset($finder['category']['name']) ? $finder['category']['name'] : '';
+    $location = isset($finder['location']['name']) ? $finder['location']['name'] : '';
+    $timearray = explode('T', $bc1['timestamp']);
+
+    $fields = [$bc1['type'], $bc1['email'], $bc1['vendor'], $category, $location, $service, $slot, $bc1['city'], $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign];
+    
     fputcsv($fp, $fields);
     
   }
@@ -435,5 +442,163 @@ public function getfacebookUTM(){
 fclose($fp);
   //return 'done';
 return Response::make(rtrim('delhitrialsbook.csv', "\n"), 200, $header);
+}
+
+public function sessionutm(){
+
+  $query = '{
+            "from": 0,
+            "size": 30000,
+            "query": {
+              "bool": {
+                "must": [{
+                  "term": {
+                    "event_id": "sessionstart"
+                  }
+                }, {
+                  "bool": {
+                    "should": [{
+                      "query_string": {
+                        "default_field": "referer",
+                        "query": "*utm*"
+                      }
+                    }, {
+                      "query_string": {
+                        "default_field": "page",
+                        "query": "*utm*"
+                      }
+                    }]
+                  }
+                }, {
+                  "bool": {
+                    "must_not": [{
+                      "constant_score": {
+                        "filter": {
+                          "exists": {
+                            "field": "utm"
+                          }
+                        }
+                      }
+                    }]
+                  }
+                }]
+              }
+            },
+            "sort": [{
+              "timestamp": {
+                "order": "asc"
+              }
+            }]
+          }';
+
+
+  $request = array( 
+      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+      'port' => 8060,
+      'method' => 'POST',
+      'postfields' => $query
+      );
+          
+    $utm_result = es_curl_request($request);
+    $utm_result = json_decode($utm_result, true);
+    $events = $utm_result['hits']['hits'];
+
+    foreach ($events as $event) {
+      $utm_medium = ''; $utm_term = ''; $utm_content = ''; $utm_campaign = '';
+      $utm_source = ''; $gclid = '';
+
+      $_id = $event['_id'];
+      $_source = $event['_source'];     
+      $page = isset($_source['page']) ? strtolower($_source['page']) : '';
+      $referer = isset($_source['referer']) ? strtolower($_source['referer']) : '';
+
+      if(strpos($page, 'utm') > -1){
+
+        if(strpos($page, 'facebook') > -1){         
+           $utm_source = 'facebook';
+           $utmarray = explode('?', $page)[1];
+           $utmlist = explode('&', $utmarray);
+           foreach ($utmlist as $ul) {
+             $final = explode('=', $ul);
+             switch ($final[0]) {
+               case 'utm_medium':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_term':
+               $utm_term = $final[1];
+               break;
+               case 'utm_content':
+               $utm_content = $final[1];
+               break;
+               case 'utm_campaign':
+               $utm_campaign = $final[1];
+               break;               
+               default:                
+               break;
+             }
+           }
+
+          $utm['source'] = $utm_source;
+          $utm['medium'] = $utm_medium;
+          $utm['term'] = $utm_term;
+          $utm['content'] = $utm_content;
+          $utm['campaign'] = $utm_campaign;
+          $_source['utm'] = $utm;
+          $postfields_data = json_encode($_source);
+          
+          $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$_id;
+          $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
+          es_curl_request($updaterequest);
+          echo $_id.'</br>';
+        }
+
+       if(strpos($page, 'google') > -1){
+        $utm_source = 'google';
+           $utmarray = explode('?', $page)[1];
+           $utmlist = explode('&', $utmarray);
+           foreach ($utmlist as $ul) {
+             $final = explode('=', $ul);
+             switch ($final[0]) {
+               case 'utm_medium':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_term':
+               $utm_term = $final[1];
+               break;
+               case 'utm_content':
+               $utm_content = $final[1];
+               break;
+               case 'utm_campaign':
+               $utm_campaign = $final[1];
+               break;   
+               case 'gclid':
+               $gclid = $final[1];
+               break;              
+               default:                
+               break;
+             }
+           }
+
+          $utm['source'] = $utm_source;
+          $utm['medium'] = $utm_medium;
+          $utm['term'] = $utm_term;
+          $utm['content'] = $utm_content;
+          $utm['campaign'] = $utm_campaign;
+          $utm['gclid'] = $gclid;
+          $_source['utm'] = $utm;
+
+          $postfields_data = json_encode($_source);
+          
+          $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$_id;
+          $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
+          es_curl_request($updaterequest);
+          echo $_id.'</br>';
+      }
+
+      elseif (strpos($referer, 'utm') > -1) {
+          // dont need for facebook as facebook will always have it in page property, so created a placeholder for google
+      }     
+    }
+}
 }
 }

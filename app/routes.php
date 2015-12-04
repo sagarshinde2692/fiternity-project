@@ -470,7 +470,7 @@ Route::get('pushcategorycity', 'GlobalPushController@pushcategorycity');
 Route::get('updatelatlon', 'GlobalPushController@updatelatlon');
 Route::get('pushallfittnesslocation', 'GlobalPushController@pushallfittnesslocation');
 Route::get('getfacebookUTM', 'KYUController@getfacebookUTM');
-
+Route::get('sessionutm', 'KYUController@sessionutm');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
