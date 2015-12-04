@@ -311,6 +311,14 @@ class HomeController extends BaseController {
 	}
 
 
+	public function getCities(){   
+
+		$cites		= 	City::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+		return Response::json($cites,200);
+	}
+	
+
+
 	public function landingzumba(){
 		$finder_slugs 		=		array(1493,2701,1771,1623,4742,5373,1646,731,6140,6134,3382,1783);
 		$zumba = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
