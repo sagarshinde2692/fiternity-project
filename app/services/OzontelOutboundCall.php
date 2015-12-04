@@ -57,7 +57,7 @@ Class OzontelOutboundCall {
 
     }
 
-    public function sidekiq($trial_id,$phone_no,$label = 'label', $priority = 0, $delay = 0){
+    public function sidekiq($trial_id,$label = 'label', $priority = 0, $delay = 0){
 
         $url = 'http://apistg.fitn.in/ozonetel/outbound/'.$trial_id;
 

@@ -843,15 +843,15 @@ class SchedulebooktrialsController extends \BaseController {
 			return array('status' => 500,'message' => $e->getMessage());
 		}
 
-	if($trialbooked = true){
+	if($trialbooked == true){
 
 		$orderid = (int) Input::json()->get('order_id');
-		$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
 		$booktrial->update(array('redis_id'=>$redisid));
 
 	}
 
-	if($trialbooked = true && $campaign != ''){
+	if($trialbooked == true && $campaign != ''){
 		$this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
 	}
 	Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
@@ -1164,17 +1164,17 @@ class SchedulebooktrialsController extends \BaseController {
 		return array('status' => 500,'message' => $e->getMessage());
 	}
 
-	if($trialbooked = true){
+	if($trialbooked == true){
 
 		//if vendor type is free special dont send communication
 		Log::info('finder commercial_type  -- '. $finder['commercial_type']);
 		if($finder['commercial_type'] != '2'){
-			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
 			$booktrial->update(array('redis_id'=>$redisid));
 		}
 	}
 
-	if($trialbooked = true && $campaign != ''){
+	if($trialbooked == true && $campaign != ''){
 		$this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
 	}
 	
@@ -1548,7 +1548,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
 			);
 
-			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
 			$booktrial->update(array('reschedule_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -1770,7 +1770,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($trialbooked == true ){
 
-			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
 			$booktrial->update(array('cancel_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -2063,11 +2063,7 @@ class SchedulebooktrialsController extends \BaseController {
 	public function ozonetelOutbound($booktrialdata,$schedule_date_starttime){
 
 		$created_date = new MongoDate(strtotime(date('Y-m-d H:m:s', strtotime($booktrialdata['created_at']))));
-		$schedule_date = strtotime(\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString());
-
-		//$schedule_date = Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
-
-			//echo"<pre>";print_r(strtotime($schedule_date));exit;
+		$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
 		$created_sec = strtotime($created_date);
 		$scheduled_sec = strtotime($schedule_date);
@@ -2076,7 +2072,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($diff_sec >= $hour24){
 
-			$pre18 = date("Y-m-d H:m:s", strtotime('-18 hours', $schedule_date));
+			$pre18 = date("Y-m-d H:m:s", strtotime('-18 hours', strtotime($schedule_date)));
 			$pre18hour = (int) date("G", strtotime($pre18));
 
 			if($pre18hour < 10 || $pre18hour > 19){
@@ -2085,12 +2081,12 @@ class SchedulebooktrialsController extends \BaseController {
 
 				if($pre18hour < 10){
 
-					$ozonetel_date = date("Y-m-d 10:m:s", strtotime('+'.$minutes.' min', $pre18));	
+					$ozonetel_date = date("Y-m-d 10:m:s", strtotime('+'.$minutes.' min', strtotime($pre18)));	
 				}
 
 				if($pre18hour > 19){
 
-					$ozonetel_date = date("Y-m-d 18:m:s", strtotime('+'.$minutes.' min', $pre18));	
+					$ozonetel_date = date("Y-m-d 18:m:s", strtotime('+'.$minutes.' min', strtotime($pre18)));	
 				}
 
 			}else{
@@ -2102,12 +2098,12 @@ class SchedulebooktrialsController extends \BaseController {
 
 		}else{
 
-			$pre2 = date("Y-m-d H:m:s", strtotime('-2 hours', $schedule_date));
+			$pre2 = date("Y-m-d H:m:s", strtotime('-2 hours', strtotime($schedule_date)));
 			$pre2hour = (int) date("G", strtotime($pre2));
 
 			if($diff_sec < 2){
 
-				$ozonetel_date = date("Y-m-d H:m:s", strtotime('+20 min', $created_date));
+				$ozonetel_date = date("Y-m-d H:m:s", strtotime('+20 min', strtotime($created_date)));
 
 			}else{
 
@@ -2117,12 +2113,12 @@ class SchedulebooktrialsController extends \BaseController {
 
 					if($pre2hour < 10){
 
-						$ozonetel_date = date("Y-m-d H:m:s", strtotime('+20 min', $created_date));	
+						$ozonetel_date = date("Y-m-d H:m:s", strtotime('+20 min', strtotime($created_date)));	
 					}
 
 					if($pre2hour > 19){
 
-						$ozonetel_date = date("Y-m-d 18:m:s", strtotime('+'.$minutes.' min', $pre2));	
+						$ozonetel_date = date("Y-m-d 18:m:s", strtotime('+'.$minutes.' min', strtotime($pre2)));	
 					}
 					
 				}else{
