@@ -311,6 +311,14 @@ class HomeController extends BaseController {
 	}
 
 
+	public function getCities(){   
+
+		$cites		= 	City::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+		return Response::json($cites,200);
+	}
+	
+
+
 	public function landingzumba(){
 		$finder_slugs 		=		array(1493,2701,1771,1623,4742,5373,1646,731,6140,6134,3382,1783);
 		$zumba = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
@@ -675,6 +683,24 @@ class HomeController extends BaseController {
 			
 		$responsedata 	= ['offertabs' => $offertabs,  'message' => 'List for offertabs'];
 		return Response::json($responsedata, 200);
+
+	}
+
+
+
+	public function getCategorytagsOfferings($city = 'mumbai'){
+
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 		= 	$citydata['name'];
+		$city_id		= 	(int) $citydata['_id'];	
+		$categorytag_offerings = Findercategorytag::active()->with('offerings')->whereIn('cities', [$city_id])->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings'));
+
+		$responsedata 	= ['categorytag_offerings' => $categorytag_offerings,  'message' => 'List for Finder categorytags'];
+		return Response::json($responsedata, 200);
+
 
 	}
 

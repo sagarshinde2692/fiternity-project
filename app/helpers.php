@@ -815,8 +815,8 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster){
         
-            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
-            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
+             $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+            $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -890,8 +890,8 @@ if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
 
     function get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $city, $cluster, $offrank){
        
-            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
-            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
+            $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+            $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -917,8 +917,8 @@ if (!function_exists(('get_elastic_autosuggest_catlocfac_doc'))){
 
     function get_elastic_autosuggest_catlocfac_doc($cat, $fac, $loc, $string, $city, $cluster){
        
-            $lat = isset($loc['lat']) ? $loc['lat'] : 0.0;
-            $lon = isset($loc['lon']) ? $loc['lon'] : 0.0;
+            $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+            $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
             'input'                         =>      $cat['name'],
             'autosuggestvalue'              =>      $string,
@@ -958,6 +958,57 @@ if (!function_exists(('get_elastic_autosuggest_catcity_doc'))){
             'type'                          =>      'categorycity',
             'slug'                          =>      "",
             'geolocation'                   =>       array('lat' => 0.0,'lon' => 0.0)
+            );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_autosuggest_catcityoffer_doc'))){
+
+    function get_elastic_autosuggest_catcityoffer_doc($cat, $city, $string){
+                   
+        $postfields_data = array(
+            'input'                         =>      $cat['name'],
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      $cat['name'],
+            'inputv4'                       =>      "",
+            'inputloc1'                     =>      $city,
+            'inputloc2'                     =>      "",
+            'inputcat'                      =>      $cat['name'],
+            'inputcat1'                     =>      $cat['name'],
+            'city'                          =>      $city,
+            'location'                      =>      strtolower($city),            
+            'type'                          =>      'categorycity',
+            'slug'                          =>      "",
+            'geolocation'                   =>       array('lat' => 0.0,'lon' => 0.0)
+            );
+        return $postfields_data;
+    }
+}
+
+if (!function_exists(('get_elastic_autosuggest_allfitness_doc'))){
+
+    function get_elastic_autosuggest_allfitness_doc($loc, $city, $string){
+                   
+        $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+        $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
+
+        $postfields_data = array(
+            'input'                         =>      'all fitness options '.$loc['name'],
+            'autosuggestvalue'              =>      $string,
+            'inputv2'                       =>      "",                                                                 
+            'inputv3'                       =>      '',
+            'inputv4'                       =>      "",
+            'inputloc1'                     =>      $loc['name'],
+            'inputloc2'                     =>      "",
+            'inputcat'                      =>      '',
+            'inputcat1'                     =>      '',
+            'city'                          =>      $city,
+            'location'                      =>      strtolower($city),            
+            'type'                          =>      'allfitnesslocation',
+            'slug'                          =>      "",
+            'geolocation'                   =>       array('lat' => $lat,'lon' => $lon)
             );
         return $postfields_data;
     }

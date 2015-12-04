@@ -82,7 +82,7 @@ class ElasticsearchController extends \BaseController {
 					"snowball_analyzer": {
 						"type": "custom",
 						"tokenizer": "standard",
-						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter","filter_snowball"]
+						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
 					},
 					"shingle_analyzer": {
 						"type": "custom",

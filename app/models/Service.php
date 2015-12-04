@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
+	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
@@ -125,6 +125,17 @@ class Service extends \Basemodel{
 		}
 
 		return $ratecards ;
+	}
+
+
+	public function getServiceTrainerAttribute(){
+
+		$trainer 	= 	new stdClass();
+		if(!empty($this->trainer_id) && isset($this->trainer_id) && intval($this->trainer_id) != 0){
+			$trainerObj 	=	Servicetrainer::find(intval($this->trainer_id));
+			$trainer   = $trainerObj;
+		}
+		return $trainer ;
 	}
 
 	

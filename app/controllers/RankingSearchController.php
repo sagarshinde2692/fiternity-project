@@ -218,7 +218,7 @@ public function CategoryAmenities()
 
 public function getcategories(){
     $city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
-    $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+    $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->get(array('name','_id','slug'));
 
     return Response::json($categorytags);        
 }
@@ -421,10 +421,10 @@ public function getRankedFinderResultsApp()
     $filters = "";
     $from    =         Input::json()->get('offset')['from'];
     $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
-    $location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+    //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
     $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
-    $city    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+    $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
     $locat = Input::json()->get('location');
     $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
     $lon    =         (isset($locat['long'])) ? $locat['long']  : '';

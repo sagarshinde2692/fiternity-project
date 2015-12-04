@@ -880,7 +880,8 @@ class CustomerController extends \BaseController {
 		if(!empty($customer_data)){
 			$customer->update($customer_data);
 			$message = implode(', ', array_keys($customer_data)) ;
-			return Response::json(array('status' => 200,'message' => $message.' updated successfull'),200);
+			$token = $this->createToken($customer);
+			return Response::json(array('status' => 200,'message' => $message.' updated successfull','token'=>$token),200);
 		}
 		
 		return Response::json(array('status' => 400,'message' => 'customer data empty'),400);

@@ -1,5 +1,56 @@
 <?php
 
+Route::get('moveratecard', function() { 
+	$items = Service::active()->orderBy('_id')->lists('_id');
+	if($items){ DB::table('ratecards')->truncate(); }
+
+	foreach ($items as $key => $item) {
+		$service_id = intval($item);
+		$Service 	=	Service::find($service_id,['ratecards']);
+
+		if($Service){
+			$data 	=	$Service->toArray();
+			if(count($data['service_ratecards']) > 0 && isset($data['service_ratecards'])){
+
+				foreach ($data['service_ratecards'] as $key => $val) {
+					$insertedid = Ratecard::max('_id') + 1;
+					$days = $sessions = 0;
+
+					if(isset($val['duration']) && $val['duration'] != ''){
+						$durationObj = Duration::active()->where('slug', url_slug(array($val['duration'])))->first();
+						$days 		= (isset($durationObj->days)) ? intval($durationObj->days) : 0;
+						$sessions 	= (isset($durationObj->sessions)) ? intval($durationObj->sessions) : 0;
+					}
+					
+					$ratecarddata = [
+					'service_id'=> $service_id,
+					'offers'=> [],
+					'order'=> (isset($val['order'])) ? $val['order'] : '0',
+					'type'=> (isset($val['type'])) ? $val['type'] : '',
+					'remarks'=> (isset($val['remarks'])) ? $val['remarks'] : '',
+					'price'=> (isset($val['price'])) ? intval($val['price']) : 0,
+					'special_price'=> (isset($val['special_price'])) ? intval($val['special_price']) : 0,
+					'direct_payment_enable'=> (isset($val['direct_payment_enable'])) ? $val['direct_payment_enable'] : '0',
+					'validity'=> intval($days),
+					'validity_type'=> 'days',
+					'duration'=> intval($sessions),
+					'duration_type'=> 'sessions',
+					];
+				 	// print_pretty($ratecarddata); exit();
+
+					$ratecard 		=	new Ratecard($ratecarddata);
+					$ratecard->_id 	=	$insertedid;
+					$ratecard->save();
+					
+				}//foreach ratecards
+			}
+		}
+	}
+
+	return "ratecard migraterated successfully ...";
+	
+});
+
 
 Route::get('/updateservices', function() { 
 

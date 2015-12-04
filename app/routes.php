@@ -35,11 +35,13 @@ Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
+Route::get('/getcities', 'HomeController@getCities');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
 Route::get('offers/{city?}/{from?}/{size?}', 'HomeController@getOffers');
 Route::get('offertabs/{city?}', 'HomeController@getOffersTabs');
+Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferings');
 
 
 ##############################################################################
@@ -445,6 +447,8 @@ Route::get('/getcampaigntrials/{campaignid}/{email}', 'CampaignsController@getca
 // Route::get('/featuredcampaign/{campaignid}', 'CampaignsController@featuredcampaign');
 Route::post('campaignsearch', 'CampaignsController@campaignsearch');
 Route::post('campaign/registercustomer', 'CampaignsController@registercustomer');
+Route::post('campaign/campaignregistercustomer', 'CampaignsController@campaignregistercustomer');
+
 /******************** Campaign SECTION END HERE ********************/
 ##############################################################################
 
@@ -463,6 +467,10 @@ Route::get('pushcategoryoffering', 'GlobalPushController@pushcategoryoffering');
 Route::get('pushcategoryofferinglocation', 'GlobalPushController@pushcategoryofferinglocation');
 Route::get('pushcategoryfacilitieslocation', 'GlobalPushController@pushcategoryfacilitieslocation');
 Route::get('pushcategorycity', 'GlobalPushController@pushcategorycity');
+Route::get('updatelatlon', 'GlobalPushController@updatelatlon');
+Route::get('pushallfittnesslocation', 'GlobalPushController@pushallfittnesslocation');
+Route::get('getfacebookUTM', 'KYUController@getfacebookUTM');
+
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
@@ -471,6 +479,14 @@ Route::get('pushcategorycity', 'GlobalPushController@pushcategorycity');
 /*******************  New Search for APP ************************************************/
 
 Route::post('search/getautosuggestresults1', 'GlobalSearchController@newglobalsearch');
+
+/******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
+#####################################################################################################
+
+##################################################################################################
+/*******************  CleanUP API ************************************************/
+
+Route::get('movepostnatal', 'DebugController@movepostnatal');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
