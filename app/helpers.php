@@ -7,6 +7,15 @@
  */
 
 
+if (!function_exists('random_numbers')) {
+    function random_numbers($digits) {
+        $min = pow(10, $digits - 1);
+        $max = pow(10, $digits) - 1;
+        return mt_rand($min, $max);
+    }
+}
+
+
 if (!function_exists('print_pretty')) {
     function print_pretty($a) {
         echo "<pre>";

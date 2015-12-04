@@ -147,8 +147,8 @@ abstract Class Mailer {
 	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		//used to test email instantly
-		return $this->sendEmail($email_template,$template_data,$message_data);
-
+		$this->sendEmail($email_template,$template_data,$message_data);
+		return '1';
 
 		// if($delay !== 0){
 		// 	$delay = $this->getSeconds($delay);

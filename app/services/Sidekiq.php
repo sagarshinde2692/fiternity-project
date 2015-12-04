@@ -6,8 +6,8 @@ use \Log;
 
 Class Sidekiq {
 
-    protected $base_uri = 'http://192.168.1.8:3000/';
-    protected $debug = false;
+    protected $base_uri = 'http://nw.fitn.in/';
+    protected $debug = true;
     protected $client;
     protected $route_type;
 

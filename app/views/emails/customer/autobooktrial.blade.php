@@ -296,12 +296,15 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646;; padding-top:10px; padding-left:20px; " st-content="fulltext-paragraph"> <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; font-weight:bold; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> Address:</p>
-                                                                   <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_address) }}</p>
-                                                                   <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Contact Person:</p>
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_poc_for_customer_name) }}</p>
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Contact Number:</p>
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_poc_for_customer_no) }}</p>
-                          
+                                                                    <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_address) }}</div>
+                                                                    <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
+                                                                    <div style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Contact Person:</div>
+                                                                    <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_poc_for_customer_name) }}</div>
+                                                                     <?php }?>
+                                                                     <?php if(isset($finder_poc_for_customer_no) && $finder_poc_for_customer_no != ""){ ?> 
+                                                                    <div style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Contact Number:</div>
+                                                                    <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_poc_for_customer_no) }}</div>
+                                                                    <?php }?>
                                                                     </td>
                                                                 </tr>
                                                             </tbody>

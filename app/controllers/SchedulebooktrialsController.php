@@ -771,7 +771,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
 			$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
-			$code								=	$booktrialid.str_random(8);
+			$code								=	random_numbers(5);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 			$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
@@ -840,7 +840,7 @@ class SchedulebooktrialsController extends \BaseController {
 	if($trialbooked = true){
 
 		$orderid = (int) Input::json()->get('order_id');
-		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+		$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
 		$booktrial->update(array('redis_id'=>$redisid));
 
 	}
@@ -1086,7 +1086,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
 			$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
-			$code								=	$booktrialid.str_random(8);
+			$code								=	random_numbers(5);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 			$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
@@ -1155,7 +1155,7 @@ class SchedulebooktrialsController extends \BaseController {
 		//if vendor type is free special dont send communication
 		Log::info('finder commercial_type  -- '. $finder['commercial_type']);
 		if($finder['commercial_type'] != '2'){
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
 			$booktrial->update(array('redis_id'=>$redisid));
 		}
 	}
@@ -1421,7 +1421,7 @@ class SchedulebooktrialsController extends \BaseController {
 			if($update_only_info == ''){
 				$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
 				$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
-				$code								=	$booktrialid.str_random(8);
+				$code								=	random_numbers(5);
 			}
 			$device_id							= 	(Input::has('device_id') && $data['device_id'] != '') ? $data['device_id'] : "";
 			$followup_date 						=	(isset($data['followup_date']) && $data['followup_date'] != '') ? date('Y-m-d 00:00:00', strtotime($data['followup_date'])) : '';
@@ -1524,7 +1524,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
 			);
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
+			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
 			$booktrial->update(array('reschedule_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -1686,7 +1686,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($trialbooked == true ){
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
 			$booktrial->update(array('cancel_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
