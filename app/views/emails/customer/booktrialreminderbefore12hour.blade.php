@@ -251,7 +251,6 @@
                                                     <?php }?>
 
                                                     <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
-
                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color:#f9a91e;" >What to expect?</span><br/>
                                                         {{ $preferred_starting_date }}
                                                     </p>
@@ -278,19 +277,24 @@
                                                       <td>
 
                                                         <?php if(isset($finder_photos) && count($finder_photos) > 0){ ?> 
+
+                                                        @foreach($finder_photos as $key => $value)
+
                                                         <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
                                                             <tbody>
                                                                <tr>
-                                                                  <td style="background-image:url(https://b.fitn.in/f/g/full/4307/4307_1433414128.jpg); background-repeat:no-repeat; background-size:cover; background-position:center center;" width="300px" height="250px" align="center" class="devicewidth" >
-                                                                  </td>
-                                                              </tr>
-                                                          </tbody>
-                                                      </table>
-                                                      
-                                                      <tr style="background-color:#f6f6f6;">
+                                                                   <td style="background-image:url({{$value}}); background-repeat:no-repeat; background-size:cover; background-position:center center;" width="300px" height="250px" align="center" class="devicewidth" >
+                                                                   </td>
+                                                               </tr>
+                                                           </tbody>
+                                                       </table>
+                                                       @endforeach
+
+
+                                                       <tr style="background-color:#f6f6f6;">
                                                         <td width="100%" height="40" ></td>
                                                     </tr> 
-                                                      <?php }?>
+                                                    <?php }?>
 
 
 
@@ -309,15 +313,18 @@
                                             <tbody>
                                                 <tr>
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-
+                                                         <?php if(isset($customer_name) && $customer_name != ""){ ?> 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Session booked for:</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
+                                                        <?php }?>
+                                                         <?php if(isset($finder_name) && $finder_name != ""){ ?> 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Name of the service provider:</p> 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph"> {{ ucwords($finder_name) }}</p>
+                                                        <?php }?>
+                                                         <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Date:</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
-
-
+                                                        <?php }?>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -328,13 +335,20 @@
                                                 <tbody>
                                                     <tr>
                                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-
+                                                             <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Time:</p>
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ date(' g\.i A', strtotime($schedule_date_time) ) }}</p>
+                                                        <?php }?>
+                                                             <?php if(isset($service_name) && $service_name != ""){ ?> 
+
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Workout Form</p> 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_name)  }}</p>
+                                                        <?php }?>
+                                                            
+                                                        <?php if(isset($code) && $code != ""){ ?> 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
+                                                        <?php }?>
 
 
                                                         </td>

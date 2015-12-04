@@ -5,8 +5,7 @@ use \GuzzleHttp\Client;
 use \Log;
 
 Class Sidekiq {
-
-    protected $base_uri = 'http://ec2-54-169-206-158.ap-southeast-1.compute.amazonaws.com/';
+    protected $base_uri = 'http://nw.fitn.in/';
     protected $debug = false;
     protected $client;
     protected $route_type;

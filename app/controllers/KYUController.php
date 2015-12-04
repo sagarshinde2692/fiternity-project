@@ -171,52 +171,52 @@ class KYUController extends \BaseController
 
 public function getcitywiseviews(){
 
-$datefrom = Input::get('datefrom');
-$dateto = Input::get('dateto');
+  $datefrom = Input::get('datefrom');
+  $dateto = Input::get('dateto');
 
-$query = '{
-              "query": {
-                "filtered": {
-                  "filter": {
-                    "bool": {
-                      "must": [
-                        {
-                          "exists": {
-                            "field": "city"
-                          }
-                        },
-                        {
-                          "range": {
-                            "timestamp": {
-                              "gte": "'.$datefrom.'",
-                              "lte": "'.$dateto.'"
-                            }
-                          }
-                        }
-                      ]
-                    }
-                  }
-                }
-              },
-              "aggs": {
-                "cityname": {
-                  "terms": {
-                    "field": "city",
-                    "size": 100
-                  },
-                  "aggs": {
-                    "eventtype": {
-                      "terms": {
-                        "field": "event_id",
-                        "size": 100
-                      }
-                    }
-                  }
+  $query = '{
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [
+            {
+              "exists": {
+                "field": "city"
+              }
+            },
+            {
+              "range": {
+                "timestamp": {
+                  "gte": "'.$datefrom.'",
+                  "lte": "'.$dateto.'"
                 }
               }
-            }';
-           
-    $request = array( 
+            }
+            ]
+          }
+        }
+      }
+    },
+    "aggs": {
+      "cityname": {
+        "terms": {
+          "field": "city",
+          "size": 100
+        },
+        "aggs": {
+          "eventtype": {
+            "terms": {
+              "field": "event_id",
+              "size": 100
+            }
+          }
+        }
+      }
+    }
+  }';
+
+  $request = array( 
     'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
     'port' => 8060,
     'method' => 'POST',
@@ -227,8 +227,213 @@ $query = '{
   $search_results = json_decode($search_results1, true);  
   $response = array();
   foreach ($search_results['aggregations']['cityname']['buckets'] as $agg) {
-     array_push($response, array($agg['key'] => $agg['eventtype']['buckets']));
+   array_push($response, array($agg['key'] => $agg['eventtype']['buckets']));
+ }
+ return $response;
+}
+
+public function getfacebookUTM(){
+  $fromdate = Input::json()->get('fromdate');
+  $todate = Input::json()->get('todate');
+  $city = Input::json()->get('city');
+
+  $query = '{ 
+  "from":0,
+  "size":2000,  
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [
+            {
+              "term": {
+                "event_id": "bookingconfirm"
+              }
+            },
+            {
+              "term": {
+                "city": "'.$city.'"
+              }
+            },
+            {
+              "range": {
+                "timestamp": {
+                  "gte": "'.$fromdate.'",
+                  "lte": "'.$todate.'"
+                }
+              }
+            }
+            ]
+          }
+        }
+      }
+    }
+  }';
+
+  $request = array( 
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $query
+    );
+
+  $search_results1     =   es_curl_request($request);
+  $search_results = json_decode($search_results1, true);
+  $bookingconfirm = $search_results['hits']['hits'];
+  $fp = fopen('delhitrialsbook.csv', 'w');
+  $header =    ["TrialType","UserEmail", "Vendor", "Service", "Slot","City","Date" ,"TrailDate", "Device",
+  "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign"];
+  fputcsv($fp, $header);
+
+  foreach ($bookingconfirm as $bc) {
+    echo $bc['_id'].'</br>';
+    $bookinginfo = $bc['_source'];
+    $userid = $bookinginfo['useridentifier'];
+    $sessionid = isset($bookinginfo['sessionid']) ? $bookinginfo['sessionid'] : '';
+    $utmquery = '';
+    if($utmquery !== ''){
+      $utmquery = '{
+        "query": {
+          "filtered": {
+            "filter": {
+              "bool": {
+                "must": [{
+                  "term": {
+                    "userid": "'.$userid.'"
+                  }
+                }, {
+                  "term": {
+                    "visitsession": "'.$sessionid.'"
+                  }
+                },{
+                  "term": {
+                    "event_id": "sessionstart"
+                  }
+                }, {
+                  "range": {
+                    "timestamp": {
+                      "gte": "'.$fromdate.'",
+                      "lte": "'.$todate.'"
+                    }
+                  }
+                }]
+              }
+            }
+          }
+        }
+      }';
+    }
+    else{
+      $utmquery = '{
+        "query": {
+          "filtered": {
+            "filter": {
+              "bool": {
+                "must": [{
+                  "term": {
+                    "userid": "'.$userid.'"
+                  }
+                },{
+                  "term": {
+                    "event_id": "sessionstart"
+                  }
+                }, {
+                  "range": {
+                    "timestamp": {
+                      "gte": "2015-11-01",
+                      "lte": "2015-11-30"
+                    }
+                  }
+                }]
+              }
+            }
+          }
+        }
+      }';
+    }
+
+    $request1 = array( 
+      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+      'port' => 8060,
+      'method' => 'POST',
+      'postfields' => $utmquery
+      );
+        //return $utmquery;exit;
+    $utm_result1     =   es_curl_request($request1);
+    $utm_result = json_decode($utm_result1, true);
+
+    if(sizeof($utm_result['hits']['hits']) > 0){
+      $referer = isset($utm_result['hits']['hits'][0]['_source']['referer']) ? $utm_result['hits']['hits'][0]['_source']['referer'] : '';
+      $page = isset($utm_result['hits']['hits'][0]['_source']['page']) ? $utm_result['hits']['hits'][0]['_source']['page'] : '';
+      $trafficsource = ''; $tarffictype = '';
+      $utm_medium='';$utm_term='';$utm_content='';$utm_campaign='';
+
+      if((strpos(strtolower($referer), 'facebook') > -1) || (strpos(strtolower($page), 'facebook') > -1)){
+        //echo $page.'       ---      '.$referer;
+        $trafficsource = 'facebook';
+        $utmurl = '';
+        if((strpos(strtolower($referer), 'utm') > -1) || (strpos(strtolower($page), 'utm') > -1)) {
+          $tarffictype = 'inorganic';  
+
+          $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;         
+          if(strpos(strtolower($utmurl), 'facebook.com') === false){
+           //echo 'here'.$utmurl.'----------------------'.$userid.'</br>';
+           $utmarray = explode('?', $utmurl)[1];
+           $utmlist = explode('&', $utmarray);
+           foreach ($utmlist as $ul) {
+             $final = explode('=', $ul);
+             switch ($final[0]) {
+               case 'utm_medium':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_term':
+               $utm_term = $final[1];
+               break;
+               case 'utm_content':
+               $utm_content = $final[1];
+               break;
+               case 'utm_campaign':
+               $utm_campaign = $final[1];
+               break;               
+               default:                
+               break;
+             }
+           }
+         }
+       }
+       else{
+        $tarffictype = 'organic';
+      }
+    }   
+
+    else if((strpos($referer, 'google') > -1 ) || (strpos($page, 'google') > -1)){
+      $trafficsource = 'google';
+      $tarffictype = 'organic';
+      
+    }
+    else{
+      $trafficsource = 'direct';
+      $tarffictype = 'organic';
+    }
+
+    $bc1 = $bc['_source'];
+    $service = isset($bc1['service']) ? $bc1['service'] : 'n/a';
+    $slot = isset($bc1['slot']) ? $bc1['slot'] : 'n/a';
+    $TrailDate = isset($bc1['date']) ? $bc1['date'] : 'n/a';
+    $vendor = isset($bc1['vendor']) ? $bc1['vendor'] : 'n/a';
+    
+ 
+    $fields = [$bc1['type'], $bc1['email'], $bc1['vendor'], $service, $slot, $city, $bc1['timestamp'], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign];
+
+    fputcsv($fp, $fields);
+    
   }
-  return $response;
+  else{
+   echo 'exit here</br>';
+  }
+}
+fclose($fp);
+  //return 'done';
+return Response::make(rtrim('delhitrialsbook.csv', "\n"), 200, $header);
 }
 }

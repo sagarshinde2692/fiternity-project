@@ -16,6 +16,7 @@ use App\Services\Fitnessforce as Fitnessforce;
 use Carbon\Carbon;
 use \IronWorker; 
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\OzontelOutboundCall as OzontelOutboundCall;
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -28,8 +29,9 @@ class SchedulebooktrialsController extends \BaseController {
 	protected $fitnessforce;
 	protected $worker;
 	protected $sidekiq;
+	protected $ozontelOutboundCall;
 
-	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification, Fitnessforce $fitnessforce,Sidekiq $sidekiq) {
+	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification, Fitnessforce $fitnessforce,Sidekiq $sidekiq,OzontelOutboundCall $ozontelOutboundCall) {
 		//parent::__construct();	
 		date_default_timezone_set("Asia/Kolkata");
 		$this->customermailer			=	$customermailer;
@@ -39,6 +41,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$this->customernotification 	=	$customernotification;
 		$this->fitnessforce 			=	$fitnessforce;
 		$this->sidekiq 	=	$sidekiq;
+		$this->ozontelOutboundCall 	=	$ozontelOutboundCall;
 
 		$this->worker = new IronWorker(array(
 			'token' => Config::get('queue.connections.ironworker.token'),
@@ -750,6 +753,16 @@ class SchedulebooktrialsController extends \BaseController {
 				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 			}
 
+			$finder_lat				=	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+			$finder_lon				=	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+			$finder_photos			= 	[];
+			if(isset($finder['photos']) && count($finder['photos']) > 0){
+				foreach ($finder['photos'] as $key => $value) {
+					if($key > 2){ continue; }
+					array_push($finder_photos, Config::get('app.s3_finder_url').'g/thumbs/'.$value['url']);
+				}
+			}
+
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
 				$explode = explode(',', $finder['finder_vcc_email']);
@@ -774,7 +787,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
 			$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
-			$code								=	$booktrialid.str_random(8);
+			$code								=	random_numbers(5);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 			$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
@@ -840,7 +853,7 @@ class SchedulebooktrialsController extends \BaseController {
 			return array('status' => 500,'message' => $e->getMessage());
 		}
 
-	if($trialbooked = true){
+	if($trialbooked == true){
 
 		$orderid = (int) Input::json()->get('order_id');
 		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
@@ -848,7 +861,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 	}
 
-	if($trialbooked = true && $campaign != ''){
+	if($trialbooked == true && $campaign != ''){
 		$this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
 	}
 	Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
@@ -908,7 +921,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 
-				//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
+			$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+
+			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
@@ -945,8 +960,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'customer_smsqueuedids' => $customer_sms_messageids,
 				'customer_notificationqueuedids' => $customer_notification_messageids,
 				'finder_emailqueuedids' => $finder_email_messageids, 
-				'finder_smsqueuedids' => $finer_sms_messageids
-
+				'finder_smsqueuedids' => $finer_sms_messageids,
+				'customer_ozonetel_outbound' => $customer_ozonetel_outbound
 				);
 
 			$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
@@ -1072,6 +1087,16 @@ class SchedulebooktrialsController extends \BaseController {
 				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 			}
 
+			$finder_lat				=	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+			$finder_lon				=	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+			$finder_photos			= 	[];
+			if(isset($finder['photos']) && count($finder['photos']) > 0){
+				foreach ($finder['photos'] as $key => $value) {
+					if($key > 2){ continue; }
+					array_push($finder_photos, Config::get('app.s3_finder_url').'g/thumbs/'.$value['url']);
+				}
+			}
+
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
 				$explode = explode(',', $finder['finder_vcc_email']);
@@ -1095,7 +1120,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
 			$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
-			$code								=	$booktrialid.str_random(8);
+			$code								=	random_numbers(5);
 			$device_id							= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 			$premium_session 					=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 			$reminder_need_status 				=	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
@@ -1159,7 +1184,7 @@ class SchedulebooktrialsController extends \BaseController {
 		return array('status' => 500,'message' => $e->getMessage());
 	}
 
-	if($trialbooked = true){
+	if($trialbooked == true){
 
 		//if vendor type is free special dont send communication
 		Log::info('finder commercial_type  -- '. $finder['commercial_type']);
@@ -1169,7 +1194,7 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 	}
 
-	if($trialbooked = true && $campaign != ''){
+	if($trialbooked == true && $campaign != ''){
 		$this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
 	}
 	
@@ -1223,6 +1248,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
+			//ozonetel outbound calls
+			$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
@@ -1258,7 +1286,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'customer_smsqueuedids' => $customer_sms_messageids,
 				'customer_notificationqueuedids' => $customer_notification_messageids,
 				'finder_emailqueuedids' => $finder_email_messageids, 
-				'finder_smsqueuedids' => $finer_sms_messageids
+				'finder_smsqueuedids' => $finer_sms_messageids,
+				'customer_ozonetel_outbound' => $customer_ozonetel_outbound
 				);
 
 			$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
@@ -1408,7 +1437,16 @@ class SchedulebooktrialsController extends \BaseController {
 				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 			}
 
-
+			$finder_lat				=	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+			$finder_lon				=	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+			$finder_photos			= 	[];
+			if(isset($finder['photos']) && count($finder['photos']) > 0){
+				foreach ($finder['photos'] as $key => $value) {
+					if($key > 2){ continue; }
+					array_push($finder_photos, Config::get('app.s3_finder_url').'g/thumbs/'.$value['url']);
+				}
+			}
+			
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
 				$explode = explode(',', $finder['finder_vcc_email']);
@@ -1436,7 +1474,7 @@ class SchedulebooktrialsController extends \BaseController {
 			if($update_only_info == ''){
 				$schedule_date						=	date('Y-m-d 00:00:00', strtotime($slot_date));
 				$schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
-				$code								=	$booktrialid.str_random(8);
+				$code								=	random_numbers(5);
 			}
 			$device_id							= 	(Input::has('device_id') && $data['device_id'] != '') ? $data['device_id'] : "";
 			$followup_date 						=	(isset($data['followup_date']) && $data['followup_date'] != '') ? date('Y-m-d 00:00:00', strtotime($data['followup_date'])) : '';
@@ -2048,6 +2086,82 @@ class SchedulebooktrialsController extends \BaseController {
 		$cancel = Schedulerjob::where('_id',(int)$id)->update(array('status'=>'cancel'));
 
 		return $cancel;
+
+	}
+
+	public function ozonetelOutbound($booktrialdata,$schedule_date_starttime){
+
+		$created_date = new MongoDate(strtotime(date('Y-m-d H:m:s', strtotime($booktrialdata['created_at']))));
+		$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+
+		$created_sec = strtotime($created_date);
+		$scheduled_sec = strtotime($schedule_date);
+		$diff_sec = (int) $created_sec - $scheduled_sec;
+		$hour24 = 60*60*24 ;
+
+		if($diff_sec >= $hour24){
+
+			$pre18 = date("Y-m-d H:m:s", strtotime('-18 hours', strtotime($schedule_date)));
+			$pre18hour = (int) date("G", strtotime($pre18));
+
+			if($pre18hour < 10 || $pre18hour > 19){
+
+				$minutes = date("m", strtotime($schedule_date));
+
+				if($pre18hour < 10){
+
+					$ozonetel_date = date("Y-m-d 10:m:s", strtotime('+'.$minutes.' min', strtotime($pre18)));	
+				}
+
+				if($pre18hour > 19){
+
+					$ozonetel_date = date("Y-m-d 18:m:s", strtotime('+'.$minutes.' min', strtotime($pre18)));	
+				}
+
+			}else{
+
+				$ozonetel_date = $post18;
+
+			}
+
+
+		}else{
+
+			$pre2 = date("Y-m-d H:m:s", strtotime('-2 hours', strtotime($schedule_date)));
+			$pre2hour = (int) date("G", strtotime($pre2));
+
+			if($diff_sec < 2){
+
+				$ozonetel_date = date("Y-m-d H:m:s", strtotime('+20 min', strtotime($created_date)));
+
+			}else{
+
+				if($pre2hour < 10 || $pre2hour > 19){
+
+					$minutes = date("m", strtotime($schedule_date));
+
+					if($pre2hour < 10){
+
+						$ozonetel_date = date("Y-m-d H:m:s", strtotime('+20 min', strtotime($created_date)));	
+					}
+
+					if($pre2hour > 19){
+
+						$ozonetel_date = date("Y-m-d 18:m:s", strtotime('+'.$minutes.' min', strtotime($pre2)));	
+					}
+					
+				}else{
+	
+					$ozonetel_date = $pre2;
+				}
+
+			}
+
+		}
+
+		$ozonetelOutbound = $this->ozontelOutboundCall->sidekiq($booktrialdata['_id'],$label = 'OzonetelOutbound', $priority = 0, $delay = $ozonetel_date);
+
+		return $ozonetelOutbound;
 
 	}
 

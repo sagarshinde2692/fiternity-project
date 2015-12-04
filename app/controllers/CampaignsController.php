@@ -124,16 +124,63 @@ class CampaignsController extends \BaseController {
 			return $customer_data;
 		}
 	}
+	public function campaignregistercustomer()
+	{
+		$data = Input::json()->all();
+		$rules = [
+		'name' => 'required|max:255',
+		'email' => 'required|email|max:255',
+		'contact_no' => 'max:15',
+		];
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+		}else{
+			$customer = Customer::where('email','=',$data['email'])->first();
+			if(empty($customer)){
+				$inserted_id = Customer::max('_id') + 1;
+				$account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
+				$customer = new Customer();
+				$customer->_id = $inserted_id;
+				$customer->name = ucwords($data['name']) ;
+				$customer->email = $data['email'];
+				$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+				$customer->hull_id = "Selfregistered";
+				$customer->ishulluser = 1;
+				$customer->password = md5("Fitternity");
+				if(isset($data['contact_no'])){
+					$customer->contact_no = $data['contact_no'];
+				}
+				$customer->identity = "email";
+				$customer->account_link = $account_link;
+				$customer->status = "1";
+				$customer->save();
+			}
+			$customer_data = array('name' => $customer->name,'email' => $customer->email, 'contact_no'=> $customer->contact_no);
+			return $customer_data;
+		}
+	}
 	public function getcampaigntrials($campaignid='',$email= '')
 	{
 		$customer = Customer::where('email','=',$email)->first();
-		if(isset($customer->uber_code)){
-			$customer_data = array('name' => $customer->name,'email' => $customer->email, 'uber_code'=>$customer->uber_code,'contact_no'=> $customer->contact_no, 'uber_trial'=>$customer->uber_trial);
-			return $customer_data;	
+		switch($campaignid){
+			case "1": if(isset($customer->uber_code)){
+						$customer_data = array('name' => $customer->name,'email' => $customer->email, 'uber_code'=>$customer->uber_code,'contact_no'=> $customer->contact_no, 'uber_trial'=>$customer->uber_trial);
+						return $customer_data;	
+					}
+					else{
+						return Response::json(array('status' => 400,'message' => "Not a valid Uber Customer"),400); 
+					}
+					break;
+			case "3":
+			case "4":
+			case "5":
+			case "6":
+			 $customer_data = array('name' => $customer->name,'email' => $customer->email,'contact_no'=> $customer->contact_no, 'uber_trial'=>$customer->ttt_trial);
+			 break;
 		}
-		else{
-			return Response::json(array('status' => 400,'message' => "Not a valid Uber Customer"),400); 
-		}
+		return $customer_data;	
 	}
 	function sortmyfinders($finders, $payload){
 		$arr = [];

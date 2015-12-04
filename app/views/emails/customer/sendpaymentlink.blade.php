@@ -146,7 +146,7 @@
 
                   <p style="padding-top:25px; font-size:15px;">
                     Please access this link to make a payment:  
-                    <a href="http://apistg.fitn.in:6060/paymentlink/{{ $order_id }}" target="_blank" style="text-decoration:underline; color:#999;"> Payment link</a>
+                    <a href="http://fitternity.com/paymentlink/{{ $order_id }}" target="_blank" style="text-decoration:underline; color:#999;"> Payment link</a>
                   </p>
 
                   <p style="padding-top:25px">

@@ -70,15 +70,6 @@ abstract Class Mailer {
 
 	}
 
-	public function  sendEmail($email_template, $template_data = [], $message_data = []){
-
-			return Mail::send($email_template, $template_data, function($message) use ($message_data){
-				$message->to($message_data['user_email'], $message_data['user_name'])
-				->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
-				->subject($message_data['email_subject']);
-			});
-	}
-
 
 
 	/**
@@ -155,6 +146,10 @@ abstract Class Mailer {
 
 	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
+		//used to test email instantly
+		// $this->sendEmail($email_template,$template_data,$message_data);
+		// return '1';
+
 		if($delay !== 0){
 			$delay = $this->getSeconds($delay);
 		}
@@ -172,6 +167,18 @@ abstract Class Mailer {
 		}
 
 	}
+
+
+
+	public function  sendEmail($email_template, $template_data = [], $message_data = []){
+
+			return Mail::send($email_template, $template_data, function($message) use ($message_data){
+				$message->to($message_data['user_email'], $message_data['user_name'])
+				->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
+				->subject($message_data['email_subject']);
+			});
+	}
+
 
 	/*public function sendToWorkerTest($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
