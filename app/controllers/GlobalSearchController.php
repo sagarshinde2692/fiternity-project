@@ -1106,7 +1106,17 @@ $inputcat1function = $inputcat1function.$inputcat1function1;
             }                                           
     },';
 
-$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript,',');
+$allfitnessscript = '{
+        "script_score": {            
+                "params": {
+                    "terms": 50
+                },
+                "script": "doc[\'type\'].value == \'allfitnesslocation\' ? -70 : 0"
+            }                                           
+    },';
+
+
+$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript,',');
 
 $filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter,',');
 
@@ -1148,7 +1158,7 @@ $query = '{
 }';    
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations1/autosuggestor/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations2/autosuggestor/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query
