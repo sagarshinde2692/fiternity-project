@@ -70,15 +70,6 @@ abstract Class Mailer {
 
 	}
 
-	public function  sendEmail($email_template, $template_data = [], $message_data = []){
-
-			return Mail::send($email_template, $template_data, function($message) use ($message_data){
-				$message->to($message_data['user_email'], $message_data['user_name'])
-				->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
-				->subject($message_data['email_subject']);
-			});
-	}
-
 
 
 	/**
@@ -155,23 +146,39 @@ abstract Class Mailer {
 
 	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
-		if($delay !== 0){
-			$delay = $this->getSeconds($delay);
-		}
+		//used to test email instantly
+		return $this->sendEmail($email_template,$template_data,$message_data);
+
+
+		// if($delay !== 0){
+		// 	$delay = $this->getSeconds($delay);
+		// }
 	
-		$email_html = View::make($email_template, $template_data)->render();
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+		// $email_html = View::make($email_template, $template_data)->render();
+		// $payload = array('email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 
-		$route	= 'email';
-		$result  = $this->sidekiq->sendToQueue($payload,$route);
+		// $route	= 'email';
+		// $result  = $this->sidekiq->sendToQueue($payload,$route);
 
-		if($result['status'] == 200){
-			return $result['task_id'];
-		}else{
-			return $result['status'].':'.$result['reason'];
-		}
+		// if($result['status'] == 200){
+		// 	return $result['task_id'];
+		// }else{
+		// 	return $result['status'].':'.$result['reason'];
+		// }
 
 	}
+
+
+
+	public function  sendEmail($email_template, $template_data = [], $message_data = []){
+
+			return Mail::send($email_template, $template_data, function($message) use ($message_data){
+				$message->to($message_data['user_email'], $message_data['user_name'])
+				->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
+				->subject($message_data['email_subject']);
+			});
+	}
+
 
 	/*public function sendToWorkerTest($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
