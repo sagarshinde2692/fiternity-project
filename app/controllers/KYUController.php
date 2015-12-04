@@ -447,37 +447,49 @@ return Response::make(rtrim('delhitrialsbook.csv', "\n"), 200, $header);
 public function sessionutm(){
 
   $query = '{
-              "from": 2,
-              "size": 30000,
-              "query": {
-                "bool": {
-                  "must": [{
-                    "term": {
-                      "event_id": "sessionstart"
-                    }
-                  }, {
-                    "bool": {
-                      "should": [{
-                        "query_string": {
-                          "default_field": "referer",
-                          "query": "*utm*"
+            "from": 0,
+            "size": 30000,
+            "query": {
+              "bool": {
+                "must": [{
+                  "term": {
+                    "event_id": "sessionstart"
+                  }
+                }, {
+                  "bool": {
+                    "should": [{
+                      "query_string": {
+                        "default_field": "referer",
+                        "query": "*utm*"
+                      }
+                    }, {
+                      "query_string": {
+                        "default_field": "page",
+                        "query": "*utm*"
+                      }
+                    }]
+                  }
+                }, {
+                  "bool": {
+                    "must_not": [{
+                      "constant_score": {
+                        "filter": {
+                          "exists": {
+                            "field": "utm"
+                          }
                         }
-                      }, {
-                        "query_string": {
-                          "default_field": "page",
-                          "query": "*utm*"
-                        }
-                      }]
-                    }
-                  }]
-                }
-              },
-              "sort": [{
-                "timestamp": {
-                  "order": "asc"
-                }
-              }]
-            }';
+                      }
+                    }]
+                  }
+                }]
+              }
+            },
+            "sort": [{
+              "timestamp": {
+                "order": "asc"
+              }
+            }]
+          }';
 
 
   $request = array( 
@@ -493,7 +505,7 @@ public function sessionutm(){
 
     foreach ($events as $event) {
       $utm_medium = ''; $utm_term = ''; $utm_content = ''; $utm_campaign = '';
-      $utm_source = '';
+      $utm_source = ''; $gclid = '';
 
       $_id = $event['_id'];
       $_source = $event['_source'];     
@@ -541,7 +553,46 @@ public function sessionutm(){
         }
 
        if(strpos($page, 'google') > -1){
-        // dont knwo the strucutre of google utm url , 
+        $utm_source = 'google';
+           $utmarray = explode('?', $page)[1];
+           $utmlist = explode('&', $utmarray);
+           foreach ($utmlist as $ul) {
+             $final = explode('=', $ul);
+             switch ($final[0]) {
+               case 'utm_medium':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_term':
+               $utm_term = $final[1];
+               break;
+               case 'utm_content':
+               $utm_content = $final[1];
+               break;
+               case 'utm_campaign':
+               $utm_campaign = $final[1];
+               break;   
+               case 'gclid':
+               $gclid = $final[1];
+               break;              
+               default:                
+               break;
+             }
+           }
+
+          $utm['source'] = $utm_source;
+          $utm['medium'] = $utm_medium;
+          $utm['term'] = $utm_term;
+          $utm['content'] = $utm_content;
+          $utm['campaign'] = $utm_campaign;
+          $utm['gclid'] = $gclid;
+          $_source['utm'] = $utm;
+
+          $postfields_data = json_encode($_source);
+          
+          $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$_id;
+          $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
+          es_curl_request($updaterequest);
+          echo $_id.'</br>';
       }
 
       elseif (strpos($referer, 'utm') > -1) {
