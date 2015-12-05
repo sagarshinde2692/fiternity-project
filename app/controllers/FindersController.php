@@ -713,7 +713,7 @@ class FindersController extends \BaseController {
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
 			$booktrial_id 	=	(int) $data['booktrialid'];
 			$trial 			= 	Booktrial::find($booktrial_id);
-			$trialdata 	=	$trial->update(['review_id'=> intval($review_id), 'has_reviewed' => '1', 'has_reviewed' => '1']);
+			$trialdata 	=	$trial->update(['review_id'=> intval($review_id), 'has_reviewed' => '1']);
 		}
 
 		$this->cacheapi->flushTagKey('finder_detail',$finderobj->slug);
