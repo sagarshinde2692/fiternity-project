@@ -89,12 +89,12 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		$bity_url 	= 	$google_pin = "";
 
-		if(isset($finder_lat) && $finder_lat != "" && isset($finder_lon) && $finder_lon != ""){
-			$bity_url 	= 	bitly_url("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon");
-			$google_pin = "Google pin for directions: ".$bity_url;
-		}else{
-			$google_pin = "test ".$finder_lat.$finder_lon;
-		}
+		// if(isset($finder_lat) && $finder_lat != "" && isset($finder_lon) && $finder_lon != ""){
+		// 	$bity_url 	= 	bitly_url("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon");
+		// 	$google_pin = "Google pin for directions: ".$bity_url;
+		// }else{
+		// 	$google_pin = "test ".$finder_lat.$finder_lon;
+		// }
 
 
 		// $google_pin = "test ".$finder_lat.$finder_lon;
