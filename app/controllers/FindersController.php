@@ -678,15 +678,11 @@ class FindersController extends \BaseController {
 		'detail_rating' => array_map('intval',$data['detail_rating']),
 		'description' => $data['description'],
 		'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
-		'booktrial_id' => (isset($data['booktrialid'])) ? $data['booktrialid'] : '',
+		'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
 		'status' => '1'
 		];
 
-		if(issest(Input::json()->get('booktrialid')) &&  Input::json()->get('booktrialid') != ''){
-			$booktrial_id 	=	(int) Input::json()->get('booktrialid');
-			$trial 			= 	Booktrial::find($booktrial_id);
-			$trialdata 	=	$trial->update(['had_review' => '1']);
-		}
+		
 
 
 		$finderobj = Finder::where('_id', intval($data['finder_id']))->first();
@@ -700,6 +696,7 @@ class FindersController extends \BaseController {
 			$updatefinder = $this->updateFinderRatingV1($reviewdata,$oldreview);
 			$oldreviewobj = Review::findOrFail(intval($oldreview->_id));
 			$oldreviewobj->update($reviewdata);
+			$review_id = $oldreview->_id;
 			$response = array('status' => 200, 'message' => 'Review Updated Successfully.');
 		}else{
 			$inserted_id = Review::max('_id') + 1;
@@ -707,15 +704,20 @@ class FindersController extends \BaseController {
 			$review->_id = $inserted_id;
 			$reviewobject = $review->save();
 			$updatefinder = $this->updateFinderRatingV1($reviewdata);
+			$review_id = $inserted_id;
 
 			Log::info('Customer Review : '.json_encode(array('review_details' => Review::findOrFail($inserted_id))));
-
 			$response = array('status' => 200, 'message' => 'Review Created Successfully.');
+		}
+
+		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
+			$booktrial_id 	=	(int) $data['booktrialid'];
+			$trial 			= 	Booktrial::find($booktrial_id);
+			$trialdata 	=	$trial->update(['review_id'=> intval($review_id), 'has_reviewed' => '1']);
 		}
 
 		$this->cacheapi->flushTagKey('finder_detail',$finderobj->slug);
 		$this->cacheapi->flushTagKey('review_by_finder_list',$finderobj->slug);
-		
 		return Response::json($response, 200);  
 	}
 
