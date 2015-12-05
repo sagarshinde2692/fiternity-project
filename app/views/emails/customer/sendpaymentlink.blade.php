@@ -151,7 +151,8 @@
 
                   <p style="padding-top:25px">
                     Do note that this is a unique link and will expire on clicking if you are not able to complete the transaction.
-                    Please click here to generate an <a href="http://apistg.fitn.in:6060/paymentlink/{{ $order_id }}" target="_blank" style="text-decoration:underline; color:#999;display:none;"> Alternate link</a>
+                    Please click here to generate an <a href="#" target="_blank" style="text-decoration:underline; color:#999;display:none;"> Alternate link</a>
+
                   </p>
 
                   <p>&nbsp;</p>
