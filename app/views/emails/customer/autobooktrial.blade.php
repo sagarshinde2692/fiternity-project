@@ -235,9 +235,8 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         <hr width="100px">
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a workout session on <strong>{{ ucwords($finder_name) }} </strong> at <strong>@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</strong></p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your session has been <strong>CONFIRMED.</strong> </p>
-                                                        
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a workout session on {{ ucwords($service_name) }} at <strong>{{ ucwords($finder_name) }} </strong> <strong>@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your session has been <strong>CONFIRMED.</strong> </p>                                                        
                                                     </td>
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
@@ -331,7 +330,12 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646; padding-left:20px;" st-content="fulltext-paragraph">
-                                                                        <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
+                                                                        <a href="https://maps.google.com/maps?q={{ $finder_lat }},{{ $finder_lon }}&ll={{ $finder_lat }},{{ $finder_lon }}">
+                                                                            <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
+                                                                        </a>
+                                                                        <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
+                                                                            <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get Direction", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
+                                                                        </p>
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -357,102 +361,80 @@
         <div class="block"> 
           <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
             <tbody>
-             <tr>
-              <td align="center">
-                 <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+               <tr>
+                  <td align="center">
+                   <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
                     <tbody>
                       <!-- Title -->
 
 
                       <tr>
                           <td>
-                           <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-                            <tbody>
+                             <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                                <tbody>
 
-                             <tr>
-                              <td>
-
-
+                                   <tr>
+                                      <td>
 
 
 
 
 
-                                <tr style="background-color:#f6f6f6;">
-                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                        <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on +91 92222 21131.</p>
-                                        <p style="padding-top:10px;">Regards<br/>
-                                            TEAM FITTERNITY
-                                        </p>
+
+
+                                        <tr style="background-color:#f6f6f6;">
+                                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
+                                                <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on +91 92222 21131.</p>
+                                                <p style="padding-top:10px;">Regards<br/>
+                                                    TEAM FITTERNITY
+                                                </p>
+
+                                            </td>
+                                        </tr>
+
 
                                     </td>
-                                </tr>
+                                </tr> </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table></td></tr></tbody></table>
+        </div>
+        <div class="block">
+            <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
+                <tbody>
+                    <tr bgcolor="#f6f6f6">
+                        <td align="center">
+                            <table bgcolor="#f6f6f6" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
+                                <tbody>
+                                    <tr>
+                                        <td style="text-align:center;">
+                                            <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
+                                            <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
+                                            <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="block">
+            <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
+                <tr>
+                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
+                        <p>Contact us
+                            <br /> Phone: <a style="text-decoration:none;color:#ffffff"> 022 61222222  |  +91 92222 21131</a>
+                            <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </div>
 
+    </body>
 
-                            </td>
-                        </tr> </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table></td></tr></tbody></table>
-</div>
-<div class="block">
-    <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
-        <tbody>
-            <tr bgcolor="#f6f6f6">
-                <td align="center">
-                    <table bgcolor="#f6f6f6" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
-                        <tbody>
-                            <tr>
-                                <td style="text-align:center;">
-                                    <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
-                                    <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
-                                    <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div class="block">
-    <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
-        <tr>
-            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
-                <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;"> 022 61222222  |  +91 92222 21131</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
-                </p>
-            </td>
-        </tr>
-    </table>
-</div>
-<div class="block">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;">
-        <tbody>
-            <tr>
-                <td align="center">
-                    <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-                        <tbody>
-                            <!-- Title -->
-                            <tr>
-                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 12px; text-align:center;line-height: 18px; padding:25px; color: #7b7b7b; " st-content="fulltext-paragraph">
-                                    <p>Don't want to see this? <span style=" font-family:Arial, Helvetica, sans-serif; color:#f9a91e;"><unsubscribe>Unsubscribe</unsubscribe></span></p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="100%" height="15"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-</body>
-
-</html>
+    </html>

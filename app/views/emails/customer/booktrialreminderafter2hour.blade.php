@@ -239,7 +239,7 @@
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:30px; " st-content="fulltext-paragraph">
                                                             <img width="50px;" src="http://email.fitternity.com/195/yes.png"  /></p>
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> If you have attended the session – please share your review about <strong>{{ ucwords($finder_name) }}</strong> and <strong>win exciting merchandise</strong> (trendy coasters, cool sipper bottles, kick-ass workout tees or functional backpacks) and also get a discount coupon worth Rs. 500 to avail when you purchase the membership. </p>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; " st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;" > Review now! By clicking on this link - {{ link_to('http://www.fitternity.com/'.$finder_slug.'/'.$_id, ucwords($finder_name), array("style"=>"text-decoration:underline; color:#f9a91e; cursor:pointer;") ) }}</span>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; " st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;" > Review now! By clicking on this link - {{ link_to('http://www.fitternity.com/'.$finder_slug.'/'.$booktrialid, ucwords($finder_name), array("style"=>"text-decoration:underline; color:#f9a91e; cursor:pointer;") ) }}</span>
                                                             </p>
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:40px; padding-bottom:10px; " st-content="fulltext-paragraph">
                                                                 <img width="50px;" src="http://email.fitternity.com/195/no.png"  /></p>
@@ -307,36 +307,14 @@
                 <tr>
                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                         <p>Contact us
-                            <br /> Phone: <a style="text-decoration:none;"> 022 61222222  |  +91 92222 21131</a>
+                            <br /> Phone: <a style="text-decoration:none;color:#ffffff"> 022 61222222  |  +91 92222 21131</a>
                             <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                         </p>
                     </td>
                 </tr>
             </table>
         </div>
-        <div class="block">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;" >
-                <tbody>
-                    <tr>
-                        <td align="center">
-                            <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-                                <tbody>
-                                    <!-- Title -->
-                                    <tr>
-                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 12px; text-align:center;line-height: 18px; padding:25px; color: #7b7b7b; " st-content="fulltext-paragraph">
-                                            <p>Don't want to see this? <span style=" font-family:Arial, Helvetica, sans-serif; color:#f9a91e;"><unsubscribe>Unsubscribe</unsubscribe></span></p>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td width="100%" height="15"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+       
     </body>
 
     </html>

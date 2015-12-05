@@ -239,21 +239,21 @@
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Here are a few details you should know and might want to follow before your workout session, to make the most out of it:</p>
 
                                                         <?php if(isset($description) && $description != ""){ ?> 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px;" st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;" > What is {{ ucwords($service_name)  }} ?</span><br/>
+                                                        <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px;" st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;" > What is {{ ucwords($service_name)  }} ?</span><br/>
                                                          {{ $description }}
-                                                     </p>
+                                                     </div>
                                                      <?php }?>
 
                                                      <?php if(isset($what_i_should_carry) && $what_i_should_carry != ""){ ?> 
-                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color:#f9a91e;" >What to carry?</span><br/>
+                                                     <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color:#f9a91e;" >What to carry?</span><br/>
                                                         {{ $what_i_should_carry }}
-                                                    </p>
+                                                    </div>
                                                     <?php }?>
 
                                                     <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
-                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color:#f9a91e;" >What to expect?</span><br/>
+                                                    <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color:#f9a91e;" >What to expect?</span><br/>
                                                         {{ $preferred_starting_date }}
-                                                    </p>
+                                                    </div>
                                                     <?php }?>
 
                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:15px 0px; " st-content="fulltext-paragraph"> Post your workout should you wish to purchase a membership, we’ve got you covered with exciting insider discounts valid only for Fitternity users. </p>
@@ -270,27 +270,24 @@
                                                     <tr style="background-color:#f6f6f6;">
                                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px; font-weight:bold" st-content="fulltext-paragraph">
                                                             <hr style="width:30%;" />            
-                                                            <p style="padding-top:30px;">A {{ ucwords($finder_name) }} at @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif</p>
+                                                            <p style="padding-top:30px;">A Glimpse {{ ucwords($finder_name) }}</p>
                                                         </td>
                                                     </tr>
-                                                    <tr>
+
+                                                    <tr  style="background-color:#f6f6f6;">
                                                       <td>
 
                                                         <?php if(isset($finder_photos) && count($finder_photos) > 0){ ?> 
-
                                                         @foreach($finder_photos as $key => $value)
-
-                                                        <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                        <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth" style="background-color:#f6f6f6;">
                                                             <tbody>
-                                                               <tr>
+                                                               <tr >
                                                                    <td style="background-image:url({{$value}}); background-repeat:no-repeat; background-size:cover; background-position:center center;" width="300px" height="250px" align="center" class="devicewidth" >
                                                                    </td>
                                                                </tr>
                                                            </tbody>
                                                        </table>
                                                        @endforeach
-
-
                                                        <tr style="background-color:#f6f6f6;">
                                                         <td width="100%" height="40" ></td>
                                                     </tr> 
@@ -313,103 +310,108 @@
                                             <tbody>
                                                 <tr>
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                         <?php if(isset($customer_name) && $customer_name != ""){ ?> 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Session booked for:</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
-                                                        <?php }?>
-                                                         <?php if(isset($finder_name) && $finder_name != ""){ ?> 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Name of the service provider:</p> 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph"> {{ ucwords($finder_name) }}</p>
-                                                        <?php }?>
-                                                         <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Date:</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
-                                                        <?php }?>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                                     <?php if(isset($customer_name) && $customer_name != ""){ ?> 
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Session booked for:</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
+                                                     <?php }?>
+                                                     <?php if(isset($finder_name) && $finder_name != ""){ ?> 
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Name of the service provider:</p> 
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph"> {{ ucwords($finder_name) }}</p>
+                                                     <?php }?>
+                                                     <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Date:</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
+                                                     <?php }?>
+                                                 </td>
+                                             </tr>
+                                         </tbody>
+                                     </table>
 
-                                        <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                            <tbody>
-                                                <tbody>
-                                                    <tr>
-                                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                             <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Time:</p>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ date(' g\.i A', strtotime($schedule_date_time) ) }}</p>
-                                                        <?php }?>
-                                                             <?php if(isset($service_name) && $service_name != ""){ ?> 
-
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Workout Form</p> 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_name)  }}</p>
-                                                        <?php }?>
-                                                            
-                                                        <?php if(isset($code) && $code != ""){ ?> 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
-                                                        <?php }?>
-
-
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </tbody>
-                                        </table>
-
-                                    </td>
-                                </tr>
-
-                                <tr style="background-color:#f6f6f6;">
-                                    <td>
-                                        <hr style="width:30%;" />
-                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">How do I get there?</strong></p>
-                                        <!-- col 1 -->
-                                        <table width="250px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
+                                     <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                        <tbody>
                                             <tbody>
                                                 <tr>
-                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646;; padding-top:10px; padding-left:20px; " st-content="fulltext-paragraph"> <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; font-weight:bold; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> Address:</p>
-                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_address) }}</p>
-                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Contact Person:</p>
-                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> {{ ucwords($finder_poc_for_customer_name) }}</p>
-                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Contact Number:</p>
-                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> {{ ucwords($finder_poc_for_customer_no) }}</p>
+                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+                                                     <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Time:</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ date(' g\.i A', strtotime($schedule_date_time) ) }}</p>
+                                                     <?php }?>
+                                                     <?php if(isset($service_name) && $service_name != ""){ ?> 
 
-                                                   </td>
-                                               </tr>
-                                           </tbody>
-                                       </table>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Workout Form</p> 
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_name)  }}</p>
+                                                     <?php }?>
 
-                                       <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                        <tbody>
-                                            <tr>
-                                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646; padding-left:20px;" st-content="fulltext-paragraph">
-                                                    <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center=78.0,79.0&markers=icon:http://tinyurl.com/2ftvtt6|{{ $finder_lat }},{{ $finder_lon }}&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table></td>
-                                </tr>
-                                <tr style="background-color:#f6f6f6;">
-                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                        <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on +91 92222 21131.</p>
-                                        <p style="padding-top:10px;">Regards<br/>
-                                            TEAM FITTERNITY
-                                        </p>
-
-                                    </td>
-                                </tr>
+                                                     <?php if(isset($code) && $code != ""){ ?> 
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
+                                                     <?php }?>
 
 
-                            </tbody>
-                        </table>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+                                                 </td>
+                                             </tr>
+                                         </tbody>
+                                     </tbody>
+                                 </table>
+
+                             </td>
+                         </tr>
+
+                         <tr style="background-color:#f6f6f6;">
+                            <td>
+                                <hr style="width:30%;" />
+                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">How do I get there?</strong></p>
+                                <!-- col 1 -->
+                                <table width="250px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
+                                    <tbody>
+                                        <tr>
+                                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646;; padding-top:10px; padding-left:20px; " st-content="fulltext-paragraph"> <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; font-weight:bold; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> Address:</p>
+                                                <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_address) }}</div>
+                                                <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Contact Person:</p>
+                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> {{ ucwords($finder_poc_for_customer_name) }}</p>
+                                                <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Contact Number:</p>
+                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> {{ ucwords($finder_poc_for_customer_no) }}</p>
+
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                    <tbody>
+                                        <tr>
+                                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646; padding-left:20px;" st-content="fulltext-paragraph">
+                                                <a href="https://maps.google.com/maps?q={{ $finder_lat }},{{ $finder_lon }}&ll={{ $finder_lat }},{{ $finder_lon }}">
+                                                    <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
+                                                </a>
+                                                <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
+                                                    <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get Direction", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table></td>
+                            </tr>
+                            <tr style="background-color:#f6f6f6;">
+                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
+                                    <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on +91 92222 21131.</p>
+                                    <p style="padding-top:10px;">Regards<br/>
+                                        TEAM FITTERNITY
+                                    </p>
+
+                                </td>
+                            </tr>
 
 
-    </td>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+
+</td>
 </tr>
 </tbody>
 </table>
@@ -442,36 +444,14 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;"> 022 61222222  |  +91 92222 21131</a>
+                    <br /> Phone: <a style="text-decoration:none;color:#ffffff"> 022 61222222  |  +91 92222 21131</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                 </p>
             </td>
         </tr>
     </table>
 </div>
-<div class="block">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;" >
-        <tbody>
-            <tr>
-                <td align="center">
-                    <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-                        <tbody>
-                            <!-- Title -->
-                            <tr>
-                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 12px; text-align:center;line-height: 18px; padding:25px; color: #7b7b7b; " st-content="fulltext-paragraph">
-                                    <p>Don't want to see this? <span style=" font-family:Arial, Helvetica, sans-serif; color:#f9a91e;"><unsubscribe>Unsubscribe</unsubscribe></span></p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="100%" height="15"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
+
 </body>
 
 </html>
