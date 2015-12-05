@@ -41,8 +41,8 @@ class GlobalPushController extends \BaseController
 		->active()
 		->orderBy('_id')         
         //->whereIn('_id', array(1623))
-		->whereIn('city_id', array(1))
-		->take(2500)->skip(0)
+		->whereIn('city_id', array(1,2,3,4,8))
+		->take(1000)->skip(0)
 		->timeout(400000000)
         // ->take(3000)->skip(0)                          
 		->get()->toArray(); 
@@ -171,13 +171,15 @@ class GlobalPushController extends \BaseController
 					break;
 
 					case 'zumba':
-					foreach ($offerings as $off) {						
-						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;				
-						$string = ucwords($off['name']).' classes';						
-						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
-						$postfields_data = json_encode($postdata);					
-						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
-						echo "<br> ---  ".es_curl_request($request);					
+					foreach ($offerings as $off) {	
+						if($off['_id'] !== 334)	{		
+							$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;				
+							$string = ucwords($off['name']).' classes - '.ucwords($cat['name']);					
+							$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
+							$postfields_data = json_encode($postdata);					
+							$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+							echo "<br> ---  ".es_curl_request($request);		
+							}			
 					}
 					break;
 
@@ -304,13 +306,15 @@ class GlobalPushController extends \BaseController
 							break;
 
 							case 'zumba':
-							$cluster = '';
-							$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
-							$string = ucwords($off['name']).' classes in '.ucwords($loc['name']);				
-							$postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);			
-							$postfields_data = json_encode($postdata);											
-							$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
-							echo "<br> ---  ".es_curl_request($request);		
+							if($off['_id'] !== 334)	{
+								$cluster = '';
+								$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
+								$string = ucwords($off['name']).' classes in '.ucwords($loc['name']);				
+								$postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);			
+								$postfields_data = json_encode($postdata);											
+								$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
+								echo "<br> ---  ".es_curl_request($request);	
+								}	
 							break;
 
 							case 'cross functional training':
@@ -377,7 +381,7 @@ class GlobalPushController extends \BaseController
 							default:
 							$cluster = '';
 							$offeringrank =  0;	
-							$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);						
+							$string = ucwords($cat['name']).' in '.ucwords($loc['name']).' with '.ucwords($off['name']);					
 							$postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);			
 							$postfields_data = json_encode($postdata);											
 							$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -418,6 +422,7 @@ class GlobalPushController extends \BaseController
 			}			
 		}
 	}
+
 	public function pushcategorycity(){
 		foreach ($this->citylist as $city) {
 			$cityname = $this->citynames[strval($city)];
@@ -503,6 +508,17 @@ class GlobalPushController extends \BaseController
 						"ngram-filter"
 						],
 						"tokenizer": "standard"
+					},
+					"input_analyzer": {
+						"type": "custom",
+						"tokenizer": "standard",
+						"filter": [
+						"standard",
+						"lowercase",
+						"delimiter-filter",
+						"titlesynfilter"						
+						],
+						"tokenizer": "input_ngram_tokenizer"
 					}
 				},
 				"tokenizer": {
@@ -510,12 +526,17 @@ class GlobalPushController extends \BaseController
 						"type": "edgeNGram",
 						"min_gram": "3",
 						"max_gram": "20"
+					},
+					"input_ngram_tokenizer": {
+						"type": "edgeNGram",
+						"min_gram": "1",
+						"max_gram": "20"
 					}
 				},
 				"filter": {
 					"ngram-filter": {
 						"type": "edgeNGram",
-						"min_gram": "3",
+						"min_gram": "1",
 						"max_gram": "20"
 					},
 					"stop-filter": {
@@ -581,6 +602,13 @@ class GlobalPushController extends \BaseController
 						"gamdevi,hughes road",
 						"mazgaon,byculla"
 						]
+					},
+					"titlesynfilter":{
+						"type": "synonym",
+						"synonyms": [
+						"golds , gold",
+						"talwalkars, talwalkar"
+						]
 					}
 				}
 			}
@@ -618,7 +646,7 @@ class GlobalPushController extends \BaseController
 			"properties": {
 				"input": {
 					"type": "string",
-					"index_analyzer": "index_analyzerV2",
+					"index_analyzer": "input_analyzer",
 					"search_analyzer": "search_analyzer"
 				},
 				"autosuggestvalue": {
