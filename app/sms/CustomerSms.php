@@ -92,8 +92,13 @@ Class CustomerSms extends VersionNextSms{
 		if(isset($finder_lat) && $finder_lat != "" && isset($finder_lon) && $finder_lon != ""){
 			$bity_url 	= 	bitly_url("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon");
 			$google_pin = "Google pin for directions: ".$bity_url;
+		}else{
+			$google_pin = "test ".$finder_lat.$finder_lon;
 		}
 
+
+		// $google_pin = "test ".$finder_lat.$finder_lon;
+		
 		if($data['show_location_flag']){
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_address'])." Contact person: ".ucwords($data['finder_poc_for_customer_name']).$google_pin;
 		}else{
