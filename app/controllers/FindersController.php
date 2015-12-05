@@ -678,12 +678,12 @@ class FindersController extends \BaseController {
 		'detail_rating' => array_map('intval',$data['detail_rating']),
 		'description' => $data['description'],
 		'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
-		'booktrial_id' => (isset($data['booktrialid'])) ? $data['booktrialid'] : '',
+		'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
 		'status' => '1'
 		];
 
-		if(issest(Input::json()->get('booktrialid')) &&  Input::json()->get('booktrialid') != ''){
-			$booktrial_id 	=	(int) Input::json()->get('booktrialid');
+		if(isset($data['booktrialid']) &&  $data['booktrialid'] != ''){
+			$booktrial_id 	=	(int) $data['booktrialid'];
 			$trial 			= 	Booktrial::find($booktrial_id);
 			$trialdata 	=	$trial->update(['had_review' => '1']);
 		}
