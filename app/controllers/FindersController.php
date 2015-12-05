@@ -685,7 +685,7 @@ class FindersController extends \BaseController {
 		if(issest(Input::json()->get('booktrialid') &&  Input::json()->get('booktrialid') != ''){
 			$booktrial_id 	=	(int) Input::json()->get('booktrialid');
 			$trial 			= 	Booktrial::find($booktrial_id);
-			$trialdata 	=	$trial->update(['had_review' => '1');
+			$trialdata 	=	$trial->update(['had_review' => '1']);
 		}
 
 
