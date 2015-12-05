@@ -6,6 +6,30 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+if (!function_exists(('bitly_url'))){
+
+    function ($url = 'https://www.fitternity.com') {
+        $url = $url;
+        $domain = 'bit.ly';
+        $access_token = '6813bbea5cf6ddf122a31fdf35f7c9b4afb244f5';
+        $format = 'json';
+        $bitly = 'https://api-ssl.bitly.com/v3/shorten?access_token='.$access_token.'&longUrl='.urlencode($url).'&domain='.$domain.'&format='.$format;
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $bitly);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        $json = @json_decode($data,true);
+
+        if($json['status_code'] == 200){
+            return $bitly =  $json['data']['url'];
+        }else{
+            return $url;
+        }
+    }
+}
+
+
 
 if (!function_exists('random_numbers')) {
     function random_numbers($digits) {
