@@ -17,12 +17,6 @@
 							</p>
 							<br>
 							<table border="1" bordercolor="#2c3e50" align="center">
-								@if ($vendor != '')
-								<tr>
-									<td>Vendor Name:</td>
-									<td>{{$vendor}}</td>
-								</tr>
-								@endif 
 								<tr>
 									<td>User Name:</td>
 									<td>{{$name}}</td>
@@ -35,10 +29,10 @@
 									<td>User Phone:</td>
 									<td>{{$phone}}</td>
 								</tr>
-								<tr>
-									<td>Preferred Time:</td>
-									<td>{{$preferred_time}}</td>
-								</tr>								
+                                <tr>
+                                    <td>Preferred Time:</td>
+                                    <td>{{$preferred_time}}</td>
+                                </tr>								
 								<tr>
 									<td>Date:</td>
 									<td>{{$date}}</td>
