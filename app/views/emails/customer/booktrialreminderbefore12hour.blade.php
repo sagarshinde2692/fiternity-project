@@ -384,7 +384,10 @@
                                         <tbody>
                                             <tr>
                                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646; padding-left:20px;" st-content="fulltext-paragraph">
-                                                    <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center=78.0,79.0&markers=icon:http://tinyurl.com/2ftvtt6|{{ $finder_lat }},{{ $finder_lon }}&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
+                                                <a href="https://www.google.com/maps?q={{ $finder_lat }},{{ $finder_lon }}&ll={{trial.finder.lat}},{{trial.finder.lon}}">
+                                                    <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center=78.0,79.0&markers=icon:http://tinyurl.com/2ftvtt6|{{ $finder_lat }},{{ $finder_lon }}&zoom=14&size=300x100"a lt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">
+                                                </a>
+                                                                                                                           
                                                 </td>
                                             </tr>
                                         </tbody>
