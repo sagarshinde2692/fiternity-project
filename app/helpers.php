@@ -6,7 +6,7 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
-if (!function_exists(('bitly_url'))){
+    if (!function_exists('bitly_url')) {
 
     function ($url = 'https://www.fitternity.com') {
         $url = $url;
