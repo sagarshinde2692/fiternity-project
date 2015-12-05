@@ -42,7 +42,7 @@ class GlobalPushController extends \BaseController
 		->orderBy('_id')         
         //->whereIn('_id', array(1623))
 		->whereIn('city_id', array(1,2,3,4,8))
-		->take(1500)->skip(1000)
+		->take(1000)->skip(1000)
 		->timeout(400000000)
         // ->take(3000)->skip(0)                          
 		->get()->toArray(); 
