@@ -232,10 +232,10 @@
                                                     </td>
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
-                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
+                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">restify
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         <hr width="100px">
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a workout session on {{ ucwords($service_name) }} at <strong>{{ ucwords($finder_name) }} </strong> <strong>@if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a workout session on <strong>{{ ucwords($service_name) }}</strong> at <strong>{{ ucwords($finder_name) }} </strong> <strong>@if ($show_location_flag), {{ ucwords($finder_location)}} @endif.</strong></p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your session has been <strong>CONFIRMED.</strong> </p>                                                        
                                                     </td>
                                                 </tr>
@@ -334,7 +334,7 @@
                                                                             <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
                                                                         </a>
                                                                         <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
-                                                                            <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get Direction", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
+                                                                            <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get directions", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
                                                                         </p>
                                                                     </td>
                                                                 </tr>
