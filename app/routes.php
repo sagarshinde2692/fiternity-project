@@ -471,6 +471,8 @@ Route::get('updatelatlon', 'GlobalPushController@updatelatlon');
 Route::get('pushallfittnesslocation', 'GlobalPushController@pushallfittnesslocation');
 Route::get('getfacebookUTM', 'KYUController@getfacebookUTM');
 Route::get('sessionutm', 'KYUController@sessionutm');
+Route::get('createkyuusers', 'KYUController@createkyuusers');
+Route::get('getunidentifiedusers', 'KYUController@getunidentifiedusers');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################

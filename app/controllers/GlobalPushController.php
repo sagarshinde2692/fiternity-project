@@ -42,7 +42,7 @@ class GlobalPushController extends \BaseController
 		->orderBy('_id')         
         //->whereIn('_id', array(1623))
 		->whereIn('city_id', array(1,2,3,4,8))
-		->take(1000)->skip(1000)
+		->take(500)->skip(1000)
 		->timeout(400000000)
         // ->take(3000)->skip(0)                          
 		->get()->toArray(); 
@@ -151,7 +151,7 @@ class GlobalPushController extends \BaseController
 					case 'gyms':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;				
-						$string = ucwords($cat['name']).' with '.ucwords($off['name']);
+						$string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($cityname);
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -162,7 +162,7 @@ class GlobalPushController extends \BaseController
 					case 'yoga':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;			
-						$string = ucwords($off['name']).'- '.ucwords($cat['name']).' classes';			
+						$string = ucwords($off['name']).'- '.ucwords($cat['name']).' classes'.' in '.ucwords($cityname);			
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -174,7 +174,7 @@ class GlobalPushController extends \BaseController
 					foreach ($offerings as $off) {	
 						if($off['_id'] !== 334)	{		
 							$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;				
-							$string = ucwords($off['name']).' classes - '.ucwords($cat['name']);					
+							$string = ucwords($off['name']).' classes - '.ucwords($cat['name']).' in '.ucwords($cityname);				
 							$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 							$postfields_data = json_encode($postdata);					
 							$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -186,7 +186,7 @@ class GlobalPushController extends \BaseController
 					case 'cross functional training':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;
-						$string = ucwords($off['name']).' - '.ucwords($cat['name']);														
+						$string = ucwords($off['name']).' - '.ucwords($cat['name']).' in '.ucwords($cityname);													
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -196,7 +196,7 @@ class GlobalPushController extends \BaseController
 					case 'dance':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;					
-						$string = ucwords($off['name']).' '.ucwords($cat['name']).' Classes';		
+						$string = ucwords($off['name']).' '.ucwords($cat['name']).' Classes'.' in '.ucwords($cityname);	
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -207,7 +207,7 @@ class GlobalPushController extends \BaseController
 					case 'fitness studios':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;				
-						$string = ucwords($cat['name']).' - '.ucwords($off['name']);				
+						$string = ucwords($cat['name']).' - '.ucwords($off['name']).' in '.ucwords($cityname);			
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);			
@@ -218,7 +218,7 @@ class GlobalPushController extends \BaseController
 					case 'crossfit':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;			
-						$string = ucwords($cat['name']).'- '.ucwords($cat['name']).' with '.ucwords($off['name']);				
+						$string = ucwords($cat['name']).'- '.ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($cityname);				
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -229,7 +229,7 @@ class GlobalPushController extends \BaseController
 					case 'pilates':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;			
-						$string = ucwords($cat['name']).' '.ucwords($off['name']);				
+						$string = ucwords($cat['name']).' '.ucwords($off['name']).' in '.ucwords($cityname);				
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);			
@@ -240,7 +240,7 @@ class GlobalPushController extends \BaseController
 					case 'mma & kickboxing':
 					foreach ($offerings as $off) {						
 						$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;			
-						$string = ucwords($cat['name']).' '.ucwords($off['name']);				
+						$string = ucwords($cat['name']).' '.ucwords($off['name']).' in '.ucwords($cityname);				
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);			
@@ -252,7 +252,7 @@ class GlobalPushController extends \BaseController
 					foreach ($offerings as $off) {
 						//$offeringrank = isset($catprioroff) ? intval($catprioroff[strtolower($off['name'])]) : 0;
 						$offeringrank = 0;//intval($catprioroff[strtolower($off['name'])]);				
-						$string = ucwords($cat['name']).' with '.ucwords($off['name']);
+						$string = ucwords($cat['name']).' with '.ucwords($off['name']).' in '.ucwords($cityname);
 						$postdata = get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $cityname, $offeringrank);					
 						$postfields_data = json_encode($postdata);					
 						$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
