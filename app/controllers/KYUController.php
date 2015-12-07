@@ -874,7 +874,7 @@ public function getunidentifiedusers(){
 
   $query = '{
     "from": 0,
-    "size": 2000000000,
+    "size": 20,
     "query": {
       "filtered": {       
         "filter": {
@@ -906,14 +906,15 @@ public function getunidentifiedusers(){
 
   $user1 = es_curl_request($request1);
   $user_visits = json_decode($user1, true);
- 
+
   foreach ($user_visits['hits']['hits'] as $user1) {
 
     $user = $user1['_source'];
     $isbot = false;
+   
     if(isset($user['page'])){
-      if((strpos($user['page'], 'dir=') === -1)||(strpos($user['page'], 'limit='))){
-        $isbot = true;
+      if((strpos($user['page'], 'dir='))||(strpos($user['page'], 'limit=')) || (strpos($user['page'], 'mode='))){
+        $isbot = true;        
       }
     }  
     if(!$isbot){
