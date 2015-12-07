@@ -953,7 +953,7 @@ public function toQueueBookTrialPaid($job,$data){
 		$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
 
-		$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+		//$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 		if($twelveHourDiffInMin >= (12 * 60)){
@@ -993,7 +993,7 @@ public function toQueueBookTrialPaid($job,$data){
 			'customer_notificationqueuedids' => $customer_notification_messageids,
 			'finder_emailqueuedids' => $finder_email_messageids, 
 			'finder_smsqueuedids' => $finer_sms_messageids,
-			'customer_ozonetel_outbound' => $customer_ozonetel_outbound
+			//'customer_ozonetel_outbound' => $customer_ozonetel_outbound
 			);
 
 		$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
@@ -1312,8 +1312,8 @@ public function toQueueBookTrialFree($job,$data){
 		$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
 		$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
-			//ozonetel outbound calls
-		$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
+		//ozonetel outbound calls
+		//$customer_ozonetel_outbound = $this->ozonetelOutbound($booktrialdata,$schedule_date_starttime);
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 		if($twelveHourDiffInMin >= (12 * 60)){
@@ -1351,7 +1351,7 @@ public function toQueueBookTrialFree($job,$data){
 			'customer_notificationqueuedids' => $customer_notification_messageids,
 			'finder_emailqueuedids' => $finder_email_messageids, 
 			'finder_smsqueuedids' => $finer_sms_messageids,
-			'customer_ozonetel_outbound' => $customer_ozonetel_outbound
+			//'customer_ozonetel_outbound' => $customer_ozonetel_outbound
 			);
 
 		$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
@@ -1718,11 +1718,11 @@ public function toQueueRescheduledBookTrial($job,$data){
 
 		if($send_alert != '' && $update_only_info == ''){
 			if((isset($booktrial->customer_emailqueuedids['before12hour']) && $booktrial->customer_emailqueuedids['before12hour'] != '')){
-				try {
+				/*try {
 					$this->worker->deleteTask($booktrial->customer_emailqueuedids['before12hour']);
 				}catch(\Exception $exception){
 					Log::error($exception);
-				}
+				}*/
 
 				try {
 					$this->deleteTask($booktrial->customer_emailqueuedids['before12hour']);
@@ -1738,11 +1738,11 @@ public function toQueueRescheduledBookTrial($job,$data){
 			}
 
 			if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
-				try {
+				/*try {
 					$this->worker->deleteTask($booktrial->customer_emailqueuedids['after2hour']);
 				}catch(\Exception $exception){
 					Log::error($exception);
-				}
+				}*/
 
 				try {
 					$this->deleteTask($booktrial->customer_emailqueuedids['after2hour']);
@@ -1759,11 +1759,11 @@ public function toQueueRescheduledBookTrial($job,$data){
 			}
 
 			if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
-				try{	
+				/*try{	
 					$this->worker->deleteTask($booktrial->customer_smsqueuedids['before1hour']);
 				}catch(\Exception $exception){
 					Log::error($exception);
-				}
+				}*/
 
 				try {
 					$this->deleteTask($booktrial->customer_smsqueuedids['before1hour']);
@@ -1779,11 +1779,11 @@ public function toQueueRescheduledBookTrial($job,$data){
 			}
 
 			if((isset($booktrial->customer_smsqueuedids['after2hour']) && $booktrial->customer_smsqueuedids['after2hour'] != '')){
-				try{
+				/*try{
 					$this->worker->deleteTask($booktrial->customer_smsqueuedids['after2hour']);
 				}catch(\Exception $exception){
 					Log::error($exception);
-				}
+				}*/
 
 				try {
 					$this->deleteTask($booktrial->customer_smsqueuedids['after2hour']);
@@ -1799,11 +1799,11 @@ public function toQueueRescheduledBookTrial($job,$data){
 			}
 
 			if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
-				try{
+				/*try{
 					$this->worker->deleteTask($booktrial->finder_smsqueuedids['before1hour']);
 				}catch(\Exception $exception){
 					Log::error($exception);
-				}
+				}*/
 
 				try {
 					$this->deleteTask($booktrial->finder_smsqueuedids['before1hour']);
@@ -1922,11 +1922,11 @@ public function toQueueBookTrialCancel($job,$data){
 		}
 
 		if((isset($booktrial->customer_emailqueuedids['before12hour']) && $booktrial->customer_emailqueuedids['before12hour'] != '')){
-			try {
+			/*try {
 				$this->worker->deleteTask($booktrial->customer_emailqueuedids['before12hour']);
 			}catch(\Exception $exception){
 				Log::error($exception);
-			}
+			}*/
 
 			try {
 				$this->deleteTask($booktrial->customer_emailqueuedids['before12hour']);
@@ -1942,11 +1942,11 @@ public function toQueueBookTrialCancel($job,$data){
 		}
 
 		if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
-			try {
+			/*try {
 				$this->worker->deleteTask($booktrial->customer_emailqueuedids['after2hour']);
 			}catch(\Exception $exception){
 				Log::error($exception);
-			}
+			}*/
 
 			try {
 				$this->deleteTask($booktrial->customer_emailqueuedids['after2hour']);
@@ -1963,11 +1963,11 @@ public function toQueueBookTrialCancel($job,$data){
 		}
 
 		if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
-			try{
+			/*try{
 				$this->worker->deleteTask($booktrial->customer_smsqueuedids['before1hour']);
 			}catch(\Exception $exception){
 				Log::error($exception);
-			}
+			}*/
 
 			try {
 				$this->deleteTask($booktrial->customer_smsqueuedids['before1hour']);
@@ -1983,11 +1983,11 @@ public function toQueueBookTrialCancel($job,$data){
 		}
 
 		if((isset($booktrial->customer_smsqueuedids['after2hour']) && $booktrial->customer_smsqueuedids['after2hour'] != '')){
-			try{
+			/*try{
 				$this->worker->deleteTask($booktrial->customer_smsqueuedids['after2hour']);
 			}catch(\Exception $exception){
 				Log::error($exception);
-			}
+			}*/
 
 			try {
 				$this->deleteTask($booktrial->customer_smsqueuedids['after2hour']);
@@ -2003,11 +2003,11 @@ public function toQueueBookTrialCancel($job,$data){
 		}
 
 		if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
-			try{
+			/*try{
 				$this->worker->deleteTask($booktrial->finder_smsqueuedids['before1hour']);
 			}catch(\Exception $exception){
 				Log::error($exception);
-			}
+			}*/
 
 			try {
 				$this->deleteTask($booktrial->finder_smsqueuedids['before1hour']);
