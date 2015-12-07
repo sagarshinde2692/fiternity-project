@@ -529,7 +529,7 @@ class GlobalPushController extends \BaseController
 					},
 					"input_ngram_tokenizer": {
 						"type": "edgeNGram",
-						"min_gram": "1",
+						"min_gram": "2",
 						"max_gram": "20"
 					}
 				},
