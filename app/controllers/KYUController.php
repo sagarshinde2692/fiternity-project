@@ -868,7 +868,7 @@ public function createkyuusers(){
 }
 }
 public function getunidentifiedusers(){
-  $m = new MongoClient();
+  $m = new MongoClient("mongodb://54.255.173.1:27017");
   $db = $m->fitadmin;
   $collection = $db->userskyu;
 
