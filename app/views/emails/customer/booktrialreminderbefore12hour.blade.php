@@ -250,9 +250,9 @@
                                                     </div>
                                                     <?php }?>
 
-                                                    <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
+                                                    <?php if(isset($what_i_should_expect) && $what_i_should_expect != ""){ ?> 
                                                     <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color:#f9a91e;" >What to expect?</span><br/>
-                                                        {{ $preferred_starting_date }}
+                                                        {{ $what_i_should_expect }}
                                                     </div>
                                                     <?php }?>
 
