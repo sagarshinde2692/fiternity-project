@@ -320,7 +320,7 @@
                                                      <?php }?>
                                                      <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Date:</p>
-                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
                                                      <?php }?>
                                                  </td>
                                              </tr>
@@ -385,7 +385,7 @@
                                                     <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
                                                 </a>
                                                 <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
-                                                    <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get Direction", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
+                                                    <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get directions", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
                                                 </p>
                                             </td>
                                         </tr>
