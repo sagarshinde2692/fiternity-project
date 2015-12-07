@@ -923,11 +923,11 @@ public function toQueueBookTrialPaid($job,$data){
 		$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
 		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
 		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
-		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
-		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false); 
-		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
-		$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore5Hour, false);  
-		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false);
+		$oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);  
+		$twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false); 
+		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
+		$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
+		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
 		$finderid 							= 	(int) $data['finder_id'];
 
 		$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
@@ -1287,11 +1287,11 @@ public function toQueueBookTrialFree($job,$data){
 		$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
 		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
 		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
-		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
-		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false); 
-		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
-		$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore5Hour, false);  
-		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false);  
+		$oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);  
+		$twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false); 
+		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
+		$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
+		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
 		$finderid 							= 	(int) $data['finder_id'];
 
 		$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
@@ -1458,10 +1458,10 @@ public function rescheduledBookTrial(){
 		$delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
 		$delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
 		$delayReminderTimeAfter2Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
-		$oneHourDiff 						= 	$currentDateTime->diffInHours($delayReminderTimeBefore1Hour, false);  
-		$twelveHourDiff 					= 	$currentDateTime->diffInHours($delayReminderTimeBefore12Hour, false); 
-		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);  
-		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($delayReminderTimeBefore12Hour, false); 
+		$oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);  
+		$twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false); 
+		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
+		$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($scheduleDateTime, false); 
 
 		$booktrialid 						=	(int) $data['booktrial_id'];
 		$finderid 							= 	(int) $data['finder_id'];
