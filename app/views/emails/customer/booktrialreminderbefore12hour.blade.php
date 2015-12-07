@@ -344,7 +344,7 @@
 
                                                      <?php if(isset($code) && $code != ""){ ?> 
                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
-                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }} (please flash this code at the service provider location)</p>
                                                      <?php }?>
 
 
