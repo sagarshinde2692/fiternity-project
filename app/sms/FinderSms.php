@@ -57,19 +57,22 @@ Class FinderSms extends VersionNextSms{
 
 	public function bookTrialReminderBefore1Hour ($data, $delay){
 
-		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		
+		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
+
+        $cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
+
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_address'])." Contact person: ".ucwords($data['finder_poc_for_customer_name']);
+			$message 	=	"This is a reminder for session scheduled for ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." on ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have confirmed the session. Incase there is a no-show we will followup and get back to you. Regards - Team Fitternity.";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).". Please note the address: ".ucwords($data['finder_address'])." Contact person: ".ucwords($data['finder_poc_for_customer_name']);
+			$message 	=	"This is a reminder for session scheduled for ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name'])." on ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have confirmed the session. Incase there is a no-show we will followup and get back to you. Regards - Team Fitternity.";
 		}
 
-		$label = 'TrialRmdBefore1Hr-C';
+		$label = 'TrialRmdBefore1Hr-F';
 		$priority = 0;
 
 		return $this->sendToWorker($to, $message, $label, $priority, $delay);
 	}
+
 
 
 	public function cancelBookTrial ($data){
