@@ -21,19 +21,20 @@
 
 			<p><b>Your session details:</b></p>
 			<table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
-				<tr><td>Session booked for:		</td><td>{{	ucwords($customer_name)	}}</td></tr>
 				<tr><td>Name of the fitness service provider: </td><td>{{ ucwords($finder_name) }}</td></tr>
 				<tr><td>Date: </td><td>{{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}</td></tr>
 				<tr><td>Time: </td><td>{{ date(' g\.i A', strtotime($schedule_date_time) ) }}</td></tr>
 				<tr><td>Workout form (if any):	</td><td>{{	ucwords($service_name)	}}</td></tr>
 				<tr><td>Workout type: </td><td> Trial </td></tr>
 				<tr><td>Subscription Code: </td><td> {{ $code }}(please flash this code at the service provider location) </td></tr>
+				<tr><td>Session booked for:		</td><td>{{	ucwords($customer_name)	}}</td></tr>
 			</table> 
 
 			<p><b>How to get there?</b></p>
 			<table border="1" bordercolor="#2c3e50" align="center" cellspacing="0" width="550" style="margin:5px 0px 15px 0px;">
 				<tr><td>Address: </td><td>{{ ucwords($finder_address) }}</td></tr>
 				<tr><td>Contact Person: </td><td>{{ ucwords($finder_poc_for_customer_name) }}</td></tr>
+				<tr><td>Contact No: </td><td>{{ $finder_poc_for_customer_no }}</td></tr>
 			</table>
 
 			<p>Regards<br>TEAM FITTERNITY</p>
