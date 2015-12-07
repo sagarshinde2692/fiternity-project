@@ -861,7 +861,7 @@ public function createkyuusers(){
       $bool = false;
     }
     if($bool){
-     $collection->insert($kyuuser, array("w" => 1));
+     echo $collection->insert($kyuuser, array("w" => 1));
 
    }
  }
