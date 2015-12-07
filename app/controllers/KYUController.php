@@ -241,8 +241,8 @@ public function getfacebookUTM(){
   $todate = '2015-11-30';
 
   $query = '{ 
-  "from":0,
-  "size":2000,  
+    "from":0,
+    "size":2000,  
     "query": {
       "filtered": {
         "filter": {
@@ -437,7 +437,7 @@ public function getfacebookUTM(){
   }
   else{
    echo 'exit here</br>';
-  }
+ }
 }
 fclose($fp);
   //return 'done';
@@ -447,158 +447,422 @@ return Response::make(rtrim('delhitrialsbook.csv', "\n"), 200, $header);
 public function sessionutm(){
 
   $query = '{
-            "from": 0,
-            "size": 30000,
-            "query": {
-              "bool": {
-                "must": [{
-                  "term": {
-                    "event_id": "sessionstart"
-                  }
-                }, {
-                  "bool": {
-                    "should": [{
-                      "query_string": {
-                        "default_field": "referer",
-                        "query": "*utm*"
-                      }
-                    }, {
-                      "query_string": {
-                        "default_field": "page",
-                        "query": "*utm*"
-                      }
-                    }]
-                  }
-                }, {
-                  "bool": {
-                    "must_not": [{
-                      "constant_score": {
-                        "filter": {
-                          "exists": {
-                            "field": "utm"
-                          }
-                        }
-                      }
-                    }]
-                  }
-                }]
+    "from": 0,
+    "size": 30000,
+    "query": {
+      "bool": {
+        "must": [{
+          "term": {
+            "event_id": "sessionstart"
+          }
+        }, {
+          "bool": {
+            "should": [{
+              "query_string": {
+                "default_field": "referer",
+                "query": "*utm*"
               }
-            },
-            "sort": [{
-              "timestamp": {
-                "order": "asc"
+            }, {
+              "query_string": {
+                "default_field": "page",
+                "query": "*utm*"
               }
             }]
-          }';
+          }
+        }, {
+          "bool": {
+            "must_not": [{
+              "constant_score": {
+                "filter": {
+                  "exists": {
+                    "field": "utm"
+                  }
+                }
+              }
+            }]
+          }
+        }]
+      }
+    },
+    "sort": [{
+      "timestamp": {
+        "order": "asc"
+      }
+    }]
+  }';
 
 
   $request = array( 
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $query
+    );
+
+  $utm_result = es_curl_request($request);
+  $utm_result = json_decode($utm_result, true);
+  $events = $utm_result['hits']['hits'];
+  return $events;exit;
+  foreach ($events as $event) {
+    $utm_medium = ''; $utm_term = ''; $utm_content = ''; $utm_campaign = '';
+    $utm_source = ''; $gclid = '';
+
+    $_id = $event['_id'];
+    $_source = $event['_source'];     
+    $page = isset($_source['page']) ? strtolower($_source['page']) : '';
+    $referer = isset($_source['referer']) ? strtolower($_source['referer']) : '';
+
+    if(strpos($page, 'utm') > -1){
+
+      if(strpos($page, 'facebook') > -1){         
+       $utm_source = 'facebook';
+       $utmarray = explode('?', $page)[1];
+       $utmlist = explode('&', $utmarray);
+       foreach ($utmlist as $ul) {
+         $final = explode('=', $ul);
+         switch ($final[0]) {
+           case 'utm_medium':
+           $utm_medium = $final[1];
+           break;
+           case 'utm_term':
+           $utm_term = $final[1];
+           break;
+           case 'utm_content':
+           $utm_content = $final[1];
+           break;
+           case 'utm_campaign':
+           $utm_campaign = $final[1];
+           break;               
+           default:                
+           break;
+         }
+       }
+
+       $utm['source'] = $utm_source;
+       $utm['medium'] = $utm_medium;
+       $utm['term'] = $utm_term;
+       $utm['content'] = $utm_content;
+       $utm['campaign'] = $utm_campaign;
+       $_source['utm'] = $utm;
+       $postfields_data = json_encode($_source);
+
+       $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$_id;
+       $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
+       es_curl_request($updaterequest);
+       echo $_id.'</br>';
+     }
+
+     if(strpos($page, 'google') > -1){
+      $utm_source = 'google';
+      $utmarray = explode('?', $page)[1];
+      $utmlist = explode('&', $utmarray);
+      foreach ($utmlist as $ul) {
+       $final = explode('=', $ul);
+       switch ($final[0]) {
+         case 'utm_medium':
+         $utm_medium = $final[1];
+         break;
+         case 'utm_term':
+         $utm_term = $final[1];
+         break;
+         case 'utm_content':
+         $utm_content = $final[1];
+         break;
+         case 'utm_campaign':
+         $utm_campaign = $final[1];
+         break;   
+         case 'gclid':
+         $gclid = $final[1];
+         break;              
+         default:                
+         break;
+       }
+     }
+
+     $utm['source'] = $utm_source;
+     $utm['medium'] = $utm_medium;
+     $utm['term'] = $utm_term;
+     $utm['content'] = $utm_content;
+     $utm['campaign'] = $utm_campaign;
+     $utm['gclid'] = $gclid;
+     $_source['utm'] = $utm;
+
+     $postfields_data = json_encode($_source);
+
+     $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$_id;
+     $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
+     es_curl_request($updaterequest);
+     echo $_id.'</br>';
+   }
+
+   elseif (strpos($referer, 'utm') > -1) {
+          // dont need for facebook as facebook will always have it in page property, so created a placeholder for google
+   }     
+ }
+}
+}
+public function createkyuusers(){
+  $m = new MongoClient();
+  $db = $m->fitadmin;
+  $collection = $db->userskyu;
+ 
+  // $esquery = '{
+  //   "from": 0,
+  //   "size": 10000000,
+  //   "query": {
+  //     "bool": {
+  //       "must": [{
+  //         "term": {
+  //           "event_id": "sessionstart"
+  //         }
+  //       }, {
+  //         "bool": {
+  //           "must_not": [{
+  //             "query_string": {
+  //               "default_field": "page",
+  //               "query": "*dir=*"
+  //             }
+  //           },{
+  //             "query_string": {
+  //               "default_field": "page",
+  //               "query": "*limit=*"
+  //             }
+  //           }]
+  //         }
+  //       },{"range": {
+  //         "timestamp": {
+  //           "gte": "2015-11-01",
+  //           "lte": "2015-11-10"
+  //         }
+  //       }}]
+  //     }
+  //   },
+  //   "sort": [{
+  //     "timestamp": {
+  //       "order": "asc"
+  //     }
+  //   }],"aggs": {
+  //     "users": {
+  //       "terms": {
+  //         "field": "userid",
+  //         "size": 1000000
+  //       }
+  //     }
+  //   }
+  // }
+  // ';
+
+  $esquery = '{
+    "from": 0,
+    "size": 20000,
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [
+            {
+              "terms": {
+                "event_id": [
+                "signin",
+                "requestcallback",
+                "bookingconfirm"
+                ]
+              }
+            },
+            {
+              "range": {
+                "timestamp": {
+                  "gte": "2015-11-01",
+                  "lte": "2015-11-30"
+                }
+              }
+            }
+            ]
+          }
+        }
+      }
+    }
+  }';
+
+  $request = array( 
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $esquery
+    );
+
+  $user = es_curl_request($request);
+  $user_result = json_decode($user, true);
+  //return $user_result;exit;
+  //$useridlist = $user_result['aggregations']['users']['buckets'];
+  // return $useridlist;exit;
+  $useridlist = $user_result['hits']['hits'];
+  foreach($useridlist as $user1){
+    $user = $user1['_source'];
+    $key = $user['useridentifier'];
+
+    $firstvisitquery = '{
+      "from": 0,
+      "size": 100,
+      "query": {
+        "bool": {
+          "must": [{
+            "term": {
+              "event_id": "sessionstart"
+            }
+          }, {
+            "bool": {
+              "must_not": [{
+                "query_string": {
+                  "default_field": "page",
+                  "query": "*dir=*"
+                }
+              }, {
+                "query_string": {
+                  "default_field": "page",
+                  "query": "*limit=*"
+                }
+              }]
+            }
+          }, {
+            "range": {
+              "timestamp": {
+                "gte": "2015-11-01",
+                "lte": "2015-11-30"
+              }
+            }
+          }, {
+            "term": {
+              "userid": {
+                "value": "'.$key.'"
+              }
+            }
+          }]
+        }
+      },
+      "sort": [{
+        "timestamp": {
+          "order": "asc"
+        }
+      }]
+    }';
+
+    $request1 = array( 
       'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
       'port' => 8060,
       'method' => 'POST',
-      'postfields' => $query
+      'postfields' => $firstvisitquery
       );
-          
-    $utm_result = es_curl_request($request);
-    $utm_result = json_decode($utm_result, true);
-    $events = $utm_result['hits']['hits'];
 
-    foreach ($events as $event) {
-      $utm_medium = ''; $utm_term = ''; $utm_content = ''; $utm_campaign = '';
-      $utm_source = ''; $gclid = '';
+    $user1 = es_curl_request($request1);
+    $user_visits = json_decode($user1, true);
 
-      $_id = $event['_id'];
-      $_source = $event['_source'];     
-      $page = isset($_source['page']) ? strtolower($_source['page']) : '';
-      $referer = isset($_source['referer']) ? strtolower($_source['referer']) : '';
-
-      if(strpos($page, 'utm') > -1){
-
-        if(strpos($page, 'facebook') > -1){         
-           $utm_source = 'facebook';
-           $utmarray = explode('?', $page)[1];
-           $utmlist = explode('&', $utmarray);
-           foreach ($utmlist as $ul) {
-             $final = explode('=', $ul);
-             switch ($final[0]) {
-               case 'utm_medium':
-               $utm_medium = $final[1];
-               break;
-               case 'utm_term':
-               $utm_term = $final[1];
-               break;
-               case 'utm_content':
-               $utm_content = $final[1];
-               break;
-               case 'utm_campaign':
-               $utm_campaign = $final[1];
-               break;               
-               default:                
-               break;
-             }
-           }
-
-          $utm['source'] = $utm_source;
-          $utm['medium'] = $utm_medium;
-          $utm['term'] = $utm_term;
-          $utm['content'] = $utm_content;
-          $utm['campaign'] = $utm_campaign;
-          $_source['utm'] = $utm;
-          $postfields_data = json_encode($_source);
-          
-          $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$_id;
-          $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
-          es_curl_request($updaterequest);
-          echo $_id.'</br>';
-        }
-
-       if(strpos($page, 'google') > -1){
-        $utm_source = 'google';
-           $utmarray = explode('?', $page)[1];
-           $utmlist = explode('&', $utmarray);
-           foreach ($utmlist as $ul) {
-             $final = explode('=', $ul);
-             switch ($final[0]) {
-               case 'utm_medium':
-               $utm_medium = $final[1];
-               break;
-               case 'utm_term':
-               $utm_term = $final[1];
-               break;
-               case 'utm_content':
-               $utm_content = $final[1];
-               break;
-               case 'utm_campaign':
-               $utm_campaign = $final[1];
-               break;   
-               case 'gclid':
-               $gclid = $final[1];
-               break;              
-               default:                
-               break;
-             }
-           }
-
-          $utm['source'] = $utm_source;
-          $utm['medium'] = $utm_medium;
-          $utm['term'] = $utm_term;
-          $utm['content'] = $utm_content;
-          $utm['campaign'] = $utm_campaign;
-          $utm['gclid'] = $gclid;
-          $_source['utm'] = $utm;
-
-          $postfields_data = json_encode($_source);
-          
-          $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$_id;
-          $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
-          es_curl_request($updaterequest);
-          echo $_id.'</br>';
+    $kyuuser['_id'] = $key;
+    $kyuuser['totalsession'] = $user_visits['hits']['total'];   
+    //return $user_visits['hits']['hits'][0];exit;
+    //return  $user_visits['hits']['hits'][0];exit;
+    if($user_visits['hits']['total'] > 0){
+      $first_visit = $user_visits['hits']['hits'][0];
+      if(isset($first_visit['_source']['utm'])){
+        $kyuuser['firstvisittype'] = 'inorganic';
+        $kyuuser['utm_source'] = $first_visit['_source']['utm'];
       }
+      $kyuuser['firstpagelanded'] = $first_visit['_source']['page'];
 
-      elseif (strpos($referer, 'utm') > -1) {
-          // dont need for facebook as facebook will always have it in page property, so created a placeholder for google
-      }     
-    }
+    // $identification_query = '{
+    //   "query": {
+    //     "filtered": {
+    //       "filter": {
+    //         "bool": {
+    //           "must": [{
+    //             "terms": {
+    //               "event_id": [
+    //               "signin",
+    //               "requestcallback",
+    //               "bookingconfirm"
+    //               ]
+    //             }
+    //           }, {
+    //             "term": {
+    //               "useridentifier": "'.$key.'"
+    //             }
+    //           }]
+    //         }
+    //       }
+    //     }
+    //   }
+    // }';
+
+    // $request2 = array( 
+    //   'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    //   'port' => 8060,
+    //   'method' => 'POST',
+    //   'postfields' => $identification_query
+    //   );
+
+    // $identifications = es_curl_request($request2);
+    // $identifications = json_decode($identifications, true);
+    //return $kyuuser;exit;
+      switch ($user['event_id']) {
+        case 'requestcallback' || 'bookingconfirm':
+        $kyuuser['email'] = $user['email'];
+        break;
+        case 'signin':
+        if(isset($user['email'])){
+         $kyuuser['email'] = $user['email'];           
+       }
+       else if(isset($identity['_source']['userid'])){
+         $kyuuser['email'] = $user['userid'];         
+       }
+       break;
+       default:
+       break;
+       $kyuuser['emailtmsp'] = $user['timestamp'];
+
+   //  if($identifications['hits']['total'] !== 0){
+   //    foreach ($identifications['hits']['hits'] as $identity) {
+   //      switch ($identity['_source']['event_id']) {
+   //        case 'requestcallback' || 'bookingconfirm':
+   //        $kyuuser['email'] = $identity['_source']['email'];
+   //        break;
+   //        case 'signin':
+   //        if(isset($identity['_source']['email'])){
+   //         $kyuuser['email'] = $identity['_source']['email'];           
+   //       }
+   //       else if(isset($identity['_source']['userid'])){
+   //         $kyuuser['email'] = $identity['_source']['userid'];
+   //         $kyuuser['emailtmsp'] = $identity['_source']['timestamp'];
+   //       }
+   //       break;
+   //       default:
+   //       break;
+   //     }
+   //     $kyuuser['emailtmsp'] = $identity['_source']['timestamp'];
+
+   //   }
+   // }
+   // else{
+
+   // }
+     }
+
+     $emailquery = array('email' => $kyuuser['email']);
+     $idquery = array('_id' => $kyuuser['_id']);
+     $cursor = $collection->find($emailquery);
+     $secondcursor = $collection->find($idquery);
+    $bool = true;
+     foreach ($cursor as $cur) {
+      $bool = false;
+     }
+     foreach ($secondcursor as $scur) {
+      $bool = false;
+     }
+     if($bool){
+       $collection->insert($kyuuser, array("w" => 1));
+       
+     }
+   }
+ }
 }
-}
+
 }
