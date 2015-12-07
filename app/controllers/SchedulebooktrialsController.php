@@ -839,6 +839,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'finder_lat'		 			=>		$finder_lat,
 				'finder_lon'		 			=>		$finder_lon,
 				'finder_photos'		 			=>		$finder_photos,
+				'description'		 			=>		$description,
 				'what_i_should_carry'		 	=>		$what_i_should_carry,
 				'what_i_should_expect'		 	=>		$what_i_should_expect,
 				
@@ -1206,6 +1207,7 @@ public function bookTrialFree(){
 			'finder_lat'		 			=>		$finder_lat,
 			'finder_lon'		 			=>		$finder_lon,
 			'finder_photos'		 			=>		$finder_photos,
+			'description'		 			=>		$description,
 			'what_i_should_carry'		 	=>		$what_i_should_carry,
 			'what_i_should_expect'		 	=>		$what_i_should_expect,
 
