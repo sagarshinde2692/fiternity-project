@@ -235,7 +235,7 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you are all geared up for your upcoming workout session on <strong>{{ ucwords($service_name)  }}</strong> at <strong>{{ ucwords($finder_name) }}</strong> on <strong>{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }}.</strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you are all geared up for your upcoming workout session at <strong>{{ ucwords($finder_name) }}</strong> on <strong>{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Here are a few details you should know and might want to follow before your workout session, to make the most out of it:</p>
 
                                                         <?php if(isset($description) && $description != ""){ ?> 
@@ -250,9 +250,9 @@
                                                     </div>
                                                     <?php }?>
 
-                                                    <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
+                                                    <?php if(isset($what_i_should_expect) && $what_i_should_expect != ""){ ?> 
                                                     <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color:#f9a91e;" >What to expect?</span><br/>
-                                                        {{ $preferred_starting_date }}
+                                                        {{ $what_i_should_expect }}
                                                     </div>
                                                     <?php }?>
 
@@ -320,7 +320,7 @@
                                                      <?php }?>
                                                      <?php if(isset($schedule_date_time) && $schedule_date_time != ""){ ?> 
                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Date:</p>
-                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
                                                      <?php }?>
                                                  </td>
                                              </tr>
@@ -344,7 +344,7 @@
 
                                                      <?php if(isset($code) && $code != ""){ ?> 
                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
-                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }} (please flash this code at the service provider location)</p>
                                                      <?php }?>
 
 
@@ -385,7 +385,7 @@
                                                     <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
                                                 </a>
                                                 <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
-                                                    <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get Direction", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
+                                                    <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get directions", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
                                                 </p>
                                             </td>
                                         </tr>
