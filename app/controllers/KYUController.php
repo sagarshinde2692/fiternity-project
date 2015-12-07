@@ -602,9 +602,9 @@ public function sessionutm(){
 }
 }
 public function createkyuusers(){
-  $m = new MongoClient();
+  $m = new MongoClient("mongodb://54.255.173.1:27017");
   $db = $m->fitadmin;
-  $collection = $db->userskyu;
+  $collection = $db->userskyu1;
 
   // $esquery = '{
   //   "from": 0,
@@ -861,7 +861,7 @@ public function createkyuusers(){
       $bool = false;
     }
     if($bool){
-     echo $collection->insert($kyuuser, array("w" => 1));
+     $collection->insert($kyuuser, array("w" => 1));
 
    }
  }
