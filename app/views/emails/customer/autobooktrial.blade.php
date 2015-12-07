@@ -232,7 +232,7 @@
                                                     </td>
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
-                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">restify
+                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         <hr width="100px">
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a workout session on <strong>{{ ucwords($service_name) }}</strong> at <strong>{{ ucwords($finder_name) }} </strong></p>
