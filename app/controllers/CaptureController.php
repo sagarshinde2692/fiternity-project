@@ -69,15 +69,37 @@ public function sendSMS($smsdata){
 
 	$to = $smsdata['send_to'];
 	$message = $smsdata['message_body'];
-	$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);
-    // $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+
+	$url = 'http://www.kookoo.in/outbound/outbound_sms.php';
+
+	$param = array(
+		'api_key' => 'KK6cb3903e3d2c428bb60c0cfaa212009e', 
+		'phone_no' => trim($to), 
+		'message' => $message,
+		'senderid'=> 'FTRNTY' 
+	);
+	                          
+	$url = $url . "?" . http_build_query($param, '&');
 
 	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+	$result = curl_exec($ch);
+	curl_close($ch);
+	
+	
+	/*$live_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode($to) . "&source=fitter&message=" . urlencode($message);*/
+    // $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+
+	/*$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $live_url);
 	curl_setopt($ch, CURLOPT_HEADER, 0);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 	$response = curl_exec($ch);
-	curl_close($ch);
+	curl_close($ch);*/
 }
 
 public function postCapture(){

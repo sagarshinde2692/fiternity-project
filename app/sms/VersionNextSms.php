@@ -17,15 +17,36 @@ abstract Class VersionNextSms {
                 $msg = strip_tags($message);
 
                 foreach ($to as $number) {
-                    // echo $number;
-                    // $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=india123&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
-                    $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+                
+                    $url = 'http://www.kookoo.in/outbound/outbound_sms.php';
+
+                    $param = array(
+                        'api_key' => 'KK6cb3903e3d2c428bb60c0cfaa212009e', 
+                        'phone_no' => trim($number), 
+                        'message' => $message,
+                        'senderid'=> 'FTRNTY' 
+                    );
+                                              
+                    $url = $url . "?" . http_build_query($param, '&');
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+                    $result = curl_exec($ch);
+                    curl_close($ch);
+                    
+                    echo $result;
+
+                    /*$sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
                     $ci = curl_init();
                     curl_setopt($ci, CURLOPT_URL, $sms_url);
                     curl_setopt($ci, CURLOPT_HEADER, 0);
                     curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
                     $response = curl_exec($ci);
-                    curl_close($ci);
+                    curl_close($ci);*/
                 }
 
                 $job->delete();  
@@ -44,13 +65,35 @@ abstract Class VersionNextSms {
 
                 foreach ($to as $number) {
 
-                    $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+                    $url = 'http://www.kookoo.in/outbound/outbound_sms.php';
+
+                    $param = array(
+                        'api_key' => 'KK6cb3903e3d2c428bb60c0cfaa212009e', 
+                        'phone_no' => trim($number), 
+                        'message' => $message,
+                        'senderid'=> 'FTRNTY' 
+                    );
+                                              
+                    $url = $url . "?" . http_build_query($param, '&');
+
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+                    $result = curl_exec($ch);
+                    curl_close($ch);
+                    
+                    echo $result;
+
+                   /* $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
                     $ci = curl_init();
                     curl_setopt($ci, CURLOPT_URL, $sms_url);
                     curl_setopt($ci, CURLOPT_HEADER, 0);
                     curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
                     $response = curl_exec($ci);
-                    curl_close($ci);
+                    curl_close($ci);*/
 
                 }
 
@@ -71,13 +114,35 @@ abstract Class VersionNextSms {
 
        foreach ($to as $number) {
 
-            $sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
+            $url = 'http://www.kookoo.in/outbound/outbound_sms.php';
+
+            $param = array(
+                'api_key' => 'KK6cb3903e3d2c428bb60c0cfaa212009e', 
+                'phone_no' => trim($number), 
+                'message' => $message,
+                'senderid'=> 'FTRNTY' 
+            );
+                                      
+            $url = $url . "?" . http_build_query($param, '&');
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+            $result = curl_exec($ch);
+            curl_close($ch);
+            
+            echo $result;
+
+            /*$sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim($number)) . "&source=fitter&message=" . urlencode($msg);
             $ci = curl_init();
             curl_setopt($ci, CURLOPT_URL, $sms_url);
             curl_setopt($ci, CURLOPT_HEADER, 0);
             curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
             $response = curl_exec($ci);
-            curl_close($ci);
+            curl_close($ci);*/
 
         }
 
