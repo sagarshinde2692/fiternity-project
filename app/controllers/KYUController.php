@@ -874,7 +874,7 @@ public function getunidentifiedusers(){
 
   $query = '{
     "from": 0,
-    "size": 200000000000000,
+    "size": 20000000,
     "query": {
       "filtered": {       
         "filter": {
