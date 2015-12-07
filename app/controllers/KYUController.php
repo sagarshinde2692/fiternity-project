@@ -604,7 +604,7 @@ public function sessionutm(){
 public function createkyuusers(){
   $m = new MongoClient("mongodb://54.255.173.1:27017");
   $db = $m->fitadmin;
-  $collection = $db->userskyu1;
+  $collection = $db->userskyu;
 
   // $esquery = '{
   //   "from": 0,
