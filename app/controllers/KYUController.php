@@ -605,7 +605,7 @@ public function createkyuusers(){
   $m = new MongoClient();
   $db = $m->fitadmin;
   $collection = $db->userskyu;
- 
+
   // $esquery = '{
   //   "from": 0,
   //   "size": 10000000,
@@ -758,11 +758,14 @@ public function createkyuusers(){
     $user_visits = json_decode($user1, true);
 
     $kyuuser['_id'] = $key;
+    $kyuuser['type'] = 'unidentified';
     $kyuuser['totalsession'] = $user_visits['hits']['total'];   
     //return $user_visits['hits']['hits'][0];exit;
     //return  $user_visits['hits']['hits'][0];exit;
     if($user_visits['hits']['total'] > 0){
       $first_visit = $user_visits['hits']['hits'][0];
+      $kyuuser['firstvisittype'] = 'organic';
+      $kyuuser['type'] = 'identified';
       if(isset($first_visit['_source']['utm'])){
         $kyuuser['firstvisittype'] = 'inorganic';
         $kyuuser['utm_source'] = $first_visit['_source']['utm'];
@@ -850,19 +853,135 @@ public function createkyuusers(){
      $idquery = array('_id' => $kyuuser['_id']);
      $cursor = $collection->find($emailquery);
      $secondcursor = $collection->find($idquery);
-    $bool = true;
+     $bool = true;
      foreach ($cursor as $cur) {
       $bool = false;
-     }
-     foreach ($secondcursor as $scur) {
+    }
+    foreach ($secondcursor as $scur) {
       $bool = false;
-     }
-     if($bool){
-       $collection->insert($kyuuser, array("w" => 1));
-       
-     }
+    }
+    if($bool){
+     $collection->insert($kyuuser, array("w" => 1));
+
    }
  }
 }
+}
+public function getunidentifiedusers(){
+  $m = new MongoClient();
+  $db = $m->fitadmin;
+  $collection = $db->userskyu;
 
+  $query = '{
+    "from": 0,
+    "size": 2000000000,
+    "query": {
+      "filtered": {       
+        "filter": {
+          "bool": {
+            "must": [{
+              "term": {
+                "event_id": "sessionstart"
+              }
+            }, {
+              "range": {
+                "timestamp": {
+                  "gte": "2015-11-1",
+                  "lte": "2015-11-30"
+                }
+              }
+            }]
+          }
+        }
+      }
+    }
+  }';
+
+  $request1 = array( 
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $query
+    );
+
+  $user1 = es_curl_request($request1);
+  $user_visits = json_decode($user1, true);
+ 
+  foreach ($user_visits['hits']['hits'] as $user1) {
+
+    $user = $user1['_source'];
+    $isbot = false;
+    if(isset($user['page'])){
+      if((strpos($user['page'], 'dir=') === -1)||(strpos($user['page'], 'limit='))){
+        $isbot = true;
+      }
+    }  
+    if(!$isbot){
+      $key = $user['userid'];
+      $kyuuser['_id'] = $key;
+      $kyuuser['type'] = 'unidentified';
+      $idquery = array('_id' => $key);
+      $cursor = $collection->find($idquery);
+      $bool = true;
+      foreach ($cursor as $val) {
+        $bool = false;
+      }
+      if($bool){
+        $sessionquery = '{
+          "from": 0,
+          "size": 20000000,
+          "query": {
+            "filtered": {
+              "filter": {
+                "bool": {
+                  "must": [{
+                    "term": {
+                      "event_id": "sessionstart"
+                    }
+                  }, {
+                    "range": {
+                      "timestamp": {
+                        "gte": "2015-11-01",
+                        "lte": "2015-11-30"
+                      }
+                    }
+                  }, {
+                    "term": {
+                      "userid": "'.$key.'"
+                    }
+                  }]
+                }
+              }
+            }
+          },
+          "sort": [{
+            "timestamp": {
+              "order": "asc"
+            }
+          }]
+        }';
+        $request2 = array( 
+          'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+          'port' => 8060,
+          'method' => 'POST',
+          'postfields' => $sessionquery
+          );
+
+        $sessions = es_curl_request($request2);
+        $sessionlist = json_decode($sessions, true);      
+        $kyuuser['totalsession'] = $sessionlist['hits']['total'];
+
+        $firstsession = $sessionlist['hits']['hits'][0];
+        $kyuuser['firstvisittype'] = 'organic';
+        $kyuuser['firstpagelanded'] = $firstsession['_source']['page'];
+        if(isset($firstsession['_source']['utm'])){
+          $kyuuser['utm_source'] = $firstsession['_source']['utm'];
+          $kyuuser['firstvisittype'] = 'inorganic';
+        }                   
+        $resp = $collection->insert($kyuuser, array("w" => 1));
+        
+      }
+    }
+  }
+}
 }
