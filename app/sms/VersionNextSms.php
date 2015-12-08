@@ -1,8 +1,16 @@
 <?PHP namespace App\Sms;
 
 use Queue, IronWorker, Config;
+use App\Services\Sidekiq as Sidekiq;
 
 abstract Class VersionNextSms {
+
+    protected $sidekiq;
+
+    public function __construct(Sidekiq $sidekiq) {
+
+        $this->sidekiq = $sidekiq;
+    }
 
 	public function sendTo($to, $message, $delay = null ){
 
@@ -177,10 +185,7 @@ abstract Class VersionNextSms {
         return time();
     }
 
-    //scheduled/inprocess/done
-    //email_template,template_data,message_data,delay_time,status,_id,type,to,message,delay_time,status,_is,type
-
-    public function sendToWorker($to, $message, $label = 'label', $priority = 0, $delay = 0){
+/* public function sendToWorkerBk($to, $message, $label = 'label', $priority = 0, $delay = 0){
 
         if($delay !== 0){
             $delay = strtotime($delay);
@@ -199,27 +204,6 @@ abstract Class VersionNextSms {
         $scheduler->save();
 
         return $scheduler->_id;
-
-    }
-
-    public function sendToWorkerTest($to, $message, $label = 'label', $priority = 0, $delay = 0){
-
-        $worker = new IronWorker(array(
-            'token' => Config::get('queue.connections.ironworker.token'),
-            'project_id' => Config::get('queue.connections.ironworker.project')
-        ));
-        
-        if($delay !== 0){
-            $delay = $this->getSeconds($delay);
-        }
-    
-        $payload = array('to'=>$to,'message'=>$message);
-        $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-        $queue_name = 'TestSmsApi';
-
-        $messageid = $worker->postTask($queue_name,$payload,$options);
-
-        return $messageid;
 
     }
 
@@ -242,8 +226,47 @@ abstract Class VersionNextSms {
 
         return $messageid;
 
+    }*/
+
+    public function sendToWorker($to, $message, $label = 'label', $priority = 0, $delay = 0){
+
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+    
+        $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+        
+        $route  = 'sms';
+        $result  = $this->sidekiq->sendToQueue($payload,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+
     }
 
 
+    /*public function sendToWorkerTest($to, $message, $label = 'label', $priority = 0, $delay = 0){
 
+        $worker = new IronWorker(array(
+            'token' => Config::get('queue.connections.ironworker.token'),
+            'project_id' => Config::get('queue.connections.ironworker.project')
+        ));
+        
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+    
+        $payload = array('to'=>$to,'message'=>$message);
+        $options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+        $queue_name = 'TestSmsApi';
+
+        $messageid = $worker->postTask($queue_name,$payload,$options);
+
+        return $messageid;
+
+    }*/
+    
 }

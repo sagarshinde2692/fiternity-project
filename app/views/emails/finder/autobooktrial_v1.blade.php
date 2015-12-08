@@ -140,11 +140,11 @@
 
               <tr>
                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-                  <p style="padding-top:10px">Hi,  <br>
-                    <p style="padding-top:10px"> Greetings from Fitternity <br>
+                  <p style="padding-top:10px">Hi, 
+                    <p style="padding-top:10px"> Greetings from Fitternity .
 
-                      We have received a workout session request for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif .  <br>    
-                      <p style="padding-top:10px; font-size:15px;">Here are the details :</p>
+                      We have received a booking for workout session for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif .     
+                      <p style="padding-top:10px; font-size:15px;">Here are the details ::</p>
 
                     </td>
                   </tr>
@@ -209,7 +209,7 @@
 
                          <?PHP } ?>
 
-                           @if ($share_customer_no)
+
                           <tr>
                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                          <p style="font-weight:light">Phone Number of the customer:   
@@ -219,7 +219,6 @@
                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                            {{ $customer_phone }}</td>
                          </tr>
-                          @endif 
 
 
                          <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 

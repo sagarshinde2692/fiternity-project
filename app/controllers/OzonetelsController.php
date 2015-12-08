@@ -9,17 +9,21 @@
 
 use App\Services\OzonetelResponse as OzonetelResponse;
 use App\Services\OzonetelCollectDtmf as OzonetelCollectDtmf;
+use App\Services\OzontelOutboundCall as OzontelOutboundCall;
+
 use Guzzle\Http\Client;
 
 class OzonetelsController extends \BaseController {
 
 	protected $ozonetelResponse;
 	protected $ozonetelCollectDtmf;
+	protected $ozontelOutboundCall;
 
-	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf) {
+	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall) {
 
 		$this->ozonetelResponse	=	$ozonetelResponse;
 		$this->ozonetelCollectDtmf	=	$ozonetelCollectDtmf;
+		$this->ozontelOutboundCall	=	$ozontelOutboundCall;
 
 	}
 
@@ -376,6 +380,237 @@ class OzonetelsController extends \BaseController {
 		}	
 
 		return $path;
+	}
+
+	public function outboundCallSend($phone_no){
+
+		$trial_id = 15961;
+
+	/*	$booktrial = Booktrial::find((int) $trial_id);
+
+		$slot_date 							=	date('d-m-Y', strtotime($booktrial->schedule_date));
+		$schedule_date_starttime 			=	strtoupper($slot_date ." ".$booktrial->schedule_slot_start_time);
+
+		echo"<pre>";print_r($schedule_date_starttime);
+
+		$date = '';//\Carbon\Carbon::createFromFormat('j F Y', $schedule_date_starttime);
+		$hour = \Carbon\Carbon::createFromFormat('g', $schedule_date_starttime);
+		$min = \Carbon\Carbon::createFromFormat('i', $schedule_date_starttime);
+		$ante = \Carbon\Carbon::createFromFormat('a', $schedule_date_starttime);
+
+		$ante = ($ante == 'am') ? 'a m' : 'p m';
+		$min = ($min == 00) ? ' ' : $min;
+		
+		$datetime = $date.' ,'.$hour.' '.$min.' '.$ante;
+
+		echo"<pre>";print_r($datetime);exit;*/
+
+		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
+
+		return  Response::json($result, $result['status']);
+
+	}
+
+	public function outbound($trial_id){
+
+		$booktrial = Booktrial::find((int) $trial_id);
+		$phone_no = $booktrial->customer_phone;
+		$result = $this->ozontelOutboundCall->call($phone_no,$trial_id);
+
+		return  Response::json($result, $result['status']);
+
+	}
+
+	public function outboundCallRecive($trial_id){
+
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+
+			$booktrial = Booktrial::find((int) $trial_id);
+
+			$slot_date 			=	date('d-m-Y', strtotime($booktrial->schedule_date));
+			$datetime 			=	strtoupper($slot_date ." ".$booktrial->schedule_slot_start_time);
+
+			$this->ozonetelResponse->addPlayText("Hi ".$booktrial->customer_name.", this is regarding a workout session booked by you through Fitternity at ".$booktrial->finder_name."on ".$datetime." , ",3);
+
+			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+
+			$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),3);
+
+		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+
+		   	$add_outbound = $this->addOutbound($_REQUEST,$booktrial->finder_id,$trial_id);
+
+		   	$this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
+
+			if (isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
+
+				$input = (int)$_REQUEST['data'];
+
+				$ivr_status = array(1 =>'confirm',2 =>'cancel',3 =>'reschedule',4 =>'repeat');
+
+				if(array_key_exists($input, $ivr_status))
+				{
+					switch ($input) {
+						case 1:
+							$this->ozonetelResponse->addPlayText("Thank you for your confirmation, we hope you have a great workout",3);
+							$this->ozonetelResponse->addHangup();
+							break;
+						case 2:
+							$this->ozonetelResponse->addPlayText("Thank you for your request, your session is now cancel",3);
+							$this->ozonetelResponse->addHangup();
+							break;
+						case 3:
+							$this->ozonetelResponse->addPlayText("Please hold, your call is being transfer to our fitness concierge",3);
+							$this->ozonetelResponse->addDial('09773348762',"true");
+							$this->ozonetelResponse->addHangup();
+							break;
+						case 4:
+							$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    				$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),3);
+		    				$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+							$this->ozonetelResponse->addHangup();
+							break;
+						default:
+							$this->ozonetelResponse->addHangup();
+							break;
+					}
+
+					$booktrial = Booktrial::find((int) $trial_id);
+					$booktrial->update(array('ivr_status'=>$input));
+
+					$update_outbound = $this->updateOutbound($_REQUEST);
+
+				}else{
+
+					$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    		$this->ozonetelCollectDtmf->addPlayText("wrong extension, please dial correct extension number",3);
+		    		$this->ozonetelCollectDtmf->addPlayText($this->outboundIvr(),3);
+		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+				}
+	    	}else{
+
+	    		$this->ozonetelResponse->addHangup();
+	    	}
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+
+			if (isset($_REQUEST['status']) && $_REQUEST['status'] == 'not_answered') {
+
+				$update_outbound = $this->updateOutbound($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+
+			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
+
+				$update_outbound = $this->updateOutbound($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+		    	
+			}else{
+
+				$this->ozonetelResponse->addHangup();
+			}
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
+
+		    $update_outbound = $this->updateOutbound($_REQUEST);
+		    $this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Disconnect') {
+
+		    $update_outbound = $this->updateOutbound($_REQUEST);
+		    $this->ozonetelResponse->addHangup();
+
+		}else {
+
+		    $this->ozonetelResponse->addHangup();
+		}
+		
+		$this->ozonetelResponse->send();
+
+	}
+
+
+	public function outboundIvr(){
+
+		
+		$ivr = 'to confirm if you are going,press 1,
+
+				to cancel the booking,press 2,
+
+				to reschedule or for any query,press 3,
+
+				to repeat,Press 4';
+
+		return $ivr;
+	}
+
+	public function addOutbound($data,$finder_id,$trial_id){
+		
+		$ozonetel_outbound = new Ozoneteloutbound();
+		$ozonetel_outbound->_id = Ozoneteloutbound::max('_id') + 1;
+		$ozonetel_outbound->ozonetel_unique_id = $data['sid'];
+		$ozonetel_outbound->finder_id = (int) $finder_id;
+		$ozonetel_outbound->trial_id = (int) $trial_id;
+		$ozonetel_outbound->ozonetel_no = (string) $data['called_number'];
+		$ozonetel_outbound->customer_contact_no = (string)$data['cid_e164'];
+		$ozonetel_outbound->customer_contact_circle = (string)$data['circle'];
+		$ozonetel_outbound->customer_contact_operator = (string)$data['operator'];
+		$ozonetel_outbound->customer_contact_type = (string)$data['cid_type'];
+		$ozonetel_outbound->customer_cid = (string)$data['cid'];
+		$ozonetel_outbound->outbound_sid = (string)$data['outbound_sid'];
+
+		$ozonetel_outbound->call_status = "called";
+		$ozonetel_outbound->status = "1";
+		$ozonetel_outbound->save();
+
+		return $ozonetel_outbound;
+	}
+
+	public function updateOutbound($data){
+
+		$ozonetel_outbound = Ozoneteloutbound::where('ozonetel_unique_id','=',$data['sid'])->first();
+
+		if($ozonetel_outbound){
+
+			if(isset($data['status']) && $data['status'] != ''){
+				if($data['status'] != 'answered'){
+
+					$ozonetel_outbound->call_status = "not_answered";
+					$ozonetel_outbound->message = $data['message'];
+					$ozonetel_outbound->telco_code = $data['telco_code'];
+					$ozonetel_outbound->rec_md5_checksum = $data['rec_md5_checksum'];
+					$ozonetel_outbound->call_duration = $data['callduration'];
+					$ozonetel_outbound->pickduration = $data['pickduration'];
+					
+				}else{
+					
+					$ozonetel_outbound->call_status = "answered";
+					$ozonetel_outbound->call_duration = $data['callduration'];
+					$ozonetel_outbound->ozone_url_record = $data['data'];
+					$ozonetel_outbound->message = $data['message'];
+					$ozonetel_outbound->telco_code = $data['telco_code'];
+					$ozonetel_outbound->rec_md5_checksum = $data['rec_md5_checksum'];
+					$ozonetel_outbound->pickduration = $data['pickduration'];
+				}
+			}
+
+			if( isset($data['event']) && $data['event'] == 'GotDTMF' && isset($data['data']) && $data['data'] != ''){
+				$ozonetel_outbound->ivr_status = (int) $data['data'];
+			}
+
+			if( isset($data['event']) && $data['event'] == 'Hangup' || $data['event'] == 'Disconnect' && isset($data['total_call_duration']) && $data['total_call_duration'] != ''){
+				$ozonetel_outbound->total_call_duration = (int) $data['total_call_duration'];
+			}
+
+			$ozonetel_outbound->update();
+
+			return $ozonetel_outbound;
+
+		}else{
+
+			return false;
+		}
 	}
 
 

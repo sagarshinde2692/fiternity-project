@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fitternity Newsletter 2</title>
+<title>Ozonetel Available Numbers</title>
 <style type="text/css">
  /* Client-specific Styles */
  #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
@@ -140,11 +140,9 @@
 
               <tr>
                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-                  <p style="padding-top:10px">Hi , </p>
-                  <p style="padding-top:10px">Greetings from Fitternity.com</p>
-                  <p style="padding-top:10px">Daily report on customers who have booked sessions for tomorrow.
-
-                    <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
+                  <p style="padding-top:10px">Hello All, </p>
+                  <p style="padding-top:10px">Ozonetel available numbers count
+                  <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
 
                   </td>
                 </tr>
@@ -195,30 +193,20 @@
 
                        <tr>
                         <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                         <p style="font-weight:light">Customer Info:   </p>
+                         <p style="font-weight:light">City</p>
                          </td>
                          <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                           <p style="font-weight:light">Scheduled Date</td>
+                           <p style="font-weight:light">Premium</td>
+                            
                             <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                             <p style="font-weight:light">Scheduled Slot</td> <td width="96" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Subscription Code   
-
-                               </td> <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Workout Form 
-
-                               </td> <td width="156" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Contact person name (provided to the customer) 
-
+                           <p style="font-weight:light">Free</td>
                                </tr>
 
-                               @foreach($scheduletrials as $key => $value)
+                               @foreach($city as $key => $value)
                                <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
-                                <td style="padding:10px;"> {{ ucwords($value['customer_name']) }} <?php if($value['customer_phone'] != ''){?> <br>({{ $value['customer_phone'] }}) <?php } ?> </td>
-                                <td > {{ $value['schedule_date'] }}  </td>
-                                <td> {{ $value['schedule_slot'] }}  </td> 
-                                <td> {{ $value['code']}} </td> 
-                                <td>{{ ucwords($value['service_name']) }}  </td> 
-                                <td> {{ ucwords($value['finder_poc_for_customer_name']) }}  </td>
+                                <td> {{ $key }}  </td>
+                                <td> {{ $value['paid'] }}  </td>
+                                <td> {{ $value['free'] }}  </td> 
                               </tr>
                               @endforeach
 
@@ -239,129 +227,6 @@
 
     </td></tr></tbody></table>
   </div>
-
-
-
-  <!-- customer who attended session today start here -->
-<?php if(count($todaytrials) > 0){  ?>
-
-  <div class="block"><!-- Start Editor's Note -->
-   <!-- start textbox-with-title -->
-   <table width="100%" bgcolor="#fff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
-    <tbody>
-     <tr>
-      <td align="center">
-       <table bgcolor="#fff" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-        <tbody>
-
-          <tr>
-            <td>
-             <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
-              <tbody>
-                <tr>
-                  <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
-
-                    <p style="padding-top:5px"> &nbsp;</p>
-                    <p style="padding-top:10px">Customers who attended session on Today.</p>
-                    <p style="padding-top:10px; font-size:15px;">Here are the details:</p>
-                  </td>
-                </tr>
-                <tr>
-                  <td style="background-color:#666" width="100%" height="3"></td>
-                </tr>
-
-                <!-- Spacing -->
-              </tbody>
-            </table>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="block"> 
-  <table width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
-    <tbody>
-     <tr>
-      <td align="center">
-       <table bgcolor="#f3f3f3" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-        <tbody>
-          <!-- Title -->
-          <tr>
-            <td>
-             <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-              <tbody>
-               <tr>
-                <td>
-                 <!-- col 1 -->
-                 <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                  <tbody>
-                   <!-- image 2 -->
-                   <!-- end of image2 -->
-                   <tr>
-                    <td>
-                     <!-- start of text content table -->  
-                     <table  width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
-                      <tbody>
-                       <!-- Spacing -->
-
-                       <tr>
-                        <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                         <p style="font-weight:light">Customer Info:   </p>
-                         </td>
-                         <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                           <p style="font-weight:light">Scheduled Date</td>
-                            <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                             <p style="font-weight:light">Scheduled Slot</td> <td width="96" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Subscription Code   
-
-                               </td> <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Workout Form 
-
-                               </td> <td width="156" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Contact person name (provided to the customer) 
-
-                               </tr>
-
-                               @foreach($todaytrials as $key => $value)
-                               <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
-                                <td style="padding:10px;"> {{ ucwords($value['customer_name']) }} <?php if($value['customer_phone'] != ''){?> <br>({{ $value['customer_phone'] }}) <?php } ?> </td>
-                                <td > {{ $value['schedule_date'] }}  </td>
-                                <td> {{ $value['schedule_slot'] }}  </td> 
-                                <td> {{ $value['code']}} </td> 
-                                <td>{{ ucwords($value['service_name']) }}  </td> 
-                                <td> {{ ucwords($value['finder_poc_for_customer_name']) }}  </td>
-                              </tr>
-                              @endforeach
-
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-                      <!-- end of text content table -->
-                    </tbody>
-                  </table>
-
-                </tbody>
-              </table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-    </td></tr></tbody></table>
-  </div>
-
-  <!-- customer who attended session today end here -->
-
-<?php } ?>
-
-
-
-
   <div class="block"> 
     <table width="100%" bgcolor="#ffffff" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
       <tbody>
@@ -394,32 +259,5 @@
 <!-- end of col 2 -->
 <!-- spacing --><!-- end of spacing -->
 <!-- col 3 -->
-
-
-<tr>
-  <td width="100%" height="20"></td>
-</tr>
-<!-- end of spacing --></div>
-
-
-<div class="block">
- <!-- Start of preheader -->
- <table width="100%" bgcolor="#ffffff" cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
-  <tbody>
-   <tr>
-    <td align="center"><table width="580" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
-      <tbody>
-        <tr style="background-color:#fff">
-          <td width="160"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
-          <td align="center" style="color:#666; font-family:Arial, sans serif; font-size:13px;" width="200">Call -          022 6122 2222</td>
-          <td width="197" style="text-align:right"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
-        </tr>
-      </tbody>
-    </table></td>
-  </tr>
-</tbody>
-</table>
-<!-- End of preheader -->
-</div>
 
 </body></html>

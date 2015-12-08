@@ -1,9 +1,17 @@
 <?PHP namespace App\Mailers;
 
-use Mail, Queue, IronWorker, Config;
+use Mail, Queue, IronWorker, Config, View;
+use App\Services\Sidekiq as Sidekiq;
 
 abstract Class Mailer {
 
+	protected $sidekiq;
+
+    public function __construct(Sidekiq $sidekiq) {
+
+        $this->sidekiq = $sidekiq;
+    }
+    
 	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
 
 		if($delay == null){
@@ -62,15 +70,6 @@ abstract Class Mailer {
 
 	}
 
-	public function  sendEmail($email_template, $template_data = [], $message_data = []){
-
-			return Mail::send($email_template, $template_data, function($message) use ($message_data){
-				$message->to($message_data['user_email'], $message_data['user_name'])
-				->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
-				->subject($message_data['email_subject']);
-			});
-	}
-
 
 
 	/**
@@ -102,10 +101,7 @@ abstract Class Mailer {
 	}
 
 
-	//scheduled/inprocess/done
-	//email_template,template_data,message_data,delay_time,status,_id,type,to,message,delay_time,status,_is,type
-
-	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+	/*public function sendToWorkerBk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		if($delay !== 0){
 			$delay = strtotime($delay);
@@ -127,28 +123,6 @@ abstract Class Mailer {
         return $scheduler->_id;
 	}
 
-
-	public function sendToWorkerTest($email_template, $etmplate_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
-
-		$worker = new IronWorker(array(
-		    'token' => Config::get('queue.connections.ironworker.token'),
-    		'project_id' => Config::get('queue.connections.ironworker.project')
-		));
-		
-		if($delay !== 0){
-			$delay = $this->getSeconds($delay);
-		}
-	
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
-		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
-		$queue_name = 'TestMailerApi';
-
-		$messageid = $worker->postTask($queue_name,$payload,$options);
-
-		return $messageid;
-
-	}
-
 	public function sendToWorkerBk($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		$worker = new IronWorker(array(
@@ -168,8 +142,63 @@ abstract Class Mailer {
 
 		return $messageid;
 
+	}*/
+
+	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		//used to test email instantly
+		// $this->sendEmail($email_template,$template_data,$message_data);
+		// return '1';
+
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+	
+		$email_html = View::make($email_template, $template_data)->render();
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+		$route	= 'email';
+		$result  = $this->sidekiq->sendToQueue($payload,$route);
+
+		if($result['status'] == 200){
+			return $result['task_id'];
+		}else{
+			return $result['status'].':'.$result['reason'];
+		}
+
 	}
 
 
+
+	public function  sendEmail($email_template, $template_data = [], $message_data = []){
+
+			return Mail::send($email_template, $template_data, function($message) use ($message_data){
+				$message->to($message_data['user_email'], $message_data['user_name'])
+				->bcc(array_merge( ['sanjay.id7@gmail.com'], $message_data['bcc_emailids']))
+				->subject($message_data['email_subject']);
+			});
+	}
+
+
+	/*public function sendToWorkerTest($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		$worker = new IronWorker(array(
+		    'token' => Config::get('queue.connections.ironworker.token'),
+    		'project_id' => Config::get('queue.connections.ironworker.project')
+		));
+		
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+	
+		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'message_data'=>$message_data);
+		$options = array('delay'=>$delay,'priority'=>$priority,'label' => $label, 'cluster' => 'dedicated');
+		$queue_name = 'TestMailerApi';
+
+		$messageid = $worker->postTask($queue_name,$payload,$options);
+
+		return $messageid;
+
+	}*/
 
 }

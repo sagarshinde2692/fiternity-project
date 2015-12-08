@@ -889,3 +889,40 @@ Route::get('/customercleanup', function() {
 	
 	
 });
+
+Route::get('/testsms',function(){
+
+	$url = 'http://www.kookoo.in/outbound/outbound_sms.php';
+	$param = array('api_key' => 'KK33e21df516ab75130faef25c151130c1', 
+	'phone_no' => '09920864894', 
+	'message' => 'test message',
+	'senderid'=> 'FITTER' 
+	);
+	                          
+	$url = $url . "?" . http_build_query($param, '&');
+
+	echo"<pre>";print_r($url);exit;
+
+	$ch = curl_init();
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+	$result = curl_exec($ch);
+	curl_close($ch);
+	echo $result;
+
+	/*$sms_url = "http://103.16.101.52:8080/bulksms/bulksms?username=vnt-fitternity&password=vishwas1&type=0&dlr=1&destination=" . urlencode(trim('9920864894')) . "&source=fitter&message=" . urlencode('test sms mahesh');
+
+
+	echo"<pre>";print_r($sms_url);exit;
+        $ci = curl_init();
+        curl_setopt($ci, CURLOPT_URL, $sms_url);
+        curl_setopt($ci, CURLOPT_HEADER, 0);
+        curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
+        $response = curl_exec($ci);
+        curl_close($ci);
+
+        echo 'Sms sent to 9920864894';*/
+
+});

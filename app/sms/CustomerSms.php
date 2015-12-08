@@ -9,9 +9,9 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please flash this subscription code for the session: ".$data['code'].". For address refer to http://www.fitternity.com/".$data['finder_slug'] .". Thank you for using Fitternity.";
+			$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your workout session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])." - ".ucwords($data['finder_location'])." is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on +91 92222 21131 for any queries. Regards - Team Fitternity.";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name']).". Please flash this subscription code for the session: ".$data['code'].". For address refer to http://www.fitternity.com/".$data['finder_slug'] .". Thank you for using Fitternity.";
+			$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your workout session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])."  is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on +91 92222 21131 for any queries. Regards - Team Fitternity.";
 		}
 		
 		$label = 'BookTrial-C';
@@ -79,21 +79,32 @@ Class CustomerSms extends VersionNextSms{
 		$priority = 0;
 
 		return $this->sendToWorker($to, $message, $label, $priority, $delay);
-
 	}
+
+
 
 
 	public function bookTrialReminderBefore1Hour ($data, $delay){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		//$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_name']).", ".ucwords($data['finder_address']).", ".ucwords($data['finder_location']).". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
+		$bity_url 	= 	$google_pin = "";
+
+		// if(isset($finder_lat) && $finder_lat != "" && isset($finder_lon) && $finder_lon != ""){
+		// 	$bity_url 	= 	bitly_url("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon");
+		// 	$google_pin = "Google pin for directions: ".$bity_url;
+		// }else{
+		// 	$google_pin = "test ".$finder_lat.$finder_lon;
+		// }
+
+
+		// $google_pin = "test ".$finder_lat.$finder_lon;
 		
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug'].". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_address'])." Contact person: ".ucwords($data['finder_poc_for_customer_name']).$google_pin;
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).". For address please refer to http://www.fitternity.com/".$data['finder_slug'].". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).". Please note the address: ".ucwords($data['finder_address'])." Contact person: ".ucwords($data['finder_poc_for_customer_name']).$google_pin;
 		}
-		
+
 		$label = 'TrialRmdBefore1Hr-C';
 		$priority = 0;
 
@@ -101,22 +112,20 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
-
 	public function bookTrialReminderAfter2Hour ($data, $delay){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
 		if($data['show_location_flag']){
-			$message 	=	"Hope you had a good session at ".ucwords($data['finder_name']).". We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'];
+			$message 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 500 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
 		}else{
-			$message 	=	"Hope you had a good session at ".ucwords($data['finder_name']).". We will call you later to hear about it and share discounts in case you wish to subscribe. In the meantime you can rate your experience at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'];
+			$message 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 500 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
 		}
-		
+
 		$label = 'TrialRmdAfter2Hr-C';
 		$priority = 0;
 
 		return $this->sendToWorker($to, $message, $label, $priority, $delay);
-
 	}
 
 
@@ -128,7 +137,7 @@ Class CustomerSms extends VersionNextSms{
 		}else{
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on +91 92222 21131 or reply to this message.";
 		}
-		
+
 		$label = 'CancelTrial-C';
 		return $this->sendToWorker($to, $message, $label);
 	}
@@ -186,7 +195,7 @@ Class CustomerSms extends VersionNextSms{
 	public function sendPgOrderSms ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		
+
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity";
 
 		$label = 'PgOrder-C';
@@ -199,7 +208,7 @@ Class CustomerSms extends VersionNextSms{
 	public function buyServiceThroughFitmania ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		
+
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing your membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
 
 		$label = 'BuySrvFitmania-C';
@@ -211,7 +220,7 @@ Class CustomerSms extends VersionNextSms{
 	public function buyServiceMembershipThroughFitmania ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		
+
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing your membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
 
 		$label = 'BuySrvMbrFitM-C';
@@ -223,7 +232,7 @@ Class CustomerSms extends VersionNextSms{
 	public function buyServiceHealthyTiffinThroughFitmania ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		
+
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing healthy food from ". ucwords($data['finder_name']).". Your Order ID is ".$data['_id'].". We will be sending you an email with the all details. Call us on +91922221131 for any queries.";
 
 		$label = 'BuySrvHltTifFitM-C';
@@ -235,7 +244,7 @@ Class CustomerSms extends VersionNextSms{
 	public function forgotPasswordApp ($data){
 
 		$to 		=  	array_merge(explode(',', $data['contact_no']));
-		
+
 		$message 	=	"Hello ".ucwords($data['name']).", The authorisation code required for resetting your password on Fitternity is ".$data['otp'] ;
 
 		$label = 'ForgotPwdApp-C';
@@ -247,7 +256,7 @@ Class CustomerSms extends VersionNextSms{
 	public function fitmaniaPreRegister ($data){
 
 		$to 		=  	array_merge(explode(',', $data['mobile']));
-		
+
 		$message 	=	"Thanks for pre-registering on FitMania Sale by Fitternity.com. We will be getting in touch with you to share more details. Spread the word http://on.fb.me/1JgBYIU .";
 
 		$label = 'FitMPreRegister-C';
@@ -260,7 +269,7 @@ Class CustomerSms extends VersionNextSms{
 	public function buyArsenalMembership ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		
+
 		// $message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for your payment of Fitternity.com towards Arsenal Mumbai Supporters Club, we acknowledge the receipt of the same. You will soon receive an email with the details. Regards, Team Fitternity.";
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank You for requesting purchase of AMSC membership  Renewal. We will get in touch with you shortly to help you get started. In the meantime you can reach us on 09222221131 for any queries. Team Fitternity.";
 
