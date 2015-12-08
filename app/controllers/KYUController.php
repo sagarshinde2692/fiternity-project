@@ -1033,7 +1033,7 @@ public function updatepaymentbooking(){
 
   foreach ($transactionlist['hits']['hits'] as $tran) {
     $src = $tran['_source'];
-    $sessionid = $src['sessionid'];
+    $sessionid = isset($src['sessionid']) ? $src['sessionid'] : '';
     // return $tran['_source']['sessionid'];
     // $sessionid = $tran['_source']['sessionid'];
 
