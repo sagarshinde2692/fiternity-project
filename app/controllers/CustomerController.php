@@ -946,7 +946,7 @@ class CustomerController extends \BaseController {
 
 		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('offerings'=>function($query){$query->select('_id','name','slug');}))
+		->with('offerings')
 		->whereIn('_id', $finderids)
 		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
