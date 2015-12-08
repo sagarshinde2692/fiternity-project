@@ -911,7 +911,7 @@ public function getunidentifiedusers(){
 
     $user = $user1['_source'];
     $isbot = false;
-   
+
     if(isset($user['page'])){
       if((strpos($user['page'], 'dir='))||(strpos($user['page'], 'limit=')) || (strpos($user['page'], 'mode='))){
         $isbot = true;        
@@ -985,4 +985,112 @@ public function getunidentifiedusers(){
     }
   }
 }
+
+public function updatepaymentbooking(){
+  $query = '{
+    "from" : 0,
+    "size" : 20000,
+    "query": {
+      "filtered": {
+
+        "filter": {
+          "bool": {
+            "must": [{
+              "terms": {
+                "event_id": [
+                "paymentsuccess",
+                "bookingconfirm"
+                ]
+              }
+            }, {
+              "range": {
+                "timestamp": {
+                  "gte": "2015-11-01",
+                  "lte": "2015-11-30"
+                }
+              }
+            }]
+          }
+        }
+      }
+    },
+    "sort": [{
+      "timestamp": {
+        "order": "asc"
+      }
+    }]
+  }';
+
+  $request2 = array( 
+    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+    'port' => 8060,
+    'method' => 'POST',
+    'postfields' => $query
+    );
+
+  $transactions = es_curl_request($request2);
+  $transactionlist = json_decode($transactions, true);
+
+  foreach ($transactionlist['hits']['hits'] as $tran) {
+    $sessionid = $tran['_source']['sessionid'];
+    $newquery = '{
+      "query": {
+        "filtered": {
+          "filter": {
+            "bool": {
+              "must": [{
+                "term": {
+                  "visitsession": "VALUE"
+                }
+              }, {
+                "range": {
+                  "timestamp": {
+                    "gte": "2015-11-01",
+                    "lte": "2015-11-30"
+                  }
+                }
+              }]
+            }
+          }
+        }
+      },
+      "sort": [{
+        "timestamp": {
+          "order": "asc"
+        }
+      }]
+    }';
+
+    $request3 = array( 
+      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+      'port' => 8060,
+      'method' => 'POST',
+      'postfields' => $newquery
+      );
+
+    $visits = es_curl_request($request3);
+    $visitlist = json_decode($visits, true);
+    $utm = '';
+    $source = 'organic';
+   
+    if($visitlist['hits']['total'] > 0){      
+      $utm = isset($visitlist['hits']['hits'][0]['_source']['utm']) ? $visitlist['hits']['hits'][0]['_source']['utm'] : '';
+      $source = isset($visitlist['hits']['hits'][0]['_source']['utm']) ? 'inorganic' : 'organic';
+    }
+
+    if(!empty($utm)){
+       $tran['_source']['utm'] = $utm;
+     }   
+    $tran['_source']['visitsource'] = $source;
+    $transource = $tran['_source'];
+    $id = $tran['_id'];
+    $postfields_data = json_encode($transource);    
+     $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$id;
+     $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
+     es_curl_request($updaterequest);
+     echo $id.'</br>';
+  }
+
+}
+
 }

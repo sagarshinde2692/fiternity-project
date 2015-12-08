@@ -473,6 +473,7 @@ Route::get('getfacebookUTM', 'KYUController@getfacebookUTM');
 Route::get('sessionutm', 'KYUController@sessionutm');
 Route::get('createkyuusers', 'KYUController@createkyuusers');
 Route::get('getunidentifiedusers', 'KYUController@getunidentifiedusers');
+Route::get('updatepaymentbooking', 'KYUController@updatepaymentbooking');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
