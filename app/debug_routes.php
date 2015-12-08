@@ -896,12 +896,12 @@ Route::get('/testsms',function(){
 	$param = array('api_key' => 'KK33e21df516ab75130faef25c151130c1', 
 	'phone_no' => '09920864894', 
 	'message' => 'test message',
-	'senderid'=> 'FITTER' 
+	'senderid'=> 'FTRNTY' 
 	);
 	                          
 	$url = $url . "?" . http_build_query($param, '&');
 
-	echo"<pre>";print_r($url);exit;
+	//echo"<pre>";print_r($url);exit;
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);

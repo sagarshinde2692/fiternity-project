@@ -227,7 +227,7 @@
 
                            <tr>
                              <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight: 500" st-title="3col-title1">
-                               {{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time['date']) )  }}
+                               {{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time) )  }}
 
                              </td>
                            </tr>
@@ -244,7 +244,7 @@
 
                            <tr>
                              <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                               {{ date(' g\.i A', strtotime($schedule_date_time['date']) ) }}
+                               {{ date(' g\.i A', strtotime($schedule_date_time) ) }}
 
                              </td>
                            </tr>
