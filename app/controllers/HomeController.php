@@ -614,6 +614,15 @@ class HomeController extends BaseController {
 	}
 
 
+	public function getOffersTabsOffers($slug){
+
+		$data = '{"services":[{"_id":4464,"name":"gym workout","slug":"gym-workout","lat":"19.1182856","lon":"72.8516914","workout_intensity":"all","session_type":"group class","show_in_offers":"1","service_coverimage":"f/c/2.jpg","service_coverimage_thumb":"f/ct/2.jpg","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":15,"name":"andheri east","slug":"andheri-east"},"category":{"_id":65,"name":"Gym","slug":"gym"},"subcategory":{"_id":82,"name":"Gym","slug":"gym"}},{"_id":3695,"name":"zumba test","slug":"zumba-test","lat":"70.09","lon":"67.23","workout_intensity":"all","session_type":"group class","show_in_offers":"1","service_coverimage":"s/c/","service_coverimage_thumb":"s/ct/","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":15,"name":"andheri east","slug":"andheri-east"},"category":{"_id":19,"name":"Zumba","slug":"zumba"},"subcategory":{"_id":20,"name":"Zumba Classes","slug":"zumba-classes"}},{"_id":1,"name":"functional training beginner","slug":"functional-training-beginner","lat":" 18.975683","lon":"72.813086","workout_intensity":"beginner","session_type":"group class","show_in_offers":"1","service_coverimage":"f/c/1_1425276778.jpg","service_coverimage_thumb":"f/ct/1_1425276778.jpg","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":68,"name":"tardeo","slug":"tardeo"},"category":{"_id":5,"name":"Cross Functional Training","slug":"cross-functional-training"},"subcategory":{"_id":64,"name":"Functional Training","slug":"functional-training"}}],"message":"List for offers"}';
+
+		return Response::json(json_decode($data), 200);
+	}
+
+
+
 	public function getOffers($city = 'mumbai', $from = '', $size = ''){
 
 		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
@@ -663,9 +672,9 @@ class HomeController extends BaseController {
 
 		// echo "<pre>";print_r($data);exit();
 		return $data;
-
-
 	}
+
+
 
 
 	public function getOffersTabs($city = 'mumbai'){

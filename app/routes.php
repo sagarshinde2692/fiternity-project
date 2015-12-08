@@ -41,6 +41,7 @@ Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}'
 
 Route::get('offers/{city?}/{from?}/{size?}', 'HomeController@getOffers');
 Route::get('offertabs/{city?}', 'HomeController@getOffersTabs');
+Route::get('offertabsoffers/{slug?}', 'HomeController@getOffersTabsOffers');
 Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferings');
 
 
@@ -68,6 +69,7 @@ Route::get('reviews/{customerid}/{from?}/{size?}',  array('as' => 'customer.revi
 Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderhistory','uses' => 'CustomerController@orderHistory'));
 Route::get('bookmarks/{customerid}',  array('as' => 'customer.bookmarks','uses' => 'CustomerController@getBookmarks'));
 Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarks','uses' => 'CustomerController@updateBookmarks'));
+Route::get('customerdetail/{customerid}',  array('as' => 'customer.customerdetail','uses' => 'CustomerController@customerDetail'));
 
 Route::group(array('before' => 'validatetoken'), function() {
 
@@ -81,6 +83,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customer/getallorders/{offset?}/{limit?}',  array('as' => 'customer.getallorders','uses' => 'CustomerController@getAllOrders'));
 	Route::get('customer/getallbookmarks',  array('as' => 'customer.getallbookmarks','uses' => 'CustomerController@getAllBookmarks'));
 	Route::get('customer/editbookmarks/{finder_id}/{remove?}',  array('as' => 'customer.editbookmarks','uses' => 'CustomerController@editBookmarks'));
+	Route::get('getcustomerdetail',  array('as' => 'customer.getcustomerdetail','uses' => 'CustomerController@getCustomerDetail'));
 
 });
 
