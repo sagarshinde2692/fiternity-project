@@ -404,7 +404,7 @@ class CustomerController extends \BaseController {
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer is inactive');
 		}else{
-			if(isset($customer['hull_id']) && $customer['ishulluser'] == 1){
+			if($customer['ishulluser'] == 1){
 				$customer->password = md5($data['password']);
 				$customer->ishulluser = 0;
 			}else{
@@ -946,8 +946,9 @@ class CustomerController extends \BaseController {
 
 		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('offerings'=>function($query){$query->select('_id','name','slug');}))
 		->whereIn('_id', $finderids)
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
 		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
 		return Response::json($responseData, 200);
