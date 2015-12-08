@@ -1032,8 +1032,10 @@ public function updatepaymentbooking(){
   $transactionlist = json_decode($transactions, true);
 
   foreach ($transactionlist['hits']['hits'] as $tran) {
-    return $tran['_source']['sessionid'];
-    $sessionid = $tran['_source']['sessionid'];
+    $src = $tran['_source'];
+    $sessionid = $src['sessionid'];
+    // return $tran['_source']['sessionid'];
+    // $sessionid = $tran['_source']['sessionid'];
 
     $newquery = '{
       "query": {
