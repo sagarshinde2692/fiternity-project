@@ -371,12 +371,12 @@ class CustomerController extends \BaseController {
 				$responce = $this->socialLogin($data);
 				return Response::json($responce,$responce['status']);
 			}else{
-				return Response::json(array('status' => 400,'message' => array('identity' => 'The identity is incorrect')),400);
+				return Response::json(array('status' => 400,'message' => 'The identity is incorrect'),400);
 			}
 
 		}else{
 
-			return Response::json(array('status' => 400,'message' => array('identity' => 'The identity field is required')),400);
+			return Response::json(array('status' => 400,'message' => 'The identity field is required'),400);
 		}
 	}
 
@@ -844,6 +844,9 @@ class CustomerController extends \BaseController {
 		foreach ($errors as $key => $value) {
 			$message[$key] = $value[0];
 		}
+
+		$message = implode(',', array_values($message));
+
 		return $message;
 	}
 
