@@ -989,7 +989,7 @@ public function getunidentifiedusers(){
 public function updatepaymentbooking(){
   $query = '{
     "from" : 0,
-    "size" : 20000,
+    "size" : 100,
     "query": {
       "filtered": {
 
@@ -1032,7 +1032,9 @@ public function updatepaymentbooking(){
   $transactionlist = json_decode($transactions, true);
 
   foreach ($transactionlist['hits']['hits'] as $tran) {
+
     $sessionid = $tran['_source']['sessionid'];
+
     $newquery = '{
       "query": {
         "filtered": {
@@ -1040,7 +1042,7 @@ public function updatepaymentbooking(){
             "bool": {
               "must": [{
                 "term": {
-                  "visitsession": "VALUE"
+                  "visitsession": "'.$sessionid.'"
                 }
               }, {
                 "range": {
@@ -1084,7 +1086,8 @@ public function updatepaymentbooking(){
     $tran['_source']['visitsource'] = $source;
     $transource = $tran['_source'];
     $id = $tran['_id'];
-    $postfields_data = json_encode($transource);    
+    $postfields_data = json_encode($transource);  
+
      $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$id;
      $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
      es_curl_request($updaterequest);
