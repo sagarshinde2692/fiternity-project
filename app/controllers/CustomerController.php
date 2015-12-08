@@ -393,7 +393,14 @@ class CustomerController extends \BaseController {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		}
 
+		$customer = Customer::where('email','=',$data['email'])->first();
+
+		if(empty($customer)){
+			return array('status' => 400,'message' => 'Customer does not exists');
+		}
+
 		$customer = Customer::where('email','=',$data['email'])->where('status','=','1')->first();
+
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer is inactive');
 		}else{
@@ -854,7 +861,7 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$decodedToken = $this->customerTokenDecode($jwt_token);
-		$variable = ['name','email','contact_no','picture','location','sex','shipping_address','billing_address','address','interest'];
+		$variable = ['name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'];
 
 		$data = Input::json()->all();
 		$validator = Validator::make($data, Customer::$update_rules);
