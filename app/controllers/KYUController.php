@@ -989,7 +989,7 @@ public function getunidentifiedusers(){
 public function updatepaymentbooking(){
   $query = '{
     "from" : 0,
-    "size" : 100,
+    "size" : 200000,
     "query": {
       "filtered": {
 
@@ -1032,7 +1032,7 @@ public function updatepaymentbooking(){
   $transactionlist = json_decode($transactions, true);
 
   foreach ($transactionlist['hits']['hits'] as $tran) {
-
+    return $tran['_source']['sessionid'];
     $sessionid = $tran['_source']['sessionid'];
 
     $newquery = '{
