@@ -409,7 +409,7 @@ class CustomerController extends \BaseController {
 				$customer->ishulluser = 0;
 			}else{
 				if($customer['password'] != md5($data['password'])){
-					return array('status' => 400,'message' => 'Incorrect email or password'));
+					return array('status' => 400,'message' => 'Incorrect email or password');
 				}
 			}
 		}
