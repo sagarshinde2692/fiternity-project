@@ -271,33 +271,33 @@ class GlobalSearchController extends \BaseController
                           "boost_factor": 11
                       },
                       {
-                         "filter": {
-                            "query": {
-                                "bool": {
-                                    "should": [
+                       "filter": {
+                        "query": {
+                            "bool": {
+                                "should": [
 
-                                    {
-                                        "query_string": {
-                                            "fields": [
-                                            "input"                                                                                    
-                                            ],
-                                            "query": "'.$keys[0].'*",
-                                            "fuzziness": 0,
-                                            "fuzzy_prefix_length": 0
-                                        }
-                                    }'.$key2_input_query.$key3_input_query.'
-                                    ]
-                                }
+                                {
+                                    "query_string": {
+                                        "fields": [
+                                        "input"                                                                                    
+                                        ],
+                                        "query": "'.$keys[0].'*",
+                                        "fuzziness": 0,
+                                        "fuzzy_prefix_length": 0
+                                    }
+                                }'.$key2_input_query.$key3_input_query.'
+                                ]
                             }
-                        },
-                        "boost_factor": 6
-                    }
-                    ],
-                    "boost_mode": "sum"
+                        }
+                    },
+                    "boost_factor": 6
                 }
+                ],
+                "boost_mode": "sum"
             }
         }
     }
+}
 }';
 
 $request = array(
@@ -332,119 +332,119 @@ public function keywordSearch(){
 
     try {
 
-    $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-    $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
-    $key     =         Input::json()->get('key');
-    $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-    $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
-    $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
-    $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
-    $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
+        $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
+        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
+        $key     =         Input::json()->get('key');
+        $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
+        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
+        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
+        $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
+        $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
 
-    $sort_clause = '';
+        $sort_clause = '';
 
-    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-    $city_filter = '{"term" : { "city" : "'.$city.'" } },';
-    $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
-    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
-    $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';   
-    $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
-    $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+        $city_filter = '{"term" : { "city" : "'.$city.'" } },';
+        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';   
+        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
 
         
-    $must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter,',');
-    
+        $must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter,',');
+        
 
-    $keylist = explode(' ', $key);
-    $locations_new_filter =' {"terms" : { "locationtags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-    $category_new_filter =' {"terms" : { "categorytags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-    $title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-    $offering_new_filter =' {"terms" : { "offerings_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-    $city_new_filter =' {"terms" : { "city" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-    $loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
+        $keylist = explode(' ', $key);
+        $locations_new_filter =' {"terms" : { "locationtags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+        $category_new_filter =' {"terms" : { "categorytags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+        $title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+        $offering_new_filter =' {"terms" : { "offerings_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+        $city_new_filter =' {"terms" : { "city" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+        $loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
 
-    $loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
-    $mustfilter_post = '"must": ['.$must_filtervalue_post.']';
-   
-    $filtervalue_post = trim($mustfilter_post,',');
-    $must_filtervalue = trim($city_filter.$loccatshould,',');
-    $mustfilter = '"must": ['.$must_filtervalue.']'; 
-     $filtervalue = trim($mustfilter,',');
+        $loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
+        $mustfilter_post = '"must": ['.$must_filtervalue_post.']';
+        
+        $filtervalue_post = trim($mustfilter_post,',');
+        $must_filtervalue = trim($city_filter.$loccatshould,',');
+        $mustfilter = '"must": ['.$must_filtervalue.']'; 
+        $filtervalue = trim($mustfilter,',');
 
      //$locationarray = array('andheri, juhu, bandra, ')
-   
-    if($mustfilter != ''){
-        $filters = '"filter": {
-            "bool" : {'.$filtervalue.'}
-        },"_cache" : true';
-    }
+        
+        if($mustfilter != ''){
+            $filters = '"filter": {
+                "bool" : {'.$filtervalue.'}
+            },"_cache" : true';
+        }
 
-    if($mustfilter_post != ''){
-        $filters_post = ',"post_filter": {
-            "bool" : {'.$filtervalue_post.'}
+        if($mustfilter_post != ''){
+            $filters_post = ',"post_filter": {
+                "bool" : {'.$filtervalue_post.'}
+            }';
+        }
+
+
+        $location_facets_filter = trim($geo_location_filter.$category_filter,',');
+        $facilities_facets_filter = trim($regions_filter.$geo_location_filter.$category_filter, ',');
+        $offerings_facets_filter = trim($regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
+        $budgets_facets_filter = trim($regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
+
+        $facilities_bool = '"filter": {
+            "bool" : { "must":['.$facilities_facets_filter.']}
         }';
-    }
 
+        $offering_bool = '"filter": {
+            "bool" : {"must":['.$offerings_facets_filter.']}
+        }';
 
-    $location_facets_filter = trim($geo_location_filter.$category_filter,',');
-    $facilities_facets_filter = trim($regions_filter.$geo_location_filter.$category_filter, ',');
-    $offerings_facets_filter = trim($regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
-    $budgets_facets_filter = trim($regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
+        $budgets_bool = '"filter": {
+            "bool" : {"must":['.$budgets_facets_filter.']}
+        }';
 
-    $facilities_bool = '"filter": {
-        "bool" : { "must":['.$facilities_facets_filter.']}
-    }';
+        $location_bool = '"filter": {
+            "bool" : {"must":['.$location_facets_filter.']}
+        }';
 
-    $offering_bool = '"filter": {
-        "bool" : {"must":['.$offerings_facets_filter.']}
-    }';
-
-    $budgets_bool = '"filter": {
-        "bool" : {"must":['.$budgets_facets_filter.']}
-    }';
-
-    $location_bool = '"filter": {
-        "bool" : {"must":['.$location_facets_filter.']}
-    }';
-
-    $location_facets = ' "filtered_locationtags": {
-    '.$location_bool.',
-        "aggs": {
-            "locationstags": {
-                "terms": {
-                    "field": "locationtags",                    
-                    "min_doc_count": 1,
-                    "size": 500,
-                    "order":{"_term": "asc"}
+        $location_facets = ' "filtered_locationtags": {
+            '.$location_bool.',
+            "aggs": {
+                "locationstags": {
+                    "terms": {
+                        "field": "locationtags",                    
+                        "min_doc_count": 1,
+                        "size": 500,
+                        "order":{"_term": "asc"}
+                    }
                 }
             }
-        }
-    },';
+        },';
 
-    $regions_facets = '
-    "filtered_locations": { '.$location_bool.', 
-    "aggs":
-    { "loccluster": {
-        "terms": {
-            "field": "locationcluster",
-            "min_doc_count":1
-
-        },"aggs": {
-          "region": {
+        $regions_facets = '
+        "filtered_locations": { '.$location_bool.', 
+        "aggs":
+        { "loccluster": {
             "terms": {
-                "field": "location",
-                "min_doc_count":1,
-                "size":"500",
-                "order": {
-                  "_term": "asc"
+                "field": "locationcluster",
+                "min_doc_count":1
+
+            },"aggs": {
+              "region": {
+                "terms": {
+                    "field": "location",
+                    "min_doc_count":1,
+                    "size":"500",
+                    "order": {
+                      "_term": "asc"
+                  }
+
               }
-
           }
-      }
-  }}}
-},';
+      }}}
+  },';
 
-$facilities_facets = ' "filtered_facilities": {
+  $facilities_facets = ' "filtered_facilities": {
     '.$facilities_bool.',
     "aggs": {
         "facilities": {
@@ -507,140 +507,140 @@ if(!empty($sort)){
 $keywordfunction = '';
 
 foreach ($keylist as $keyval) {
-   $newval = '{
-                        "filter": {
-                            "query": {
-                                "bool": {"should": [
-                                {"match": {
-                                    "categorytags_snow": "'.$keyval.'"
-                                }}
-                                ]}
-                            }
-                        },
-                        "boost_factor": 20
-                    },
-                    {
-                        "filter": {
-                            "query": {
-                                "bool": {"should": [
-                                {"match": {
-                                    "category_snow": "'.$keyval.'"
-                                }}
-                                ]}
-                            }
-                        },
-                        "boost_factor": 40
-                    },
-                    {
-                        "filter": {
-                            "query": {
-                                "bool": {
-                                    "should": [
-                                    {"match": {
-                                      "locationtags_snow": "'.$keyval.'"
-                                  }}
-                                  ]
-                              }
-                          }
-                      },
-                      "boost_factor": 10
-                  },
-                  {
-                        "filter": {
-                            "query": {
-                                "bool": {
-                                    "should": [
-                                    {"match": {
-                                      "location_snow": "'.$keyval.'"
-                                  }}
-                                  ]
-                              }
-                          }
-                      },
-                      "boost_factor": 20
-                  },
-                  {
-                    "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [
-                                {
-                                    "match": {
-                                        "offerings_snow": "'.$keyval.'"
-                                    }
-                                }
-                                ]
-                            }
-                        }
-                    },
-                    "boost_factor": 15
-                },
+ $newval = '{
+    "filter": {
+        "query": {
+            "bool": {"should": [
+            {"match": {
+                "categorytags_snow": "'.$keyval.'"
+            }}
+            ]}
+        }
+    },
+    "boost_factor": 20
+},
+{
+    "filter": {
+        "query": {
+            "bool": {"should": [
+            {"match": {
+                "category_snow": "'.$keyval.'"
+            }}
+            ]}
+        }
+    },
+    "boost_factor": 40
+},
+{
+    "filter": {
+        "query": {
+            "bool": {
+                "should": [
+                {"match": {
+                  "locationtags_snow": "'.$keyval.'"
+              }}
+              ]
+          }
+      }
+  },
+  "boost_factor": 10
+},
+{
+    "filter": {
+        "query": {
+            "bool": {
+                "should": [
+                {"match": {
+                  "location_snow": "'.$keyval.'"
+              }}
+              ]
+          }
+      }
+  },
+  "boost_factor": 20
+},
+{
+    "filter": {
+        "query": {
+            "bool": {
+                "should": [
                 {
-                    "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [
-                                {
-                                    "match": {
-                                        "title_snow": "'.$keyval.'"
-                                    }
-                                }
-                                ]
-                            }
-                        }
-                    },
-                    "boost_factor": 30
-                },
+                    "match": {
+                        "offerings_snow": "'.$keyval.'"
+                    }
+                }
+                ]
+            }
+        }
+    },
+    "boost_factor": 15
+},
+{
+    "filter": {
+        "query": {
+            "bool": {
+                "should": [
                 {
-                    "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [
-                                {
-                                    "match": {
-                                        "locationcluster_snow": "'.$keyval.'"
-                                    }
-                                }
-                                ]
-                            }
-                        }
-                    },
-                    "boost_factor": 2
-                },
+                    "match": {
+                        "title_snow": "'.$keyval.'"
+                    }
+                }
+                ]
+            }
+        }
+    },
+    "boost_factor": 30
+},
+{
+    "filter": {
+        "query": {
+            "bool": {
+                "should": [
                 {
-                    "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [
-                                {
-                                    "match": {
-                                        "facilities_snow": "'.$keyval.'"
-                                    }
-                                }
-                                ]
-                            }
-                        }
-                    },
-                    "boost_factor": 2
-                },
+                    "match": {
+                        "locationcluster_snow": "'.$keyval.'"
+                    }
+                }
+                ]
+            }
+        }
+    },
+    "boost_factor": 2
+},
+{
+    "filter": {
+        "query": {
+            "bool": {
+                "should": [
                 {
-                    "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [
-                                {
-                                    "match": {
-                                        "info_service_snow": "'.$keyval.'"
-                                    }
-                                }
-                                ]
-                            }
-                        }
-                    },
-                    "boost_factor": 6
-                },';
+                    "match": {
+                        "facilities_snow": "'.$keyval.'"
+                    }
+                }
+                ]
+            }
+        }
+    },
+    "boost_factor": 2
+},
+{
+    "filter": {
+        "query": {
+            "bool": {
+                "should": [
+                {
+                    "match": {
+                        "info_service_snow": "'.$keyval.'"
+                    }
+                }
+                ]
+            }
+        }
+    },
+    "boost_factor": 6
+},';
 
-    $keywordfunction = $keywordfunction.$newval;
+$keywordfunction = $keywordfunction.$newval;
 }
 
 $keywordfunction = trim($keywordfunction,',');
@@ -720,19 +720,19 @@ $query = '{
                                 }
                             }
                             ],
-                         "minimum_number_should_match": 2
+                            "minimum_number_should_match": 2
                         }
                     },
                     "functions": [
                     '.$keywordfunction.'
-                ],
-                "boost_mode": "max",
-                "score_mode": "sum"
-            }
-        },
-        '.$filters.'
-    }
-}'.$filters_post.$sort_clause.'
+                    ],
+                    "boost_mode": "max",
+                    "score_mode": "sum"
+                }
+            },
+            '.$filters.'
+        }
+    }'.$filters_post.$sort_clause.'
 }';
 
 
@@ -760,19 +760,19 @@ $response       =   json_decode($searchresulteresponse1,true);
 return Response::json($response);
 }
 catch(Exception $e){
-   throw $e;
+ throw $e;
 }
 }
 
 public function newglobalsearch(){
 
-   $from     =         Input::json()->get('offset')['from'];
-   $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
-   $string   =         strtolower(Input::json()->get('keyword'));
-   $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
-   $location =         Input::json()->get('location');
-   $lat      =         isset($location['lat']) ? $location['lat'] : '';
-   $lon      =         isset($location['long']) ? $location['long'] : '';
+ $from     =         Input::json()->get('offset')['from'];
+ $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+ $string   =         strtolower(Input::json()->get('keyword'));
+ $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+ $location =         Input::json()->get('location');
+ $lat      =         isset($location['lat']) ? $location['lat'] : '';
+ $lon      =         isset($location['long']) ? $location['long'] : '';
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
@@ -781,6 +781,11 @@ public function newglobalsearch(){
         $string1 = str_replace($stopwords, "", $string);
         
         $keylist   = array_filter(explode(" ", $string1));
+        if(sizeof($keylist) > 1){
+            if(($keylist[1] === 'i')){
+                array_splice($keylist, 1);
+            }
+        }
         
         $geofunction = 50;
         $geo_boost = 20;
@@ -896,7 +901,7 @@ public function newglobalsearch(){
             }
         },';
 
-    
+        
         if(!empty($lat)&&!empty($lon)){
             $geofunction = '{
               "weight": '.$geo_boost.',            
@@ -917,12 +922,12 @@ public function newglobalsearch(){
 if (strpos($string,'in') !== false){
     $indelimterscript = '{
         "script_score": {            
-                "params": {
-                    "boost": 50,
-                    "param2": 20
-                },
-                "script": "(doc[\'type\'].value == \'categorycity\') ? 40 :(doc[\'type\'].value == \'allfitnesslocation\') ? 31 :(doc[\'type\'].value == \'categorylocation\') ? 30 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
-            }                                           
+            "params": {
+                "boost": 50,
+                "param2": 20
+            },
+            "script": "(doc[\'type\'].value == \'categorycity\') ? 40 :(doc[\'type\'].value == \'allfitnesslocation\') ? 31 :(doc[\'type\'].value == \'categorylocation\') ? 30 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+        }                                           
     },';
 }
 
@@ -930,190 +935,190 @@ if ((strpos($string,'in') === false) && (strpos($string,'with') === false) && (s
 {    
     $indelimterscript = '{
         "script_score": {            
-                "params": {
-                    "boost": 1,
-                    "param2": 20
-                },
-                "script": "(doc[\'type\'].value == \'categorycity\') ? 80 : (doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
-            }                                           
+            "params": {
+                "boost": 1,
+                "param2": 20
+            },
+            "script": "(doc[\'type\'].value == \'categorycity\') ? 80 : (doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+        }                                           
     },';
 }
 
 if ((strpos($string, 'with') !== false)||(strpos($string, '-') !== false)){
-$withdelimeterscript = '{
-    "script_score": {       
+    $withdelimeterscript = '{
+        "script_score": {       
             "params": {
                 "boost": 50,
                 "param2": 20
             },
             "script": "((doc[\'type\'].value != \'categorylocation\') || (doc[\'type\'].value != \'vendor\') ? '.$withdelimeterboost.' : 0)"
-}                                
-},{
-    "script_score": {       
+        }                                
+    },{
+        "script_score": {       
             "params": {
                 "boost": 50,
                 "param2": 20
             },
             "script": "((doc[\'type\'].value == \'categoryoffering\') ? 50 : 0)"
-}                                
-},';
+        }                                
+    },';
 
-$withofferingpriorityscript = '{
-    "script_score": {       
+    $withofferingpriorityscript = '{
+        "script_score": {       
             "params": {
                 "boost": 50,
                 "param2": 20
             },
             "script": "((doc[\'type\'].value != \'categorylocationfacilities\') ? '.$withofferingpriorboost.' : 0)"
-}                                 
-},';
+        }                                 
+    },';
 }
                                 //categoryfacility, categoryoffering, categorylocation, categorylocationoffering, categorylocationfacilities
 foreach ($keylist as $key) {
 
-$inputfunction1 = '{
-    "filter": {
-        "query": {
-            "match": {
-                "input": {
-                    "query": "'.$key.'",
-                    "fuzziness": "2",
-                    "operator": "or",
-                    "prefix_length": 6,
-                    "max_expansions": 100
+    $inputfunction1 = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "input": {
+                        "query": "'.$key.'",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
                 }
             }
-        }
-    },
-    "boost_factor": '.$inputboost.'
-},';
+        },
+        "boost_factor": '.$inputboost.'
+    },';
 
-$inputfunction = $inputfunction.$inputfunction1;
+    $inputfunction = $inputfunction.$inputfunction1;
 
-$inputv2function1 = '{
-    "filter": {
-        "query": {
-            "match": {
-                "inputv2": {
-                    "query": "'.$key.'",
-                    "fuzziness": "2",
-                    "operator": "or",
-                    "prefix_length": 6,
-                    "max_expansions": 100
+    $inputv2function1 = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "inputv2": {
+                        "query": "'.$key.'",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
                 }
             }
-        }
-    },
-    "boost_factor": '.$inputv2boost.'
-},';
+        },
+        "boost_factor": '.$inputv2boost.'
+    },';
 
-$inputv2function = $inputv2function.$inputv2function1;
+    $inputv2function = $inputv2function.$inputv2function1;
 
-$inputv3function1 = '{
-    "filter": {
-        "query": {
-            "match": {
-                "inputv3": {
-                    "query": "'.$key.'",
-                    "fuzziness": "2",
-                    "operator": "or",
-                    "prefix_length": 6,
-                    "max_expansions": 100
+    $inputv3function1 = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "inputv3": {
+                        "query": "'.$key.'",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
                 }
             }
-        }
-    },
-    "boost_factor": '.$inputv3boost.'
-},';
+        },
+        "boost_factor": '.$inputv3boost.'
+    },';
 
-$inputv3function = $inputv3function.$inputv3function1;
+    $inputv3function = $inputv3function.$inputv3function1;
 
-$inputv4function1 = '{
-    "filter": {
-        "query": {
-            "match": {
-                "inputv4": {
-                    "query": "'.$key.'",
-                    "fuzziness": "2",
-                    "operator": "or",
-                    "prefix_length": 6,
-                    "max_expansions": 100
+    $inputv4function1 = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "inputv4": {
+                        "query": "'.$key.'",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
                 }
             }
-        }
-    },
-    "boost_factor": '.$inputv4boost.'
-},';
+        },
+        "boost_factor": '.$inputv4boost.'
+    },';
 
-$inputv4function = $inputv4function.$inputv4function1;
+    $inputv4function = $inputv4function.$inputv4function1;
 
-$inputloc1function1 = '{
-    "filter": {
-        "query": {
-            "match": {
-                "inputloc1": {
-                    "query": "'.$key.'",
-                    "fuzziness": "2",
-                    "operator": "or",
-                    "prefix_length": 6,
-                    "max_expansions": 100
+    $inputloc1function1 = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "inputloc1": {
+                        "query": "'.$key.'",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
                 }
             }
-        }
-    },
-    "boost_factor": '.$inputloc1boost.'
-},';
+        },
+        "boost_factor": '.$inputloc1boost.'
+    },';
 
-$inputloc1function = $inputloc1function.$inputloc1function1;
+    $inputloc1function = $inputloc1function.$inputloc1function1;
 
-$inputcat1function1 = '{
-    "filter": {
-        "query": {
-            "match": {
-                "inputcat1": {
-                    "query": "'.$key.'",
-                    "fuzziness": "2",
-                    "operator": "or",
-                    "prefix_length": 6,
-                    "max_expansions": 100
+    $inputcat1function1 = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "inputcat1": {
+                        "query": "'.$key.'",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
                 }
             }
-        }
-    },
-    "boost_factor": '.$inputcat1boost.'
-},';
+        },
+        "boost_factor": '.$inputcat1boost.'
+    },';
 
-$inputcat1function = $inputcat1function.$inputcat1function1;
+    $inputcat1function = $inputcat1function.$inputcat1function1;
 
 }
 
- $vendortypescript = '{
-        "script_score": {            
-                "params": {
-                    "boost": 50,
-                    "param2": 20
-                },
-                "script": "((doc[\'type\'].value != \'vendor\') ? 80 : 0)"
-            }                                           
-    },';
+$vendortypescript = '{
+    "script_score": {            
+        "params": {
+            "boost": 50,
+            "param2": 20
+        },
+        "script": "((doc[\'type\'].value != \'vendor\') ? 80 : 0)"
+    }                                           
+},';
 
- $offeringpriorityscript = '{
-        "script_score": {            
-                "params": {
-                    "boost": 50
-                },
-                "script": "doc[\'type\'].value == \'categorylocationoffering\' ? doc[\'offeringrank\'].value : 0"
-            }                                           
-    },';
+$offeringpriorityscript = '{
+    "script_score": {            
+        "params": {
+            "boost": 50
+        },
+        "script": "doc[\'type\'].value == \'categorylocationoffering\' ? doc[\'offeringrank\'].value : 0"
+    }                                           
+},';
 
 $allfitnessscript = '{
-        "script_score": {            
-                "params": {
-                    "terms": 50
-                },
-                "script": "doc[\'type\'].value == \'allfitnesslocation\' ? -70 : 0"
-            }                                           
-    },';
+    "script_score": {            
+        "params": {
+            "terms": 50
+        },
+        "script": "doc[\'type\'].value == \'allfitnesslocation\' ? -70 : 0"
+    }                                           
+},';
 
 
 $functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript,',');
@@ -1139,22 +1144,22 @@ $functionfilters =  ' "filter": {
 }'; 
 
 $query = '{
-     "fields": [
-            "autosuggestvalue",
-            "location",
-            "identifier",
-            "type",
-            "slug",
-            "inputcat1",
-            "inputcat"
-            ],
-    "from": '.$from.',
-    "size": '.$size.',
-    "query": {
-        "filtered": {
-         '.$functionquery.$functionfilters.'                                
-     }
- }
+   "fields": [
+   "autosuggestvalue",
+   "location",
+   "identifier",
+   "type",
+   "slug",
+   "inputcat1",
+   "inputcat"
+   ],
+   "from": '.$from.',
+   "size": '.$size.',
+   "query": {
+    "filtered": {
+       '.$functionquery.$functionfilters.'                                
+   }
+}
 }';    
 
 $request = array(
