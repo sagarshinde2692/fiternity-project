@@ -41,6 +41,7 @@ Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}'
 
 Route::get('offers/{city?}/{from?}/{size?}', 'HomeController@getOffers');
 Route::get('offertabs/{city?}', 'HomeController@getOffersTabs');
+Route::get('offertabsoffers/{slug?}', 'HomeController@getOffersTabsOffers');
 Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferings');
 
 
