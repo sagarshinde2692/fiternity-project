@@ -371,12 +371,12 @@ class CustomerController extends \BaseController {
 				$responce = $this->socialLogin($data);
 				return Response::json($responce,$responce['status']);
 			}else{
-				return Response::json(array('status' => 400,'message' => array('identity' => 'The identity is incorrect')),400);
+				return Response::json(array('status' => 400,'message' => 'The identity is incorrect'),400);
 			}
 
 		}else{
 
-			return Response::json(array('status' => 400,'message' => array('identity' => 'The identity field is required')),400);
+			return Response::json(array('status' => 400,'message' => 'The identity field is required'),400);
 		}
 	}
 
@@ -393,7 +393,14 @@ class CustomerController extends \BaseController {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		}
 
+		$customer = Customer::where('email','=',$data['email'])->first();
+
+		if(empty($customer)){
+			return array('status' => 400,'message' => 'Customer does not exists');
+		}
+
 		$customer = Customer::where('email','=',$data['email'])->where('status','=','1')->first();
+
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer is inactive');
 		}else{
@@ -402,7 +409,7 @@ class CustomerController extends \BaseController {
 				$customer->ishulluser = 0;
 			}else{
 				if($customer['password'] != md5($data['password'])){
-					return array('status' => 400,'message' => array('email' => 'Incorrect email and password','password' => 'incorrect email and password'));
+					return array('status' => 400,'message' => 'Incorrect email or password');
 				}
 			}
 		}
@@ -844,6 +851,9 @@ class CustomerController extends \BaseController {
 		foreach ($errors as $key => $value) {
 			$message[$key] = $value[0];
 		}
+
+		$message = implode(',', array_values($message));
+
 		return $message;
 	}
 
@@ -851,7 +861,7 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$decodedToken = $this->customerTokenDecode($jwt_token);
-		$variable = ['name','email','contact_no','picture','location','sex','shipping_address','billing_address','address','interest'];
+		$variable = ['name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'];
 
 		$data = Input::json()->all();
 		$validator = Validator::make($data, Customer::$update_rules);
