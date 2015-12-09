@@ -786,7 +786,18 @@ public function newglobalsearch(){
                 array_splice($keylist, 1);
             }
         }
-        
+        $firstwordscript = '';
+        if($keylist[0] === 'i'){
+            $firstwordscript = '{
+                            "script_score": {            
+                                "params": {
+                                    "boost": 50,
+                                    "param2": 20
+                                },
+                                "script": "((doc[\'type\'].value == \'vendor\') ? 100 : 0)"
+                            }                                           
+                        },';
+        }
         $geofunction = 50;
         $geo_boost = 20;
         $inputboost = 150;
@@ -1121,7 +1132,7 @@ $allfitnessscript = '{
 },';
 
 
-$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript,',');
+$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript.$firstwordscript,',');
 
 $filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter,',');
 
