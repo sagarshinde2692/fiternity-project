@@ -924,6 +924,7 @@ public function toQueueBookTrialPaid($job,$data){
 		$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
 		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
 		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+		$reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
 		$oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);  
 		$twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false); 
 		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
@@ -958,6 +959,9 @@ public function toQueueBookTrialPaid($job,$data){
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 		if($twelveHourDiffInMin >= (12 * 60)){
 			$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+			$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+		}else{
+			$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 			$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 		}
 
@@ -1289,6 +1293,7 @@ public function toQueueBookTrialFree($job,$data){
 		$delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
 		$delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
 		$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+		$reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
 		$oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);  
 		$twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false); 
 		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
@@ -1318,6 +1323,9 @@ public function toQueueBookTrialFree($job,$data){
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 		if($twelveHourDiffInMin >= (12 * 60)){
 			$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+			$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+		}else{
+			$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 			$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 		}
 
@@ -1460,6 +1468,7 @@ public function rescheduledBookTrial(){
 		$delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
 		$delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
 		$delayReminderTimeAfter2Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+		$reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
 		$oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);  
 		$twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false); 
 		$oneHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);  
@@ -1843,6 +1852,9 @@ public function toQueueRescheduledBookTrial($job,$data){
 				//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+			}else{
+				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 			}
 
