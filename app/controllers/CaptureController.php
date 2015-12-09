@@ -73,7 +73,7 @@ public function sendSMS($smsdata){
 	$url = 'http://www.kookoo.in/outbound/outbound_sms.php';
 
 	$param = array(
-		'api_key' => 'KK6cb3903e3d2c428bb60c0cfaa212009e', 
+		'api_key' => 'KK33e21df516ab75130faef25c151130c1', 
 		'phone_no' => trim($to), 
 		'message' => $message,
 		'senderid'=> 'FTRNTY' 
