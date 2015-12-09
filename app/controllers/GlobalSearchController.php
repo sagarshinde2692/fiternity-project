@@ -271,33 +271,33 @@ class GlobalSearchController extends \BaseController
                           "boost_factor": 11
                       },
                       {
-                       "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [
+                         "filter": {
+                            "query": {
+                                "bool": {
+                                    "should": [
 
-                                {
-                                    "query_string": {
-                                        "fields": [
-                                        "input"                                                                                    
-                                        ],
-                                        "query": "'.$keys[0].'*",
-                                        "fuzziness": 0,
-                                        "fuzzy_prefix_length": 0
-                                    }
-                                }'.$key2_input_query.$key3_input_query.'
-                                ]
+                                    {
+                                        "query_string": {
+                                            "fields": [
+                                            "input"                                                                                    
+                                            ],
+                                            "query": "'.$keys[0].'*",
+                                            "fuzziness": 0,
+                                            "fuzzy_prefix_length": 0
+                                        }
+                                    }'.$key2_input_query.$key3_input_query.'
+                                    ]
+                                }
                             }
-                        }
-                    },
-                    "boost_factor": 6
+                        },
+                        "boost_factor": 6
+                    }
+                    ],
+                    "boost_mode": "sum"
                 }
-                ],
-                "boost_mode": "sum"
             }
         }
     }
-}
 }';
 
 $request = array(
@@ -507,7 +507,7 @@ if(!empty($sort)){
 $keywordfunction = '';
 
 foreach ($keylist as $keyval) {
- $newval = '{
+   $newval = '{
     "filter": {
         "query": {
             "bool": {"should": [
@@ -760,27 +760,37 @@ $response       =   json_decode($searchresulteresponse1,true);
 return Response::json($response);
 }
 catch(Exception $e){
- throw $e;
+   throw $e;
 }
 }
 
 public function newglobalsearch(){
 
- $from     =         Input::json()->get('offset')['from'];
- $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
- $string   =         strtolower(Input::json()->get('keyword'));
- $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
- $location =         Input::json()->get('location');
- $lat      =         isset($location['lat']) ? $location['lat'] : '';
- $lon      =         isset($location['long']) ? $location['long'] : '';
+   $from     =         Input::json()->get('offset')['from'];
+   $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+   $string   =         strtolower(Input::json()->get('keyword'));
+   $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+   $location =         Input::json()->get('location');
+   $lat      =         isset($location['lat']) ? $location['lat'] : '';
+   $lon      =         isset($location['long']) ? $location['long'] : '';
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
-        
+        $string1 = '';
         $stopwords = array(" and "," in");
-        $string1 = str_replace($stopwords, "", $string);
+        if(($city==='bangalore') && (strpos($string, 'in'))){
+            if(sizeof(explode(" ", $string)) > 2){
+                $stopwords = array(" and "," in ");
+                 $string1 = str_replace($stopwords, " ", $string);
+            }                        
+        }
+        else{
+             $string1 = str_replace($stopwords, "", $string);
+        }
+       
         
         $keylist   = array_filter(explode(" ", $string1));
+       
         if(sizeof($keylist) > 1){
             if(($keylist[1] === 'i')){
                 array_splice($keylist, 1);
@@ -789,14 +799,14 @@ public function newglobalsearch(){
         $firstwordscript = '';
         if($keylist[0] === 'i'){
             $firstwordscript = '{
-                            "script_score": {            
-                                "params": {
-                                    "boost": 50,
-                                    "param2": 20
-                                },
-                                "script": "((doc[\'type\'].value == \'vendor\') ? 100 : 0)"
-                            }                                           
-                        },';
+                "script_score": {            
+                    "params": {
+                        "boost": 50,
+                        "param2": 20
+                    },
+                    "script": "((doc[\'type\'].value == \'vendor\') ? 100 : 0)"
+                }                                           
+            },';
         }
         $geofunction = 50;
         $geo_boost = 20;
@@ -1155,21 +1165,21 @@ $functionfilters =  ' "filter": {
 }'; 
 
 $query = '{
-   "fields": [
-   "autosuggestvalue",
-   "location",
-   "identifier",
-   "type",
-   "slug",
-   "inputcat1",
-   "inputcat"
-   ],
-   "from": '.$from.',
-   "size": '.$size.',
-   "query": {
+ "fields": [
+ "autosuggestvalue",
+ "location",
+ "identifier",
+ "type",
+ "slug",
+ "inputcat1",
+ "inputcat"
+ ],
+ "from": '.$from.',
+ "size": '.$size.',
+ "query": {
     "filtered": {
-       '.$functionquery.$functionfilters.'                                
-   }
+     '.$functionquery.$functionfilters.'                                
+ }
 }
 }';    
 
