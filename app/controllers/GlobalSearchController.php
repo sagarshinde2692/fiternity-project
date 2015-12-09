@@ -790,13 +790,14 @@ public function newglobalsearch(){
        
         
         $keylist   = array_filter(explode(" ", $string1));
-       
+      
         if(sizeof($keylist) > 1){
             if(($keylist[1] === 'i')){
                 array_splice($keylist, 1);
             }
         }
         $firstwordscript = '';
+
         if($keylist[0] === 'i'){
             $firstwordscript = '{
                 "script_score": {            
@@ -1119,7 +1120,7 @@ $vendortypescript = '{
             "boost": 50,
             "param2": 20
         },
-        "script": "((doc[\'type\'].value != \'vendor\') ? 80 : 0)"
+        "script": "((doc[\'type\'].value != \'vendor\') ? 0 : 0)"
     }                                           
 },';
 
@@ -1189,7 +1190,7 @@ $request = array(
     'method' => 'POST',
     'postfields' => $query
     );    
-
+//return $query;exit;
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
