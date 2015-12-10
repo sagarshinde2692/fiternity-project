@@ -988,14 +988,22 @@ Route::get('/testsms',function(){
 
 	$url = 'http://www.kookoo.in/outbound/outbound_sms.php';
 	$param = array('api_key' => 'KK33e21df516ab75130faef25c151130c1', 
+<<<<<<< HEAD
 		'phone_no' => '09920864894', 
 		'message' => 'test message',
 		'senderid'=> 'FITTER' 
 		);
 
+=======
+	'phone_no' => '09920864894', 
+	'message' => 'test message',
+	'senderid'=> 'FTRNTY' 
+	);
+	                          
+>>>>>>> f7febfd87f353adfc139192492cd73d4a7b2d185
 	$url = $url . "?" . http_build_query($param, '&');
 
-	echo"<pre>";print_r($url);exit;
+	//echo"<pre>";print_r($url);exit;
 
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url);

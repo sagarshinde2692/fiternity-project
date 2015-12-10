@@ -563,8 +563,8 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 $flag = true;                   
                 $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
                 foreach ($service as $doc1) { 
-                   $doc = $doc1->toArray();
-                   if( isset($doc['photos']) && !empty($doc['photos'])){                                            
+                 $doc = $doc1->toArray();
+                 if( isset($doc['photos']) && !empty($doc['photos'])){                                            
                     $photos = $doc['photos'];                       
                     foreach ($photos as $key => $value) {                           
                         if(!empty($photos[$key])){                               
@@ -838,19 +838,28 @@ return $postfields_data;
 if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster){
-        
-       $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
-       $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
-       $postfields_data = array(
-        'input'                         =>      $cat['name'],
+
+     $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+     $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
+
+        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+        {
+            $catname = $cat['name'].' classes sessions';
+        }
+        else{
+            $catname = $cat['name'];
+        }
+
+     $postfields_data = array(
+        'input'                         =>      $catname,
         'autosuggestvalue'              =>      $string,
         'inputv2'                       =>      "",                                                                 
-        'inputv3'                       =>      $cat['name'],
+        'inputv3'                       =>      $catname,
         'inputv4'                       =>      "",
         'inputloc1'                     =>      strtolower($loc['name']),
         'inputloc2'                     =>      $cluster,
-        'inputcat'                      =>      $cat['name'],
-        'inputcat1'                     =>      $cat['name'],
+        'inputcat'                      =>      $catname,
+        'inputcat1'                     =>      $catname,
         'city'                          =>      $city,
         'location'                      =>      (isset($loc['name']) && $loc['name'] != '') ? $loc['name'] :"",                        
         'type'                          =>      'categorylocation',
@@ -864,17 +873,24 @@ return $postfields_data;
 if (!function_exists(('get_elastic_autosuggest_catfac_doc'))){
 
     function get_elastic_autosuggest_catfac_doc($cat, $fac, $string, $city){
-      
+
+        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+        {
+            $catname = $cat['name'].' classes sessions';
+        }
+        else{
+            $catname = $cat['name'];
+        }
         $postfields_data = array(
-            'input'                         =>      $cat['name'],
+            'input'                         =>      $catname,
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
             'inputv3'                       =>      "",
             'inputv4'                       =>      strtolower($fac),
             'inputloc1'                     =>      "",
             'inputloc2'                     =>      "",
-            'inputcat'                      =>      $cat['name'],
-            'inputcat1'                     =>      $cat['name'],
+            'inputcat'                      =>      $catname,
+            'inputcat1'                     =>      $catname,
             'city'                          =>      $city,
             'location'                      =>      "",            
             'type'                          =>      'categoryfacility',
@@ -888,17 +904,25 @@ if (!function_exists(('get_elastic_autosuggest_catfac_doc'))){
 if (!function_exists(('get_elastic_autosuggest_catoffer_doc'))){
 
     function get_elastic_autosuggest_catoffer_doc($cat, $off, $string, $city, $offrank){
-     
+
+        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+        {
+            $catname = $cat['name'].' classes sessions';
+        }
+        else{
+            $catname = $cat['name'];
+        }
+
         $postfields_data = array(
-            'input'                         =>      $cat['name'],
+            'input'                         =>      $catname,
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
-            'inputv3'                       =>      strtolower($off['name'].' '.$cat['name']),
+            'inputv3'                       =>      strtolower($off['name'].' '.$catname),
             'inputv4'                       =>      "",
             'inputloc1'                     =>      "",
             'inputloc2'                     =>      "",
-            'inputcat'                      =>      $cat['name'],
-            'inputcat1'                     =>      $cat['name'],
+            'inputcat'                      =>      $catname,
+            'inputcat1'                     =>      $catname,
             'city'                          =>      $city,
             'location'                      =>      "",            
             'type'                          =>      'categoryoffering',
@@ -913,19 +937,26 @@ return $postfields_data;
 if (!function_exists(('get_elastic_autosuggest_catlocoffer_doc'))){
 
     function get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $city, $cluster, $offrank){
-     
+
+        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+        {
+            $catname = $cat['name'].' classes sessions';
+        }
+        else{
+            $catname = $cat['name'];
+        }
         $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
         $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
-            'input'                         =>      $cat['name'],
+            'input'                         =>      $catname,
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
-            'inputv3'                       =>      strtolower($off['name'].' '.$cat['name']),
+            'inputv3'                       =>      strtolower($off['name'].' '.$catname),
             'inputv4'                       =>      "",
             'inputloc1'                     =>      strtolower($loc['name']),
             'inputloc2'                     =>      $cluster,
-            'inputcat'                      =>      $cat['name'],
-            'inputcat1'                     =>      $cat['name'],
+            'inputcat'                      =>      $catname,
+            'inputcat1'                     =>      $catname,
             'city'                          =>      $city,
             'location'                      =>      strtolower($loc['name']),            
             'type'                          =>      'categorylocationoffering',
@@ -940,19 +971,26 @@ return $postfields_data;
 if (!function_exists(('get_elastic_autosuggest_catlocfac_doc'))){
 
     function get_elastic_autosuggest_catlocfac_doc($cat, $fac, $loc, $string, $city, $cluster){
-     
+
+        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+        {
+            $catname = $cat['name'].' classes sessions';
+        }
+        else{
+            $catname = $cat['name'];
+        }
         $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
         $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
         $postfields_data = array(
-            'input'                         =>      $cat['name'],
+            'input'                         =>      $catname,
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
             'inputv3'                       =>      "",
             'inputv4'                       =>      strtolower($fac),
             'inputloc1'                     =>      strtolower($loc['name']),
             'inputloc2'                     =>      $cluster,
-            'inputcat'                      =>      $cat['name'],
-            'inputcat1'                     =>      $cat['name'],
+            'inputcat'                      =>      $catname,
+            'inputcat1'                     =>      $catname,
             'city'                          =>      $city,
             'location'                      =>      strtolower($loc['name']),            
             'type'                          =>      'categorylocationfacilities',
@@ -966,17 +1004,24 @@ return $postfields_data;
 if (!function_exists(('get_elastic_autosuggest_catcity_doc'))){
 
     function get_elastic_autosuggest_catcity_doc($cat, $city, $string){
-     
+
+        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+        {
+            $catname = $cat['name'].' classes sessions';
+        }
+        else{
+            $catname = $cat['name'];
+        }
         $postfields_data = array(
-            'input'                         =>      $cat['name'],
+            'input'                         =>      $catname,
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
-            'inputv3'                       =>      $cat['name'],
+            'inputv3'                       =>      $catname,
             'inputv4'                       =>      "",
             'inputloc1'                     =>      $city,
             'inputloc2'                     =>      "",
-            'inputcat'                      =>      $cat['name'],
-            'inputcat1'                     =>      $cat['name'],
+            'inputcat'                      =>      $catname,
+            'inputcat1'                     =>      $catname,
             'city'                          =>      $city,
             'location'                      =>      strtolower($city),            
             'type'                          =>      'categorycity',
@@ -990,17 +1035,24 @@ if (!function_exists(('get_elastic_autosuggest_catcity_doc'))){
 if (!function_exists(('get_elastic_autosuggest_catcityoffer_doc'))){
 
     function get_elastic_autosuggest_catcityoffer_doc($cat, $city, $string){
-     
+
+        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+        {
+            $catname = $cat['name'].' classes sessions';
+        }
+        else{
+            $catname = $cat['name'];
+        }
         $postfields_data = array(
-            'input'                         =>      $cat['name'],
+            'input'                         =>      $catname,
             'autosuggestvalue'              =>      $string,
             'inputv2'                       =>      "",                                                                 
-            'inputv3'                       =>      $cat['name'],
+            'inputv3'                       =>      $catname,
             'inputv4'                       =>      "",
             'inputloc1'                     =>      $city,
             'inputloc2'                     =>      "",
-            'inputcat'                      =>      $cat['name'],
-            'inputcat1'                     =>      $cat['name'],
+            'inputcat'                      =>      $catname,
+            'inputcat1'                     =>      $catname,
             'city'                          =>      $city,
             'location'                      =>      strtolower($city),            
             'type'                          =>      'categorycity',
@@ -1014,7 +1066,7 @@ if (!function_exists(('get_elastic_autosuggest_catcityoffer_doc'))){
 if (!function_exists(('get_elastic_autosuggest_allfitness_doc'))){
 
     function get_elastic_autosuggest_allfitness_doc($loc, $city, $string){
-     
+
         $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
         $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
 

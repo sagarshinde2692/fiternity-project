@@ -404,7 +404,7 @@ class CustomerController extends \BaseController {
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer is inactive');
 		}else{
-			if(isset($customer['hull_id']) && $customer['ishulluser'] == 1){
+			if($customer['ishulluser'] == 1){
 				$customer->password = md5($data['password']);
 				$customer->ishulluser = 0;
 			}else{
@@ -946,8 +946,9 @@ class CustomerController extends \BaseController {
 
 		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with('offerings')
 		->whereIn('_id', $finderids)
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
 		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
 		return Response::json($responseData, 200);
@@ -1007,8 +1008,9 @@ class CustomerController extends \BaseController {
 
 		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with('offerings')
 		->whereIn('_id', $finderids)
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
 		$response 		= 	['status' => 200, 'bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
 		return Response::json($response, 200);
@@ -1093,6 +1095,48 @@ class CustomerController extends \BaseController {
 		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
 		
 		return Response::json($responseData, 200);
+	}
+
+	public function customerDetail($customer_id){
+
+		$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>NULL,'dob'=>NULL,'ideal_workout_time'=>NULL);
+
+		$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'))->toArray();
+		
+
+		if($customer){
+
+			foreach ($array as $key => $value) {
+
+				if(array_key_exists($key, $customer[0]))
+				{
+					continue;
+				}else{
+					$customer[0][$key] = $value;
+				}
+
+			}
+
+			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
+
+		}else{
+
+			$response 	= 	array('status' => 400,'message' => 'Customer not found');
+		}
+
+		return Response::json($response, $response['status']);
+
+	}
+
+	public function getCustomerDetail(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+
+		$customer_id = $decoded->customer->_id;
+
+		return $this->customerDetail($customer_id);
+
 	}
 
 
