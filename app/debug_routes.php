@@ -52,6 +52,100 @@ Route::get('moveratecard', function() {
 });
 
 
+
+
+
+Route::get('exportbooktrialorder', function() { 
+
+	// return $items = Order::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
+	
+	// exit();
+
+	
+	// $items = Order::whereIn('_id', $orderids)->get();
+
+	// $fp = fopen('orderlatest.csv', 'w');
+	// $header = ["ID", "NAME", "EMAIL", "NUMBER", "TYPE" , "ADDRESS"  ];
+	// fputcsv($fp, $header);
+	
+	// foreach ($items as $value) {  
+	// 	$fields = [$value->_id, $value->customer_name, $value->customer_email, $value->customer_phone,  $value->payment_mode, $value->customer_location];
+	// 	fputcsv($fp, $fields);
+	// }
+	// fclose($fp);
+	// return 'done';
+
+
+	$headers = [
+	'Content-type'        => 'application/csv'
+	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+	,   'Content-type'        => 'text/csv'
+	,   'Content-Disposition' => 'attachment; filename=export_order.csv'
+	,   'Expires'             => '0'
+	,   'Pragma'              => 'public'
+	];
+
+
+	//Orders
+	$output = "ID,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, SERVICE NAME, AMOUNT, ORDER ACTION, ORDER DATE  \n";
+	$items = $items = Order::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
+
+	foreach ($items as $key => $value) {
+		// var_dump($value;)exit();
+		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
+			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
+			$finder_name = $finder->title;
+			$finder_location = $finder->location->name;
+			$finder_city = $finder->city->name;
+			$output .= "$value[_id], $value[customer_name], $value[customer_email], $value[customer_phone], $finder_name, $finder_location, $finder_city, $value[service_name], $value[amount], $value[order_action], $value[created_at]\n";
+		}else{
+			$city = City::find(intval($value['city_id']));
+			$finder_city = $city->name;
+			$output .= "$value[_id], $value[customer_name], $value[customer_email], $value[customer_phone], $value[finder_name], $value[finder_location], $finder_city, $value[service_name], $value[amount], $value[order_action], $value[created_at]\n";
+		}
+		// var_dump($output);exit;
+
+	}
+
+
+
+	// $headers = [
+	// 'Content-type'        => 'application/csv'
+	// ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+	// ,   'Content-type'        => 'text/csv'
+	// ,   'Content-Disposition' => 'attachment; filename=export_booktrial.csv'
+	// ,   'Expires'             => '0'
+	// ,   'Pragma'              => 'public'
+	// ];
+
+
+	// //Orders
+	// $output = "ID, SOURCE, BOOKTRIAL TYPE  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, SERVICE NAME, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
+	// $items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
+
+	// foreach ($items as $key => $value) {
+	// 	// var_dump($value;)exit();
+	// 	if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
+	// 		$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
+	// 		$finder_name = $finder->title;
+	// 		$finder_location = $finder->location->name;
+	// 		$finder_city = $finder->city->name;
+	// 		$output .= "$value[_id], $value[source], $value[booktrial_type], $value[customer_name], $value[customer_email], $value[customer_phone], $finder_name, $finder_location, $finder_city, $value[service_name], $value[amount], $value[post_trial_status], $value[schedule_date], $value[schedule_slot], $value[created_at]\n";
+	// 	}else{
+	// 		$city = City::find(intval($value['city_id']));
+	// 		$finder_city = $city->name;
+	// 		$output .= "$value[_id], $value[source], $value[booktrial_type], $value[customer_name], $value[customer_email], $value[customer_phone], $value[finder_name], $value[finder_location], $finder_city, $value[service_name], $value[amount], $value[post_trial_status], $value[schedule_date], $value[schedule_slot], $value[created_at]\n";
+	// 	}
+	// 	// var_dump($output);exit;
+
+	// }
+
+	return Response::make(rtrim($output, "\n"), 200, $headers);
+	
+});
+
+
+
 Route::get('/updateservices', function() { 
 
 	$items = Service::active()->orderBy('_id')->lists('_id');
@@ -894,11 +988,11 @@ Route::get('/testsms',function(){
 
 	$url = 'http://www.kookoo.in/outbound/outbound_sms.php';
 	$param = array('api_key' => 'KK33e21df516ab75130faef25c151130c1', 
-	'phone_no' => '09920864894', 
-	'message' => 'test message',
-	'senderid'=> 'FITTER' 
-	);
-	                          
+		'phone_no' => '09920864894', 
+		'message' => 'test message',
+		'senderid'=> 'FITTER' 
+		);
+
 	$url = $url . "?" . http_build_query($param, '&');
 
 	echo"<pre>";print_r($url);exit;
@@ -925,4 +1019,4 @@ Route::get('/testsms',function(){
 
         echo 'Sms sent to 9920864894';*/
 
-});
+    });

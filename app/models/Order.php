@@ -40,5 +40,9 @@ class Order extends \Basemodel {
 	public function setAmountAttribute($value){
 		$this->attributes['amount'] = intval($value);
 	}
-    
+
+	public function finder(){
+		return $this->belongsTo('Finder');
+	}
+	
 }
