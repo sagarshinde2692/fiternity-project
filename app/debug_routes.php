@@ -76,36 +76,36 @@ Route::get('exportbooktrialorder', function() {
 	// return 'done';
 
 
-	$headers = [
-	'Content-type'        => 'application/csv'
-	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
-	,   'Content-type'        => 'text/csv'
-	,   'Content-Disposition' => 'attachment; filename=export_order.csv'
-	,   'Expires'             => '0'
-	,   'Pragma'              => 'public'
-	];
+	// $headers = [
+	// 'Content-type'        => 'application/csv'
+	// ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+	// ,   'Content-type'        => 'text/csv'
+	// ,   'Content-Disposition' => 'attachment; filename=export_order.csv'
+	// ,   'Expires'             => '0'
+	// ,   'Pragma'              => 'public'
+	// ];
 
 
-	//Orders
-	$output = "ID,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, SERVICE NAME, AMOUNT, ORDER ACTION, ORDER DATE  \n";
-	$items = $items = Order::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
+	// //Orders
+	// $output = "ID,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, SERVICE NAME, AMOUNT, ORDER ACTION, ORDER DATE  \n";
+	// $items = $items = Order::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
 
-	foreach ($items as $key => $value) {
-		// var_dump($value;)exit();
-		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
-			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-			$finder_name = $finder->title;
-			$finder_location = $finder->location->name;
-			$finder_city = $finder->city->name;
-			$output .= "$value[_id], $value[customer_name], $value[customer_email], $value[customer_phone], $finder_name, $finder_location, $finder_city, $value[service_name], $value[amount], $value[order_action], $value[created_at]\n";
-		}else{
-			$city = City::find(intval($value['city_id']));
-			$finder_city = $city->name;
-			$output .= "$value[_id], $value[customer_name], $value[customer_email], $value[customer_phone], $value[finder_name], $value[finder_location], $finder_city, $value[service_name], $value[amount], $value[order_action], $value[created_at]\n";
-		}
-		// var_dump($output);exit;
+	// foreach ($items as $key => $value) {
+	// 	// var_dump($value;)exit();
+	// 	if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
+	// 		$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
+	// 		$finder_name = $finder->title;
+	// 		$finder_location = $finder->location->name;
+	// 		$finder_city = $finder->city->name;
+	// 		$output .= "$value[_id], $value[customer_name], $value[customer_email], $value[customer_phone], $finder_name, $finder_location, $finder_city, $value[service_name], $value[amount], $value[order_action], $value[created_at]\n";
+	// 	}else{
+	// 		$city = City::find(intval($value['city_id']));
+	// 		$finder_city = $city->name;
+	// 		$output .= "$value[_id], $value[customer_name], $value[customer_email], $value[customer_phone], $value[finder_name], $value[finder_location], $finder_city, $value[service_name], $value[amount], $value[order_action], $value[created_at]\n";
+	// 	}
+	// 	// var_dump($output);exit;
 
-	}
+	// }
 
 
 
