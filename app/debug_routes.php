@@ -120,7 +120,7 @@ Route::get('exportbooktrialorder', function() {
 	,   'Pragma'              => 'public'
 	];
 
-	$output = "ID, SOURCE, BOOKTRIAL TYPE  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, SERVICE NAME, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
+	$output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, SERVICE NAME, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
 	$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
 
 	foreach ($items as $key => $value) {
