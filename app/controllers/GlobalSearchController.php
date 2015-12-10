@@ -810,8 +810,12 @@ public function newglobalsearch(){
             },';
         }
         $goldflag = false;
+        $crossfitomflag = false;
         if(strpos($string1, 'gold') !== false){
             $goldflag = true;
+        }
+        if(strpos($string1, 'crossfito') !== false){
+            $crossfitomflag = true;
         }
 
         $geofunction = 50;
@@ -1167,8 +1171,26 @@ if($goldflag){
         "boost_factor": 100
     },';
 }
-
-$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript.$firstwordscript.$goldfunction,',');
+$crossfunction = '';
+if($crossfitomflag){   
+     $crossfunction = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "input": {
+                        "query": "crossfitom",
+                        "fuzziness": "0",
+                        "operator": "or",
+                        "prefix_length": 15,
+                        "max_expansions": 100
+                    }
+                }
+            }
+        },
+        "boost_factor": 200
+    },';
+}
+$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript.$firstwordscript.$goldfunction.$crossfunction,',');
 
 $filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter,',');
 
