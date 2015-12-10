@@ -42,7 +42,7 @@ class GlobalPushController extends \BaseController
 		->orderBy('_id')         
         //->whereIn('_id', array(1623))
 		->whereIn('city_id', array(1,2,3,4,8))
-		->take(500)->skip(1000)
+		->take(500)->skip(0)
 		->timeout(400000000)
         // ->take(3000)->skip(0)                          
 		->get()->toArray(); 
@@ -73,7 +73,8 @@ class GlobalPushController extends \BaseController
 		foreach ($this->citylist as $city) {
 			$categorytags = Findercategorytag::active()
 			->with('cities')
-			->where('cities', $city)					
+			->where('cities', $city)
+			->whereNotIn('_id', array(22))					
 			->get();
 
 			$locationtags = Location::where('cities', $city)
@@ -119,6 +120,7 @@ class GlobalPushController extends \BaseController
 			$categorytags = Findercategorytag::active()
 			->with('cities')
 			->where('cities', $city)
+			->whereNotIn('_id', array(22))
 			->get();
 			
 			foreach ($categorytags as $cat) {
@@ -142,6 +144,7 @@ class GlobalPushController extends \BaseController
 			->whereIn('cities',array($city))
 			->with('offerings')
 			->orderBy('ordering')
+			->whereNotIn('_id', array(22))
 			->get(array('_id','name','offering_header','slug','status','offerings'));
 
 			foreach ($categorytag_offerings as $cat) {
@@ -276,6 +279,7 @@ class GlobalPushController extends \BaseController
 			->whereIn('cities',array($city))
 			->with('offerings')
 			->orderBy('ordering')
+			->whereNotIn('_id', array(22))
 			//->whereIn('_id',array(32))
 			->get(array('_id','name','offering_header','slug','status','offerings'));
 
@@ -361,7 +365,7 @@ class GlobalPushController extends \BaseController
 							case 'pilates':
 							$cluster = '';
 							$offeringrank = (isset($catprioroff)&&(isset($catprioroff[strtolower($off['name'])]))) ? intval($catprioroff[strtolower($off['name'])]) : 0;	
-							$string = ucwords($cat['name']).' '.ucwords($off['name']).' in '.ucwords($loc['name']);						
+							$string = ucwords($off['name']).'- '.ucwords($cat['name']).' in '.ucwords($loc['name']);						
 							$postdata = get_elastic_autosuggest_catlocoffer_doc($cat, $off, $loc, $string, $cityname, $cluster, $offeringrank);			
 							$postfields_data = json_encode($postdata);											
 							$request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);		
@@ -406,6 +410,7 @@ class GlobalPushController extends \BaseController
 			$categorytags = Findercategorytag::active()
 			->with('cities')
 			->where('cities', $city)
+			->whereNotIn('_id', array(22))
 			->get();
 			
 			foreach ($categorytags as $cat) {
@@ -429,6 +434,7 @@ class GlobalPushController extends \BaseController
 			$categorytags = Findercategorytag::active()
 			->with('cities')
 			->where('cities', $city)
+			->whereNotIn('_id', array(22))
 			->get();
 
 			foreach ($categorytags as $cat) {
@@ -745,6 +751,7 @@ class GlobalPushController extends \BaseController
 			$cityname = $this->citynames[strval($city)];
 			$categorytag_offerings = Findercategorytag::active()				
 			->whereIn('cities',array($city))
+			->whereNotIn('_id', array(22))
 			->with('offerings')
 			->orderBy('ordering')
 				//->whereIn('_id',array(32))
