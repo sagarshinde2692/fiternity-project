@@ -971,7 +971,7 @@ if ((strpos($string,'in') === false) && (strpos($string,'with') === false) && (s
     },';
 }
 
-if ((strpos($string, 'with') !== false)||(strpos($string, '-') !== false)){
+if (((strpos($string, 'with') !== false)||(strpos($string, '-') !== false))&&(strpos($string, 'in') === false)){
     $withdelimeterscript = '{
         "script_score": {       
             "params": {
@@ -986,7 +986,7 @@ if ((strpos($string, 'with') !== false)||(strpos($string, '-') !== false)){
                 "boost": 50,
                 "param2": 20
             },
-            "script": "((doc[\'type\'].value == \'categoryoffering\') ? 50 : 0)"
+            "script": "((doc[\'type\'].value == \'categoryoffering\') ? 200 : 0)"
         }                                
     },';
 
@@ -1215,7 +1215,7 @@ $request = array(
     'method' => 'POST',
     'postfields' => $query
     );    
-
+//return $query;exit;
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
