@@ -47,6 +47,12 @@ class CustomerController extends \BaseController {
 		$passedtrials = [];
 		
 		foreach ($trials as $trial){
+			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
+				$finderarr = Finder::active()->with('offerings')->where('_id','=', intval($trial['finder_id']))->first();
+				$finderarr = $finderarr->toArray();
+				array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
+			}
+
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
 			array_set($trial, 'passed', $slot_datetime_pass_status);
