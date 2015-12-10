@@ -809,6 +809,11 @@ public function newglobalsearch(){
                 }                                           
             },';
         }
+        $goldflag = false;
+        if(strpos($string1, 'gold') !== false){
+            $goldflag = true;
+        }
+
         $geofunction = 50;
         $geo_boost = 20;
         $inputboost = 150;
@@ -1142,8 +1147,28 @@ $allfitnessscript = '{
     }                                           
 },';
 
+$goldfunction = '';
+if($goldflag){
 
-$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript.$firstwordscript,',');
+    $goldfunction = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "input": {
+                        "query": "gold",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
+                }
+            }
+        },
+        "boost_factor": 100
+    },';
+}
+
+$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript.$firstwordscript.$goldfunction,',');
 
 $filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter,',');
 
@@ -1190,7 +1215,7 @@ $request = array(
     'method' => 'POST',
     'postfields' => $query
     );    
-//return $query;exit;
+
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
