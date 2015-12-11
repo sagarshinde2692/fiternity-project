@@ -25,9 +25,7 @@ class CustomerController extends \BaseController {
 
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
-
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
-
 		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 		->where('customer_email', '=', $customeremail)
 		->whereIn('booktrial_type', array('auto'))
@@ -45,17 +43,30 @@ class CustomerController extends \BaseController {
 
 		$customertrials  = 	$trial = array();
 		$currentDateTime =	\Carbon\Carbon::now();
-
+		$upcomingtrials = [];
+		$passedtrials = [];
+		
 		foreach ($trials as $trial){
+			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
+				$finderarr = Finder::active()->with('offerings')->where('_id','=', intval($trial['finder_id']))->first();
+				$finderarr = $finderarr->toArray();
+				array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
+			}
+
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
 			array_set($trial, 'passed', $slot_datetime_pass_status);
-			array_push($customertrials, $trial);
+			if($slot_datetime_pass_status){
+				array_push($passedtrials, $trial);
+			}else{
+				array_push($upcomingtrials, $trial);	
+			}
 		}
-
-		$resp 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
+		// array_push($customertrials, $trial);
+		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'message' => 'List of scheduled trials');
 		return Response::json($resp,200);
 	}
+
 
 
 	// Listing Schedule Tirals for Fitcard Customer
