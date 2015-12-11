@@ -40,7 +40,7 @@ class GlobalPushController extends \BaseController
 		->with('services')
 		->active()
 		->orderBy('_id')         
-        //->whereIn('_id', array(1623))
+        ->whereIn('_id', array(1029, 1030, 1032, 1033, 1034, 1035, 1554, 1705, 1706, 1870, 4585, 5045))
 		->whereIn('city_id', array(1,2,3,4,8))
 		->take(500)->skip(0)
 		->timeout(400000000)
@@ -536,7 +536,7 @@ class GlobalPushController extends \BaseController
 					"input_ngram_tokenizer": {
 						"type": "edgeNGram",
 						"min_gram": "2",
-						"max_gram": "20"
+						"max_gram": "25"
 					}
 				},
 				"filter": {

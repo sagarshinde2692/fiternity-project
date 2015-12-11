@@ -93,6 +93,11 @@ class ElasticsearchController extends \BaseController {
 						"type": "custom",
 						"tokenizer": "standard",
 						"filter": ["standard","lowercase","asciifolding","filter_stop","filter_edgengram","filter_worddelimiter","filter_snowball"]
+					},
+					"title_analyzer" :{
+						"type" : "custom",
+						"tokenizer" : "input_ngram_tokenizer",
+						"filter" : ["standard","lowercase","delimiter-filter", "titlesynfilter"]
 					}
 				},
 				"filter": {
@@ -127,6 +132,18 @@ class ElasticsearchController extends \BaseController {
 					},
 					"filter_worddelimiter": {
 						"type": "word_delimiter"
+					},
+					"delimiter-filter": {
+						"type": "word_delimiter",
+						"preserve_original" : true
+					},
+					"titlesynfilter":{
+						"type": "synonym",
+						"synonyms" : [
+						"golds, gold",
+						"talwalkars,talwalkar",
+						"yfc,your fitness club"
+						]
 					}
 				},
 				"tokenizer": {
@@ -140,6 +157,11 @@ class ElasticsearchController extends \BaseController {
 						"min_gram": 2,
 						"max_gram": 15,
 						"side": "front"
+					},
+					"input_ngram_tokenizer" : {
+					"type": "edgeNGram",
+					"min_gram": "2",
+					"max_gram": "20"
 					}
 				}
 			}
