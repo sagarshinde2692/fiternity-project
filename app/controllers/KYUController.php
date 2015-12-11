@@ -1233,4 +1233,76 @@ $query = '{
      return Response::json($response);
 }
 
+public function getdailyvisitors(){
+   $date = Input::get('date');
+  $query = '{
+          "from": 0,
+          "size": 0,
+          "query": {
+            "bool": {
+              "must": [
+                {
+                  "term": {
+                    "event_id": "sessionstart"
+                  }
+                },
+                {
+                  "bool": {
+                    "must_not": [
+                      {
+                        "query_string": {
+                          "default_field": "page",
+                          "query": "*dir=*"
+                        }
+                      },
+                      {
+                        "query_string": {
+                          "default_field": "page",
+                          "query": "*limit=*"
+                        }
+                      },
+                      {
+                        "query_string": {
+                          "default_field": "page",
+                          "query": "*mode=*"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "range": {
+                    "timestamp": {
+                      "gte": "'.$date.'"
+                    }
+                  }
+                }
+              ]
+            }
+          },
+          "aggs": {
+            "users": {
+              "cardinality": {
+                "field": "userid"
+              }
+            }
+          }
+        }';
+
+    $request3 = array( 
+      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+      'port' => 8060,
+      'method' => 'POST',
+      'postfields' => $query
+      );
+
+    $visit = es_curl_request($request3);
+    $users = json_decode($visit, true);
+
+    $value = $users['aggregations']['users']['value'];
+
+return $value;
+
+}
+
 }
