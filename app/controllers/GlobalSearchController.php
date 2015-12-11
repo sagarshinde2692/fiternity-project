@@ -1236,7 +1236,7 @@ $query = '{
 }';    
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations2/autosuggestor/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations3/autosuggestor/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query
