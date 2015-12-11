@@ -1097,5 +1097,140 @@ public function updatepaymentbooking(){
   }
 
 }
+public function getglobalsearchkeywordmatrix(){
+
+ $datefrom = Input::get('datefrom');
+  $dateto = Input::get('dateto');
+$query = '{
+  "from": 0,
+  "size": 0,
+  "query": {
+    "filtered": {
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "event_id": "globalsearch"
+              }
+            },
+            {
+              "range": {
+                "timestamp": {
+                  "gte": "'.$datefrom.'",
+                  "lte": "'.$dateto.'"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+   "aggs": {
+    "city": {
+      "terms": {
+        "field": "city",
+        "size": 100
+      },
+      "aggs": {
+        "keyword": {
+          "terms": {
+            "field": "keyword",
+            "size": 20
+          }
+        }
+      }
+    }
+  }
+}';
+
+ $request3 = array( 
+      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+      'port' => 8060,
+      'method' => 'POST',
+      'postfields' => $query
+      );
+
+    $keywords = es_curl_request($request3);
+    $keywordlist = json_decode($keywords, true);
+
+    $result = $keywordlist['aggregations']['city']['buckets'];
+
+    $response = array();
+    foreach ($result as $city) {
+    array_push($response, array($city['key'] => $city['keyword']['buckets']));
+    }
+
+     return Response::json($response);
+}
+
+public function getglobalsearchclickedmatrix(){
+
+   $datefrom = Input::get('datefrom');
+  $dateto = Input::get('dateto');
+$query = '{
+  "from": 0,
+  "size": 0,
+  "query": {
+    "filtered": {
+      "filter": {
+        "bool": {
+          "must": [
+            {
+              "term": {
+                "event_id": "globalsearchclick"
+              }
+            },
+            {
+              "range": {
+                "timestamp": {
+                  "gte": "'.$datefrom.'",
+                  "lte": "'.$dateto.'"
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  },
+   "aggs": {
+    "city": {
+      "terms": {
+        "field": "city",
+        "size": 100
+      },
+      "aggs": {
+        "keyword": {
+          "terms": {
+            "field": "clicked",
+            "size": 20
+          }
+        }
+      }
+    }
+  }
+}';
+
+ $request3 = array( 
+      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+      'port' => 8060,
+      'method' => 'POST',
+      'postfields' => $query
+      );
+
+    $keywords = es_curl_request($request3);
+    $keywordlist = json_decode($keywords, true);
+
+    $result = $keywordlist['aggregations']['city']['buckets'];
+
+    $response = array();
+    foreach ($result as $city) {
+    array_push($response, array($city['key'] => $city['keyword']['buckets']));
+    }
+
+     return Response::json($response);
+}
 
 }
