@@ -48,12 +48,16 @@ class CustomerController extends \BaseController {
 		
 		foreach ($trials as $trial){
 			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
-				$finderarr = Finder::active()->with('offerings')->find(intval($trial['finder_id']));
-				// return $finderarr->offerings;
-				// $finderarr = $finderarr->toArray();
-				if(isset($finderarr->offerings) && count($finderarr->offerings) > 0){
-					array_set($trial, 'finder_offerings', pluck( $finderarr->offerings , array('_id', 'name', 'slug') ));
+				$finderarr 	= 	Finder::active()
+				->with('offerings')
+				->where('_id','=',intval($trial['finder_id']))
+				->first();
+				return $data 		= 	$finderarr->toArray();
+				if(isset($finderarr['offerings']) && count($finderarr['offerings']) > 0){
+					array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
+					// var_dump($finderarr);
 				}
+				// array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 			}
 
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
@@ -67,7 +71,7 @@ class CustomerController extends \BaseController {
 		}
 		// array_push($customertrials, $trial);
 		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'message' => 'List of scheduled trials');
-		return Response::json($resp,200);
+		// return Response::json($resp,200);
 	}
 
 
@@ -448,40 +452,40 @@ class CustomerController extends \BaseController {
 			if(isset($data['email']) && !empty($data['email'])){
 
 				$rules = [
-				    'email' => 'email',
-				    'facebook_id' => 'required'
+				'email' => 'email',
+				'facebook_id' => 'required'
 				];
 
 				$validator = Validator::make($data = Input::json()->all(),$rules);
 
 				if($validator->fails()) {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-		        }
+				}
 
-		        $customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
+				$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
 
-		        if(empty($customer)){
-		        	$customer = Customer::where('email','=',$data['email'])->first();
-		        }
+				if(empty($customer)){
+					$customer = Customer::where('email','=',$data['email'])->first();
+				}
 
-		        if(!empty($customer)){
-			        if(!isset($customer->email) || $customer->email == ''){
-			        	$customer->email = $data['email'];
-			        	$customer->update();
-			        }
-			    }
+				if(!empty($customer)){
+					if(!isset($customer->email) || $customer->email == ''){
+						$customer->email = $data['email'];
+						$customer->update();
+					}
+				}
 
 			}else{
 
 				$rules = [
-			    	'facebook_id' => 'required'
+				'facebook_id' => 'required'
 				];
 
 				$validator = Validator::make($data = Input::json()->all(),$rules);
 
 				if($validator->fails()) {
 					return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-		        }else{
+				}else{
 
 					$customer = Customer::where('facebook_id','=',$data['facebook_id'])->first();
 
@@ -491,20 +495,20 @@ class CustomerController extends \BaseController {
 				}
 			}
 			
-	    }else{
+		}else{
 
-	    	$rules = [
-				    'email' => 'required|email'
-				];
+			$rules = [
+			'email' => 'required|email'
+			];
 
 			$validator = Validator::make($data = Input::json()->all(),$rules);
 
 			if($validator->fails()) {
 				return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
-	        }
+			}
 
-	        $customer = Customer::where('email','=',$data['email'])->first();
-	    }
+			$customer = Customer::where('email','=',$data['email'])->first();
+		}
 
 		if(empty($customer)){
 			$socialRegister = $this->socialRegister($data);
@@ -535,12 +539,12 @@ class CustomerController extends \BaseController {
 		}
 
 		if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
-        	$customer->facebook_id = $data['facebook_id'];
-        	$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
-        }
+			$customer->facebook_id = $data['facebook_id'];
+			$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
+		}
 
 		$customer->last_visited = Carbon::now();
-       	$customer->update();
+		$customer->update();
 
 		return $this->createToken($customer);
 	}
@@ -548,41 +552,41 @@ class CustomerController extends \BaseController {
 	public function socialRegister($data){
 
 		$rules = [
-			    'email' => 'required|email',
-			    'name' => 'required',
-			    'identity' => 'required',
-			];
+		'email' => 'required|email',
+		'name' => 'required',
+		'identity' => 'required',
+		];
 
 		$inserted_id = Customer::max('_id') + 1;
-        $validator = Validator::make($data, $rules);
+		$validator = Validator::make($data, $rules);
 
 		if ($validator->fails()) {
-            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
-        }else{
-        	
-        	$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-        	$account_link[$data['identity']] = 1;
+			$response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+		}else{
 
-	        $customer = new Customer();
-	        $customer->_id = $inserted_id;
-	        $customer->name = ucwords($data['name']) ;
-	        $customer->email = $data['email'];
-	        $customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
-	        $customer->identity = $data['identity'];
-	        $customer->account_link = $account_link;
+			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+			$account_link[$data['identity']] = 1;
 
-	        if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
-	        	$customer->facebook_id = $data['facebook_id'];
-	        	$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
-	        }
+			$customer = new Customer();
+			$customer->_id = $inserted_id;
+			$customer->name = ucwords($data['name']) ;
+			$customer->email = $data['email'];
+			$customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
+			$customer->identity = $data['identity'];
+			$customer->account_link = $account_link;
 
-	        $customer->status = "1";
-	        $customer->save();
+			if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
+				$customer->facebook_id = $data['facebook_id'];
+				$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
+			}
 
-	        $response = array('status' => 200,'customer'=>$customer);
-        }
+			$customer->status = "1";
+			$customer->save();
 
-        return $response;
+			$response = array('status' => 200,'customer'=>$customer);
+		}
+
+		return $response;
 	}
 
 	public function createToken($customer){
@@ -955,203 +959,203 @@ class CustomerController extends \BaseController {
 
 		if(empty($finderids)){
 			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
-			return Response::json($responseData, 200);
+return Response::json($responseData, 200);
+}
+
+$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+->with('offerings')
+->whereIn('_id', $finderids)
+->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
+
+$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
+return Response::json($responseData, 200);
+}
+
+public function updateBookmarks($customer_id, $finder_id, $remove = ''){
+
+	$customer 			= 	Customer::where('_id', intval($customer_id))->first();
+	$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? array_map('intval',$customer->bookmarks) : [];
+
+	if($remove == ""){
+		array_push($finderids, intval($finder_id));
+		$message = 'bookmark added successfully';
+	}else{
+		if (in_array(intval($finder_id), $finderids)){
+			unset($finderids[array_search(intval($finder_id),$finderids)]);
 		}
-
-		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->with('offerings')
-		->whereIn('_id', $finderids)
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
-
-		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
-		return Response::json($responseData, 200);
+		$message = 'bookmark revomed successfully';
 	}
 
-	public function updateBookmarks($customer_id, $finder_id, $remove = ''){
+	$customer = Customer::find((int) $customer_id);
+	$bookmarksdata = ['bookmarks' => array_unique($finderids)];
+	$customer->update($bookmarksdata);
 
-		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
-		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? array_map('intval',$customer->bookmarks) : [];
+	$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->whereIn('_id', array_unique($finderids))
+	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+	$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
 
-		if($remove == ""){
-			array_push($finderids, intval($finder_id));
-			$message = 'bookmark added successfully';
-		}else{
-			if (in_array(intval($finder_id), $finderids)){
-    			unset($finderids[array_search(intval($finder_id),$finderids)]);
-			}
-			$message = 'bookmark revomed successfully';
-		}
+	return Response::json($responseData, 200);
+}
 
-		$customer = Customer::find((int) $customer_id);
-		$bookmarksdata = ['bookmarks' => array_unique($finderids)];
-		$customer->update($bookmarksdata);
+public function getAllOrders($offset = 0, $limit = 10){
 
-		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->whereIn('_id', array_unique($finderids))
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
-		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
-		
-		return Response::json($responseData, 200);
-	}
+	$jwt_token = Request::header('Authorization');
+	$decoded = $this->customerTokenDecode($jwt_token);
 
-	public function getAllOrders($offset = 0, $limit = 10){
-		
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
+	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+	$response 		= 	['status' => 200, 'orders' => $orders,  'message' => 'List for orders'];
 
-		$orders 			= 	Order::where('customer_email',$decoded->customer->email)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
-		$response 		= 	['status' => 200, 'orders' => $orders,  'message' => 'List for orders'];
+	return Response::json($response, 200);
+}
 
-		return Response::json($response, 200);
-	}
+public function getAllBookmarks(){
 
-	public function getAllBookmarks(){
+	$jwt_token = Request::header('Authorization');
+	$decoded = $this->customerTokenDecode($jwt_token);
 
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
-		
-		$customer 			= 	Customer::where('_id', intval($decoded->customer->_id))->first();
-		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
+	$customer 			= 	Customer::where('_id', intval($decoded->customer->_id))->first();
+	$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
 
-		if(empty($finderids)){
-			$response 		= 	['status' => 200, 'bookmarks' => [],  'message' => 'No bookmarks yet :)'];
-			return Response::json($response, 200);
-		}
+	if(empty($finderids)){
+		$response 		= 	['status' => 200, 'bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+return Response::json($response, 200);
+}
 
-		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->with('offerings')
-		->whereIn('_id', $finderids)
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
+$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+->with('offerings')
+->whereIn('_id', $finderids)
+->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
-		$response 		= 	['status' => 200, 'bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
-		return Response::json($response, 200);
-	}
+$response 		= 	['status' => 200, 'bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
+return Response::json($response, 200);
+}
 
-	public function getAllReviews($offset = 0, $limit = 10){
+public function getAllReviews($offset = 0, $limit = 10){
 	
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
+	$jwt_token = Request::header('Authorization');
+	$decoded = $this->customerTokenDecode($jwt_token);
 
-		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('customer_id',$decoded->customer->_id)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+	$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('customer_id',$decoded->customer->_id)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
-		$response 		= 	['status' => 200,'reviews' => $reviews,  'message' => 'List for reviews'];
+	$response 		= 	['status' => 200,'reviews' => $reviews,  'message' => 'List for reviews'];
 
-		return Response::json($response, 200);
+	return Response::json($response, 200);
+}
+
+public function getAllTrials(){
+
+	$jwt_token = Request::header('Authorization');
+	$decoded = $this->customerTokenDecode($jwt_token);
+
+	$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
+
+	$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+	->where('customer_email', '=', $decoded->customer->email)
+	->whereIn('booktrial_type', array('auto'))
+	->orderBy('_id', 'desc')
+	->get($selectfields)->toArray();
+
+	if(!$trials){
+		return $this->responseNotFound('Customer does not exist');
 	}
 
-	public function getAllTrials(){
-
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
-
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
-
-		$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-		->where('customer_email', '=', $decoded->customer->email)
-		->whereIn('booktrial_type', array('auto'))
-		->orderBy('_id', 'desc')
-		->get($selectfields)->toArray();
-
-		if(!$trials){
-			return $this->responseNotFound('Customer does not exist');
-		}
-
-		if(count($trials) < 1){
-			$response 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
-			return Response::json($response,200);
-		}
-
-		$customertrials  = 	$trial = array();
-		$currentDateTime =	\Carbon\Carbon::now();
-
-		foreach ($trials as $trial){
-			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
-			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-			array_set($trial, 'passed', $slot_datetime_pass_status);
-			array_push($customertrials, $trial);
-		}
-
-		$response 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
+	if(count($trials) < 1){
+		$response 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
 		return Response::json($response,200);
 	}
 
-	public function editBookmarks($finder_id, $remove = ''){
+	$customertrials  = 	$trial = array();
+	$currentDateTime =	\Carbon\Carbon::now();
 
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
+	foreach ($trials as $trial){
+		$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
+		$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+		array_set($trial, 'passed', $slot_datetime_pass_status);
+		array_push($customertrials, $trial);
+	}
 
-		$customer_id = $decoded->customer->_id;
+	$response 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
+	return Response::json($response,200);
+}
 
-		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
-		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? array_map('intval',$customer->bookmarks) : [];
+public function editBookmarks($finder_id, $remove = ''){
 
-		if($remove == ""){
-			array_push($finderids, intval($finder_id));
-			$message = 'bookmark added successfully';
-		}else{
-			if (in_array(intval($finder_id), $finderids)){
-    			unset($finderids[array_search(intval($finder_id),$finderids)]);
+	$jwt_token = Request::header('Authorization');
+	$decoded = $this->customerTokenDecode($jwt_token);
+
+	$customer_id = $decoded->customer->_id;
+
+	$customer 			= 	Customer::where('_id', intval($customer_id))->first();
+	$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? array_map('intval',$customer->bookmarks) : [];
+
+	if($remove == ""){
+		array_push($finderids, intval($finder_id));
+		$message = 'bookmark added successfully';
+	}else{
+		if (in_array(intval($finder_id), $finderids)){
+			unset($finderids[array_search(intval($finder_id),$finderids)]);
+		}
+		$message = 'bookmark revomed successfully';
+	}
+
+	$customer = Customer::find((int) $customer_id);
+	$bookmarksdata = ['bookmarks' => array_unique($finderids)];
+	$customer->update($bookmarksdata);
+
+	$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->whereIn('_id', array_unique($finderids))
+	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
+	$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
+
+	return Response::json($responseData, 200);
+}
+
+public function customerDetail($customer_id){
+
+	$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>NULL,'dob'=>NULL,'ideal_workout_time'=>NULL);
+
+	$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'))->toArray();
+
+
+	if($customer){
+
+		foreach ($array as $key => $value) {
+
+			if(array_key_exists($key, $customer[0]))
+			{
+				continue;
+			}else{
+				$customer[0][$key] = $value;
 			}
-			$message = 'bookmark revomed successfully';
+
 		}
 
-		$customer = Customer::find((int) $customer_id);
-		$bookmarksdata = ['bookmarks' => array_unique($finderids)];
-		$customer->update($bookmarksdata);
+		$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
-		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-		->whereIn('_id', array_unique($finderids))
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
-		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
-		
-		return Response::json($responseData, 200);
+	}else{
+
+		$response 	= 	array('status' => 400,'message' => 'Customer not found');
 	}
 
-	public function customerDetail($customer_id){
+	return Response::json($response, $response['status']);
 
-		$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>NULL,'dob'=>NULL,'ideal_workout_time'=>NULL);
+}
 
-		$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'))->toArray();
-		
+public function getCustomerDetail(){
 
-		if($customer){
+	$jwt_token = Request::header('Authorization');
+	$decoded = $this->customerTokenDecode($jwt_token);
 
-			foreach ($array as $key => $value) {
+	$customer_id = $decoded->customer->_id;
 
-				if(array_key_exists($key, $customer[0]))
-				{
-					continue;
-				}else{
-					$customer[0][$key] = $value;
-				}
+	return $this->customerDetail($customer_id);
 
-			}
-
-			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
-
-		}else{
-
-			$response 	= 	array('status' => 400,'message' => 'Customer not found');
-		}
-
-		return Response::json($response, $response['status']);
-
-	}
-
-	public function getCustomerDetail(){
-
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
-
-		$customer_id = $decoded->customer->_id;
-
-		return $this->customerDetail($customer_id);
-
-	}
+}
 
 
 }
