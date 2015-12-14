@@ -52,9 +52,9 @@ class CustomerController extends \BaseController {
 				->with('offerings')
 				->where('_id','=',intval($trial['finder_id']))
 				->first();
-				$data 		= 	$finderarr->toArray();
-				if(isset($data['offerings']) && count($data['offerings']) > 0){
-					array_set($trial, 'finder_offerings', pluck( $data['offerings'] , array('_id', 'name', 'slug') ));
+				// $data 		= 	$finderarr->toArray();
+				if(isset($finderarr['offerings']) && count($finderarr['offerings']) > 0){
+					array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				}else{
 					array_set($trial, 'finder_offerings', []);
 				}
