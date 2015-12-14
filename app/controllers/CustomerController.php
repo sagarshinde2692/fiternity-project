@@ -48,7 +48,7 @@ class CustomerController extends \BaseController {
 		
 		foreach ($trials as $trial){
 			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
-				$finderarr = Finder::active()->with('offerings')->where('_id','=', intval($trial['finder_id']))->first();
+				$finderarr = Finder::active()->with('offerings')->find(intval($trial['finder_id']));
 				$finderarr = $finderarr->toArray();
 				array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 			}
