@@ -49,8 +49,11 @@ class CustomerController extends \BaseController {
 		foreach ($trials as $trial){
 			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
 				$finderarr = Finder::active()->with('offerings')->find(intval($trial['finder_id']));
-				$finderarr = $finderarr->toArray();
-				array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
+				// return $finderarr->offerings;
+				// $finderarr = $finderarr->toArray();
+				if(isset($finderarr->offerings) && count($finderarr->offerings) > 0){
+					array_set($trial, 'finder_offerings', pluck( $finderarr->offerings , array('_id', 'name', 'slug') ));
+				}
 			}
 
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
