@@ -494,6 +494,10 @@ $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budget
 $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
 $string = str_replace($stopwords, " ", $key);
 
+$titleboost = 50;
+if(($key === '5 fitness')||($key === '5 fitness club')){
+  $titleboost = 75;
+}
 if(!empty($sort)){
     $sort_clause = ',"sort": [
     {
@@ -529,7 +533,7 @@ foreach ($keylist as $keyval) {
             ]}
         }
     },
-    "boost_factor": 40
+    "boost_factor": 30
 },
 {
     "filter": {
@@ -589,7 +593,7 @@ foreach ($keylist as $keyval) {
             }
         }
     },
-    "boost_factor": 30
+    "boost_factor": '.$titleboost.'
 },
 {
     "filter": {
@@ -738,7 +742,7 @@ $query = '{
 
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv1/finder/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv2/finder/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query
@@ -1232,12 +1236,12 @@ $query = '{
 }';    
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations2/autosuggestor/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations3/autosuggestor/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query
     );    
-//return $query;exit;
+
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 

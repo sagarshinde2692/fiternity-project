@@ -479,6 +479,9 @@ Route::get('sessionutm', 'KYUController@sessionutm');
 Route::get('createkyuusers', 'KYUController@createkyuusers');
 Route::get('getunidentifiedusers', 'KYUController@getunidentifiedusers');
 Route::get('updatepaymentbooking', 'KYUController@updatepaymentbooking');
+Route::post('getglobalsearchkeywordmatrix', 'KYUController@getglobalsearchkeywordmatrix');
+Route::post('getglobalsearchclickedmatrix', 'KYUController@getglobalsearchclickedmatrix');
+Route::post('getdailyvisitors', 'KYUController@getdailyvisitors');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################

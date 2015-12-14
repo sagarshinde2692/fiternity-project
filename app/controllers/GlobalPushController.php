@@ -4,7 +4,7 @@
 
 class GlobalPushController extends \BaseController
 {
-	protected $indice = "autosuggest_index_alllocations2";
+	protected $indice = "autosuggest_index_alllocations3";
 	protected $type   = "autosuggestor";	
 	protected $elasticsearch_port = "";
 	protected $elasticsearch_default_index = "";
@@ -22,8 +22,8 @@ class GlobalPushController extends \BaseController
 		parent::__construct();		
 		$this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
 		$this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
-		$this->elasticsearch_url  = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations2/autosuggestor/';
-		$this->build_elasticsearch_url = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations2';
+		$this->elasticsearch_url  = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations3/autosuggestor/';
+		$this->build_elasticsearch_url = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations3';
 		//'http://localhost:9200/autosuggest_index_alllocations1';
 	}
 
@@ -40,7 +40,7 @@ class GlobalPushController extends \BaseController
 		->with('services')
 		->active()
 		->orderBy('_id')         
-        //->whereIn('_id', array(1623))
+        ->whereNotIn('_id', array(1029, 1030, 1032, 1033, 1034, 1035, 1554, 1705, 1706, 1870, 4585, 5045))
 		->whereIn('city_id', array(1,2,3,4,8))
 		->take(500)->skip(0)
 		->timeout(400000000)
@@ -536,7 +536,7 @@ class GlobalPushController extends \BaseController
 					"input_ngram_tokenizer": {
 						"type": "edgeNGram",
 						"min_gram": "2",
-						"max_gram": "20"
+						"max_gram": "25"
 					}
 				},
 				"filter": {
