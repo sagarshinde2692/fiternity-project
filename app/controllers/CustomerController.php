@@ -47,16 +47,17 @@ class CustomerController extends \BaseController {
 		$passedtrials = [];
 		
 		foreach ($trials as $trial){
-			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
-				$finderarr 	= 	Finder::active()->with('offerings')->find(intval($trial['finder_id']));
-				// return $finderarr->offerings;
+			array_set($trial, 'finder_offerings', []);
 
-				if(isset($finderarr->offerings) && count($finderarr->offerings) > 0){
-					array_set($trial, 'finder_offerings', pluck( $finderarr->offerings , array('_id', 'name', 'slug') ));
-				}else{
-					array_set($trial, 'finder_offerings', []);
+			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
+				$finderarr = Finder::active()->with('offerings')->where('_id','=', intval($trial['finder_id']))->first();
+				if ($finderarr) {
+					$finderarr = $finderarr->toArray();
+					array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				}
 			}
+
+
 
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
@@ -69,7 +70,7 @@ class CustomerController extends \BaseController {
 		}
 		// array_push($customertrials, $trial);
 		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'message' => 'List of scheduled trials');
-		// return Response::json($resp,200);
+		return Response::json($resp,200);
 	}
 
 
@@ -561,7 +562,7 @@ class CustomerController extends \BaseController {
 		if ($validator->fails()) {
 			$response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
 		}else{
-
+			
 			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$account_link[$data['identity']] = 1;
 
@@ -994,12 +995,12 @@ public function updateBookmarks($customer_id, $finder_id, $remove = ''){
 	->whereIn('_id', array_unique($finderids))
 	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
 	$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
-
+	
 	return Response::json($responseData, 200);
 }
 
 public function getAllOrders($offset = 0, $limit = 10){
-
+	
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
 
@@ -1013,7 +1014,7 @@ public function getAllBookmarks(){
 
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
-
+	
 	$customer 			= 	Customer::where('_id', intval($decoded->customer->_id))->first();
 	$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
 
@@ -1109,7 +1110,7 @@ public function editBookmarks($finder_id, $remove = ''){
 	->whereIn('_id', array_unique($finderids))
 	->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count'));
 	$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
-
+	
 	return Response::json($responseData, 200);
 }
 
@@ -1118,7 +1119,7 @@ public function customerDetail($customer_id){
 	$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>NULL,'dob'=>NULL,'ideal_workout_time'=>NULL);
 
 	$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'))->toArray();
-
+	
 
 	if($customer){
 
