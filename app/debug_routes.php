@@ -79,7 +79,7 @@ Route::get('exportcustomer', function() {
 
 		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
 			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-			$finder_city = $finder->city->name;
+			$finder_city = (isset($finder->city->name) && $finder->city->name !="") ? $finder->city->name : "-"; 
 		}else{
 			$city = City::find(intval($value['city_id']));
 			$finder_city = $city->name;
