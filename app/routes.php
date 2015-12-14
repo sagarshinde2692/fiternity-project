@@ -333,22 +333,24 @@ Route::get('flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('fitmania/{city?}/{from?}/{size?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
-Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
+Route::get('fitmania/{city?}/', 'FitmaniaController@home');
+Route::get('fitmaniadod/{city?}/{from?}/{size?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
 
-Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
-Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
+// Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
 
-Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+// Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
+// Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
 
-Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
-Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
-Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
+// Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+
+// Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
+// Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
+// Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
 
 
-Route::get('resendemails', 'FitmaniaController@resendEmails');
-Route::get('resendfinderemail', 'FitmaniaController@resendFinderEmail');
-Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
+// Route::get('resendemails', 'FitmaniaController@resendEmails');
+// Route::get('resendfinderemail', 'FitmaniaController@resendFinderEmail');
+// Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 
 
 ##############################################################################

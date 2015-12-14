@@ -18,6 +18,7 @@ class FitmaniaController extends \BaseController {
 	protected $customermailer;
 	protected $customersms;
 	protected $findermailer;
+
 	
 	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, FinderMailer $findermailer) {
 
@@ -27,11 +28,17 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function getDealOfDay(){
+	public function home(){
 
+		return "welcome to fitmania home page";
 	}
-	
+
 	public function getDealOfDay($city = 'mumbai', $from = '', $size = '', $location_cluster = ''){
+
+		return "welcome to fitmania dod";
+
+
+		
 
 		// $date 				=  	($date == null) ? Carbon::now() : $date;
 		$date 					=  	Carbon::now();
@@ -41,7 +48,7 @@ class FitmaniaController extends \BaseController {
 		$city_id				= 	(int) $citydata['_id'];	
 		$dealsofdays 			=	[];
 
-		$query 	=	Fitmaniadod::with('location')->with('city')->active()->where('city_id', '=', $city_id)
+		$query 	=	Serviceoffer::with('finder')->with('service')->where('city_id', '=', $city_id)
 		->where('offer_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 		->where('offer_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ));
 
