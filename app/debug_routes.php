@@ -98,7 +98,7 @@ Route::get('exportcustomer', function() {
 	];
 
 	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER CITY,  \n";
-	$items = $items = Booktrial::get();
+	$items = $items = Capture::get();
 
 	foreach ($items as $key => $value) {
 		// var_dump($value;)exit();
