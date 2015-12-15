@@ -649,7 +649,7 @@ class CustomerController extends \BaseController {
 			$response = array('status' => 200,'message' => 'password reset successfull');
 		}
 
-		return Response::json($response,$responce['status']);
+		return Response::json($response,$response['status']);
 	}
 
 	public function createPasswordToken($customer){
