@@ -65,8 +65,12 @@ Route::get('exportcustomer', function() {
 	,   'Pragma'              => 'public'
 	];
 
-	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER CITY,  \n";
-	$items = $items = Booktrial::where('finder_id','=',1493)->get();
+	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER CITY,  \n";
+
+	$finders 	= 	Finder::active()->where('location_id', 5 )->get(array('_id'))->toArray();
+	$finder_ids 	= 	array_map('intval', array_pluck($finders, '_id'));
+	$items = $items = Booktrial::where('finder_id', 'exists', true )->whereIn('finder_id', $finder_ids  )->get();
+
 
 	foreach ($items as $key => $value) {
 		// var_dump($value;)exit();
@@ -79,12 +83,13 @@ Route::get('exportcustomer', function() {
 
 		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
 			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
+			$finder_name = $finder->title;
 			$finder_city = (isset($finder->city->name) && $finder->city->name !="") ? $finder->city->name : "-"; 
 		}else{
 			$city = City::find(intval($value['city_id']));
 			$finder_city = $city->name;
 		}
-		$output .= "$id, $customer_name, $customer_email, $customer_phone, $finder_city \n";
+		$output .= "$id, $customer_name, $customer_email, $customer_phone, $finder_name, $finder_city \n";
 	}
 
 	// //CAPTURE
