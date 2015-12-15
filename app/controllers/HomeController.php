@@ -614,8 +614,47 @@ class HomeController extends BaseController {
 	}
 
 
-	public function getOffersTabsOffers($slug){
+	public function getOffersTabsOffers($city, $slug){
 
+
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
+
+		$slugname 				= 	strtolower(trim($slug));
+		$offerdata 				=	Offer::where('city_id', '=', $city_id)->first()->toArray();
+		$slug_array 			=  	array_map('strtolower', array_only($offerdata, array('1_title', '2_title','3_title','4_title')));
+		$slug_index 			= 	array_search($slugname,$offerdata); 
+		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
+		$ratecardids 			=   array_map('intval', explode(',', $offerdata[$ratecardids_index]));
+		$ratecards_array        =   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids  )->get()->toArray();
+		$servicesids     		=  	array_flatten(pluck($ratecards_array, ['service_id']));
+		$serivce_array 			= 	Service::active()
+										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+										->whereIn('_id', $servicesids  )
+										->get()
+										->toArray();	
+
+		$services = $service_ratecards = [];
+		foreach ($serivce_array as $key => $value) {
+			$service_id  			=	$value['_id'];
+			$serviceobj 			=	array_only($value, ['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage','finder']);
+			$service_ratecards 		=	array_where($ratecards_array, function($key, $value) use ($service_id){
+				if($value['service_id'] == $service_id){
+					return $value;
+				}			    
+			});
+			$serviceobj['service_ratecards'] = $service_ratecards;
+			array_push($services, $serviceobj);			
+		}							
+
+		return $services;
 		$data = '{"services":[{"_id":4464,"name":"gym workout","slug":"gym-workout","lat":"19.1182856","lon":"72.8516914","workout_intensity":"all","session_type":"group class","show_in_offers":"1","service_coverimage":"f/c/2.jpg","service_coverimage_thumb":"f/ct/2.jpg","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":15,"name":"andheri east","slug":"andheri-east"},"category":{"_id":65,"name":"Gym","slug":"gym"},"subcategory":{"_id":82,"name":"Gym","slug":"gym"}},{"_id":3695,"name":"zumba test","slug":"zumba-test","lat":"70.09","lon":"67.23","workout_intensity":"all","session_type":"group class","show_in_offers":"1","service_coverimage":"s/c/","service_coverimage_thumb":"s/ct/","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":15,"name":"andheri east","slug":"andheri-east"},"category":{"_id":19,"name":"Zumba","slug":"zumba"},"subcategory":{"_id":20,"name":"Zumba Classes","slug":"zumba-classes"}},{"_id":1,"name":"functional training beginner","slug":"functional-training-beginner","lat":" 18.975683","lon":"72.813086","workout_intensity":"beginner","session_type":"group class","show_in_offers":"1","service_coverimage":"f/c/1_1425276778.jpg","service_coverimage_thumb":"f/ct/1_1425276778.jpg","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":68,"name":"tardeo","slug":"tardeo"},"category":{"_id":5,"name":"Cross Functional Training","slug":"cross-functional-training"},"subcategory":{"_id":64,"name":"Functional Training","slug":"functional-training"}}],"message":"List for offers"}';
 
 		return Response::json(json_decode($data), 200);
@@ -689,7 +728,7 @@ class HomeController extends BaseController {
 		if(!$offertabs){
 			return $this->responseNotFound('offertabs does not exist');
 		}
-			
+
 		$responsedata 	= ['offertabs' => $offertabs,  'message' => 'List for offertabs'];
 		return Response::json($responsedata, 200);
 
