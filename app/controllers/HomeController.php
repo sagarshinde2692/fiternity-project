@@ -654,8 +654,7 @@ class HomeController extends BaseController {
 		}							
 
 		$data['services'] = $services;
-
-		return Response::json(json_decode($data), 200);
+		return Response::json($data, 200);
 	}
 
 
