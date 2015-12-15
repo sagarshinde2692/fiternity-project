@@ -33,7 +33,7 @@ class FitmaniaController extends \BaseController {
 		return "welcome to fitmania home page";
 	}
 
-	public function getDealOfDay($city = 'mumbai', $from = '', $size = '', $location_cluster = ''){
+	public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 		return "welcome to fitmania dod";
 
@@ -77,6 +77,10 @@ class FitmaniaController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
+	public function getDealOfWeek($city = 'mumbai', $from = '', $size = ''){
+
+		return "welcome to fitmania dow";
+	}
 
 	public function getDealOfDayBetweenDate($startdate = null, $enddate = null, $city = 'mumbai', $location_cluster = ''){
 
@@ -318,7 +322,7 @@ class FitmaniaController extends \BaseController {
 			$resp 			= 	array('status' => 404,'message' => "Order Update Fail :)");
 
 			if($buydealofday){
-		
+
 				$sndsSmsCustomer		= 	$this->customersms->buyServiceMembershipThroughFitmania($orderData);
 
 				if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){

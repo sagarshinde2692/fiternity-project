@@ -334,7 +334,8 @@ Route::get('flushall', 'CacheApiController@flushAll');
 /******************** FITMANIA SECTION START HERE *******************************/
 
 Route::get('fitmania/{city?}/', 'FitmaniaController@home');
-Route::get('fitmaniadod/{city?}/{from?}/{size?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
+Route::get('fitmaniadod/{city?}/{from?}/{size?}', 'FitmaniaController@getDealOfDay');
+Route::get('fitmaniadow/{city?}/{from?}/{size?}', 'FitmaniaController@getDealOfWeek');
 
 // Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
 
