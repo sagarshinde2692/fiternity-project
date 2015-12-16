@@ -225,7 +225,7 @@ Route::get('exportbooktrialorder', function() {
 	,   'Pragma'              => 'public'
 	];
 
-	$output = "ID, CAPTURE TYPE, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER MOBILE, CUSTOMER PHONE, FINDER NAME, FINDER LOCATION, FINDER CITY, CAPTURE STATUS, CAPTURE ACTIONS, REQUESTED DATE  \n";
+	$output = "ID, CAPTURE TYPE, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER MOBILE, CUSTOMER PHONE, FINDER NAME, FINDER LOCATION, FINDER CITY, CAPTURE STATUS, CAPTURE ACTIONS, REQUESTED DATE , REMARKS  \n";
 	$items = $items = Capture::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
 
 	foreach ($items as $key => $value) {
@@ -241,6 +241,7 @@ Route::get('exportbooktrialorder', function() {
 		$capture_status 		= 	(isset($value['capture_status']) && $value['capture_status'] !="") ? $value['capture_status'] : "-";
 		$capture_actions 		= 	(isset($value['capture_actions']) && $value['capture_actions'] !="") ? $value['capture_actions'] : "-";
 		$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
+		$remarks 				= 	(isset($value['remarks']) && $value['remarks'] !="") ? str_replace(',', '|', $value['remarks']) : "-";
 
 		$finder_name 			= 	(isset($value['vendor']) && $value['vendor'] !="") ? str_replace(',', '|', $value['vendor'])  : "-";
 		$finder_location 		= 	(isset($value['location']) && $value['location'] !="") ? $value['location'] : "-";
@@ -257,7 +258,7 @@ Route::get('exportbooktrialorder', function() {
 				$finder_city = (isset($city->name) && $city->name !="") ? str_replace(',', '|', $city->name)  : "-";  
 			}
 		}
-		$output .= "$id, $capture_type, $customer_name, $customer_email, $customer_mobile, $customer_phone, $finder_name, $finder_location, $finder_city, $capture_status, $capture_actions, $created_at,  \n";
+		$output .= "$id, $capture_type, $customer_name, $customer_email, $customer_mobile, $customer_phone, $finder_name, $finder_location, $finder_city, $capture_status, $capture_actions, $created_at, $remarks  \n";
 		// var_dump($output);exit;
 	}
 
