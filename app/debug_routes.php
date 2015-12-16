@@ -171,33 +171,80 @@ Route::get('exportbooktrialorder', function() {
 
 
 	//BOOKTRIALS
+	// $headers = [
+	// 'Content-type'        => 'application/csv'
+	// ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+	// ,   'Content-type'        => 'text/csv'
+	// ,   'Content-Disposition' => 'attachment; filename=export_booktrial.csv'
+	// ,   'Expires'             => '0'
+	// ,   'Pragma'              => 'public'
+	// ];
+
+	// $output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
+	// $items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
+
+	// foreach ($items as $key => $value) {
+	// 	// var_dump($value;)exit();
+	// 	$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
+	// 	$source 				= 	(isset($value['source']) && $value['source'] !="") ? $value['source'] : "-";
+	// 	$booktrial_type 		= 	(isset($value['booktrial_type']) && $value['booktrial_type'] !="") ? $value['booktrial_type'] : "-";
+	// 	$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
+	// 	$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
+	// 	$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
+	// 	$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
+	// 	$post_trial_status 		= 	(isset($value['post_trial_status']) && $value['post_trial_status'] !="") ? $value['post_trial_status'] : "-";
+	// 	$schedule_date 			= 	(isset($value['schedule_date']) && $value['schedule_date'] !="") ? $value['schedule_date'] : "-";
+	// 	$schedule_slot 			= 	(isset($value['schedule_slot']) && $value['schedule_slot'] !="") ? $value['schedule_slot'] : "-";
+	// 	$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
+	// 	$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
+	// 	$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
+
+	// 	if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
+	// 		$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
+	// 		$finder_name = $finder->title;
+	// 		$finder_location = $finder->location->name;
+	// 		$finder_city = $finder->city->name;
+	// 	}else{
+	// 		$city = City::find(intval($value['city_id']));
+	// 		$finder_city = $city->name;
+	// 	}
+	// 	// $output .= "$value[_id], $value[source], $value[booktrial_type], $value[customer_name], $value[customer_email], $value[customer_phone], $finder_name, $finder_location, $finder_city, $value[amount], $value[post_trial_status], $value[schedule_date], $value[schedule_slot], $value[created_at]\n";
+	// 	$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $finder_city, $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at, $finder_name, $finder_location \n";
+	// 	// var_dump($output);exit;
+	// }
+
+
+
+	//CAPTURES
 	$headers = [
 	'Content-type'        => 'application/csv'
 	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
 	,   'Content-type'        => 'text/csv'
-	,   'Content-Disposition' => 'attachment; filename=export_booktrial.csv'
+	,   'Content-Disposition' => 'attachment; filename=export_capture.csv'
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
 
-	$output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION,FINDER CITY, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
-	$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
+	$output = "ID, CAPTURE TYPE, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER MOBILE, CUSTOMER PHONE, FINDER NAME, FINDER LOCATION, FINDER CITY, CAPTURE STATUS, CAPTURE ACTIONS, REQUESTED DATE  \n";
+	$items = $items = Capture::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
 
 	foreach ($items as $key => $value) {
 		// var_dump($value;)exit();
 		$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
-		$source 				= 	(isset($value['source']) && $value['source'] !="") ? $value['source'] : "-";
-		$booktrial_type 		= 	(isset($value['booktrial_type']) && $value['booktrial_type'] !="") ? $value['booktrial_type'] : "-";
-		$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
-		$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
-		$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
-		$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
-		$post_trial_status 		= 	(isset($value['post_trial_status']) && $value['post_trial_status'] !="") ? $value['post_trial_status'] : "-";
-		$schedule_date 			= 	(isset($value['schedule_date']) && $value['schedule_date'] !="") ? $value['schedule_date'] : "-";
-		$schedule_slot 			= 	(isset($value['schedule_slot']) && $value['schedule_slot'] !="") ? $value['schedule_slot'] : "-";
+		$capture_type 			= 	(isset($value['capture_type']) && $value['capture_type'] !="") ? $value['capture_type'] : "-";
+		$customer_name 			= 	(isset($value['name']) && $value['name'] !="") ? $value['name'] : "-";
+		$customer_email 		= 	(isset($value['email']) && $value['email'] !="") ? $value['email'] : "-";
+		$customer_mobile 		= 	(isset($value['mobile']) && $value['mobile'] !="") ? $value['mobile'] : "-";
+		$customer_phone 		= 	(isset($value['phone']) && $value['phone'] !="") ? $value['phone'] : "-";
+
+
+		$capture_status 		= 	(isset($value['capture_status']) && $value['capture_status'] !="") ? $value['capture_status'] : "-";
+		$capture_actions 		= 	(isset($value['capture_actions']) && $value['capture_actions'] !="") ? $value['capture_actions'] : "-";
 		$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
-		$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
-		$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
+
+		$finder_name 			= 	(isset($value['vendor']) && $value['vendor'] !="") ? str_replace(',', '|', $value['vendor'])  : "-";
+		$finder_location 		= 	(isset($value['location']) && $value['location'] !="") ? $value['location'] : "-";
+		$finder_city 			= 	"-";
 
 		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
 			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
@@ -208,10 +255,10 @@ Route::get('exportbooktrialorder', function() {
 			$city = City::find(intval($value['city_id']));
 			$finder_city = $city->name;
 		}
-		// $output .= "$value[_id], $value[source], $value[booktrial_type], $value[customer_name], $value[customer_email], $value[customer_phone], $finder_name, $finder_location, $finder_city, $value[amount], $value[post_trial_status], $value[schedule_date], $value[schedule_slot], $value[created_at]\n";
-		$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $finder_city, $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at, $finder_name, $finder_location \n";
+		$output .= "$id, $capture_type, $customer_name, $customer_email, $customer_mobile, $customer_phone, $finder_name, $finder_location, $finder_city, $capture_status, $capture_actions, $created_at,  \n";
 		// var_dump($output);exit;
 	}
+
 
 	return Response::make(rtrim($output, "\n"), 200, $headers);
 	
