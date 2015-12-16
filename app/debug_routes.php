@@ -248,13 +248,13 @@ Route::get('exportbooktrialorder', function() {
 
 		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
 			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-			$finder_name = $finder->title;
-			$finder_location = $finder->location->name;
-			$finder_city = $finder->city->name;
+			$finder_name = (isset($finder->title) && $finder->title !="") ? str_replace(',', '|', $finder->title)  : "-"; 
+			$finder_location = (isset($finder->location->name) && $finder->location->name !="") ? str_replace(',', '|', $finder->location->name)  : "-";
+			$finder_city = (isset($finder->city->name) && $finder->city->name !="") ? str_replace(',', '|', $finder->city->name)  : "-"; 
 		}else{
 			if(isset($value['city_id']) && $value['city_id'] != ''){
 				$city = City::find(intval($value['city_id']));
-				$finder_city = $city->name;
+				$finder_city = (isset($city->name) && $city->name !="") ? str_replace(',', '|', $city->name)  : "-";  
 			}
 		}
 		$output .= "$id, $capture_type, $customer_name, $customer_email, $customer_mobile, $customer_phone, $finder_name, $finder_location, $finder_city, $capture_status, $capture_actions, $created_at,  \n";
