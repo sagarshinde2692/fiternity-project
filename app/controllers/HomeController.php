@@ -616,7 +616,7 @@ class HomeController extends BaseController {
 	}
 
 
-	public function getOffersTabsOffers($city, $slug){
+	public function getOffersTabsOffers($city, $captionslug, $slug){
 
 		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 		if(!$citydata){
@@ -626,14 +626,15 @@ class HomeController extends BaseController {
 		$city_id				= 	(int) $citydata['_id'];	
 
 		$slugname 				= 	strtolower(trim($slug));
-		$offerobj 				=	Offer::where('city_id', '=', $city_id)->first();
+		$captionslug 			= 	strtolower(trim($captionslug));
+		$offerdata 				=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first()->toArray();
 
-		if(count($offerobj) < 0){
-			$responsedata 	= ['services' => [],  'message' => 'No services exits'];
-			return Response::json($responsedata, 200);
-		}
+		// return $offerobj 				=	Offer::where('city_id', '=', $city_id)->where('1_url',$slugname)->orWhere('2_url',$slugname)->orWhere('3_url',$slugname)->orWhere('4_url',$slugname)->get()->toArray();
+		// return $offerdata 				=	Offer::where('city_id', '=', $city_id)->where('1_url', '=', $slugname)->orWhere('2_url', '=', $slugname)->orWhere('3_url', '=', $slugname)->orWhere('4_url', '=', $slugname)->first()->toArray();
 
-		$offerdata 				=	$offerobj->toArray();
+		// echo "<pre>";print_r($offerobj);exit();
+		// $offerdata 				=	Offer::where('city_id', '=', $city_id)->first()->toArray();
+		
 		$slug_array 			=  	array_map('strtolower', array_only($offerdata, array('1_title', '2_title','3_title','4_title')));
 		$slug_index 			= 	array_search($slugname,$offerdata); 
 		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
@@ -644,7 +645,7 @@ class HomeController extends BaseController {
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-		->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating');}))
+		->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact');}))
 		->whereIn('_id', $servicesids  )
 		->get()
 		->toArray();	
@@ -740,6 +741,7 @@ class HomeController extends BaseController {
 			$data = [
 			'_id' => $item['_id'],
 			'caption' => (isset($item['caption']) && $item['caption'] != '') ? strtolower($item['caption']) : "",
+			'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
 			'banner_link' => (isset($item['banner_link']) && $item['banner_link'] != '') ? strtolower($item['banner_link']) : "",
 			'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? intval($item['ordering']) : "",
 			'status' => (isset($item['status']) && $item['status'] != '') ? strtolower($item['status']) : "",
