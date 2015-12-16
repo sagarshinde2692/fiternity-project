@@ -225,7 +225,7 @@ Route::get('exportbooktrialorder', function() {
 	,   'Pragma'              => 'public'
 	];
 
-	$output = "ID, CAPTURE TYPE, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER MOBILE, CUSTOMER PHONE, FINDER NAME, FINDER LOCATION, FINDER CITY, CAPTURE STATUS, CAPTURE ACTIONS, REQUESTED DATE , REMARKS , MEMBERSHIP  \n";
+	$output = "ID, CAPTURE TYPE, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER MOBILE, CUSTOMER PHONE, FINDER NAME, FINDER LOCATION, FINDER CITY, CAPTURE STATUS, CAPTURE ACTIONS, REQUESTED DATE , REMARKS , MEMBERSHIP \n";
 	$items = $items = Capture::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( "2015-11-01" )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( "2015-11-30" )) ))->get();
 
 	foreach ($items as $key => $value) {
