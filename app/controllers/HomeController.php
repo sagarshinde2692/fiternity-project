@@ -86,7 +86,7 @@ class HomeController extends BaseController {
 			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+			->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','contact');}))
 			->whereIn('_id', $feature_service_ids)
 			->get();
 
@@ -105,6 +105,7 @@ class HomeController extends BaseController {
 				'location' => (isset($item['location']) && !empty($item['location'])) ? array_only( $item['location'] , array('_id', 'name', 'slug') ) : "",
 				'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
 				'subcategory' => (isset($item['subcategory']) && !empty($item['subcategory'])) ? array_only( $item['subcategory'] , array('_id', 'name', 'slug') ) : "",
+				'finder' => (isset($item['finder']) && !empty($item['finder'])) ? array_only( $item['finder'] , array('_id','title','slug','finder_coverimage','coverimage','contact') ) : "",
 				];
 
 				if(isset($item['show_in_offers']) && $item['show_in_offers'] == '1' && isset($item['service_ratecards']) && !empty($item['service_ratecards'])){
