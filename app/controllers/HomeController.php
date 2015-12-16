@@ -119,6 +119,8 @@ class HomeController extends BaseController {
 					$data['service_ratecards'] =  (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards']  : [];
 				}
 
+				$data['service_trialschedules'] =  (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules']  : [];
+
 				array_push($feature_services, $data);
 			}
 
@@ -745,7 +747,6 @@ class HomeController extends BaseController {
 			'block3_url' => (isset($item['3_url']) && $item['3_url'] != '') ? strtolower($item['3_url']) : "",
 			'block4_url' => (isset($item['4_url']) && $item['4_url'] != '') ? strtolower($item['4_url']) : "",
 			];
-
 			array_push($offertabs, $data);
 		}
 
