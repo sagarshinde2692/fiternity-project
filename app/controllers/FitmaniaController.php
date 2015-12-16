@@ -33,12 +33,10 @@ class FitmaniaController extends \BaseController {
 		return "welcome to fitmania home page";
 	}
 
+
 	public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 		return "welcome to fitmania dod";
-
-
-		
 
 		// $date 				=  	($date == null) ? Carbon::now() : $date;
 		$date 					=  	Carbon::now();
@@ -81,6 +79,8 @@ class FitmaniaController extends \BaseController {
 
 		return "welcome to fitmania dow";
 	}
+
+
 
 	public function getDealOfDayBetweenDate($startdate = null, $enddate = null, $city = 'mumbai', $location_cluster = ''){
 
