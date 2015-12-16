@@ -746,7 +746,7 @@ class HomeController extends BaseController {
 			'block4_url' => (isset($item['4_url']) && $item['4_url'] != '') ? strtolower($item['4_url']) : "",
 			];
 
-			array_push($offertabs, $data)
+			array_push($offertabs, $data);
 		}
 
 
