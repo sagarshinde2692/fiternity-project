@@ -252,8 +252,10 @@ Route::get('exportbooktrialorder', function() {
 			$finder_location = $finder->location->name;
 			$finder_city = $finder->city->name;
 		}else{
-			$city = City::find(intval($value['city_id']));
-			$finder_city = $city->name;
+			if(isset($value['city_id']) && $value['city_id'] != ''){
+				$city = City::find(intval($value['city_id']));
+				$finder_city = $city->name;
+			}
 		}
 		$output .= "$id, $capture_type, $customer_name, $customer_email, $customer_mobile, $customer_phone, $finder_name, $finder_location, $finder_city, $capture_status, $capture_actions, $created_at,  \n";
 		// var_dump($output);exit;
