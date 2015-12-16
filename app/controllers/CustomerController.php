@@ -32,12 +32,9 @@ class CustomerController extends \BaseController {
 		->orderBy('_id', 'desc')
 		->get($selectfields)->toArray();
 
-		if(!$trials){
-			return $this->responseNotFound('Customer does not exist');
-		}
 
-		if(count($trials) < 1){
-			$resp 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
+		if(count($trials) < 0){
+			$resp 	= 	array('status' => 200,'trials' => [],'message' => 'No trials scheduled yet :)');
 			return Response::json($resp,200);
 		}
 
