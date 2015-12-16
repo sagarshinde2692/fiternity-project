@@ -635,7 +635,7 @@ class HomeController extends BaseController {
 										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 										->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 										->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+										->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating');}))
 										->whereIn('_id', $servicesids  )
 										->get()
 										->toArray();	
