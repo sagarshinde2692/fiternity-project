@@ -649,7 +649,7 @@ class HomeController extends BaseController {
 					return $value;
 				}			    
 			});
-			$serviceobj['service_ratecards'] = $service_ratecards;
+			$serviceobj['service_ratecards'] = array_values($service_ratecards);
 			array_push($services, $serviceobj);			
 		}							
 
