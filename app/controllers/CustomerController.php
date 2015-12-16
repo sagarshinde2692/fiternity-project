@@ -1113,9 +1113,9 @@ public function editBookmarks($finder_id, $remove = ''){
 
 public function customerDetail($customer_id){
 
-	$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>NULL,'dob'=>NULL,'ideal_workout_time'=>NULL);
+	$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>[],'dob'=>NULL,'ideal_workout_time'=>NULL);
 
-	$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'))->toArray();
+	$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time','identity'))->toArray();
 	
 
 	if($customer){
