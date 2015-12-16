@@ -643,7 +643,7 @@ class HomeController extends BaseController {
 		$services = $service_ratecards = [];
 		foreach ($serivce_array as $key => $value) {
 			$service_id  			=	$value['_id'];
-			$serviceobj 			=	array_only($value, ['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'category',  'subcategory', 'location', 'finder']);
+			$serviceobj 			=	array_only($value, ['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'category',  'subcategory', 'location', 'finder','trialschedules']);
 			$service_ratecards 		=	array_where($ratecards_array, function($key, $value) use ($service_id){
 				if($value['service_id'] == $service_id){
 					return $value;
