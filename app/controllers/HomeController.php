@@ -632,13 +632,13 @@ class HomeController extends BaseController {
 		$ratecards_array        =   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids  )->get()->toArray();
 		$servicesids     		=  	array_flatten(pluck($ratecards_array, ['service_id']));
 		$serivce_array 			= 	Service::active()
-										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating');}))
-										->whereIn('_id', $servicesids  )
-										->get()
-										->toArray();	
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating');}))
+		->whereIn('_id', $servicesids  )
+		->get()
+		->toArray();	
 
 		$services = $service_ratecards = [];
 		foreach ($serivce_array as $key => $value) {
@@ -721,9 +721,37 @@ class HomeController extends BaseController {
 		}
 		$city_name 		= 	$citydata['name'];
 		$city_id		= 	(int) $citydata['_id'];	
-		$offertabs 		= 	Offer::where('city_id', '=', $city_id)->get();			
-		if(!$offertabs){
-			return $this->responseNotFound('offertabs does not exist');
+		$offertabsrs 		= 	Offer::where('city_id', '=', $city_id)->get();			
+
+		$offertabs  = [];
+		foreach ($offertabsrs as $key => $value) {
+
+			$item = $value->toArray();
+
+			$data = [
+			'_id' => $item['_id'],
+			'caption' => (isset($item['caption']) && $item['caption'] != '') ? strtolower($item['caption']) : "",
+			'banner_link' => (isset($item['banner_link']) && $item['banner_link'] != '') ? strtolower($item['banner_link']) : "",
+			'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? intval($item['ordering']) : "",
+			'status' => (isset($item['status']) && $item['status'] != '') ? strtolower($item['status']) : "",
+			'banner_image' => (isset($item['banner_image']) && $item['banner_image'] != '') ? strtolower($item['banner_image']) : "",
+			'block1_title' => (isset($item['1_title']) && $item['1_title'] != '') ? strtolower($item['1_title']) : "",
+			'block2_title' => (isset($item['2_title']) && $item['2_title'] != '') ? strtolower($item['2_title']) : "",
+			'block3_title' => (isset($item['3_title']) && $item['3_title'] != '') ? strtolower($item['3_title']) : "",
+			'block4_title' => (isset($item['4_title']) && $item['4_title'] != '') ? strtolower($item['4_title']) : "",
+			'block1_url' => (isset($item['1_url']) && $item['1_url'] != '') ? strtolower($item['1_url']) : "",
+			'block2_url' => (isset($item['2_url']) && $item['2_url'] != '') ? strtolower($item['2_url']) : "",
+			'block3_url' => (isset($item['3_url']) && $item['3_url'] != '') ? strtolower($item['3_url']) : "",
+			'block4_url' => (isset($item['4_url']) && $item['4_url'] != '') ? strtolower($item['4_url']) : "",
+			];
+
+			array_push($offertabs, $data)
+		}
+
+
+		if(count($offertabs) < 0){
+			$responsedata 	= ['offertabs' => [],  'message' => 'List for offertabs'];
+			return Response::json($responsedata, 200);
 		}
 
 		$responsedata 	= ['offertabs' => $offertabs,  'message' => 'List for offertabs'];
