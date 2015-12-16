@@ -627,14 +627,21 @@ class HomeController extends BaseController {
 
 		$slugname 				= 	strtolower(trim($slug));
 		$captionslug 			= 	strtolower(trim($captionslug));
-		$offerdata 				=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first()->toArray();
+		$offerobj 				=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first();
+
+		if(count($offerobj) < 1){
+			$responsedata 	= ['services' => [],  'message' => 'No Service Exist'];
+			return Response::json($responsedata, 200);
+		}
+
+		$offerdata = $offerobj->toArray();
 
 		// return $offerobj 				=	Offer::where('city_id', '=', $city_id)->where('1_url',$slugname)->orWhere('2_url',$slugname)->orWhere('3_url',$slugname)->orWhere('4_url',$slugname)->get()->toArray();
 		// return $offerdata 				=	Offer::where('city_id', '=', $city_id)->where('1_url', '=', $slugname)->orWhere('2_url', '=', $slugname)->orWhere('3_url', '=', $slugname)->orWhere('4_url', '=', $slugname)->first()->toArray();
 
 		// echo "<pre>";print_r($offerobj);exit();
 		// $offerdata 				=	Offer::where('city_id', '=', $city_id)->first()->toArray();
-		
+
 		$slug_array 			=  	array_map('strtolower', array_only($offerdata, array('1_title', '2_title','3_title','4_title')));
 		$slug_index 			= 	array_search($slugname,$offerdata); 
 		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
@@ -649,6 +656,11 @@ class HomeController extends BaseController {
 		->whereIn('_id', $servicesids  )
 		->get()
 		->toArray();	
+
+		if(count($serivce_array) < 1){
+			$responsedata 	= ['services' => [],  'message' => 'No Service Exist'];
+			return Response::json($responsedata, 200);
+		}
 
 		$services = $service_ratecards = [];
 		foreach ($serivce_array as $key => $value) {
