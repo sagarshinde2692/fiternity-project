@@ -626,7 +626,14 @@ class HomeController extends BaseController {
 		$city_id				= 	(int) $citydata['_id'];	
 
 		$slugname 				= 	strtolower(trim($slug));
-		$offerdata 				=	Offer::where('city_id', '=', $city_id)->first()->toArray();
+		$offerobj 				=	Offer::where('city_id', '=', $city_id)->first();
+
+		if(count($offerobj) < 0){
+			$responsedata 	= ['services' => [],  'message' => 'No services exits'];
+			return Response::json($responsedata, 200);
+		}
+
+		$offerdata 				=	$offerobj->toArray();
 		$slug_array 			=  	array_map('strtolower', array_only($offerdata, array('1_title', '2_title','3_title','4_title')));
 		$slug_index 			= 	array_search($slugname,$offerdata); 
 		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
