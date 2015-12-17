@@ -72,16 +72,13 @@ Route::get('moveratecard', function() {
 					$output .= "$rservice_id,$rfinder_id,$rtype,$rprice,$rspecial_price,$rduration,$rduration_type,$rvalidity,$rvalidity_type,$rdirect_payment_enable,$rremarks,$rorder \n";
 					// echo $output; exit();
 
-					return Response::make(rtrim($output, "\n"), 200, $headers);
-
-
-
 					
 				}//foreach ratecards
 			}
 		}
 	}
-
+	
+	return Response::make(rtrim($output, "\n"), 200, $headers);
 	return "ratecard migraterated successfully ...";
 	
 });
