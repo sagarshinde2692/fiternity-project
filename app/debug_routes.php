@@ -58,7 +58,7 @@ Route::get('moveratecard', function() {
 					//export to csv
 					$Finderobj 					=	Finder::find(intval($finder_id));
 					$findername 				=	(isset($Finderobj->slug) && $Finderobj->slug != "") ? $Finderobj->slug : "-";
-					$commercial_type_status 	=	(isset($Finderobj->commercial_type_status) && $Finderobj->commercial_type_status != "") ? $Finderobj->slug : "-";
+					$commercial_type_status 	=	(isset($Finderobj->commercial_type_status) && $Finderobj->commercial_type_status != "") ? $Finderobj->commercial_type_status : "-";
 					$business_type_status 		=	(isset($Finderobj->business_type_status) && $Finderobj->business_type_status != "") ? $Finderobj->business_type_status : "-";
 					$finder_type 				=	(isset($Finderobj->finder_type) && $Finderobj->finder_type != "") ? $Finderobj->finder_type : "-";
 					$rservice_id 			=	(isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
@@ -74,7 +74,7 @@ Route::get('moveratecard', function() {
 					$rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? $ratecarddata['remarks'] : "-";
 					$rorder 				=	(isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
 
-					$output .= "$rservice_id, $rfinder_id, $findername, $commercial_type_status, $commercial_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
+					$output .= "$rservice_id, $rfinder_id, $findername, $commercial_type_status, $business_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
 					// echo $output; exit();
 
 					
