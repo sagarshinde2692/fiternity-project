@@ -57,7 +57,6 @@ class FitmaniaController extends \BaseController {
 		// $dealsofdaycolleciton 	= $query->orderBy('ordering', 'desc')->get()->toArray();
 		$dealsofdaycolleciton 	= $query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
 		
-		
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transform($value);
 			array_push($dealsofdays, $dealdata);
