@@ -58,7 +58,7 @@ Route::get('moveratecard', function() {
 					// $ratecard->save();
 
 					//export to csv
-					$Finderobj 		=	Finder::find($intval($finder_id));
+					$Finderobj 				=	Finder::find(intval($finder_id));
 					$findername 			=	(isset($Finderobj->slug) && $Finderobj->slug != "") ? $Finderobj->slug : "-";
 					$rservice_id 			=	(isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
 					$rfinder_id 			=	(isset($ratecarddata['finder_id']) && $ratecarddata['finder_id'] != "") ? $ratecarddata['finder_id'] : "-";
