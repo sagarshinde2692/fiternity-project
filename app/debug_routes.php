@@ -13,7 +13,7 @@ Route::get('moveratecard', function() {
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
-	$output = "SERVICE ID, FINDER ID, TYPE, PRICE, SPECIAL PRICE, DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE, REMARKS, ORDER \n";
+	$output = "SERVICE ID, FINDER ID, FINDER NAME, TYPE, PRICE, SPECIAL PRICE, DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE, REMARKS, ORDER \n";
 
 
 	foreach ($items as $key => $item) {
@@ -34,6 +34,8 @@ Route::get('moveratecard', function() {
 						$days 		= (isset($durationObj->days)) ? intval($durationObj->days) : 0;
 						$sessions 	= (isset($durationObj->sessions)) ? intval($durationObj->sessions) : 0;
 					}
+
+
 					
 					$ratecarddata = [
 					'service_id'=> $service_id,
@@ -56,20 +58,22 @@ Route::get('moveratecard', function() {
 					// $ratecard->save();
 
 					//export to csv
-					$rservice_id = (isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
-					$rfinder_id = (isset($ratecarddata['finder_id']) && $ratecarddata['finder_id'] != "") ? $ratecarddata['finder_id'] : "-";
-					$rtype = (isset($ratecarddata['type']) && $ratecarddata['type'] != "") ? $ratecarddata['type'] : "-";
-					$rprice = (isset($ratecarddata['price']) && $ratecarddata['price'] != "") ? $ratecarddata['price'] : "-";
-					$rspecial_price = (isset($ratecarddata['special_price']) && $ratecarddata['special_price'] != "") ? $ratecarddata['special_price'] : "-";
-					$rduration = (isset($ratecarddata['duration']) && $ratecarddata['duration'] != "") ? $ratecarddata['duration'] : "-";
-					$rduration_type = (isset($ratecarddata['duration_type']) && $ratecarddata['duration_type'] != "") ? $ratecarddata['duration_type'] : "-";
-					$rvalidity = (isset($ratecarddata['validity']) && $ratecarddata['validity'] != "") ? $ratecarddata['validity'] : "-";
-					$rvalidity_type = (isset($ratecarddata['validity_type']) && $ratecarddata['validity_type'] != "") ? $ratecarddata['validity_type'] : "-";
-					$rdirect_payment_enable = (isset($ratecarddata['direct_payment_enable']) && $ratecarddata['direct_payment_enable'] != "") ? $ratecarddata['direct_payment_enable'] : "-";
-					$rremarks = (isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? $ratecarddata['remarks'] : "-";
-					$rorder = (isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
+					$Finderobj 		=	Finder::find($intval($finder_id));
+					$findername 			=	(isset($Finderobj->slug) && $Finderobj->slug != "") ? $Finderobj->slug : "-";
+					$rservice_id 			=	(isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
+					$rfinder_id 			=	(isset($ratecarddata['finder_id']) && $ratecarddata['finder_id'] != "") ? $ratecarddata['finder_id'] : "-";
+					$rtype 					=	(isset($ratecarddata['type']) && $ratecarddata['type'] != "") ? $ratecarddata['type'] : "-";
+					$rprice 				=	(isset($ratecarddata['price']) && $ratecarddata['price'] != "") ? $ratecarddata['price'] : "-";
+					$rspecial_price 		=	(isset($ratecarddata['special_price']) && $ratecarddata['special_price'] != "") ? $ratecarddata['special_price'] : "-";
+					$rduration 				=	(isset($ratecarddata['duration']) && $ratecarddata['duration'] != "") ? $ratecarddata['duration'] : "-";
+					$rduration_type 		=	(isset($ratecarddata['duration_type']) && $ratecarddata['duration_type'] != "") ? $ratecarddata['duration_type'] : "-";
+					$rvalidity 				=	(isset($ratecarddata['validity']) && $ratecarddata['validity'] != "") ? $ratecarddata['validity'] : "-";
+					$rvalidity_type 		=	(isset($ratecarddata['validity_type']) && $ratecarddata['validity_type'] != "") ? $ratecarddata['validity_type'] : "-";
+					$rdirect_payment_enable =	(isset($ratecarddata['direct_payment_enable']) && $ratecarddata['direct_payment_enable'] != "") ? $ratecarddata['direct_payment_enable'] : "-";
+					$rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? $ratecarddata['remarks'] : "-";
+					$rorder 				=	(isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
 
-					$output .= "$rservice_id,$rfinder_id,$rtype,$rprice,$rspecial_price,$rduration,$rduration_type,$rvalidity,$rvalidity_type,$rdirect_payment_enable,$rremarks,$rorder \n";
+					$output .= "$rservice_id, $rfinder_id, $findername, $rtype, $rprice, $rspecial_price, $rduration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rremarks, $rorder \n";
 					// echo $output; exit();
 
 					
@@ -77,7 +81,7 @@ Route::get('moveratecard', function() {
 			}
 		}
 	}
-	
+
 	return Response::make(rtrim($output, "\n"), 200, $headers);
 	return "ratecard migraterated successfully ...";
 	
