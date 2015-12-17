@@ -4,12 +4,25 @@ Route::get('moveratecard', function() {
 	$items = Service::active()->orderBy('_id')->lists('_id');
 	if($items){ DB::table('ratecards')->truncate(); }
 
+	//export
+	$headers = [
+	'Content-type'        => 'application/csv'
+	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+	,   'Content-type'        => 'text/csv'
+	,   'Content-Disposition' => 'attachment; filename=export_newratecard.csv'
+	,   'Expires'             => '0'
+	,   'Pragma'              => 'public'
+	];
+	$output = "SERVICE ID, FINDER ID, TYPE, PRICE, SPECIAL PRICE, DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE, REMARKS, ORDER \n";
+
+
 	foreach ($items as $key => $item) {
 		$service_id = intval($item);
-		$Service 	=	Service::find($service_id,['ratecards']);
+		$Service 	=	Service::find($service_id,['ratecards','finder_id']);
 
 		if($Service){
-			$data 	=	$Service->toArray();
+			$data 		=	$Service->toArray();
+			$finder_id 	=   intval($data['finder_id']);
 			if(count($data['service_ratecards']) > 0 && isset($data['service_ratecards'])){
 
 				foreach ($data['service_ratecards'] as $key => $val) {
@@ -24,23 +37,45 @@ Route::get('moveratecard', function() {
 					
 					$ratecarddata = [
 					'service_id'=> $service_id,
-					'offers'=> [],
-					'order'=> (isset($val['order'])) ? $val['order'] : '0',
+					'finder_id'=> intval($finder_id),
 					'type'=> (isset($val['type'])) ? $val['type'] : '',
-					'remarks'=> (isset($val['remarks'])) ? $val['remarks'] : '',
 					'price'=> (isset($val['price'])) ? intval($val['price']) : 0,
 					'special_price'=> (isset($val['special_price'])) ? intval($val['special_price']) : 0,
-					'direct_payment_enable'=> (isset($val['direct_payment_enable'])) ? $val['direct_payment_enable'] : '0',
-					'validity'=> intval($days),
-					'validity_type'=> 'days',
 					'duration'=> intval($sessions),
 					'duration_type'=> 'sessions',
+					'validity'=> intval($days),
+					'validity_type'=> 'days',
+					'direct_payment_enable'=> (isset($val['direct_payment_enable'])) ? $val['direct_payment_enable'] : '0',
+					'remarks'=> (isset($val['remarks'])) ? $val['remarks'] : '',
+					'order'=> (isset($val['order'])) ? $val['order'] : '0',
 					];
 				 	// print_pretty($ratecarddata); exit();
 
-					$ratecard 		=	new Ratecard($ratecarddata);
-					$ratecard->_id 	=	$insertedid;
-					$ratecard->save();
+					// $ratecard 		=	new Ratecard($ratecarddata);
+					// $ratecard->_id 	=	$insertedid;
+					// $ratecard->save();
+
+					//export to csv
+					$rservice_id = (isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
+					$rfinder_id = (isset($ratecarddata['finder_id']) && $ratecarddata['finder_id'] != "") ? $ratecarddata['finder_id'] : "-";
+					$rtype = (isset($ratecarddata['type']) && $ratecarddata['type'] != "") ? $ratecarddata['type'] : "-";
+					$rprice = (isset($ratecarddata['price']) && $ratecarddata['price'] != "") ? $ratecarddata['price'] : "-";
+					$rspecial_price = (isset($ratecarddata['special_price']) && $ratecarddata['special_price'] != "") ? $ratecarddata['special_price'] : "-";
+					$rduration = (isset($ratecarddata['duration']) && $ratecarddata['duration'] != "") ? $ratecarddata['duration'] : "-";
+					$rduration_type = (isset($ratecarddata['duration_type']) && $ratecarddata['duration_type'] != "") ? $ratecarddata['duration_type'] : "-";
+					$rvalidity = (isset($ratecarddata['validity']) && $ratecarddata['validity'] != "") ? $ratecarddata['validity'] : "-";
+					$rvalidity_type = (isset($ratecarddata['validity_type']) && $ratecarddata['validity_type'] != "") ? $ratecarddata['validity_type'] : "-";
+					$rdirect_payment_enable = (isset($ratecarddata['direct_payment_enable']) && $ratecarddata['direct_payment_enable'] != "") ? $ratecarddata['direct_payment_enable'] : "-";
+					$rremarks = (isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? $ratecarddata['remarks'] : "-";
+					$rorder = (isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
+
+					$output .= "$rservice_id,$rfinder_id,$rtype,$rprice,$rspecial_price,$rduration,$rduration_type,$rvalidity,$rvalidity_type,$rdirect_payment_enable,$rremarks,$rorder \n";
+					// echo $output; exit();
+
+					return Response::make(rtrim($output, "\n"), 200, $headers);
+
+
+
 					
 				}//foreach ratecards
 			}
