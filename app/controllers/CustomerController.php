@@ -1145,6 +1145,7 @@ public function customerDetail($customer_id){
 public function getCustomerDetail(){
 
 	$jwt_token = Request::header('Authorization');
+	Log::info($jwt_token);
 	$decoded = $this->customerTokenDecode($jwt_token);
 
 	$customer_id = $decoded->customer->_id;
