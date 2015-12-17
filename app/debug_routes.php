@@ -2,7 +2,7 @@
 
 Route::get('moveratecard', function() { 
 	$items = Service::active()->orderBy('_id')->lists('_id');
-	if($items){ DB::table('ratecards')->truncate(); }
+	// if($items){ DB::table('ratecards')->truncate(); }
 
 	//export
 	$headers = [
@@ -13,7 +13,7 @@ Route::get('moveratecard', function() {
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
-	$output = "SERVICE ID, FINDER ID, FINDER NAME, TYPE, PRICE, SPECIAL PRICE, DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE, REMARKS, ORDER \n";
+	$output = "SERVICE ID, FINDER ID, FINDER NAME, commercial TYPE, business TYPE, FINDER TYPE,  TYPE, PRICE, SPECIAL PRICE, DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE,  ORDER, REMARKS \n";
 
 
 	foreach ($items as $key => $item) {
@@ -35,8 +35,6 @@ Route::get('moveratecard', function() {
 						$sessions 	= (isset($durationObj->sessions)) ? intval($durationObj->sessions) : 0;
 					}
 
-
-					
 					$ratecarddata = [
 					'service_id'=> $service_id,
 					'finder_id'=> intval($finder_id),
@@ -58,8 +56,11 @@ Route::get('moveratecard', function() {
 					// $ratecard->save();
 
 					//export to csv
-					$Finderobj 				=	Finder::find(intval($finder_id));
-					$findername 			=	(isset($Finderobj->slug) && $Finderobj->slug != "") ? $Finderobj->slug : "-";
+					$Finderobj 					=	Finder::find(intval($finder_id));
+					$findername 				=	(isset($Finderobj->slug) && $Finderobj->slug != "") ? $Finderobj->slug : "-";
+					$commercial_type_status 	=	(isset($Finderobj->commercial_type_status) && $Finderobj->commercial_type_status != "") ? $Finderobj->slug : "-";
+					$business_type_status 		=	(isset($Finderobj->business_type_status) && $Finderobj->business_type_status != "") ? $Finderobj->business_type_status : "-";
+					$finder_type 				=	(isset($Finderobj->finder_type) && $Finderobj->finder_type != "") ? $Finderobj->finder_type : "-";
 					$rservice_id 			=	(isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
 					$rfinder_id 			=	(isset($ratecarddata['finder_id']) && $ratecarddata['finder_id'] != "") ? $ratecarddata['finder_id'] : "-";
 					$rtype 					=	(isset($ratecarddata['type']) && $ratecarddata['type'] != "") ? $ratecarddata['type'] : "-";
@@ -73,7 +74,7 @@ Route::get('moveratecard', function() {
 					$rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? $ratecarddata['remarks'] : "-";
 					$rorder 				=	(isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
 
-					$output .= "$rservice_id, $rfinder_id, $findername, $rtype, $rprice, $rspecial_price, $rduration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rremarks, $rorder \n";
+					$output .= "$rservice_id, $rfinder_id, $findername, $commercial_type_status, $commercial_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
 					// echo $output; exit();
 
 					

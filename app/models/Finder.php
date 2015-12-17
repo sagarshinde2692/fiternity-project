@@ -24,7 +24,7 @@ class Finder extends  \Basemodel {
 	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
 	];
 
-	protected $appends = array('finder_coverimage');
+	protected $appends = array('finder_coverimage','commercial_type_status', 'business_type_status');
 
 
 	public function setIdAttribute($value){
@@ -32,10 +32,37 @@ class Finder extends  \Basemodel {
 	}
 
 
+
 	public function getFinderCoverimageAttribute(){
 
 		$finder_coverimage = (trim($this->coverimage) != '') ? trim($this->coverimage) : 'default/'.$this->category_id.'-'.rand(1, 4).'.jpg';
 		return $finder_coverimage;
+	}
+
+	public function getCommercialTypeStatusAttribute(){
+		
+		$val = '';
+		if($this->commercial_type == 0){
+			$val = 'Free';
+		}elseif($this->commercial_type == 1){
+			$val = 'Paid';
+		}elseif($this->commercial_type == 2){
+			$val = 'Free Special';
+		}elseif($this->commercial_type == 3){
+			$val = 'Commission On Sales';
+		}
+		return $val;
+	}
+
+	public function getBusinessTypeStatusAttribute(){
+
+		$val = '';
+		if($this->business_type == 0){
+			$val = 'Non Infrastructure';
+		}elseif($this->business_type == 1){
+			$val = 'Infrastructure';
+		}
+		return $val;
 	}
 
 
