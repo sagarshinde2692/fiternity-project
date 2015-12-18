@@ -28,4 +28,8 @@ class Ratecard extends \Basemodel {
 		return $this->belongsTo('Location');
 	}
 
+	public function serviceoffers(){
+		return $this->hasMany('Serviceoffer','ratecard_id');
+	}
+	
 }

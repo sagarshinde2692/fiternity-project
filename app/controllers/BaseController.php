@@ -30,6 +30,11 @@ class BaseController extends Controller {
     	return   $this->setStatusCode(404)->respondWithError($message);
     }
 
+    public function responseEmpty ($message = 'No Result'){
+        return   $this->setStatusCode(200)->respondWithError($message);
+    }
+
+
     public function respond ($data, $header = []){
     	return  Response::json($data, $this->getStatusCode(), $header);
     }
