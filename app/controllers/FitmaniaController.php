@@ -49,7 +49,7 @@ class FitmaniaController extends \BaseController {
 		$city_id		= 	(int) $citydata['_id'];	
 		$from 			=	($from != '') ? intval($from) : 0;
 		$size 			=	($size != '') ? intval($size) : 10;
-		
+
 		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();			
 		if(!$banners){
 			return $this->responseEmpty('Fitmania Home Page Banners does not exist :)');
@@ -95,7 +95,10 @@ class FitmaniaController extends \BaseController {
 			array_push($fitmaniadods, $dealdata);
 		}
 
-		return $fitmaniadods;
+		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();			
+		
+		$responsedata 	= ['fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+		return Response::json($responsedata, 200);
 
 	}
 
@@ -161,7 +164,11 @@ class FitmaniaController extends \BaseController {
 			$membershipdata = $this->transformMembership($value);
 			array_push($fitmaniamemberships, $membershipdata);
 		}
-		return $fitmaniamemberships;
+
+		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();			
+		
+		$responsedata 	= ['fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'message' => 'Fitmania Home Page Memberships :)'];
+		return Response::json($responsedata, 200);
 	}
 
 
