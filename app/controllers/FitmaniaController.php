@@ -231,7 +231,15 @@ class FitmaniaController extends \BaseController {
 
 		$fitmaniamemberships 		=	[];
 
-		$query	 					= 	Service::active();		
+		$serviceoffers  			= 	Serviceoffer::where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->get()->toArray();
+		$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
+		$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
+
+		$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+												->active()->whereIn('_id', $serviceids_array);		
 		if(!empty($category)){
 			$query->whereIn('servicecategory_id', $category );
 		}
@@ -248,13 +256,28 @@ class FitmaniaController extends \BaseController {
 			$query->whereIn('finder_id', $finder );
 		}
 
-		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
-		$offers  				= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-											->where("type" , "=" , "fitmania-membership-giveaways")
-											->whereIn('service_id', $serviceids_array)->get();
-		foreach ($offers as $key => $value) {
-			$membershipdata = $this->transformMembership($value);
-			array_push($fitmaniamemberships, $membershipdata);
+		$services 		= 	$query->orderBy('ordering', 'desc')->get()->toArray();
+		
+		foreach ($services as $key => $value) {
+			$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
+			$service_ratedcards    	=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();					
+			$finderarr 				= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+											->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+											->where('_id', (int) $item['finder_id'])->first();
+			$data = [
+			'_id' => $item['_id'],
+			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+			'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+			'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
+			'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
+			'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
+			];
+
+			// return $data;
+			array_push($fitmaniamemberships, $data);
 		}
 
 
@@ -307,8 +330,10 @@ class FitmaniaController extends \BaseController {
 		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
 
 		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-												// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-												// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												// ->orWhere('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->Where("active" , "=" , "1")
 												->where("type" , "=" , "fitmania-dod")
 												->orWhere("type" , "=" , "fitmania-dow")
 												->whereIn('service_id', $serviceids_array)
