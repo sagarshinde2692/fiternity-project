@@ -219,36 +219,117 @@ class FitmaniaController extends \BaseController {
 
 	public function serachMembership(){
 
-		return Input::json()->all();
-
-		$ratecardids 			=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
-
-
+		// return Input::json()->all();
+		$from 						=	(Input::json()->get('from')) ? intval(Input::json()->get('from')) : 0;
+		$size 						=	(Input::json()->get('size')) ? intval(Input::json()->get('size')) : 10;
 		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';
 		$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
-		$category 					=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : [];		
-		$subcategory 				=	(Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : [];		
-		$location 					=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : [];	
-		$finder 					=	(Input::json()->get('finder')) ? strtolower(Input::json()->get('finder')) : [];	
-		// $workout_intensity 			=	(Input::json()->get('workout_intensity')) ? strtolower(Input::json()->get('workout_intensity')) : '';			
-		// $workout_tags 				=	(Input::json()->get('workout_tags')) ? strtolower(Input::json()->get('workout_tags')) : '';	
-		$fitmaniaServices 			=	[];
+		$category 					=	(Input::json()->get('category')) ? array_map('intval', Input::json()->get('category')) : [];		
+		$subcategory 				=	(Input::json()->get('subcategory')) ? array_map('intval', Input::json()->get('subcategory')) : [];		
+		$location 					=	(Input::json()->get('location')) ? array_map('intval', Input::json()->get('location')) : [];	
+		$finder 					=	(Input::json()->get('finder')) ? array_map('intval', Input::json()->get('finder')) : [];	
 
+		$fitmaniamemberships 		=	[];
 
-		$query	 					= 	Service::active()->with('finder')->with('category')->with('subcategory')->where('finder_id', 'exists', true)->orderBy('_id');		
-		
+		$query	 					= 	Service::active();		
 		if(!empty($category)){
-			$query->whereIn('category_id',$category );
+			$query->whereIn('servicecategory_id', $category );
 		}
 
 		if(!empty($subcategory)){
-			$query->whereIn('servicecategory_id',$subcategory );
+			$query->whereIn('servicesubcategory_id', $subcategory );
+		}
+
+		if(!empty($location)){
+			$query->whereIn('location_id', $location );
 		}
 
 		if(!empty($finder)){
 			$query->whereIn('finder_id', $finder );
 		}
 
+		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
+		$offers  				= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
+											->where("type" , "=" , "fitmania-membership-giveaways")
+											->whereIn('service_id', $serviceids_array)->get();
+		foreach ($offers as $key => $value) {
+			$membershipdata = $this->transformMembership($value);
+			array_push($fitmaniamemberships, $membershipdata);
+		}
+
+
+		$date 			=  	Carbon::now();
+		$stringdate 	= 	$date->toFormattedDateString();
+		$categoryday   	=   'zumba';
+
+		$leftside 					= 	[];
+		$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
+		$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
+		$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
+		
+		$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
+		return Response::json($responsedata, 200);
+	}
+
+
+
+	public function serachDodAndDow(){
+
+		// return Input::json()->all();
+		$from 						=	(Input::json()->get('from')) ? intval(Input::json()->get('from')) : 0;
+		$size 						=	(Input::json()->get('size')) ? intval(Input::json()->get('size')) : 10;
+		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';
+		$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
+		$category 					=	(Input::json()->get('category')) ? array_map('intval', Input::json()->get('category')) : [];		
+		$subcategory 				=	(Input::json()->get('subcategory')) ? array_map('intval', Input::json()->get('subcategory')) : [];		
+		$location 					=	(Input::json()->get('location')) ? array_map('intval', Input::json()->get('location')) : [];	
+		$finder 					=	(Input::json()->get('finder')) ? array_map('intval', Input::json()->get('finder')) : [];	
+
+		$fitmaniadods 				=	[];
+
+		$query	 					= 	Service::active();		
+		if(!empty($category)){
+			$query->whereIn('servicecategory_id', $category );
+		}
+
+		if(!empty($subcategory)){
+			$query->whereIn('servicesubcategory_id', $subcategory );
+		}
+
+		if(!empty($location)){
+			$query->whereIn('location_id', $location );
+		}
+
+		if(!empty($finder)){
+			$query->whereIn('finder_id', $finder );
+		}
+
+		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
+
+		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
+												// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												->where("type" , "=" , "fitmania-dod")
+												->where("type" , "=" , "fitmania-dod")
+												->whereIn('service_id', $serviceids_array)
+												->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transformDod($value);
+			array_push($fitmaniadods, $dealdata);
+		}
+
+		$date 			=  	Carbon::now();
+		$stringdate 	= 	$date->toFormattedDateString();
+		$categoryday   	=   'zumba';
+
+		$leftside 					= 	[];
+		$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
+		$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
+		$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
+
+		$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
+		return Response::json($responsedata, 200);
 
 
 	}
