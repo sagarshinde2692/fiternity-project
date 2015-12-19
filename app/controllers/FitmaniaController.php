@@ -163,10 +163,9 @@ class FitmaniaController extends \BaseController {
 		$ratecardids 			=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
 		$fitmaniamemberships 	=	[];
 
-		$offers  		= 	Serviceoffer::with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact');}))
-		->with(array('service'=>function($query){$query->select('name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'category',  'subcategory', 'location', 'finder','trialschedules');}))
-		->where("type" , "=" , "fitmania-membership-giveaways")
-		->whereIn('ratecard_id', $ratecardids)->get();
+		$offers  		= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
+										->where("type" , "=" , "fitmania-membership-giveaways")
+										->whereIn('ratecard_id', $ratecardids)->get();
 		foreach ($offers as $key => $value) {
 			$membershipdata = $this->transformMembership($value);
 			array_push($fitmaniamemberships, $membershipdata);
@@ -220,15 +219,35 @@ class FitmaniaController extends \BaseController {
 
 	public function serachMembership(){
 
+		return Input::json()->all();
+
+		$ratecardids 			=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
+
+
 		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';
 		$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
-		$category 					=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : '';		
-		$subcategory 				=	(Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : '';		
-		$location 					=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : '';	
+		$category 					=	(Input::json()->get('category')) ? strtolower(Input::json()->get('category')) : [];		
+		$subcategory 				=	(Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : [];		
+		$location 					=	(Input::json()->get('location')) ? strtolower(Input::json()->get('location')) : [];	
+		$finder 					=	(Input::json()->get('finder')) ? strtolower(Input::json()->get('finder')) : [];	
 		// $workout_intensity 			=	(Input::json()->get('workout_intensity')) ? strtolower(Input::json()->get('workout_intensity')) : '';			
 		// $workout_tags 				=	(Input::json()->get('workout_tags')) ? strtolower(Input::json()->get('workout_tags')) : '';	
 		$fitmaniaServices 			=	[];
 
+
+		$query	 					= 	Service::active()->with('finder')->with('category')->with('subcategory')->where('finder_id', 'exists', true)->orderBy('_id');		
+		
+		if(!empty($category)){
+			$query->whereIn('category_id',$category );
+		}
+
+		if(!empty($subcategory)){
+			$query->whereIn('servicecategory_id',$subcategory );
+		}
+
+		if(!empty($finder)){
+			$query->whereIn('finder_id', $finder );
+		}
 
 
 
