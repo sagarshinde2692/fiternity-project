@@ -266,7 +266,7 @@ class FitmaniaController extends \BaseController {
 		$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
 		$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
 		$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
-		
+
 		$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
 		return Response::json($responsedata, 200);
 	}
@@ -310,7 +310,7 @@ class FitmaniaController extends \BaseController {
 												// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												->where("type" , "=" , "fitmania-dod")
-												->where("type" , "=" , "fitmania-dod")
+												->orWhere("type" , "=" , "fitmania-dow")
 												->whereIn('service_id', $serviceids_array)
 												->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
