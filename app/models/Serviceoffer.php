@@ -44,6 +44,10 @@ class Serviceoffer extends \Basemodel {
 		return $this->belongsTo('Service');
 	}
 
+	public function ratecard(){
+		return $this->belongsTo('Ratecard');
+	}
+
 
 
 
