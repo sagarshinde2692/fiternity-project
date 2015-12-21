@@ -484,7 +484,45 @@ class FitmaniaController extends \BaseController {
 	}
 
 
+	public function buyOffer(){
 
+		// return Input::json()->all();
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		}
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
+
+		//Maintain Slab for deals of day
+		if($orderData['type'] == 'fitmania-dod'){
+			if(empty($orderData['serviceoffer_id']) ){
+				return Response::json(array('status' => 404,'message' => "Data Missing - serviceoffer_id"),404);				
+			}
+		}
+
+
+		if($orderData['status'] == 0){
+			$buydealofday 	=	$order->update(['status' => '1']);
+
+			if($buydealofday){
+				if($orderData['type'] == 'fitmania-dod'){
+					$serviceoffer 	= Serviceoffer::find(intval($orderData['serviceoffer_id']));
+					$offer_limit 	=  intval($serviceoffer->limit);
+					$offer_sold 	=  intval($serviceoffer->sold) + 1;
+					$offer_active  	=  1;
+					if(intval($offer_limit) == intval($offer_sold)){
+						$offer_active = 0; 
+					}
+					$service_offerdata  = ['limit' => $offer_limit, 'sold' => $offer_sold, 'active' => $offer_active];
+					$serviceoffer->update($service_offerdata);
+
+				}
+			}
+
+		}
+	}
 
 
 
