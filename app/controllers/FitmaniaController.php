@@ -380,11 +380,88 @@ class FitmaniaController extends \BaseController {
 
 		$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
 		return Response::json($responsedata, 200);
+	}
 
 
+	/**
+	 * Return the specified service.
+	 *
+	 * @param  int  	$serviceid
+	 * @return Response
+	 */
+
+	public function serviceDetail($serviceid){
+
+		$service = Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->where('_id', (int) $serviceid)->first();
+
+		if(!$service){
+			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
+			return Response::json($resp, 400);
+		}
+		$servicedata = $this->transformServiceDetail($service);
+
+		$resp 	= 	array('service' => $servicedata,  'message' => 'Particular Service Info');
+		return Response::json($resp, 200);
 	}
 
 
 
 
+	private function transformServiceDetail($service){
+
+		$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
+		$service_ratedcards    	=   Ratecard::with('serviceoffers')->where('service_id', intval($item['_id']) )->get()->toArray();					
+		$data = array(
+			'_id' => $item['_id'],
+			'servicecategory_id' => $item['servicecategory_id'],
+			'location_id' => $item['location_id'],
+			'finder_id' => $item['finder_id'],
+			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+			'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
+			'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
+			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
+			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
+			'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
+			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+			'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
+			'short_description' => (isset($item['short_description']) && $item['short_description'] != '') ? $item['short_description'] : "", 
+			'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "", 
+			'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "", 
+			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
+			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
+			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
+			'location' =>  array_only($item['location'], array('_id', 'name', 'slug')) ,
+			'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
+			'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
+			'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
+			'service_ratecards' =>  (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
+
+		);
+		
+		// return $data;
+						
+		if(isset($item['finder']) && $item['finder'] != ''){
+			$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+							->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+							->where('_id', (int) $service['finder_id'])
+							->first();
+			// return $finderarr;
+			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average'));
+		}else{
+			$data['finder'] = NULL;
+		}
+
+		if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
+			$servicetrainer = Servicetrainer::remember(Config::get('app.cachetime'))->findOrFail( intval($item['trainer_id']) );
+			if($servicetrainer){
+				$trainerdata = $servicetrainer->toArray();
+				$data['trainer'] = array_only($trainerdata, array('_id', 'name', 'bio', 'trainer_pic'));
+			}
+		}else{
+			$data['trainer'] = NULL;
+		}
+
+		return $data;
+	}
 }
