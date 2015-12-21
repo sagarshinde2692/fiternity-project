@@ -260,6 +260,7 @@ class FitmaniaController extends \BaseController {
 		$serviceoffers  			= 	Serviceoffer::where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->get()->toArray();
 		$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 		$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
+		$finderids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'finder_id')) ; 
 
 		$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
@@ -313,9 +314,14 @@ class FitmaniaController extends \BaseController {
 		$categoryday   	=   'zumba';
 
 		$leftside 					= 	[];
-		$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
-		$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
+		$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+		if(!empty($category)){
+			$leftside['subcategory'] 	= 	Servicecategory::active()->whereIn('parent_id', $category)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+		}else{
+			$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+		}
 		$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
+		$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
 		$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
 		return Response::json($responsedata, 200);
@@ -335,6 +341,14 @@ class FitmaniaController extends \BaseController {
 		$location 					=	(Input::json()->get('location')) ? array_map('intval', Input::json()->get('location')) : [];	
 		$finder 					=	(Input::json()->get('finder')) ? array_map('intval', Input::json()->get('finder')) : [];	
 
+
+		$date 			=  	Carbon::now();
+		$stringdate 	= 	$date->toFormattedDateString();
+		$categoryday   	=   'zumba';
+		$serviceoffers  			= 	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->get()->toArray();
+		$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
+		$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
+		$finderids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'finder_id')) ; 
 		$fitmaniadods 				=	[];
 
 		$query	 					= 	Service::active();		
@@ -357,27 +371,34 @@ class FitmaniaController extends \BaseController {
 		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
 
 		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-												->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-												->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+												// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												// ->orWhere('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												->Where("active" , "=" , "1")
-												->where("type" , "=" , "fitmania-dod")
-												->orWhere("type" , "=" , "fitmania-dow")
+												->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
 												->whereIn('service_id', $serviceids_array)
 												->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
 			$dealdata = $this->transformDod($value);
 			array_push($fitmaniadods, $dealdata);
 		}
 
-		$date 			=  	Carbon::now();
-		$stringdate 	= 	$date->toFormattedDateString();
-		$categoryday   	=   'zumba';
+
 
 		$leftside 					= 	[];
-		$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
-		$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','status'));
+		$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+		if(!empty($category)){
+			$leftside['subcategory'] 	= 	Servicecategory::active()->whereIn('parent_id', $category)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+		}else{
+			$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+		}
+		$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
+		$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
+
+
+		Serviceoffer::get()->toArray();
 		$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
 		$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
@@ -405,8 +426,6 @@ class FitmaniaController extends \BaseController {
 		$resp 	= 	array('service' => $servicedata,  'message' => 'Particular Service Info');
 		return Response::json($resp, 200);
 	}
-
-
 
 
 	private function transformServiceDetail($service){
@@ -437,9 +456,7 @@ class FitmaniaController extends \BaseController {
 			'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 			'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
 			'service_ratecards' =>  (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
-
 		);
-		
 		// return $data;
 						
 		if(isset($item['finder']) && $item['finder'] != ''){
