@@ -96,7 +96,7 @@ class FitmaniaController extends \BaseController {
 			array_push($fitmaniadods, $dealdata);
 		}
 
-		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();					
+		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();					
 		$responsedata 	= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 		return Response::json($responsedata, 200);
 
@@ -185,6 +185,7 @@ class FitmaniaController extends \BaseController {
 			'_id' => $item['_id'],
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 			'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+			'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
 			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 			'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
@@ -196,7 +197,7 @@ class FitmaniaController extends \BaseController {
 			array_push($fitmaniamemberships, $data);
 		}
 
-		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();			
+		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();			
 		$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'message' => 'Fitmania Home Page Memberships :)'];
 		return Response::json($responsedata, 200);
 	}
@@ -294,6 +295,7 @@ class FitmaniaController extends \BaseController {
 			'_id' => $item['_id'],
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 			'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+			'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
 			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 			'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
@@ -428,7 +430,6 @@ class FitmaniaController extends \BaseController {
 			'short_description' => (isset($item['short_description']) && $item['short_description'] != '') ? $item['short_description'] : "", 
 			'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "", 
 			'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "", 
-			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
 			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
 			'location' =>  array_only($item['location'], array('_id', 'name', 'slug')) ,
@@ -464,4 +465,14 @@ class FitmaniaController extends \BaseController {
 
 		return $data;
 	}
+
+
+
+
+
+
+
+
+
+
 }

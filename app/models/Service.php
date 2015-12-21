@@ -64,7 +64,7 @@ class Service extends \Basemodel{
 		$service_coverimage = '';
 
 		if(!empty($this->coverimage) && isset($this->coverimage)){
-			$service_coverimage = 's/c/'.$service_coverimage;
+			$service_coverimage = 's/c/'.trim($this->coverimage);
 		}else{
 			$finder  	=	Finder::find(intval($this->finder_id));
 			if($finder){
@@ -79,7 +79,7 @@ class Service extends \Basemodel{
 		$service_coverimage = '';
 
 		if(!empty($this->coverimage) && isset($this->coverimage)){
-			$service_coverimage = 's/ct/'.$service_coverimage;
+			$service_coverimage = 's/ct/'.trim($this->coverimage);
 		}else{
 			$finder  	=	Finder::find(intval($this->finder_id));
 			if($finder){
