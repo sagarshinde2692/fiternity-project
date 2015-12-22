@@ -531,4 +531,378 @@ class DebugController extends \BaseController {
 			$deadoffering->update($updateoldoffering);
 		}
 
+		public function csvBooktrialAll(){
+
+			$date = "23_07_2015";
+
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+
+			//$array = array('_id','customer_name','customer_email','customer_phone','preferred_location','finder_id','finder_name','finder_location','created_at','service_name','premium_session','amount');
+
+			$array = array('created_at','customer_name','customer_email','customer_phone','finder_id','finder_name','city_id','finder_location','service_name','premium_session','booktrial_type','amount','schedule_date_time');
+
+			$trials = Booktrial::where('created_at','>=',$start_date)->orderBy('_id', 'desc')->get($array)->toArray();
+
+			
+
+			foreach ($trials as $key => $booktrial) {
+
+				if(isset($booktrial['finder_id']))
+				{
+					$finder = Finder::find((int) $booktrial['finder_id'] );
+
+					if(isset($finder->city_id) && $finder->city_id != ''){
+						$city = City::find((int) $finder->city_id );
+
+						$trials[$key]['city_id'] = ucwords($city->name);
+					}else{
+						$trials[$key]['city_id'] = '-';
+					}
+
+				}
+
+				if(isset($booktrial['schedule_date_time']) && $booktrial['schedule_date_time'] != '')
+				{
+
+					$trials[$key]['schedule_date_time'] = date('Y-m-d',$booktrial['schedule_date_time']->sec);
+				}
+
+				if(isset($booktrial['premium_session']))
+				{
+					if($booktrial['premium_session'])
+					{
+						$trials[$key]['premium_session'] = 'Paid';
+
+					}else{
+						$trials[$key]['premium_session'] = 'Free';
+					}
+					
+				}
+
+				foreach ($array as $value) {
+
+					if(!array_key_exists($value, $booktrial)){
+						$trials[$key][$value] = '-';
+					}
+					
+				}
+				
+			}
+
+
+			$fp = fopen('trials_from_'.$date.'.csv', 'w');
+
+			$header = [];
+
+			foreach ($array as $key => $value) {
+
+				$str = str_replace("_"," ",$value);
+				$header[] = ucwords($str);
+
+				if($value == 'created_at')
+				{
+					$header[$key] = 'Date';
+
+				}
+
+				if($value == 'premium_session')
+				{
+					$header[$key] = 'Trial (Free/Paid)';
+
+				}
+
+				if($value == 'city_id')
+				{
+					$header[$key] = 'City';
+
+				}
+
+				if($value == 'finder_location')
+				{
+					$header[$key] = 'Location';
+
+				}
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($trials as $value) {  
+				
+
+				$fields = array($value['created_at'],$value['customer_name'],$value['customer_email'],$value['customer_phone'],$value['finder_id'],$value['finder_name'],$value['city_id'],$value['finder_location'],$value['service_name'],$value['premium_session'],$value['booktrial_type'],$value['amount'],$value['schedule_date_time']);
+
+				fputcsv($fp, $fields);
+			}
+			fclose($fp);
+			return 'done';
+		
+		}
+
+
+		public function csvOrderAll(){
+
+			$date = "23_07_2015";
+
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+
+			$array = array('created_at','_id','customer_name','customer_email','customer_phone','finder_id','finder_name','service_name','service_duration','amount','payment_mode','city_id');
+
+			$orders = Order::where('created_at','>=',$start_date)->orderBy('_id', 'desc')->get($array)->toArray();
+
+			foreach ($orders as $key => $booktrial) {
+
+				if(isset($booktrial['finder_id']))
+				{
+					$finder = Finder::find((int) $booktrial['finder_id'] );
+
+					if(isset($finder->city_id) && $finder->city_id != ''){
+						$city = City::find((int) $finder->city_id );
+
+						$orders[$key]['city_id'] = ucwords($city->name);
+					}else{
+						$orders[$key]['city_id'] = '-';
+					}
+
+					if(isset($finder->location_id) && $finder->location_id != ''){
+						$location = Location::find((int) $finder->location_id );
+
+						$orders[$key]['Location'] = ucwords($location->name);
+					}else{
+						$orders[$key]['Location'] = '-';
+					}
+
+				}else{
+					$orders[$key]['city_id'] = '-';
+					$orders[$key]['Location'] = '-';
+				}
+
+				foreach ($array as $value) {
+
+					if(!array_key_exists($value, $booktrial)){
+						$orders[$key][$value] = '-';
+					}
+				}
+				
+			}
+
+
+			$fp = fopen('orders_from_'.$date.'.csv', 'w');
+
+			$header = [];
+
+			foreach ($array as $key => $value) {
+
+				$str = str_replace("_"," ",$value);
+				$header[] = ucwords($str);
+
+				if($value == 'created_at')
+				{
+					$header[$key] = 'Date';
+
+				}
+
+				if($value == '_id')
+				{
+					$header[$key] = 'Order ID';
+
+				}
+
+				if($value == 'city_id')
+				{
+					$header[$key] = 'City';
+
+				}
+
+			}
+
+			array_push($header,'Location');
+
+
+			fputcsv($fp, $header);
+			
+			foreach ($orders as $value) {  
+				
+
+				$fields = array($value['created_at'],$value['_id'],$value['customer_name'],$value['customer_email'],$value['customer_phone'],$value['finder_id'],$value['finder_name'],$value['service_name'],$value['service_duration'],$value['amount'],$value['payment_mode'],$value['city_id'],$value['Location']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+			return 'done';
+			
+		}
+
+		public function csvFakebuyAll(){
+
+			$date = "23_07_2015";
+
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+
+			$array = array('created_at','name','email','mobile','finder_id','vendor','membership','city_id');
+
+			$capture = Capture::where('created_at','>=',$start_date)->where('capture_type','=','FakeBuy')->orderBy('_id', 'desc')->get($array)->toArray();
+
+			foreach ($capture as $key => $fakebuy) {
+
+				if(isset($fakebuy['finder_id']))
+				{
+					$finder = Finder::find((int) $fakebuy['finder_id'] );
+
+					if(isset($finder->city_id) && $finder->city_id != ''){
+						$city = City::find((int) $finder->city_id );
+
+						$capture[$key]['city_id'] = ucwords($city->name);
+					}else{
+						$capture[$key]['city_id'] = '-';
+					}
+
+					if(isset($finder->location_id) && $finder->location_id != ''){
+						$location = Location::find((int) $finder->location_id );
+
+						$capture[$key]['Location'] = ucwords($location->name);
+					}else{
+						$capture[$key]['Location'] = '-';
+					}
+
+				}else{
+					$capture[$key]['city_id'] = '-';
+					$capture[$key]['Location'] = '-';
+				}
+
+				foreach ($array as $value) {
+
+					if(!array_key_exists($value, $fakebuy)){
+						$capture[$key][$value] = '-';
+					}
+				}
+				
+			}
+
+
+			$fp = fopen('fakebuys_from_'.$date.'.csv', 'w');
+
+			$header = [];
+
+			foreach ($array as $key => $value) {
+
+				$str = str_replace("_"," ",$value);
+				$header[] = ucwords($str);
+
+				if($value == 'created_at')
+				{
+					$header[$key] = 'Date';
+
+				}
+
+			
+				if($value == 'city_id')
+				{
+					$header[$key] = 'City';
+
+				}
+
+			}
+
+			array_push($header,'Location');
+
+
+			fputcsv($fp, $header);
+			
+			foreach ($capture as $value) {  
+				
+
+				$fields = array($value['created_at'],$value['name'],$value['email'],$value['mobile'],$value['finder_id'],$value['vendor'],$value['membership'],$value['city_id'],$value['Location']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+			return 'done';
+			
+		}
+
+		public function csvCaptureAll(){
+
+			$date = "23_07_2015";
+
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+
+			$array = array('created_at','name','email','mobile','capture_type','vendor','location','city_id');
+
+			$capture = Capture::where('created_at','>=',$start_date)->where('capture_type','!=','FakeBuy')->orderBy('_id', 'desc')->get($array)->toArray();
+
+			foreach ($capture as $key => $all) {
+
+				if(isset($all['city_id']) && $all['city_id'] != ''){
+					$city = City::find((int) $all['city_id'] );
+
+					$capture[$key]['city_id'] = ucwords($city->name);
+				}else{
+					$capture[$key]['city_id'] = '-';
+				}
+
+				if(isset($all['location']) && $all['location'] != ''){
+				
+					$capture[$key]['location'] = ucwords($all['location']);
+				}else{
+					$capture[$key]['location'] = '-';
+				}
+
+
+				foreach ($array as $value) {
+
+					if(!array_key_exists($value, $all)){
+						$capture[$key][$value] = '-';
+					}
+				}
+				
+			}
+
+
+			$fp = fopen('captures_from_'.$date.'.csv', 'w');
+
+			$header = [];
+
+			foreach ($array as $key => $value) {
+
+				$str = str_replace("_"," ",$value);
+				$header[] = ucwords($str);
+
+				if($value == 'created_at')
+				{
+					$header[$key] = 'Date';
+
+				}
+
+				if($value == 'city_id')
+				{
+					$header[$key] = 'City';
+
+				}
+
+				if($value == 'location')
+				{
+					$header[$key] = 'Location';
+
+				}
+
+			}
+
+
+			fputcsv($fp, $header);
+			
+			foreach ($capture as $value) {  
+				
+
+				$fields = array($value['created_at'],$value['name'],$value['email'],$value['mobile'],$value['capture_type'],$value['vendor'],$value['location'],$value['city_id']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+			return 'done';
+			
+		}
+
 	}
