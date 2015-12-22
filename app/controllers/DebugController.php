@@ -533,15 +533,16 @@ class DebugController extends \BaseController {
 
 		public function csvBooktrialAll(){
 
-			$date = "23_07_2015";
+			$date = "01_07_2015_to_30_11_2015";
 
-			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("01-07-2015"))));
+			$end_date = new DateTime( date("d-m-Y", strtotime(date("30-11-2015")." +1 day")));
 
 			//$array = array('_id','customer_name','customer_email','customer_phone','preferred_location','finder_id','finder_name','finder_location','created_at','service_name','premium_session','amount');
 
 			$array = array('created_at','customer_name','customer_email','customer_phone','finder_id','finder_name','city_id','finder_location','service_name','premium_session','booktrial_type','amount','schedule_date_time');
 
-			$trials = Booktrial::where('created_at','>=',$start_date)->orderBy('_id', 'desc')->get($array)->toArray();
+			$trials = Booktrial::where('created_at','>=',$start_date)->where('created_at','<=',$end_date)->orderBy('_id', 'desc')->get($array)->toArray();
 
 			
 
@@ -583,6 +584,8 @@ class DebugController extends \BaseController {
 
 					if(!array_key_exists($value, $booktrial)){
 						$trials[$key][$value] = '-';
+					}else{
+						$trials[$key][$value] = str_replace(","," ",$trials[$key][$value]);
 					}
 					
 				}
@@ -641,13 +644,14 @@ class DebugController extends \BaseController {
 
 		public function csvOrderAll(){
 
-			$date = "23_07_2015";
+			$date = "01_07_2015_to_30_11_2015";
 
-			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("01-07-2015"))));
+			$end_date = new DateTime( date("d-m-Y", strtotime(date("30-11-2015")." +1 day")));
 
 			$array = array('created_at','_id','customer_name','customer_email','customer_phone','finder_id','finder_name','service_name','service_duration','amount','payment_mode','city_id');
 
-			$orders = Order::where('created_at','>=',$start_date)->orderBy('_id', 'desc')->get($array)->toArray();
+			$orders = Order::where('created_at','>=',$start_date)->where('created_at','<=',$end_date)->orderBy('_id', 'desc')->get($array)->toArray();
 
 			foreach ($orders as $key => $booktrial) {
 
@@ -680,6 +684,8 @@ class DebugController extends \BaseController {
 
 					if(!array_key_exists($value, $booktrial)){
 						$orders[$key][$value] = '-';
+					}else{
+						$orders[$key][$value] = str_replace(","," ",$orders[$key][$value]);
 					}
 				}
 				
@@ -735,13 +741,14 @@ class DebugController extends \BaseController {
 
 		public function csvFakebuyAll(){
 
-			$date = "23_07_2015";
+			$date = "01_07_2015_to_30_11_2015";
 
-			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("01-07-2015"))));
+			$end_date = new DateTime( date("d-m-Y", strtotime(date("30-11-2015")." +1 day")));
 
 			$array = array('created_at','name','email','mobile','finder_id','vendor','membership','city_id');
 
-			$capture = Capture::where('created_at','>=',$start_date)->where('capture_type','=','FakeBuy')->orderBy('_id', 'desc')->get($array)->toArray();
+			$capture = Capture::where('created_at','>=',$start_date)->where('created_at','<=',$end_date)->where('capture_type','=','FakeBuy')->orderBy('_id', 'desc')->get($array)->toArray();
 
 			foreach ($capture as $key => $fakebuy) {
 
@@ -774,6 +781,8 @@ class DebugController extends \BaseController {
 
 					if(!array_key_exists($value, $fakebuy)){
 						$capture[$key][$value] = '-';
+					}else{
+						$capture[$key][$value] = str_replace(","," ",$capture[$key][$value]);
 					}
 				}
 				
@@ -824,13 +833,14 @@ class DebugController extends \BaseController {
 
 		public function csvCaptureAll(){
 
-			$date = "23_07_2015";
+			$date = "01_07_2015_to_30_11_2015";
 
-			$start_date = new DateTime( date("d-m-Y", strtotime(date("23-07-2015"))));
+			$start_date = new DateTime( date("d-m-Y", strtotime(date("01-07-2015"))));
+			$end_date = new DateTime( date("d-m-Y", strtotime(date("30-11-2015")." +1 day")));
 
 			$array = array('created_at','name','email','mobile','capture_type','vendor','location','city_id');
 
-			$capture = Capture::where('created_at','>=',$start_date)->where('capture_type','!=','FakeBuy')->orderBy('_id', 'desc')->get($array)->toArray();
+			$capture = Capture::where('created_at','>=',$start_date)->where('created_at','<=',$end_date)->where('capture_type','!=','FakeBuy')->orderBy('_id', 'desc')->get($array)->toArray();
 
 			foreach ($capture as $key => $all) {
 
@@ -854,6 +864,8 @@ class DebugController extends \BaseController {
 
 					if(!array_key_exists($value, $all)){
 						$capture[$key][$value] = '-';
+					}else{
+						$capture[$key][$value] = str_replace(","," ",$capture[$key][$value]);
 					}
 				}
 				
