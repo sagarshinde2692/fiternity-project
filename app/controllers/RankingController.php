@@ -56,7 +56,7 @@ class RankingController extends \BaseController {
     public function IndexRankMongo2Elastic(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $citykist      =    array(1,3,4,8);
+        $citykist      =    array(1,2,3,4,8);
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
                             ->with(array('city'=>function($query){$query->select('name');}))
                             ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -71,7 +71,7 @@ class RankingController extends \BaseController {
                             //->whereIn('category_id', array(42,45))
                             //->whereIn('_id', array(1))
                             ->whereIn('city_id', $citykist)
-                            ->take(10000)->skip(0)
+                            ->take(500)->skip(0)
                             ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
@@ -125,7 +125,8 @@ class RankingController extends \BaseController {
                 $postdata['rankv2'] = $score + $catval;
                 $postfields_data = json_encode($postdata);
                 //return $postfields_data;exit;                                                  
-                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
+                //$posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
+                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv2/finder/" . $finderdocument['_id'];
                 //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
