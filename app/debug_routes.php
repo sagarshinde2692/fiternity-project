@@ -13,7 +13,7 @@ Route::get('moveratecard', function() {
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
-	$output = "SERVICE ID, FINDER ID, FINDER NAME, commercial TYPE, business TYPE, FINDER TYPE,  TYPE, PRICE, SPECIAL PRICE, DURATION, PREVIOUS DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE,  ORDER, REMARKS \n";
+	$output = "SERVICE ID, SERVICE NAME, FINDER ID, FINDER NAME, commercial TYPE, business TYPE, FINDER TYPE,  TYPE, PRICE, SPECIAL PRICE, DURATION, PREVIOUS DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE,  ORDER, REMARKS \n";
 
 
 	foreach ($items as $key => $item) {
@@ -38,6 +38,7 @@ Route::get('moveratecard', function() {
 
 					$ratecarddata = [
 					'service_id'=> $service_id,
+					'service_name'=> $item['name'],
 					'finder_id'=> intval($finder_id),
 					'type'=> (isset($val['type'])) ? $val['type'] : '',
 					'price'=> (isset($val['price'])) ? intval($val['price']) : 0,
@@ -75,8 +76,9 @@ Route::get('moveratecard', function() {
 					$rprevious_duration 	=	(isset($previous_duration) && $previous_duration != "") ? str_replace(',', '|', $previous_duration)  : "-";
 					$rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? str_replace(',', '|', $ratecarddata['remarks'])  : "-";
 					$rorder 				=	(isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
+					$rservice_name 				=	(isset($ratecarddata['service_name']) && $ratecarddata['service_name'] != "") ? str_replace(',', '|', $ratecarddata['service_name'])  : "-";
 
-					$output .= "$rservice_id, $rfinder_id, $findername, $commercial_type_status, $business_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rprevious_duration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
+					$output .= "$rservice_id, $rservice_name, $rfinder_id, $findername, $commercial_type_status, $business_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rprevious_duration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
 					// echo $output; exit();
 
 					
