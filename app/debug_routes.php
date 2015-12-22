@@ -13,7 +13,7 @@ Route::get('moveratecard', function() {
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
-	$output = "SERVICE ID, FINDER ID, FINDER NAME, commercial TYPE, business TYPE, FINDER TYPE,  TYPE, PRICE, SPECIAL PRICE, DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE,  ORDER, REMARKS \n";
+	$output = "SERVICE ID, FINDER ID, FINDER NAME, commercial TYPE, business TYPE, FINDER TYPE,  TYPE, PRICE, SPECIAL PRICE, DURATION, PREVIOUS DURATION, DURATION TYPE, VALIDITY, VALIDITY TYPE, DIRECT PAYMENT MODE,  ORDER, REMARKS \n";
 
 
 	foreach ($items as $key => $item) {
@@ -28,8 +28,9 @@ Route::get('moveratecard', function() {
 				foreach ($data['service_ratecards'] as $key => $val) {
 					$insertedid = Ratecard::max('_id') + 1;
 					$days = $sessions = 0;
-
+					$previous_duration = "-";
 					if(isset($val['duration']) && $val['duration'] != ''){
+						$previous_duration  = $val['duration'];
 						$durationObj = Duration::active()->where('slug', url_slug(array($val['duration'])))->first();
 						$days 		= (isset($durationObj->days)) ? intval($durationObj->days) : 0;
 						$sessions 	= (isset($durationObj->sessions)) ? intval($durationObj->sessions) : 0;
@@ -71,10 +72,11 @@ Route::get('moveratecard', function() {
 					$rvalidity 				=	(isset($ratecarddata['validity']) && $ratecarddata['validity'] != "") ? $ratecarddata['validity'] : "-";
 					$rvalidity_type 		=	(isset($ratecarddata['validity_type']) && $ratecarddata['validity_type'] != "") ? $ratecarddata['validity_type'] : "-";
 					$rdirect_payment_enable =	(isset($ratecarddata['direct_payment_enable']) && $ratecarddata['direct_payment_enable'] != "") ? $ratecarddata['direct_payment_enable'] : "-";
-					$rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? $ratecarddata['remarks'] : "-";
+					$rprevious_duration 	=	(isset($previous_duration) && $previous_duration != "") ? str_replace(',', '|', $previous_duration)  : "-";
+					$rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? str_replace(',', '|', $ratecarddata['remarks'])  : "-";
 					$rorder 				=	(isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
 
-					$output .= "$rservice_id, $rfinder_id, $findername, $commercial_type_status, $business_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
+					$output .= "$rservice_id, $rfinder_id, $findername, $commercial_type_status, $business_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rprevious_duration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
 					// echo $output; exit();
 
 					
