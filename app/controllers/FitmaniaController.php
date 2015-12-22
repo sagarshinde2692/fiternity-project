@@ -374,7 +374,7 @@ class FitmaniaController extends \BaseController {
 												// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												// ->orWhere('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-												->Where("active" , "=" , "1")
+												// ->Where("active" , "=" , "1")
 												->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
 												->whereIn('service_id', $serviceids_array)
 												->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
