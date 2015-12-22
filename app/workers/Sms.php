@@ -17,7 +17,7 @@ function fire($payload)
 
     foreach ($to as $number) {
 
-        $url = 'http://www.kookoo.in/outbound/outbound_sms.php';
+        $url = 'http://www.kookoo.in/outbound/outbound_sms_ftrnty.php';
 
         $param = array(
             'api_key' => 'KK33e21df516ab75130faef25c151130c1', 

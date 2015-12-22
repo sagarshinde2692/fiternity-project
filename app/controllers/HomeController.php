@@ -86,7 +86,7 @@ class HomeController extends BaseController {
 			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
+			->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','contact','average_rating');}))
 			->whereIn('_id', $feature_service_ids)
 			->get();
 
@@ -105,6 +105,7 @@ class HomeController extends BaseController {
 				'location' => (isset($item['location']) && !empty($item['location'])) ? array_only( $item['location'] , array('_id', 'name', 'slug') ) : "",
 				'category' => (isset($item['category']) && !empty($item['category'])) ? array_only( $item['category'] , array('_id', 'name', 'slug') ) : "",
 				'subcategory' => (isset($item['subcategory']) && !empty($item['subcategory'])) ? array_only( $item['subcategory'] , array('_id', 'name', 'slug') ) : "",
+				'finder' => (isset($item['finder']) && !empty($item['finder'])) ? array_only( $item['finder'] , array('_id','title','slug','finder_coverimage','coverimage','contact','average_rating') ) : "",
 				];
 
 				if(isset($item['show_in_offers']) && $item['show_in_offers'] == '1' && isset($item['service_ratecards']) && !empty($item['service_ratecards'])){
@@ -118,6 +119,8 @@ class HomeController extends BaseController {
 				}else{
 					$data['service_ratecards'] =  (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards']  : [];
 				}
+
+				$data['service_trialschedules'] =  (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules']  : [];
 
 				array_push($feature_services, $data);
 			}
@@ -614,11 +617,67 @@ class HomeController extends BaseController {
 	}
 
 
-	public function getOffersTabsOffers($slug){
+	public function getOffersTabsOffers($city, $captionslug, $slug){
 
-		$data = '{"services":[{"_id":4464,"name":"gym workout","slug":"gym-workout","lat":"19.1182856","lon":"72.8516914","workout_intensity":"all","session_type":"group class","show_in_offers":"1","service_coverimage":"f/c/2.jpg","service_coverimage_thumb":"f/ct/2.jpg","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":15,"name":"andheri east","slug":"andheri-east"},"category":{"_id":65,"name":"Gym","slug":"gym"},"subcategory":{"_id":82,"name":"Gym","slug":"gym"}},{"_id":3695,"name":"zumba test","slug":"zumba-test","lat":"70.09","lon":"67.23","workout_intensity":"all","session_type":"group class","show_in_offers":"1","service_coverimage":"s/c/","service_coverimage_thumb":"s/ct/","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":15,"name":"andheri east","slug":"andheri-east"},"category":{"_id":19,"name":"Zumba","slug":"zumba"},"subcategory":{"_id":20,"name":"Zumba Classes","slug":"zumba-classes"}},{"_id":1,"name":"functional training beginner","slug":"functional-training-beginner","lat":" 18.975683","lon":"72.813086","workout_intensity":"beginner","session_type":"group class","show_in_offers":"1","service_coverimage":"f/c/1_1425276778.jpg","service_coverimage_thumb":"f/ct/1_1425276778.jpg","service_ratecards":[{"_id":"1","service_id":"3695","type":"membership","price":"3000","special_price":"0","duration":"0","duration_type":"sessions","validity":"30","validity_type":"days","direct_payment_enable":"0","remarks":"","order":"2","offers":[{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"},{"_id":"1","finder_id":"3006","service_id":"3006","ratecard_id":"1","price":"10","sort":"1","start_date":"2015-12-08 15:04:25","end_date":"2015-12-08 15:04:25","active":"0","limit":"10","total_purchase":"1","status":"1"}]}],"location":{"_id":68,"name":"tardeo","slug":"tardeo"},"category":{"_id":5,"name":"Cross Functional Training","slug":"cross-functional-training"},"subcategory":{"_id":64,"name":"Functional Training","slug":"functional-training"}}],"message":"List for offers"}';
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
 
-		return Response::json(json_decode($data), 200);
+		$slugname 				= 	strtolower(trim($slug));
+		$captionslug 			= 	strtolower(trim($captionslug));
+		$offerobj 				=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first();
+
+		if(count($offerobj) < 1){
+			$responsedata 	= ['services' => [],  'message' => 'No Service Exist'];
+			return Response::json($responsedata, 200);
+		}
+
+		$offerdata = $offerobj->toArray();
+
+		// return $offerobj 				=	Offer::where('city_id', '=', $city_id)->where('1_url',$slugname)->orWhere('2_url',$slugname)->orWhere('3_url',$slugname)->orWhere('4_url',$slugname)->get()->toArray();
+		// return $offerdata 				=	Offer::where('city_id', '=', $city_id)->where('1_url', '=', $slugname)->orWhere('2_url', '=', $slugname)->orWhere('3_url', '=', $slugname)->orWhere('4_url', '=', $slugname)->first()->toArray();
+
+		// echo "<pre>";print_r($offerobj);exit();
+		// $offerdata 				=	Offer::where('city_id', '=', $city_id)->first()->toArray();
+
+		$slug_array 			=  	array_map('strtolower', array_only($offerdata, array('1_title', '2_title','3_title','4_title')));
+		$slug_index 			= 	array_search($slugname,$offerdata); 
+		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
+		$ratecardids 			=   array_map('intval', explode(',', $offerdata[$ratecardids_index]));
+		$ratecards_array        =   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids  )->get()->toArray();
+		$servicesids     		=  	array_flatten(pluck($ratecards_array, ['service_id']));
+		$serivce_array 			= 	Service::active()
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact');}))
+		->whereIn('_id', $servicesids  )
+		->get()
+		->toArray();	
+
+		if(count($serivce_array) < 1){
+			$responsedata 	= ['services' => [],  'message' => 'No Service Exist'];
+			return Response::json($responsedata, 200);
+		}
+
+		$services = $service_ratecards = [];
+		foreach ($serivce_array as $key => $value) {
+			$service_id  			=	$value['_id'];
+			$serviceobj 			=	array_only($value, ['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'category',  'subcategory', 'location', 'finder','trialschedules']);
+			$service_ratecards 		=	array_where($ratecards_array, function($key, $value) use ($service_id){
+				if($value['service_id'] == $service_id){
+					return $value;
+				}			    
+			});
+			$serviceobj['service_ratecards'] = array_values($service_ratecards);
+			array_push($services, $serviceobj);			
+		}							
+
+		$data['services'] = $services;
+		return Response::json($data, 200);
 	}
 
 
@@ -685,11 +744,40 @@ class HomeController extends BaseController {
 		}
 		$city_name 		= 	$citydata['name'];
 		$city_id		= 	(int) $citydata['_id'];	
-		$offertabs 		= 	Offer::where('city_id', '=', $city_id)->get();			
-		if(!$offertabs){
-			return $this->responseNotFound('offertabs does not exist');
+		$offertabsrs 		= 	Offer::where('city_id', '=', $city_id)->get();			
+
+		$offertabs  = [];
+		foreach ($offertabsrs as $key => $value) {
+
+			$item = $value->toArray();
+
+			$data = [
+			'_id' => $item['_id'],
+			'caption' => (isset($item['caption']) && $item['caption'] != '') ? strtolower($item['caption']) : "",
+			'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+			'banner_link' => (isset($item['banner_link']) && $item['banner_link'] != '') ? strtolower($item['banner_link']) : "",
+			'ordering' => (isset($item['ordering']) && $item['ordering'] != '') ? intval($item['ordering']) : "",
+			'status' => (isset($item['status']) && $item['status'] != '') ? strtolower($item['status']) : "",
+			'banner_image' => (isset($item['banner_image']) && $item['banner_image'] != '') ? strtolower($item['banner_image']) : "",
+			'banner_icon' => (isset($item['banner_icon']) && $item['banner_icon'] != '') ? strtolower($item['banner_icon']) : "",
+			'block1_title' => (isset($item['1_title']) && $item['1_title'] != '') ? strtolower($item['1_title']) : "",
+			'block2_title' => (isset($item['2_title']) && $item['2_title'] != '') ? strtolower($item['2_title']) : "",
+			'block3_title' => (isset($item['3_title']) && $item['3_title'] != '') ? strtolower($item['3_title']) : "",
+			'block4_title' => (isset($item['4_title']) && $item['4_title'] != '') ? strtolower($item['4_title']) : "",
+			'block1_url' => (isset($item['1_url']) && $item['1_url'] != '') ? strtolower($item['1_url']) : "",
+			'block2_url' => (isset($item['2_url']) && $item['2_url'] != '') ? strtolower($item['2_url']) : "",
+			'block3_url' => (isset($item['3_url']) && $item['3_url'] != '') ? strtolower($item['3_url']) : "",
+			'block4_url' => (isset($item['4_url']) && $item['4_url'] != '') ? strtolower($item['4_url']) : "",
+			];
+			array_push($offertabs, $data);
 		}
-			
+
+
+		if(count($offertabs) < 0){
+			$responsedata 	= ['offertabs' => [],  'message' => 'List for offertabs'];
+			return Response::json($responsedata, 200);
+		}
+
 		$responsedata 	= ['offertabs' => $offertabs,  'message' => 'List for offertabs'];
 		return Response::json($responsedata, 200);
 

@@ -13,19 +13,24 @@ class Ratecard extends \Basemodel {
 		'findercategory_id' => 'required',
 		'interest' => 'required',
 		'area' => 'required',
-		'short_description' => 'required',
+		//'short_description' => 'required',
 		);
 
+	public function setOrderAttribute($value){
+		$this->attributes['order'] = intval($value);
+	}
+	
 	public function finder(){
 		return $this->belongsTo('Finder');
 	}
 
-	public function findercateogry(){
-		return $this->belongsTo('Findercategory');
+	public function reviews(){
+		return $this->hasMany('Finder', 'finder_id');
 	}
 
-	public function location(){
-		return $this->belongsTo('Location');
+	public function serviceoffers(){
+		return $this->hasMany('Serviceoffer','ratecard_id');
 	}
+
 
 }
