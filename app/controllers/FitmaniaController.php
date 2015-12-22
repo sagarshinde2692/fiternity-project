@@ -61,7 +61,6 @@ class FitmaniaController extends \BaseController {
 
 
 	public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
-
 		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 		if(!$citydata){
 			return $this->responseNotFound('City does not exist');
@@ -84,7 +83,6 @@ class FitmaniaController extends \BaseController {
 
 		$ratecardids 			=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
 		$fitmaniadods			=	[];
-
 		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
 												// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 												// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
@@ -465,7 +463,7 @@ class FitmaniaController extends \BaseController {
 							->where('_id', (int) $service['finder_id'])
 							->first();
 			// return $finderarr;
-			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average'));
+			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info'));
 		}else{
 			$data['finder'] = NULL;
 		}
