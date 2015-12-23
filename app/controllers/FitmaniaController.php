@@ -35,103 +35,103 @@ class FitmaniaController extends \BaseController {
 		$responsedata['membership'] = $this->getDealOfDay($city , $from, $size);
 		$responsedata['message'] = "Fitmania Home Page Data :)";
 
-return Response::json($responsedata, 200);
-}
-
-public function getFitmaniaHomepageBanners($city = 'mumbai', $type = '',  $from = '', $size = ''){
-
-	$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-	if(!$citydata){
-		return $this->responseNotFound('City does not exist');
+		return Response::json($responsedata, 200);
 	}
 
-	$city_name 		= 	$citydata['name'];
-	$city_id		= 	(int) $citydata['_id'];	
-	$from 			=	($from != '') ? intval($from) : 0;
-	$size 			=	($size != '') ? intval($size) : 10;
+	public function getFitmaniaHomepageBanners($city = 'mumbai', $type = '',  $from = '', $size = ''){
 
-	$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();			
-	if(!$banners){
-		return $this->responseEmpty('Fitmania Home Page Banners does not exist :)');
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+
+		$city_name 		= 	$citydata['name'];
+		$city_id		= 	(int) $citydata['_id'];	
+		$from 			=	($from != '') ? intval($from) : 0;
+		$size 			=	($size != '') ? intval($size) : 10;
+
+		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();			
+		if(!$banners){
+			return $this->responseEmpty('Fitmania Home Page Banners does not exist :)');
+		}
+
+		$responsedata 	= ['banners' => $banners,  'message' => 'Fitmania Home Page Banners :)'];
+		return Response::json($responsedata, 200);
 	}
 
-	$responsedata 	= ['banners' => $banners,  'message' => 'Fitmania Home Page Banners :)'];
-return Response::json($responsedata, 200);
-}
 
+	public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 		= 	$citydata['name'];
+		$city_id		= 	(int) $citydata['_id'];	
+		$from 			=	($from != '') ? intval($from) : 0;
+		$size 			=	($size != '') ? intval($size) : 10;
+		$date 			=  	Carbon::now();
+		$timestamp 		= 	strtotime($date);
+			// $stringdate 	= 	$date->format('l jS \\of F Y h:i:s A');
+		$stringdate 	= 	$date->toFormattedDateString();
+		$categoryday   	=   'zumba';
 
-public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
-	$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-	if(!$citydata){
-		return $this->responseNotFound('City does not exist');
+		$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+		if(count($fitmaniahomepageobj) < 1){
+			$responsedata 	= ['services' => [],  'message' => 'No Fitmania DOD Exist :)'];
+			return Response::json($responsedata, 200);
+		}
+
+		$ratecardids 			=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
+		$fitmaniadods			=	[];
+		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
+														// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+														// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		->where("type" , "=" , "fitmania-dod")
+		->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transformDod($value);
+			array_push($fitmaniadods, $dealdata);
+		}
+
+		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();					
+		$responsedata 	= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+		return Response::json($responsedata, 200);
+
 	}
-	$city_name 		= 	$citydata['name'];
-	$city_id		= 	(int) $citydata['_id'];	
-	$from 			=	($from != '') ? intval($from) : 0;
-	$size 			=	($size != '') ? intval($size) : 10;
-	$date 			=  	Carbon::now();
-	$timestamp 		= 	strtotime($date);
-		// $stringdate 	= 	$date->format('l jS \\of F Y h:i:s A');
-	$stringdate 	= 	$date->toFormattedDateString();
-	$categoryday   	=   'zumba';
 
-	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
-	if(count($fitmaniahomepageobj) < 1){
-		$responsedata 	= ['services' => [],  'message' => 'No Fitmania DOD Exist :)'];
-return Response::json($responsedata, 200);
-}
+	private function transformDod($offers){
 
-$ratecardids 			=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
-$fitmaniadods			=	[];
-$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-												// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-												// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-->where("type" , "=" , "fitmania-dod")
-->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+		$item  	   		=  	(!is_array($offers)) ? $offers->toArray() : $offers;
+		$ratecardarr  	=  	(!is_array($item['ratecard'])) ?  (array) $item['ratecard'] : $item['ratecard'];
+		$finderarr   	=  	(!is_array($item['finder'])) ?  (array) $item['finder'] : $item['finder'];
+		$servicearr 	= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+		->where('_id', (int) $item['service_id'])->first();
 
-foreach ($dealsofdaycolleciton as $key => $value) {
-	$dealdata = $this->transformDod($value);
-	array_push($fitmaniadods, $dealdata);
-}
+		$data = [
+		'_id' => $item['_id'],
+		'type' => (isset($item['type']) && $item['type'] != '') ? strtolower($item['type']) : "",
+		'type' => (isset($item['type']) && $item['type'] != '') ? strtolower($item['type']) : "",
+		'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? intval($item['finder_id']) : "",
+		'service_id' => (isset($item['service_id']) && $item['service_id'] != '') ? intval($item['service_id']) : "",
+		'ratecard_id' => (isset($item['ratecard_id']) && $item['ratecard_id'] != '') ? intval($item['ratecard_id']) : "",
+		'city_id' => (isset($item['city_id']) && $item['city_id'] != '') ? intval($item['city_id']) : "",
+		'price' => (isset($item['price']) && $item['price'] != '') ? intval($item['price']) : "",
+		'limit' => (isset($item['limit']) && $item['limit'] != '') ? intval($item['limit']) : "",
+		'order' => (isset($item['order']) && $item['order'] != '') ? intval($item['order']) : "",
+		'start_date' => (isset($item['start_date']) && $item['start_date'] != '') ? $item['start_date'] : "",
+		'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
+		'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
+		'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact'] )  : "",		
+		'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location' )),
 
-$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();					
-$responsedata 	= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
-return Response::json($responsedata, 200);
+		];
 
-}
-
-private function transformDod($offers){
-
-	$item  	   		=  	(!is_array($offers)) ? $offers->toArray() : $offers;
-	$ratecardarr  	=  	(!is_array($item['ratecard'])) ?  (array) $item['ratecard'] : $item['ratecard'];
-	$finderarr   	=  	(!is_array($item['finder'])) ?  (array) $item['finder'] : $item['finder'];
-	$servicearr 	= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-	->where('_id', (int) $item['service_id'])->first();
-
-	$data = [
-	'_id' => $item['_id'],
-	'type' => (isset($item['type']) && $item['type'] != '') ? strtolower($item['type']) : "",
-	'type' => (isset($item['type']) && $item['type'] != '') ? strtolower($item['type']) : "",
-	'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? intval($item['finder_id']) : "",
-	'service_id' => (isset($item['service_id']) && $item['service_id'] != '') ? intval($item['service_id']) : "",
-	'ratecard_id' => (isset($item['ratecard_id']) && $item['ratecard_id'] != '') ? intval($item['ratecard_id']) : "",
-	'city_id' => (isset($item['city_id']) && $item['city_id'] != '') ? intval($item['city_id']) : "",
-	'price' => (isset($item['price']) && $item['price'] != '') ? intval($item['price']) : "",
-	'limit' => (isset($item['limit']) && $item['limit'] != '') ? intval($item['limit']) : "",
-	'order' => (isset($item['order']) && $item['order'] != '') ? intval($item['order']) : "",
-	'start_date' => (isset($item['start_date']) && $item['start_date'] != '') ? $item['start_date'] : "",
-	'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
-	'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
-	'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact'] )  : "",		
-	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location' )),
-
-	];
-
-	return $data;
-}
+		return $data;
+	}
 
 
 
@@ -243,7 +243,7 @@ public function getDealOfWeek($city = 'mumbai', $from = '', $size = ''){
 
 public function serachMembership(){
 
-		// return Input::json()->all();
+	// return Input::json()->all();
 	$from 						=	(Input::json()->get('from')) ? intval(Input::json()->get('from')) : 0;
 	$size 						=	(Input::json()->get('size')) ? intval(Input::json()->get('size')) : 10;
 	$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';
@@ -558,6 +558,33 @@ public function serachDodAndDow(){
 	}
 
 
+   public function maintainActiveFlag(){
+
+		$date 				=	Carbon::now();
+		$timestamp 			= 	strtotime($date);
+   		$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
+
+   		foreach ($ratecardoffers as $key => $offers) {
+   			// return $offers;
+   			$initial_acitve_flag = 0;
+   			foreach ($offers as $key => $offer) {
+   				if($initial_acitve_flag == 1){ continue; }
+
+   				$serviceObj =	Serviceoffer::find(intval($offer->_id));
+   				$limit 		=	intval($serviceObj->limit);
+   				$sold 		=	intval($serviceObj->sold);
+
+   				if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
+	   				if(($limit - $sold) > 0){
+	   					$serviceObj->update(['active' => 1]);
+	   					$initial_acitve_flag = 1;
+	   				}
+   				}
+   			}//foreach
+   		}//foreach
+
+   		return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
+   }
 
 
 
