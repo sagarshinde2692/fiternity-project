@@ -106,7 +106,7 @@ class FitmaniaController extends \BaseController {
 
 		$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 		if(count($fitmaniahomepageobj) < 1){
-			$responsedata 	= ['services' => [],  'message' => 'No Fitmania DOD Exist :)'];
+			$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'fitmaniadods' => [],  'message' => 'No Fitmania DOD Exist :)'];
 			return Response::json($responsedata, 200);
 		}
 
@@ -184,7 +184,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
-		$responsedata 	= ['services' => [],  'message' => 'No Membership Giveaway Exist :)'];
+		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
 		return Response::json($responsedata, 200);
 	}
 
