@@ -341,7 +341,7 @@ Route::get('fitmaniahomepagebanners/{city?}/{type?}/{from?}/{size?}', 'FitmaniaC
 Route::post('searchfitmaniamembership', 'FitmaniaController@serachMembership');
 Route::post('searchfitmaniadoddow', 'FitmaniaController@serachDodAndDow');
 Route::post('buyfitmaniaoffer', 'FitmaniaController@buyOffer');
-Route::get('fitmaniaservicedetail/{serviceid?}', 'FitmaniaController@serviceDetail');
+Route::get('fitmaniaservicedetail/{serviceid}/{offerid}', 'FitmaniaController@serviceDetail');
 
 // Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
 
