@@ -2,7 +2,7 @@
 
 Route::get('moveratecard', function() { 
 	$items = Service::active()->orderBy('_id')->lists('_id');
-	// if($items){ DB::table('ratecards')->truncate(); }
+	if($items){ DB::table('ratecards')->truncate(); }
 
 	//export
 	$headers = [
@@ -53,32 +53,32 @@ Route::get('moveratecard', function() {
 					];
 				 	// print_pretty($ratecarddata); exit();
 
-					// $ratecard 		=	new Ratecard($ratecarddata);
-					// $ratecard->_id 	=	$insertedid;
-					// $ratecard->save();
+					$ratecard 		=	new Ratecard($ratecarddata);
+					$ratecard->_id 	=	$insertedid;
+					$ratecard->save();
 
 					//export to csv
-					$Finderobj 					=	Finder::find(intval($finder_id));
-					$findername 				=	(isset($Finderobj->slug) && $Finderobj->slug != "") ? $Finderobj->slug : "-";
-					$commercial_type_status 	=	(isset($Finderobj->commercial_type_status) && $Finderobj->commercial_type_status != "") ? $Finderobj->commercial_type_status : "-";
-					$business_type_status 		=	(isset($Finderobj->business_type_status) && $Finderobj->business_type_status != "") ? $Finderobj->business_type_status : "-";
-					$finder_type 				=	(isset($Finderobj->finder_type) && $Finderobj->finder_type != "") ? $Finderobj->finder_type : "-";
-					$rservice_id 			=	(isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
-					$rfinder_id 			=	(isset($ratecarddata['finder_id']) && $ratecarddata['finder_id'] != "") ? $ratecarddata['finder_id'] : "-";
-					$rtype 					=	(isset($ratecarddata['type']) && $ratecarddata['type'] != "") ? $ratecarddata['type'] : "-";
-					$rprice 				=	(isset($ratecarddata['price']) && $ratecarddata['price'] != "") ? $ratecarddata['price'] : "-";
-					$rspecial_price 		=	(isset($ratecarddata['special_price']) && $ratecarddata['special_price'] != "") ? $ratecarddata['special_price'] : "-";
-					$rduration 				=	(isset($ratecarddata['duration']) && $ratecarddata['duration'] != "") ? $ratecarddata['duration'] : "-";
-					$rduration_type 		=	(isset($ratecarddata['duration_type']) && $ratecarddata['duration_type'] != "") ? $ratecarddata['duration_type'] : "-";
-					$rvalidity 				=	(isset($ratecarddata['validity']) && $ratecarddata['validity'] != "") ? $ratecarddata['validity'] : "-";
-					$rvalidity_type 		=	(isset($ratecarddata['validity_type']) && $ratecarddata['validity_type'] != "") ? $ratecarddata['validity_type'] : "-";
-					$rdirect_payment_enable =	(isset($ratecarddata['direct_payment_enable']) && $ratecarddata['direct_payment_enable'] != "") ? $ratecarddata['direct_payment_enable'] : "-";
-					$rprevious_duration 	=	(isset($previous_duration) && $previous_duration != "") ? str_replace(',', '|', $previous_duration)  : "-";
-					$rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? str_replace(',', '|', $ratecarddata['remarks'])  : "-";
-					$rorder 				=	(isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
-					$rservice_name 				=	(isset($ratecarddata['service_name']) && $ratecarddata['service_name'] != "") ? $ratecarddata['service_name']  : "-";
+					// $Finderobj 					=	Finder::find(intval($finder_id));
+					// $findername 				=	(isset($Finderobj->slug) && $Finderobj->slug != "") ? $Finderobj->slug : "-";
+					// $commercial_type_status 	=	(isset($Finderobj->commercial_type_status) && $Finderobj->commercial_type_status != "") ? $Finderobj->commercial_type_status : "-";
+					// $business_type_status 		=	(isset($Finderobj->business_type_status) && $Finderobj->business_type_status != "") ? $Finderobj->business_type_status : "-";
+					// $finder_type 				=	(isset($Finderobj->finder_type) && $Finderobj->finder_type != "") ? $Finderobj->finder_type : "-";
+					// $rservice_id 			=	(isset($ratecarddata['service_id']) && $ratecarddata['service_id'] != "") ? $ratecarddata['service_id'] : "-";
+					// $rfinder_id 			=	(isset($ratecarddata['finder_id']) && $ratecarddata['finder_id'] != "") ? $ratecarddata['finder_id'] : "-";
+					// $rtype 					=	(isset($ratecarddata['type']) && $ratecarddata['type'] != "") ? $ratecarddata['type'] : "-";
+					// $rprice 				=	(isset($ratecarddata['price']) && $ratecarddata['price'] != "") ? $ratecarddata['price'] : "-";
+					// $rspecial_price 		=	(isset($ratecarddata['special_price']) && $ratecarddata['special_price'] != "") ? $ratecarddata['special_price'] : "-";
+					// $rduration 				=	(isset($ratecarddata['duration']) && $ratecarddata['duration'] != "") ? $ratecarddata['duration'] : "-";
+					// $rduration_type 		=	(isset($ratecarddata['duration_type']) && $ratecarddata['duration_type'] != "") ? $ratecarddata['duration_type'] : "-";
+					// $rvalidity 				=	(isset($ratecarddata['validity']) && $ratecarddata['validity'] != "") ? $ratecarddata['validity'] : "-";
+					// $rvalidity_type 		=	(isset($ratecarddata['validity_type']) && $ratecarddata['validity_type'] != "") ? $ratecarddata['validity_type'] : "-";
+					// $rdirect_payment_enable =	(isset($ratecarddata['direct_payment_enable']) && $ratecarddata['direct_payment_enable'] != "") ? $ratecarddata['direct_payment_enable'] : "-";
+					// $rprevious_duration 	=	(isset($previous_duration) && $previous_duration != "") ? str_replace(',', '|', $previous_duration)  : "-";
+					// $rremarks 				=	(isset($ratecarddata['remarks']) && $ratecarddata['remarks'] != "") ? str_replace(',', '|', $ratecarddata['remarks'])  : "-";
+					// $rorder 				=	(isset($ratecarddata['order']) && $ratecarddata['order'] != "") ? $ratecarddata['order'] : "-";
+					// $rservice_name 				=	(isset($ratecarddata['service_name']) && $ratecarddata['service_name'] != "") ? $ratecarddata['service_name']  : "-";
 
-					$output .= "$rservice_id, $rservice_name, $rfinder_id, $findername, $commercial_type_status, $business_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rprevious_duration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
+					// $output .= "$rservice_id, $rservice_name, $rfinder_id, $findername, $commercial_type_status, $business_type_status, $finder_type, $rtype, $rprice, $rspecial_price, $rduration, $rprevious_duration, $rduration_type, $rvalidity, $rvalidity_type, $rdirect_payment_enable, $rorder, $rremarks  \n";
 					// echo $output; exit();
 
 					
@@ -87,7 +87,7 @@ Route::get('moveratecard', function() {
 		}
 	}
 
-	return Response::make(rtrim($output, "\n"), 200, $headers);
+	// return Response::make(rtrim($output, "\n"), 200, $headers);
 	return "ratecard migraterated successfully ...";
 	
 });
