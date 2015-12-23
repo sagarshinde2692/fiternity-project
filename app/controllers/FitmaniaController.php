@@ -360,11 +360,13 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 	public function serachDodAndDow(){
 
-			// return Input::json()->all();
+		// return Input::json()->all();
 		$from 						=	(Input::json()->get('from')) ? intval(Input::json()->get('from')) : 0;
 		$size 						=	(Input::json()->get('size')) ? intval(Input::json()->get('size')) : 10;
 		$city 						=	(Input::json()->get('city')) ? strtolower(Input::json()->get('city')) : 'mumbai';
 		$city_id					=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
+		$start_price				=	(Input::json()->get('start_price')) ? intval(Input::json()->get('start_price')) : "";
+		$end_price					=	(Input::json()->get('end_price')) ? intval(Input::json()->get('end_price')) : "";
 		$category 					=	(Input::json()->get('category')) ? array_map('intval', Input::json()->get('category')) : [];		
 		$subcategory 				=	(Input::json()->get('subcategory')) ? array_map('intval', Input::json()->get('subcategory')) : [];		
 		$location 					=	(Input::json()->get('location')) ? array_map('intval', Input::json()->get('location')) : [];	
@@ -402,13 +404,16 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
 
-		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-													// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-													// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-													->where("active" , "=" , 1)
-													->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
-													->whereIn('service_id', $serviceids_array)
-													->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+		$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id);
+							// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+							// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+		// if($start_price != "" || $start_price != 0){
+		// 	$dealsofdayquery->where('price', '>=', intval($start_price));
+		// }
+		// if($end_price != "" || $end_price != 0){
+		// 	$dealsofdayquery->where('price', '<=', intval($end_price));
+		// }
+		$dealsofdaycolleciton 	=	$dealsofdayquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 
 		foreach ($dealsofdaycolleciton as $key => $value) {
