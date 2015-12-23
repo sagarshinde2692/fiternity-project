@@ -415,14 +415,37 @@ class FitmaniaController extends \BaseController {
 	public function serviceDetail($serviceid){
 
 		$service = Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->where('_id', (int) $serviceid)->first();
-
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
 			return Response::json($resp, 400);
 		}
 		$servicedata = $this->transformServiceDetail($service);
 
-		$resp 	= 	array('service' => $servicedata,  'message' => 'Particular Service Info');
+		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
+		$servicefinderid 	= intval($servicedata['finder_id']);
+		$same_vendor_service = $same_category_service = [];
+
+		//same_vendor_service
+		// $serviceoffers = Serviceoffer::where('finder_id', '=', $servicefinderid)->where("type" , "=" , "fitmania-membership-giveaways")->get()->toArray();
+		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->get()->toArray();
+		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
+		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->get()->take(5)->toArray();	
+		foreach ($services_result as $key => $service) {
+			$servicedata = $this->transformServiceDetail($service);
+			array_push($same_vendor_service, $servicedata);
+		}
+
+		//same_category_service
+		// $serviceoffers = Serviceoffer::where('finder_id', '=', $servicefinderid)->where("type" , "=" , "fitmania-membership-giveaways")->get()->toArray();
+		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->get()->toArray();
+		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')); 
+		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->where('servicecategory_id', '=', $servicecategoryid)->get()->take(5)->toArray();		
+		foreach ($services_result as $key => $service) {
+			$servicedata = $this->transformServiceDetail($service);
+			array_push($same_category_service, $servicedata);
+		}
+
+		$resp 	= 	array('service' => $servicedata,'same_vendor_service' => $same_vendor_service,'same_category_service' => $same_category_service,  'message' => 'Particular Service Info');
 		return Response::json($resp, 200);
 	}
 
