@@ -827,7 +827,10 @@ class SchedulebooktrialsController extends \BaseController {
 				'premium_session' 				=>		$premium_session, 
 				'reminder_need_status' 			=>		$reminder_need_status, 
 
-				'customer_id' 					=>		$customer_id, 
+				'customer_id' 					=>		$customer_id,
+				'customer_name' 				=>		$customer_name, 
+				'customer_email' 				=>		$customer_email, 
+				'customer_phone' 				=>		$customer_phone, 
 				'fitcard_user'					=>		$fitcard_user,
 				'type'							=>		$type,
 
