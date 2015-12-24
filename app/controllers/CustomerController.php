@@ -653,7 +653,8 @@ class CustomerController extends \BaseController {
 		$password_claim = array(
 			"iat" => Config::get('app.forgot_password.iat'),
 			"exp" => Config::get('app.forgot_password.exp'),
-			"customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
+			// "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
+			"customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'])
 			// "customer" => array('name'=>$customer['name'],"email"=>$customer['email'])
 			);
 		$password_key = Config::get('app.forgot_password.key');
