@@ -599,7 +599,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 		$date 				=	Carbon::now();
 		$timestamp 			= 	strtotime($date);
-   		$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
+   		$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
 
    		foreach ($ratecardoffers as $key => $offers) {
    			// return $offers;
