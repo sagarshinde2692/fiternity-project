@@ -917,4 +917,121 @@ class DebugController extends \BaseController {
 			
 		}
 
+		public function csvKatchi(){
+
+		
+			$array = array(9820332324,9869170441,9168554322,9821046843,9819801210,9320996070,9619592268,9930912468,9757039364,9820787817,8451811112);
+
+
+			$order = Order::whereIn('customer_phone',$array)->where('finder_name','Katchi Marathon')->orderBy('_id', 'desc')->get()->toArray();
+
+			$header = array(
+				"_id",
+			    "uuid",
+			    "customer_id",
+			    "customer_name",
+			    "customer_lastname",
+			    "customer_father",
+			    "customer_mother",
+			    "customer_grandfather",
+			    "gender",
+			    "blood_group",
+			    "customer_phone",
+			    "customer_email",
+			    "birthday",
+			    "customer_identity",
+			    "customer_location",
+			    "customer_source",
+			    "city_id",
+			    "finder_id",
+			    "finder_name",
+			    "finder_address",
+			    "service_id",
+			    "service_name",
+			    "service_duration",
+			    "type",
+			    "sms_body",
+			    "email_body2",
+			    "amount",
+			    "emergency_number",
+			    "tshirt",
+			    "preferred_starting_date",
+			    "status",
+			    "payment_mode",
+			    "updated_at",
+			    "created_at");
+
+			
+
+
+			foreach ($order as $key => $all) {
+
+				
+
+
+				foreach ($header as $value) {
+
+					if(!array_key_exists($value, $all)){
+						$order[$key][$value] = '-';
+					}else{
+						$order[$key][$value] = str_replace(","," ",$order[$key][$value]);
+					}
+				}
+				
+			}
+			
+
+			$fp = fopen('katchi.csv', 'w');
+
+		
+
+			fputcsv($fp, $header);
+			
+			foreach ($order as $value) {  
+				
+
+				$fields = array(
+				$value["_id"],
+			    $value["uuid"],
+			    $value["customer_id"],
+			    $value["customer_name"],
+			    $value["customer_lastname"],
+			    $value["customer_father"],
+			    $value["customer_mother"],
+			    $value["customer_grandfather"],
+			    $value["gender"],
+			    $value["blood_group"],
+			    $value["customer_phone"],
+			    $value["customer_email"],
+			    $value["birthday"],
+			    $value["customer_identity"],
+			    $value["customer_location"],
+			    $value["customer_source"],
+			    $value["city_id"],
+			    $value["finder_id"],
+			    $value["finder_name"],
+			    $value["finder_address"],
+			    $value["service_id"],
+			    $value["service_name"],
+			    $value["service_duration"],
+			    $value["type"],
+			    $value["sms_body"],
+			    $value["email_body2"],
+			    $value["amount"],
+			    $value["emergency_number"],
+			    $value["tshirt"],
+			    $value["preferred_starting_date"],
+			    $value["status"],
+			    $value["payment_mode"],
+			    $value["updated_at"],
+			    $value["created_at"]);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+			return 'done';
+			
+		}
+
 	}
