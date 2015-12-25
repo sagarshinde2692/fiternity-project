@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer');
+	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
@@ -122,6 +122,18 @@ class Service extends \Basemodel{
 
 				array_push($ratecards, $ratecard);
 			}		
+		}
+
+		return $ratecards ;
+	}
+
+
+
+	public function getServiceratecardAttribute(){
+
+		$ratecards 	= 	[];
+		if(!empty($this->_id) && isset($this->_id)){
+			$ratecards 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('_id', 'desc')->get()->toArray();
 		}
 
 		return $ratecards ;
