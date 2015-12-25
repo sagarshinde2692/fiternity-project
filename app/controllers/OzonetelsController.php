@@ -634,11 +634,11 @@ class OzonetelsController extends \BaseController {
 
 				if($current_date <= $before4jan){
 
-					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-10th Jan 2016. 2000+ brands across 15+ categories. Pre-register for insider info and chance to WIN a VIP Fitness Transformation. Click - http://bit.ly/22rA1ll TC Apply";
+					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-11th Jan 2016. 2000+ brands across 15+ categories. Pre-register for insider info and chance to WIN a VIP Fitness Transformation. Click - http://bit.ly/22rA1ll TC Apply";
 
 				}elseif($current_date > $before4jan && $current_date <= $before12jan){
 
-					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-10th Jan 2016. 2000+ brands across 15+ categories. The smartest way to stick to your New Year resolution to be FIT in 2016. Buy Now! http://bit.ly/22rA1ll TC Apply";
+					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-11th Jan 2016. 2000+ brands across 15+ categories. The smartest way to stick to your New Year resolution to be FIT in 2016. Buy Now! http://bit.ly/22rA1ll TC Apply";
 				}
 			
 				if($message != ''){
