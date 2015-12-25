@@ -19,6 +19,7 @@ class OzonetelsController extends \BaseController {
 	protected $ozonetelResponse;
 	protected $ozonetelCollectDtmf;
 	protected $ozontelOutboundCall;
+	protected $customersms;
 
 	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms) {
 
