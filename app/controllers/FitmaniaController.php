@@ -114,7 +114,7 @@ class FitmaniaController extends \BaseController {
 		$fitmaniadods			=	[];
 		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
 														// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-														// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+														// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
 													->where("type" , "=" , "fitmania-dod")
 													->where("active" , "=" , 1)
 													->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
