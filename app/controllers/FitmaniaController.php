@@ -82,6 +82,8 @@ class FitmaniaController extends \BaseController {
 			return $this->responseEmpty('Fitmania Home Page Banners does not exist :)');
 		}
 
+
+
 		$responsedata 	= ['banners' => $banners,  'message' => 'Fitmania Home Page Banners :)'];
 		return Response::json($responsedata, 200);
 	}
@@ -124,8 +126,9 @@ class FitmaniaController extends \BaseController {
 			array_push($fitmaniadods, $dealdata);
 		}
 
-		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();					
-		$responsedata 	= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+		$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();					
+		$banners 			= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();					
+		$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 		return Response::json($responsedata, 200);
 
 	}
@@ -224,8 +227,9 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 			array_push($fitmaniamemberships, $data);
 		}
 
-		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();			
-		$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'message' => 'Fitmania Home Page Memberships :)'];
+		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();		
+		$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();						
+		$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
 		return Response::json($responsedata, 200);
 	}
 
@@ -525,7 +529,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 				'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
 				'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 				'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
-				'service_ratecards' =>  (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
+				'serviceratecard' => (isset($item['serviceratecard']) && !empty($item['serviceratecard'])) ? $item['serviceratecard'] : "",
 				);
 			// return $data;
 
