@@ -29,11 +29,21 @@ Route::get('moveratecard', function() {
 					$insertedid = Ratecard::max('_id') + 1;
 					$days = $sessions = 0;
 					$previous_duration = "-";
+
+					
+
+
 					if(isset($val['duration']) && $val['duration'] != ''){
 						$previous_duration  = $val['duration'];
 						$durationObj = Duration::active()->where('slug', url_slug(array($val['duration'])))->first();
 						$days 		= (isset($durationObj->days)) ? intval($durationObj->days) : 0;
 						$sessions 	= (isset($durationObj->sessions)) ? intval($durationObj->sessions) : 0;
+					}
+
+					$duration_type = 'sessions';
+					if(isset($val['duration']) && $val['duration'] == '1-meal'){
+						$duration_type 	= 	'meal';
+						$days 			= 	0;
 					}
 
 					$ratecarddata = [
@@ -44,7 +54,7 @@ Route::get('moveratecard', function() {
 					'price'=> (isset($val['price'])) ? intval($val['price']) : 0,
 					'special_price'=> (isset($val['special_price'])) ? intval($val['special_price']) : 0,
 					'duration'=> intval($sessions),
-					'duration_type'=> 'sessions',
+					'duration_type'=> $duration_type,
 					'validity'=> intval($days),
 					'validity_type'=> 'days',
 					'direct_payment_enable'=> (isset($val['direct_payment_enable'])) ? $val['direct_payment_enable'] : '0',
