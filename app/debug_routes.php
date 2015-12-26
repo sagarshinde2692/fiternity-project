@@ -45,7 +45,6 @@ Route::get('moveratecard', function() {
 
 					$ratecarddata = [
 					'service_id'=> $service_id,
-					'service_name'=> $Service['name'],
 					'finder_id'=> intval($finder_id),
 					'type'=> (isset($val['type'])) ? $val['type'] : '',
 					'price'=> (isset($val['price'])) ? intval($val['price']) : 0,
@@ -93,6 +92,16 @@ Route::get('moveratecard', function() {
 			}
 		}
 	}
+
+	//for new ratecards
+	$newratecards = DB::table('ratecards_dec262015')->where('service_name', 'exists', false)->get(); 
+	foreach ($newratecards as $key => $value) {
+		$insertedid 	= 	Ratecard::max('_id') + 1;
+		$ratecard 		=	new Ratecard($value);
+		$ratecard->_id 	=	$insertedid;
+		$ratecard->save();
+	}
+
 
 	// return Response::make(rtrim($output, "\n"), 200, $headers);
 	return "ratecard migraterated successfully ...";
