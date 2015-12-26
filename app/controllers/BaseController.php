@@ -34,6 +34,14 @@ class BaseController extends Controller {
         return   $this->setStatusCode(200)->respondWithError($message);
     }
 
+     public function responseMissingData ($message = 'Missing Data',$showoriginalMsg = false){
+        if($showoriginalMsg){
+            return   $this->setStatusCode(404)->respondWithError($message);
+        }else {
+            return   $this->setStatusCode(404)->respondWithError("Data Missing - ".$message);
+        }
+    }
+    
 
     public function respond ($data, $header = []){
     	return  Response::json($data, $this->getStatusCode(), $header);

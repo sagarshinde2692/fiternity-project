@@ -17,7 +17,7 @@ Class Sidekiq {
         $this->initClient();
     }
 
-    public function initClient($debug = false,$base_uri = false) {
+    public function initClient($debug = false, $base_uri = false) {
 
         $debug = ($debug) ? $debug : $this->debug;
         $base_uri = ($base_uri) ? $base_uri : $this->base_uri;

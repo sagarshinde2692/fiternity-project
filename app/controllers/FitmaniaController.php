@@ -576,21 +576,30 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 			}
 		}
 
-
 		if($orderData['status'] == 0){
 			$buydealofday 	=	$order->update(['status' => '1']);
 
+			/* limit | buyable | sold | acitve | left */
+
 			if($buydealofday){
 				if($orderData['type'] == 'fitmania-dod'){
-					$serviceoffer 	= Serviceoffer::find(intval($orderData['serviceoffer_id']));
-					$offer_limit 	=  intval($serviceoffer->limit);
-					$offer_sold 	=  intval($serviceoffer->sold) + 1;
-					$offer_active  	=  1;
+					$serviceoffer 	= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
+					$offer_limit 	=  	intval($serviceoffer->limit);
+					$offer_sold 	=  	intval($serviceoffer->sold) + 1;
+					$offer_left 	=  	$offer_limit - $offer_sold;
+					$offer_buyable 	=  	$offer_limit - ($offer_sold + 1);
+
+					$offer_active  	=  	1;
 					if(intval($offer_limit) == intval($offer_sold)){
-						$offer_active = 0; 
+						$offer_active	=	0; 
 					}
-					$service_offerdata  = ['limit' => $offer_limit, 'sold' => $offer_sold, 'active' => $offer_active];
-					$serviceoffer->update($service_offerdata);
+					$service_offerdata  = ['limit' => $offer_limit, 'sold' => $offer_sold, 'left' => $offer_left, 'buyable' => intval($offer_buyable), 'active' => $offer_active];
+					$success_order = $serviceoffer->update($service_offerdata);
+
+					//send email
+					if($success_order){
+						echo "send email";
+					}
 
 				}
 			}

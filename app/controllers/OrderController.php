@@ -20,7 +20,7 @@ class OrderController extends \BaseController {
 
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
 	}
 
 
@@ -281,6 +281,24 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
+		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow' || $data['type'] == 'fitmania-membership-giveaways'){
+			if( empty($data['serviceoffer_id']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - serviceoffer_id");
+				return Response::json($resp,404);				
+			}
+
+			/* limit | buyable | sold | acitve | left */
+			$serviceoffer 		= 	Serviceoffer::find(intval($data['serviceoffer_id']));
+			$offer_limit 		=  	intval($serviceoffer->limit);
+			$offer_left 		=  	(intval($serviceoffer->limit) - intval($serviceoffer->sold));
+			$offer_buyable 		=  	intval($serviceoffer->limit) - (intval($serviceoffer->sold) + 1);
+
+			$service_offerdata  = 	['left' => intval($offer_left), 'buyable' => intval($offer_buyable)];
+			$serviceoffer->update($service_offerdata);
+			//call to side kick
+
+		}
+
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice'){
 			if( empty($data['service_duration']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
@@ -332,6 +350,8 @@ class OrderController extends \BaseController {
 		return Response::json($resp);
 
 	}
+
+
 
 	public function captureFailOrders(){
 
