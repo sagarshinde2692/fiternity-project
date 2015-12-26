@@ -647,9 +647,14 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 		if($orderData['status'] == 0){
 			$serviceoffer 		= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
+			if(!$serviceoffer){
+				return Response::json(array('status' => 404,'message' => "serviceoffer does not exist"),404);				
+			}
+
 			$offer_buyable 		=  	intval($serviceoffer->buyable) + 1;
 			$service_offerdata  = 	['buyable' => intval($offer_buyable)];
 			$success_order 		= 	$serviceoffer->update($service_offerdata);
+
 			return Response::json(array('status' => 200,'message' => "serviceoffer buyable update scuessfull"),200);				
 		}
 
