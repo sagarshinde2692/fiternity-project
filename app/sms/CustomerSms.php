@@ -289,7 +289,14 @@ Class CustomerSms extends VersionNextSms{
 		return $this->sendToWorker($to, $message, $label);
 	}
 
+	public function generalSms ($data){
 
+		$to 		=  	array($data['to']);
+		$message 	= 	$data['message'];
+		$label 		= 	$data['label'];
+
+		return $this->sendToWorker($to, $message, $label);
+	}
 
 
 

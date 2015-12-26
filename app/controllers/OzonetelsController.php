@@ -10,6 +10,7 @@
 use App\Services\OzonetelResponse as OzonetelResponse;
 use App\Services\OzonetelCollectDtmf as OzonetelCollectDtmf;
 use App\Services\OzontelOutboundCall as OzontelOutboundCall;
+use App\Sms\CustomerSms as CustomerSms;
 
 use Guzzle\Http\Client;
 
@@ -18,12 +19,14 @@ class OzonetelsController extends \BaseController {
 	protected $ozonetelResponse;
 	protected $ozonetelCollectDtmf;
 	protected $ozontelOutboundCall;
+	protected $customersms;
 
-	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall) {
+	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms) {
 
 		$this->ozonetelResponse	=	$ozonetelResponse;
 		$this->ozonetelCollectDtmf	=	$ozonetelCollectDtmf;
 		$this->ozontelOutboundCall	=	$ozontelOutboundCall;
+		$this->customersms 				=	$customersms;
 
 	}
 
@@ -611,6 +614,117 @@ class OzonetelsController extends \BaseController {
 
 			return false;
 		}
+	}
+
+	public function sms(){
+
+		try{
+
+			$response = $this->misscall('sms');
+		
+			$ozonetel_missedcall = $response['ozonetel_missedcall'];
+
+			if($ozonetel_missedcall->customer_number != ''){
+
+				$current_date = time();
+				$before4jan = strtotime("4 January 2016");
+				$before12jan = strtotime("12 January 2016");
+				$message = '';
+				$label = 'FitmaniaSms';
+
+				if($current_date <= $before4jan){
+
+					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-11th Jan 2016. 2000+ brands across 15+ categories. Pre-register for insider info and chance to WIN a VIP Fitness Transformation. Click - http://bit.ly/22rA1ll TC Apply";
+
+				}elseif($current_date > $before4jan && $current_date <= $before12jan){
+
+					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-11th Jan 2016. 2000+ brands across 15+ categories. The smartest way to stick to your New Year resolution to be FIT in 2016. Buy Now! http://bit.ly/22rA1ll TC Apply";
+				}
+			
+				if($message != ''){
+
+					$data = array();
+
+					$data['label'] = $label;
+					$data['message'] = $message;
+					$data['to'] = $ozonetel_missedcall->cid;
+
+					$update['sms_general'] = $this->customersms->generalSms($data);
+					$update['sms_message'] = $message;
+
+				}else{
+
+					$update['error_message'] = 'missed call after limitd date';
+
+				}
+			
+			}else{
+
+				$update['error_message'] = 'contact number is null';
+			}
+
+			$ozonetel_missedcall->update($update);
+
+			$response = array('status'=>200,'message'=>'success');
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
+
+	}
+
+	public function misscall($type){
+
+		try{
+
+			$request = $_REQUEST;
+
+			$ozonetel_missedcall = new Ozonetelmissedcall();
+			$ozonetel_missedcall->_id = Ozonetelmissedcall::max('_id') + 1;
+			$ozonetel_missedcall->type = $type;
+			$ozonetel_missedcall->status = "1";
+			$ozonetel_missedcall->cid = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->customer_number = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->sid = isset($request['sid']) ? $request['sid'] : '';
+			$ozonetel_missedcall->called_number = isset($request['called_number']) ? $request['called_number'] : '';
+			$ozonetel_missedcall->circle = isset($request['circle']) ? $request['circle'] : '';
+			$ozonetel_missedcall->operator = isset($request['operator']) ? $request['operator'] : '';
+			$ozonetel_missedcall->call_time = isset($request['call_time']) ? $request['call_time'] : ''; 
+			$ozonetel_missedcall->called_at = isset($request['call_time']) ? strtotime($request['call_time']) : '';
+			$ozonetel_missedcall->save();
+
+			$response = array('status'=>200,'message'=>'success','ozonetel_missedcall'=> $ozonetel_missedcall );
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return $response;
+
 	}
 
 
