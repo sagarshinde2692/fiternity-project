@@ -56,6 +56,7 @@ Route::get('moveratecard', function() {
 
 
 Route::get('exportbooktrialorder', function() { 
+			return $reminderTimeAfter12Min 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
 
 	////Orders
 	// $headers = [

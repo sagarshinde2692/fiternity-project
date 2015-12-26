@@ -58,4 +58,36 @@ class BaseController extends Controller {
     }
     
 
+
+
+    
+    /**
+     * Calculate the number of seconds with the given delay.
+     *
+     * @param  \DateTime|int  $delay
+     * @return int
+     */
+    protected function getSeconds($delay){
+
+        if ($delay instanceof DateTime){
+            return max(0, $delay->getTimestamp() - $this->getTime());
+        }
+
+        if ($delay instanceof \Carbon\Carbon){
+            return max(0, $delay->timestamp - $this->getTime());
+        }
+        // echo (int) $delay; exit;
+        return (int) $delay;
+    }
+
+    /**
+     * Get the current UNIX timestamp.
+     *
+     * @return int
+     */
+    public function getTime(){
+        return time();
+    }
+
+
 }

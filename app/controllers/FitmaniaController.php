@@ -560,7 +560,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 	public function buyOffer(){
 
-			// return Input::json()->all();
+		// return Input::json()->all();
 		$data			=	Input::json()->all();		
 		if(empty($data['order_id'])){
 			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
@@ -570,7 +570,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 		$orderData 	= 	$order->toArray();
 
 			//Maintain Slab for deals of day
-		if($orderData['type'] == 'fitmania-dod'){
+		if($orderData['type'] == 'fitmania-dod' || $orderData['type'] == 'fitmania-dow'){
 			if(empty($orderData['serviceoffer_id']) ){
 				return Response::json(array('status' => 404,'message' => "Data Missing - serviceoffer_id"),404);				
 			}
@@ -578,41 +578,44 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 		if($orderData['status'] == 0){
 			$buydealofday 	=	$order->update(['status' => '1']);
-
-			/* limit | buyable | sold | acitve | left */
-
 			if($buydealofday){
-				if($orderData['type'] == 'fitmania-dod'){
+				/* limit | buyable | sold | acitve | left */
+				if($orderData['type'] == 'fitmania-dod' || $orderData['type'] == 'fitmania-dow'){
 					$serviceoffer 	= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
 					$offer_limit 	=  	intval($serviceoffer->limit);
 					$offer_sold 	=  	intval($serviceoffer->sold) + 1;
 					$offer_left 	=  	$offer_limit - $offer_sold;
-					$offer_buyable 	=  	$offer_limit - ($offer_sold + 1);
-
 					$offer_active  	=  	1;
 					if(intval($offer_limit) == intval($offer_sold)){
 						$offer_active	=	0; 
 					}
-					$service_offerdata  = ['limit' => $offer_limit, 'sold' => $offer_sold, 'left' => $offer_left, 'buyable' => intval($offer_buyable), 'active' => $offer_active];
+					$service_offerdata  = ['sold' => $offer_sold, 'left' => $offer_left, 'buyable' => intval($offer_buyable), 'active' => $offer_active];
 					$success_order = $serviceoffer->update($service_offerdata);
 
-					//send email
 					if($success_order){
-						echo "send email";
+						//send email & sms
+						$this->maintainActiveFlag($serviceoffer->service_id);
+						// Log::info('Customer Purchase : '.json_encode(array('purchase_details' => $order)));
+						$resp 	= 	array('status' => 200, 'message' => "Successfully buy Serivce through Fitmania :)");
+						return Response::json($resp);				
 					}
-
 				}
-			}
-
+			}//buydealofday
 		}
+		
 	}
 
 
-   public function maintainActiveFlag(){
+   public function maintainActiveFlag($serviceid = NULL){
 
 		$date 				=	Carbon::now();
 		$timestamp 			= 	strtotime($date);
-   		$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
+
+		if($serviceid != NULL){
+   			$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("service_id", intval($serviceid))->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();			
+		}else{
+   			$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();			
+		}
 
    		foreach ($ratecardoffers as $key => $offers) {
    			// return $offers;
@@ -634,6 +637,22 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
    		}//foreach
 
    		return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
+   }
+
+
+   public function checkFitmaniaOrder($order_id){
+
+		$order 		= 	Order::find(intval($order_id));
+		$orderData 	= 	$order->toArray();
+
+		if($orderData['status'] == 0){
+			$serviceoffer 		= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
+			$offer_buyable 		=  	intval($serviceoffer->buyable) + 1;
+			$service_offerdata  = 	['buyable' => intval($offer_buyable)];
+			$success_order 		= 	$serviceoffer->update($service_offerdata);
+			return Response::json(array('status' => 200,'message' => "serviceoffer buyable update scuessfull"),200);				
+		}
+
    }
 
 
