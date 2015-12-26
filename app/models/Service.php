@@ -139,21 +139,21 @@ class Service extends \Basemodel{
 		if($ratecardsarr){
 			foreach ($ratecardsarr as $key => $value) {
 
-				if(intval($value['validity']) % 30){
+				if(intval($value['validity'])%30 == 0){
 					$value['validity']  = intval(intval($value['validity'])/30);
 					if(intval($value['validity']) > 1){
-						$value['validity_type'] = "month";
-					}else{
 						$value['validity_type'] = "months";
+					}else{
+						$value['validity_type'] = "month";
 					}
 				}
 
-				if(intval($value['validity']) % 360){
+				if(intval($value['validity'])%360 == 0){
 					$value['validity']  = intval(intval($value['validity'])/360);
 					if(intval($value['validity']) > 1){
-						$value['validity_type'] = "year";
-					}else{
 						$value['validity_type'] = "years";
+					}else{
+						$value['validity_type'] = "year";
 					}
 				}
 
