@@ -30,9 +30,6 @@ Route::get('moveratecard', function() {
 					$days = $sessions = 0;
 					$previous_duration = "-";
 
-					
-
-
 					if(isset($val['duration']) && $val['duration'] != ''){
 						$previous_duration  = $val['duration'];
 						$durationObj = Duration::active()->where('slug', url_slug(array($val['duration'])))->first();

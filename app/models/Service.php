@@ -133,7 +133,33 @@ class Service extends \Basemodel{
 
 		$ratecards 	= 	[];
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecards 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('_id', 'desc')->get()->toArray();
+			$ratecardsarr 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('_id', 'desc')->get()->toArray();
+		}
+
+		if($ratecardsarr){
+			foreach ($ratecardsarr as $key => $value) {
+
+				if($value['validity'] % 30){
+					$value['validity']  = intval($value['validity']/30);
+					if($value['validity'] > 1){
+						$value['validity_type'] = "month";
+					}else{
+						$value['validity_type'] = "months";
+					}
+				}
+
+				if($value['validity'] % 360){
+					$value['validity']  = intval($value['validity']/360);
+					if($value['validity'] > 1){
+						$value['validity_type'] = "year";
+					}else{
+						$value['validity_type'] = "years";
+					}
+				}
+
+				array_push($ratecards, $value);
+			}
+			
 		}
 
 		return $ratecards ;
