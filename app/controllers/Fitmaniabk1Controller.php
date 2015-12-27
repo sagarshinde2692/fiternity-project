@@ -455,12 +455,20 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 	public function serviceDetail($serviceid, $offerid){
 
+		return $service_ratedcards    	=   Ratecard::with('serviceoffers')->where('service_id', intval($serviceid) )->get()->toArray();
+
+
+		return $service_ratedcards    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+																			$query->select('*')->whereIn('_id', [intval($offerid)]);
+																		}))->where('service_id', intval($serviceid) )->get()->toArray();
+
+
 		$service = Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->where('_id', (int) $serviceid)->first();
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
 			return Response::json($resp, 400);
 		}
-		$servicedata = $this->transformServiceDetail($service, $offerid);
+		return $servicedata = $this->transformServiceDetail($service, $offerid);
 
 		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
 		$servicefinderid 	= intval($servicedata['finder_id']);
@@ -498,10 +506,13 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 			if($offerid != ""){
 				$service_ratedcards    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
 																			$query->select('*')->whereIn('_id', [intval($offerid)]);
-																		}))->where('service_id', intval($item['_id']) )->get()->toArray();	
+																		}))->where('service_id', intval($item['_id']) )->get()->toArray();		
+
 			}else{
 				$service_ratedcards    	=   Ratecard::with('serviceoffers')->where('service_id', intval($item['_id']) )->get()->toArray();					
 			}
+				// $service_ratedcards    	=   Ratecard::with('serviceoffers')->where('service_id', intval($item['_id']) )->get()->toArray();					
+
 
 			// return $service_ratedcards;
 
@@ -528,7 +539,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 				'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
 				'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 				'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
-				'serviceratecard' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
+				'serviceratecard' => (isset($item['serviceratecard']) && !empty($item['serviceratecard'])) ? $item['serviceratecard'] : "",
 				);
 			// return $data;
 

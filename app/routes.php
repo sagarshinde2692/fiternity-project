@@ -333,22 +333,33 @@ Route::get('flushall', 'CacheApiController@flushAll');
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
 
-Route::get('fitmania/{city?}/{from?}/{size?}/{location_cluster?}', 'FitmaniaController@getDealOfDay');
-Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
+Route::get('fitmania/{city?}/{from?}/{size?}', 'FitmaniaController@homeData');
+Route::get('fitmaniadow/{city?}/{from?}/{size?}', 'FitmaniaController@getDealOfWeek');
+Route::get('fitmaniadod/{city?}/{from?}/{size?}', 'FitmaniaController@getDealOfDay');
+Route::get('fitmaniamembership/{city?}/{from?}/{size?}', 'FitmaniaController@getMembership');
+Route::get('fitmaniahomepagebanners/{city?}/{type?}/{from?}/{size?}', 'FitmaniaController@getFitmaniaHomepageBanners');
+Route::post('searchfitmaniamembership', 'FitmaniaController@serachMembership');
+Route::post('searchfitmaniadoddow', 'FitmaniaController@serachDodAndDow');
+Route::post('buyfitmaniaoffer', 'FitmaniaController@buyOffer');
+Route::get('fitmaniaservicedetail/{serviceid}/{offerid}', 'FitmaniaController@serviceDetail');
+Route::get('maintainactiveflag/{serviceid?}', 'FitmaniaController@maintainActiveFlag');
+Route::get('checkfitmaniaorder/{orderid}', 'FitmaniaController@checkFitmaniaOrder');
 
-Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
-Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
+// Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
 
-Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+// Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');
+// Route::get('fitmaniadeals/{startdate?}/{enddate?}/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayBetweenDate');
 
-Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
-Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
-Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
+// Route::post('fitmania', 'FitmaniaController@fitmaniaServices');
+
+// Route::post('buyfitmaniaservice', 'FitmaniaController@buyService');
+// Route::post('buyfitmaniaservicemembership', 'FitmaniaController@buyServiceMembership');
+// Route::post('buyfitmaniahealthytiffin', 'FitmaniaController@buyServiceHealthyTiffin');
 
 
-Route::get('resendemails', 'FitmaniaController@resendEmails');
-Route::get('resendfinderemail', 'FitmaniaController@resendFinderEmail');
-Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
+// Route::get('resendemails', 'FitmaniaController@resendEmails');
+// Route::get('resendfinderemail', 'FitmaniaController@resendFinderEmail');
+// Route::get('resendcustomeremail', 'FitmaniaController@resendCustomerEmail');
 
 
 ##############################################################################

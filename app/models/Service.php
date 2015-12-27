@@ -63,12 +63,12 @@ class Service extends \Basemodel{
 
 		$service_coverimage = '';
 
-		if(!empty($this->coverimage) && isset($this->coverimage)){
-			$service_coverimage = 's/c/'.$service_coverimage;
+		if(!empty($this->coverimage) && isset($this->coverimage) && trim($this->coverimage) != ""){
+			$service_coverimage = 's/c/'.trim($this->coverimage);
 		}else{
 			$finder  	=	Finder::find(intval($this->finder_id));
 			if($finder){
-				$service_coverimage = (trim($finder->coverimage) != '') ? 'f/c/'.trim($finder->coverimage) : 'default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
+				$service_coverimage = (trim($finder->coverimage) != '') ? 'f/c/'.trim($finder->coverimage) : 'f/c/default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
 			}
 		}
 		return $service_coverimage ;
@@ -78,12 +78,12 @@ class Service extends \Basemodel{
 
 		$service_coverimage = '';
 
-		if(!empty($this->coverimage) && isset($this->coverimage)){
-			$service_coverimage = 's/ct/'.$service_coverimage;
+		if(!empty($this->coverimage) && isset($this->coverimage) && trim($this->coverimage) != ""){
+			$service_coverimage = 's/ct/'.trim($this->coverimage);
 		}else{
 			$finder  	=	Finder::find(intval($this->finder_id));
 			if($finder){
-				$service_coverimage = (trim($finder->coverimage) != '') ? 'f/ct/'.trim($finder->coverimage) : 'default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
+				$service_coverimage = (trim($finder->coverimage) != '') ? 'f/c/'.trim($finder->coverimage) : 'f/c/default/'.$finder->category_id.'-'.rand(1, 4).'.jpg';
 			}
 		}
 		return $service_coverimage ;
@@ -127,6 +127,13 @@ class Service extends \Basemodel{
 		return $ratecards ;
 	}
 
+	public function getServiceratecardAttribute(){
+		$ratecards 	= 	[];
+		if(!empty($this->_id) && isset($this->_id)){
+			$ratecards 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('_id', 'desc')->get()->toArray();
+		}
+		return $ratecards ;
+	}
 
 
 	public function getServiceratecardAttribute(){

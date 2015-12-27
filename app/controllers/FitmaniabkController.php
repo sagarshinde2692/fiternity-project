@@ -13,7 +13,7 @@ use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
 
 
-class FitmaniaController extends \BaseController {
+class FitmaniabkController extends \BaseController {
 
 	protected $customermailer;
 	protected $customersms;

@@ -37,10 +37,17 @@ class Serviceoffer extends \Basemodel {
 	}
 
 
-	public function serviceratecards(){
-		return $this->belongsTo('Ratecard');
+	public function finder(){
+		return $this->belongsTo('Finder','finder_id');
 	}
 
+	public function service(){
+		return $this->belongsTo('Service','service_id');
+	}
+
+	public function ratecard(){
+		return $this->belongsTo('Ratecard','ratecard_id');
+	}
 
 
 }

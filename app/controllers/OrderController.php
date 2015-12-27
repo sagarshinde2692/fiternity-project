@@ -9,18 +9,21 @@
 
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\Sidekiq as Sidekiq;
 
 class OrderController extends \BaseController {
 
 	protected $customermailer;
 	protected $customersms;
+    protected $sidekiq;
 
 
-	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms) {
-
+	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, Sidekiq $sidekiq) {
+		parent::__construct();	
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub');
+        $this->sidekiq 				= 	$sidekiq;
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
 	}
 
 
@@ -281,6 +284,29 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
+		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
+			if( empty($data['serviceoffer_id']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - serviceoffer_id");
+				return Response::json($resp,404);				
+			}
+
+			/* limit | buyable | sold | acitve | left */
+			$serviceoffer 		= 	Serviceoffer::find(intval($data['serviceoffer_id']));
+			if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) == 0){
+				$resp 	= 	array('status' => 404,'message' => "Buyable limit reach to zero :)");
+				return Response::json($resp,404);				
+			}
+
+			if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) > 0){
+				$offer_buyable 		=  	$serviceoffer->buyable - 1;
+			}else{
+				$offer_buyable 		=  	intval($serviceoffer->limit) - 1;
+			}
+			$service_offerdata  = 	['buyable' => intval($offer_buyable)];
+			$serviceoffer->update($service_offerdata);
+
+		}
+
 		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice'){
 			if( empty($data['service_duration']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
@@ -312,6 +338,12 @@ class OrderController extends \BaseController {
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
 		$email_body2 		=	(Input::json()->get('email_body2') != "-") ? Input::json()->get('email_body2') : '';	
 		
+		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
+			$reminderTimeAfter12Min 	=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
+			$buyable_after12min 		= 	$this->checkFitmaniaBuyable($orderid ,'checkFitmaniaBuyable', 0, $reminderTimeAfter12Min);
+			array_set($data, 'buyable_after12min_queueid', $buyable_after12min);
+		}
+
 		array_set($data, 'customer_id', intval($customer_id));
 		
 		// return $data;
@@ -332,6 +364,8 @@ class OrderController extends \BaseController {
 		return Response::json($resp);
 
 	}
+
+
 
 	public function captureFailOrders(){
 
@@ -458,7 +492,6 @@ class OrderController extends \BaseController {
 	}
 
 
-
 	public function getOrderDetail($orderid){
 
 		$orderdata 		=	Order::find(intval($orderid));
@@ -471,5 +504,28 @@ class OrderController extends \BaseController {
 		return Response::json($responsedata, 200);
 
 	}
+
+
+
+    public function checkFitmaniaBuyable($order_id, $label = 'label', $priority = 0, $delay = 0){
+
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+    
+        $payload = array('order_id'=>$order_id,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+        $route  = 'fitmaniabuyable';
+        $result  = $this->sidekiq->sendToQueue($payload,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+
+    }
+
+
+
 
 }
