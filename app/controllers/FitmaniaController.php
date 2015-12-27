@@ -106,15 +106,10 @@ class FitmaniaController extends \BaseController {
 		$weekday 		= 	strtolower(date( "l", $timestamp));
 		$categoryday   	=   $this->categorydayCitywise($city,$weekday);
 
-		$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();
-		$banners 			= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();		
-		$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
-		if(count($fitmaniahomepageobj) < 1){
-			$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday,  'location_clusters' => $location_clusters,  'banners' => $banners, 'fitmaniadods' => [],  'message' => 'No Fitmania DOD Exist :)'];
-			return Response::json($responsedata, 200);
-		}
-
-		$ratecardids 			=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
+		$location_clusters 		= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();
+		$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();		
+		$fitmaniahomepageobj 	=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+		
 		$fitmaniadods			=	[];
 		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
 														// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
