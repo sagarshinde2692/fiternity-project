@@ -105,11 +105,9 @@ class FitmaniaController extends \BaseController {
 		$stringdate 	= 	$date->toFormattedDateString();
 		$weekday 		= 	strtolower(date( "l", $timestamp));
 		$categoryday   	=   $this->categorydayCitywise($city,$weekday);
-
-		$location_clusters 		= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();
-		$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();		
-		$fitmaniahomepageobj 	=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
-		
+		$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();
+		$banners 			= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
+			
 		$fitmaniadods			=	[];
 		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
 														// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
@@ -179,10 +177,12 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$weekday 		= 	strtolower(date( "l", $timestamp));
 	$categoryday   	=   $this->categorydayCitywise($city,$weekday);
 
-
+	$banners 			= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();		
+	$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();						
+		
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
-		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
+		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
 		return Response::json($responsedata, 200);
 	}
 
@@ -222,8 +222,6 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 			array_push($fitmaniamemberships, $data);
 		}
 
-		$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();		
-		$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();						
 		$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
 		return Response::json($responsedata, 200);
 	}
