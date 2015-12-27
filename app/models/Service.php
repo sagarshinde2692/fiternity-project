@@ -127,14 +127,6 @@ class Service extends \Basemodel{
 		return $ratecards ;
 	}
 
-	public function getServiceratecardAttribute(){
-		$ratecards 	= 	[];
-		if(!empty($this->_id) && isset($this->_id)){
-			$ratecards 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('_id', 'desc')->get()->toArray();
-		}
-		return $ratecards ;
-	}
-
 
 	public function getServiceratecardAttribute(){
 
