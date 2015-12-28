@@ -943,9 +943,23 @@ class CustomerController extends \BaseController {
 		$from 				=	($from != '') ? intval($from) : 0;
 		$size 				=	($size != '') ? intval($size) : 10;
 
-		$orders 			= 	Order::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))->where('customer_email','=',$customer_email)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
-		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
+		$orders 			=  	[];
+		$ordersrs 			= 	Order::where('customer_email','=',$customer_email)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
+		foreach ($ordersrs as $key => $value) {
+			if(isset($value['finder_id']) && $value['finder_id'] != ''){
+				$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+				->find(intval($value['finder_id']),['_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city']);
+				if($finderarr){
+					$value['finder'] = $finderarr;
+				}
+			}
+			array_push($orders, $value);
+		}
+
+		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
 		return Response::json($responseData, 200);
 	}
 
