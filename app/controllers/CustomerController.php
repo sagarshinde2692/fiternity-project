@@ -877,7 +877,7 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$decodedToken = $this->customerTokenDecode($jwt_token);
-		$variable = ['name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time'];
+		$variable = ['name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time','preferred_workout_location','recieve_update'];
 
 		$data = Input::json()->all();
 		$validator = Validator::make($data, Customer::$update_rules);
@@ -1115,9 +1115,9 @@ public function editBookmarks($finder_id, $remove = ''){
 
 public function customerDetail($customer_id){
 
-	$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>[],'dob'=>NULL,'ideal_workout_time'=>NULL);
+	$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>[],'dob'=>NULL,'ideal_workout_time'=>NULL,'preferred_workout_location'=>NULL,'recieve_update'=>NULL);
 
-	$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time','identity'))->toArray();
+	$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time','identity','preferred_workout_location','recieve_update'))->toArray();
 	
 
 	if($customer){
