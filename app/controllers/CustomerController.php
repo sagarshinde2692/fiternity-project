@@ -943,7 +943,7 @@ class CustomerController extends \BaseController {
 		$from 				=	($from != '') ? intval($from) : 0;
 		$size 				=	($size != '') ? intval($size) : 10;
 
-		$orders 			= 	Order::where('customer_email','=',$customer_email)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$orders 			= 	Order::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))->where('customer_email','=',$customer_email)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
 
 		return Response::json($responseData, 200);
