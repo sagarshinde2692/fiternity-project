@@ -300,10 +300,9 @@ Class CustomerMailer extends Mailer {
 
 	public function buyServiceThroughFitmania ($data){
 
-		$email_template_customer 	= 	'emails.order.fitmanianew_offer_template_v1';
-		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
+		$email_template_customer 	= 	'emails.order.fitmania_offer';
 		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
@@ -316,16 +315,11 @@ Class CustomerMailer extends Mailer {
 		$label = 'BuySrvFitmania-C';
 		$priority = 1;
 		
-		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 
-		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-
-		$label = 'BuySrvFitmania-Us';
-		
-		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 	}
+
+
 
 	public function buyServiceThroughFitmaniaResend1 ($data){
 

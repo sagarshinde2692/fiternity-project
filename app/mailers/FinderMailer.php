@@ -106,16 +106,14 @@ Class FinderMailer extends Mailer {
 
 	public function buyServiceThroughFitmania ($data){
 
-		$email_template 	= 	'emails.order.fitmania_offer_vendor_v1';
-		$template_data 				= 	$data;
+		$email_template 	= 	'emails.order.fitmania_offer_vendor';
+		$template_data 		= 	$data;
 
 		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
 			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_fitmaniasale'));
 		}else{
 			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
 		} 
-		
-		// $bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
 
 		$subject  					=   'FitMania Sale by Fitternity - Membership purchase request for '.ucwords($data['finder_name']);
 

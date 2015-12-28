@@ -195,6 +195,7 @@
                        <tr>
                         <td width="100%" height="10" style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
                       </tr>
+                      <?php if(isset($customer_name) && $customer_name != ""){ ?>  
                       <tr>
                         <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                          <p style="font-weight:light">Name of the customer:   
@@ -206,7 +207,9 @@
                        <tr>
                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                            {{ ucwords($customer_name) }}</td>
-                         </tr>
+                         </tr> <?PHP } ?>
+
+                         <?php if(isset($customer_phone) && $customer_phone != ""){ ?>  
                          <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Number of the customer::
@@ -217,21 +220,9 @@
                          <tr>
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $customer_phone }} </td>
-                           </tr>
+                           </tr> <?PHP } ?>
 
-                           @if ($subscription_start) 
-                           <tr>
-                          <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
-                           <p style="font-weight:light">Starting Date:
-                           </td>
-                         </tr>
-                         <tr>
-                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
-                             {{ date(' jS F\, Y \(l\) ', strtotime($subscription_start) )  }} </td>
-                           </tr>
-                           @endif
-
-
+                           <?php if(isset($amount) && $amount != ""){ ?> 
                            <tr>
                           <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                            <p style="font-weight:light">Purchase price:
@@ -242,7 +233,7 @@
                          <tr>
                            <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1">
                              {{ $amount }} </td>
-                           </tr>
+                           </tr><?PHP } ?>
 
 
 
@@ -392,7 +383,7 @@
       <tbody>
         <tr style="background-color:#fff">
           <td width="160"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
-          <td align="center" style="color:#666; font-family:Arial, sans serif; font-size:13px;" width="200">Call -          022 6122 2222</td>
+          <td align="center" style="color:#666; font-family:Arial, sans serif; font-size:13px;" width="200">Call -  022 6122 2222</td>
           <td width="197" style="text-align:right"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
         </tr>
       </tbody>

@@ -208,14 +208,12 @@ Class CustomerSms extends VersionNextSms{
 	public function buyServiceThroughFitmania ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-
 		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for purchasing your membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you an email with the all details you need to start the membership. Call us on +91922221131 for any queries.";
-
 		$label = 'BuySrvFitmania-C';
 		$priority = 1;
-
 		return $this->sendToWorker($to, $message, $label, $priority);
 	}
+
 
 	public function buyServiceMembershipThroughFitmania ($data){
 

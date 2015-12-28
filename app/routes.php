@@ -341,6 +341,7 @@ Route::get('fitmaniahomepagebanners/{city?}/{type?}/{from?}/{size?}', 'FitmaniaC
 Route::post('searchfitmaniamembership', 'FitmaniaController@serachMembership');
 Route::post('searchfitmaniadoddow', 'FitmaniaController@serachDodAndDow');
 Route::post('buyfitmaniaoffer', 'FitmaniaController@buyOffer');
+Route::post('searchfitmaniafinders', 'FitmaniaController@serachFinders');
 Route::get('fitmaniaservicedetail/{serviceid}/{offerid}', 'FitmaniaController@serviceDetail');
 Route::get('maintainactiveflag/{serviceid?}', 'FitmaniaController@maintainActiveFlag');
 Route::get('checkfitmaniaorder/{orderid}', 'FitmaniaController@checkFitmaniaOrder');
