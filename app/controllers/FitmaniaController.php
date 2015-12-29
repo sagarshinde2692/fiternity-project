@@ -450,6 +450,11 @@ public function serachDodAndDow(){
 
 	public function serviceDetail($serviceid, $offerid){
 
+		// return $service_ratedcards    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+		// 		$query->select('*')->whereNotIn('_id', [intval($offerid)]);
+		// 	}))->where('service_id', intval($serviceid) )->get()->toArray();	
+		
+
 		$service = Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->where('_id', (int) $serviceid)->first();
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
@@ -551,7 +556,6 @@ if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
 
 return $data;
 }
-
 
 
 	private function transformServiceDetailV1($service, $offerid = ''){
