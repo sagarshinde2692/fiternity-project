@@ -132,7 +132,7 @@ class Service extends \Basemodel{
 
 		$ratecards 	= 	[];
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecardsarr 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('_id', 'desc')->get()->toArray();
+			$ratecardsarr 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
 		}
 
 		if($ratecardsarr){

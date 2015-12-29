@@ -152,7 +152,7 @@ private function transformDod($offers){
 	'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
 	'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
 	'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact'] )  : "",		
-	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location' )),
+	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location','address','timing','batches' )),
 
 	];
 
@@ -211,10 +211,13 @@ foreach ($services as $key => $value) {
 	'_id' => $item['_id'],
 	'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 	'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+	'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
+	'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
 	'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
 	'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 	'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 	'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
+	'batches' => (isset($item['batches']) && $item['batches'] != '') ? $item['batches'] : [],
 	'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
 	'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
 	];
@@ -260,10 +263,6 @@ private function transformMembership($offers){
 }
 
 
-public function getDealOfWeek($city = 'mumbai', $from = '', $size = ''){
-
-	return "welcome to fitmania dow";
-}
 
 
 public function serachMembership(){
@@ -319,11 +318,14 @@ public function serachMembership(){
 		'_id' => $item['_id'],
 		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+		'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
+		'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
 		'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
 		'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
 		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 		'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
+		'batches' => (isset($item['batches']) && $item['batches'] != '') ? $item['batches'] : [],
 		'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
 		];
@@ -350,7 +352,7 @@ public function serachMembership(){
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
 	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
-return Response::json($responsedata, 200);
+	return Response::json($responsedata, 200);
 }
 
 
@@ -435,7 +437,7 @@ public function serachDodAndDow(){
 	$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
-return Response::json($responsedata, 200);
+	return Response::json($responsedata, 200);
 }
 
 
@@ -503,6 +505,8 @@ return Response::json($responsedata, 200);
 			'location_id' => $item['location_id'],
 			'finder_id' => $item['finder_id'],
 			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+			'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
+			'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
 			'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
 			'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
 			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
@@ -520,6 +524,7 @@ return Response::json($responsedata, 200);
 			'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
 			'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 			'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
+			'batches' => (isset($item['batches']) && !empty($item['batches'])) ? $item['batches'] : "",
 			'serviceratecard' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
 			);
 
