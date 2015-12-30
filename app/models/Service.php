@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard');
+	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard','servicebatches');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
@@ -172,6 +172,34 @@ class Service extends \Basemodel{
 			$trainer   = $trainerObj;
 		}
 		return $trainer ;
+	}
+
+
+	public function getServicebatchesAttribute(){
+
+		$service_batches = [];
+
+		if(!empty($this->batches) && isset($this->batches)){
+			foreach ($this->batches as $key => $batch) {
+				$service_batch = [];
+
+				foreach ($batch as $k => $batch_weekday) {
+					$batch_weekday_arr = [];
+					$batch_weekday_arr['weekday'] =  $batch_weekday['weekday'];
+					$slots = [];
+					if(!empty($batch_weekday['slots']) && isset($batch_weekday['slots'])){
+						foreach ($batch_weekday['slots'] as $k => $slot) {
+							array_push($slots, $slot);
+						}
+					}
+					$batch_weekday_arr['slots'] = array_values($slots);
+					array_push($service_batch, $batch_weekday_arr);
+				}
+				array_push($service_batches, $service_batch);
+			}
+		}
+
+		return $service_batches;
 	}
 
 	

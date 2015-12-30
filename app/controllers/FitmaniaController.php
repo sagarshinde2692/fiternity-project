@@ -62,7 +62,7 @@ class FitmaniaController extends \BaseController {
 		$responsedata['membership'] = $this->getDealOfDay($city , $from, $size);
 		$responsedata['message'] = "Fitmania Home Page Data :)";
 
-return Response::json($responsedata, 200);
+		return Response::json($responsedata, 200);
 }
 
 public function getFitmaniaHomepageBanners($city = 'mumbai', $type = '',  $from = '', $size = ''){
@@ -77,7 +77,7 @@ public function getFitmaniaHomepageBanners($city = 'mumbai', $type = '',  $from 
 	$from 			=	($from != '') ? intval($from) : 0;
 	$size 			=	($size != '') ? intval($size) : 10;
 
-	$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->take($size)->skip($from)->orderBy('ordering')->get();			
+	$banners 		= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', trim($type))->take($size)->skip($from)->orderBy('ordering')->get();			
 	if(!$banners){
 		return $this->responseEmpty('Fitmania Home Page Banners does not exist :)');
 	}
@@ -152,7 +152,7 @@ private function transformDod($offers){
 	'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
 	'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
 	'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact'] )  : "",		
-	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location','address','timing','batches' )),
+	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location','address','timing','servicebatches' )),
 
 	];
 
@@ -217,7 +217,7 @@ foreach ($services as $key => $value) {
 	'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 	'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 	'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
-	'batches' => (isset($item['batches']) && $item['batches'] != '') ? $item['batches'] : [],
+	'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
 	'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
 	'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
 	];
@@ -325,7 +325,7 @@ public function serachMembership(){
 		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 		'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
-		'batches' => (isset($item['batches']) && $item['batches'] != '') ? $item['batches'] : [],
+		'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
 		'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
 		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
 		];
@@ -460,7 +460,7 @@ return Response::json($responsedata, 200);
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
 			return Response::json($resp, 400);
 		}
-		$servicedata = $this->transformServiceDetail($service, $offerid);
+		return $servicedata = $this->transformServiceDetail($service, $offerid);
 
 		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
 		$servicefinderid 	= intval($servicedata['finder_id']);
@@ -530,7 +530,7 @@ return Response::json($responsedata, 200);
 			'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
 			'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 			'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
-			'batches' => (isset($item['batches']) && !empty($item['batches'])) ? $item['batches'] : "",
+			'batches' => (isset($item['servicebatches']) && !empty($item['servicebatches'])) ? $item['servicebatches'] : "",
 			'serviceratecard' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
 			);
 
@@ -593,7 +593,7 @@ private function transformServiceDetailV1($service, $offerid = ''){
 		'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
 		'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
 		'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
-		'batches' => (isset($item['batches']) && !empty($item['batches'])) ? $item['batches'] : "",
+		'batches' => (isset($item['servicebatches']) && !empty($item['servicebatches'])) ? $item['servicebatches'] : "",
 		'serviceratecard' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
 		);
 
@@ -706,6 +706,7 @@ public function maintainActiveFlag($serviceid = NULL){
    	}
 
 
+   	// used to reset buyable value it will hit by sidekick after 12 min
    	public function checkFitmaniaOrder($order_id){
 
    		$order 		= 	Order::find(intval($order_id));
