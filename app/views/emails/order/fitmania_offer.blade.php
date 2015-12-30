@@ -165,8 +165,8 @@
                    <?php if(isset($finder_name) && $finder_name != ""){ ?>  {{ ucwords($finder_name) }}  <?PHP } ?>
                  </p>
 
-                 <?php if(isset($subscription_start) && $subscription_start != ""){ ?> 
-                 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Starting Date:</span> {{ date(' jS F\, Y \(l\) ', strtotime($subscription_start) )  }} </p>
+                 <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
+                 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Starting Date:</span> {{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) )  }} </p>
                  <?PHP } ?>
 
                  <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">2. Start the membership</span></p>

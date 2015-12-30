@@ -201,6 +201,12 @@ class OrderController extends \BaseController {
 		// $userdata	=	array_except(Input::all(), array());
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+
+		if(Input::json()->get('preferred_starting_date')){
+			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( Input::json()->get('preferred_starting_date') ));
+			array_set($data, 'preferred_starting_date', $preferred_starting_date);
+		}
+
 		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
 		// $required_fiels = ['customer_name', ];
 
@@ -291,8 +297,8 @@ class OrderController extends \BaseController {
 				return Response::json($resp,404);				
 			}
 
-			if( empty($data['subscription_start']) ){
-				$resp 	= 	array('status' => 404,'message' => "Data Missing - subscription_start");
+			if( empty($data['preferred_starting_date']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
 				return Response::json($resp,404);				
 			}
 

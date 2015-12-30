@@ -263,9 +263,9 @@
                   <tr> <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1"> {{ $_id }} (this code will be shared by the customer to avail the membership) </td> </tr>
                  <?PHP } ?>
 
-                 <?php if(isset($subscription_start) && $subscription_start != ""){ ?> 
+                 <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
                   <tr> <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1"> <p style="font-weight:light">Starting Date:</p> </td> </tr>
-                  <tr>  <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1"> {{ date(' jS F\, Y \(l\) ', strtotime($subscription_start) )  }} </td>  </tr>
+                  <tr>  <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-top:15px; vertical-align:text-top; color: #333; font-weight:500" st-title="3col-title1"> {{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) )  }} </td>  </tr>
                  <?PHP } ?>
 
                   <tr>
