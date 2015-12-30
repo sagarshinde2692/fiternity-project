@@ -32,11 +32,11 @@ Route::get('landingzumba', 'HomeController@landingzumba');
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
 Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 
-Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
-Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
-Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
-Route::get('/getcategorys/{city?}', 'HomeController@getCityCategorys');
-Route::get('/getcities', 'HomeController@getCities');
+Route::get('getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
+Route::get('getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
+Route::get('getlocations/{city?}', 'HomeController@getCityLocation');
+Route::get('getcategories/{city?}', 'HomeController@getCityCategorys');
+Route::get('getcities', 'HomeController@getCities');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
