@@ -460,7 +460,7 @@ return Response::json($responsedata, 200);
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
 			return Response::json($resp, 400);
 		}
-		return $servicedata = $this->transformServiceDetail($service, $offerid);
+		$servicedata = $this->transformServiceDetail($service, $offerid);
 
 		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
 		$servicefinderid 	= intval($servicedata['finder_id']);
@@ -762,6 +762,22 @@ public function maintainActiveFlag($serviceid = NULL){
 
    		}
    	}
+
+
+   	public function checkCouponcode($code){
+
+   		$couponcode  	= 	Couponcode::where("code" , strtolower(trim($code)))->first();
+
+   		if(count($couponcode) < 1){
+			$responsedata 	= ['couponcode' => "", 'exist' => false, 'message' => 'No couponcode Exist :)'];
+			return Response::json($responsedata, 200);
+		}
+		
+		$responsedata 	= ['couponcode' => $couponcode, 'exist' => true, 'message' => 'couponcode Exist :)'];
+		return Response::json($responsedata, 200);
+
+   	}
+
 
 
 
