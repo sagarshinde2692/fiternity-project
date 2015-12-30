@@ -35,6 +35,7 @@ Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 Route::get('/getcollecitonnames/{city?}', 'HomeController@getcollecitonnames');
 Route::get('/getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfinders');
 Route::get('/getlocations/{city?}', 'HomeController@getCityLocation');
+Route::get('/getcategorys/{city?}', 'HomeController@getCityCategorys');
 Route::get('/getcities', 'HomeController@getCities');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
@@ -344,6 +345,8 @@ Route::post('searchfitmaniafinders', 'FitmaniaController@serachFinders');
 Route::get('fitmaniaservicedetail/{serviceid}/{offerid}', 'FitmaniaController@serviceDetail');
 Route::get('maintainactiveflag/{serviceid?}', 'FitmaniaController@maintainActiveFlag');
 Route::get('checkfitmaniaorder/{orderid}', 'FitmaniaController@checkFitmaniaOrder');
+Route::get('updatecityid/', 'FitmaniaController@updateCityIdFromFinderCityId');
+
 
 // Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
 

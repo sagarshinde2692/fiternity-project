@@ -352,7 +352,7 @@ public function serachMembership(){
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
 	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 
@@ -437,7 +437,7 @@ public function serachDodAndDow(){
 	$leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 
@@ -558,44 +558,44 @@ return $data;
 }
 
 
-	private function transformServiceDetailV1($service, $offerid = ''){
+private function transformServiceDetailV1($service, $offerid = ''){
 
-		$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
+	$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
 
-			$service_ratedcards    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
-				$query->select('*')->whereNotIn('_id', [intval($offerid)]);
-			}))->where('service_id', intval($item['_id']) )->get()->toArray();	
-		
+	$service_ratedcards    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+		$query->select('*')->whereNotIn('_id', [intval($offerid)]);
+	}))->where('service_id', intval($item['_id']) )->get()->toArray();	
 
 
-		$data = array(
-			'_id' => $item['_id'],
-			'servicecategory_id' => $item['servicecategory_id'],
-			'location_id' => $item['location_id'],
-			'finder_id' => $item['finder_id'],
-			'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
-			'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
-			'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
-			'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
-			'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
-			'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
-			'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
-			'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
-			'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
-			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
-			'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
-			'short_description' => (isset($item['short_description']) && $item['short_description'] != '') ? $item['short_description'] : "", 
-			'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "", 
-			'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "", 
-			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
-			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
-			'location' =>  array_only($item['location'], array('_id', 'name', 'slug')) ,
-			'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
-			'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
-			'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
-			'batches' => (isset($item['batches']) && !empty($item['batches'])) ? $item['batches'] : "",
-			'serviceratecard' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
-			);
+
+	$data = array(
+		'_id' => $item['_id'],
+		'servicecategory_id' => $item['servicecategory_id'],
+		'location_id' => $item['location_id'],
+		'finder_id' => $item['finder_id'],
+		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+		'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
+		'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
+		'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
+		'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
+		'created_at' => (isset($item['created_at']) && $item['created_at'] != '') ? strtolower($item['created_at']) : "",
+		'lat' => (isset($item['lat']) && $item['lat'] != '') ? strtolower($item['lat']) : "",
+		'lon' => (isset($item['lon']) && $item['lon'] != '') ? strtolower($item['lon']) : "",
+		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+		'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
+		'short_description' => (isset($item['short_description']) && $item['short_description'] != '') ? $item['short_description'] : "", 
+		'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "", 
+		'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "", 
+		'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
+		'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name','what_i_should_carry','what_i_should_expect','description')) ,
+		'location' =>  array_only($item['location'], array('_id', 'name', 'slug')) ,
+		'city' =>  array_only($item['city'], array('_id', 'name', 'slug')) ,
+		'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
+		'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
+		'batches' => (isset($item['batches']) && !empty($item['batches'])) ? $item['batches'] : "",
+		'serviceratecard' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : "",
+		);
 
 if(isset($item['finder']) && $item['finder'] != ''){
 	$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
@@ -744,6 +744,25 @@ public function maintainActiveFlag($serviceid = NULL){
    		return Response::json(array('status' => 200,'finders' => $finders, 'message' => 'Finder list :)'),200);				
 
    	}
+
+
+
+
+
+   	public function updateCityIdFromFinderCityId(){
+
+   		$serviceoffers_array  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->get(['finder_id'])->toArray();
+
+   		foreach ($serviceoffers_array as $key => $value) {
+   			$finder 		= 		Finder::find(intval($value['finder_id']));
+   			$serviceoffer 	= 		Serviceoffer::find(intval($value['_id']));
+   			$city_id 		= 		intval($finder->city_id);
+   			$success_order 	= 		$serviceoffer->update(['city_id' => $city_id]);
+
+   		}
+   	}
+
+
 
 
 

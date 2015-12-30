@@ -290,6 +290,12 @@ class HomeController extends BaseController {
 	}
 
 
+	public function getCities(){   
+
+		$cites		= 	City::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+		return Response::json($cites,200);
+	}
+
 	public function getCityLocation($city = 'mumbai',$cache = true){   
 
 		$location_by_city = $cache ? Cache::tags('location_by_city')->has($city) : false;
@@ -314,11 +320,31 @@ class HomeController extends BaseController {
 	}
 
 
-	public function getCities(){   
 
-		$cites		= 	City::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-		return Response::json($cites,200);
+	public function getCityCategorys($city = 'mumbai',$cache = true){   
+
+		$category_by_city = $cache ? Cache::tags('category_by_city')->has($city) : false;
+		if(!$category_by_city){
+			$categorytags = $locations  =	array();
+			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
+			$city_name 				= 	$citydata['name'];
+			$city_id				= 	(int) $citydata['_id'];	
+			// $categorytags			= 	Findercategorytag::active()->whereIn('cities',array($city_id))->where('_id', '!=', 42)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$categorytags			= 	Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$homedata 				= 	array('categorytags' => $categorytags );
+
+			Cache::tags('category_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+		}
+
+		return Response::json(Cache::tags('category_by_city')->get($city));
 	}
+
+	
 	
 
 
