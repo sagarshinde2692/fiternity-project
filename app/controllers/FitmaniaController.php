@@ -65,7 +65,7 @@ class FitmaniaController extends \BaseController {
 		return Response::json($responsedata, 200);
 }
 
-public function getFitmaniaHomepageBanners($city = 'mumbai', $type = '',  $from = '', $size = ''){
+public function getFitmaniaHomepageBanners($city = 'mumbai', $type = 'fitmania-fitternity-home',  $from = '', $size = ''){
 
 	$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 	if(!$citydata){
