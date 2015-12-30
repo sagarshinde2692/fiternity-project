@@ -347,6 +347,7 @@ Route::get('maintainactiveflag/{serviceid?}', 'FitmaniaController@maintainActive
 Route::get('checkfitmaniaorder/{orderid}', 'FitmaniaController@checkFitmaniaOrder');
 Route::get('updatecityid/', 'FitmaniaController@updateCityIdFromFinderCityId');
 Route::get('checkcouponcode/{code}', 'FitmaniaController@checkCouponcode');
+Route::get('checkbuyablevalue/{offerid}', 'FitmaniaController@checkBuyableValue');
 
 
 // Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
