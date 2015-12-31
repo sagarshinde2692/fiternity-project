@@ -180,7 +180,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$banners 			= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();		
 	$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();						
 
-	return $fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
 		return Response::json($responsedata, 200);
