@@ -778,7 +778,7 @@ public function buyOffer(){
 
    		if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) < 1){
    			$responsedata 	= ['serviceoffer' => "", 'exist' => false, 'message' => 'No serviceoffer Exist :)'];
-			return Response::json($responsedata, 200);
+			return Response::json($responsedata, 400);
    		}
 		
 		$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
