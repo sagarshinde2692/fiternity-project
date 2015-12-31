@@ -776,15 +776,14 @@ public function buyOffer(){
 
    		$serviceoffer 		= 	Serviceoffer::find(intval($offerid));
 
-   		if(count($serviceoffer) < 1){
+   		if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) < 1){
    			$responsedata 	= ['serviceoffer' => "", 'exist' => false, 'message' => 'No serviceoffer Exist :)'];
 			return Response::json($responsedata, 200);
-		}
-
+   		}
+		
 		$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
 		return Response::json($responsedata, 200);
-
-}
+	}
 
 
 public function updateCityIdFromFinderCityId(){
