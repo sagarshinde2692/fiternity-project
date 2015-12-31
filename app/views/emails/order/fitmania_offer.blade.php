@@ -310,8 +310,8 @@
                                                                         <tr>
                                                                             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
                                                                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>On your membership start date - visit the gym/studio and flash the subscription number.</strong> </p>
-                                                                                <?php if(isset($location) && $location != ""){ ?>
-                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Location:</strong> {{ ucwords($location) }} </p>
+                                                                                <?php if(isset($finder_location) && $finder_location != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Location:</strong> {{ ucwords($finder_location) }} </p>
                                                                                 <?PHP } ?>                                                           
 
                                                                                 <?php if(isset($finder_address) && $finder_address != ""){ ?>
@@ -319,7 +319,7 @@
                                                                                 <?PHP } ?>                                                                                    
 
                                                                                 <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?>
-                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Contact Person: </strong> {{ ucwords($location) }}</p>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Contact Person: </strong> {{ ucwords($finder_poc_for_customer_name) }}</p>
                                                                                 <?PHP } ?>                                                                                    
 
                                                                                 <?php if(isset($finder_poc_for_customer_mobile) && $finder_poc_for_customer_mobile != ""){ ?>
