@@ -370,6 +370,7 @@ class OrderController extends \BaseController {
 				$finder_city						=	(isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
 				$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
 				$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+				$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
 				$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 				$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 				$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
@@ -379,6 +380,7 @@ class OrderController extends \BaseController {
 				array_set($data, 'finder_city', trim($finder_city));
 				array_set($data, 'finder_location', trim($finder_location));
 				array_set($data, 'finder_address', trim($finder_address));
+				array_set($data, 'finder_vcc_email', trim($finder_vcc_email));
 				array_set($data, 'finder_vcc_mobile', trim($finder_vcc_mobile));
 				array_set($data, 'finder_poc_for_customer_name', trim($finder_poc_for_customer_name));
 				array_set($data, 'finder_poc_for_customer_no', trim($finder_poc_for_customer_no));
