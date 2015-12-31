@@ -279,10 +279,22 @@ public function serachMembership(){
 	$subcategory 				=	(Input::json()->get('subcategory')) ? array_map('intval', Input::json()->get('subcategory')) : [];		
 	$location 					=	(Input::json()->get('location')) ? array_map('intval', Input::json()->get('location')) : [];	
 	$finder 					=	(Input::json()->get('finder')) ? array_map('intval', Input::json()->get('finder')) : [];	
+	$start_price				=	(Input::json()->get('start_price')) ? intval(Input::json()->get('start_price')) : "";
+	$end_price					=	(Input::json()->get('end_price')) ? intval(Input::json()->get('end_price')) : "";
 
 	$fitmaniamemberships 		=	[];
 
-	$serviceoffers  			= 	Serviceoffer::where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->get()->toArray();
+	$serviceoffersquery  			= 	Serviceoffer::where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways");
+	if($start_price != "" || $start_price != 0){
+		$serviceoffersquery->where('price', '>=', intval($start_price));
+	}
+	if($end_price != "" || $end_price != 0){
+		$serviceoffersquery->where('price', '<=', intval($end_price));
+	}
+	$serviceoffers 	=	$serviceoffersquery->get()->toArray();
+
+
+
 	$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 	$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 	$finderids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'finder_id')) ; 
