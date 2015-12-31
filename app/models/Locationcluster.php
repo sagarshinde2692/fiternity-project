@@ -30,7 +30,7 @@ class Locationcluster extends \Basemodel {
 	}
 
 	public function locations(){
-		return $this->hasMany('Location');
+		return $this->hasMany('Location','locationcluster_id');
 	}
 
 	public function city(){

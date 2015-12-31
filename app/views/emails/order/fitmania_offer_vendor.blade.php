@@ -265,7 +265,7 @@
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Batch Selected:</p>
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">
                                                                         @foreach($batches as $key => $value)
-                                                                        {{ ucwords$value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br>
+                                                                        {{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br>
                                                                         @endforeach
                                                                         <!-- Monday-Friday, 3:00-4:00 PM -->
                                                                     </p>
