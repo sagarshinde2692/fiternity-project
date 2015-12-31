@@ -684,7 +684,7 @@ public function maintainActiveFlag($serviceid = NULL){
 	}
 
 	foreach ($ratecardoffers as $key => $offers) {
-   			// return $offers;
+   		// return $offers;
 		$initial_acitve_flag = 0;
 		foreach ($offers as $key => $offer) {
 			if($initial_acitve_flag == 1){ continue; }
@@ -702,7 +702,9 @@ public function maintainActiveFlag($serviceid = NULL){
    			}//foreach
    		}//foreach
 
-   		return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
+   		return true;
+
+   		// return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
    	}
 
 

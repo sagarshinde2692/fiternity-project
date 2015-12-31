@@ -276,21 +276,24 @@
 
                                                                                 <?php if(isset($batches) && $batches != ""){ ?>
 
-                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Batch selected: </strong> 
-                                                                                   @foreach($batches as $key => $value)
-                                                                                   {{$value['weekday']}}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br>
-                                                                                   @endforeach
-                                                                                   <!-- Monday-Friday, 3:00-4:00 PM -->
-                                                                               </p>
-                                                                               <?PHP } ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Batch selected: </strong><br> 
+                                                                                    <span>
 
-                                                                           </td>
-                                                                       </tr>
-                                                                   </tbody>
-                                                               </table>
-                                                           </td>
-                                                       </tr>
-                                                       <tr style="background-color:#f6f6f6;">
+                                                                                     @foreach($batches as $key => $value)
+                                                                                     {{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br>
+                                                                                     @endforeach
+                                                                                 </span>
+                                                                                 <!-- Monday-Friday, 3:00-4:00 PM -->
+                                                                             </p>
+                                                                             <?PHP } ?>
+
+                                                                         </td>
+                                                                     </tr>
+                                                                 </tbody>
+                                                             </table>
+                                                         </td>
+                                                     </tr>
+                                                     <tr style="background-color:#f6f6f6;">
                                                         <td>
                                                             <hr style="color:#535353;" width="80%;">
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Start the membership</strong></p>
