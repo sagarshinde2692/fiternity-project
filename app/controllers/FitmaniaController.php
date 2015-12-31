@@ -180,47 +180,47 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$banners 			= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();		
 	$location_clusters 	= 	Locationcluster::where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();						
 
-	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+	return $fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-return Response::json($responsedata, 200);
-}
+		return Response::json($responsedata, 200);
+	}
 
-$ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
-$serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
+	$ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
+	$serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
 
-$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
-$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
+	$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
+	$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 
-$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-->active()->whereIn('_id', $serviceids_array);	
-$services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
+	$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+									->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+									->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+									->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+									->active()->whereIn('_id', $serviceids_array);	
+	$services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
 
-$fitmaniamemberships 	=	[];
-foreach ($services as $key => $value) {
-	$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
-	$service_ratedcards    	=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();					
-	$finderarr 				= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->where('_id', (int) $item['finder_id'])->first();
-	$data = [
-	'_id' => $item['_id'],
-	'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
-	'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
-	'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
-	'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
-	'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
-	'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
-	'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
-	'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
-	'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
-	'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
-	'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
-	];
+	$fitmaniamemberships 	=	[];
+	foreach ($services as $key => $value) {
+		$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
+		$service_ratedcards    	=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();					
+		$finderarr 				= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->where('_id', (int) $item['finder_id'])->first();
+		$data = [
+		'_id' => $item['_id'],
+		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+		'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
+		'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
+		'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
+		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+		'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
+		'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
+		'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
+		];
 
 	array_push($fitmaniamemberships, $data);
 }

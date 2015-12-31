@@ -1,331 +1,438 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fitternity - Confirmation of purchase: </title>
-<style type="text/css">
- /* Client-specific Styles */
- #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
- body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0;}
- /* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
- .ExternalClass {width:100%;} /* Force Hotmail to display emails at full width */
- .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;} /* Force Hotmail to display normal line spacing.  More on that: http://www.emailonacid.com/forum/viewthread/43/ */
- #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
- img {max-width:100%; outline:none; text-decoration:none;border:none; -ms-interpolation-mode: bicubic;}
- a img {border:none;}
- .image_fix {display:block;}
- p {margin: 0px 0px !important;}
+<html xmlns="http://www.w3.org/1999/xhtml">
 
- table td {border-collapse: collapse;}
- table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; }
- /*a {color: #e95353;text-decoration: none;text-decoration:none!important;}*/
- /*STYLES*/
- table[class=full] { width: 100%; clear: both; }
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitternity Newsletter Mumbai 2015</title>
+    <style type="text/css">
+        ul {
+            display: block;
+            list-style-type: disc;
+            margin-top: 1em;
+            margin-bottom: 1 em;
+            margin-left: 0;
+            margin-right: 0;
+            padding-left: 40px;
+            -webkit-column-count: 2;
+            /* Chrome, Safari, Opera */
+            -moz-column-count: 2;
+            /* Firefox */
+            column-count: 2;
+        }
+        /* Client-specific Styles */
 
- /*################################################*/
- /*IPAD STYLES*/
- /*################################################*/
- @media only screen and (max-width: 640px) {
-   a[href^="tel"], a[href^="sms"] {
-     text-decoration: none;
-     color: #ffffff; /* or whatever your want */
+        #outlook a {
+            padding: 0;
+        }
+        /* Force Outlook to provide a "view in browser" menu link. */
 
-     cursor: default;
-   }
-   .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
-     text-decoration: default;
-     color: #ffffff !important;
-     pointer-events: auto;
-     cursor: default;
-   }
-   table[class=devicewidth] {width: 440px!important;text-align:center!important;}
-   table[class=devicewidthinner] {width: 420px!important;text-align:center!important;}
-   table[class="sthide"]{display: none!important;}
-   img[class="bigimage"]{width: 420px!important;height:219px!important;}
-   img[class="col2img"]{width: 420px!important;height:258px!important;}
-   img[class="image-banner"]{width: 440px!important;height:106px!important;}
-   td[class="menu"]{text-align:center !important; padding: 0 0 10px 0 !important;}
-   td[class="logo"]{padding:10px 0 5px 0!important;margin: 0 auto !important;}
-   img[class="logo"]{padding:0!important;margin: 0 auto !important;}
+        body {
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        /* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
 
- }
- /*##############################################*/
- /*IPHONE STYLES*/
- /*##############################################*/
- @media only screen and (max-width: 480px) {
-   a[href^="tel"], a[href^="sms"] {
-     text-decoration: none;
-     color: #ffffff; /* or whatever your want */
+        .ExternalClass {
+            width: 100%;
+        }
 
-     cursor: default;
-   }
-   .mobile_link a[href^="tel"], .mobile_link a[href^="sms"] {
-     text-decoration: default;
-     color: #ffffff !important; 
-     pointer-events: auto;
-     cursor: default;
-   }
-   .logoImage{
-    height:auto !important;
-    max-width:580px !important;
-    width: 100% !important;
-  }
-  .emailArticleImage{
-    height:auto !important;
-    max-width:170px !important;
-    width: 100% !important;
-  }
-  table[class=devicewidth] {width: 280px!important;text-align:center!important;}
-  table[class=devicewidthinner] {width: 260px!important;text-align:center!important;}
-  table[class="sthide"]{display: none!important;}
-  img[class="bigimage"]{width: 260px!important;height:136px!important;}
-  img[class="col2img"]{width: 260px!important;height:160px!important;}
-  img[class="image-banner"]{width: 280px!important;height:68px!important;}
+        td[class="mobile-wrapper"] {
+            padding: 10px 5% 15px 5% !important;
+        }
+        /* Force Hotmail to display emails at full width */
 
-}
-</style>
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass font,
+        .ExternalClass td,
+        .ExternalClass div {
+            line-height: 100%;
+        }
+        /* Force Hotmail to display normal line spacing.  More on that: http://www.emailonacid.com/forum/viewthread/43/ */
 
+        #backgroundTable {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            line-height: 100% !important;
+        }
 
+        img {
+            max-width: 100%;
+            outline: none;
+            text-decoration: none;
+            border: none;
+            -ms-interpolation-mode: bicubic;
+        }
+
+        a img {
+            border: none;
+        }
+
+        .image_fix {
+            display: block;
+        }
+
+        p {
+            margin: 0px 0px !important;
+        }
+
+        table td {
+            border-collapse: collapse;
+        }
+
+        table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+        }
+        /*a {color: #e95353;text-decoration: none;text-decoration:none!important;}*/
+        /*STYLES*/
+
+        table[class=full] {
+            width: 100%;
+            clear: both;
+        }
+        /*################################################*/
+        /*IPAD STYLES*/
+        /*################################################*/
+
+        @media only screen and (max-width: 640px) {
+            a[href^="tel"],
+            a[href^="sms"] {
+                text-decoration: none;
+                color: #ffffff;
+                /* or whatever your want */
+                cursor: default;
+            }
+            .mobile_link a[href^="tel"],
+            .mobile_link a[href^="sms"] {
+                text-decoration: default;
+                color: #ffffff !important;
+                pointer-events: auto;
+                cursor: default;
+            }
+            table[class=devicewidth] {
+                width: 440px!important;
+                text-align: center!important;
+            }
+            table[class=devicewidthinner] {
+                width: 420px!important;
+                text-align: center!important;
+            }
+            table[class="sthide"] {
+                display: none!important;
+            }
+            img[class="bigimage"] {
+                width: 420px!important;
+                height: 219px!important;
+            }
+            img[class="col2img"] {
+                width: 420px!important;
+                height: 258px!important;
+            }
+            img[class="image-banner"] {
+                width: 440px!important;
+                height: 106px!important;
+            }
+            td[class="menu"] {
+                text-align: center !important;
+                padding: 0 0 10px 0 !important;
+            }
+            td[class="logo"] {
+                padding: 10px 0 5px 0!important;
+                margin: 0 auto !important;
+            }
+            img[class="logo"] {
+                padding: 0!important;
+                margin: 0 auto !important;
+            }
+        }
+        /*##############################################*/
+        /*IPHONE STYLES*/
+        /*##############################################*/
+
+        @media only screen and (max-width: 480px) {
+            a[href^="tel"],
+            a[href^="sms"] {
+                text-decoration: none;
+                color: #ffffff;
+                /* or whatever your want */
+                cursor: default;
+            }
+            .mobile_link a[href^="tel"],
+            .mobile_link a[href^="sms"] {
+                text-decoration: default;
+                color: #ffffff !important;
+                pointer-events: auto;
+                cursor: default;
+            }
+            .logoImage {
+                height: auto !important;
+                max-width: 580px !important;
+                width: 100% !important;
+            }
+            .emailArticleImage {
+                height: auto !important;
+                max-width: 170px !important;
+                width: 100% !important;
+            }
+            table[class=devicewidth] {
+                width: 280px!important;
+                text-align: center!important;
+            }
+            table[class=devicewidthinner] {
+                width: 260px!important;
+                text-align: center!important;
+            }
+            table[class="sthide"] {
+                display: none!important;
+            }
+            img[class="bigimage"] {
+                width: 260px!important;
+                height: 136px!important;
+            }
+            img[class="col2img"] {
+                width: 260px!important;
+                height: 160px!important;
+            }
+            img[class="image-banner"] {
+                width: 280px!important;
+                height: 68px!important;
+            }
+        }
+    </style>
 </head>
-<body style="background-image:url(http://email.fitternity.com/140/gplaypattern.png)" >
-  <div class="block">
-   <!-- start of header -->
-   <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="header" class="devicewidth" style="table-layout:fixed;">
-    <tbody>
-     <tr>
-      <td align="center"><table width="580" height="80"  cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" hlitebg="edit" shadow="edit">
-        <tbody>
-          <tr>
-            <td><!-- logo -->
 
-              <!-- End of logo -->
-              <!-- menu -->
-              <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
-                <tbody>
-                  <tr>
-                    <td width="100%"  align="left" class="menu" st-content="menu"><a href="http://www.fitternity.com" target="_blank"><div class="imgpop"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></div></a></td>
-
-                  </tr>
-                  
-                </tbody>
-              </table>
-              
-              
-            </td>
-          </tr>
-        </tbody>
-
-      </table></td>
-    </tr>
-
-  </tbody>
-</table>
-<!-- end of header -->
-
-</div>
-
-<div class="block"><!-- Start Editor's Note -->
- <!-- start textbox-with-title -->
- <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="fulltext"  style="table-layout:fixed;">
-  <tbody>
-   <tr>
-    <td align="center">
-     <table bgcolor="#fff" width="580px" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-      <tbody>
-
-        <tr>
-          <td>
-           <table width="100%" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+<body style="background-image:url(http://email.fitternity.com/197/pattern.jpg)">
+    <div class="block">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;">
             <tbody>
+                <tr>
+                    <td align="center">
+                        <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
+                                            <tbody>
+                                                <tr style="background-color:#f6f6f6;">
+                                                    <td width="100%" align="center" class="devicewidth">
+                                                        <a href="http://www.fitternity.com" target="_blank"><img width="150px" src="http://email.fitternity.com/191/logo.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding:20px;"></a>
+                                                    </td>
+                                                </tr>
+                                                <tr style="background-color:#f6f6f6;">
+                                                    <td width="100%" align="center" class="devicewidth">
+                                                        <a href="http://www.fitternity.com" target="_blank"><img width="50%" src="http://email.fitternity.com/197/badge.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">
+                                                            Hi {{ $customer_name }}!
+                                                            <br /> Thank you purchasing your membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr style="background-color:#f6f6f6;">
+                                                        <td>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Refer to your purchase details</strong></p>
+                                                            <!-- col 1 -->
+                                                            <table width="200px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px; vertical-align:central; " st-content="fulltext-paragraph">
+                                                                                <img width="80px;" src="http://email.fitternity.com/197/refer.png" /></p>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <table width="350px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+                                                                                <?php if(isset($_id) && $_id != ""){ ?> 
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Subscription number:</strong> {{ $_id }}</p>
+                                                                                <?php }?>
 
-              <tr>
-                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:left;line-height: 35px; padding:5px 10px;" st-content="fulltext-paragraph">
+                                                                                <?php if(isset($finder_name) && $finder_name != ""){ ?>  
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination:</strong> {{ ucwords($finder_name) }} <?php if(isset($finder_location) && $finder_location != ""){ ?>  ,{{ ucwords($finder_location) }}<?PHP } ?></p>
+                                                                                <?PHP } ?>
 
+                                                                                <?php if(isset($service_name) && $service_name != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Membership Type::</strong> {{ ucwords($service_name) }}</p>
+                                                                                <?PHP } ?>
 
+                                                                                <?php if(isset($service_duration) && $service_duration != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Duration:</strong> {{ ucwords($service_duration) }}</p>
+                                                                                <?PHP } ?>
 
+                                                                                <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Starting Date: </strong>{{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) )  }}</p>
+                                                                                <?PHP } ?>
 
-                 <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
-                  Hi {{ $customer_name }}!</span></p>      
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Payment Method: </strong> Online</p>
 
-                  <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e; padding-bottom:5px;">Thank you purchasing your membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.<hr /></p>
+                                                                                <?php if(isset($batches) && $batches != ""){ ?>
 
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Batch selected: </strong> 
+                                                                                   @foreach($batches as $key => $value)
+                                                                                   {{$value['weekday']}}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br>
+                                                                                   @endforeach
+                                                                                   <!-- Monday-Friday, 3:00-4:00 PM -->
+                                                                               </p>
+                                                                               <?PHP } ?>
 
-                  <p style="line-height:20px; font-weight:lighter; color:#5f5e5e; padding-top:15px;"><span style="color:#222222; font-weight:600;" > How do you avail the membership and get started?</span></p>
+                                                                           </td>
+                                                                       </tr>
+                                                                   </tbody>
+                                                               </table>
+                                                           </td>
+                                                       </tr>
+                                                       <tr style="background-color:#f6f6f6;">
+                                                        <td>
+                                                            <hr style="color:#535353;" width="80%;">
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Start the membership</strong></p>
+                                                            <!-- col 1 -->
+                                                            <table width="200px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px; vertical-align:central; " st-content="fulltext-paragraph">
+                                                                                <img width="80px;" src="http://email.fitternity.com/197/start.png" /></p>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                                <table width="350px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>On your membership start date - visit the gym/studio and flash the subscription number.</strong> </p>
+                                                                                <?php if(isset($location) && $location != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Location:</strong> {{ ucwords($location) }} </p>
+                                                                                <?PHP } ?>                                                           
 
-                  <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;"> 1. Refer to your purchase details</span> </p>
+                                                                                <?php if(isset($finder_address) && $finder_address != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Address: </strong> {{ ucwords($finder_address) }}</p>
+                                                                                <?PHP } ?>                                                                                    
 
-                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Subscription number:</span>  <?php if(isset($_id) && $_id != ""){ ?>{{ $_id }} <?php }?></p>
-                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Payment mode:</span>  Online purchase</p>
+                                                                                <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Contact Person: </strong> {{ ucwords($location) }}</p>
+                                                                                <?PHP } ?>                                                                                    
 
-                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601">
-                   <span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Membership details:</span> 
-                   <?php if(isset($service_name) && $service_name != ""){ ?>  {{ ucwords($service_name) }} <?PHP } ?>
-                   <?php if(isset($service_duration) && $service_duration != ""){ ?>  {{ ucwords($service_duration) }}  <?PHP } ?>
-                   at 
-                   <?php if(isset($finder_name) && $finder_name != ""){ ?>  {{ ucwords($finder_name) }}  <?PHP } ?>
-                 </p>
+                                                                                <?php if(isset($finder_poc_for_customer_mobile) && $finder_poc_for_customer_mobile != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Contact Number: </strong> {{ $finder_poc_for_customer_mobile }}</p>
+                                                                                <?PHP } ?>                                                                                    
 
-                 <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
-                 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;" href="mailto:info@fitternity.com">Starting Date:</span> {{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) )  }} </p>
-                 <?PHP } ?>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr style="background-color:#f6f6f6;">
+                                                            <td>
+                                                                <hr style="color:#535353;" width="80%;">
+                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Call us for help</strong></p>
+                                                                <!-- col 1 -->
+                                                                <table width="200px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px; vertical-align:central; " st-content="fulltext-paragraph">
+                                                                                    <img width="70px;" src="http://email.fitternity.com/197/call.png" /></p>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                    <table width="350px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                        <tbody>
+                                                                            <tr>
+                                                                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+                                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on +91922221131 or 02261222222</strong></p>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                            <tr style="background-color:#f6f6f6;">
+                                                                <td width="100%" align="center" class="devicewidth">
+                                                                    <hr style="color:#535353;" width="80%;">
+                                                                    <a href="http://www.fitternity.com" target="_blank"><img  src="http://email.fitternity.com/197/fitmania.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
+                                                                    <a href="http://www.fitternity.com" target="_blank"><img  src="http://email.fitternity.com/197/fitmania2.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
 
-                 <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">2. Start the membership</span></p>
+                                                                </td>
+                                                            </tr>                                                
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="block">
+                    <table bgcolor="#e9e9e9" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
+                        <tbody>
+                            <tr>
+                                <td align="center">
+                                    <table width="580" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
+                                        <tbody>
+                                            <tr>
+                                                <td style="text-align:center;">
+                                                    <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
+                                                    <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
+                                                    <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="block">
+                    <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
+                        <tr>
+                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
+                                <p>Contact us
+                                    <br /> Phone: <a style="text-decoration:none;"> 022 61222222  |  +91 92222 21131</a>
+                                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>
+                                </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="block">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;">
+                        <tbody>
+                            <tr>
+                                <td align="center">
+                                    <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+                                        <tbody>
+                                            <!-- Title -->
+                                            <tr>
+                                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 12px; text-align:center;line-height: 18px; padding:25px; color: #7b7b7b; " st-content="fulltext-paragraph">
+                                                    <p>Don't want to see this? <span style=" font-family:Arial, Helvetica, sans-serif; color:#f9a91e;"><unsubscribe>Unsubscribe</unsubscribe></span></p>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td width="100%" height="15"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </body>
 
-                 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">
-                   On your membership start date - visit 
-                   <?php if(isset($finder_name) && $finder_name != ""){ ?>  {{ ucwords($finder_name) }}  <?PHP } ?>
-                   <?php if(isset($location) && $location != ""){ ?>  {{ ucwords($location) }}  <?PHP } ?>
-                   and flash the subscription number. </span>
-                 </p>
-
-                 <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Location:</span> <?php if(isset($location) && $location != ""){ ?>  {{ ucwords($location) }}  <?PHP } ?>.</p>
-
-                 <p style="padding-top:10px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Address:</span><?php if(isset($finder_address) && $finder_address != ""){ ?>  {{ ucwords($finder_address) }}  <?PHP } ?>. </p>
-
-                 <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
-                 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Person:</span> {{ ucwords($finder_poc_for_customer_name) }}  </p>
-                 <?PHP } ?>
-
-                 <?php if(isset($finder_poc_for_customer_mobile) && $finder_poc_for_customer_mobile != ""){ ?> 
-                 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#ec8601"><span style="color:#222222; font-weight:450;">Contact Number:</span> {{ ucwords($finder_poc_for_customer_mobile) }}  </p>
-                 <?PHP } ?>
-
-
-
-                 <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">3. Call us for help</span></p>
-                 <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on +91922221131 or 02261222222<hr /> </p>
-                 <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#222222; font-weight:600;">Whats more?</span></p>
-
-                 <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#222;">Fitternity is India's leading search engine that helps you find fitness activities around you. We are on a simple mission to make fitness easy and affordable. </p>
-                 <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#222;">Our search engine helps you filter basis your requirement (location, budget etc.) and gets you different fitness activities (gym, yoga, zumba, crossfit, fitness classes, healthy tiffins & more) with all details you need, without stepping outside your house! <br><br>You can book trials through Fitternity for the options you like and also purchase memberships at amazing discounts. <hr /></p>
-                 <p><h3 style="padding-top:25px; line-height:20px; font-weight:600; color:#ec8601">Explore fitness like never before</h3></p>
-               </td>
-             </tr>
-
-           </tbody>
-         </table>
-       </td>
-     </tr>
-   </tbody>
- </table>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="block"> 
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
-    <tbody>
-     <tr>
-      <td align="center">
-       <table bgcolor="#f3f3f3" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-        <tbody>
-          <!-- Title -->
-
-
-          <tr>
-            <td>
-             <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-              <tbody>
-               <tr>
-                <td>
-                 <!-- col 1 -->
-                 <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                  <tbody>
-                   <!-- image 2 -->
-                   <tr>
-                    <td width="100%" align="center" class="devicewidth" ><a href="http://www.fitternity.com/selections/{{$finder_city}}/intense-workout" target="_blank"><img src="http://email.fitternity.com/148/Intense-Workout.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
-                    </td>
-                  </tr>
-                  <!-- end of image2 -->
-
-                  <!-- end of text content table -->
-                </tbody>
-              </table>
-              <table width=".5%" align="left" border="0" cellpadding="0" cellspacing="0" class="removeMobile">
-               <tbody>
-                 <tr>
-                   <td width="100%"style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-                 </tr>
-               </tbody>
-             </table>
-
-             <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-              <tbody>
-               <!-- image 2 -->
-               <tr>
-                <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/selections/{{$finder_city}}/trending-now"><img src="http://email.fitternity.com/148/trending-now.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
-                </td>
-              </tr>
-              <!-- end of image2 -->
-
-              <!-- end of text content table -->
-            </tbody>
-          </table>
-          <table width=".5%" align="left" border="0" cellpadding="0" cellspacing="0" class="removeMobile">
-           <tbody>
-             <tr>
-               <td width="100%"style="font-size:1px; line-height:1px; mso-line-height-rule: exactly;">&nbsp;</td>
-             </tr>
-           </tbody>
-         </table>
-         <table width="33%" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-          <tbody>
-           <!-- image 2 -->
-           <tr>
-            <td width="100%"  align="center" class="devicewidth"><a href="http://www.fitternity.com/selections/{{$finder_city}}/all-for-variety"><img src="http://email.fitternity.com/148/all-for-variety.jpg" alt="" border="0" width="100%" style="display:block; border:none; outline:none; text-decoration:none; " class="col3img"></a>
-            </td>
-          </tr>
-          <!-- end of image2 -->
-
-          <!-- end of text content table -->
-        </tbody>
-      </table>
-      <tr>
-        <td width="100%" height="20" ></td>
-      </tr> 
-
-
-
-    </tbody>
-  </table>
-</td>
-</tr>
-</tbody>
-</table></td></tr></tbody></table>
-</div>
-
-
-
-
-
-<div class="block">
- <!-- Start of preheader -->
- <table width="100%"  cellpadding="0" align="center" cellspacing="0" border="0" id="backgroundTable" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
-  <tbody>
-
-   <tr>
-    <td align="center"><table width="580" cellspacing="0" align="center" class="devicewidth">
-      <tbody>
-
-        <tr>
-
-          <td align="center" style="color:#808080; font-family:Arial, sans serif; font-size:15px; font-weight:500; line-height:25px; padding-bottom:10px;" width="100%">Connect with us on</td>
-
-        </tr>
-      </tbody>
-      <tbody>
-        <tr>
-
-
-          <td width="100%" style="text-align:center; padding-bottom:10px;"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="35" height="33" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="35" height="35" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/pinterest.png" width="35" height="35" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="35" height="35" alt="Instagram" title="Instagram" border="0"></a></td>
-        </tr>
-      </tbody>
-    </table></td>
-  </tr>
-</tbody>
-</table>
-<!-- End of preheader -->
-</div>
-
-</body></html>
+            </html>
