@@ -593,7 +593,7 @@ return Response::json($responsedata, 200);
 		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->get()->take(5)->toArray();	
 		foreach ($services_result as $key => $service) {
-			$data = $this->transformServiceDetail($service, $offerid);
+			$data = $this->transformServiceDetailV1($service, $offerid);
 			array_push($same_vendor_service, $data);
 		}
 
@@ -603,7 +603,7 @@ return Response::json($responsedata, 200);
 		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')); 
 		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->where('servicecategory_id', '=', $servicecategoryid)->get()->take(5)->toArray();		
 		foreach ($services_result as $key => $service) {
-			$data = $this->transformServiceDetail($service, $offerid);
+			$data = $this->transformServiceDetailV1($service, $offerid);
 			array_push($same_category_service, $data);
 		}
 
@@ -707,9 +707,13 @@ private function transformServiceDetailV1($service, $offerid = ''){
 
 	$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
 	$service_ratedcards 	= 	[];
-	$ratecardsarr    		=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
-		$query->select('*')->whereNotIn('_id', [intval($offerid)]);
-	}))->where('service_id', intval($item['_id']) )->get()->toArray();	
+	$ratecardsarr    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+				$query->select('*')->whereNotIn('_id', [intval($offerid)]);
+			}))->where('service_id', intval($item['_id']) )->get()->toArray();	
+	
+	// $ratecardsarr    		=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+	// 	$query->select('*')->whereNotIn('_id', [intval($offerid)]);
+	// }))->where('service_id', intval($item['_id']) )->get()->toArray();	
 
 	if($ratecardsarr){
 		foreach ($ratecardsarr as $key => $value) {
