@@ -116,6 +116,7 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 														// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
 	->where("type" , "=" , "fitmania-dod")
 	->where("active" , "=" , 1)
+	->where("buyable" , ">" , 0)->orWhere("buyable" , "=" , "")->orWhere('buyable', 'exists', false)
 	->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	foreach ($dealsofdaycolleciton as $key => $value) {
@@ -454,7 +455,7 @@ public function serachDodAndDow(){
 	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
-return Response::json($responsedata, 200);
+	return Response::json($responsedata, 200);
 }
 
 
@@ -511,14 +512,37 @@ return Response::json($responsedata, 200);
 	private function transformServiceDetail($service, $offerid = ''){
 
 		$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
-
+		$service_ratedcards 	= 	[];
 		if($offerid != ""){
-			$service_ratedcards    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+			$ratecardsarr    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
 				$query->select('*')->whereIn('_id', [intval($offerid)]);
 			}))->where('service_id', intval($item['_id']) )->get()->toArray();	
 		}else{
+			$ratecardsarr    	=   Ratecard::with('serviceoffers')->where('service_id', intval($item['_id']) )->get()->toArray();					
+		}
 
-			$service_ratedcards    	=   Ratecard::with('serviceoffers')->where('service_id', intval($item['_id']) )->get()->toArray();					
+		if($ratecardsarr){
+			foreach ($ratecardsarr as $key => $value) {
+				if(intval($value['validity'])%360 == 0){
+					$value['validity']  = intval(intval($value['validity'])/360);
+					if(intval($value['validity']) > 1){
+						$value['validity_type'] = "years";
+					}else{
+						$value['validity_type'] = "year";
+					}
+				}
+
+				if(intval($value['validity'])%30 == 0){
+					$value['validity']  = intval(intval($value['validity'])/30);
+					if(intval($value['validity']) > 1){
+						$value['validity_type'] = "months";
+					}else{
+						$value['validity_type'] = "month";
+					}
+				}
+				array_push($service_ratedcards, $value);
+			}
+
 		}
 
 
@@ -579,11 +603,34 @@ return $data;
 private function transformServiceDetailV1($service, $offerid = ''){
 
 	$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
-
-	$service_ratedcards    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+	$service_ratedcards 	= 	[];
+	$ratecardsarr    		=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
 		$query->select('*')->whereNotIn('_id', [intval($offerid)]);
 	}))->where('service_id', intval($item['_id']) )->get()->toArray();	
 
+	if($ratecardsarr){
+		foreach ($ratecardsarr as $key => $value) {
+			if(intval($value['validity'])%360 == 0){
+				$value['validity']  = intval(intval($value['validity'])/360);
+				if(intval($value['validity']) > 1){
+					$value['validity_type'] = "years";
+				}else{
+					$value['validity_type'] = "year";
+				}
+			}
+
+			if(intval($value['validity'])%30 == 0){
+				$value['validity']  = intval(intval($value['validity'])/30);
+				if(intval($value['validity']) > 1){
+					$value['validity_type'] = "months";
+				}else{
+					$value['validity_type'] = "month";
+				}
+			}
+			array_push($service_ratedcards, $value);
+		}
+
+	}
 
 
 	$data = array(
@@ -779,12 +826,12 @@ public function buyOffer(){
 
    		if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) < 1){
    			$responsedata 	= ['serviceoffer' => "", 'exist' => false, 'message' => 'No serviceoffer Exist :)'];
-			return Response::json($responsedata, 400);
-			}
+return Response::json($responsedata, 400);
+}
 
-			$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
-			return Response::json($responsedata, 200);
-	}
+$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
+return Response::json($responsedata, 200);
+}
 
 
 public function updateCityIdFromFinderCityId(){
