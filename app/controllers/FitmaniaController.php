@@ -593,7 +593,7 @@ return Response::json($responsedata, 200);
 		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->get()->take(5)->toArray();	
 		foreach ($services_result as $key => $service) {
-			$data = $this->transformServiceDetailV1($service, $offerid);
+			$data = $this->transformServiceDetail($service, $offerid);
 			array_push($same_vendor_service, $data);
 		}
 
@@ -603,7 +603,7 @@ return Response::json($responsedata, 200);
 		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')); 
 		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->where('servicecategory_id', '=', $servicecategoryid)->get()->take(5)->toArray();		
 		foreach ($services_result as $key => $service) {
-			$data = $this->transformServiceDetailV1($service, $offerid);
+			$data = $this->transformServiceDetail($service, $offerid);
 			array_push($same_category_service, $data);
 		}
 
@@ -901,7 +901,6 @@ public function buyOffer(){
    		}
 
    	}
-
 
 
    	public function serachFinders (){
