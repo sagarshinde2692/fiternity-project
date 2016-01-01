@@ -125,7 +125,7 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 		array_push($fitmaniadods, $dealdata);
 	}
 
-	return $fitmaniadods;
+	// return $fitmaniadods;
 	
 	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 return Response::json($responsedata, 200);
