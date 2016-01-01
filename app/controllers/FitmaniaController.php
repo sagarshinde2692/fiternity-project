@@ -697,6 +697,7 @@ public function buyOffer(){
 	public function maintainActiveFlag($serviceid = NULL){
 
 		$date 				=	Carbon::now();
+		$date 				=  	'04-01-2016';
 		$timestamp 			= 	strtotime($date);
 
 		if($serviceid != NULL){
