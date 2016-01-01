@@ -30,6 +30,11 @@ class FitmaniaController extends \BaseController {
 
 	public function categorydayCitywise($city, $weekday){
 
+		$category_info  = [];
+		$tommorow_date 	=	\Carbon\Carbon::tomorrow();
+		$timestamp 		= 	strtotime($tommorow_date);
+		$tommorow 		= 	strtolower(date( "l", $timestamp));
+
 		switch (strtolower(trim($city))) {
 			case 'mumbai':
 			$categorydays_arr     =  array('sunday' => 'fitternity anniversary offer (mixed bag)', 'monday' => 'zumba', 'tuesday' => 'gyms', 'wednesday' => 'crossfit & functional fitness','thursday' => 'mma & kickboxing','friday' => 'dance', 'saturday' => 'yoga & pilates');
@@ -52,8 +57,11 @@ class FitmaniaController extends \BaseController {
 			break;		
 		}
 
-		return $categorydays_arr[$weekday];
+		$category_info['today']  	=  $categorydays_arr[$weekday];
+		$category_info['tommorow']  =  $categorydays_arr[$tommorow];
+		return $category_info;
 	}
+
 
 	public function homeData($city = 'mumbai', $from = '', $size = ''){
 
@@ -62,8 +70,9 @@ class FitmaniaController extends \BaseController {
 		$responsedata['membership'] = $this->getDealOfDay($city , $from, $size);
 		$responsedata['message'] = "Fitmania Home Page Data :)";
 
-return Response::json($responsedata, 200);
-}
+		return Response::json($responsedata, 200);
+	}
+
 
 public function getFitmaniaHomepageBanners($city = 'mumbai', $type = 'fitmania-fitternity-home',  $from = '', $size = ''){
 
@@ -82,10 +91,8 @@ public function getFitmaniaHomepageBanners($city = 'mumbai', $type = 'fitmania-f
 		return $this->responseEmpty('Fitmania Home Page Banners does not exist :)');
 	}
 
-
-
 	$responsedata 	= ['banners' => $banners,  'message' => 'Fitmania Home Page Banners :)'];
-return Response::json($responsedata, 200);
+	return Response::json($responsedata, 200);
 }
 
 
@@ -124,10 +131,8 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	}
 
 	// return $fitmaniadods;
-
-	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
-return Response::json($responsedata, 200);
-
+	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+	return Response::json($responsedata, 200);
 }
 
 private function transformDod($offers){
@@ -186,7 +191,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
-		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
+		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
 return Response::json($responsedata, 200);
 }
 
@@ -257,7 +262,7 @@ foreach ($services as $key => $value) {
 	array_push($fitmaniamemberships, $data);
 }
 
-$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
+$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
 return Response::json($responsedata, 200);
 }
 
@@ -448,7 +453,7 @@ public function serachMembership(){
 	$leftside['locations'] 		= 	$this->getLocationCluster($city_id);
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
-	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
+	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
 return Response::json($responsedata, 200);
 }
 
@@ -552,7 +557,7 @@ public function serachDodAndDow(){
 	// Serviceoffer::get()->toArray();
 	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
-	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
+	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
 return Response::json($responsedata, 200);
 }
 
