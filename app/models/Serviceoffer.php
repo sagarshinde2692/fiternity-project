@@ -46,7 +46,7 @@ class Serviceoffer extends \Basemodel {
 			$ratecardsarr 	= 	Ratecard::find(intval($this->ratecard_id));
 		}
 
-		if($ratecardsarr){
+		if(!empty($ratecardsarr) && isset($ratecardsarr)){
 			if(intval($ratecardsarr['validity'])%360 == 0){
 				$ratecardsarr['validity']  = intval(intval($ratecardsarr['validity'])/360);
 				if(intval($ratecardsarr['validity']) > 1){
@@ -66,8 +66,8 @@ class Serviceoffer extends \Basemodel {
 			}
 			$ratecard = $ratecardsarr;
 		}
-		
-		return $ratecard ;
+
+		return $ratecard;
 	}
 
 
