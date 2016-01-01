@@ -116,7 +116,8 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 														// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
 	->where("type" , "=" , "fitmania-dod")
 	->where("active" , "=" , 1)
-	->where("buyable" , ">" , 0)->orWhere("buyable" , "=" , "")->orWhere('buyable', 'exists', false)
+	// ->orWhere('buyable', 'exists', false)
+	// ->where("buyable" , ">" , 0)->orWhere("buyable" , "=" , "")->orWhere('buyable', 'exists', false)
 	->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	foreach ($dealsofdaycolleciton as $key => $value) {
@@ -124,6 +125,8 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 		array_push($fitmaniadods, $dealdata);
 	}
 
+	return $fitmaniadods;
+	
 	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday,  'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 return Response::json($responsedata, 200);
 
@@ -439,7 +442,6 @@ public function serachDodAndDow(){
 		$dealdata = $this->transformDod($value);
 		array_push($fitmaniadods, $dealdata);
 	}
-
 
 	$leftside 					= 	[];
 	$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
