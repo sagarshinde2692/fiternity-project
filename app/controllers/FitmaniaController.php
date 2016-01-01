@@ -185,8 +185,8 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-		return Response::json($responsedata, 200);
-	}
+return Response::json($responsedata, 200);
+}
 
 $ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
 $serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
@@ -371,7 +371,7 @@ public function serachMembership(){
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
 	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 
@@ -454,7 +454,7 @@ public function serachDodAndDow(){
 	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 
@@ -680,7 +680,7 @@ public function buyOffer(){
 			$success_order = $serviceoffer->update($service_offerdata);
 
 			if($success_order){
-				$this->maintainActiveFlag($serviceoffer->service_id);
+				$maintainActiveFlagData = $this->maintainActiveFlag($serviceoffer->service_id);
 				$resp 	= 	array('status' => 200, 'message' => "Successfully buy Serivce through Fitmania :)");
 				return Response::json($resp);				
 			}else{
@@ -724,9 +724,9 @@ public function buyOffer(){
    			}//foreach
    		}//foreach
 
-   		return true;
+   		// return true;
 
-   		// return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
+   		return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
    	}
 
 
@@ -779,10 +779,10 @@ public function buyOffer(){
    		if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) < 1){
    			$responsedata 	= ['serviceoffer' => "", 'exist' => false, 'message' => 'No serviceoffer Exist :)'];
 			return Response::json($responsedata, 400);
-   		}
-		
-		$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
-		return Response::json($responsedata, 200);
+			}
+
+			$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
+			return Response::json($responsedata, 200);
 	}
 
 
