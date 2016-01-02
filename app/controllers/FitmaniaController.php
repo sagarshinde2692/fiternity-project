@@ -583,8 +583,7 @@ public function serachDodAndDow(){
 		$same_vendor_service = $same_category_service = [];
 
 		//same_vendor_service
-		// $serviceoffers = Serviceoffer::where('finder_id', '=', $servicefinderid)->where("type" , "=" , "fitmania-membership-giveaways")->get()->toArray();
-		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->get()->toArray();
+		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->whereNotIn('service_id', [intval($serviceid)])->where("active" , "=" , 1)->get()->toArray();
 		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->get()->take(5)->toArray();	
 		foreach ($services_result as $key => $service) {
@@ -593,8 +592,7 @@ public function serachDodAndDow(){
 		}
 
 		//same_category_service
-		// $serviceoffers = Serviceoffer::where('finder_id', '=', $servicefinderid)->where("type" , "=" , "fitmania-membership-giveaways")->get()->toArray();
-		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->get()->toArray();
+		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->whereNotIn('service_id', [intval($serviceid)])->where("active" , "=" , 1)->get()->toArray();
 		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')); 
 		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->where('servicecategory_id', '=', $servicecategoryid)->get()->take(5)->toArray();		
 		foreach ($services_result as $key => $service) {
