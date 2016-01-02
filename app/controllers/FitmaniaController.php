@@ -1009,8 +1009,19 @@ public function getLocationCluster($city_id){
 
 public function exploreCategoryOffers($city_id = 1){
 
-
-
+	$categorys_arr     		=  	array('gyms' => '65', 'yoga' => '1',  'crossfit' => '111',  'pilates' => '4');
+	
+	$explore_category_offers = [];
+	foreach ($categorys_arr as $k => $v) {
+		$servicecategory_name  	= 	$k;
+		$servicecategory_id  	= 	intval($v);
+		$services				=	Service::active()->whereIn('servicecategory_id', [$servicecategory_id])->lists('_id');
+		$serviceoffers_cnt  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->whereIn("service_id" , $services)->count();
+		$offer = ['category_name' => $servicecategory_name,'category_id' => $servicecategory_id,'cnt'=>$serviceoffers_cnt];
+		array_push($explore_category_offers, $offer);
+	}
+	
+	return $explore_category_offers;
 }
 
 
@@ -1042,12 +1053,8 @@ public function exploreLocationClusterOffers($city_id = 1){
 		array_push($explore_location_cluster_offers, $locationcluster);
 
 	}
-	
+
 	return $explore_location_cluster_offers;
-
-
-
-	// $fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 
 }
 
