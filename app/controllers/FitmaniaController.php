@@ -982,16 +982,16 @@ public function getLocationCluster($city_id){
 
 
 
-public function exploreCategoryOffers($city_id = 1, $cache = true){
+public function exploreCategoryOffers($city_id = 1){
 
 	$date 					=  	Carbon::now();
 	$timestamp 				= 	strtotime($date);
 	$date_hour 				= 	strtolower(date( "d-m-y : h", $timestamp));
 	$redis_tag_id 			=   "explore_category_offers_by_city_".$city_id."_".$date_hour;
 
-	$explore_category_offers_by_city = $cache ? Cache::tags('explore_category_offers_by_city')->has($redis_tag_id) : false;
+	$explore_category_offers_by_city = Cache::tags('explore_category_offers_by_city')->has($redis_tag_id);
 
-	if($explore_category_offers_by_city){
+	if(!$explore_category_offers_by_city){
 
 		$categorys_arr     		=  	array('zumba' => '19', 'yoga & pilates' => '1,4',  'gyms' => '65', 'mma & kickboxing' => '3', 'functional / crossfit' => '5',  'dance' => '2');
 		
@@ -1013,16 +1013,17 @@ public function exploreCategoryOffers($city_id = 1, $cache = true){
 
 
 
-public function exploreLocationClusterOffers($city_id = 1, $cache = true){
+public function exploreLocationClusterOffers($city_id = 1){
 
 	$date 					=  	Carbon::now();
 	$timestamp 				= 	strtotime($date);
 	$date_hour 				= 	strtolower(date( "d-m-y : h", $timestamp));
 	$redis_tag_id 			=   "explore_locationcluster_offers_by_city_".$city_id."_".$date_hour;
 	
-	$explore_locationcluster_offers_by_city = $cache ? Cache::tags('explore_locationcluster_offers_by_city')->has($redis_tag_id) : false;
+	// $explore_locationcluster_offers_by_city = $cache ? Cache::tags('explore_locationcluster_offers_by_city')->has($redis_tag_id) : false;
+	$explore_locationcluster_offers_by_city = Cache::tags('explore_locationcluster_offers_by_city')->has($redis_tag_id);
 
-	if($explore_locationcluster_offers_by_city){
+	if(!$explore_locationcluster_offers_by_city){
 		$categorys_arr     		=  	array('gyms' => '65', 'yoga & pilates' => '1,4',  'functional / crossfit' => '5,111',  'dance' => '2');
 		$location_clusters 		= 	Locationcluster::where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('name')->get()->toArray();
 
@@ -1053,7 +1054,7 @@ public function exploreLocationClusterOffers($city_id = 1, $cache = true){
 	}
 
 	return Cache::tags('explore_locationcluster_offers_by_city')->get($redis_tag_id) ;
-	
+
 }
 
 
