@@ -367,8 +367,9 @@ public function serachMembership(){
 		$query->whereIn('finder_id', $finder );
 	}
 
+	$cntquery 			= 	$query;
 	$services 			= 	$query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
-	$services_count 	= 	$query->count();
+	$services_count 	= 	$cntquery->count();
 
 	foreach ($services as $key => $value) {
 		$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
@@ -527,8 +528,9 @@ public function serachDodAndDow(){
 	if($end_price != "" || $end_price != 0){
 		$dealsofdayquery->where('price', '<=', intval($end_price));
 	}
+	$cntquery 				= 	$dealsofdayquery;
 	$dealsofdaycolleciton 	=	$dealsofdayquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
-	$dealsofday_count 	=	$dealsofdayquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->take($size)->skip($from)->orderBy('order', 'desc')->count();
+	$dealsofday_count 		=	$cntquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->count();
 
 	foreach ($dealsofdaycolleciton as $key => $value) {
 		$dealdata = $this->transformDod($value);
@@ -585,7 +587,11 @@ public function serachDodAndDow(){
 
 
 		//same_vendor_service
-		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)->orWhere("active" , "=" , 1)->orWhere('active', 'exists', false)->orWhere("type" , "=" , "fitmania-membership-giveaways")->get()->take(5)->toArray();	
+		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)
+												->where(function($query){
+										        		$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
+										    		})
+												->timeout(400000000)->get()->take(5)->toArray();	
 		foreach ($serviceoffers as $key => $service) {
 			$data = $this->transformDod($service);
 			array_push($same_vendor_service, $data);
@@ -594,7 +600,11 @@ public function serachDodAndDow(){
 
 		//same_category_service
 		$services_ids			=	Service::active()->where('servicecategory_id', '=', $servicecategoryid)->where('location_id', '=', $servicelocationid)->lists('_id');		
-		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->whereIn('service_id', $services_ids)->orWhere("active" , "=" , 1)->orWhere('active', 'exists', false)->orWhere("type" , "=" , "fitmania-membership-giveaways")->get()->take(5)->toArray();	
+		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->whereIn('service_id', $services_ids)
+												->where(function($query){
+										        		$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
+										    		})
+												->timeout(400000000)->get()->take(5)->toArray();	
 		foreach ($serviceoffers as $key => $service) {
 			$data = $this->transformDod($service);
 			array_push($same_category_service, $data);
