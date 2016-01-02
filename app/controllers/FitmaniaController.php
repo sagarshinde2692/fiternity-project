@@ -183,7 +183,7 @@ private function transformDod($offers){
 	'start_date' => (isset($item['start_date']) && $item['start_date'] != '') ? $item['start_date'] : "",
 	'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
 	'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
-	'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact'] )  : "",		
+	'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average'] )  : "",		
 	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location', 'address','timing','servicebatches' )),
 
 	];
@@ -279,7 +279,7 @@ foreach ($services as $key => $value) {
 	'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
 	'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
 	'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
-	'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
+	'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average')),
 	];
 
 	array_push($fitmaniamemberships, $data);
@@ -419,7 +419,7 @@ public function serachMembership(){
 		'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
 		'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
 		'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
-		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average')),
 		];
 
 					// return $data;
@@ -584,12 +584,13 @@ public function serachDodAndDow(){
 		}
 		$servicedata = $this->transformServiceDetail($service, $offerid);
 
-		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
-		$servicelocationid 	= intval($servicedata['location_id']);
-		$servicefinderid 	= intval($servicedata['finder_id']);
-		$serviceratecardid 	= intval($servicedata['ratecard_id']);
-		$same_vendor_service = $same_category_service = [];
+		$servicecategoryid 		=	intval($servicedata['servicecategory_id']);
+		$servicelocationid 		=	intval($servicedata['location_id']);
+		$servicefinderid 		=	intval($servicedata['finder_id']);
+		$serviceoffer 			=	Serviceoffer::find(intval($servicedata['ratecard_id']));
+		$serviceratecardid 		=	intval($serviceoffer->ratecard_id);
 
+		$same_vendor_service = $same_category_service = [];
 
 		//same_vendor_service
 		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)->whereNotIn('ratecard_id', [$serviceratecardid])
