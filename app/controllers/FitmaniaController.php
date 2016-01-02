@@ -368,8 +368,9 @@ public function serachMembership(){
 	}
 
 	$cntquery 			= 	$query;
-	$services 			= 	$query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
 	$services_count 	= 	$cntquery->count();
+	$services 			= 	$query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
+	// echo "services_count -- $services_count size -- $size from -- $from ";exit();
 
 	foreach ($services as $key => $value) {
 		$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
@@ -446,7 +447,7 @@ public function serachMembership(){
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
 	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'total_count' => $services_count, 'message' => 'Fitmania Memberships :)'];
-return Response::json($responsedata, 200);
+	return Response::json($responsedata, 200);
 }
 
 
@@ -501,7 +502,7 @@ public function serachDodAndDow(){
 
 	$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
 
-	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id);
+	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array);
 							// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 							// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 
@@ -528,9 +529,12 @@ public function serachDodAndDow(){
 	if($end_price != "" || $end_price != 0){
 		$dealsofdayquery->where('price', '<=', intval($end_price));
 	}
+
 	$cntquery 				= 	$dealsofdayquery;
-	$dealsofdaycolleciton 	=	$dealsofdayquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
-	$dealsofday_count 		=	$cntquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->count();
+	$dealsofday_count 		=	$cntquery->count();
+	$dealsofdaycolleciton 	=	$dealsofdayquery->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+
+	// echo "dealsofday_count -- $dealsofday_count size -- $size from -- $from";exit();
 
 	foreach ($dealsofdaycolleciton as $key => $value) {
 		$dealdata = $this->transformDod($value);
@@ -583,11 +587,12 @@ public function serachDodAndDow(){
 		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
 		$servicelocationid 	= intval($servicedata['location_id']);
 		$servicefinderid 	= intval($servicedata['finder_id']);
+		$serviceratecardid 	= intval($servicedata['ratecard_id']);
 		$same_vendor_service = $same_category_service = [];
 
 
 		//same_vendor_service
-		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)
+		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)->whereNotIn('ratecard_id', [$serviceratecardid])
 												->where(function($query){
 										        		$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
 										    		})
@@ -600,7 +605,7 @@ public function serachDodAndDow(){
 
 		//same_category_service
 		$services_ids			=	Service::active()->where('servicecategory_id', '=', $servicecategoryid)->where('location_id', '=', $servicelocationid)->lists('_id');		
-		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->whereIn('service_id', $services_ids)
+		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->whereIn('service_id', $services_ids)->whereNotIn('ratecard_id', [$serviceratecardid])
 												->where(function($query){
 										        		$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
 										    		})
