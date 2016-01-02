@@ -587,7 +587,7 @@ public function serachDodAndDow(){
 		$servicecategoryid 		=	intval($servicedata['servicecategory_id']);
 		$servicelocationid 		=	intval($servicedata['location_id']);
 		$servicefinderid 		=	intval($servicedata['finder_id']);
-		$serviceoffer 			=	Serviceoffer::find(intval($servicedata['ratecard_id']));
+		$serviceoffer 			=	Serviceoffer::find(intval($offerid));
 		$serviceratecardid 		=	intval($serviceoffer->ratecard_id);
 
 		$same_vendor_service = $same_category_service = [];
