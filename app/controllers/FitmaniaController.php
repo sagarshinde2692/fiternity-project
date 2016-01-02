@@ -123,6 +123,15 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	$location_clusters 		= 	$this->getLocationCluster($city_id);
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
 
+	$dealsofdaycnt 			=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
+	->where("type" , "=" , "fitmania-dod")
+	->where("active" , "=" , 1)
+	// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
+	// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
+	// ->orWhere('buyable', 'exists', false)
+	// ->where("buyable" , ">" , 0)->orWhere("buyable" , "=" , "")->orWhere('buyable', 'exists', false)
+	->count();
+
 	$fitmaniadods			=	[];
 	$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
 	->where("type" , "=" , "fitmania-dod")
@@ -139,7 +148,7 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	}
 
 	// return $fitmaniadods;
-	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt, 'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 	return Response::json($responsedata, 200);
 }
 
@@ -200,8 +209,8 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-return Response::json($responsedata, 200);
-}
+		return Response::json($responsedata, 200);
+	}
 
 $ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
 $serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
@@ -985,9 +994,8 @@ public function getLocationCluster($city_id){
 	$location_clusters_rs 	= 	Locationcluster::where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('name')->get()->toArray();
 	
 	foreach ($location_clusters_rs as $key => $value) {
+		$locations  			=   Location::where('locationcluster_id', '=', intval($value['_id']))->where('status', '=', '1')->orderBy('name')->get(['_id', 'name', 'slug'])->toArray();
 		$location_cluster 		= 	array_except($value, array('locations','updated_at','created_at')); 
-		$locations  			=   Location::where('city_id', '=', intval($value['city_id']))->where('status', '=', '1')->orderBy('name')->get(['_id', 'name', 'slug'])->toArray();
-		// $location_cluster['locations'] 		=  pluck( $value['locations'] , array('_id', 'name', 'slug'));
 		$location_cluster['locations'] 		=  pluck( $locations , array('_id', 'name', 'slug'));
 		array_push($location_clusters, $location_cluster);
 	}
