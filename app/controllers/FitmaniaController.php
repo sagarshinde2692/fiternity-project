@@ -1009,7 +1009,7 @@ public function exploreCategoryOffers($city_id = 1, $cache = true){
 	}
 
 	
-	return $explore_category_offers;
+	return $explore_category_offers_by_city;
 }
 
 
@@ -1053,7 +1053,7 @@ public function exploreLocationClusterOffers($city_id = 1, $cache = true){
 		Cache::tags('explore_locationcluster_offers_by_city')->put($redis_tag_id, $explore_location_cluster_offers, Config::get('cache.cache_time'));
 	}
 
-	return $explore_location_cluster_offers;
+	return $explore_locationcluster_offers_by_city;
 }
 
 
