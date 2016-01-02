@@ -193,6 +193,7 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	if(!$citydata){
 		return $this->responseNotFound('City does not exist');
 	}
+
 	$city_name 		= 	$citydata['name'];
 	$city_id		= 	(int) $citydata['_id'];	
 	$from 			=	($from != '') ? intval($from) : 0;
@@ -212,75 +213,73 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 		return Response::json($responsedata, 200);
 	}
 
-$ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
-$serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
+	$ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
+	$serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
 
-$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
-$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
+	$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
+	$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 
-$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-->active()->whereIn('_id', $serviceids_array);	
-$services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
+	$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+											->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+											->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+											->active()->whereIn('_id', $serviceids_array);	
+	$services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
 
-$fitmaniamemberships 	=	[];
-foreach ($services as $key => $value) {
-	$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
-	// $service_ratedcards    	=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();				
-
-	$service_ratedcards 	= 	[];
-	$ratecardsarr    		=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();	
-	if($ratecardsarr){
-		foreach ($ratecardsarr as $key => $value) {
-			if(intval($value['validity'])%360 == 0){
-				$value['validity']  = intval(intval($value['validity'])/360);
-				if(intval($value['validity']) > 1){
-					$value['validity_type'] = "years";
-				}else{
-					$value['validity_type'] = "year";
+	$fitmaniamemberships 	=	[];
+	foreach ($services as $key => $value) {
+		$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
+		$service_ratedcards 	= 	[];
+		$ratecardsarr    		=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();	
+		if($ratecardsarr){
+			foreach ($ratecardsarr as $key => $value) {
+				if(intval($value['validity'])%360 == 0){
+					$value['validity']  = intval(intval($value['validity'])/360);
+					if(intval($value['validity']) > 1){
+						$value['validity_type'] = "years";
+					}else{
+						$value['validity_type'] = "year";
+					}
 				}
-			}
 
-			if(intval($value['validity'])%30 == 0){
-				$value['validity']  = intval(intval($value['validity'])/30);
-				if(intval($value['validity']) > 1){
-					$value['validity_type'] = "months";
-				}else{
-					$value['validity_type'] = "month";
+				if(intval($value['validity'])%30 == 0){
+					$value['validity']  = intval(intval($value['validity'])/30);
+					if(intval($value['validity']) > 1){
+						$value['validity_type'] = "months";
+					}else{
+						$value['validity_type'] = "month";
+					}
 				}
+				array_push($service_ratedcards, $value);
 			}
-			array_push($service_ratedcards, $value);
 		}
+
+
+		$finderarr 				= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+											->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+											->where('_id', (int) $item['finder_id'])->first();
+		$data = [
+		'_id' => $item['_id'],
+		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
+		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+		'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
+		'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
+		'buyable' => (isset($item['buyable']) && $item['buyable'] != '') ? trim($item['buyable']) : "",
+		'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
+		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
+		'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
+		'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
+		'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
+		'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
+		'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
+		];
+
+		array_push($fitmaniamemberships, $data);
 	}
 
-
-	$finderarr 				= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->where('_id', (int) $item['finder_id'])->first();
-	$data = [
-	'_id' => $item['_id'],
-	'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
-	'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
-	'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
-	'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
-	'buyable' => (isset($item['buyable']) && $item['buyable'] != '') ? trim($item['buyable']) : "",
-	'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
-	'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
-	'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
-	'workout_tags' => (isset($item['workout_tags']) && $item['workout_tags'] != '') ? $item['workout_tags'] : [],
-	'batches' => (isset($item['servicebatches']) && $item['servicebatches'] != '') ? $item['servicebatches'] : [],
-	'service_ratedcards' => (isset($service_ratedcards) && !empty($service_ratedcards)) ? $service_ratedcards : [],
-	'finder' =>  array_only($finderarr->toArray(), array('_id', 'title', 'slug', 'finder_type','commercial_type','coverimage','info','category','location','contact','finder_poc_for_customer_name','finder_poc_for_customer_mobile','finder_vcc_email')),
-	];
-
-	array_push($fitmaniamemberships, $data);
-}
-
-$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
-return Response::json($responsedata, 200);
+	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
+	return Response::json($responsedata, 200);
 }
 
 
@@ -352,10 +351,10 @@ public function serachMembership(){
 		$ratecardids_array 		= 	$ratecardidquery->orderBy('ordering', 'desc')->lists('_id');
 	}
 
+	// return $ratecardids_array;
 	if(isset($ratecardids_array) && !empty($ratecardids_array)){
 		$serviceoffersquery->whereIn('ratecard_id', $ratecardids_array);
 	}
-
 
 	if($start_price != "" || $start_price != 0){
 		$serviceoffersquery->where('price', '>=', intval($start_price));
@@ -363,9 +362,8 @@ public function serachMembership(){
 	if($end_price != "" || $end_price != 0){
 		$serviceoffersquery->where('price', '<=', intval($end_price));
 	}
+
 	$serviceoffers 	=	$serviceoffersquery->get()->toArray();
-
-
 
 	$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 	$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
@@ -375,7 +373,8 @@ public function serachMembership(){
 	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 	->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-	->active()->whereIn('_id', $serviceids_array);		
+	->active()->whereIn('_id', $serviceids_array);	
+
 	if(!empty($category)){
 		$query->whereIn('servicecategory_id', $category );
 	}
@@ -458,15 +457,15 @@ public function serachMembership(){
 	$categoryday   	=   $this->categorydayCitywise($city,$weekday);
 
 	$leftside 					= 	[];
-	$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
-	if(!empty($category)){
-		$leftside['subcategory'] 	= 	Servicecategory::active()->whereIn('parent_id', $category)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
-	}else{
-		$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
-	}
+	// $leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+	// if(!empty($category)){
+	// 	$leftside['subcategory'] 	= 	Servicecategory::active()->whereIn('parent_id', $category)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+	// }else{
+	// 	$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+	// }
 
-
-	// $leftside['locations'] 		= 	Locationcluster::with(array('locations'=>function($query){$query->select('_id','name','slug');}))->where('city_id', '=', $city_id)->where('status', '=', '1')->orderBy('ordering')->get();	
+	$leftside['category'] 		= 	[];
+	$leftside['subcategory'] 	= 	[];
 	$leftside['locations'] 		= 	$this->getLocationCluster($city_id);
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
@@ -562,12 +561,16 @@ public function serachDodAndDow(){
 	}
 
 	$leftside 					= 	[];
-	$leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
-	if(!empty($category)){
-		$leftside['subcategory'] 	= 	Servicecategory::active()->whereIn('parent_id', $category)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
-	}else{
-		$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
-	}
+
+	// $leftside['category'] 	 	= 	Servicecategory::active()->where('parent_id', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+	// if(!empty($category)){
+	// 	$leftside['subcategory'] 	= 	Servicecategory::active()->whereIn('parent_id', $category)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+	// }else{
+	// 	$leftside['subcategory'] 	= 	Servicecategory::active()->where('parent_id', '!=', 0)->orderBy('ordering')->get(array('_id','name','slug','parent_id'));
+	// }
+
+	$leftside['category'] 		= 	[];
+	$leftside['subcategory'] 	= 	[];
 	$leftside['locations'] 		= 	$this->getLocationCluster($city_id);
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
