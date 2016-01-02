@@ -349,7 +349,7 @@ public function serachMembership(){
 		if($end_duration != "" || $end_duration != 0){
 			$dealsofdayquery->where('validity', '<=', intval($end_duration));
 		}
-		$ratecardids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
+		$ratecardids_array 		= 	$dealsofdayquery->orderBy('ordering', 'desc')->lists('_id');
 	}
 
 	if(isset($ratecardids_array) && !empty($ratecardids_array)){
