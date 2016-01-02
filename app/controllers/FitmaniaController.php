@@ -121,6 +121,9 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	$weekday 				= 	strtolower(date( "l", $timestamp));
 	$categoryday   			=   $this->categorydayCitywise($city,$weekday);
 	$location_clusters 		= 	$this->getLocationCluster($city_id);
+	$explore_locations 		= 	$this->exploreLocationClusterOffers($city_id);
+	$explore_categorys 		= 	$this->exploreCategoryOffers($city_id);
+
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
 
 	$dealsofdaycnt 			=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
@@ -148,8 +151,9 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	}
 
 	// return $fitmaniadods;
-	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt, 'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
-return Response::json($responsedata, 200);
+	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 
+	'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+	return Response::json($responsedata, 200);
 }
 
 private function transformDod($offers){
@@ -174,11 +178,13 @@ private function transformDod($offers){
 	'price' => (isset($item['price']) && $item['price'] != '') ? intval($item['price']) : "",
 	'limit' => (isset($item['limit']) && $item['limit'] != '') ? intval($item['limit']) : "",
 	'order' => (isset($item['order']) && $item['order'] != '') ? intval($item['order']) : "",
+	'buyable' => (isset($item['buyable']) && $item['buyable'] != '') ? intval($item['buyable']) : "",
+	'left' => (isset($item['left']) && $item['left'] != '') ? intval($item['left']) : "",
 	'start_date' => (isset($item['start_date']) && $item['start_date'] != '') ? $item['start_date'] : "",
 	'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
 	'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
 	'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact'] )  : "",		
-	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location', 'buyable','address','timing','servicebatches' )),
+	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage', 'service_coverimage_thumb', 'category',  'subcategory', 'location', 'address','timing','servicebatches' )),
 
 	];
 
@@ -206,12 +212,14 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 
 	$banners 			= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-membership-giveaways')->take($size)->skip($from)->orderBy('ordering')->get();		
 	$location_clusters 	= 	$this->getLocationCluster($city_id);			
+	$explore_locations 		= 	$this->exploreLocationClusterOffers($city_id);
+	$explore_categorys 		= 	$this->exploreCategoryOffers($city_id);
 
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-return Response::json($responsedata, 200);
-}
+		return Response::json($responsedata, 200);
+	}
 
 $ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
 $serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
@@ -265,7 +273,6 @@ foreach ($services as $key => $value) {
 	'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
 	'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
 	'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
-	'buyable' => (isset($item['buyable']) && $item['buyable'] != '') ? trim($item['buyable']) : "",
 	'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
 	'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
 	'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
@@ -278,42 +285,11 @@ foreach ($services as $key => $value) {
 	array_push($fitmaniamemberships, $data);
 }
 
-$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
+$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 
+'fitmaniamemberships' => $fitmaniamemberships,  'banners' => $banners, 'location_clusters' => $location_clusters, 'message' => 'Fitmania Home Page Memberships :)'];
 return Response::json($responsedata, 200);
 }
 
-
-private function transformMembership($offers){
-
-	$item  	   		=  	(!is_array($offers)) ? $offers->toArray() : $offers;
-	$ratecardarr  	=  	(!is_array($item['ratecard'])) ?  (array) $item['ratecard'] : $item['ratecard'];
-	$finderarr   	=  	(!is_array($item['finder'])) ?  (array) $item['finder'] : $item['finder'];
-	$servicearr 	= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-	->where('_id', (int) $item['service_id'])->first();
-
-	$data = [
-	'_id' => $item['_id'],
-	'type' => (isset($item['type']) && $item['type'] != '') ? strtolower($item['type']) : "",
-	'type' => (isset($item['type']) && $item['type'] != '') ? strtolower($item['type']) : "",
-	'finder_id' => (isset($item['finder_id']) && $item['finder_id'] != '') ? intval($item['finder_id']) : "",
-	'service_id' => (isset($item['service_id']) && $item['service_id'] != '') ? intval($item['service_id']) : "",
-	'ratecard_id' => (isset($item['ratecard_id']) && $item['ratecard_id'] != '') ? intval($item['ratecard_id']) : "",
-	'city_id' => (isset($item['city_id']) && $item['city_id'] != '') ? intval($item['city_id']) : "",
-	'price' => (isset($item['price']) && $item['price'] != '') ? intval($item['price']) : "",
-	'limit' => (isset($item['limit']) && $item['limit'] != '') ? intval($item['limit']) : "",
-	'order' => (isset($item['order']) && $item['order'] != '') ? intval($item['order']) : "",
-	'start_date' => (isset($item['start_date']) && $item['start_date'] != '') ? $item['start_date'] : "",
-	'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
-	'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
-	'finder' => (isset($item['finder']) && $item['finder'] != '') ? array_only( $finderarr , ['_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact'] )  : "",		
-	'service' =>  array_only($servicearr->toArray(), array('name','_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage','service_coverimage_thumb', 'category',  'subcategory', 'location' )),
-	];
-
-	return $data;
-}
 
 
 
@@ -357,7 +333,7 @@ public function serachMembership(){
 	}
 
 	if($start_price != "" || $start_price != 0){
-		$serviceoffersquery->where('price', '>=', intval($start_price));
+		$serviceoffersquery->where('price', '>', intval($start_price));
 	}
 	if($end_price != "" || $end_price != 0){
 		$serviceoffersquery->where('price', '<=', intval($end_price));
@@ -391,11 +367,11 @@ public function serachMembership(){
 		$query->whereIn('finder_id', $finder );
 	}
 
-	$services 		= 	$query->orderBy('ordering', 'desc')->get()->toArray();
+	$services 			= 	$query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
+	$services_count 	= 	$query->count();
 
 	foreach ($services as $key => $value) {
 		$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
-		// $ratecardsarr    	=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();		
 
 		$service_ratedcards 	= 	[];
 		$ratecardsarr    		=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();	
@@ -434,7 +410,6 @@ public function serachMembership(){
 		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
 		'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
 		'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
-		'buyable' => (isset($item['buyable']) && $item['buyable'] != '') ? trim($item['buyable']) : "",
 		'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
 		'service_coverimage_thumb' => (isset($item['service_coverimage_thumb']) && $item['service_coverimage_thumb'] != '') ? strtolower($item['service_coverimage_thumb']) : "",
 		'session_type' => (isset($item['session_type']) && $item['session_type'] != '') ? strtolower($item['session_type']) : "",
@@ -469,7 +444,7 @@ public function serachMembership(){
 	$leftside['locations'] 		= 	$this->getLocationCluster($city_id);
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
-	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'message' => 'Fitmania Memberships :)'];
+	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'total_count' => $services_count, 'message' => 'Fitmania Memberships :)'];
 return Response::json($responsedata, 200);
 }
 
@@ -547,13 +522,13 @@ public function serachDodAndDow(){
 	}
 
 	if($start_price != "" || $start_price != 0){
-		$dealsofdayquery->where('price', '>=', intval($start_price));
+		$dealsofdayquery->where('price', '>', intval($start_price));
 	}
 	if($end_price != "" || $end_price != 0){
 		$dealsofdayquery->where('price', '<=', intval($end_price));
 	}
 	$dealsofdaycolleciton 	=	$dealsofdayquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
-
+	$dealsofday_count 	=	$dealsofdayquery->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->take($size)->skip($from)->orderBy('order', 'desc')->count();
 
 	foreach ($dealsofdaycolleciton as $key => $value) {
 		$dealdata = $this->transformDod($value);
@@ -577,8 +552,8 @@ public function serachDodAndDow(){
 	// Serviceoffer::get()->toArray();
 	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
-	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'message' => 'Fitmania dod and dow :)'];
-return Response::json($responsedata, 200);
+	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
+	return Response::json($responsedata, 200);
 }
 
 
@@ -935,12 +910,12 @@ public function buyOffer(){
    		$serviceoffers_array  	= 	Serviceoffer::where('city_id', $city_id)->whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->get(['finder_id'])->toArray();
    		$finderids_array 		= 	array_map('intval', array_pluck($serviceoffers_array, 'finder_id')) ; 
 
-   		$query 					= 	Finder::active()->orderBy('title')->whereIn('_id', $finderids_array );
+   		$query 					= 	Finder::active()->with(array('location'=>function($query){$query->select('_id','name','slug');}))->orderBy('title')->whereIn('_id', $finderids_array );
    		if ($keyword != '') {
    			$query->where('title', 'LIKE', '%' . $keyword . '%');
    		}
 
-   		$finders = $query->get(['_id','title','slug']);
+   		$finders = $query->get(['_id','title','slug','location_id','location']);
    		return Response::json(array('status' => 200,'finders' => $finders, 'message' => 'Finder list :)'),200);				
    	}
 
@@ -1009,17 +984,30 @@ public function getLocationCluster($city_id){
 
 public function exploreCategoryOffers($city_id = 1){
 
-	$categorys_arr     		=  	array('gyms' => '65', 'yoga' => '1',  'crossfit' => '111',  'pilates' => '4');
-	
-	$explore_category_offers = [];
-	foreach ($categorys_arr as $k => $v) {
-		$servicecategory_name  	= 	$k;
-		$servicecategory_id  	= 	intval($v);
-		$services				=	Service::active()->whereIn('servicecategory_id', [$servicecategory_id])->lists('_id');
-		$serviceoffers_cnt  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->whereIn("service_id" , $services)->count();
-		$offer = ['category_name' => $servicecategory_name,'category_id' => $servicecategory_id,'cnt'=>$serviceoffers_cnt];
-		array_push($explore_category_offers, $offer);
+	$date 					=  	Carbon::now();
+	$timestamp 				= 	strtotime($date);
+	$date_hour 				= 	strtolower(date( "d-m-y : h", $timestamp));
+	$redis_tag_id 			=   "explore_category_offers_by_city_".$city_id."_".$date_hour;
+
+	$explore_category_offers_by_city = $cache ? Cache::tags('explore_category_offers_by_city')->has($redis_tag_id) : false;
+
+	if($explore_category_offers_by_city){
+
+		$categorys_arr     		=  	array('zumba' => '19', 'yoga & pilates' => '1,4',  'gyms' => '65', 'mma & kickboxing' => '3', 'functional / crossfit' => '5',  'dance' => '2');
+		
+		$explore_category_offers = [];
+		foreach ($categorys_arr as $k => $v) {
+			$servicecategory_name  	= 	$k;
+			$servicecategory_id  	= 	array_map('intval', explode(',', $v)) ;
+			$services				=	Service::active()->whereIn('servicecategory_id', $servicecategory_id)->lists('_id');
+			$serviceoffers_cnt  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->whereIn("service_id" , $services)->count();
+			$offer = ['category_name' => $servicecategory_name,'category_id' => $servicecategory_id,'cnt'=>$serviceoffers_cnt];
+			array_push($explore_category_offers, $offer);
+		}
+
+		Cache::tags('explore_category_offers_by_city')->put($redis_tag_id, $explore_category_offers, Config::get('cache.cache_time'));
 	}
+
 	
 	return $explore_category_offers;
 }
@@ -1028,34 +1016,44 @@ public function exploreCategoryOffers($city_id = 1){
 
 public function exploreLocationClusterOffers($city_id = 1){
 
-	$categorys_arr     		=  	array('gyms' => '65', 'yoga' => '1',  'crossfit' => '111',  'pilates' => '4');
-	$location_clusters 		= 	Locationcluster::where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('name')->get()->toArray();
+	$date 					=  	Carbon::now();
+	$timestamp 				= 	strtotime($date);
+	$date_hour 				= 	strtolower(date( "d-m-y : h", $timestamp));
+	$redis_tag_id 			=   "explore_locationcluster_offers_by_city_".$city_id."_".$date_hour;
 	
-	$explore_location_cluster_offers = [];
+	$explore_locationcluster_offers_by_city = $cache ? Cache::tags('explore_locationcluster_offers_by_city')->has($redis_tag_id) : false;
 
-	foreach ($location_clusters as $key => $value) {
-		$locations  				=   Location::where('locationcluster_id', '=', intval($value['_id']))->where('status', '=', '1')->get(['_id','name']);
-		$locationids_array 			= 	array_map('intval', array_pluck($locations, '_id')) ; 
+	if($explore_locationcluster_offers_by_city){
+		$categorys_arr     		=  	array('gyms' => '65', 'yoga & pilates' => '1,4',  'functional / crossfit' => '5,111',  'dance' => '2');
+		$location_clusters 		= 	Locationcluster::where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('name')->get()->toArray();
 
-		$clusteroffers 				= 	[];
-		foreach ($categorys_arr as $k => $v) {
-			$servicecategory_name  	= 	$k;
-			$servicecategory_id  	= 	intval($v);
-			$services				=	Service::active()->whereIn('servicecategory_id', [$servicecategory_id])->whereIn('location_id', $locationids_array)->lists('_id');
-			$serviceoffers_cnt  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->whereIn("service_id" , $services)->count();
-			$offer = ['category_name' => $servicecategory_name,'category_id' => $servicecategory_id,'cnt'=>$serviceoffers_cnt];
-			array_push($clusteroffers, $offer);
+		$explore_location_cluster_offers = [];
+
+		foreach ($location_clusters as $key => $value) {
+			$locations  				=   Location::where('locationcluster_id', '=', intval($value['_id']))->where('status', '=', '1')->get(['_id','name']);
+			$locationids_array 			= 	array_map('intval', array_pluck($locations, '_id')) ; 
+
+			$clusteroffers 				= 	[];
+			foreach ($categorys_arr as $k => $v) {
+				$servicecategory_name  	= 	$k;
+				$servicecategory_id  	= 	array_map('intval', explode(',', $v)) ;
+				$services				=	Service::active()->whereIn('servicecategory_id', $servicecategory_id)->whereIn('location_id', $locationids_array)->lists('_id');
+				$serviceoffers_cnt  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->whereIn("service_id" , $services)->count();
+				$offer = ['category_name' => $servicecategory_name,'category_id' => $servicecategory_id,'cnt'=>$serviceoffers_cnt];
+				array_push($clusteroffers, $offer);
+			}
+			$locationcluster['offers']  = 	$clusteroffers;	
+			$locationcluster['name']  	= 	$value['name'];	
+			$locationcluster['_id']  	= 	intval($value['_id']);	
+
+			array_push($explore_location_cluster_offers, $locationcluster);
+
 		}
-		$locationcluster['offers']  = 	$clusteroffers;	
-		$locationcluster['name']  	= 	$value['name'];	
-		$locationcluster['_id']  	= 	intval($value['_id']);	
-		
-		array_push($explore_location_cluster_offers, $locationcluster);
 
+		Cache::tags('explore_locationcluster_offers_by_city')->put($redis_tag_id, $explore_location_cluster_offers, Config::get('cache.cache_time'));
 	}
 
 	return $explore_location_cluster_offers;
-
 }
 
 
