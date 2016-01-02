@@ -982,7 +982,7 @@ public function getLocationCluster($city_id){
 
 
 
-public function exploreCategoryOffers($city_id = 1){
+public function exploreCategoryOffers($city_id = 1, $cache = true){
 
 	$date 					=  	Carbon::now();
 	$timestamp 				= 	strtotime($date);
@@ -1014,7 +1014,7 @@ public function exploreCategoryOffers($city_id = 1){
 
 
 
-public function exploreLocationClusterOffers($city_id = 1){
+public function exploreLocationClusterOffers($city_id = 1, $cache = true){
 
 	$date 					=  	Carbon::now();
 	$timestamp 				= 	strtotime($date);
