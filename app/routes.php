@@ -348,6 +348,8 @@ Route::get('checkfitmaniaorder/{orderid}', 'FitmaniaController@checkFitmaniaOrde
 Route::get('updatecityid/', 'FitmaniaController@updateCityIdFromFinderCityId');
 Route::get('checkcouponcode/{code}', 'FitmaniaController@checkCouponcode');
 Route::get('checkbuyablevalue/{offerid}', 'FitmaniaController@checkBuyableValue');
+Route::get('updateexplorecategoryoffers/{cityid?}', 'FitmaniaController@exploreCategoryOffers');
+Route::get('updateexplorelocationclusteroffers/{cityid?}', 'FitmaniaController@exploreLocationClusterOffers');
 
 
 // Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');

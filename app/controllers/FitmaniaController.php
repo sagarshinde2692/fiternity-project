@@ -930,7 +930,9 @@ public function buyOffer(){
    	public function serachFinders (){
 
    		$keyword 				=	(Input::json()->get('finder')) ? trim(Input::json()->get('finder')) : "";
-   		$serviceoffers_array  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->get(['finder_id'])->toArray();
+		$city_id				=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
+
+   		$serviceoffers_array  	= 	Serviceoffer::where('city_id', $city_id)->whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->get(['finder_id'])->toArray();
    		$finderids_array 		= 	array_map('intval', array_pluck($serviceoffers_array, 'finder_id')) ; 
 
    		$query 					= 	Finder::active()->orderBy('title')->whereIn('_id', $finderids_array );
@@ -939,9 +941,7 @@ public function buyOffer(){
    		}
 
    		$finders = $query->get(['_id','title','slug']);
-
    		return Response::json(array('status' => 200,'finders' => $finders, 'message' => 'Finder list :)'),200);				
-
    	}
 
 
@@ -952,11 +952,11 @@ public function buyOffer(){
 
    		if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) < 1){
    			$responsedata 	= ['serviceoffer' => "", 'exist' => false, 'message' => 'No serviceoffer Exist :)'];
-return Response::json($responsedata, 400);
-}
+			return Response::json($responsedata, 400);
+		}
 
-$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
-return Response::json($responsedata, 200);
+	$responsedata 	= ['serviceoffer' => $serviceoffer, 'exist' => true, 'message' => 'serviceoffer Exist :)'];
+	return Response::json($responsedata, 200);
 }
 
 
@@ -1003,6 +1003,41 @@ public function getLocationCluster($city_id){
 		array_push($location_clusters, $location_cluster);
 	}
 	return $location_clusters;
+}
+
+
+
+public function exploreCategoryOffers($city_id = 1){
+
+
+
+}
+
+
+
+public function exploreLocationClusterOffers($city_id = 1){
+
+	$categorys_arr     		=  	array('gyms' => '65', 'yoga' => '1',  'crossfit' => '111',  'pilates' => '4');
+	$location_clusters 		= 	Locationcluster::where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('name')->get()->toArray();
+	
+	foreach ($location_clusters as $key => $value) {
+		$locations  			=   Location::where('locationcluster_id', '=', intval($value['_id']))->where('status', '=', '1')->get(['_id']);
+		$locationids_array 		= 	array_map('intval', array_pluck($locations, '_id')) ; 
+		foreach ($categorys_arr as $k => $v) {
+			$servicecategory_name  	= 	$k;
+			$servicecategory_id  	= 	intval($v);
+			$services				=	Service::active()->whereIn('servicecategory_id', [$servicecategory_id])->whereIn('location_id', $locationids_array)->lists('_id');
+			return $serviceoffers_cnt  	= 	Serviceoffer::whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->whereIn("service_id" , $services)->count();
+			
+		}
+
+		array_push($location_clusters, $location_cluster);
+	}
+
+
+
+	// $fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+
 }
 
 
