@@ -120,7 +120,7 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	$stringdate 			= 	$date->toFormattedDateString();
 	$weekday 				= 	strtolower(date( "l", $timestamp));
 	$categoryday   			=   $this->categorydayCitywise($city,$weekday);
-	$location_clusters 		= 	$this->getLocationCluster($city_id);
+	// $location_clusters 		= 	$this->getLocationCluster($city_id);
 	$explore_locations 		= 	$this->exploreLocationClusterOffers($city_id);
 	$explore_categorys 		= 	$this->exploreCategoryOffers($city_id);
 
@@ -152,7 +152,7 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	// return $fitmaniadods;
 	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 
-	'fitmaniadods' => $fitmaniadods, 'location_clusters' => $location_clusters,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+	'fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 	return Response::json($responsedata, 200);
 }
 
@@ -579,26 +579,28 @@ public function serachDodAndDow(){
 		$servicedata = $this->transformServiceDetail($service, $offerid);
 
 		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
+		$servicelocationid 	= intval($servicedata['location_id']);
 		$servicefinderid 	= intval($servicedata['finder_id']);
 		$same_vendor_service = $same_category_service = [];
 
+
 		//same_vendor_service
-		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->whereNotIn('service_id', [intval($serviceid)])->where("active" , "=" , 1)->get()->toArray();
-		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
-		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->get()->take(5)->toArray();	
-		foreach ($services_result as $key => $service) {
-			$data = $this->transformServiceDetailV1($service, $offerid);
+		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)->orWhere("active" , "=" , 1)->orWhere('active', 'exists', false)->orWhere("type" , "=" , "fitmania-membership-giveaways")->get()->take(5)->toArray();	
+		foreach ($serviceoffers as $key => $service) {
+			$data = $this->transformDod($service);
 			array_push($same_vendor_service, $data);
 		}
+		// return $same_vendor_service;
 
 		//same_category_service
-		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->whereNotIn('service_id', [intval($serviceid)])->where("active" , "=" , 1)->get()->toArray();
-		$serviceids_array 		= 	array_map('intval', array_pluck($serviceoffers, 'service_id')); 
-		$services_result		=	Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->whereIn('_id', $serviceids_array)->where('servicecategory_id', '=', $servicecategoryid)->get()->take(5)->toArray();		
-		foreach ($services_result as $key => $service) {
-			$data = $this->transformServiceDetailV1($service, $offerid);
+		$services_ids			=	Service::active()->where('servicecategory_id', '=', $servicecategoryid)->where('location_id', '=', $servicelocationid)->lists('_id');		
+		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->whereIn('service_id', $services_ids)->orWhere("active" , "=" , 1)->orWhere('active', 'exists', false)->orWhere("type" , "=" , "fitmania-membership-giveaways")->get()->take(5)->toArray();	
+		foreach ($serviceoffers as $key => $service) {
+			$data = $this->transformDod($service);
 			array_push($same_category_service, $data);
 		}
+		// return $same_category_service;
+
 
 		$resp 	= 	array('service' => $servicedata,'same_vendor_service' => $same_vendor_service,'same_category_service' => $same_category_service,  'message' => 'Particular Service Info');
 		return Response::json($resp, 200);
@@ -1042,6 +1044,8 @@ public function exploreLocationClusterOffers($city_id = 1){
 			}
 			$locationcluster['offers']  = 	$clusteroffers;	
 			$locationcluster['name']  	= 	$value['name'];	
+			$locationcluster['slug']  	= 	$value['slug'];	
+			$locationcluster['locations']  	= 	$locationids_array;	
 			$locationcluster['_id']  	= 	intval($value['_id']);	
 
 			array_push($explore_location_cluster_offers, $locationcluster);
