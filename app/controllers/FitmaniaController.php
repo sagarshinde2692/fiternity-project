@@ -28,6 +28,13 @@ class FitmaniaController extends \BaseController {
 	}
 
 
+
+	public function categoryId($category){
+
+		$categorydays_arr     =  array('anniversary' => 'all', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111','mma' => '3', 'dance' => '2', 'yoga' => '1');
+		return $categorydays_arr[$category];
+	}
+
 	public function categorydayCitywise($city, $weekday){
 
 		$category_info  = [];
@@ -37,28 +44,29 @@ class FitmaniaController extends \BaseController {
 
 		switch (strtolower(trim($city))) {
 			case 'mumbai':
-			$categorydays_arr     =  array('sunday' => 'fitternity anniversary offer (mixed bag)', 'monday' => 'zumba', 'tuesday' => 'gyms', 'wednesday' => 'crossfit & functional fitness','thursday' => 'mma & kickboxing','friday' => 'dance', 'saturday' => 'yoga & pilates');
+			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 			break;
 			
 			case 'pune':
-			$categorydays_arr     =  array('sunday' => 'fitternity anniversary offer (mixed bag)', 'monday' => 'zumba', 'tuesday' => 'yoga & pilates', 'wednesday' => 'gyms','thursday' => 'mma & kickboxing','friday' => 'crossfit & functional fitness', 'saturday' => 'dance');
+			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 			break;
 
 			case 'bangalore':
-			$categorydays_arr     =  array('sunday' => 'fitternity anniversary offer (mixed bag)', 'monday' => 'zumba', 'tuesday' => 'yoga & pilates', 'wednesday' => 'gyms','thursday' => 'mma & kickboxing','friday' => 'crossfit & functional fitness', 'saturday' => 'dance');
+			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 			break;	
 
 			case 'delhi':
-			$categorydays_arr     =  array('sunday' => 'fitternity anniversary offer (mixed bag)', 'monday' => 'zumba', 'tuesday' => 'yoga & pilates', 'wednesday' => 'gyms','thursday' => 'mma & kickboxing','friday' => 'crossfit & functional fitness', 'saturday' => 'dance');
+			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 			break;
 
 			case 'gurgaon':
-			$categorydays_arr     =  array('sunday' => 'fitternity anniversary offer (mixed bag)', 'monday' => 'zumba', 'tuesday' => 'yoga & pilates', 'wednesday' => 'gyms','thursday' => 'mma & kickboxing','friday' => 'crossfit & functional fitness', 'saturday' => 'dance');
+			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 			break;		
 		}
 
-		$category_info['today']  	=  $categorydays_arr[$weekday];
-		$category_info['tommorow']  =  $categorydays_arr[$tommorow];
+		$category_info['today']  		=  $categorydays_arr[$weekday];
+		$category_info['tommorow']  	=  $categorydays_arr[$tommorow];
+		$category_info['category_id']  	=  $this->categoryId($categorydays_arr[$weekday]);
 		return $category_info;
 	}
 
@@ -973,11 +981,14 @@ return Response::json($responsedata, 200);
 public function getLocationCluster($city_id){
 
 	$location_clusters  =  [];
-	$location_clusters_rs 	= 	Locationcluster::with('locations')->where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('ordering')->get()->toArray();
+	// $location_clusters_rs 	= 	Locationcluster::with('locations')->where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('name')->get()->toArray();
+	$location_clusters_rs 	= 	Locationcluster::where('city_id', '=', intval($city_id))->where('status', '=', '1')->orderBy('name')->get()->toArray();
 	
 	foreach ($location_clusters_rs as $key => $value) {
-		$location_cluster 		= 	array_except($value, array('locations','updated_at','created_at','offerings','facilities','services')); 
-		$location_cluster['locations'] 		=  pluck( $value['locations'] , array('_id', 'name', 'slug'));
+		$location_cluster 		= 	array_except($value, array('locations','updated_at','created_at')); 
+		$locations  			=   Location::where('city_id', '=', intval($value['city_id']))->where('status', '=', '1')->orderBy('name')->get(['_id', 'name', 'slug'])->toArray();
+		// $location_cluster['locations'] 		=  pluck( $value['locations'] , array('_id', 'name', 'slug'));
+		$location_cluster['locations'] 		=  pluck( $locations , array('_id', 'name', 'slug'));
 		array_push($location_clusters, $location_cluster);
 	}
 	return $location_clusters;
