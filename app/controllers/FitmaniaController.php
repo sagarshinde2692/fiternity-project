@@ -896,14 +896,17 @@ public function buyOffer(){
    	}
 
 
-   	// used to reset buyable value it will hit by sidekick after 12 min
+   	// used to reset buyable value it will hit by sidekick after 12 min check only once base on sidekick_check_status
    	public function checkFitmaniaOrder($order_id){
 
    		$order 		= 	Order::find(intval($order_id));
    		$orderData 	= 	$order->toArray();
 
-   		if($orderData['status'] == 0){
-   			$serviceoffer 		= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
+   		if($orderData['status'] == 0 && !isset($orderData['sidekick_check_status'])){
+
+   			$order_obj 		= 	$order->update(['sidekick_check_status' => 1]);
+
+   			$serviceoffer 	= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
    			if(!$serviceoffer){
    				return Response::json(array('status' => 404,'message' => "serviceoffer does not exist"),404);				
    			}
