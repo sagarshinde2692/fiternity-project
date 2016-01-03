@@ -231,7 +231,7 @@
                                                         <a href="http://www.fitternity.com" target="_blank"><img width="50%" src="http://email.fitternity.com/197/badge.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">
                                                             Hi {{ $customer_name }}!
-                                                            <br /> Thank you purchasing your membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.</p>
+                                                            <br /> Thank you purchasing for membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.</p>
                                                         </td>
                                                     </tr>
                                                     <tr style="background-color:#f6f6f6;">
@@ -257,11 +257,11 @@
                                                                                 <?php }?>
 
                                                                                 <?php if(isset($finder_name) && $finder_name != ""){ ?>  
-                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination:</strong> {{ ucwords($finder_name) }} <?php if(isset($finder_location) && $finder_location != ""){ ?>  ,{{ ucwords($finder_location) }}<?PHP } ?></p>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination: </strong> {{ ucwords($finder_name) }} <?php if(isset($finder_location) && $finder_location != ""){ ?>, {{ ucwords($finder_location) }}<?PHP } ?></p>
                                                                                 <?PHP } ?>
 
                                                                                 <?php if(isset($service_name) && $service_name != ""){ ?>
-                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Membership Type::</strong> {{ ucwords($service_name) }}</p>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Membership Type:</strong> {{ ucwords($service_name) }}</p>
                                                                                 <?PHP } ?>
 
                                                                                 <?php if(isset($service_duration) && $service_duration != ""){ ?>
@@ -354,7 +354,7 @@
                                                                         <tbody>
                                                                             <tr>
                                                                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on 02261222232</strong></p>
+                                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on 02261222232 </strong></p>
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>
