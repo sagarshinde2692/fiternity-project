@@ -257,7 +257,7 @@
                                                                                 <?php }?>
 
                                                                                 <?php if(isset($finder_name) && $finder_name != ""){ ?>  
-                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination: </strong> {{ ucwords($finder_name) }} <?php if(isset($finder_location) && $finder_location != ""){ ?>, {{ ucwords($finder_location) }}<?PHP } ?></p>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination: </strong> {{ ucwords($finder_name) }}<?php if(isset($finder_location) && $finder_location != ""){ ?>, {{ ucwords($finder_location) }}<?PHP } ?></p>
                                                                                 <?PHP } ?>
 
                                                                                 <?php if(isset($service_name) && $service_name != ""){ ?>
