@@ -278,7 +278,7 @@
 
                                                                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Batch selected: </strong><br> 
                                                                                    @foreach($batches as $key => $value)
-                                                                                   <span style="line-height:16px;">{{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br></span>
+                                                                                   <span style="padding-bottom:6px;display: inline-block;">{{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?></span>  <br>
                                                                                    @endforeach
                                                                                    <!-- Monday-Friday, 3:00-4:00 PM -->
                                                                                </p>

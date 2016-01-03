@@ -221,7 +221,7 @@
                                     <td>
                                         <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
                                             <tbody>
-                                             
+                                               
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td width="100%" align="center" class="devicewidth">
                                                         <a href="http://www.fitternity.com" target="_blank"><img width="150px" src="http://email.fitternity.com/191/logo.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding:20px;"></a>
@@ -262,7 +262,7 @@
 
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph"> 
                                                                         @foreach($batches as $key => $value)
-                                                                        <span style="line-height:16px;">{{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br></span>
+                                                                        <span style="padding-bottom:6px;display: inline-block;">{{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?></span>  <br>
                                                                         @endforeach
                                                                     </p>
                                                                     <?PHP } else { echo "NA"; }?>
@@ -280,24 +280,24 @@
                                                     <tbody>
                                                         <tr>
                                                             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                               <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Payment Method:</p>
-                                                               <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Online</p>             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Membership Type:</p> 
-                                                               <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$service_name}}</p>                                                                           
-                                                               
-                                                               <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p> 
-                                                               <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$_id}}</p>
-                                                               <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Starting date:</p> 
-                                                               <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{date('jS F Y',strtotime($preferred_starting_date))}}</p>
-                                                           </td>
-                                                       </tr>
-                                                   </tbody>
-                                                   
-                                                   
-                                               </table>
-                                               
-                                           </td>
-                                       </tr>
-                                       <tr style="background-color:#f6f6f6;">
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Payment Method:</p>
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Online</p>             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Membership Type:</p> 
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$service_name}}</p>                                                                           
+                                                             
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p> 
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$_id}}</p>
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Starting date:</p> 
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{date('jS F Y',strtotime($preferred_starting_date))}}</p>
+                                                         </td>
+                                                     </tr>
+                                                 </tbody>
+                                                 
+                                                 
+                                             </table>
+                                             
+                                         </td>
+                                     </tr>
+                                     <tr style="background-color:#f6f6f6;">
                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph"> 
                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Please call us in case of any queries - you can reach your assigned Relationship Manager directly or call us on 02261222232.</p>
                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Regards,<br />
@@ -323,29 +323,29 @@
 <div class="block"> 
   <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
     <tbody>
-       <tr>
-          <td align="center">
-           <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+     <tr>
+      <td align="center">
+         <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
             <tbody>
               <!-- Title -->
               
               
               <tr>
                   <td>
-                     <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-                        <tbody>
-                            
-                           <tr>
-                              <td>
-                              </td>
-                          </tr> </tbody>
-                      </table>
-                  </td>
-              </tr>
-          </tbody>
-      </table></td></tr></tbody></table>
-  </div>
-  <div class="block">
+                   <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                    <tbody>
+                        
+                     <tr>
+                      <td>
+                      </td>
+                  </tr> </tbody>
+              </table>
+          </td>
+      </tr>
+  </tbody>
+</table></td></tr></tbody></table>
+</div>
+<div class="block">
     <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
         <tbody>
             <tr bgcolor="#f6f6f6">
