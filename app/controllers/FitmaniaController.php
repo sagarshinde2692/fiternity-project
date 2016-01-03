@@ -912,6 +912,8 @@ public function buyOffer(){
 				}
 			}
 		}//buydealofday
+	}else{
+		return Response::json(array('status' => 200,'message' => "order already scuessfull :)"),200);				
 	}
 
 }
