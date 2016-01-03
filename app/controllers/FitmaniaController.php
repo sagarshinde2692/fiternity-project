@@ -78,7 +78,7 @@ class FitmaniaController extends \BaseController {
 		$responsedata['membership'] = $this->getDealOfDay($city , $from, $size);
 		$responsedata['message'] = "Fitmania Home Page Data :)";
 
-		return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 
@@ -126,8 +126,8 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
 	// $dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
-	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->count();
-
+	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
+	
 	$fitmaniadods			=	[];
 	$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
 	->where("type" , "=" , "fitmania-dod")
@@ -209,8 +209,8 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-		return Response::json($responsedata, 200);
-	}
+return Response::json($responsedata, 200);
+}
 
 $ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
 $serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
@@ -219,10 +219,10 @@ $serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service
 $ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 
 $query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-										->active()->whereIn('_id', $serviceids_array);	
+->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+->active()->whereIn('_id', $serviceids_array);	
 
 $services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
 
@@ -474,29 +474,35 @@ public function serachDodAndDow(){
 	$finderids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'finder_id')) ; 
 	$fitmaniadods 				=	[];
 
-	$query	 					= 	Service::active();		
-	if(!empty($category)){
-		$query->whereIn('servicecategory_id', $category );
+	$serviceids_array  = [];
+	if(!empty($category) || !empty($subcategory) || !empty($location) || !empty($finder)){
+
+		$query	 					= 	Service::active();		
+		if(!empty($category)){
+			$query->whereIn('servicecategory_id', $category );
+		}
+
+		if(!empty($subcategory)){
+			$query->whereIn('servicesubcategory_id', $subcategory );
+		}
+
+		if(!empty($location)){
+			$query->whereIn('location_id', $location );
+		}
+
+		if(!empty($finder)){
+			$query->whereIn('finder_id', $finder );
+		}
+		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
 	}
 
-	if(!empty($subcategory)){
-		$query->whereIn('servicesubcategory_id', $subcategory );
-	}
 
-	if(!empty($location)){
-		$query->whereIn('location_id', $location );
-	}
-
-	if(!empty($finder)){
-		$query->whereIn('finder_id', $finder );
-	}
-
-	$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
-
-	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array);
+	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
 							// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 							// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-
+	if(isset($serviceids_array) && !empty($serviceids_array)){
+		$dealsofdayquery->whereIn('service_id', $serviceids_array);
+	}
 	if($start_duration != "" || $start_duration != 0 || $end_duration != "" || $end_duration != 0){
 		$ratecardidquery 	= 	Ratecard::active();
 
