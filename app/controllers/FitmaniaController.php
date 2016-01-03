@@ -36,7 +36,7 @@ class FitmaniaController extends \BaseController {
 	}
 
 
-	public function categoryCitywiseSuccessPage($city){
+	public function categoryCitywiseSuccessPage($city = 'mumbai', $from = '', $size = ''){
 
 		$category_info  = [];
 		$tommorow_date 	=	\Carbon\Carbon::tomorrow();
@@ -52,7 +52,7 @@ class FitmaniaController extends \BaseController {
 		$city_id		= 	(int) $citydata['_id'];	
 		$from 			=	($from != '') ? intval($from) : 0;
 		$size 			=	($size != '') ? intval($size) : 10;
-	
+
 		switch (strtolower(trim($city_name))) {
 			case 'mumbai':
 			$categorydays_arr     =  array( 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'anniversary', 'monday' => 'personal trainers');
