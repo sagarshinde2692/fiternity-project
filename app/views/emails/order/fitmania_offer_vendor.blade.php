@@ -142,7 +142,7 @@
                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding:5px 5px; color:#666" st-content="fulltext-paragraph">
                   <p style="padding-top:15px">Hi, 
                     <p style="padding-top:15px"> Greetings from Fitternity.com ! 
-                      <p style="padding-top:15px">We have processed an offer for {{ ucwords($data['finder_name']) }} on FitMania Sale currently live on Fitternity.com: 
+                      <p style="padding-top:15px">We have processed an offer for {{ ucwords($finder_name) }} on FitMania Sale currently live on Fitternity.com: 
                         <a href="http://www.fitternity.com/fitmania"> http://www.fitternity.com/fitmania </a></p>
                         <p style="padding-top:15px; font-size:15px;">Here are the details:</p>
 
