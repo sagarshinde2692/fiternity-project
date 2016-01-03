@@ -126,7 +126,16 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
 	// $dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
-	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
+	// $dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
+
+	$serviceids_array  = [];
+	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
+	if(isset($serviceids_array) && !empty($serviceids_array)){
+		$dealsofdayquery->whereIn('service_id', $serviceids_array);
+	}
+	$cntquery 				= 	$dealsofdayquery;
+	$dealsofdaycnt 		=	$cntquery->count();
+	
 	
 	$fitmaniadods			=	[];
 	$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
@@ -498,8 +507,6 @@ public function serachDodAndDow(){
 
 
 	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
-							// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-							// ->where('end_date', '<=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 	if(isset($serviceids_array) && !empty($serviceids_array)){
 		$dealsofdayquery->whereIn('service_id', $serviceids_array);
 	}
