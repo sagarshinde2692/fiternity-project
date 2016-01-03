@@ -125,16 +125,8 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	$explore_categorys 		= 	$this->exploreCategoryOffers($city_id);
 
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
-
-	$dealsofdaycnt 			=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-	->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
-	// ->where("type" , "=" , "fitmania-dod")
-	->where("active" , "=" , 1)
-	// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-	// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
-	// ->orWhere('buyable', 'exists', false)
-	// ->where("buyable" , ">" , 0)->orWhere("buyable" , "=" , "")->orWhere('buyable', 'exists', false)
-	->count();
+	// $dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
+	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->count();
 
 	$fitmaniadods			=	[];
 	$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
@@ -142,8 +134,6 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	->where("active" , "=" , 1)
 	// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 	// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
-	// ->orWhere('buyable', 'exists', false)
-	// ->where("buyable" , ">" , 0)->orWhere("buyable" , "=" , "")->orWhere('buyable', 'exists', false)
 	->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	foreach ($dealsofdaycolleciton as $key => $value) {
@@ -476,7 +466,6 @@ public function serachDodAndDow(){
 	$stringdate 	= 	$date->toFormattedDateString();
 	$weekday 		= 	strtolower(date( "l", $timestamp));
 	$categoryday   	=   $this->categorydayCitywise($city,$weekday);
-
 
 
 	$serviceoffers  			= 	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->get()->toArray();
