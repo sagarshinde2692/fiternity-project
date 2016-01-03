@@ -43,7 +43,17 @@ class FitmaniaController extends \BaseController {
 		$timestamp 		= 	strtotime($tommorow_date);
 		$tommorow 		= 	strtolower(date( "l", $timestamp));
 
-		switch (strtolower(trim($city))) {
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+
+		$city_name 		= 	$citydata['name'];
+		$city_id		= 	(int) $citydata['_id'];	
+		$from 			=	($from != '') ? intval($from) : 0;
+		$size 			=	($size != '') ? intval($size) : 10;
+	
+		switch (strtolower(trim($city_name))) {
 			case 'mumbai':
 			$categorydays_arr     =  array( 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'anniversary', 'monday' => 'personal trainers');
 			break;
@@ -65,9 +75,17 @@ class FitmaniaController extends \BaseController {
 			break;		
 		}
 
-		$deals  = $this->getDealOfDay($city , 0, 8);
-		$responsedata 	= ['categorydays_arr' => $categorydays_arr, 'deals' => $deals,  'message' => 'Fitmania categoryCitywiseSuccessPage :)'];
-		return Response::json($responsedata, 200);
+		$fitmaniadods			=	[];
+		$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-dod")->where("active" , "=" , 1)->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+
+		foreach ($dealsofdaycolleciton as $key => $value) {
+			$dealdata = $this->transformDod($value);
+			array_push($fitmaniadods, $dealdata);
+		}
+
+
+		$responsedata 	= ['categorydays_arr' => $categorydays_arr, 'deals' => $fitmaniadods,  'message' => 'Fitmania categoryCitywiseSuccessPage :)'];
+return Response::json($responsedata, 200);
 }
 
 public function categorydayCitywise($city, $weekday){
