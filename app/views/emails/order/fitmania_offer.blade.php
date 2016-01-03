@@ -268,6 +268,10 @@
                                                                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Duration:</strong> {{ ucwords($service_duration) }}</p>
                                                                                 <?PHP } ?>
 
+                                                                                <?php if(isset($service_name) && $service_name != ""){ ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Membership Type:</strong> {{ ucwords($service_name) }}</p>
+                                                                                <?PHP } ?>
+
                                                                                 <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?>
                                                                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Starting Date: </strong>{{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) )  }}</p>
                                                                                 <?PHP } ?>
@@ -279,21 +283,21 @@
                                                                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;   " st-content="fulltext-paragraph"> <strong>Batch selected: </strong><br> 
                                                                                     <span>
 
-                                                                                       @foreach($batches as $key => $value)
-                                                                                       {{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br>
-                                                                                       @endforeach
-                                                                                   </span>
-                                                                                   <!-- Monday-Friday, 3:00-4:00 PM -->
-                                                                               </p>
-                                                                               <?PHP } ?>
+                                                                                     @foreach($batches as $key => $value)
+                                                                                     {{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?> <br>
+                                                                                     @endforeach
+                                                                                 </span>
+                                                                                 <!-- Monday-Friday, 3:00-4:00 PM -->
+                                                                             </p>
+                                                                             <?PHP } ?>
 
-                                                                           </td>
-                                                                       </tr>
-                                                                   </tbody>
-                                                               </table>
-                                                           </td>
-                                                       </tr>
-                                                       <tr style="background-color:#f6f6f6;">
+                                                                         </td>
+                                                                     </tr>
+                                                                 </tbody>
+                                                             </table>
+                                                         </td>
+                                                     </tr>
+                                                     <tr style="background-color:#f6f6f6;">
                                                         <td>
                                                             <hr style="color:#535353;" width="80%;">
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Start the membership</strong></p>
@@ -397,8 +401,6 @@
                                                         <?php if(isset($peppertap_code) && $peppertap_code != ""){ ?>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Use Code: </strong> {{ $peppertap_code }}</p>
                                                         <?PHP } ?>                                                                                    
-
-
                                                     </td>
                                                 </tr>
                                             </tbody>
