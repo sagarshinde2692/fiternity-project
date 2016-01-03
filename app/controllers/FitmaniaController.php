@@ -133,9 +133,9 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	if(isset($serviceids_array) && !empty($serviceids_array)){
 		$dealsofdayquery->whereIn('service_id', $serviceids_array);
 	}
-	$cntquery 				= 	$dealsofdayquery;
+	$cntquery 			= 	$dealsofdayquery;
 	$dealsofdaycnt 		=	$cntquery->count();
-	
+
 	
 	$fitmaniadods			=	[];
 	$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)

@@ -90,6 +90,13 @@ class FindersController extends \BaseController {
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
 
+				$fitmania_offer_cnt 	=	Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
+				if($fitmania_offer_cnt > 0){
+					array_set($finder, 'fitmania_offer_exist', true);
+				}else{
+					array_set($finder, 'fitmania_offer_exist', false);
+				}
+
 			}else{
 				
 				$finder = null;
