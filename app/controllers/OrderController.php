@@ -356,6 +356,12 @@ class OrderController extends \BaseController {
 			array_set($data, 'buyable_after12min_queueid', $buyable_after12min);
 		}
 
+		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow' || $data['type'] == 'fitmania-membership-giveaways'){
+			$peppertapobj 	= 	Peppertap::where('status','=', 0)->first();
+			array_set($data, 'peppertap_code', $peppertapobj->code);
+			$peppertapstatus 	=	$peppertapobj->update(['status' => 1]);
+		}
+
 		array_set($data, 'customer_id', intval($customer_id));
 		
 		if(trim(Input::json()->get('preferred_starting_date')) != '-' ){
@@ -365,202 +371,202 @@ class OrderController extends \BaseController {
 
 		if(trim(Input::json()->get('finder_id')) != '' ){
 
-				$finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval(Input::json()->get('finder_id')))->first()->toArray();
+			$finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval(Input::json()->get('finder_id')))->first()->toArray();
 
-				$finder_city						=	(isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
-				$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-				$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
-				$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
-				$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
-				$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
-				$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
-				$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;	
-				$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;	
+			$finder_city						=	(isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+			$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+			$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+			$finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+			$finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
+			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
+			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
+			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;	
+			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;	
 
-				array_set($data, 'finder_city', trim($finder_city));
-				array_set($data, 'finder_location', trim($finder_location));
-				array_set($data, 'finder_address', trim($finder_address));
-				array_set($data, 'finder_vcc_email', trim($finder_vcc_email));
-				array_set($data, 'finder_vcc_mobile', trim($finder_vcc_mobile));
-				array_set($data, 'finder_poc_for_customer_name', trim($finder_poc_for_customer_name));
-				array_set($data, 'finder_poc_for_customer_no', trim($finder_poc_for_customer_no));
-				array_set($data, 'show_location_flag', $show_location_flag);
-				array_set($data, 'share_customer_no', $share_customer_no);
-
-			}
-
-			array_set($data, 'status', '0');
-			array_set($data, 'email_body2', trim($email_body2));
-			array_set($data, 'payment_mode', 'paymentgateway');
-			$order 				= 	new Order($data);
-			$order->_id 		= 	$orderid;
-			$orderstatus   		= 	$order->save();
-			$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp order :)");
-			return Response::json($resp);
+			array_set($data, 'finder_city', trim($finder_city));
+			array_set($data, 'finder_location', trim($finder_location));
+			array_set($data, 'finder_address', trim($finder_address));
+			array_set($data, 'finder_vcc_email', trim($finder_vcc_email));
+			array_set($data, 'finder_vcc_mobile', trim($finder_vcc_mobile));
+			array_set($data, 'finder_poc_for_customer_name', trim($finder_poc_for_customer_name));
+			array_set($data, 'finder_poc_for_customer_no', trim($finder_poc_for_customer_no));
+			array_set($data, 'show_location_flag', $show_location_flag);
+			array_set($data, 'share_customer_no', $share_customer_no);
 
 		}
 
+		array_set($data, 'status', '0');
+		array_set($data, 'email_body2', trim($email_body2));
+		array_set($data, 'payment_mode', 'paymentgateway');
+		$order 				= 	new Order($data);
+		$order->_id 		= 	$orderid;
+		$orderstatus   		= 	$order->save();
+		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp order :)");
+		return Response::json($resp);
+
+	}
 
 
-		public function captureFailOrders(){
 
-			$data		=	Input::json()->all();
-			if(empty($data['order_id'])){
-				$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
-				return  Response::json($resp, 400);
-			}
-			if(empty($data['status'])){
-				$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
-				return  Response::json($resp, 400);
-			}
-			$orderid 	=	(int) Input::json()->get('order_id');
-			$order 		= 	Order::findOrFail($orderid);
-			$orderdata 	=	$order->update($data);
-			$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
-			return Response::json($resp);
+	public function captureFailOrders(){
+
+		$data		=	Input::json()->all();
+		if(empty($data['order_id'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
+			return  Response::json($resp, 400);
 		}
-
-
-		public function autoRegisterCustomer($data){
-
-			$customerdata 	= 	$data;
-			$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
-
-			if(!$customer) {
-				$inserted_id = Customer::max('_id') + 1;
-				$customer = new Customer();
-				$customer->_id = $inserted_id;
-				$customer->name = ucwords($data['customer_name']) ;
-				$customer->email = $data['customer_email'];
-				$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-				$customer->password = md5(time());
-				if(isset($customer['customer_phone'])){
-					$customer->contact_no = $data['customer_phone'];
-				}
-				$customer->identity = 'email';
-				$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
-				$customer->status = "1";
-				$customer->ishulluser = 1;
-				$customer->save();
-
-				return $inserted_id;
-			}  
-
-			return $customer->_id;
+		if(empty($data['status'])){
+			$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
+			return  Response::json($resp, 400);
 		}
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderdata 	=	$order->update($data);
+		$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+		return Response::json($resp);
+	}
 
 
-		public function buyArsenalMembership(){
+	public function autoRegisterCustomer($data){
 
-			$data			=	Input::json()->all();		
-			if(empty($data['order_id'])){
-				return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		$customerdata 	= 	$data;
+		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
+
+		if(!$customer) {
+			$inserted_id = Customer::max('_id') + 1;
+			$customer = new Customer();
+			$customer->_id = $inserted_id;
+			$customer->name = ucwords($data['customer_name']) ;
+			$customer->email = $data['customer_email'];
+			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+			$customer->password = md5(time());
+			if(isset($customer['customer_phone'])){
+				$customer->contact_no = $data['customer_phone'];
 			}
+			$customer->identity = 'email';
+			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
+			$customer->status = "1";
+			$customer->ishulluser = 1;
+			$customer->save();
+
+			return $inserted_id;
+		}  
+
+		return $customer->_id;
+	}
+
+
+	public function buyArsenalMembership(){
+
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		}
 		// return Input::json()->all();
-			$orderid 	=	(int) Input::json()->get('order_id');
-			$order 		= 	Order::findOrFail($orderid);
-			$orderData 	= 	$order->toArray();
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
 
 		// array_set($data, 'status', '1');
-			$buydealofday 			=	$order->update(['status' => '1']);
-			$sndsSmsCustomer		= 	$this->customersms->buyArsenalMembership($orderData);
+		$buydealofday 			=	$order->update(['status' => '1']);
+		$sndsSmsCustomer		= 	$this->customersms->buyArsenalMembership($orderData);
 
-			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-				$order->update(['email_not_sent'=>'buyArsenalMembership']);
-			}else{
-				$sndsEmailCustomer		= 	$this->customermailer->buyArsenalMembership($orderData);
-			}
-
-			$resp 	= 	array('status' => 200,'message' => "Successfully buy Arsenal Membership :)");
-
-			return Response::json($resp,200);		
+		if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+			$order->update(['email_not_sent'=>'buyArsenalMembership']);
+		}else{
+			$sndsEmailCustomer		= 	$this->customermailer->buyArsenalMembership($orderData);
 		}
 
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Arsenal Membership :)");
 
-		public function buyLandingpagePurchase(){
+		return Response::json($resp,200);		
+	}
 
-			$data			=	Input::json()->all();		
-			if(empty($data['order_id'])){
-				return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
-			}
 
-			if($data['status'] != "success"){
-				return Response::json(array('status' => 404,'message' => "Order Failed"),404);			
-			}
+	public function buyLandingpagePurchase(){
+
+		$data			=	Input::json()->all();		
+		if(empty($data['order_id'])){
+			return Response::json(array('status' => 404,'message' => "Data Missing Order Id - order_id"),404);			
+		}
+
+		if($data['status'] != "success"){
+			return Response::json(array('status' => 404,'message' => "Order Failed"),404);			
+		}
 
 		// return Input::json()->all();
-			$orderid 	=	(int) Input::json()->get('order_id');
-			$order 		= 	Order::findOrFail($orderid);
-			$orderData 	= 	$order->toArray();
+		$orderid 	=	(int) Input::json()->get('order_id');
+		$order 		= 	Order::findOrFail($orderid);
+		$orderData 	= 	$order->toArray();
 
 		// array_set($data, 'status', '1');
-			$buydealofday 			=	$order->update(['status' => '1']);
-			$sndsSmsCustomer		= 	$this->customersms->buyLandingpagePurchase($orderData);
+		$buydealofday 			=	$order->update(['status' => '1']);
+		$sndsSmsCustomer		= 	$this->customersms->buyLandingpagePurchase($orderData);
 
-			if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
-				$order->update(['email_not_sent'=>'buyLandingpagePurchase']);
-			}else{
-				$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
-			}
-
-			$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
-
-			return Response::json($resp,200);		
+		if (filter_var(trim($order->customer_email), FILTER_VALIDATE_EMAIL) === false){
+			$order->update(['email_not_sent'=>'buyLandingpagePurchase']);
+		}else{
+			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
 		}
 
+		$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
 
-		public function exportorders() {
-
-			$order_ids 	=	[5754,5783,5786,5789,5791,5800,5806,5823,5826,5827,5881,5801,5807,5809,5822,5831,5835,5837,5839,5857,5890,5891,5892,5896,5897,5903,5925,5947,5984,5985,5996,5998,6000,6006,6007,6008,6011,6014,6019,6021,6023,6035,6044,6045,6056,6066,6068,6071,6073,6074,6077,6097,6102,6103,6105,6107,6110,6111,6122,6124,6126,6127,6129,6131,6132,6135,6137,6138,6139,6142,6146,6152,6164,6170,6171,6172,6175,6178,6199,6203,6206,6214,6216,6218,6223,6224,6226,6227,6237,6239,6267,6277,6278,6279,6281,6285,6291,6295,6306,6312,6316,6317,6318,6320,6332,6344,6346,6348,6351,6354,6361,6364,6366,6367,6370,6390,6375,6372,6371];
-			$orders 	= 	Order::whereIn('_id', $order_ids)->get();
-
-			$fp = fopen('orderlatest.csv', 'w');
-			$header = ["ID", "NAME", "EMAIL", "NUMBER", "TYPE" , "AMOUNT" , "ADDRESS"   ];
-			fputcsv($fp, $header);
-
-			foreach ($orders as $value) {  
-				$fields = [$value->_id, $value->customer_name, $value->customer_email, $value->customer_phone,  $value->payment_mode, $value->amount, $value->customer_location];
-				fputcsv($fp, $fields);
-			}
+		return Response::json($resp,200);		
+	}
 
 
+	public function exportorders() {
+
+		$order_ids 	=	[5754,5783,5786,5789,5791,5800,5806,5823,5826,5827,5881,5801,5807,5809,5822,5831,5835,5837,5839,5857,5890,5891,5892,5896,5897,5903,5925,5947,5984,5985,5996,5998,6000,6006,6007,6008,6011,6014,6019,6021,6023,6035,6044,6045,6056,6066,6068,6071,6073,6074,6077,6097,6102,6103,6105,6107,6110,6111,6122,6124,6126,6127,6129,6131,6132,6135,6137,6138,6139,6142,6146,6152,6164,6170,6171,6172,6175,6178,6199,6203,6206,6214,6216,6218,6223,6224,6226,6227,6237,6239,6267,6277,6278,6279,6281,6285,6291,6295,6306,6312,6316,6317,6318,6320,6332,6344,6346,6348,6351,6354,6361,6364,6366,6367,6370,6390,6375,6372,6371];
+		$orders 	= 	Order::whereIn('_id', $order_ids)->get();
+
+		$fp = fopen('orderlatest.csv', 'w');
+		$header = ["ID", "NAME", "EMAIL", "NUMBER", "TYPE" , "AMOUNT" , "ADDRESS"   ];
+		fputcsv($fp, $header);
+
+		foreach ($orders as $value) {  
+			$fields = [$value->_id, $value->customer_name, $value->customer_email, $value->customer_phone,  $value->payment_mode, $value->amount, $value->customer_location];
+			fputcsv($fp, $fields);
 		}
-
-
-		public function getOrderDetail($orderid){
-
-			$orderdata 		=	Order::find(intval($orderid));
-
-			if(!$orderdata){
-				return $this->responseNotFound('Order does not exist');
-			}
-
-			$responsedata 	= ['orderdata' => $orderdata,  'message' => 'Order Detial'];
-			return Response::json($responsedata, 200);
-
-		}
-
-
-
-		public function checkFitmaniaBuyable($order_id, $label = 'label', $priority = 0, $delay = 0){
-
-			if($delay !== 0){
-				$delay = $this->getSeconds($delay);
-			}
-
-			$payload = array('order_id'=>$order_id,'delay'=>$delay,'priority'=>$priority,'label' => $label);
-			$route  = 'fitmaniabuyable';
-			$result  = $this->sidekiq->sendToQueue($payload,$route);
-
-			if($result['status'] == 200){
-				return $result['task_id'];
-			}else{
-				return $result['status'].':'.$result['reason'];
-			}
-
-		}
-
-
 
 
 	}
+
+
+	public function getOrderDetail($orderid){
+
+		$orderdata 		=	Order::find(intval($orderid));
+
+		if(!$orderdata){
+			return $this->responseNotFound('Order does not exist');
+		}
+
+		$responsedata 	= ['orderdata' => $orderdata,  'message' => 'Order Detial'];
+		return Response::json($responsedata, 200);
+
+	}
+
+
+
+	public function checkFitmaniaBuyable($order_id, $label = 'label', $priority = 0, $delay = 0){
+
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+
+		$payload = array('order_id'=>$order_id,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+		$route  = 'fitmaniabuyable';
+		$result  = $this->sidekiq->sendToQueue($payload,$route);
+
+		if($result['status'] == 200){
+			return $result['task_id'];
+		}else{
+			return $result['status'].':'.$result['reason'];
+		}
+
+	}
+
+
+
+
+}

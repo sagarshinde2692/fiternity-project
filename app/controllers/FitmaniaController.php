@@ -35,7 +35,8 @@ class FitmaniaController extends \BaseController {
 		return $categorydays_arr[$category];
 	}
 
-	public function categorydayCitywise($city, $weekday){
+
+	public function categoryCitywiseSuccessPage($city){
 
 		$category_info  = [];
 		$tommorow_date 	=	\Carbon\Carbon::tomorrow();
@@ -44,39 +45,73 @@ class FitmaniaController extends \BaseController {
 
 		switch (strtolower(trim($city))) {
 			case 'mumbai':
-			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+			$categorydays_arr     =  array( 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'anniversary', 'monday' => 'personal trainers');
 			break;
 			
 			case 'pune':
-			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+			$categorydays_arr     =  array( 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'anniversary', 'monday' => 'personal trainers');
 			break;
 
 			case 'bangalore':
-			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+			$categorydays_arr     =  array( 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'anniversary', 'monday' => 'mix bag');
 			break;	
 
 			case 'delhi':
-			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+			$categorydays_arr     =  array( 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'anniversary', 'monday' => 'mix bag');
 			break;
 
 			case 'gurgaon':
-			$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+			$categorydays_arr     =  array( 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'anniversary', 'monday' => 'mix bag');
 			break;		
 		}
 
-		$category_info['today']  		=  $categorydays_arr[$weekday];
-		$category_info['tommorow']  	=  $categorydays_arr[$tommorow];
-		$category_info['category_id']  	=  $this->categoryId($categorydays_arr[$weekday]);
-		return $category_info;
+		$deals  = $this->getDealOfDay($city , 0, 8);
+		$responsedata 	= ['categorydays_arr' => $categorydays_arr, 'deals' => $deals,  'message' => 'Fitmania categoryCitywiseSuccessPage :)'];
+		return Response::json($responsedata, 200);
+}
+
+public function categorydayCitywise($city, $weekday){
+
+	$category_info  = [];
+	$tommorow_date 	=	\Carbon\Carbon::tomorrow();
+	$timestamp 		= 	strtotime($tommorow_date);
+	$tommorow 		= 	strtolower(date( "l", $timestamp));
+
+	switch (strtolower(trim($city))) {
+		case 'mumbai':
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+		break;
+
+		case 'pune':
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+		break;
+
+		case 'bangalore':
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		break;	
+
+		case 'delhi':
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		break;
+
+		case 'gurgaon':
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		break;		
 	}
 
+	$category_info['today']  		=  $categorydays_arr[$weekday];
+	$category_info['tommorow']  	=  $categorydays_arr[$tommorow];
+	$category_info['category_id']  	=  $this->categoryId($categorydays_arr[$weekday]);
+	return $category_info;
+}
 
-	public function homeData($city = 'mumbai', $from = '', $size = ''){
 
-		$responsedata = [];
-		$responsedata['dod'] = $this->getDealOfDay($city , $from, $size);
-		$responsedata['membership'] = $this->getDealOfDay($city , $from, $size);
-		$responsedata['message'] = "Fitmania Home Page Data :)";
+public function homeData($city = 'mumbai', $from = '', $size = ''){
+
+	$responsedata = [];
+	$responsedata['dod'] = $this->getDealOfDay($city , $from, $size);
+	$responsedata['membership'] = $this->getDealOfDay($city , $from, $size);
+	$responsedata['message'] = "Fitmania Home Page Data :)";
 
 return Response::json($responsedata, 200);
 }
