@@ -874,9 +874,9 @@ public function buyOffer(){
 		foreach ($ratecardoffers as $key => $offers) {
    		// return $offers;
 			$initial_acitve_flag = 0;
+			//for dod
 			foreach ($offers as $key => $offer) {
 				if($offer->type == "fitmania-dod"){
-
 					$serviceObj =	Serviceoffer::find(intval($offer->_id));
 					$limit 		=	intval($serviceObj->limit);
 					$sold 		=	intval($serviceObj->sold);
@@ -895,9 +895,9 @@ public function buyOffer(){
 
    			}//foreach
 
+			//for dow
    			foreach ($offers as $key => $offer) {
 				if($offer->type == "fitmania-dow"){
-
 					$serviceObj =	Serviceoffer::find(intval($offer->_id));
 					$limit 		=	intval($serviceObj->limit);
 					$sold 		=	intval($serviceObj->sold);
@@ -945,7 +945,9 @@ public function buyOffer(){
    			$service_offerdata  = 	['buyable' => intval($offer_buyable)];
    			$success_order 		= 	$serviceoffer->update($service_offerdata);
 
-   			return Response::json(array('status' => 200,'message' => "serviceoffer buyable update scuessfull"),200);				
+   			return Response::json(array('status' => 200,'message' => "serviceoffer buyable update scuessfull :)"),200);				
+   		}else{
+   			return Response::json(array('status' => 200,'message' => "sidekick already checked once :)"),200);				
    		}
 
    	}
