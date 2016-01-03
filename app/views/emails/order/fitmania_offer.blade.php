@@ -354,7 +354,7 @@
                                                                         <tbody>
                                                                             <tr>
                                                                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on 02261222232 </strong></p>
+                                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on  <span style="color:#f9a91e"> 02261222232 </span></strong></p>
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>
