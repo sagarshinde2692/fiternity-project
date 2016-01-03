@@ -21,12 +21,12 @@
             column-count: 2;
         }
         /* Client-specific Styles */
-        
+
         #outlook a {
             padding: 0;
         }
         /* Force Outlook to provide a "view in browser" menu link. */
-        
+
         body {
             width: 100% !important;
             -webkit-text-size-adjust: 100%;
@@ -35,16 +35,16 @@
             padding: 0;
         }
         /* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */
-        
+
         .ExternalClass {
             width: 100%;
         }
-        
+
         td[class="mobile-wrapper"] {
             padding: 10px 5% 15px 5% !important;
         }
         /* Force Hotmail to display emails at full width */
-        
+
         .ExternalClass,
         .ExternalClass p,
         .ExternalClass span,
@@ -54,14 +54,14 @@
             line-height: 100%;
         }
         /* Force Hotmail to display normal line spacing.  More on that: http://www.emailonacid.com/forum/viewthread/43/ */
-        
+
         #backgroundTable {
             margin: 0;
             padding: 0;
             width: 100% !important;
             line-height: 100% !important;
         }
-        
+
         img {
             max-width: 100%;
             outline: none;
@@ -69,23 +69,23 @@
             border: none;
             -ms-interpolation-mode: bicubic;
         }
-        
+
         a img {
             border: none;
         }
-        
+
         .image_fix {
             display: block;
         }
-        
+
         p {
             margin: 0px 0px !important;
         }
-        
+
         table td {
             border-collapse: collapse;
         }
-        
+
         table {
             border-collapse: collapse;
             mso-table-lspace: 0pt;
@@ -93,7 +93,7 @@
         }
         /*a {color: #e95353;text-decoration: none;text-decoration:none!important;}*/
         /*STYLES*/
-        
+
         table[class=full] {
             width: 100%;
             clear: both;
@@ -101,7 +101,7 @@
         /*################################################*/
         /*IPAD STYLES*/
         /*################################################*/
-        
+
         @media only screen and (max-width: 640px) {
             a[href^="tel"],
             a[href^="sms"] {
@@ -156,7 +156,7 @@
         /*##############################################*/
         /*IPHONE STYLES*/
         /*##############################################*/
-        
+
         @media only screen and (max-width: 480px) {
             a[href^="tel"],
             a[href^="sms"] {
@@ -221,7 +221,7 @@
                                     <td>
                                         <table width="580" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner">
                                             <tbody>
-                                               
+
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td width="100%" align="center" class="devicewidth">
                                                         <a href="http://www.fitternity.com" target="_blank"><img width="150px" src="http://email.fitternity.com/191/logo.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding:20px;"></a>
@@ -234,10 +234,10 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
-                                                        
+
                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Greetings from Fitternity</p>
                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> We have processed a membership sale  for  <strong>{{$finder_name}} </strong>offer on FitMania Sale powered by Fitternity.com</p>
-                                                      
+
                                                   </td>
                                               </tr>
                                               <tr style="background-color:#f6f6f6;">
@@ -249,7 +249,7 @@
                                                         <tbody>
                                                             <tr>
                                                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                                    
+
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Name of the customer:</p>
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$customer_name}}</p>
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Number of the customer:</p> 
@@ -259,31 +259,30 @@
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Batch Selected:</p>
 
                                                                     <?php if(isset($batches) && $batches != "-" && $batches != ""){ ?>
-
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph"> 
                                                                         @foreach($batches as $key => $value)
                                                                         <span style="padding-bottom:6px;display: inline-block;">{{ ucwords($value['weekday']) }}  <?php if(isset($value['slots'][0]['start_time'])){ ?> - {{ $value['slots'][0]['start_time'] }}  <?PHP } ?></span>  <br>
                                                                         @endforeach
                                                                     </p>
-                                                                    <?PHP } else { echo "NA"; }?>
+                                                                    <?PHP  }?>
 
 
                                                                 </p>
-                                                                
+
                                                             </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
-                                                
+
                                                 <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                                    
+
                                                     <tbody>
                                                         <tr>
                                                             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Payment Method:</p>
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Online</p>             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Membership Type:</p> 
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$service_name}}</p>                                                                           
-                                                             
+
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p> 
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$_id}}</p>
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Starting date:</p> 
@@ -291,10 +290,10 @@
                                                          </td>
                                                      </tr>
                                                  </tbody>
-                                                 
-                                                 
+
+
                                              </table>
-                                             
+
                                          </td>
                                      </tr>
                                      <tr style="background-color:#f6f6f6;">
@@ -302,12 +301,12 @@
                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Please call us in case of any queries - you can reach your assigned Relationship Manager directly or call us on 02261222232.</p>
                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Regards,<br />
                                                 TEAM FITTERNITY</p>
-                                                
-                                                
+
+
                                             </td>
                                         </tr>                                      
-                                        
-                                        
+
+
                                     </tbody>
                                 </table>
                             </td>
@@ -317,7 +316,7 @@
             </td>
         </tr>
     </tbody>
-    
+
 </table>
 </div>
 <div class="block"> 
@@ -328,13 +327,13 @@
          <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
             <tbody>
               <!-- Title -->
-              
-              
+
+
               <tr>
                   <td>
                    <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
                     <tbody>
-                        
+
                      <tr>
                       <td>
                       </td>
