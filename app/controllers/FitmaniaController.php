@@ -78,7 +78,7 @@ class FitmaniaController extends \BaseController {
 		$responsedata['membership'] = $this->getDealOfDay($city , $from, $size);
 		$responsedata['message'] = "Fitmania Home Page Data :)";
 
-return Response::json($responsedata, 200);
+		return Response::json($responsedata, 200);
 }
 
 
@@ -127,7 +127,8 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
 
 	$dealsofdaycnt 			=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-	->where("type" , "=" , "fitmania-dod")
+	->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
+	// ->where("type" , "=" , "fitmania-dod")
 	->where("active" , "=" , 1)
 	// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
 	// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
@@ -153,7 +154,7 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	// return $fitmaniadods;
 	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 
 	'fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 private function transformDod($offers){
@@ -228,10 +229,11 @@ $serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service
 $ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 
 $query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-->active()->whereIn('_id', $serviceids_array);	
+										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+										->active()->whereIn('_id', $serviceids_array);	
+
 $services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
 
 $fitmaniamemberships 	=	[];
@@ -447,7 +449,7 @@ public function serachMembership(){
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
 	$responsedata 				=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniamemberships' => $fitmaniamemberships, 'total_count' => $services_count, 'message' => 'Fitmania Memberships :)'];
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 
@@ -559,7 +561,7 @@ public function serachDodAndDow(){
 	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 
@@ -594,10 +596,10 @@ public function serachDodAndDow(){
 
 		//same_vendor_service
 		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)->whereNotIn('ratecard_id', [$serviceratecardid])
-												->where(function($query){
-										        		$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
-										    		})
-												->timeout(400000000)->get()->take(5)->toArray();	
+		->where(function($query){
+			$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
+		})
+		->timeout(400000000)->get()->take(5)->toArray();	
 		foreach ($serviceoffers as $key => $service) {
 			$data = $this->transformDod($service);
 			array_push($same_vendor_service, $data);
@@ -607,10 +609,10 @@ public function serachDodAndDow(){
 		//same_category_service
 		$services_ids			=	Service::active()->where('servicecategory_id', '=', $servicecategoryid)->where('location_id', '=', $servicelocationid)->lists('_id');		
 		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->whereIn('service_id', $services_ids)->whereNotIn('ratecard_id', [$serviceratecardid])
-												->where(function($query){
-										        		$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
-										    		})
-												->timeout(400000000)->get()->take(5)->toArray();	
+		->where(function($query){
+			$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
+		})
+		->timeout(400000000)->get()->take(5)->toArray();	
 		foreach ($serviceoffers as $key => $service) {
 			$data = $this->transformDod($service);
 			array_push($same_category_service, $data);
@@ -897,22 +899,22 @@ public function buyOffer(){
 
 			//for dow
    			foreach ($offers as $key => $offer) {
-				if($offer->type == "fitmania-dow"){
-					$serviceObj =	Serviceoffer::find(intval($offer->_id));
-					$limit 		=	intval($serviceObj->limit);
-					$sold 		=	intval($serviceObj->sold);
+   				if($offer->type == "fitmania-dow"){
+   					$serviceObj =	Serviceoffer::find(intval($offer->_id));
+   					$limit 		=	intval($serviceObj->limit);
+   					$sold 		=	intval($serviceObj->sold);
 
-					if($initial_acitve_flag == 1){
-						$serviceObj->update(['active' => 0]);
-					}else{
-						if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
-							if(($limit - $sold) > 0){
-								$serviceObj->update(['active' => 1]);
-								$initial_acitve_flag = 1;
-							}
-						}
-					}					
-				}
+   					if($initial_acitve_flag == 1){
+   						$serviceObj->update(['active' => 0]);
+   					}else{
+   						if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
+   							if(($limit - $sold) > 0){
+   								$serviceObj->update(['active' => 1]);
+   								$initial_acitve_flag = 1;
+   							}
+   						}
+   					}					
+   				}
 
    			}//foreach
 
