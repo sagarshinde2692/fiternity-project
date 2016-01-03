@@ -880,75 +880,76 @@ public function buyOffer(){
 		}
 	}
 
-	// if($orderData['status'] == 0){
-	$buydealofday 	=	$order->update(['status' => '1']);
-	if($buydealofday){
-			//send email & sms
+	if($orderData['status'] == 0){
+	//send email & sms
 		$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 		$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
 		$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
+		
+		$buydealofday 			=	$order->update(['status' => '1', 'customer_email_messageids' => $sndsEmailCustomer, 'customer_sms_messageids' => $sndsSmsCustomer, 'finder_email_messageids' => $sndsEmailFinder]);
 
-		/* limit | buyable | sold | acitve | left */
-		if($orderData['type'] == 'fitmania-dod' || $orderData['type'] == 'fitmania-dow'){
-			$serviceoffer 	= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
-			$offer_limit 	=  	intval($serviceoffer->limit);
-			$offer_sold 	=  	intval($serviceoffer->sold) + 1;
-			$offer_left 	=  	$offer_limit - $offer_sold;
-			$offer_active  	=  	1;
-			if(intval($offer_limit) == intval($offer_sold)){
-				$offer_active	=	0; 
-			}
-			$service_offerdata  = ['sold' => $offer_sold, 'left' => $offer_left, 'active' => $offer_active];
-			$success_order = $serviceoffer->update($service_offerdata);
+		if($buydealofday){
+			/* limit | buyable | sold | acitve | left */
+			if($orderData['type'] == 'fitmania-dod' || $orderData['type'] == 'fitmania-dow'){
+				$serviceoffer 	= 	Serviceoffer::find(intval($orderData['serviceoffer_id']));
+				$offer_limit 	=  	intval($serviceoffer->limit);
+				$offer_sold 	=  	intval($serviceoffer->sold) + 1;
+				$offer_left 	=  	$offer_limit - $offer_sold;
+				$offer_active  	=  	1;
+				if(intval($offer_limit) == intval($offer_sold)){
+					$offer_active	=	0; 
+				}
+				$service_offerdata  = ['sold' => $offer_sold, 'left' => $offer_left, 'active' => $offer_active];
+				$success_order = $serviceoffer->update($service_offerdata);
 
-			if($success_order){
-				$maintainActiveFlagData = $this->maintainActiveFlag($serviceoffer->service_id);
-				$resp 	= 	array('status' => 200, 'message' => "Successfully buy Serivce through Fitmania :)");
-				return Response::json($resp);				
-			}else{
-				$resp 	= 	array('status' => 200, 'message' => "fail :)");
-				return Response::json($resp);	
+				if($success_order){
+					$maintainActiveFlagData = $this->maintainActiveFlag($serviceoffer->service_id);
+					$resp 	= 	array('status' => 200, 'message' => "Successfully buy Serivce through Fitmania :)");
+					return Response::json($resp);				
+				}else{
+					$resp 	= 	array('status' => 200, 'message' => "fail :)");
+					return Response::json($resp);	
+				}
 			}
-		}
 		}//buydealofday
-	// }
-
 	}
 
+}
 
-	public function maintainActiveFlag($serviceid = NULL){
 
-		$date 				=	Carbon::now();
-		$date 				=  	'04-01-2016';
-		$timestamp 			= 	strtotime($date);
+public function maintainActiveFlag($serviceid = NULL){
 
-		if($serviceid != NULL){
-			$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("service_id", intval($serviceid))->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();			
-		}else{
-			$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();			
-		}
+	$date 				=	Carbon::now();
+	$date 				=  	'04-01-2016';
+	$timestamp 			= 	strtotime($date);
 
-		foreach ($ratecardoffers as $key => $offers) {
+	if($serviceid != NULL){
+		$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("service_id", intval($serviceid))->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();			
+	}else{
+		$ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod", "fitmania-dow"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();			
+	}
+
+	foreach ($ratecardoffers as $key => $offers) {
    		// return $offers;
-			$initial_acitve_flag = 0;
+		$initial_acitve_flag = 0;
 			//for dod
-			foreach ($offers as $key => $offer) {
-				if($offer->type == "fitmania-dod"){
-					$serviceObj =	Serviceoffer::find(intval($offer->_id));
-					$limit 		=	intval($serviceObj->limit);
-					$sold 		=	intval($serviceObj->sold);
+		foreach ($offers as $key => $offer) {
+			if($offer->type == "fitmania-dod"){
+				$serviceObj =	Serviceoffer::find(intval($offer->_id));
+				$limit 		=	intval($serviceObj->limit);
+				$sold 		=	intval($serviceObj->sold);
 
-					if($initial_acitve_flag == 1){
-						$serviceObj->update(['active' => 0]);
-					}else{
-						if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
-							if(($limit - $sold) > 0){
-								$serviceObj->update(['active' => 1]);
-								$initial_acitve_flag = 1;
-							}
+				if($initial_acitve_flag == 1){
+					$serviceObj->update(['active' => 0]);
+				}else{
+					if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
+						if(($limit - $sold) > 0){
+							$serviceObj->update(['active' => 1]);
+							$initial_acitve_flag = 1;
 						}
-					}					
-				}
+					}
+				}					
+			}
 
    			}//foreach
 
