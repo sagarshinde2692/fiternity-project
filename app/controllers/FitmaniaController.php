@@ -982,6 +982,8 @@ public function maintainActiveFlag($serviceid = NULL){
 
    		// return true;
 
+		Log::info(' Maintain Active Flag Called -- '. date("d-m-Y h:i:s", time()) );
+
    		return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
    	}
 
