@@ -881,11 +881,11 @@ public function buyOffer(){
 	}
 
 	if($orderData['status'] == 0){
-	//send email & sms
+		//send email & sms
 		$sndsSmsCustomer		= 	$this->customersms->buyServiceThroughFitmania($orderData);
 		$sndsEmailCustomer		= 	$this->customermailer->buyServiceThroughFitmania($orderData);
 		$sndsEmailFinder		= 	$this->findermailer->buyServiceThroughFitmania($orderData);
-		
+
 		$buydealofday 			=	$order->update(['status' => '1', 'customer_email_messageids' => $sndsEmailCustomer, 'customer_sms_messageids' => $sndsSmsCustomer, 'finder_email_messageids' => $sndsEmailFinder]);
 
 		if($buydealofday){

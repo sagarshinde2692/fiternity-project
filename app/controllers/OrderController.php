@@ -358,8 +358,10 @@ class OrderController extends \BaseController {
 
 		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow' || $data['type'] == 'fitmania-membership-giveaways'){
 			$peppertapobj 	= 	Peppertap::where('status','=', 0)->first();
-			array_set($data, 'peppertap_code', $peppertapobj->code);
-			$peppertapstatus 	=	$peppertapobj->update(['status' => 1]);
+			if($peppertapobj){
+				array_set($data, 'peppertap_code', $peppertapobj->code);
+				$peppertapstatus 	=	$peppertapobj->update(['status' => 1]);
+			}
 		}
 
 		array_set($data, 'customer_id', intval($customer_id));
