@@ -875,19 +875,49 @@ public function buyOffer(){
    		// return $offers;
 			$initial_acitve_flag = 0;
 			foreach ($offers as $key => $offer) {
-				if($initial_acitve_flag == 1){ continue; }
+				if($offer->type == "fitmania-dod"){
 
-				$serviceObj =	Serviceoffer::find(intval($offer->_id));
-				$limit 		=	intval($serviceObj->limit);
-				$sold 		=	intval($serviceObj->sold);
+					$serviceObj =	Serviceoffer::find(intval($offer->_id));
+					$limit 		=	intval($serviceObj->limit);
+					$sold 		=	intval($serviceObj->sold);
 
-				if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
-					if(($limit - $sold) > 0){
-						$serviceObj->update(['active' => 1]);
-						$initial_acitve_flag = 1;
-					}
+					if($initial_acitve_flag == 1){
+						$serviceObj->update(['active' => 0]);
+					}else{
+						if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
+							if(($limit - $sold) > 0){
+								$serviceObj->update(['active' => 1]);
+								$initial_acitve_flag = 1;
+							}
+						}
+					}					
 				}
+
    			}//foreach
+
+   			foreach ($offers as $key => $offer) {
+				if($offer->type == "fitmania-dow"){
+
+					$serviceObj =	Serviceoffer::find(intval($offer->_id));
+					$limit 		=	intval($serviceObj->limit);
+					$sold 		=	intval($serviceObj->sold);
+
+					if($initial_acitve_flag == 1){
+						$serviceObj->update(['active' => 0]);
+					}else{
+						if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
+							if(($limit - $sold) > 0){
+								$serviceObj->update(['active' => 1]);
+								$initial_acitve_flag = 1;
+							}
+						}
+					}					
+				}
+
+   			}//foreach
+
+
+
    		}//foreach
 
    		// return true;
