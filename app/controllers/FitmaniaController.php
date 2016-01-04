@@ -167,7 +167,7 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	$city_name 				= 	$citydata['name'];
 	$city_id				= 	(int) $citydata['_id'];	
 	$from 					=	($from != '') ? intval($from) : 0;
-	$size 					=	($size != '') ? intval($size) : 10;
+	$size 					=	($size != '') ? intval($size) : 15;
 	$date 					=  	Carbon::now();
 	$timestamp 				= 	strtotime($date);
 	$stringdate 			= 	$date->toFormattedDateString();
@@ -176,27 +176,26 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	// $location_clusters 		= 	$this->getLocationCluster($city_id);
 	$explore_locations 		= 	$this->exploreLocationClusterOffers($city_id);
 	$explore_categorys 		= 	$this->exploreCategoryOffers($city_id);
-
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
-	// $dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
-	// $dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where("active" , "=" , 1)->count();
 
-	$serviceids_array  = [];
-	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
-	if(isset($serviceids_array) && !empty($serviceids_array)){
-		$dealsofdayquery->whereIn('service_id', $serviceids_array);
+	$servicecategoryids  	= 	array_map('intval', explode(',', $categoryday['category_id'])) ;
+	$serviceids_array	 	= 	Service::active()->whereIn('servicecategory_id', $servicecategoryids )->lists('_id');
+	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->count();
+
+	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+	if(count($fitmaniahomepageobj) < 1){
+		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => [],  'banners' => $banners, 
+		'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
+		return Response::json($responsedata, 200);
 	}
-	$cntquery 			= 	$dealsofdayquery;
-	$dealsofdaycnt 		=	$cntquery->count();
+	$dodofferids 		=   array_map('intval', explode(',', $fitmaniahomepageobj->dod_serviceoffer_ids));
 
-	
 	$fitmaniadods			=	[];
 	$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-	->where("type" , "=" , "fitmania-dod")
-	->where("active" , "=" , 1)
-	// ->where('start_date', '>=', new DateTime( date("d-m-Y", strtotime( $date )) ))
-	// ->where('end_date', '<', new DateTime( date("d-m-Y", strtotime( $date )) ))
-	->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+											->whereIn('_id', $dodofferids)
+											->where("type" , "=" , "fitmania-dod")
+											->where("active" , "=" , 1)
+											->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	foreach ($dealsofdaycolleciton as $key => $value) {
 		$dealdata = $this->transformDod($value);
@@ -204,9 +203,11 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	}
 
 	// return $fitmaniadods;
-	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 
-	'fitmaniadods' => $fitmaniadods,  'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
-return Response::json($responsedata, 200);
+	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods, 
+						'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+	
+	return Response::json($responsedata, 200);
+
 }
 
 private function transformDod($offers){
@@ -982,7 +983,7 @@ public function maintainActiveFlag($serviceid = NULL){
 
    		// return true;
 
-		Log::info(' Maintain Active Flag Called -- '. date("d-m-Y h:i:s", time()) );
+   		Log::info(' Maintain Active Flag Called -- '. date("d-m-Y h:i:s", time()) );
 
    		return $ratecardoffers 	=	Serviceoffer::whereIn("type" ,["fitmania-dod"])->orderBy('order', 'asc')->get()->groupBy('ratecard_id')->toArray();
    	}
@@ -1126,7 +1127,7 @@ public function exploreCategoryOffers($city_id = 1){
 
 
 
-public function exploreLocationClusterOffers($city_id = 1){
+public function exploreLocationClusterOffers($city_id = 1 ){
 
 	$date 					=  	Carbon::now();
 	$timestamp 				= 	strtotime($date);

@@ -1,5 +1,42 @@
 <?php
 
+
+Route::get('/importcode', function() {  
+
+
+
+	$filename = public_path()."/code.csv";
+
+
+	if(!file_exists($filename) || !is_readable($filename))
+		return FALSE;
+
+	$header = NULL;
+	$data = array();
+	if (($handle = fopen($filename, 'r')) !== FALSE)
+	{
+		while (($row = fgetcsv($handle, 1000, ',')) !== FALSE)
+		{
+			if(!$header)
+				$header = $row;
+			else
+				$data[] = array_combine($header, $row);
+		}
+		fclose($handle);
+	}
+	// return $data;
+
+	foreach ($data as $key => $value) {
+		$code = ['code' => $value['code'], 'status' => 0 ];
+		$peppertap = new Peppertap($code);
+		$insertcatid = Peppertap::max('_id') + 1;
+		$peppertap->_id = $insertcatid;
+		$peppertap->save();
+	}
+	echo "successfully inserted"; exit();
+
+});
+
 Route::get('moveratecard', function() { 
 	$items = Service::active()->orderBy('_id')->lists('_id');
 	if($items){ DB::table('ratecards')->truncate(); }
@@ -182,7 +219,7 @@ Route::get('exportcustomer', function() {
 
 
 Route::get('exportbooktrialorder', function() { 
-			return $reminderTimeAfter12Min 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
+	return $reminderTimeAfter12Min 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
 
 	////Orders
 	// $headers = [
