@@ -284,20 +284,20 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-return Response::json($responsedata, 200);
-}
+		return Response::json($responsedata, 200);
+	}
 
-$ratecardids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
-$serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('ratecard_id', $ratecardids)->get();
+$serviceids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
+$serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('service_id', $serviceids)->get();
 
 $serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 $ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 
 $query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-->active()->whereIn('_id', $serviceids_array);	
+										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+										->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+										->active()->whereIn('_id', $serviceids);	
 
 $services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
 
