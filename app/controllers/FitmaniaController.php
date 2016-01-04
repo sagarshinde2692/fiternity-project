@@ -1052,7 +1052,23 @@ public function maintainActiveFlag($serviceid = NULL){
    		$serviceoffer 		= 	Serviceoffer::find(intval($offerid));
 
    		if(isset($serviceoffer->buyable) && intval($serviceoffer->buyable) < 1){
-   			$responsedata 	= ['serviceoffer' => "", 'exist' => false, 'message' => 'No serviceoffer Exist :)'];
+   			$allservice = Serviceoffer::where('ratecard_id',intval($serviceoffer->ratecard_id))->whereNotIn('_id',[intval($serviceoffer->_id)])->orderBy('order')->get();
+   			$nextoffer = [];
+   			$nextoffer1 = [];
+   			foreach ($allservice as $key => $value) {
+   				# code...
+   				if($value->type == 'fitmania-dod'){
+   					$nextoffer = $value;
+   					continue;
+   				}
+   				if($value->type == 'fitmania-dow'){
+   					$nextoffer1 = $value;
+   					continue;
+   				}
+   			}
+   			$finaloffer = (!empty($nextoffer)) ? $nextoffer : $nextoffer1;
+
+   			$responsedata 	= ['serviceoffer' => "",'nextoffer'=>$finaloffer, 'exist' => false, 'message' => 'No serviceoffer Exist :)'];
 return Response::json($responsedata, 400);
 }
 
