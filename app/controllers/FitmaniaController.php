@@ -204,16 +204,18 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	$fitmaniadods_orderby = [];
 	foreach ($dodofferids as $key => $oid) {
-		$offer = 	array_where($fitmaniadods, function($key, $value) use ($oid){
+		$offer = 	head(array_where($fitmaniadods, function($key, $value) use ($oid){
 				if($value['_id'] == $oid){
 					return $value;
 				}
-			});
+			}));
+
+		// var_dump($offer);exit();
 		array_push($fitmaniadods_orderby, $offer);
 	}
 
-	// return $fitmaniadods;
-	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods, 
+	// return $fitmaniadods_orderby;
+	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods_orderby, 
 						'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 	
 	return Response::json($responsedata, 200);
