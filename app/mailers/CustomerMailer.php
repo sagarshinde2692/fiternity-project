@@ -320,6 +320,28 @@ Class CustomerMailer extends Mailer {
 	}
 
 
+	public function buyServiceThroughFitmaniaWorngCustomer ($data){
+
+		$email_template_customer 	= 	'emails.order.fitmania_offer_wrong_customer';
+		$template_data 				= 	$data;
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		$subject  					=   'Please ignore previous mail - Regarding your purchase of membership on FitMania';
+
+		$message_data 	= array(
+			'user_email' => $data['customer_email'],
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$label = 'BuySrvFitmaniaWrongCustomer-C';
+		$priority = 1;
+		
+		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+
+	}
+
+
 
 	public function buyServiceThroughFitmaniaResend1 ($data){
 

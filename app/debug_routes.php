@@ -3,8 +3,6 @@
 
 Route::get('/importcode', function() {  
 
-
-
 	$filename = public_path()."/code.csv";
 
 

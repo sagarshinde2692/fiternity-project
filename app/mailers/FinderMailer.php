@@ -130,6 +130,35 @@ Class FinderMailer extends Mailer {
 
 	}
 
+
+	public function buyServiceThroughFitmaniaWorngCustomer ($data){
+
+		$email_template 	= 	'emails.order.fitmania_offer_vendor_wrong_customer';
+		$template_data 		= 	$data;
+
+		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_fitmaniasale'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		} 
+
+		$subject  			=   'Please ignore previous mail - Regarding sale of membership on FitMania';
+
+		$message_data 	= array(
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' => ucwords($data['finder_name']),
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+			);
+
+		$label = 'BuySrvFitmaniaWrongCustomer-F';
+
+		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+
+	}
+
+
+
 	public function buyServiceMembershipThroughFitmania ($data){
 
 		$email_template 	= 	'emails.order.fitmania_membership_vendor_v1';
