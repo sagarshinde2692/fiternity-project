@@ -229,16 +229,16 @@
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td width="100%" align="center" class="devicewidth">
                                                         <a href="http://www.fitternity.com" target="_blank"><img width="50%" src="http://email.fitternity.com/197/badge.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">
                                                             Hi {{ $customer_name }}!
                                                             <br /> We would want to apologise to you , incase you have received an incorrect membership subscription email from Fitternity.
                                                         </p>
 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">To clear the confusion , sending you a  list of membership/s you have purchased on Fitmania.</p>
-                                                        
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">Hope your loving Fitmania 2016!!!</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">To clear the confusion , sending you a  list of membership/s you have purchased on Fitmania.</p>
 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">Please reach out to us for queries on - 022261222232</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">Hope your loving Fitmania 2016!!!</p>
+
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">Please reach out to us for queries on - 022261222232</p>
                                                     </td>
                                                 </tr>
 
