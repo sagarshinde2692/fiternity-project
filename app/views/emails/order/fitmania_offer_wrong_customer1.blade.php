@@ -234,7 +234,7 @@
                                                             <br /> We would want to apologise to you, incase you have received an incorrect membership subscription email from Fitternity.
                                                         </p>
 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">To clear the confusion, we sending you a  list of membership's you have purchased on Fitmania.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">To clear the confusion, we are sending you a list of membership's you have purchased on Fitmania.</p>
 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">Hope you are loving Fitmania 2016!!!</p>
 
