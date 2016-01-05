@@ -95,25 +95,26 @@ public function categorydayCitywise($city, $weekday){
 	$timestamp 		= 	strtotime($tommorow_date);
 	$tommorow 		= 	strtolower(date( "l", $timestamp));
 
+
 	switch (strtolower(trim($city))) {
 		case 'mumbai':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga & pilates');
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 		break;
 
 		case 'pune':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga & pilates');
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 		break;
 
 		case 'bangalore':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga & pilates','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;	
 
 		case 'delhi':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga & pilates','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;
 
 		case 'gurgaon':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga & pilates','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;		
 	}
 
@@ -214,8 +215,10 @@ foreach ($dodofferids as $key => $oid) {
 	array_push($fitmaniadods_orderby, $offer);
 }
 
-	// return $fitmaniadods_orderby;
-$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods_orderby, 
+$todaycategoryday = str_replace("yoga","yoga & pilates",$categoryday['today']);
+
+// return $fitmaniadods_orderby;
+$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $todaycategoryday, 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods_orderby, 
 'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
 
 return Response::json($responsedata, 200);
