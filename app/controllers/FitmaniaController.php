@@ -1258,9 +1258,7 @@ public function resendEmailsForWorngCustomer (){
 
 	//For Orders
 	$match 		=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
-	$customers 		=	Order::whereIn('type',$match)->where('status','1')->where('customer_email','sanjaysahu@fitternity.com')->get()->groupBy('customer_email');
-										// ->orWhere('abondon_status', 'exists',false)
-										// ->orWhere('abondon_status', 'bought_closed')
+	$customers 		=	Order::whereIn('type',$match)->where('status','1')->where('customer_email','neha@fitternity.com')->get()->groupBy('customer_email');
 	foreach ($customers as $key => $customer) {
 		$orders  =  	(!is_array($customer)) ? $customer->toArray() : $customer;
 		if(count($orders)>0){
