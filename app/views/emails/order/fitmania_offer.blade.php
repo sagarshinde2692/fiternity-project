@@ -268,7 +268,7 @@
                                                                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Duration:</strong> {{ ucwords($service_duration) }}</p>
                                                                                 <?PHP } ?>
 
-                                                                                <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?>
+                                                                                <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""  &&  $preferred_starting_date != "-"){ ?>
                                                                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Starting Date: </strong>{{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) )  }}</p>
                                                                                 <?PHP } ?>
 

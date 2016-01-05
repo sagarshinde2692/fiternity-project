@@ -186,39 +186,39 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => [],  'banners' => $banners, 
 		'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-		return Response::json($responsedata, 200);
-	}
-	$dodofferids 		=   array_map('intval', explode(',', $fitmaniahomepageobj->dod_serviceoffer_ids));
+return Response::json($responsedata, 200);
+}
+$dodofferids 		=   array_map('intval', explode(',', $fitmaniahomepageobj->dod_serviceoffer_ids));
 
-	$fitmaniadods			=	[];
-	$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
-											->whereIn('_id', $dodofferids)
-											->where("type" , "=" , "fitmania-dod")
-											->where("active" , "=" , 1)
-											->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+$fitmaniadods			=	[];
+$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
+->whereIn('_id', $dodofferids)
+->where("type" , "=" , "fitmania-dod")
+->where("active" , "=" , 1)
+->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
-	foreach ($dealsofdaycolleciton as $key => $value) {
-		$dealdata = $this->transformDod($value);
-		array_push($fitmaniadods, $dealdata);
-	}
+foreach ($dealsofdaycolleciton as $key => $value) {
+	$dealdata = $this->transformDod($value);
+	array_push($fitmaniadods, $dealdata);
+}
 
-	$fitmaniadods_orderby = [];
-	foreach ($dodofferids as $key => $oid) {
-		$offer = 	head(array_where($fitmaniadods, function($key, $value) use ($oid){
-				if($value['_id'] == $oid){
-					return $value;
-				}
-			}));
+$fitmaniadods_orderby = [];
+foreach ($dodofferids as $key => $oid) {
+	$offer = 	head(array_where($fitmaniadods, function($key, $value) use ($oid){
+		if($value['_id'] == $oid){
+			return $value;
+		}
+	}));
 
 		// var_dump($offer);exit();
-		array_push($fitmaniadods_orderby, $offer);
-	}
+	array_push($fitmaniadods_orderby, $offer);
+}
 
 	// return $fitmaniadods_orderby;
-	$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods_orderby, 
-						'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
-	
-	return Response::json($responsedata, 200);
+$responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods_orderby, 
+'banners' => $banners, 'message' => 'Fitmania Home Page Dods :)'];
+
+return Response::json($responsedata, 200);
 
 }
 
@@ -284,8 +284,8 @@ public function getMembership($city = 'mumbai', $from = '', $size = ''){
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
 		$responsedata 	= ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'banners' => $banners, 'location_clusters' => $location_clusters,  'fitmaniamemberships' => [],  'message' => 'No Membership Giveaway Exist :)'];
-		return Response::json($responsedata, 200);
-	}
+return Response::json($responsedata, 200);
+}
 
 $serviceids 				=   array_map('intval', explode(',', $fitmaniahomepageobj->ratecardids));
 $serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("type" , "=" , "fitmania-membership-giveaways")->whereIn('service_id', $serviceids)->get();
@@ -294,10 +294,10 @@ $serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service
 $ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 
 $query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-										->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-										->active()->whereIn('_id', $serviceids);	
+->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+->active()->whereIn('_id', $serviceids);	
 
 $services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
 
@@ -1202,6 +1202,39 @@ public function exploreLocationClusterOffers($city_id = 1 ){
 }
 
 
+public function resendEmails(){
+
+	//For Orders
+	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
+	$orderscount 	=	Order::orderBy('_id','desc')->whereIn('type',$match)->where('resend_email', 'exists', false)->count();
+	$orders 		=	Order::orderBy('_id','desc')->whereIn('type',$match)->where('resend_email', 'exists', false)->get()->toArray();
+
+	foreach ($orders as $key => $order) {
+		//send email to customer and finder
+		$order 		= 	Order::find(intval($order['_id']));
+   		$orderData 	= 	$order->toArray();
+
+		if($orderData['status'] == "1"){
+			try {
+				$email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmania($orderdata);
+			} catch (Exception $e) {
+				Log::error($e);
+				$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'    => $e->getFile(), 'line'    => $e->getLine(), );
+				$email_send_data['resend_customer_confirm_email'] = $message;
+			}
+
+			try {
+				$email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmania($orderdata);
+			} catch (Exception $e) {
+				Log::error($e);
+				$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'  => $e->getFile(), 'line'  => $e->getLine(), );
+				$email_send_data['resend_finder_confirm_email'] = $message;
+			}
+			$email_send_data['resend_email'] = 1;
+			$order_obj 		= 	$order->update($email_send_data);
+		}
+	}
+}
 
 
 }
