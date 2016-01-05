@@ -241,7 +241,7 @@
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Refer to your purchase details</strong></p>
                                                             <!-- col 1 -->
 
-                                                            @foreach($data['corders'] as $key => $order)
+                                                            @foreach($corders as $key => $order)
 
                                                             <table width="200px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
                                                                 <tbody>
