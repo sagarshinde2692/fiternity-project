@@ -236,7 +236,7 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
 
                                                       <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Greetings from Fitternity</p>
-                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> We have processed a membership sale  for  <strong>{{$finder_name}} </strong>offer on FitMania Sale powered by Fitternity.com</p>
+                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> We have processed a membership sale  for  <strong>{{$finder_name}} <?php if(isset($finder_location) && $finder_location != ""){ ?>, {{ ucwords($finder_location) }}<?PHP } ?> </strong>offer on FitMania Sale powered by Fitternity.com</p>
 
                                                   </td>
                                               </tr>

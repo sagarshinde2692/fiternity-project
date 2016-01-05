@@ -1206,46 +1206,48 @@ public function resendEmails(){
 
 	//For Orders
 	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
+	$orderscount 	=	Order::orderBy('_id','desc')->whereIn('type',$match)->count();
 	// $orderscount 	=	Order::orderBy('_id','desc')->whereIn('type',$match)->where('resend_email', 'exists', false)->count();
 	$orders 		=	Order::orderBy('_id','desc')->whereIn('type',$match)->get()->toArray();
 
 	// echo "orderscount -- $orderscount "; exit();
+	$customer_email_send
 	foreach ($orders as $key => $order) {
 		//send email to customer and finder
 		$order 		= 	Order::find(intval($order['_id']));
 		$orderData 	= 	$order->toArray();
 
-		if($orderData['status'] == "1"){
-
-			try {
-				if(!isset($orderData['resend_customer_send_status']) !! $orderData['resend_customer_send_status'] == 0){
-					$email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmania($orderData);
-					$email_send_data['resend_customer_send_status'] = 1;
-				}
-			} catch (Exception $e) {
-				Log::error($e);
-				$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'    => $e->getFile(), 'line'    => $e->getLine(), );
-				$email_send_data['resend_customer_confirm_email'] = $message;
-				$email_send_data['resend_customer_send_status'] = 0;
+		try {
+			if(!isset($orderData['resend_customer_send_status']) || $orderData['resend_customer_send_status'] == 0){
+				$email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmania($orderData);
+				$email_send_data['resend_customer_send_status'] = 1;
 			}
-
-			try {
-				if(!isset($orderData['resend_finder_send_status']) !! $orderData['resend_finder_send_status'] == 0){
-					$email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmania($orderData);
-					$email_send_data['resend_finder_send_status'] = 1;
-				}
-
-			} catch (Exception $e) {
-				Log::error($e);
-				$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'  => $e->getFile(), 'line'  => $e->getLine(), );
-				$email_send_data['resend_finder_confirm_email'] = $message;
-				$email_send_data['resend_finder_send_status'] = 0;
-
-			}
-			$email_send_data['resend_email'] = 1;
-			$order_obj 		= 	$order->update($email_send_data);
+		} catch (Exception $e) {
+			Log::error($e);
+			$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'    => $e->getFile(), 'line'    => $e->getLine(), );
+			$email_send_data['resend_customer_confirm_email'] = $message;
+			$email_send_data['resend_customer_send_status'] = 0;
 		}
+
+		try {
+			if(!isset($orderData['resend_finder_send_status']) || $orderData['resend_finder_send_status'] == 0){
+				$email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmania($orderData);
+				$email_send_data['resend_finder_send_status'] = 1;
+			}
+
+		} catch (Exception $e) {
+			Log::error($e);
+			$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'  => $e->getFile(), 'line'  => $e->getLine(), );
+			$email_send_data['resend_finder_confirm_email'] = $message;
+			$email_send_data['resend_finder_send_status'] = 0;
+
+		}
+		$email_send_data['resend_email'] = 1;
+		$order_obj 		= 	$order->update($email_send_data);
 	}
+
+	echo "orderscount -- $orderscount "; exit();
+
 }
 
 
