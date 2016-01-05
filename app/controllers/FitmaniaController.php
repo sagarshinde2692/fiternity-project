@@ -338,6 +338,7 @@ foreach ($services as $key => $value) {
 	'_id' => $item['_id'],
 	'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 	'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
+	'location' => (isset($item['location']) && $item['location'] != '') ? array_only($item['location'], array('_id', 'name', 'slug'))  : [],
 	'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
 	'timing' => (isset($item['timing']) && $item['timing'] != '') ? trim($item['timing']) : "",
 	'service_coverimage' => (isset($item['service_coverimage']) && $item['service_coverimage'] != '') ? strtolower($item['service_coverimage']) : "",
@@ -475,6 +476,7 @@ public function serachMembership(){
 
 		$data = [
 		'_id' => $item['_id'],
+		'location' => (isset($item['location']) && $item['location'] != '') ? array_only($item['location'], array('_id', 'name', 'slug'))  : [],
 		'name' => (isset($item['name']) && $item['name'] != '') ? strtolower($item['name']) : "",
 		'slug' => (isset($item['slug']) && $item['slug'] != '') ? strtolower($item['slug']) : "",
 		'address' => (isset($item['address']) && $item['address'] != '') ? trim($item['address']) : "",
@@ -1253,63 +1255,63 @@ public function resendEmails(){
 public function resendEmailsForWorngCustomer (){
 
 	//For Orders
-	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
-	// $orderscount 	=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('order_action', ['bought'])->count();
-	// $orders 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('order_action', ['bought'])->get()->toArray();
-
-	//Orders
-	$headers = [
-	'Content-type'        => 'application/csv'
-	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
-	,   'Content-type'        => 'text/csv'
-	,   'Content-Disposition' => 'attachment; filename=export_order.csv'
-	,   'Expires'             => '0'
-	,   'Pragma'              => 'public'
-	];
-
-
-	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, ORDER TYPE, ORDER ACTION, AMOUNT, ORDER DATE, FINDER CITY, FINDER NAME, FINDER LOCATION  \n";
+	$match 		=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
 	$items 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('abondon_status', ['bought_closed'])->get()->toArray();
+	$orderscount 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('abondon_status', ['bought_closed'])->count();
 	
-	foreach ($items as $key => $value) {
-		// var_dump($value;)exit();
-
-		$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
-		$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
-		$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
-		$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
-		$type 					= 	(isset($value['type']) && $value['type'] !="") ? $value['type'] : "-";
-		$order_action 			= 	(isset($value['order_action']) && $value['order_action'] !="") ? $value['order_action'] : "-";
-		$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
-		$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
-		$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
-		$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
+	//Orders
+	// $headers = [
+	// 'Content-type'        => 'application/csv'
+	// ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+	// ,   'Content-type'        => 'text/csv'
+	// ,   'Content-Disposition' => 'attachment; filename=export_order.csv'
+	// ,   'Expires'             => '0'
+	// ,   'Pragma'              => 'public'
+	// ];
 
 
-		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
-			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-			$finder_name = $finder->title;
-			$finder_location = $finder->location->name;
-			$finder_city = $finder->city->name;
-		}else{
-			$city = City::find(intval($value['city_id']));
-			$finder_city = $city->name;
-		}
-		// var_dump($output);exit;
-		$output .= "$id, $customer_name, $customer_email, $customer_phone, $type, $order_action, $amount, $created_at, $finder_city, $finder_name, $finder_location \n";
-	}	
+	// $output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, ORDER TYPE, ORDER ACTION, AMOUNT, ORDER DATE, FINDER CITY, FINDER NAME, FINDER LOCATION  \n";
+	// $items 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('abondon_status', ['bought_closed'])->get()->toArray();
 
-	return Response::make(rtrim($output, "\n"), 200, $headers);
-	
+	// foreach ($items as $key => $value) {
+	// 	// var_dump($value;)exit();
 
-	echo "orderscount -- $orderscount "; exit();
-	foreach ($orders as $key => $order) {
+	// 	$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
+	// 	$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
+	// 	$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
+	// 	$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
+	// 	$type 					= 	(isset($value['type']) && $value['type'] !="") ? $value['type'] : "-";
+	// 	$order_action 			= 	(isset($value['order_action']) && $value['order_action'] !="") ? $value['order_action'] : "-";
+	// 	$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
+	// 	$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
+	// 	$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
+	// 	$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
+
+
+	// 	if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
+	// 		$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
+	// 		$finder_name = $finder->title;
+	// 		$finder_location = $finder->location->name;
+	// 		$finder_city = $finder->city->name;
+	// 	}else{
+	// 		$city = City::find(intval($value['city_id']));
+	// 		$finder_city = $city->name;
+	// 	}
+	// 	// var_dump($output);exit;
+	// 	$output .= "$id, $customer_name, $customer_email, $customer_phone, $type, $order_action, $amount, $created_at, $finder_city, $finder_name, $finder_location \n";
+	// }	
+
+	// return Response::make(rtrim($output, "\n"), 200, $headers);
+
+
+	// echo "orderscount -- $orderscount "; exit();
+	foreach ($items as $key => $order) {
 		//send email to customer and finder
 		$order 		= 	Order::find(intval($order['_id']));
 		$orderData 	= 	$order->toArray();
 
 		try {
-			$email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmaniaWorngCustomer($orderData);
+			// $email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmaniaWorngCustomer($orderData);
 			$email_send_data['resend_customer_send_status'] = 1;
 		} catch (Exception $e) {
 			Log::error($e);
@@ -1319,7 +1321,7 @@ public function resendEmailsForWorngCustomer (){
 		}
 
 		try {
-			$email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmaniaWorngCustomer($orderData);
+			// $email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmaniaWorngCustomer($orderData);
 			$email_send_data['resend_finder_send_status'] = 1;
 		} catch (Exception $e) {
 			Log::error($e);
@@ -1330,7 +1332,7 @@ public function resendEmailsForWorngCustomer (){
 		}
 		$email_send_data['resend_email'] = 1;
 		$email_send_data['resend_wrong_customer_email'] = 1;
-		$order_obj 		= 	$order->update($email_send_data);
+		// $order_obj 		= 	$order->update($email_send_data);
 	}
 
 	echo "orderscount -- $orderscount "; exit();
