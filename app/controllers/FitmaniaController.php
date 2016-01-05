@@ -1254,88 +1254,32 @@ public function resendEmails(){
 
 public function resendEmailsForWorngCustomer (){
 
+	$corders = [];
+
 	//For Orders
 	$match 		=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
-	$items 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('abondon_status', ['bought_closed'])->get()->toArray();
-	$orderscount 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('abondon_status', ['bought_closed'])->count();
-	
-	//Orders
-	// $headers = [
-	// 'Content-type'        => 'application/csv'
-	// ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
-	// ,   'Content-type'        => 'text/csv'
-	// ,   'Content-Disposition' => 'attachment; filename=export_order.csv'
-	// ,   'Expires'             => '0'
-	// ,   'Pragma'              => 'public'
-	// ];
-
-
-	// $output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, ORDER TYPE, ORDER ACTION, AMOUNT, ORDER DATE, FINDER CITY, FINDER NAME, FINDER LOCATION  \n";
-	// $items 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('abondon_status', ['bought_closed'])->get()->toArray();
-
-	// foreach ($items as $key => $value) {
-	// 	// var_dump($value;)exit();
-
-	// 	$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
-	// 	$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
-	// 	$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
-	// 	$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
-	// 	$type 					= 	(isset($value['type']) && $value['type'] !="") ? $value['type'] : "-";
-	// 	$order_action 			= 	(isset($value['order_action']) && $value['order_action'] !="") ? $value['order_action'] : "-";
-	// 	$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
-	// 	$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
-	// 	$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
-	// 	$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
-
-
-	// 	if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
-	// 		$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-	// 		$finder_name = $finder->title;
-	// 		$finder_location = $finder->location->name;
-	// 		$finder_city = $finder->city->name;
-	// 	}else{
-	// 		$city = City::find(intval($value['city_id']));
-	// 		$finder_city = $city->name;
-	// 	}
-	// 	// var_dump($output);exit;
-	// 	$output .= "$id, $customer_name, $customer_email, $customer_phone, $type, $order_action, $amount, $created_at, $finder_city, $finder_name, $finder_location \n";
-	// }	
-
-	// return Response::make(rtrim($output, "\n"), 200, $headers);
-
-
-	// echo "orderscount -- $orderscount "; exit();
-	foreach ($items as $key => $order) {
-		//send email to customer and finder
-		$order 		= 	Order::find(intval($order['_id']));
-		$orderData 	= 	$order->toArray();
-
-		try {
-			// $email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmaniaWorngCustomer($orderData);
-			$email_send_data['resend_customer_send_status'] = 1;
-		} catch (Exception $e) {
-			Log::error($e);
-			$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'    => $e->getFile(), 'line'    => $e->getLine(), );
-			$email_send_data['resend_customer_confirm_email'] = $message;
-			$email_send_data['resend_customer_send_status'] = 0;
+	$customers 		=	Order::whereIn('type',$match)->where('status','1')->where('customer_email','sanjaysahu@fitternity.com')->get()->groupBy('customer_email');
+										// ->orWhere('abondon_status', 'exists',false)
+										// ->orWhere('abondon_status', 'bought_closed')
+	foreach ($customers as $key => $customer) {
+		$orders  =  	(!is_array($customer)) ? $customer->toArray() : $customer;
+		if(count($orders)>0){
+			$customer_email = $orders[0]['customer_email'];
+			$customer_name = $orders[0]['customer_name'];
+			foreach ($orders as $key => $value) {
+				array_push($corders, $value);
+			}
+			$data['corders'] = $orders;
+			$data['customer_email'] = $orders[0]['customer_email'];
+			$data['customer_name'] = $orders[0]['customer_name'];
+			// return $data;
+			$this->customermailer->resendCustomerGroupBy($customer_email, $customer_name, $data);
 		}
-
-		try {
-			// $email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmaniaWorngCustomer($orderData);
-			$email_send_data['resend_finder_send_status'] = 1;
-		} catch (Exception $e) {
-			Log::error($e);
-			$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'  => $e->getFile(), 'line'  => $e->getLine(), );
-			$email_send_data['resend_finder_confirm_email'] = $message;
-			$email_send_data['resend_finder_send_status'] = 0;
-
-		}
-		$email_send_data['resend_email'] = 1;
-		$email_send_data['resend_wrong_customer_email'] = 1;
-		// $order_obj 		= 	$order->update($email_send_data);
 	}
 
-	echo "orderscount -- $orderscount "; exit();
+	return "email send";
+	
+
 }
 
 
