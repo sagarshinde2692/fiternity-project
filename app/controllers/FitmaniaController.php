@@ -1269,7 +1269,7 @@ public function resendEmailsForWorngCustomer (){
 
 
 	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, ORDER TYPE, ORDER ACTION, AMOUNT, ORDER DATE, FINDER CITY, FINDER NAME, FINDER LOCATION  \n";
-	$items 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('order_action', ['bought'])->get()->toArray();
+	$items 		=	Order::whereIn('type',$match)->where('status','0')->where('resend_email', 1)->whereNotIn('abondon_status', ['bought_closed'])->get()->toArray();
 	
 	foreach ($items as $key => $value) {
 		// var_dump($value;)exit();
