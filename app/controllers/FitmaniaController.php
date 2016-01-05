@@ -1209,6 +1209,7 @@ public function resendEmails(){
 	$orderscount 	=	Order::orderBy('_id','desc')->whereIn('type',$match)->where('resend_email', 'exists', false)->count();
 	$orders 		=	Order::orderBy('_id','desc')->whereIn('type',$match)->where('resend_email', 'exists', false)->get()->toArray();
 
+	// echo "orderscount -- $orderscount "; exit();
 	foreach ($orders as $key => $order) {
 		//send email to customer and finder
 		$order 		= 	Order::find(intval($order['_id']));
@@ -1216,7 +1217,7 @@ public function resendEmails(){
 
 		if($orderData['status'] == "1"){
 			try {
-				$email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmania($orderdata);
+				$email_send_data['resend_customer_confirm_email'] = $this->customermailer->buyServiceThroughFitmania($orderData);
 			} catch (Exception $e) {
 				Log::error($e);
 				$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'    => $e->getFile(), 'line'    => $e->getLine(), );
@@ -1224,7 +1225,7 @@ public function resendEmails(){
 			}
 
 			try {
-				$email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmania($orderdata);
+				$email_send_data['resend_finder_confirm_email'] = $this->findermailer->buyServiceThroughFitmania($orderData);
 			} catch (Exception $e) {
 				Log::error($e);
 				$message = array( 'type'    => get_class($e), 'message' => $e->getMessage(), 'file'  => $e->getFile(), 'line'  => $e->getLine(), );
