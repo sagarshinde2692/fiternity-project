@@ -1211,7 +1211,6 @@ public function resendEmails(){
 	$orders 		=	Order::orderBy('_id','desc')->whereIn('type',$match)->get()->toArray();
 
 	// echo "orderscount -- $orderscount "; exit();
-	$customer_email_send
 	foreach ($orders as $key => $order) {
 		//send email to customer and finder
 		$order 		= 	Order::find(intval($order['_id']));
