@@ -347,7 +347,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.fitmania_offer_wrong_customer1';
 		$template_data 				= 	$data;
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Please ignore previous mail - Regarding your purchase of membership on FitMania';
+		$subject  					=   'Here is your purchase summary for FitMania 2016 - 6th Jan';
 
 		$message_data 	= array(
 			'user_email' => $to,

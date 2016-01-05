@@ -231,12 +231,12 @@
                                                         <a href="http://www.fitternity.com" target="_blank"><img width="50%" src="http://email.fitternity.com/197/badge.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">
                                                             Hi {{ $customer_name }}!
-                                                            <br /> We would want to apologise to you , incase you have received an incorrect membership subscription email from Fitternity.
+                                                            <br /> We would want to apologise to you, incase you have received an incorrect membership subscription email from Fitternity.
                                                         </p>
 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">To clear the confusion , sending you a  list of membership/s you have purchased on Fitmania.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">To clear the confusion, we sending you a  list of membership's you have purchased on Fitmania.</p>
 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">Hope your loving Fitmania 2016!!!</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">Hope you are loving Fitmania 2016!!!</p>
 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:center;line-height: 24px; padding: 5px;  " st-content="fulltext-paragraph">Please reach out to us for queries on - 022261222232</p>
                                                     </td>
