@@ -3,6 +3,8 @@
 
 Route::get('/importcode', function() {  
 
+	return date('Y-m-d 00:00:00', strtotime( "01-13-2016" ));
+
 	$filename = public_path()."/code.csv";
 
 
