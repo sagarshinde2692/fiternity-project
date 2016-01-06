@@ -309,7 +309,7 @@ $fitmaniamemberships 	=	[];
 foreach ($services as $key => $value) {
 	$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
 	$service_ratedcards 	= 	[];
-	$ratecardsarr    		=   Ratecard::whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )with('serviceoffers')->get()->toArray();	
+	$ratecardsarr    		=   Ratecard::whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->with('serviceoffers')->get()->toArray();	
 	if($ratecardsarr){
 		foreach ($ratecardsarr as $key => $value) {
 			if(intval($value['validity'])%360 == 0){
