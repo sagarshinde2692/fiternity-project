@@ -1289,4 +1289,36 @@ public function resendEmailsForWorngCustomer (){
 
 
 
+public function resendEmailsForWorngFinder (){
+
+	$corders = [];
+
+	//For Orders
+	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
+	$finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
+	foreach ($finders as $key => $customer) {
+		$orders  =  	(!is_array($customer)) ? $customer->toArray() : $customer;
+		if(count($orders)>0){
+			$customer_email = $orders[0]['customer_email'];
+			$customer_name = $orders[0]['customer_name'];
+			foreach ($orders as $key => $value) {
+				array_push($corders, $value);
+			}
+			$data['corders'] = $orders;
+			$data['customer_email'] = $orders[0]['customer_email'];
+			$data['customer_name'] = $orders[0]['customer_name'];
+			// return $data;
+			// $this->customermailer->resendCustomerGroupBy($customer_email, $customer_name, $data);
+		}
+	}
+
+	return "email send";
+	
+
+}
+
+
+
+
+
 }
