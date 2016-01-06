@@ -1062,11 +1062,11 @@ public function maintainActiveFlag($serviceid = NULL){
    			$nextoffer1 = [];
    			foreach ($allservice as $key => $value) {
    				# code...
-   				if($value->type == 'fitmania-dod'){
+   				if($value->type == 'fitmania-dod' && intval($serviceoffer->buyable) > 0){
    					$nextoffer = $value;
    					continue;
    				}
-   				if($value->type == 'fitmania-dow'){
+   				if($value->type == 'fitmania-dow' && intval($serviceoffer->buyable) > 0){
    					$nextoffer1 = $value;
    					continue;
    				}
@@ -1275,7 +1275,7 @@ public function resendEmailsForWorngCustomer (){
 			$data['customer_email'] = $orders[0]['customer_email'];
 			$data['customer_name'] = $orders[0]['customer_name'];
 			// return $data;
-			$this->customermailer->resendCustomerGroupBy($customer_email, $customer_name, $data);
+			// $this->customermailer->resendCustomerGroupBy($customer_email, $customer_name, $data);
 		}
 	}
 
