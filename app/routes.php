@@ -14,6 +14,8 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 require __DIR__.'/debug_routes.php';
 
 
+ // $queries = DB::getQueryLog();
+ // var_dump($queries);
 
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/

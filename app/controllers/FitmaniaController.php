@@ -192,10 +192,11 @@ return Response::json($responsedata, 200);
 $dodofferids 		=   array_map('intval', explode(',', $fitmaniahomepageobj->dod_serviceoffer_ids));
 
 $fitmaniadods			=	[];
-$dealsofdaycolleciton 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)
+$dealsofdaycolleciton 	=	Serviceoffer::where('city_id', '=', $city_id)
 ->whereIn('_id', $dodofferids)
 ->where("type" , "=" , "fitmania-dod")
 ->where("active" , "=" , 1)
+->with('finder')->with('ratecard')
 ->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 foreach ($dealsofdaycolleciton as $key => $value) {
@@ -296,19 +297,19 @@ $serviceoffers  			= 	Serviceoffer::with('finder')->with('ratecard')->where('cit
 $serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 $ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 
-$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
+$query	 					= 	Service::active()->whereIn('_id', $serviceids);	
+
+$services 					= 	$query->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-->active()->whereIn('_id', $serviceids);	
-
-$services 					= 	$query->orderBy('ordering', 'desc')->get()->toArray();
+->orderBy('ordering', 'desc')->get()->toArray();
 
 $fitmaniamemberships 	=	[];
 foreach ($services as $key => $value) {
 	$item  	   				=  	(!is_array($value)) ? $value->toArray() : $value;
 	$service_ratedcards 	= 	[];
-	$ratecardsarr    		=   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )->get()->toArray();	
+	$ratecardsarr    		=   Ratecard::whereIn('_id', $ratecardids_array )->where('service_id', intval($item['_id']) )with('serviceoffers')->get()->toArray();	
 	if($ratecardsarr){
 		foreach ($ratecardsarr as $key => $value) {
 			if(intval($value['validity'])%360 == 0){
