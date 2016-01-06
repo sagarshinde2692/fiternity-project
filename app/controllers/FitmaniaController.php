@@ -417,11 +417,7 @@ public function serachMembership(){
 	$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
 	$finderids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'finder_id')) ; 
 
-	$query	 					= 	Service::with(array('city'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-	->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-	->active()->whereIn('_id', $serviceids_array);	
+	$query	 					= 	Service::active()->whereIn('_id', $serviceids_array);	
 
 	if(!empty($category)){
 		$query->whereIn('servicecategory_id', $category );
@@ -441,7 +437,11 @@ public function serachMembership(){
 
 	$cntquery 			= 	$query;
 	$services_count 	= 	$cntquery->count();
-	$services 			= 	$query->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
+	$services 			= 	$query->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+	->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+	->take($size)->skip($from)->orderBy('ordering', 'desc')->get()->toArray();
 	// echo "services_count -- $services_count size -- $size from -- $from ";exit();
 
 	foreach ($services as $key => $value) {
@@ -578,7 +578,7 @@ public function serachDodAndDow(){
 	}
 
 
-	$dealsofdayquery 	=	Serviceoffer::with('finder')->with('ratecard')->where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
+	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
 	if(isset($serviceids_array) && !empty($serviceids_array)){
 		$dealsofdayquery->whereIn('service_id', $serviceids_array);
 	}
@@ -608,7 +608,7 @@ public function serachDodAndDow(){
 
 	$cntquery 				= 	$dealsofdayquery;
 	$dealsofday_count 		=	$cntquery->count();
-	$dealsofdaycolleciton 	=	$dealsofdayquery->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
+	$dealsofdaycolleciton 	=	$dealsofdayquery->with('finder')->with('ratecard')->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	// echo "dealsofday_count -- $dealsofday_count size -- $size from -- $from";exit();
 
