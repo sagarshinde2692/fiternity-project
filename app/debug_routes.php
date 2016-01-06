@@ -3,6 +3,17 @@
 
 Route::get('/importcode', function() {  
 
+	$serviceoffers	 = 	Serviceoffer::where('left', 'exists', true)->get();	
+
+	foreach ($serviceoffers as $key => $offer) {
+		$serviceoffer 	=	Serviceoffer::find(intval($offer->_id));
+		$left 			=	intval($serviceoffer->left);
+		$success_order 	=	$serviceoffer->update(['buyable' => intval($left)]);
+		echo "$offer->_id - $left - $success_order"."<br>";
+	}	
+
+
+
 	return date('Y-m-d 00:00:00', strtotime( "01-13-2016" ));
 
 	$filename = public_path()."/code.csv";
