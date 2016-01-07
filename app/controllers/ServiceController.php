@@ -68,7 +68,7 @@ class ServiceController extends \BaseController {
 
 	public function serviceDetail($serviceid){
 
-		$service = Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->where('_id', (int) $serviceid)->first();
+		$service = Service::where('_id', (int) $serviceid)->with('category')->with('subcategory')->with('location')->with('city')->with('finder')->first();
 		// return $service;
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
@@ -85,38 +85,38 @@ class ServiceController extends \BaseController {
 
 		//same service form same location and same category
 		$same_vendor_service		=		Service::active()
+												->where('finder_id', '=', $servicefinderid)
+												->where('_id', '!=', intval($serviceid))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->where('finder_id', '=', $servicefinderid)
-												->where('_id', '!=', intval($serviceid))
 												->remember(Config::get('app.cachetime'))
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_ratecards', 'service_coverimage'])
 												->take(5)->toArray();	
 
 		//same service form same location and same category
 		$nearby_same_category 		=		Service::active()
+												->where('servicecategory_id', '=', $servicecategoryid)
+												->where('location_id', '=' ,$servicelocationid)
+												->where('_id', '!=', intval($serviceid))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->where('servicecategory_id', '=', $servicecategoryid)
-												->where('location_id', '=' ,$servicelocationid)
-												->where('_id', '!=', intval($serviceid))
 												->remember(Config::get('app.cachetime'))
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_ratecards', 'service_coverimage'])
 												->take(5)->toArray();																								
 
 		//different service form same location and same category
 		$nearby_other_category 		=		Service::active()
+												->where('servicecategory_id', '!=', $servicecategoryid)
+												->where('location_id','=',$servicelocationid)
+												->where('_id', '!=', intval($serviceid))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->where('servicecategory_id', '!=', $servicecategoryid)
-												->where('location_id','=',$servicelocationid)
-												->where('_id', '!=', intval($serviceid))
 												->remember(Config::get('app.cachetime'))
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_ratecards', 'service_coverimage'])
 												->take(5)->toArray();												
@@ -232,51 +232,51 @@ class ServiceController extends \BaseController {
 		$feature_block6_ids 		= 		array_map('intval', explode(",", $homepage['feature_ids_block6'] ));
 
 		$feature_block1_services 		=		Service::active()
+												->whereIn('_id', $feature_block1_ids)
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->whereIn('_id', $feature_block1_ids)
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);
 
 		$feature_block2_services 		=		Service::active()
+												->whereIn('_id', $feature_block2_ids)
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->whereIn('_id', $feature_block2_ids)
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);
 
 		$feature_block3_services 		=		Service::active()
+												->whereIn('_id', $feature_block3_ids)
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->whereIn('_id', $feature_block3_ids)
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);
 
 		$feature_block4_services 		=		Service::active()
+												->whereIn('_id', $feature_block4_ids)
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->whereIn('_id', $feature_block4_ids)
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);																										
 
 		$feature_block5_services 		=		Service::active()
+												->whereIn('_id', $feature_block5_ids)
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->whereIn('_id', $feature_block5_ids)
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);																										
 
 		$feature_block6_services 		=		Service::active()
+												->whereIn('_id', $feature_block6_ids)
 												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
-												->whereIn('_id', $feature_block6_ids)
 												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_coverimage', 'service_coverimage']);																										
 
 

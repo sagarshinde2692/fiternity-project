@@ -57,9 +57,8 @@ class HomeController extends BaseController {
 			array_set($footer_finders,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');	
 
 			//return Response::json($finder_ids);
-			$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			$category_finders 		=		Finder::whereIn('_id', $finder_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->whereIn('_id', $finder_ids)
 			->remember(Config::get('app.cachetime'))
 			->get(array('_id','average_rating','category_id','coverimage','finder_coverimage','slug','title','category','location_id','location','total_rating_count'))
 			->groupBy('category.name')
@@ -69,11 +68,11 @@ class HomeController extends BaseController {
 			array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
 			array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
 
-			$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			$recent_blogs	 		= 		Blog::where('status', '=', '1')
+			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 			->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-			->where('status', '=', '1')
 			->orderBy('_id', 'desc')
 			->remember(Config::get('app.cachetime'))
 			->get(array('_id','author_id','category_id','categorytags','coverimage','finder_coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
@@ -82,12 +81,11 @@ class HomeController extends BaseController {
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
 			$feature_service_ids 	= 		array_map('intval', explode(",", $homepage['service_ids'] ));
-			$services 		=		Service::active()
+			$services 		=		Service::active()->whereIn('_id', $feature_service_ids)
 			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','contact','average_rating');}))
-			->whereIn('_id', $feature_service_ids)
 			->get();
 
 			$feature_services = [];
@@ -173,9 +171,8 @@ class HomeController extends BaseController {
 			$footer_block6_ids 		= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
 
 			//return Response::json($finder_ids);
-			$category_finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			$category_finders 		=		Finder::whereIn('_id', $finder_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->whereIn('_id', $finder_ids)
 			->remember(Config::get('app.cachetime'))
 			->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
 			->groupBy('category.name')
@@ -207,11 +204,11 @@ class HomeController extends BaseController {
 			array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');									
 
 
-			$recent_blogs	 		= 		Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			$recent_blogs	 		= 		Blog::where('status', '=', '1')
+			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 			->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-			->where('status', '=', '1')
 			->orderBy('_id', 'desc')
 			->remember(Config::get('app.cachetime'))
 			->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
@@ -489,9 +486,8 @@ class HomeController extends BaseController {
 			$collection 	= 	Findercollection::where('slug', '=', trim($slug))->where('city_id', '=', $city_id)->first(array());
 			$finder_ids 	= 	array_map('intval', explode(",", $collection['finder_ids']));
 
-			$collection_finders =	Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			$collection_finders =	Finder::whereIn('_id', $finder_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->whereIn('_id', $finder_ids)
 			->remember(Config::get('app.cachetime'))
 			->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count','info'))
 			->toArray();
@@ -675,12 +671,11 @@ class HomeController extends BaseController {
 		$ratecardids 			=   array_map('intval', explode(',', $offerdata[$ratecardids_index]));
 		$ratecards_array        =   Ratecard::with('serviceoffers')->whereIn('_id', $ratecardids  )->get()->toArray();
 		$servicesids     		=  	array_flatten(pluck($ratecards_array, ['service_id']));
-		$serivce_array 			= 	Service::active()
+		$serivce_array 			= 	Service::active()->whereIn('_id', $servicesids  )
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage','average_rating', 'contact');}))
-		->whereIn('_id', $servicesids  )
 		->get()
 		->toArray();	
 
@@ -719,7 +714,7 @@ class HomeController extends BaseController {
 
 		$from 					=	($from != '') ? intval($from) : 0;
 		$size 					=	($size != '') ? intval($size) : 10;
-		$offers_colleciton 		= 	Service::active()->with('finder')->with('category')->with('location')->with('subcategory')->where('finder_id', 'exists', true)->where('city_id', $city_id)->where('show_in_offers','1')->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$offers_colleciton 		= 	Service::active()->where('finder_id', 'exists', true)->where('city_id', $city_id)->where('show_in_offers','1')->take($size)->with('finder')->with('category')->with('location')->with('subcategory')->skip($from)->orderBy('_id', 'desc')->get();
 		
 		$offers = [];
 		foreach ($offers_colleciton as $key => $value) {
