@@ -586,7 +586,7 @@ public function serachDodAndDow(){
 	}
 
 
-	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where('active', '=', 1)
+	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where('active', '=', 1);
 										// ->where(function($query){
 										// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
 										// });
