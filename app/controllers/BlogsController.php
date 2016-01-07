@@ -22,11 +22,11 @@ class BlogsController extends \BaseController {
 		if(!$blog_list){
 			$offset =  	(int) $offset;	
 			$limit 	= 	(int) $limit;	
-			$blogs 	=	Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
+			$blogs 	=	Blog::where('status', '=', '1')
+							->with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
 							->with('categorytags')
 							->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 							->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))							
-							->where('status', '=', '1')
 							->orderBy('_id', 'desc')
 							->skip($offset)
 							->take($limit)
@@ -47,12 +47,11 @@ class BlogsController extends \BaseController {
 		$blog_detail = $cache ? Cache::tags('blog_detail')->has($tslug) : false;
 
 		if(!$blog_detail){
-			$blog = Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			$blog = Blog::where('slug','=',$tslug)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 							->with('categorytags')
 							->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 							->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
 							->with(array('comments'=>function($query){$query->select('*')->where('status','=','1');}))
-							->where('slug','=',$tslug)
 							->remember(Config::get('app.cachetime'))
 							->firstOrFail();
 					
@@ -62,36 +61,29 @@ class BlogsController extends \BaseController {
 				$blogcategoryid 	= (int) $blog['category_id'];	
 				$findercategoryid 	= (int) $blog['finder_category_id'];
 
-				$relatedblogs 	= 	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+				$relatedblogs 	= 	Blog::where('status', '=', '1')->where('_id','!=',$blogid)->where('category_id','=',$blogcategoryid)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 										->with('categorytags')
 										->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 										->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))							
-										->where('_id','!=',$blogid)
-										->where('category_id','=',$blogcategoryid)
-										->where('status', '=', '1')
 										->orderBy('_id', 'desc')
 										->remember(Config::get('app.cachetime'))
 										->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 										->take(4)->toArray();
 
 			
-				$recentblogs 	= 	Blog::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+				$recentblogs 	= 	Blog::where('status', '=', '1')->where('_id','!=',$blogid)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 										->with('categorytags')
 										->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 										->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-										->where('_id','!=',$blogid)
-										->where('status', '=', '1')
 										->orderBy('_id', 'desc')
 										->remember(Config::get('app.cachetime'))
 										->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
 										->take(5)->toArray();
 
 			
-				$relatedfinders 	=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+				$relatedfinders 	=	Finder::where('finder_type', '=', 1)->where('status', '=', '1')->where('category_id','=',$findercategoryid)
+											->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
 											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-											->where('category_id','=',$findercategoryid)
-											->where('finder_type', '=', 1)
-											->where('status', '=', '1')
 											->remember(Config::get('app.cachetime'))
 											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 											->take(4)->toArray();
@@ -133,12 +125,12 @@ class BlogsController extends \BaseController {
 			$blogcategory		=  Blogcategory::where('slug','=',$cat)->firstOrFail();
 			$blogcategoryid 	= (int) $blogcategory['_id'];	
 
-			$catblogs = Blog::with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
+			$catblogs = Blog::where('status', '=', '1')
+							->where('category_id','=',$blogcategoryid)
+							->with(array('category'=>function($query){$query->select('_id','name','slug','meta');}))
 							->with('categorytags')
 							->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
 							->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-							->where('status', '=', '1')
-							->where('category_id','=',$blogcategoryid)
 							->orderBy('_id', 'desc')
 							->remember(Config::get('app.cachetime'))
 							->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'));
@@ -182,12 +174,12 @@ class BlogsController extends \BaseController {
 
 			$categorytags			= 	Findercategorytag::active()->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
-			$relatedfinders 		=	Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-											->where('category_id','=',$blog_findercategoryid)
+			$relatedfinders 		=	Finder::where('category_id','=',$blog_findercategoryid)
 											->where('finder_type', '=', 1)
 											->where('city_id', '=', $city_id)
 											->where('status', '=', '1')
+											->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 											->remember(Config::get('app.cachetime'))
 											->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','total_rating_count'))
 											->take(4)->toArray();	
