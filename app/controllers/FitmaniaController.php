@@ -239,10 +239,10 @@ private function transformDod($offers){
 	$item  	   		=  	(!is_array($offers)) ? $offers->toArray() : $offers;
 	$ratecardarr  	=  	(!is_array($item['service_offer_ratecard'])) ?  (array) $item['service_offer_ratecard'] : $item['service_offer_ratecard'];
 	$finderarr   	=  	(!is_array($item['finder'])) ?  (array) $item['finder'] : $item['finder'];
-	$servicearr 	= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))
+	$servicearr 	= 	Service::where('_id', (int) $item['service_id'])->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 	->with(array('category'=>function($query){$query->select('_id','name','slug');}))
 	->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-	->where('_id', (int) $item['service_id'])->with(array('city'=>function($query){$query->select('_id','name','slug');}))->first();
+	->with(array('city'=>function($query){$query->select('_id','name','slug');}))->first();
 
 	$data = [
 	'_id' => $item['_id'],
@@ -666,7 +666,7 @@ public function serachDodAndDow(){
 		// 	}))->where('service_id', intval($serviceid) )->get()->toArray();	
 		
 
-		$service = Service::with('category')->with('subcategory')->with('location')->with('city')->with('finder')->where('_id', (int) $serviceid)->first();
+		$service = Service::where('_id', (int) $serviceid)->with('category')->with('subcategory')->with('location')->with('city')->with('finder')->first();
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
 			return Response::json($resp, 400);
@@ -682,11 +682,11 @@ public function serachDodAndDow(){
 		$same_vendor_service = $same_category_service = [];
 
 		//same_vendor_service
-		$serviceoffers 			= 	Serviceoffer::with('finder')->with('ratecard')->with('service')->where('finder_id', '=', $servicefinderid)->whereNotIn('ratecard_id', [$serviceratecardid])
+		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->whereNotIn('ratecard_id', [$serviceratecardid])
 		->where(function($query){
 			$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
 		})
-		->timeout(400000000)->get()->take(5)->toArray();	
+		->with('finder')->with('ratecard')->with('service')->timeout(400000000)->get()->take(5)->toArray();	
 		foreach ($serviceoffers as $key => $service) {
 			$data = $this->transformDod($service);
 			array_push($same_vendor_service, $data);
@@ -717,9 +717,9 @@ public function serachDodAndDow(){
 		$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
 		$service_ratedcards 	= 	[];
 		if($offerid != ""){
-			$ratecardsarr    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+			$ratecardsarr    	=   Ratecard::where('service_id', intval($item['_id']) )->with(array('serviceoffers' => function($query) use ($offerid){
 				$query->select('*')->whereIn('_id', [intval($offerid)]);
-			}))->where('service_id', intval($item['_id']) )->get()->toArray();	
+			}))->get()->toArray();	
 		}else{
 			$ratecardsarr    	=   Ratecard::with('serviceoffers')->where('service_id', intval($item['_id']) )->get()->toArray();					
 		}
@@ -780,9 +780,8 @@ public function serachDodAndDow(){
 			);
 
 if(isset($item['finder']) && $item['finder'] != ''){
-	$finderarr 	= 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+	$finderarr 	= 	Finder::where('_id', (int) $service['finder_id'])->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 	->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-	->where('_id', (int) $service['finder_id'])
 	->first();
 	$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info'));
 }else{
@@ -790,7 +789,7 @@ if(isset($item['finder']) && $item['finder'] != ''){
 }
 
 if(isset($item['trainer_id']) && $item['trainer_id'] != ''){
-	$servicetrainer = Servicetrainer::remember(Config::get('app.cachetime'))->findOrFail( intval($item['trainer_id']) );
+	$servicetrainer = Servicetrainer::remember(Config::get('app.cachetime'))->find( intval($item['trainer_id']) );
 	if($servicetrainer){
 		$trainerdata = $servicetrainer->toArray();
 		$data['trainer'] = array_only($trainerdata, array('_id', 'name', 'bio', 'trainer_pic'));
@@ -807,9 +806,9 @@ private function transformServiceDetailV1($service, $offerid = ''){
 
 	$item  	   				=  	(!is_array($service)) ? $service->toArray() : $service;
 	$service_ratedcards 	= 	[];
-	$ratecardsarr    	=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
+	$ratecardsarr    	=   Ratecard::where('service_id', intval($item['_id']) )->with(array('serviceoffers' => function($query) use ($offerid){
 		$query->select('*')->whereNotIn('_id', [intval($offerid)]);
-	}))->where('service_id', intval($item['_id']) )->get()->toArray();	
+	}))->get()->toArray();	
 	
 	// $ratecardsarr    		=   Ratecard::with(array('serviceoffers' => function($query) use ($offerid){
 	// 	$query->select('*')->whereNotIn('_id', [intval($offerid)]);
