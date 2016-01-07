@@ -170,6 +170,6 @@ return array(
 
 	'bcc_register' 									=> 	array('mailus@fitternity.com'),
 	// 'bcc_emailds_fitmaniasale' 						=> 	array('vishwaskharote@fitternity.com'),
-	'bcc_emailds_fitmaniasale' 						=> 	array('mailus@fitternity.com','mitmehta@fitternity.com','pranjalisalvi@fitternity.com','shiprabaxi@fitternity.com','vinichellani@fitternity.com','vishwaskharote@fitternity.com'),
+	'bcc_emailds_fitmaniasale' 						=> 	array('mailus@fitternity.com','mitmehta@fitternity.com','pranjalisalvi@fitternity.com','shiprabaxi@fitternity.com','vinichellani@fitternity.com','vishwaskharote@fitternity.com','ismailbaig@fitternity.com'),
 	
 );
