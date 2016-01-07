@@ -1295,22 +1295,42 @@ public function resendEmailsForWorngFinder (){
 
 	//For Orders
 	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
+	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->where('finder_id',5962)->get()->groupBy('finder_id');
 	$finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
 	foreach ($finders as $key => $customer) {
 		$orders  =  	(!is_array($customer)) ? $customer->toArray() : $customer;
-		if(count($orders)>0){
-			$customer_email = $orders[0]['customer_email'];
-			$customer_name = $orders[0]['customer_name'];
+		if(count($orders) > 0){
+			$finder_vcc_email		=	$orders[0]['finder_vcc_email'];
+			$finder_name 			=	$orders[0]['finder_name'];
+			$finder_location 		=	$orders[0]['finder_location'];
+			$finder_id 		=	$orders[0]['finder_location'];
 			foreach ($orders as $key => $value) {
 				array_push($corders, $value);
 			}
-			$data['corders'] = $orders;
-			$data['customer_email'] = $orders[0]['customer_email'];
-			$data['customer_name'] = $orders[0]['customer_name'];
+
+			if (isset($orders[0]['finder_id']) && $orders[0]['finder_id'] != "") {
+				$abandonorders 		=	Order::whereIn('type',$match)->where('status','0')->where('finder_id',intval($orders[0]['finder_id']))->where('abondon_status','bought_closed')->get();
+				if(count($abandonorders) > 0){
+					foreach ($abandonorders as $key => $abandonorder) {
+						array_push($corders, $abandonorder);
+					}
+				}
+			}
+
+			$data['corders'] 			= $orders;
+			$data['finder_id'] 			= $orders[0]['finder_id'];
+			$data['finder_name'] 		= $orders[0]['finder_name'];
+			$data['finder_location'] 	= $orders[0]['finder_location'];
+			$data['finder_vcc_email'] 	= $orders[0]['finder_vcc_email'];
 			// return $data;
-			// $this->customermailer->resendCustomerGroupBy($customer_email, $customer_name, $data);
+			sleep(1);
+			$this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
+			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ".$data['finder_vcc_email']."<br>";
+			// exit();
 		}
 	}
+	// return $corders;
+
 
 	return "email send";
 	

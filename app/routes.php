@@ -355,6 +355,7 @@ Route::get('updateexplorelocationclusteroffers/{cityid?}', 'FitmaniaController@e
 Route::get('categorycitywisesuccesspage/{city?}/{from?}/{size?}', 'FitmaniaController@categoryCitywiseSuccessPage');
 Route::get('fitmaniaresendemails', 'FitmaniaController@resendEmails');
 Route::get('fitmaniaresendemailsworngcustomer', 'FitmaniaController@resendEmailsForWorngCustomer');
+Route::get('fitmaniaresendemailsworngfinder', 'FitmaniaController@resendEmailsForWorngFinder');
 
 
 // Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
