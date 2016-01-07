@@ -254,10 +254,11 @@
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$customer_name}}</p>
                                                                     <?PHP  }?>
 
-                                                                    <?php if(isset($customer_phone) && $customer_phone != ""){ ?>
-                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Number of the customer:</p> 
-                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$customer_phone}}</p>
-                                                                    <?PHP  }?>
+                                                                    <?php if(isset($service_name) && $service_name != ""){ ?>
+                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Membership Type:</p> 
+                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$service_name}}</p>
+                                                                    <?PHP } ?>
+                                                                    
 
                                                                     <?php if(isset($amount) && $amount != ""){ ?>
                                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Purchase price:</p>
@@ -283,17 +284,24 @@
                                                     <tbody>
                                                         <tr>
                                                             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
+
+                                                             <?php if(isset($customer_phone) && $customer_phone != ""){ ?>
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Number of the customer:</p> 
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$customer_phone}}</p>
+                                                             <?PHP  }?>   
+
+                                                             <?php if(isset($service_duration) && $service_duration != ""){ ?>
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Service Duration:</p> 
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$service_duration}}</p>
+                                                             <?PHP } ?>
+                                                            
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Payment Method:</p>
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Online</p>    
-                                                             <?php if(isset($service_name) && $service_name != ""){ ?>
-                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Membership Type:</p> 
-                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$service_name}}</p>                                                                           
-                                                             <?PHP } ?>
 
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p> 
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{$_id}}</p>
-                                                             
-                                                            <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""  &&  $preferred_starting_date != "-"){ ?>
+
+                                                             <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""  &&  $preferred_starting_date != "-"){ ?>
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Starting date:</p> 
                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{date('jS F Y',strtotime($preferred_starting_date))}}</p>
                                                              <?PHP } ?>

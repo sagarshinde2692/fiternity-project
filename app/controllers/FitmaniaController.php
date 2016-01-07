@@ -31,7 +31,7 @@ class FitmaniaController extends \BaseController {
 
 	public function categoryId($category){
 
-		$categorydays_arr     =  array('anniversary' => 'all', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111,5','mma' => '3', 'dance' => '2', 'yoga' => '1,4');
+		$categorydays_arr     =  array('anniversary' => 'all', 'mix bag' => 'all', 'mix bag' => 'all', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111,5','mma' => '3', 'dance' => '2', 'yoga' => '1,4');
 		return $categorydays_arr[$category];
 	}
 
@@ -85,7 +85,7 @@ class FitmaniaController extends \BaseController {
 
 
 		$responsedata 	= ['categorydays_arr' => $categorydays_arr, 'deals' => $fitmaniadods,  'message' => 'Fitmania categoryCitywiseSuccessPage :)'];
-return Response::json($responsedata, 200);
+		return Response::json($responsedata, 200);
 }
 
 public function categorydayCitywise($city, $weekday){
@@ -181,10 +181,10 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	$servicecategoryids  	= 	array_map('intval', explode(',', $categoryday['category_id'])) ;
 	$serviceids_array	 	= 	Service::active()->whereIn('servicecategory_id', $servicecategoryids )->lists('_id');
-	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)
-											->where(function($query){
-												$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-											})
+	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->where("active" , "=" , 1)
+											// ->where(function($query){
+											// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+											// })
 											->count();
 
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
@@ -199,9 +199,10 @@ $fitmaniadods			=	[];
 $dealsofdaycolleciton 	=	Serviceoffer::where('city_id', '=', $city_id)
 ->whereIn('_id', $dodofferids)
 ->where("type" , "=" , "fitmania-dod")
-->where(function($query){
-	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-})
+->where("active" , "=" , 1)
+// ->where(function($query){
+// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+// })
 ->with('finder')->with('ratecard')
 ->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
@@ -218,11 +219,12 @@ foreach ($dodofferids as $key => $oid) {
 		}
 	}));
 
-		// var_dump($offer);exit();
+	// var_dump($offer);exit();
 	array_push($fitmaniadods_orderby, $offer);
 }
 
-$categoryday['today'] = str_replace("yoga","yoga & pilates",$categoryday['today']);
+
+$categoryday['today'] = str_replace("mma","MMA & KICKBOXING",$categoryday['today']);
 
 // return $fitmaniadods_orderby;
 $responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods_orderby, 
@@ -584,10 +586,10 @@ public function serachDodAndDow(){
 	}
 
 
-	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
-										->where(function($query){
-											$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-										});
+	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where('active', '=', 1)
+										// ->where(function($query){
+										// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+										// });
 
 	if(isset($serviceids_array) && !empty($serviceids_array)){
 		$dealsofdayquery->whereIn('service_id', $serviceids_array);
@@ -647,7 +649,7 @@ public function serachDodAndDow(){
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
 	'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
 	return Response::json($responsedata, 200);
-	
+
 }
 
 
