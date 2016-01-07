@@ -427,7 +427,7 @@
                                                 <tr>
                                                     <td width="100%" align="center" class="devicewidth">
                                                         <a href="http://www.vistarooms.com/ambassador_website/vista_ambassador/" target="_blank"><img width="100%" src="http://email.fitternity.com/200/vistarooms.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;"></a>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">&nbsp; </p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"><strong>Use Code:</strong> VISTAMANIA </p>
                                                     </td>
                                                 </tr>
                                             </tbody>
