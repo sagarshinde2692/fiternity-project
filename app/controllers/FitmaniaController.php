@@ -181,7 +181,11 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	$servicecategoryids  	= 	array_map('intval', explode(',', $categoryday['category_id'])) ;
 	$serviceids_array	 	= 	Service::active()->whereIn('servicecategory_id', $servicecategoryids )->lists('_id');
-	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->count();
+	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)
+											->where(function($query){
+												$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+											})
+											->count();
 
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
@@ -195,7 +199,9 @@ $fitmaniadods			=	[];
 $dealsofdaycolleciton 	=	Serviceoffer::where('city_id', '=', $city_id)
 ->whereIn('_id', $dodofferids)
 ->where("type" , "=" , "fitmania-dod")
-->where("active" , "=" , 1)
+->where(function($query){
+	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+})
 ->with('finder')->with('ratecard')
 ->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
@@ -578,7 +584,11 @@ public function serachDodAndDow(){
 	}
 
 
-	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
+	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
+										->where(function($query){
+											$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+										});
+
 	if(isset($serviceids_array) && !empty($serviceids_array)){
 		$dealsofdayquery->whereIn('service_id', $serviceids_array);
 	}
@@ -634,8 +644,10 @@ public function serachDodAndDow(){
 	// Serviceoffer::get()->toArray();
 	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
-	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
-return Response::json($responsedata, 200);
+	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
+	'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
+	return Response::json($responsedata, 200);
+	
 }
 
 
