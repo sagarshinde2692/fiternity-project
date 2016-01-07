@@ -221,7 +221,7 @@ class FindersController extends \BaseController {
 
 	public function finderServices($finderid){
 		$finderid 	=  	(int) $finderid;
-		$finder = Finder::active()->where('status','=','1')->orderBy('ordering', 'ASC');}))->where('_id','=',$finderid)->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->first();
+		$finder = Finder::active()->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))->where('_id','=',$finderid)->first();
 		if($finder){
 			$finderarr = $finder->toArray();
 			$data['message'] 		= "Finder Detail With services"; 
@@ -966,7 +966,7 @@ class FindersController extends \BaseController {
 		$from 				=	($from != '') ? intval($from) : 0;
 		$size 				=	($size != '') ? intval($size) : 10;
 
-		$reviews 			= 	Review::active()->where('finder_id','=',$finder_id)->with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 		$responseData 		= 	['reviews' => $reviews,  'message' => 'List for reviews'];
 
 		return Response::json($responseData, 200);
