@@ -221,7 +221,7 @@ class FindersController extends \BaseController {
 
 	public function finderServices($finderid){
 		$finderid 	=  	(int) $finderid;
-		$finder = Finder::active()->where('status','=','1')->orderBy('ordering', 'ASC');}))->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('_id','=',$finderid)->first();
+		$finder = Finder::active()->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))->where('_id','=',$finderid)->first();
 		if($finder){
 			$finderarr = $finder->toArray();
 			$data['message'] 		= "Finder Detail With services"; 
