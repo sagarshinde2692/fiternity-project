@@ -622,7 +622,7 @@ public function serachDodAndDow(){
 	}
 
 	$cntquery 				= 	$dealsofdayquery;
-	return $dealsofday_count 		=	$cntquery->count();
+	$dealsofday_count 		=	$cntquery->count();
 	$dealsofdaycolleciton 	=	$dealsofdayquery->with('finder')->with('ratecard')->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	// echo "dealsofday_count -- $dealsofday_count size -- $size from -- $from";exit();
