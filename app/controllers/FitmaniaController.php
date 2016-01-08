@@ -244,6 +244,10 @@ private function transformDod($offers){
 	->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 	->with(array('city'=>function($query){$query->select('_id','name','slug');}))->first();
 
+	// if($servicearr == NULL){
+	// 	echo $item['service_id']; exit();
+	// }
+	
 	$data = [
 	'_id' => $item['_id'],
 	'type' => (isset($item['type']) && $item['type'] != '') ? strtolower($item['type']) : "",
@@ -618,7 +622,7 @@ public function serachDodAndDow(){
 	}
 
 	$cntquery 				= 	$dealsofdayquery;
-	$dealsofday_count 		=	$cntquery->count();
+	$dealsofday_count 		=	$cntquery->with('finder')->with('ratecard')->count();
 	$dealsofdaycolleciton 	=	$dealsofdayquery->with('finder')->with('ratecard')->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	// echo "dealsofday_count -- $dealsofday_count size -- $size from -- $from";exit();
@@ -645,8 +649,11 @@ public function serachDodAndDow(){
 	// Serviceoffer::get()->toArray();
 	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
 
-	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
-	'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
+	// $responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
+	// 'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
+
+
+	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
 	return Response::json($responsedata, 200);
 
 }
@@ -1308,14 +1315,15 @@ public function resendEmailsForWorngFinder (){
 	//For Orders
 	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->where('finder_id',5962)->get()->groupBy('finder_id');
-	$finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
+	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319,7022])->get()->groupBy('finder_id');
+	$finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319])->get()->groupBy('finder_id');
 	foreach ($finders as $key => $customer) {
 		$orders  =  	(!is_array($customer)) ? $customer->toArray() : $customer;
 		if(count($orders) > 0){
 			$finder_vcc_email		=	$orders[0]['finder_vcc_email'];
 			$finder_name 			=	$orders[0]['finder_name'];
 			$finder_location 		=	$orders[0]['finder_location'];
-			$finder_id 		=	$orders[0]['finder_location'];
+			$finder_id 				=	$orders[0]['finder_location'];
 			foreach ($orders as $key => $value) {
 				array_push($corders, $value);
 			}
@@ -1329,15 +1337,19 @@ public function resendEmailsForWorngFinder (){
 				}
 			}
 
+			$finder 				=	Finder::find(intval($orders[0]['finder_id']));
+			$finder_vcc_email		=	($finder->finder_vcc_email) ? $finder->finder_vcc_email : [];
+
 			$data['corders'] 			= $orders;
 			$data['finder_id'] 			= $orders[0]['finder_id'];
 			$data['finder_name'] 		= $orders[0]['finder_name'];
 			$data['finder_location'] 	= $orders[0]['finder_location'];
-			$data['finder_vcc_email'] 	= $orders[0]['finder_vcc_email'];
+			$data['finder_vcc_email'] 	= $finder_vcc_email;
 			// return $data;
 			sleep(1);
-			$this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
-			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ".$data['finder_vcc_email']."<br>";
+
+			// $this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
+			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ".$finder_vcc_email."<br>";
 			// exit();
 		}
 	}

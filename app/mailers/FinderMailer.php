@@ -161,13 +161,19 @@ Class FinderMailer extends Mailer {
 
 	public function resendFinderGroupBy ($to, $name, $location, $data){
 
+		if($to != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $to),Config::get('mail.bcc_emailds_fitmaniasale'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		} 
+
 		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_groupby';
 		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Summary of offers sold on FitMania Sale by Fitternity I Till 6 Jan';
+		// $bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		$subject  					=   'Summary of offers sold on FitMania Sale by Fitternity I Till 8 Jan';
 
 		$message_data 	= array(
-			'user_email' => $to,
+			'user_email' => Config::get('mail.to_mailus'),
 			'user_name' => ucwords($name),
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
