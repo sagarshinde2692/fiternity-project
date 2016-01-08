@@ -594,9 +594,9 @@ public function serachDodAndDow(){
 										// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
 										// });
 
-	if(isset($serviceids_array) && !empty($serviceids_array)){
+	// if(isset($serviceids_array) && !empty($serviceids_array)){
 		$dealsofdayquery->whereIn('service_id', $serviceids_array);
-	}
+	// }
 	if($start_duration != "" || $start_duration != 0 || $end_duration != "" || $end_duration != 0){
 		$ratecardidquery 	= 	Ratecard::active();
 
@@ -622,7 +622,7 @@ public function serachDodAndDow(){
 	}
 
 	$cntquery 				= 	$dealsofdayquery;
-	$dealsofday_count 		=	$cntquery->with('finder')->with('ratecard')->count();
+	return $dealsofday_count 		=	$cntquery->count();
 	$dealsofdaycolleciton 	=	$dealsofdayquery->with('finder')->with('ratecard')->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
 	// echo "dealsofday_count -- $dealsofday_count size -- $size from -- $from";exit();
