@@ -646,14 +646,11 @@ public function serachDodAndDow(){
 	$leftside['locations'] 		= 	$this->getLocationCluster($city_id);
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
-	// Serviceoffer::get()->toArray();
-	// $leftside['locations'] 		= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug'));
+	// $responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
+	
+	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
+	'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
 
-	// $responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
-	// 'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
-
-
-	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
 	return Response::json($responsedata, 200);
 
 }
