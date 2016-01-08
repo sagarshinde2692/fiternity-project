@@ -570,19 +570,19 @@ public function serachDodAndDow(){
 	if(!empty($category) || !empty($subcategory) || !empty($location) || !empty($finder)){
 
 		$query	 					= 	Service::active();		
-		if(!empty($category)){
+		if(!empty($category) && count($category) > 0){
 			$query->whereIn('servicecategory_id', $category );
 		}
 
-		if(!empty($subcategory)){
+		if(!empty($subcategory) && count($subcategory) > 0){
 			$query->whereIn('servicesubcategory_id', $subcategory );
 		}
 
-		if(!empty($location)){
+		if(!empty($location) && count($location) > 0){
 			$query->whereIn('location_id', $location );
 		}
 
-		if(!empty($finder)){
+		if(!empty($finder) && count($finder) > 0){
 			$query->whereIn('finder_id', $finder );
 		}
 		$serviceids_array 		= 	$query->orderBy('ordering', 'desc')->lists('_id');
@@ -647,7 +647,7 @@ public function serachDodAndDow(){
 	$leftside['finders'] 		= 	Finder::active()->whereIn('_id', $finderids_array)->orderBy('ordering')->get(array('_id','title','slug'));
 
 	// $responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
-	
+
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
 	'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
 
