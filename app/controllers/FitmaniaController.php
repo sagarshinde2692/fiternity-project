@@ -225,6 +225,9 @@ foreach ($dodofferids as $key => $oid) {
 
 
 $categoryday['today'] = str_replace("mma","MMA & KICKBOXING",$categoryday['today']);
+$categoryday['today'] = str_replace("yoga","yoga & pilates",$categoryday['today']);
+$categoryday['today'] = str_replace("crossfit","functional / crossfit",$categoryday['today']);
+$categoryday['today'] = str_replace("anniversary","surprise",$categoryday['today']);
 
 // return $fitmaniadods_orderby;
 $responsedata 		= 	['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday,  'totalcount' => $dealsofdaycnt,  'explore_locations' => $explore_locations,  'explore_categorys' => $explore_categorys, 'fitmaniadods' => $fitmaniadods_orderby, 
