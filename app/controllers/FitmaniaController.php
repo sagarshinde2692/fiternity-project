@@ -31,7 +31,7 @@ class FitmaniaController extends \BaseController {
 
 	public function categoryId($category){
 
-		$categorydays_arr     =  array('surprise' => '19,65,111,5,3,2,1,4', 'personal trainers' => 'all', 'mix bag' => '19,65,111,5,3,2,1,4', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111,5','mma' => '3', 'dance' => '2', 'yoga' => '1,4');
+		$categorydays_arr     =  array('surprise' => 'all', 'personal trainers' => 'all', 'mix bag' => 'all', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111,5','mma' => '3', 'dance' => '2', 'yoga' => '1,4');
 		return $categorydays_arr[$category];
 	}
 
@@ -55,23 +55,23 @@ class FitmaniaController extends \BaseController {
 
 		switch (strtolower(trim($city_name))) {
 			case 'mumbai':
-			$categorydays_arr     =  array( 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'anniversary', 'monday' => 'personal trainers');
+			$categorydays_arr     =  array(  'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'surprise', 'monday' => 'personal trainers');
 			break;
 			
 			case 'pune':
-			$categorydays_arr     =  array( 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'anniversary', 'monday' => 'personal trainers');
+			$categorydays_arr     =  array( 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'surprise', 'monday' => 'personal trainers');
 			break;
 
 			case 'bangalore':
-			$categorydays_arr     =  array( 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'anniversary', 'monday' => 'mix bag');
+			$categorydays_arr     =  array( 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'mix bag');
 			break;	
 
 			case 'delhi':
-			$categorydays_arr     =  array( 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'anniversary', 'monday' => 'mix bag');
+			$categorydays_arr     =  array( 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'mix bag');
 			break;
 
 			case 'gurgaon':
-			$categorydays_arr     =  array( 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'anniversary', 'monday' => 'mix bag');
+			$categorydays_arr     =  array( 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'mix bag');
 			break;		
 		}
 
@@ -179,7 +179,12 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 	$explore_categorys 		= 	$this->exploreCategoryOffers($city_id);
 	$banners 				= 	Fitmaniahomepagebanner::where('city_id', '=', $city_id)->where('banner_type', '=', 'fitmania-dod')->take($size)->skip($from)->orderBy('ordering')->get();				
 
-	$servicecategoryids  	= 	array_map('intval', explode(',', $categoryday['category_id'])) ;
+	if($categoryday['category_id'] != 'all'){
+		$servicecategoryids  	= 	array_map('intval', explode(',', $categoryday['category_id'])) ;
+	}else{
+		$servicecategoryids  	=  [19,65,111,5,3,2,1,4];
+	}
+
 	$serviceids_array	 	= 	Service::active()->whereIn('servicecategory_id', $servicecategoryids )->lists('_id');
 	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)
 											->where(function($query){
@@ -221,6 +226,8 @@ foreach ($dodofferids as $key => $oid) {
 	// var_dump($offer);exit();
 	array_push($fitmaniadods_orderby, $offer);
 }
+
+
 
 
 $categoryday['today'] = str_replace("mma","MMA & KICKBOXING",$categoryday['today']);
