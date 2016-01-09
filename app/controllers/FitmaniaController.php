@@ -1349,8 +1349,9 @@ public function resendEmailsForWorngFinder (){
 			sleep(1);
 
 			// $$finder_vcc_email = $finder_vcc_email;
-			// $this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
-			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ".$finder_vcc_email."<br>";
+			$this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
+			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ". var_dump($finder_vcc_email)."<br>";
+			echo "==================================================================================================================== <br><br>";
 			// exit();
 		}
 	}
