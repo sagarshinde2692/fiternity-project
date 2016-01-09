@@ -326,7 +326,8 @@ Route::post('/queue/push', function(){
 
 Route::get('flushtag/{tag}', 'CacheApiController@flushTag');
 Route::get('flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
-Route::get('flushall', 'CacheApiController@flushAll');
+//Route::get('flushall', 'CacheApiController@flushAll');
+Route::get('dropall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
