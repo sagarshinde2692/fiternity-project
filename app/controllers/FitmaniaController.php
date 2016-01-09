@@ -23,7 +23,7 @@ class FitmaniaController extends \BaseController {
 	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, FinderMailer $findermailer) {
 
 		$this->customermailer	=	$customermailer;
-		$this->customersms		=	$customersms;
+		$this->customersms		=	$customersms;	
 		$this->findermailer 	=	$findermailer;
 	}
 
@@ -98,23 +98,23 @@ public function categorydayCitywise($city, $weekday){
 
 	switch (strtolower(trim($city))) {
 		case 'mumbai':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 		break;
 
 		case 'pune':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'zumba', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 		break;
 
 		case 'bangalore':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;	
 
 		case 'delhi':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;
 
 		case 'gurgaon':
-		$categorydays_arr     =  array('sunday' => 'anniversary', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'gym', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;		
 	}
 
