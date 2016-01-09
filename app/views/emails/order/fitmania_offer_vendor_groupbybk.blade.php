@@ -237,8 +237,9 @@
 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Greetings from Fitternity</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> 
-                                                            Thank you for your support on Fitmania. We have reached our milestone of 7,000 transactions. With 2 more days of sale active (10 & 11 January) we plan to push through all channels of marketing and outreach.<br><br>
-                                                            Please note the summary of all transactions so far on FitMania for <strong>{{$finder_name}}<?php if(isset($finder_location) && $finder_location != ""){ ?>, {{ ucwords($finder_location) }}<?PHP } ?> </strong>
+                                                            Thank you for your support on Fitmania. We look forward to closing a great sale with your continued support.<br>
+                                                            Please note the summary of all transactions so far on FitMania for  
+                                                            <strong>{{$finder_name}}<?php if(isset($finder_location) && $finder_location != ""){ ?>, {{ ucwords($finder_location) }}<?PHP } ?> </strong>
                                                         </p>
 
                                                     </td>
@@ -325,7 +326,7 @@
 
                                             <tr style="background-color:#f6f6f6;">
                                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph"> 
-                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> In case of any questions please reach out to us on 022-61222232.</p>
+                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Please call us in case of any queries - you can reach your assigned Relationship Manager directly or call us on 02261222232.</p>
                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Regards,<br />
                                                         TEAM FITTERNITY</p>
 

@@ -161,8 +161,9 @@ Class FinderMailer extends Mailer {
 
 	public function resendFinderGroupBy ($to, $name, $location, $data){
 
-		if($to != ''){
-			$bcc_emailids 	=  	array_merge(explode(',', $to),Config::get('mail.bcc_emailds_fitmaniasale'));
+		if($to != ''){		
+			$bcc_emailids  =  	(!is_array($to)) ? array_merge( explode(',', $to), Config::get('mail.bcc_emailds_fitmaniasale') ) : array_merge($to, Config::get('mail.bcc_emailds_fitmaniasale'));
+			// $bcc_emailids 	=  	array_merge(explode(',', $to),Config::get('mail.bcc_emailds_fitmaniasale'));
 		}else{
 			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
 		} 
@@ -170,7 +171,7 @@ Class FinderMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_groupby';
 		$template_data 				= 	$data;
 		// $bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Summary of offers sold on FitMania Sale by Fitternity I Till 8 Jan';
+		$subject  					=   'Summary of offers sold on FitMania Sale by Fitternity I Till 9 Jan';
 
 		$message_data 	= array(
 			'user_email' => Config::get('mail.to_mailus'),

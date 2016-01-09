@@ -3,6 +3,8 @@
 
 Route::get('/importcode', function() {  
 
+	return Service::active()->whereIn('servicecategory_id', $servicecategory_id)->whereIn('location_id', $locationids_array)->lists('_id');
+
 	$serviceoffers	 = 	Serviceoffer::where('left', 'exists', true)->get();	
 
 	foreach ($serviceoffers as $key => $offer) {
