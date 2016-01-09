@@ -181,10 +181,10 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	$servicecategoryids  	= 	array_map('intval', explode(',', $categoryday['category_id'])) ;
 	$serviceids_array	 	= 	Service::active()->whereIn('servicecategory_id', $servicecategoryids )->lists('_id');
-	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)->where("active" , "=" , 1)
-											// ->where(function($query){
-											// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-											// })
+	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)
+											->where(function($query){
+												$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+											})
 											->count();
 
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
