@@ -569,6 +569,11 @@ public function serachDodAndDow(){
 	$categoryday   	=   $this->categorydayCitywise($city,$weekday);
 
 
+	if($categoryday['category_id'] != 'all'){
+		$category  	=  [19,65,111,5,3,2,1,4];
+	}
+	
+
 	$serviceoffers  			= 	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->get()->toArray();
 	$serviceids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'service_id')) ; 
 	$ratecardids_array 			= 	array_map('intval', array_pluck($serviceoffers, 'ratecard_id')) ; 
