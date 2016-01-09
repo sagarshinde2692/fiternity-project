@@ -199,10 +199,9 @@ $fitmaniadods			=	[];
 $dealsofdaycolleciton 	=	Serviceoffer::where('city_id', '=', $city_id)
 ->whereIn('_id', $dodofferids)
 ->where("type" , "=" , "fitmania-dod")
-->where("active" , "=" , 1)
-// ->where(function($query){
-// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-// })
+->where(function($query){
+	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+})
 ->with('finder')->with('ratecard')
 ->take($size)->skip($from)->orderBy('order', 'desc')->get()->toArray();
 
@@ -262,8 +261,8 @@ private function transformDod($offers){
 	'price' => (isset($item['price']) && $item['price'] != '') ? intval($item['price']) : "",
 	'limit' => (isset($item['limit']) && $item['limit'] != '') ? intval($item['limit']) : "",
 	'order' => (isset($item['order']) && $item['order'] != '') ? intval($item['order']) : "",
-	'buyable' => (isset($item['buyable']) && $item['buyable'] != '') ? intval($item['buyable']) : intval($item['limit']),
-	'left' => (isset($item['left']) && $item['left'] != '') ? intval($item['left']) : intval($item['limit']),
+	'buyable' => (isset($item['buyable'])) ? intval($item['buyable']) : intval($item['limit']),
+	'left' => (isset($item['left'])) ? intval($item['left']) : intval($item['limit']),
 	'start_date' => (isset($item['start_date']) && $item['start_date'] != '') ? $item['start_date'] : "",
 	'end_date' => (isset($item['end_date']) && $item['end_date'] != '') ? $item['end_date'] : "",
 	'ratecard' => (isset($item['ratecard']) && $item['ratecard'] != '') ? array_only( $ratecardarr , ['_id','type', 'price', 'special_price', 'duration', 'duration_type', 'validity', 'validity_type', 'remarks', 'order'] )  : "",
@@ -592,10 +591,10 @@ public function serachDodAndDow(){
 	}
 
 
-	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->where('active', '=', 1);
-										// ->where(function($query){
-										// 	$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-										// });
+	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"]);
+										->where(function($query){
+											$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+										});
 
 	// if(isset($serviceids_array) && !empty($serviceids_array)){
 		$dealsofdayquery->whereIn('service_id', $serviceids_array);
