@@ -31,7 +31,7 @@ class FitmaniaController extends \BaseController {
 
 	public function categoryId($category){
 
-		$categorydays_arr     =  array('surprise' => 'all', 'mix bag' => 'all', 'mix bag' => 'all', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111,5','mma' => '3', 'dance' => '2', 'yoga' => '1,4');
+		$categorydays_arr     =  array('surprise' => '19,65,111,5,3,2,1,4', 'personal trainers' => 'all', 'mix bag' => '19,65,111,5,3,2,1,4', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111,5','mma' => '3', 'dance' => '2', 'yoga' => '1,4');
 		return $categorydays_arr[$category];
 	}
 
