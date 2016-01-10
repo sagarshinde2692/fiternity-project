@@ -85,7 +85,7 @@ class FitmaniaController extends \BaseController {
 
 
 		$responsedata 	= ['categorydays_arr' => $categorydays_arr, 'deals' => $fitmaniadods,  'message' => 'Fitmania categoryCitywiseSuccessPage :)'];
-		return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 }
 
 public function categorydayCitywise($city, $weekday){
@@ -187,10 +187,10 @@ public function getDealOfDay($city = 'mumbai', $from = '', $size = ''){
 
 	$serviceids_array	 	= 	Service::active()->whereIn('servicecategory_id', $servicecategoryids )->lists('_id');
 	$dealsofdaycnt 			=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])->whereIn('service_id', $serviceids_array)
-											->where(function($query){
-												$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-											})
-											->count();
+	->where(function($query){
+		$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+	})
+	->count();
 
 	$fitmaniahomepageobj 		=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
 	if(count($fitmaniahomepageobj) < 1){
@@ -568,9 +568,10 @@ public function serachDodAndDow(){
 	$weekday 		= 	strtolower(date( "l", $timestamp));
 	$categoryday   	=   $this->categorydayCitywise($city,$weekday);
 
-
-	if($categoryday['category_id'] == 'all'){
-		$category  	=  [19,65,111,5,3,2,1,4];
+	if(!empty($category) {
+		if($categoryday['category_id'] == 'all'){
+			$category  	=  [19,65,111,5,3,2,1,4];
+		}
 	}
 
 	// return $category;
@@ -604,12 +605,12 @@ public function serachDodAndDow(){
 
 
 	$dealsofdayquery 	=	Serviceoffer::where('city_id', '=', $city_id)->whereIn("type" ,["fitmania-dod", "fitmania-dow"])
-										->where(function($query){
-											$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
-										});
+	->where(function($query){
+		$query->orWhere('active', '=', 1)->orWhere('left', '=', 0);
+	});
 
 	// if(isset($serviceids_array) && !empty($serviceids_array)){
-		$dealsofdayquery->whereIn('service_id', $serviceids_array);
+	$dealsofdayquery->whereIn('service_id', $serviceids_array);
 	// }
 	if($start_duration != "" || $start_duration != 0 || $end_duration != "" || $end_duration != 0){
 		$ratecardidquery 	= 	Ratecard::active();
@@ -665,7 +666,7 @@ public function serachDodAndDow(){
 	$responsedata 	=  ['stringdate' => $stringdate, 'categoryday' => $categoryday['today'], 'category_info' => $categoryday, 'leftside' => $leftside, 'fitmaniadods' => $fitmaniadods, 
 	'total_count' => $dealsofday_count, 'message' => 'Fitmania dod and dow :)'];
 
-	return Response::json($responsedata, 200);
+return Response::json($responsedata, 200);
 
 }
 
