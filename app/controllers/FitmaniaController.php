@@ -568,7 +568,7 @@ public function serachDodAndDow(){
 	$weekday 		= 	strtolower(date( "l", $timestamp));
 	$categoryday   	=   $this->categorydayCitywise($city,$weekday);
 
-	if(!empty($category) {
+	if(!empty($category)) {
 		if($categoryday['category_id'] == 'all'){
 			$category  	=  [19,65,111,5,3,2,1,4];
 		}
