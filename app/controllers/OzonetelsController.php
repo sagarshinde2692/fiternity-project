@@ -60,7 +60,7 @@ class OzonetelsController extends \BaseController {
 			    	if($finderDetails){
 			    		$phone = $finderDetails->finder->contact['phone'];
 			    		$phone = explode(',', $phone);
-			    		$contact_no = (string)trim($phone[0]);
+			    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
 			    		$this->ozonetelResponse->addDial($contact_no,"true");
 			    		$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true);
 			    	}else{
@@ -144,7 +144,7 @@ class OzonetelsController extends \BaseController {
 
 	    		$phone = $finderDetails->finder->contact['phone'];
 	    		$phone = explode(',', $phone);
-	    		$contact_no = (string)trim($phone[0]);
+	    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
 	    		$this->ozonetelResponse->addDial($contact_no,"true");
 	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
 	    	}else{
