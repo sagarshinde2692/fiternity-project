@@ -39,7 +39,7 @@ class FindersController extends \BaseController {
 	}
 
 
-	public function finderdetail($slug, $cache = false){
+	public function finderdetail($slug, $cache = true){
 
 		$data 	=  array();
 		$tslug 	= (string) strtolower($slug);
@@ -63,11 +63,16 @@ class FindersController extends \BaseController {
 
 
 			if($finderarr){
+
+				
 				
 				// $ratecards 			= 	Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
 
 
 				$finderarr = $finderarr->toArray();
+
+
+
 				// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
 				$finder 		= 	array_except($finderarr, array('coverimage','categorytags','locationtags','offerings','facilities','services')); 
 				$coverimage  	=	($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
@@ -83,12 +88,21 @@ class FindersController extends \BaseController {
 				// 	}
 				// }
 				// array_set($finder, 'services', $servicesArr);
+
+				$finder['associate_finder'] = null;
+				if(isset($finderarr['access_gym_name']) && $finderarr['access_gym_name'] != ''){
+
+					$associate_finder = array_map('intval',$finderarr['access_gym_name']);
+					$associate_finder = Finder::active()->whereIn('_id',$associate_finder)->get(array('_id','title','slug'))->toArray();
+					$finder['associate_finder'] = $associate_finder;
+				}
 			
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
+
 
 				$fitmania_offer_cnt 	=	Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
 				if($fitmania_offer_cnt > 0){
