@@ -50,7 +50,10 @@ Class CustomerSms extends VersionNextSms{
 
 		//testing for berfore1hour template
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_name']).", ".ucwords(strip_tags($data['finder_address'])).", ".ucwords($data['finder_location']).". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";
+
+		/*$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_name']).", ".ucwords(strip_tags($data['finder_address'])).", ".ucwords($data['finder_location']).". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";*/
+
+		$message = "Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug']." Contact person: ".ucwords($data['finder_poc_for_customer_name'])." have a great workout!";
 		
 		$label = 'TrialRmdBefore1Hr-C';
 
@@ -100,9 +103,9 @@ Class CustomerSms extends VersionNextSms{
 		// $google_pin = "test ".$finder_lat.$finder_lon;
 		
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords(strip_tags($data['finder_address']))." Contact person: ".ucwords($data['finder_poc_for_customer_name']).$google_pin;
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug']." Contact person: ".ucwords($data['finder_poc_for_customer_name']).$google_pin." have a great workout!";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).". Please note the address: ".ucwords(strip_tags($data['finder_address']))." Contact person: ".ucwords($data['finder_poc_for_customer_name']).$google_pin;
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug']." ".$google_pin." have a great workout!";
 		}
 
 		$label = 'TrialRmdBefore1Hr-C';
