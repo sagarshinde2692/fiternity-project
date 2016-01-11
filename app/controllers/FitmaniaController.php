@@ -55,23 +55,23 @@ class FitmaniaController extends \BaseController {
 
 		switch (strtolower(trim($city_name))) {
 			case 'mumbai':
-			$categorydays_arr     =  array(  'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'surprise', 'monday' => 'surprise');
+			$categorydays_arr     =  array(  'tuesday' => 'surprise', 'wednesday' => 'surprise','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'surprise', 'monday' => 'surprise');
 			break;
 			
 			case 'pune':
-			$categorydays_arr     =  array( 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'surprise', 'monday' => 'surprise');
+			$categorydays_arr     =  array( 'tuesday' => 'surprise', 'wednesday' => 'surprise','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga', 'sunday' => 'surprise', 'monday' => 'surprise');
 			break;
 
 			case 'bangalore':
-			$categorydays_arr     =  array( 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'surprise');
+			$categorydays_arr     =  array( 'tuesday' => 'surprise', 'wednesday' => 'surprise','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'surprise');
 			break;	
 
 			case 'delhi':
-			$categorydays_arr     =  array( 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'surprise');
+			$categorydays_arr     =  array( 'tuesday' => 'surprise', 'wednesday' => 'surprise','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'surprise');
 			break;
 
 			case 'gurgaon':
-			$categorydays_arr     =  array( 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'surprise');
+			$categorydays_arr     =  array( 'tuesday' => 'surprise', 'wednesday' => 'surprise','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit', 'sunday' => 'surprise', 'monday' => 'surprise');
 			break;		
 		}
 
@@ -98,23 +98,23 @@ public function categorydayCitywise($city, $weekday){
 
 	switch (strtolower(trim($city))) {
 		case 'mumbai':
-		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'surprise', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 		break;
 
 		case 'pune':
-		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'gym', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'surprise', 'wednesday' => 'crossfit','thursday' => 'mma', 'friday' => 'dance', 'saturday' => 'yoga');
 		break;
 
 		case 'bangalore':
-		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'surprise', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;	
 
 		case 'delhi':
-		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'surprise', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;
 
 		case 'gurgaon':
-		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'dance', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
+		$categorydays_arr     =  array('sunday' => 'surprise', 'monday' => 'surprise', 'tuesday' => 'surprise', 'wednesday' => 'yoga','thursday' => 'zumba', 'friday' => 'mma', 'saturday' => 'crossfit');
 		break;		
 	}
 
@@ -1015,7 +1015,8 @@ public function maintainActiveFlag($serviceid = NULL){
    					if($initial_acitve_flag == 1){
    						$serviceObj->update(['active' => 0]);
    					}else{
-   						if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
+   						// if((strtotime($serviceObj->start_date) <= $timestamp) &&  (strtotime($serviceObj->end_date) > $timestamp) ){
+   						if((strtotime($serviceObj->start_date) <= $timestamp)){
    							if(($limit - $sold) > 0){
    								$serviceObj->update(['active' => 1]);
    								$initial_acitve_flag = 1;
@@ -1326,8 +1327,8 @@ public function resendEmailsForWorngFinder (){
 
 	//For Orders
 	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
-	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->where('finder_id',7007)->get()->groupBy('finder_id');
-	$finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
+	$finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id',[5728,5745,5746,5747,5748,6250,7335])->get()->groupBy('finder_id');
+	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319,7022])->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319])->get()->groupBy('finder_id');
 	foreach ($finders as $key => $customer) {
@@ -1362,7 +1363,7 @@ public function resendEmailsForWorngFinder (){
 			sleep(1);
 
 			// $$finder_vcc_email = $finder_vcc_email;
-			$this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
+			// $this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
 			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ". var_dump($finder_vcc_email)."<br>";
 			echo "==================================================================================================================== <br><br>";
 			// exit();
