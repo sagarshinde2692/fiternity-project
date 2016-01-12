@@ -3,16 +3,23 @@
 
 Route::get('/importcode', function() {  
 
-	return Service::active()->whereIn('servicecategory_id', $servicecategory_id)->whereIn('location_id', $locationids_array)->lists('_id');
-
-	$serviceoffers	 = 	Serviceoffer::where('left', 'exists', true)->get();	
+	$serviceoffers	 = 	Serviceoffer::whereIn('finder_id', [7154])->get();	
 
 	foreach ($serviceoffers as $key => $offer) {
 		$serviceoffer 	=	Serviceoffer::find(intval($offer->_id));
-		$left 			=	intval($serviceoffer->left);
-		$success_order 	=	$serviceoffer->update(['buyable' => intval($left)]);
-		echo "$offer->_id - $left - $success_order"."<br>";
+		$data 			= 	[
+								'buyable' => 0,
+								'active' => 0,
+								'left' => 0,
+								'sold' => intval($serviceoffer->limit)
+							];
+
+		$success_order 	=	$serviceoffer->update($data);
+		echo "<pre>";print_r($data)."</pre>";
 	}	
+	return "done";
+	return Service::active()->whereIn('servicecategory_id', $servicecategory_id)->whereIn('location_id', $locationids_array)->lists('_id');
+
 
 
 
