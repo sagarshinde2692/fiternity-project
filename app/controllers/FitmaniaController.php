@@ -1071,7 +1071,8 @@ public function maintainActiveFlag($serviceid = NULL){
    		$keyword 				=	(Input::json()->get('finder')) ? trim(Input::json()->get('finder')) : "";
    		$city_id				=	(Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : 1;
 
-   		$serviceoffers_array  	= 	Serviceoffer::where('city_id', $city_id)->whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->get(['finder_id'])->toArray();
+   		// $serviceoffers_array  	= 	Serviceoffer::where('city_id', $city_id)->whereIn("type" ,  ['fitmania-dod','fitmania-dow', 'fitmania-membership-giveaways'])->get(['finder_id'])->toArray();
+   		$serviceoffers_array  	= 	Serviceoffer::where('city_id', $city_id)->where('active', '=', 1)->whereIn("type" ,  ['fitmania-dod','fitmania-dow'])->get(['finder_id'])->toArray();
    		$finderids_array 		= 	array_map('intval', array_pluck($serviceoffers_array, 'finder_id')) ; 
 
    		$query 					= 	Finder::active()->with(array('location'=>function($query){$query->select('_id','name','slug');}))->orderBy('title')->whereIn('_id', $finderids_array );
