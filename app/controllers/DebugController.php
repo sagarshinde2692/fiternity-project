@@ -1034,4 +1034,161 @@ class DebugController extends \BaseController {
 			
 		}
 
+		public function csvOzonetel(){
+
+			$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('ozonetelno'=>function($query){$query->select('finder_id','phone_number','extension','type','_id')->where('status','=','1');}))->get(array('_id','title','commercial_type','business_type','location_id','contact.phone','city_id'))->toArray();
+
+			$fp = fopen('finder_ozonetel.csv', 'w');
+
+			$header = array('Vendor ID','Vendor Name','City','Location','Commercial Type','Business Type','Vendor Number','Ozonetel ID','Ozonetel Account','Ozonetel Number','Ozonetel Extension');
+
+
+			foreach ($finder as $key => $value) 
+			{
+				if(!isset($value['title'])){
+					$finder[$key]['title'] = '';
+				}
+
+				if(!isset($value['city']['name'])){
+					$finder[$key]['city']['name'] = '';
+				}
+
+				if(!isset($value['location']['name'])){
+					$finder[$key]['location']['name'] = '';
+				}
+
+				if(!isset($value['commercial_type_status'])){
+					$finder[$key]['commercial_type_status'] = '';
+				}
+
+				if(!isset($value['business_type_status'])){
+					$finder[$key]['business_type_status'] = '';
+				}
+
+				if(!isset($value['contact']['phone'])){
+					$finder[$key]['contact']['phone'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['type'])){
+					$finder[$key]['ozonetelno']['type'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['_id'])){
+					$finder[$key]['ozonetelno']['_id'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['phone_number'])){
+					$finder[$key]['ozonetelno']['phone_number'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['extension'])){
+					$finder[$key]['ozonetelno']['extension'] = '';
+				}
+
+				$finder[$key]['city']['name'] = ucwords($finder[$key]['city']['name']);
+				$finder[$key]['location']['name'] = ucwords($finder[$key]['location']['name']);
+				$finder[$key]['ozonetelno']['type'] = ucwords($finder[$key]['ozonetelno']['type']);
+
+				$validateNo = $this->validateNo($finder[$key]['contact']['phone']);
+
+				if($validateNo){
+					unset($finder[$key]);
+				}
+
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($finder as $value) {  
+				
+
+				$fields = array($value['_id'],$value['title'],$value['city']['name'],$value['location']['name'],$value['commercial_type_status'],$value['business_type_status'],$value['contact']['phone'],$value['ozonetelno']['_id'],$value['ozonetelno']['type'],$value['ozonetelno']['phone_number'],$value['ozonetelno']['extension']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+
+
+
+			/*$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('ozonetelno'=>function($query){$query->select('finder_id','phone_number','extension','type','_id')->where('status','=','1');}))->get(array('_id','title','commercial_type','business_type','location_id','contact.phone'))->toArray();
+
+			$fp = fopen('finder_ozonetel.csv', 'w');
+
+			$header = array('Vendor ID','Vendor Name','Location','Commercial Type','Business Type','Vendor Number','Ozonetel ID','Ozonetel Account','Ozonetel Number','Ozonetel Extension');
+
+
+			foreach ($finder as $key => $value) 
+			{
+				if(!isset($value['title'])){
+					$finder[$key]['title'] = '';
+				}
+
+				if(!isset($value['location']['name'])){
+					$finder[$key]['location']['name'] = '';
+				}
+
+				if(!isset($value['commercial_type_status'])){
+					$finder[$key]['commercial_type_status'] = '';
+				}
+
+				if(!isset($value['business_type_status'])){
+					$finder[$key]['business_type_status'] = '';
+				}
+
+				if(!isset($value['contact']['phone'])){
+					$finder[$key]['contact']['phone'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['type'])){
+					$finder[$key]['ozonetelno']['type'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['_id'])){
+					$finder[$key]['ozonetelno']['_id'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['phone_number'])){
+					$finder[$key]['ozonetelno']['phone_number'] = '';
+				}
+
+				if(!isset($value['ozonetelno']['extension'])){
+					$finder[$key]['ozonetelno']['extension'] = '';
+				}
+
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($finder as $value) {  
+				
+
+				$fields = array($value['_id'],$value['title'],$value['location']['name'],$value['commercial_type_status'],$value['business_type_status'],$value['contact']['phone'],$value['ozonetelno']['_id'],$value['ozonetelno']['type'],$value['ozonetelno']['phone_number'],$value['ozonetelno']['extension']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);*/
+			
+		}
+
+
+		public function validateNo($value) {
+	        
+	        $value_explode = explode(',', $value);
+
+	        if(in_array("", $value_explode))
+			{
+			    return false;
+			}
+
+			if (!preg_match('/(^[0-9,]+$)+/', $value)) {
+			   return false;
+			}
+
+	        return true;
+	    }
+
 	}
