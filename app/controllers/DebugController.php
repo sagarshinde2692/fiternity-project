@@ -1191,4 +1191,37 @@ class DebugController extends \BaseController {
 	        return true;
 	    }
 
+	    public function csvPeppertap(){
+
+			$peppertap = Peppertap::where('status',0)->get(array('_id','code'))->toArray();
+
+			$fp = fopen('peppertap_unused_code.csv', 'w');
+
+			$header = array('ID','Code');
+
+
+			foreach ($peppertap as $key => $value) 
+			{
+				if(!isset($value['code'])){
+					$peppertap[$key]['code'] = '';
+				}
+
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($peppertap as $value) {  	
+
+				$fields = array($value['_id'],$value['code']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+		}
+
+
+
 	}
