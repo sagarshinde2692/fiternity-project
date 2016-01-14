@@ -293,7 +293,12 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['service_duration']}} </p>                                                                           
                                                                         <?PHP } ?>
 
+                                                                        <?php if(isset($order['amount']) && $order['amount'] != ""){ ?>
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; Amount:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['amount']}}</p>
+                                                                        <?PHP } ?>
+                                                                        
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; Subscription Code:</p> 
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['_id']}}</p>
 
                                                                     </td>
