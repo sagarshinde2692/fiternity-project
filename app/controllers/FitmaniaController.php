@@ -1328,8 +1328,15 @@ public function resendEmailsForWorngFinder (){
 
 	//For Orders
 	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
+<<<<<<< Updated upstream
 	$finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id',[5728,5745,5746,5747,5748,6250,7335])->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
+=======
+	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->where('finder_id',7007)->get()->groupBy('finder_id');
+	return $finders 		=	Order::whereIn('type',$match)->where('payment_status','<>','cancel')->where(function($query){
+	$query->orWhere('status','1')->orWhere('abondon_status','bought_closed');
+})->get()->groupBy('finder_id');
+>>>>>>> Stashed changes
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319,7022])->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319])->get()->groupBy('finder_id');
 	foreach ($finders as $key => $customer) {
@@ -1344,7 +1351,7 @@ public function resendEmailsForWorngFinder (){
 			}
 
 			if (isset($orders[0]['finder_id']) && $orders[0]['finder_id'] != "") {
-				$abandonorders 		=	Order::whereIn('type',$match)->where('status','0')->where('finder_id',intval($orders[0]['finder_id']))->where('abondon_status','bought_closed')->get();
+				$abandonorders 		=	Order::whereIn('type',$match)->where('payment_status','<>','cancel')->where('status','0')->where('finder_id',intval($orders[0]['finder_id']))->where('abondon_status','bought_closed')->get();
 				if(count($abandonorders) > 0){
 					foreach ($abandonorders as $key => $abandonorder) {
 						array_push($corders, $abandonorder);
