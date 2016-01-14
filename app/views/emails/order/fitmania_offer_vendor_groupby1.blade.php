@@ -391,7 +391,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;"> 022 61222222  |  +91 92222 21131</a>
+                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e"> 022 61222222  |  +91 92222 21131</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                 </p>
             </td>
