@@ -1328,16 +1328,13 @@ public function resendEmailsForWorngFinder (){
 
 	//For Orders
 	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
-<<<<<<< Updated upstream
-	$finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id',[5728,5745,5746,5747,5748,6250,7335])->get()->groupBy('finder_id');
+	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id',[5728,5745,5746,5747,5748,6250,7335])->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
-=======
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->where('finder_id',7007)->get()->groupBy('finder_id');
-	return $finders 		=	Order::whereIn('type',$match)->where('payment_status','<>','cancel')->where(function($query){
-	$query->orWhere('status','1')->orWhere('abondon_status','bought_closed');
-})->get()->groupBy('finder_id');
->>>>>>> Stashed changes
-	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319,7022])->get()->groupBy('finder_id');
+	$finders 		=	Order::whereIn('type',$match)->where('payment_status','<>','cancel')->where(function($query){
+										$query->orWhere('status','1')->orWhere('abondon_status','bought_closed');
+									})->where('finder_id',7007)->get()->groupBy('finder_id');
+	$finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319,7022])->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319])->get()->groupBy('finder_id');
 	foreach ($finders as $key => $customer) {
 		$orders  =  	(!is_array($customer)) ? $customer->toArray() : $customer;
@@ -1371,7 +1368,7 @@ public function resendEmailsForWorngFinder (){
 			sleep(1);
 
 			// $$finder_vcc_email = $finder_vcc_email;
-			// $this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
+			$this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
 			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ". var_dump($finder_vcc_email)."<br>";
 			echo "==================================================================================================================== <br><br>";
 			// exit();
