@@ -171,7 +171,7 @@ Class FinderMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_groupby1';
 		$template_data 				= 	$data;
 		// $bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Summary of offers sold on FitMania Sale by Fitternity';
+		$subject  					=   'Summary of sales on FitMania 2016 by Fitternity';
 
 		$message_data 	= array(
 			'user_email' => Config::get('mail.to_mailus'),

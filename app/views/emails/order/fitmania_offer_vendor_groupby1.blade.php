@@ -274,6 +274,8 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 18px; padding-top:5px; padding-bottom:10px;" st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['customer_email']}}</p>
                                                                         <?PHP  }?>
                                                                         
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; Subscription Code:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['_id']}}</p>
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -288,9 +290,15 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{date('jS F Y',strtotime($order['preferred_starting_date']))}}</p>
                                                                         <?PHP } ?>
 
-                                                                        <?php if(isset($order['service_duration']) && $order['service_duration'] != ""){ ?>
+                                                                        <?php if(isset($order['service_name']) && $order['service_name'] != ""){ ?>
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; Membership Type:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{ ucwords($order['service_name']) }} </p>                                                                           
+                                                                        <?PHP } ?>
+
+
+                                                                          <?php if(isset($order['service_duration']) && $order['service_duration'] != ""){ ?>
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; Duration:</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['service_duration']}} </p>                                                                           
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{ $order['service_duration'] }} </p>                                                                           
                                                                         <?PHP } ?>
 
                                                                         <?php if(isset($order['amount']) && $order['amount'] != ""){ ?>
@@ -298,9 +306,7 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['amount']}}</p>
                                                                         <?PHP } ?>
                                                                         
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; Subscription Code:</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">&nbsp;&nbsp;&nbsp; {{$order['_id']}}</p>
-
+                                                                    
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -323,7 +329,7 @@
                                                 </tr>  
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td width="100%" align="center" class="devicewidth">
-                                                        <!-- <a href="http://www.fitternity.com" target="_blank"><img src="fitmaniainfo.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a> -->
+                                                        <img src="http://email.fitternity.com/202/fitmaniainfo.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; ">
                                                     </td>
                                                 </tr>                                    
 
@@ -343,84 +349,84 @@
     <div class="block"> 
       <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
         <tbody>
-         <tr>
-          <td align="center">
-             <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+           <tr>
+              <td align="center">
+               <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
                 <tbody>
                   <!-- Title -->
 
 
                   <tr>
                       <td>
-                       <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
-                        <tbody>
+                         <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                            <tbody>
 
-                         <tr>
-                          <td>
-                          </td>
-                      </tr> </tbody>
-                  </table>
-              </td>
-          </tr>
-      </tbody>
-  </table></td></tr></tbody></table>
-</div>
-<div class="block">
-    <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
-        <tbody>
-            <tr bgcolor="#f6f6f6">
-                <td align="center">
-                    <table bgcolor="#f6f6f6" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
-                        <tbody>
-                            <tr>
-                                <td style="text-align:center;">
-                                    <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
-                                    <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
-                                    <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div class="block">
-    <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
-        <tr>
-            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
-                <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e"> 022 61222222  |  +91 92222 21131</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
-                </p>
-            </td>
-        </tr>
-    </table>
-</div>
-<div class="block">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;">
-        <tbody>
+                               <tr>
+                                  <td>
+                                  </td>
+                              </tr> </tbody>
+                          </table>
+                      </td>
+                  </tr>
+              </tbody>
+          </table></td></tr></tbody></table>
+      </div>
+      <div class="block">
+        <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
+            <tbody>
+                <tr bgcolor="#f6f6f6">
+                    <td align="center">
+                        <table bgcolor="#f6f6f6" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
+                                        <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
+                                        <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="block">
+        <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
             <tr>
-                <td align="center">
-                    <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
-                        <tbody>
-                            <!-- Title -->
-                            <tr>
-                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 12px; text-align:center;line-height: 18px; padding:25px; color: #7b7b7b; " st-content="fulltext-paragraph">
-                                    <p>Don't want to see this? <span style=" font-family:Arial, Helvetica, sans-serif; color:#f9a91e;"><unsubscribe>Unsubscribe</unsubscribe></span></p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td width="100%" height="15"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
+                    <p>Contact us
+                        <br /> Phone: <a style="text-decoration:none;color:#f9a91e"> 022 61222222  |  +91 92222 21131</a>
+                        <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                    </p>
                 </td>
             </tr>
-        </tbody>
-    </table>
-</div>
+        </table>
+    </div>
+    <div class="block">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;">
+            <tbody>
+                <tr>
+                    <td align="center">
+                        <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+                            <tbody>
+                                <!-- Title -->
+                                <tr>
+                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 12px; text-align:center;line-height: 18px; padding:25px; color: #7b7b7b; " st-content="fulltext-paragraph">
+                                        <p>Don't want to see this? <span style=" font-family:Arial, Helvetica, sans-serif; color:#f9a91e;"><unsubscribe>Unsubscribe</unsubscribe></span></p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="100%" height="15"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>
