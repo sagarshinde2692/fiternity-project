@@ -168,17 +168,17 @@ Class FinderMailer extends Mailer {
 			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
 		} 
 
-		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_groupby';
+		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_groupby1';
 		$template_data 				= 	$data;
 		// $bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Summary of offers sold on FitMania Sale by Fitternity I Till 9 Jan';
+		$subject  					=   'Summary of sales on FitMania 2016 by Fitternity';
 
 		$message_data 	= array(
-			// 'user_email' => Config::get('mail.to_mailus'),
-			'user_email' => 'apoorvasharma@fitternity.com',
+			'user_email' => Config::get('mail.to_mailus'),
+			// 'user_email' => 'sanjaysahu@fitternity.com',
 			'user_name' => ucwords($name),
-			// 'bcc_emailids' => $bcc_emailids,
-			'bcc_emailids' => ['sanjaysahu@fitternity.com'],
+			'bcc_emailids' => $bcc_emailids,
+			// 'bcc_emailids' => ['sanjaysahu@fitternity.com'],
 			'email_subject' => $subject
 			);
 

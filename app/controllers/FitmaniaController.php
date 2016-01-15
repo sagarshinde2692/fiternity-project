@@ -1324,12 +1324,16 @@ public function resendEmailsForWorngCustomer (){
 
 public function resendEmailsForWorngFinder (){
 
+	return "email send";
+	
 	$corders = [];
 
 	//For Orders
 	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
-	$finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id',[5728,5745,5746,5747,5748,6250,7335])->get()->groupBy('finder_id');
-	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->get()->groupBy('finder_id');
+	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->where('finder_id',7007)->get()->groupBy('finder_id');
+	$finders 		=	Order::whereIn('type',$match)->where('payment_status','<>','cancel')->where(function($query){
+		$query->orWhere('status','1')->orWhere('abondon_status','bought_closed');
+	})->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319,7022])->get()->groupBy('finder_id');
 	// $finders 		=	Order::whereIn('type',$match)->where('status','1')->whereIn('finder_id', [131,1026,1038,1039,1040,7319])->get()->groupBy('finder_id');
 	foreach ($finders as $key => $customer) {
@@ -1340,13 +1344,25 @@ public function resendEmailsForWorngFinder (){
 			$finder_location 		=	$orders[0]['finder_location'];
 			$finder_id 				=	$orders[0]['finder_location'];
 			foreach ($orders as $key => $value) {
+				if(isset($value['coupon_code'])){
+					$couponcode = array("uberfit","holafit","ttt","glammfit","haptik","stretchfit","vistafit","pepperfit");
+					if(in_array(trim(strtolower($value['coupon_code'])), $couponcode)){
+						$value['amount'] = ($value['amount'] * 10)/9;
+					}
+				}
 				array_push($corders, $value);
 			}
 
 			if (isset($orders[0]['finder_id']) && $orders[0]['finder_id'] != "") {
-				$abandonorders 		=	Order::whereIn('type',$match)->where('status','0')->where('finder_id',intval($orders[0]['finder_id']))->where('abondon_status','bought_closed')->get();
+				$abandonorders 		=	Order::whereIn('type',$match)->where('payment_status','<>','cancel')->where('status','0')->where('finder_id',intval($orders[0]['finder_id']))->where('abondon_status','bought_closed')->get();
 				if(count($abandonorders) > 0){
 					foreach ($abandonorders as $key => $abandonorder) {
+						if(isset($abandonorder['coupon_code'])){
+							$couponcode = array("uberfit","holafit","ttt","glammfit","haptik","stretchfit","vistafit","pepperfit");
+							if(in_array(trim(strtolower($abandonorder['coupon_code'])), $couponcode)){
+								$abandonorder['amount'] = ($abandonorder['amount'] * 10)/9;
+							}
+						}
 						array_push($corders, $abandonorder);
 					}
 				}
@@ -1364,8 +1380,9 @@ public function resendEmailsForWorngFinder (){
 			sleep(1);
 
 			// $$finder_vcc_email = $finder_vcc_email;
-			// $this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
-			echo $data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ". var_dump($finder_vcc_email)."<br>";
+			// $queid = $this->findermailer->resendFinderGroupBy($finder_vcc_email, $finder_name, $finder_location, $data);
+			echo $queid." - ".$data['finder_id']." - ".$data['finder_name']." - ".$data['finder_location']." - ". var_dump($finder_vcc_email)."<br>" ;
+			// return $data['corders'];
 			echo "==================================================================================================================== <br><br>";
 			// exit();
 		}
