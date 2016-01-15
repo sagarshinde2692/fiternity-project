@@ -1036,11 +1036,22 @@ class DebugController extends \BaseController {
 
 		public function csvOzonetel(){
 
-			$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('ozonetelno'=>function($query){$query->select('finder_id','phone_number','extension','type','_id')->where('status','=','1');}))->get(array('_id','title','commercial_type','business_type','location_id','contact.phone','city_id'))->toArray();
+			/*$mumbai = array('gyms','yoga','pilates','zumba','cross-functional-training','kick-boxing','dance','martial-arts','spinning-and-indoor-cycling','crossfit','marathon-training','healthy-tiffins','fitness-studios','healthy-snacks-and-beverages');
+        	$pune = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','cross-functional-training','aerobics','fitness-studios');
+        	$banglore = array('gyms','yoga','dance','zumba','martial-arts','pilates','kick-boxing','spinning-and-indoor-cycling','crossfit','fitness-studios');
+        	$delhi = array('gyms','yoga','pilates','zumba','cross-functional-training','dance','martial-arts','spinning-and-indoor-cycling','crossfit');
+
+        	$category = array_unique(array_merge($mumbai,$pune,$banglore,$delhi));*/
+
+        	$catgory_slug = array('gyms','yoga','pilates','zumba','cross-functional-training','kick-boxing','dance','martial-arts','spinning-and-indoor-cycling','crossfit','marathon-training','healthy-tiffins','fitness-studios','healthy-snacks-and-beverages','aerobics');
+
+        	$category_id = Findercategory::whereIn('slug',$catgory_slug)->lists('_id');
+
+			$finder = Finder::with(array('category'=>function($query){$query->select('name');}))->with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('ozonetelno'=>function($query){$query->select('finder_id','phone_number','extension','type','_id')->where('status','=','1');}))->whereIn('category_id',$category_id)->get(array('_id','title','commercial_type','business_type','location_id','category_id','contact.phone','city_id'))->toArray();
 
 			$fp = fopen('finder_ozonetel.csv', 'w');
 
-			$header = array('Vendor ID','Vendor Name','City','Location','Commercial Type','Business Type','Vendor Number','Ozonetel ID','Ozonetel Account','Ozonetel Number','Ozonetel Extension');
+			$header = array('Vendor ID','Vendor Name','Category','City','Location','Commercial Type','Business Type','Vendor Number','Ozonetel ID','Ozonetel Account','Ozonetel Number','Ozonetel Extension');
 
 
 			foreach ($finder as $key => $value) 
@@ -1055,6 +1066,10 @@ class DebugController extends \BaseController {
 
 				if(!isset($value['location']['name'])){
 					$finder[$key]['location']['name'] = '';
+				}
+
+				if(!isset($value['category']['name'])){
+					$finder[$key]['category']['name'] = '';
 				}
 
 				if(!isset($value['commercial_type_status'])){
@@ -1088,6 +1103,7 @@ class DebugController extends \BaseController {
 				$finder[$key]['city']['name'] = ucwords($finder[$key]['city']['name']);
 				$finder[$key]['location']['name'] = ucwords($finder[$key]['location']['name']);
 				$finder[$key]['ozonetelno']['type'] = ucwords($finder[$key]['ozonetelno']['type']);
+				$finder[$key]['category']['name'] = ucwords($finder[$key]['category']['name']);
 
 				$validateNo = $this->validateNo($finder[$key]['contact']['phone']);
 
@@ -1102,7 +1118,7 @@ class DebugController extends \BaseController {
 			foreach ($finder as $value) {  
 				
 
-				$fields = array($value['_id'],$value['title'],$value['city']['name'],$value['location']['name'],$value['commercial_type_status'],$value['business_type_status'],$value['contact']['phone'],$value['ozonetelno']['_id'],$value['ozonetelno']['type'],$value['ozonetelno']['phone_number'],$value['ozonetelno']['extension']);
+				$fields = array($value['_id'],$value['title'],$value['category']['name'],$value['city']['name'],$value['location']['name'],$value['commercial_type_status'],$value['business_type_status'],$value['contact']['phone'],$value['ozonetelno']['_id'],$value['ozonetelno']['type'],$value['ozonetelno']['phone_number'],$value['ozonetelno']['extension']);
 
 				fputcsv($fp, $fields);
 			}
