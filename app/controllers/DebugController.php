@@ -1222,6 +1222,24 @@ class DebugController extends \BaseController {
 			return 'done';
 		}
 
+		public function lonlat(){
+
+			$location = Location::get();
+
+			foreach ($location as $value) {
+
+				if(isset($value->lon) && isset($value->lat)){
+
+					$value->lonlat = array('lon'=>$value->lon,'lat'=>$value->lat);
+
+					$value->update();
+				}
+				
+			}
+
+			return 'done';
+		}
+
 
 
 	}

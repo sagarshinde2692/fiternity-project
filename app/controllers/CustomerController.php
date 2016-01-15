@@ -1170,5 +1170,264 @@ public function getCustomerDetail(){
 
 }
 
+	public function forYou($customer_email,$lat = 19.115490,$lon = 72.8726951){
+
+		//blogs catgories
+		$cardio = 1;
+		$strength = 2;
+		$nutrition = 3;
+		$flexibility = 4;
+		$recipes = 5;
+		$lifestyle = 6;
+		$eating_out = 7;
+		$relationships = 8;
+		$mind = 9;
+		$general = 10;
+
+		//finder categories
+		$gyms = array('id'=>5,'name'=>'gyms','blog_category'=>array($cardio,$strength,$general));
+		$yoga = array('id'=>6,'name'=>'yoga','blog_category'=>array($flexibility,$general));
+		$zumba = array('id'=>12,'name'=>'zumba','blog_category'=>array($cardio,$general));
+		$cross_functional_training = array('id'=>35,'name'=>'cross_functional_training','blog_category'=>array($strength,$general));
+		$dance = array('id'=>7,'name'=>'dance','blog_category'=>array($cardio,$general));
+		$fitness_studios = array('id'=>43,'name'=>'fitness_studios','blog_category'=>array($cardio,$strength,$general,$flexibility));
+		$crossfit = array('id'=>32,'name'=>'crossfit','blog_category'=>array($flexibility,$strength,$general));
+		$pilates = array('id'=>11,'name'=>'pilates','blog_category'=>array($flexibility,$strength,$general));
+		$mma_and_kick_boxing = array('id'=>8,'name'=>'mma_and_kick_boxing','blog_category'=>array($cardio,$strength,$general,$flexibility));
+		$spinning = array('id'=>14,'name'=>'spinning','blog_category'=>array($cardio,$general));
+		$healthy_tiffins = array('id'=>42,'name'=>'healthy_tiffins','blog_category'=>array($nutrition,$recipes,$eating_out,$general));
+		$marathon_training = array('id'=>36,'name'=>'marathon_training','blog_category'=>array($cardio,$general));
+		$healthy_snacks_and_beverages = array('id'=>45,'name'=>'healthy_snacks_and_beverages','blog_category'=>array($nutrition,$recipes,$eating_out,$general));
+		$swimming = array('id'=>10,'name'=>'swimming','blog_category'=>array($cardio,$general));
+		$dietitians_and_nutritionists = array('id'=>25,'name'=>'dietitians_and_nutritionists','blog_category'=>array($nutrition,$recipes,$eating_out,$general));
+		$aerobics = array('id'=>9,'name'=>'aerobics','blog_category'=>array($cardio));
+
+
+		$categories = array($gyms,$yoga,$zumba,$cross_functional_training,$dance,$fitness_studios,$crossfit,$pilates,$mma_and_kick_boxing,$spinning,$healthy_tiffins,$marathon_training,$healthy_snacks_and_beverages,$swimming,$dietitians_and_nutritionists,$aerobics);
+
+		//$categories = array('5'=>$gyms,'6'=>$yoga,'12'=>$zumba,'35'=>$cross_functional_training,'7'=>$dance,'43'=>$fitness_studios,'32'=>$crossfit,'11'=>$pilates,'8'=>$mma_and_kick_boxing,'14'=>$spinning,'42'=>$healthy_tiffins,'36'=>$marathon_training,'45'=>$healthy_snacks_and_beverages,'10'=>$swimming,'25'=>$dietitians_and_nutritionists,'9'=>$aerobics);
+
+		//echo"<pre>";print_r($categories);
+
+
+		$interest = Customer::where('email',$customer_email)->where('interest', 'exists', true)->lists('interest');
+
+		//echo"<pre>";print_r($interest);exit;
+
+		$finder = $offer = $article = $blog_category_id = $location_id = $category_id = array();
+
+		$limit = 5;
+
+		$lonlat = [$lon,$lat];
+
+		$location_id = Location::where('lonlat','near',$lonlat)->take($limit)->lists('_id');
+
+		if(!empty($interest)){
+
+			$interest = $interest[0];
+
+			foreach ($categories as $key => $value) {
+
+				if(in_array($value['id'], $interest)){
+					
+					$blog_category_id = array_merge($blog_category_id,$value['blog_category']);
+				}
+				
+			}
+
+			$blog_category_id = array_unique($blog_category_id);
+
+			$category_id  = Findercategory::active()->whereIn('name',$interest)->lists('_id');
+
+
+			//blogs
+			$article_query = Blog::with(array('author'=>function($query){$query->select('_id','name');}))->active();
+
+			if(!empty($blog_category_id)){
+
+				$article_query->whereIn('category_id',$blog_category_id);
+			}
+
+			$article = $article_query->take($limit)->get()->toArray();
+
+
+			//finder id
+			$finder_id_query = Finder::active();
+
+			if(!empty($category_id)){
+				$finder_id_query->whereIn('category_id',$category_id);
+			}
+
+			if(!empty($location_id)){
+
+				$finder_id_query->whereIn('location_id',$location_id);
+			}
+
+			$finder_id = $finder_id_query->lists('_id');
+
+
+			//offers and finder
+			$offer_query = Serviceoffer::with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+
+			$finder_query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->with('categorytags')
+			->with('locationtags')
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+
+			if(!empty($finder_id)){
+
+				$finder_query->whereIn('_id',$finder_id);
+
+				$offer_query->whereIn('finder_id',$finder_id);
+			}
+
+			$offer = $offer_query->take($limit)->get()->toArray();
+
+			$finder = $finder_query->take($limit)->get(array('_id','location_id','category_id','categorytags','locationtags','title','city_id','total_rating_count','average_rating'))->toArray();
+
+			foreach ($finder as $finder_key => $finder_value) {
+
+				foreach ($finder_value['categorytags'] as $key => $value) {
+
+					unset($finder[$finder_key]['categorytags'][$key]['finders']);
+					unset($finder[$finder_key]['categorytags'][$key]['cities']);
+				}
+
+				foreach ($finder_value['locationtags'] as $key => $value) {
+
+					unset($finder[$finder_key]['locationtags'][$key]['finders']);
+					unset($finder[$finder_key]['locationtags'][$key]['cities']);
+				}
+
+				foreach ($finder_value['services'] as $key => $value) {
+
+					unset($finder[$finder_key]['services'][$key]['serviceratecard']);
+				}
+
+			}
+
+			foreach ($offer as $offer_key => $offer_value) {
+
+				foreach ($offer_value['service'] as $key => $value) {
+
+					unset($offer[$offer_key]['service']['serviceratecard']);
+				}
+
+				$offer_finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+				->with('categorytags')
+				->with('locationtags')
+				->find((int) $offer_value['finder_id'],array('_id','location_id','category_id','categorytags','locationtags','title','city_id','total_rating_count','average_rating'))
+				->toArray();
+
+				foreach ($offer_finder['categorytags'] as $key => $value) {
+
+					unset($offer_finder['categorytags'][$key]['finders']);
+					unset($offer_finder['categorytags'][$key]['cities']);
+				}
+
+				foreach ($offer_finder['locationtags'] as $key => $value) {
+
+					unset($offer_finder['locationtags'][$key]['finders']);
+					unset($offer_finder['locationtags'][$key]['cities']);
+				}
+
+				$offer[$offer_key]['finder'] = $offer_finder;
+
+			}
+
+		}else{
+
+			//finder id
+			$finder_id_query = Finder::active();
+
+			if(!empty($location_id)){
+
+				$finder_id_query->whereIn('location_id',$location_id);
+			}
+
+			$finder_id = $finder_id_query->take($limit)->lists('_id');
+
+			$finder_query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->with('categorytags')
+			->with('locationtags')
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+
+			if(!empty($finder_id)){
+
+				$finder_query->whereIn('_id',$finder_id);
+			}
+
+			$finder = $finder_query->take($limit)->get(array('_id','location_id','category_id','categorytags','locationtags','title','city_id'))->toArray();
+
+			$offer = Serviceoffer::with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))->whereIn('finder_id',$finder_id)->take($limit)->get()->toArray();
+
+			$article = Blog::with(array('author'=>function($query){$query->select('_id','name');}))->active()->take($limit)->get()->toArray();
+
+			foreach ($finder as $finder_key => $finder_value) {
+
+				foreach ($finder_value['categorytags'] as $key => $value) {
+
+					unset($finder[$finder_key]['categorytags'][$key]['finders']);
+					unset($finder[$finder_key]['categorytags'][$key]['cities']);
+				}
+
+				foreach ($finder_value['locationtags'] as $key => $value) {
+
+					unset($finder[$finder_key]['locationtags'][$key]['finders']);
+					unset($finder[$finder_key]['locationtags'][$key]['cities']);
+				}
+
+				foreach ($finder_value['services'] as $key => $value) {
+
+					unset($finder[$finder_key]['services'][$key]['serviceratecard']);
+				}
+
+			}
+
+			foreach ($offer as $offer_key => $offer_value) {
+
+				foreach ($offer_value['service'] as $key => $value) {
+
+					unset($offer[$offer_key]['service']['serviceratecard']);
+				}
+
+				$offer_finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+				->with('categorytags')
+				->with('locationtags')
+				->find((int) $offer_value['finder_id'],array('_id','location_id','category_id','categorytags','locationtags','title','city_id','total_rating_count','average_rating'))
+				->toArray();
+
+				foreach ($offer_finder['categorytags'] as $key => $value) {
+
+					unset($offer_finder['categorytags'][$key]['finders']);
+					unset($offer_finder['categorytags'][$key]['cities']);
+				}
+
+				foreach ($offer_finder['locationtags'] as $key => $value) {
+
+					unset($offer_finder['locationtags'][$key]['finders']);
+					unset($offer_finder['locationtags'][$key]['cities']);
+				}
+
+				$offer[$offer_key]['finder'] = $offer_finder;
+
+			}
+
+		}
+
+		$return = array('finder'=>$finder,'offer'=>$offer,'article'=>$article);
+
+		return $return;
+
+	}
+
 
 }
