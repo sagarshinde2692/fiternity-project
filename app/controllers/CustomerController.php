@@ -1349,7 +1349,9 @@ public function getCustomerDetail(){
 				$finder_id_query->whereIn('location_id',$location_id);
 			}
 
-			$finder_id = $finder_id_query->take($limit)->lists('_id');
+			$finder_id = $finder_id_query->lists('_id');
+
+			$offer_query = Serviceoffer::with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			$finder_query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
@@ -1361,11 +1363,13 @@ public function getCustomerDetail(){
 			if(!empty($finder_id)){
 
 				$finder_query->whereIn('_id',$finder_id);
+
+				$offer_query->whereIn('finder_id',$finder_id);
 			}
 
 			$finder = $finder_query->take($limit)->get(array('_id','location_id','category_id','categorytags','locationtags','title','city_id'))->toArray();
 
-			$offer = Serviceoffer::with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))->whereIn('finder_id',$finder_id)->take($limit)->get()->toArray();
+			$offer = $offer_query->take($limit)->get()->toArray();
 
 			$article = Blog::with(array('author'=>function($query){$query->select('_id','name');}))->active()->take($limit)->get()->toArray();
 
