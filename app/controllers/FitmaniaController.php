@@ -1324,6 +1324,8 @@ public function resendEmailsForWorngCustomer (){
 
 public function resendEmailsForWorngFinder (){
 
+	return "email send";
+	
 	$corders = [];
 
 	//For Orders
