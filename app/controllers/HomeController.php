@@ -23,7 +23,7 @@ class HomeController extends BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
-			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->where('_id', '!=', 42)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
@@ -46,37 +46,37 @@ class HomeController extends BaseController {
 			$footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
 			$footer_block4_finders 		=		Finder::active()->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();																										
 
-			array_set($footer_finders,  'footer_block1_finders', $footer_block1_finders);									
-			array_set($footer_finders,  'footer_block2_finders', $footer_block2_finders);									
-			array_set($footer_finders,  'footer_block3_finders', $footer_block3_finders);									
-			array_set($footer_finders,  'footer_block4_finders', $footer_block4_finders);	
+			// array_set($footer_finders,  'footer_block1_finders', $footer_block1_finders);									
+			// array_set($footer_finders,  'footer_block2_finders', $footer_block2_finders);									
+			// array_set($footer_finders,  'footer_block3_finders', $footer_block3_finders);									
+			// array_set($footer_finders,  'footer_block4_finders', $footer_block4_finders);	
 
-			array_set($footer_finders,  'footer_block1_title', (isset($homepage['footer_block1_title']) && $homepage['footer_block1_title'] != '') ? $homepage['footer_block1_title'] : '');									
-			array_set($footer_finders,  'footer_block2_title', (isset($homepage['footer_block2_title']) && $homepage['footer_block2_title'] != '') ? $homepage['footer_block2_title'] : '');									
-			array_set($footer_finders,  'footer_block3_title', (isset($homepage['footer_block3_title']) && $homepage['footer_block3_title'] != '') ? $homepage['footer_block3_title'] : '');									
-			array_set($footer_finders,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');	
+			// array_set($footer_finders,  'footer_block1_title', (isset($homepage['footer_block1_title']) && $homepage['footer_block1_title'] != '') ? $homepage['footer_block1_title'] : '');									
+			// array_set($footer_finders,  'footer_block2_title', (isset($homepage['footer_block2_title']) && $homepage['footer_block2_title'] != '') ? $homepage['footer_block2_title'] : '');									
+			// array_set($footer_finders,  'footer_block3_title', (isset($homepage['footer_block3_title']) && $homepage['footer_block3_title'] != '') ? $homepage['footer_block3_title'] : '');									
+			// array_set($footer_finders,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');	
 
 			//return Response::json($finder_ids);
-			$category_finders 		=		Finder::whereIn('_id', $finder_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->remember(Config::get('app.cachetime'))
-			->get(array('_id','average_rating','category_id','coverimage','finder_coverimage','slug','title','category','location_id','location','total_rating_count'))
-			->groupBy('category.name')
-			->toArray();
+			// $category_finders 		=		Finder::whereIn('_id', $finder_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			// ->remember(Config::get('app.cachetime'))
+			// ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage','slug','title','category','location_id','location','total_rating_count'))
+			// ->groupBy('category.name')
+			// ->toArray();
 
-			array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
-			array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
-			array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
+			// array_set($popular_finders,  'gyms', array_get($category_finders, 'gyms'));		
+			// array_set($popular_finders,  'yoga', array_get($category_finders, 'yoga'));		
+			// array_set($popular_finders,  'dance', array_get($category_finders, 'dance'));									
 
-			$recent_blogs	 		= 		Blog::where('status', '=', '1')
-			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-			->with('categorytags')
-			->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
-			->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
-			->orderBy('_id', 'desc')
-			->remember(Config::get('app.cachetime'))
-			->get(array('_id','author_id','category_id','categorytags','coverimage','finder_coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
-			->take(4)->toArray();		
+			// $recent_blogs	 		= 		Blog::where('status', '=', '1')
+			// ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			// ->with('categorytags')
+			// ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+			// ->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+			// ->orderBy('_id', 'desc')
+			// ->remember(Config::get('app.cachetime'))
+			// ->get(array('_id','author_id','category_id','categorytags','coverimage','finder_coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+			// ->take(4)->toArray();		
 
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
@@ -125,9 +125,9 @@ class HomeController extends BaseController {
 
 			$homedata 				= 	array('categorytags' => $categorytags,
 				'locations' => $locations,
-				'popular_finders' => $popular_finders,       
-				'footer_finders' => $footer_finders,    
-				'recent_blogs' => $recent_blogs,
+				// 'popular_finders' => $popular_finders,       
+				// 'footer_finders' => $footer_finders,    
+				// 'recent_blogs' => $recent_blogs,
 				'city_name' => $city_name,
 				'city_id' => $city_id,
 				'collections' => $collections,

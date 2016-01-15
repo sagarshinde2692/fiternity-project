@@ -1277,5 +1277,8 @@ Route::get('csv/fakebuyall',  array('as' => 'debug.csvfakebuyall','uses' => 'Deb
 Route::get('csv/captureall',  array('as' => 'debug.csvcaptureall','uses' => 'DebugController@csvCaptureAll'));
 Route::get('csv/katchi',  array('as' => 'debug.csvkatchi','uses' => 'DebugController@csvKatchi'));
 Route::get('csv/ozonetel',  array('as' => 'debug.ozonetel','uses' => 'DebugController@csvOzonetel'));
+Route::get('csv/peppertap',  array('as' => 'debug.peppertap','uses' => 'DebugController@csvPeppertap'));
+Route::get('lonlat',  array('as' => 'debug.lonlat','uses' => 'DebugController@lonlat'));
+
 
 

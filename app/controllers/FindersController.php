@@ -89,13 +89,13 @@ class FindersController extends \BaseController {
 				// }
 				// array_set($finder, 'services', $servicesArr);
 
-				// $finder['associate_finder'] = null;
-				// if(isset($finderarr['access_gym_name']) && $finderarr['access_gym_name'] != ''){
+				$finder['associate_finder'] = null;
+				if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
 
-				// 	$associate_finder = array_map('intval',$finderarr['access_gym_name']);
-				// 	$associate_finder = Finder::active()->whereIn('_id',$associate_finder)->get(array('_id','title','slug'))->toArray();
-				// 	$finder['associate_finder'] = $associate_finder;
-				// }
+					$associate_finder = array_map('intval',$finderarr['associate_finder']);
+					$associate_finder = Finder::active()->whereIn('_id',$associate_finder)->get(array('_id','title','slug'))->toArray();
+					$finder['associate_finder'] = $associate_finder;
+				}
 			
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
