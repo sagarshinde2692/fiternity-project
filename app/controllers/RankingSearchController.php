@@ -413,13 +413,14 @@ return Response::json($response);
 
 public function getRankedFinderResultsApp()
 {
- 
+    // echo "yo";
+   // return Input::json()->all();
     $searchParams = array();
     $facetssize =  $this->facetssize;
     $rankField = 'rankv2';
     $type = "finder";
     $filters = "";
-    $from    =        (Input::json()->get('offset')['from'])  ?  Input::json()->get('offset')['from'] : 0;
+    $from    =         Input::json()->get('offset')['from'];
     $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
     //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
@@ -519,7 +520,6 @@ public function getRankedFinderResultsApp()
     },
     '.$sort.'
 }';
-
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
     'port' => 8050,
