@@ -413,13 +413,13 @@ return Response::json($response);
 
 public function getRankedFinderResultsApp()
 {
-   
+ 
     $searchParams = array();
     $facetssize =  $this->facetssize;
     $rankField = 'rankv2';
     $type = "finder";
     $filters = "";
-    $from    =         Input::json()->get('offset')['from'] : 0;
+    $from    =        (Input::json()->get('offset')['from'])  ?  Input::json()->get('offset')['from'] : 0;
     $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
     //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
