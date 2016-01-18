@@ -1256,6 +1256,75 @@ class DebugController extends \BaseController {
 			return 'done';
 		}
 
+		public function orderFitmania(){
+
+			$type = array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
+
+			$order = Order::with(array('serviceoffer'=>function($query){$query->select('_id','price');}))->whereIn('type',$type)->where(function ($query) { $query->orWhere('status',"1")->orWhere('abondon_status','bought_closed');})->where('coupon_code','exists',true)->get()->toArray();
+
+			$fp = fopen('order_fitmania_coupon.csv', 'w');
+
+			$header = array('Order ID','Coupon Code','Amount','Discounted Amount','Customer Name','Customer Email','Customer Number','Vendor ID','Vendor Name','Location');
+
+			foreach ($order as $key => $value) 
+			{
+				
+
+				if(!isset($value['coupon_code'])){
+					$order[$key]['coupon_code'] = '';
+				}
+
+				if(!isset($value['serviceoffer']['price'])){
+					$order[$key]['serviceoffer']['price'] = '';
+				}
+
+				if(!isset($value['amount'])){
+					$order[$key]['amount'] = '';
+				}
+
+				if(!isset($value['customer_name'])){
+					$order[$key]['customer_name'] = '';
+				}
+
+				if(!isset($value['customer_email'])){
+					$order[$key]['customer_email'] = '';
+				}
+
+				if(!isset($value['customer_phone'])){
+					$order[$key]['customer_phone'] = '';
+				}
+
+				if(!isset($value['finder_id'])){
+					$order[$key]['finder_id'] = '';
+				}
+
+				if(!isset($value['finder_name'])){
+					$order[$key]['finder_name'] = '';
+				}
+
+				if(!isset($value['finder_location'])){
+					$order[$key]['finder_location'] = '';
+				}	
+
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($order as $value) {  
+				
+
+				$fields = array($value['_id'],$value['coupon_code'],$value['serviceoffer']['price'],$value['amount'],$value['customer_name'],$value['customer_email'],$value['customer_phone'],$value['finder_id'],$value['finder_name'],$value['finder_location']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+
+
+		}
+
 
 
 	}
