@@ -8,11 +8,11 @@ Route::get('/importcode', function() {
 	foreach ($serviceoffers as $key => $offer) {
 		$serviceoffer 	=	Serviceoffer::find(intval($offer->_id));
 		$data 			= 	[
-								'buyable' => 0,
-								'active' => 0,
-								'left' => 0,
-								'sold' => intval($serviceoffer->limit)
-							];
+		'buyable' => 0,
+		'active' => 0,
+		'left' => 0,
+		'sold' => intval($serviceoffer->limit)
+		];
 
 		$success_order 	=	$serviceoffer->update($data);
 		echo "<pre>";print_r($data)."</pre>";
@@ -163,6 +163,54 @@ Route::get('moveratecard', function() {
 	// return Response::make(rtrim($output, "\n"), 200, $headers);
 	return "ratecard migraterated successfully ...";
 	
+});
+
+
+
+Route::get('reverse_moveratecard', function() { 
+	$items = Service::active()->orderBy('_id')->lists('_id');
+
+	foreach ($items as $key => $item) {
+		$service_id = intval($item);
+		$Serviceobj 	=	Service::find($service_id);
+
+		if($Serviceobj){
+			$servicedata  	= 	[];
+			$ratecards 		= 	Ratecard::where('service_id', $service_id )->get()->toArray();
+
+			if(count($ratecards) > 0 && isset($ratecards)){
+				$serviceratecards = [];
+				foreach ($ratecards as $key => $val) {
+					$duration_slug 	= 	"";
+					$ratecard 		= 	$val;
+
+					if($val['duration'] != '' && $val['validity'] != ''){
+						$previous_duration  = $val['duration'];
+						$durationObj 		= Duration::active()->where('days', intval($val['validity']) )->where('sessions', intval($val['duration']) )->first();
+						$duration_slug 		= (isset($durationObj->slug)) ? intval($durationObj->slug) : "";
+					}
+
+					$ratecard['duration'] = $duration_slug;
+					$ratecard['days'] = intval($val['validity']);
+					$ratecard['sessions'] = intval($val['duration']);
+					$ratecard['featured_offer'] = '0';
+
+					if(isset($val['duration_type']) && $val['duration_type'] == 'meal' ){
+						$ratecard['duration'] = '1-meal';
+						$ratecard['days'] = 0;
+					}
+
+					array_push($serviceratecards, $ratecard);
+				}//foreach ratecards
+				array_set($servicedata, 'ratecards', array_values($serviceratecards));
+			}
+			array_set($servicedata, 'updated_at', $Serviceobj->updated_at);
+			$Serviceobj->update($servicedata);		
+
+		}
+	}
+
+	return "ratecard migraterated successfully ...";
 });
 
 
