@@ -386,9 +386,9 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 				->find(intval($value['finder_id']));
 
 				if($finder){
-					$finder_name = $finder->title;
-					$finder_location = $finder->location->name;
-					$finder_city = $finder->city->name;
+					$finder_name = ($finder->title) ? $finder->title : "-";  
+					$finder_location = ($finder->location->name) ? $finder->location->name : "-"; 
+					$finder_city = ($finder->city->name) ? $finder->city->name : "-";  
 					$finder_category = ($finder->category->name) ? $finder->category->name : "-";
 				}
 			}else{
@@ -407,7 +407,7 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			}
 
 
-			$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $finder_city, $finder_category, $service_name, $service_category,  $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at, $finder_name, $finder_location \n";
+			$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $finder_name, $finder_location, $finder_city, $finder_category, $service_name, $service_category,  $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at \n";
 		}
 	}
 
