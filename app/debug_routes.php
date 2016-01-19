@@ -315,10 +315,10 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			$order_action 			= 	(isset($value['order_action']) && $value['order_action'] !="") ? $value['order_action'] : "-";
 			$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
 			$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
-			$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
+			$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? str_replace(',', '|', $value['finder_name']) : "-";
 			$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
 
-			$finder_category =  $service_name = $service_category = "-";
+			$finder_category =  $service_name = $service_category = $finder_city = "-";
 
 			if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
 				$finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
@@ -326,20 +326,24 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 				->find(intval($value['finder_id']));
 
-				$finder_name = $finder->title;
-				$finder_location = $finder->location->name;
-				$finder_city = $finder->city->name;
-				$finder_category = ($finder->category->name) ? $finder->category->name : "-";
+				if($finder){
+					$finder_name = $finder->title;
+					$finder_location = $finder->location->name;
+					$finder_city = $finder->city->name;
+					$finder_category = ($finder->category->name) ? $finder->category->name : "-";
+				}
 			}else{
-				$city = City::find(intval($value['city_id']));
-				$finder_city = $city->name;
+				if(isset($value['city_id']) && $value['city_id'] != ''){
+					$city = City::find(intval($value['city_id']));
+					$finder_city = $city->name;
+				}
 			}
 
 			if(isset($value['service_id']) && $value['service_id'] != ''){
 				$service = Service::where('_id', (int) $value['service_id'] )->with('category')->first();
 				if($service){
-					$service_name = $service->name;
-					$service_category = ($service->category->name) ? $service->category->name : "-";
+					$service_name = str_replace(',', '|', $service->name);
+					$service_category = ($service->category && $service->category->name) ? $service->category->name : "-";
 				}
 			}
 
@@ -369,29 +373,39 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			$schedule_date 			= 	(isset($value['schedule_date']) && $value['schedule_date'] !="") ? $value['schedule_date'] : "-";
 			$schedule_slot 			= 	(isset($value['schedule_slot']) && $value['schedule_slot'] !="") ? $value['schedule_slot'] : "-";
 			$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
-			$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
+			$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? str_replace(',', '|', $value['finder_name']) : "-";
 			$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
 
-			$finder_category =  $service_name = $service_category = "-";
 
+			$finder_category =  $service_name = $service_category = $finder_city = "-";
 
 			if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
-				$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-				$finder_name = $finder->title;
-				$finder_location = $finder->location->name;
-				$finder_city = $finder->city->name;
+				$finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+				->find(intval($value['finder_id']));
+
+				if($finder){
+					$finder_name = $finder->title;
+					$finder_location = $finder->location->name;
+					$finder_city = $finder->city->name;
+					$finder_category = ($finder->category->name) ? $finder->category->name : "-";
+				}
 			}else{
-				$city = City::find(intval($value['city_id']));
-				$finder_city = $city->name;
+				if(isset($value['city_id']) && $value['city_id'] != ''){
+					$city = City::find(intval($value['city_id']));
+					$finder_city = $city->name;
+				}
 			}
 
 			if(isset($value['service_id']) && $value['service_id'] != ''){
 				$service = Service::where('_id', (int) $value['service_id'] )->with('category')->first();
 				if($service){
-					$service_name = $service->name;
-					$service_category = ($service->category->name) ? $service->category->name : "-";
+					$service_name = str_replace(',', '|', $service->name);
+					$service_category = ($service->category && $service->category->name) ? $service->category->name : "-";
 				}
 			}
+
 
 			$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $finder_city, $finder_category, $service_name, $service_category,  $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at, $finder_name, $finder_location \n";
 		}
@@ -419,30 +433,35 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
 			$remarks 				= 	(isset($value['remarks']) && $value['remarks'] !="") ? str_replace(',', '|', $value['remarks']) : "-";
 			$membership 			= 	(isset($value['membership']) && $value['membership'] !="") ? str_replace(',', '|', $value['membership']) : "-";
-
 			$finder_name 			= 	(isset($value['vendor']) && $value['vendor'] !="") ? str_replace(',', '|', $value['vendor'])  : "-";
 			$finder_location 		= 	(isset($value['location']) && $value['location'] !="") ? $value['location'] : "-";
-			$finder_city 			= 	"-";
-			$finder_category =  $service_name = $service_category = "-";
 
+			$finder_category =  $service_name = $service_category = $finder_city = "-";
 
 			if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
-				$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-				$finder_name = (isset($finder->title) && $finder->title !="") ? str_replace(',', '|', $finder->title)  : "-"; 
-				$finder_location = (isset($finder->location->name) && $finder->location->name !="") ? str_replace(',', '|', $finder->location->name)  : "-";
-				$finder_city = (isset($finder->city->name) && $finder->city->name !="") ? str_replace(',', '|', $finder->city->name)  : "-"; 
+				$finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+				->find(intval($value['finder_id']));
+
+				if($finder){
+					$finder_name = $finder->title;
+					$finder_location = $finder->location->name;
+					$finder_city = $finder->city->name;
+					$finder_category = ($finder->category->name) ? $finder->category->name : "-";
+				}
 			}else{
 				if(isset($value['city_id']) && $value['city_id'] != ''){
 					$city = City::find(intval($value['city_id']));
-					$finder_city = (isset($city->name) && $city->name !="") ? str_replace(',', '|', $city->name)  : "-";  
+					$finder_city = $city->name;
 				}
 			}
 
 			if(isset($value['service_id']) && $value['service_id'] != ''){
 				$service = Service::where('_id', (int) $value['service_id'] )->with('category')->first();
 				if($service){
-					$service_name = $service->name;
-					$service_category = ($service->category->name) ? $service->category->name : "-";
+					$service_name = str_replace(',', '|', $service->name);
+					$service_category = ($service->category && $service->category->name) ? $service->category->name : "-";
 				}
 			}
 
