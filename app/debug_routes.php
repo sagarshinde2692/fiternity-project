@@ -1304,6 +1304,7 @@ Route::get('csv/katchi',  array('as' => 'debug.csvkatchi','uses' => 'DebugContro
 Route::get('csv/ozonetel',  array('as' => 'debug.ozonetel','uses' => 'DebugController@csvOzonetel'));
 Route::get('csv/peppertap',  array('as' => 'debug.peppertap','uses' => 'DebugController@csvPeppertap'));
 Route::get('lonlat',  array('as' => 'debug.lonlat','uses' => 'DebugController@lonlat'));
+Route::get('csv/orderfitmania',  array('as' => 'debug.orderfitmania','uses' => 'DebugController@orderFitmania'));
 
 
 

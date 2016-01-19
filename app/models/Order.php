@@ -44,5 +44,9 @@ class Order extends \Basemodel {
 	public function finder(){
 		return $this->belongsTo('Finder');
 	}
+
+	public function serviceoffer(){
+		return $this->belongsTo('Serviceoffer');
+	}
 	
 }
