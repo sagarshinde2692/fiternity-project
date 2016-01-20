@@ -32,7 +32,8 @@ class Ratecard extends \Basemodel {
 		return $this->hasMany('Serviceoffer','ratecard_id');
 	}
 
-	
-	
+	public function service(){
+		return $this->belongsTo('Service');
+	}	
 
 }
