@@ -951,7 +951,7 @@ class CustomerController extends \BaseController {
 				$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->find(intval($value['finder_id']),['_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city']);
+				->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city']);
 				if($finderarr){
 					$value['finder'] = $finderarr;
 				}

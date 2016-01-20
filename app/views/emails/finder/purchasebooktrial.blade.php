@@ -216,7 +216,7 @@
                              {{ $customer_email }}</td>
                            </tr>
 
-                           <?php if(isset($start_date) && $start_date != ""){ ?> 
+                           <?php if(isset($start_date) && $start_date != "" && $start_date != "-"){ ?> 
                            <tr>
                             <td style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 20px; vertical-align:text-top; color: #ec8601;" st-title="3col-title1">
                               <p style="font-weight:light">Starting Date:</p>
