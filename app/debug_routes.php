@@ -168,7 +168,8 @@ Route::get('moveratecard', function() {
 
 
 Route::get('reverse_moveratecard', function() { 
-	$items = Service::active()->orderBy('_id')->where('id',24)->lists('_id');
+	// $items = Service::active()->orderBy('_id')->where('_id',24)->lists('_id');
+	$items = Service::active()->orderBy('_id')->lists('_id');
 
 	foreach ($items as $key => $item) {
 		$service_id = intval($item);
@@ -197,7 +198,7 @@ Route::get('reverse_moveratecard', function() {
 					'special_price'=> (isset($val['special_price'])) ? $val['special_price'] : '',
 					'remarks'=> (isset($val['remarks'])) ? $val['remarks'] : '',
 					
-					'duration'=> (isset($val['duration'])) ? $val['duration'] : '',
+					'duration'=> $duration_slug,
 					'days'=> intval($val['validity']),
 					'sessions'=> intval($val['duration']),
 					
@@ -207,11 +208,32 @@ Route::get('reverse_moveratecard', function() {
 					];
 
 
-					$ratecard['duration'] = $duration_slug;
+					if($ratecard['days'] != '' && $ratecard['days'] != 0){
 
+						if(intval($ratecard['days'])%360 == 0){
+							$year_val  = intval(intval($ratecard['days'])/360);
+							if(intval($year_val) > 1){
+								$year_append = "years";
+							}else{
+								$year_append = "year";
+							}
+							$ratecard['duration'] = $year_val." ".$year_append;
+						}
 
+						if(intval($ratecard['days'])%30 == 0){
+							$month_val  = intval(intval($ratecard['days'])/30);
+							if(intval($month_val) > 1){
+								$month_append = "months";
+							}else{
+								$month_append = "month";
+							}
+							$ratecard['duration'] = $month_val." ".$month_append;
+						}
+					}
 					array_push($serviceratecards, $ratecard);
 				}//foreach ratecards
+
+				// return $serviceratecards;
 				array_set($servicedata, 'ratecards', array_values($serviceratecards));
 			}
 			array_set($servicedata, 'updated_at', $Serviceobj->updated_at);
