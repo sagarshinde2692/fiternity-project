@@ -44,6 +44,7 @@ class OrderController extends \BaseController {
 		$order 		= 	Order::findOrFail($orderid);
 		if(Input::json()->get('status') == 'success'){
 			array_set($data, 'status', '1');
+			array_set($data, 'order_action', 'bought');
 			$orderdata 	=	$order->update($data);
 			//send welcome email to payment gateway customer
 
