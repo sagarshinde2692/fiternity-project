@@ -168,7 +168,7 @@ Route::get('moveratecard', function() {
 
 
 Route::get('reverse_moveratecard', function() { 
-	$items = Service::active()->orderBy('_id')->where('id',23)->lists('_id');
+	$items = Service::active()->orderBy('_id')->where('id',24)->lists('_id');
 
 	foreach ($items as $key => $item) {
 		$service_id = intval($item);
