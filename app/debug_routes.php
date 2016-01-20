@@ -168,7 +168,7 @@ Route::get('moveratecard', function() {
 
 
 Route::get('reverse_moveratecard', function() { 
-	$items = Service::active()->orderBy('_id')->lists('_id');
+	$items = Service::active()->orderBy('_id')->where('id',23)->lists('_id');
 
 	foreach ($items as $key => $item) {
 		$service_id = intval($item);
@@ -181,24 +181,34 @@ Route::get('reverse_moveratecard', function() {
 			if(count($ratecards) > 0 && isset($ratecards)){
 				$serviceratecards = [];
 				foreach ($ratecards as $key => $val) {
-					$duration_slug 	= 	"";
-					$ratecard 		= 	$val;
+
+					$duration_slug 	= 	"trial";
 
 					if($val['duration'] != '' && $val['validity'] != ''){
 						$previous_duration  = $val['duration'];
 						$durationObj 		= Duration::active()->where('days', intval($val['validity']) )->where('sessions', intval($val['duration']) )->first();
 						$duration_slug 		= (isset($durationObj->slug)) ? intval($durationObj->slug) : "";
 					}
+					
+					$ratecard = [
+					'order'=> (isset($val['order'])) ? $val['order'] : '0',
+					'type'=> (isset($val['type'])) ? $val['type'] : '',
+					'price'=> (isset($val['price'])) ? $val['price'] : '',
+					'special_price'=> (isset($val['special_price'])) ? $val['special_price'] : '',
+					'remarks'=> (isset($val['remarks'])) ? $val['remarks'] : '',
+					
+					'duration'=> (isset($val['duration'])) ? $val['duration'] : '',
+					'days'=> intval($val['validity']),
+					'sessions'=> intval($val['duration']),
+					
+					'show_on_fitmania'=> (isset($val['show_on_fitmania'])) ? $val['show_on_fitmania'] : '',
+					'direct_payment_enable'=> (isset($val['direct_payment_enable'])) ? $val['direct_payment_enable'] : '0',
+					'featured_offer'=> (isset($val['featured_offer'])) ? $val['featured_offer'] : '0'
+					];
+
 
 					$ratecard['duration'] = $duration_slug;
-					$ratecard['days'] = intval($val['validity']);
-					$ratecard['sessions'] = intval($val['duration']);
-					$ratecard['featured_offer'] = '0';
 
-					if(isset($val['duration_type']) && $val['duration_type'] == 'meal' ){
-						$ratecard['duration'] = '1-meal';
-						$ratecard['days'] = 0;
-					}
 
 					array_push($serviceratecards, $ratecard);
 				}//foreach ratecards
