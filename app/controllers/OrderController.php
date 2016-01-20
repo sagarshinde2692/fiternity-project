@@ -30,7 +30,7 @@ class OrderController extends \BaseController {
 	//capture order status for customer used membership by
 	public function captureOrderStatus(){
 
-		$data		=	Input::json()->all();
+		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
 		if(empty($data['order_id'])){
 			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
 			return  Response::json($resp, 400);
@@ -69,7 +69,8 @@ class OrderController extends \BaseController {
 	//create cod order for customer
 	public function generateCodOrder(){
 
-		$data				=	Input::json()->all();
+		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		
 
 		if(empty($data['customer_name'])){
 			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
@@ -164,19 +165,6 @@ class OrderController extends \BaseController {
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
 		
 		array_set($data, 'customer_id', intval($customer_id));
-		
-		if(Input::json()->get('preferred_starting_date')){
-			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[1]."-".$date_arr[0]."-".$date_arr[2]));
-			array_set($data, 'preferred_starting_date', $preferred_starting_date);
-		}
-
-		if(Input::json()->get('start_date')){
-			$date_arr = explode('-', Input::json()->get('start_date'));
-			$start_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[1]."-".$date_arr[0]."-".$date_arr[2]));
-			array_set($data, 'start_date', $start_date);
-		}
-
 		array_set($data, 'status', '0');
 		array_set($data, 'payment_mode', 'cod');
 		$order 				= 	new Order($data);
@@ -369,7 +357,7 @@ class OrderController extends \BaseController {
 		array_set($data, 'customer_id', intval($customer_id));
 		
 		if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-			return $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
 			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[1]."-".$date_arr[0]."-".$date_arr[2]));
 			array_set($data, 'preferred_starting_date', $preferred_starting_date);
 		}
