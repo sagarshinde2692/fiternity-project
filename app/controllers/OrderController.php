@@ -162,7 +162,14 @@ class OrderController extends \BaseController {
 		}
 
 		$orderid 			=	Order::max('_id') + 1;
-		$data 				= 	Input::json()->all();
+		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
+			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[1]."-".$date_arr[0]."-".$date_arr[2]));
+			array_set($data, 'preferred_starting_date', $preferred_starting_date);
+		}
+		// return $data;
+		
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
 		
 		array_set($data, 'customer_id', intval($customer_id));
@@ -171,6 +178,8 @@ class OrderController extends \BaseController {
 		$order 				= 	new Order($data);
 		$order->_id 		= 	$orderid;
 		$orderstatus   		= 	$order->save();
+
+
 
 		//SEND COD EMAIL TO CUSTOMER
 		$sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());

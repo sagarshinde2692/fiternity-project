@@ -172,7 +172,7 @@
 
                   <p style="padding-top:15px; line-height:20px; font-weight:lighter; color:#5f5e5e">Thank you for requesting purchase of {{  ucwords($service_name) }} - {{ ucwords($service_duration) }} at {{  ucwords($finder_name) }}. </p>
 
-                  <?php if(isset($preferred_starting_date) && $preferred_starting_date != ""){ ?> 
+                  <?php if(isset($preferred_starting_date) && $preferred_starting_date != "" && $preferred_starting_date != "-"){ ?> 
                   <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e;"><span style="color:#ec8601; font-weight:100;" href="mailto:info@fitternity.com">Prefered Starting Date:</span> {{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) ) }}
                   </p>
                   <?php }?>
