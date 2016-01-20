@@ -1326,5 +1326,194 @@ class DebugController extends \BaseController {
 		}
 
 
+		public function csvPaidTrial(){
+
+			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->where('type','trial')->where('price','>',0)->get()->toArray();
+
+			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->where('type','workout session')->get()->toArray();
+
+			$services = Service::where('trialschedules','exists',true)->where('trialschedules',array())->lists('_id');
+
+			//echo"<pre>";print_r($services);exit;
+
+			$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->whereIn('service_id',$services)->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->get()->toArray();
+
+
+			//echo"<pre>";print_r($ratecard);exit;
+
+			$fp = fopen('no_schdule.csv', 'w');
+
+			$header = array('Ratecard ID','Service ID','Service Name','Amount','Vendor ID','Vendor Name','Vendor City','Vendor Location','Commercial Type');
+
+			foreach ($ratecard as $key => $value) 
+			{
+				
+
+				if(!isset($value['service']['name'])){
+					$ratecard[$key]['service']['name'] = '';
+				}
+
+				if(!isset($value['price'])){
+					$ratecard[$key]['price'] = '';
+				}
+
+				if(!isset($value['finder_id'])){
+					$ratecard[$key]['finder_id'] = '';
+				}
+
+				if(!isset($value['finder']['title'])){
+					$ratecard[$key]['finder']['title'] = '';
+				}
+
+				if(!isset($value['finder']['city']['name'])){
+					$ratecard[$key]['finder']['city']['name'] = '';
+				}
+
+				if(!isset($value['finder']['location']['name'])){
+					$ratecard[$key]['finder']['location']['name'] = '';
+				}
+
+				if(!isset($value['finder']['commercial_type_status'])){
+					$ratecard[$key]['finder']['commercial_type_status'] = '';
+				}
+
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($ratecard as $value) {  
+				
+
+				$fields = array($value['_id'],$value['service_id'],$value['service']['name'],$value['price'],$value['finder_id'],$value['finder']['title'],$value['finder']['city']['name'],$value['finder']['location']['name'],$value['finder']['commercial_type_status']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+
+		}
+
+
+		public function freeSpecial(){
+
+
+			$finder = Finder::with(array('category'=>function($query){$query->select('name');}))->with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->where('status',"1")->where('commercial_type',2)->get(array('_id','title','commercial_type','business_type','location_id','category_id','city_id'))->toArray();
+
+			$fp = fopen('freeSpecialVendor.csv', 'w');
+
+			$header = array('Vendor ID','Vendor Name','Category','City','Location');
+
+
+			foreach ($finder as $key => $value) 
+			{
+				if(!isset($value['title'])){
+					$finder[$key]['title'] = '';
+				}
+
+				if(!isset($value['city']['name'])){
+					$finder[$key]['city']['name'] = '';
+				}
+
+				if(!isset($value['location']['name'])){
+					$finder[$key]['location']['name'] = '';
+				}
+
+				if(!isset($value['category']['name'])){
+					$finder[$key]['category']['name'] = '';
+				}
+		
+				$finder[$key]['city']['name'] = ucwords($finder[$key]['city']['name']);
+				$finder[$key]['location']['name'] = ucwords($finder[$key]['location']['name']);
+				$finder[$key]['category']['name'] = ucwords($finder[$key]['category']['name']);
+
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($finder as $value) {  
+				
+
+				$fields = array($value['_id'],$value['title'],$value['category']['name'],$value['city']['name'],$value['location']['name']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+
+
+		}
+
+		public function membershipFitmania(){
+
+			$array = array('elabali09@gmail.com','adv.kaushiq@gmail.com','shrutikanthakandali@gmail.com','anushri.churhat@gmail.com','shruti.gupta184@yahoo.com','shilpagoel23@gmail.com','aarushichauhan9@gmail.com','aquarian_asmita@yahoo.com','ankit.sethi236@gmail.com','sonali.david@gmail.com','sejalchoudhari@gmail.com','dhiraj14792@gmail.com','surbhivyas2907@gmail.com','nagpal129@gmail.com');
+
+			$order = Order::whereIn('customer_email',$array)->get()->toArray();
+
+			$fp = fopen('membership_fitmania.csv', 'w');
+
+			$header = array('Order ID','Amount','Customer Name','Customer Email','Customer Number','Customer Address','Vendor ID','Vendor Name','Location');
+
+			foreach ($order as $key => $value) 
+			{
+				
+				if(!isset($value['amount'])){
+					$order[$key]['amount'] = '';
+				}
+
+				if(!isset($value['address'])){
+					$order[$key]['address'] = '';
+				}
+
+
+				if(!isset($value['customer_name'])){
+					$order[$key]['customer_name'] = '';
+				}
+
+				if(!isset($value['customer_email'])){
+					$order[$key]['customer_email'] = '';
+				}
+
+				if(!isset($value['customer_phone'])){
+					$order[$key]['customer_phone'] = '';
+				}
+
+				if(!isset($value['finder_id'])){
+					$order[$key]['finder_id'] = '';
+				}
+
+				if(!isset($value['finder_name'])){
+					$order[$key]['finder_name'] = '';
+				}
+
+				if(!isset($value['finder_location'])){
+					$order[$key]['finder_location'] = '';
+				}	
+
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($order as $value) {  
+				
+
+				$fields = array($value['_id'],$value['amount'],$value['customer_name'],$value['customer_email'],$value['customer_phone'],$value['address'],$value['finder_id'],$value['finder_name'],$value['finder_location']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+
+
+		}
+
+
+
+
 
 	}
