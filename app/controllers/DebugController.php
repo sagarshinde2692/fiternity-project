@@ -1332,59 +1332,56 @@ class DebugController extends \BaseController {
 
 			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->where('type','workout session')->get()->toArray();
 
-			$services = Service::where('trialschedules','exists',true)->where('trialschedules',array())->lists('_id');
+			$services = Service::where('trialschedules','exists',true)->where('trialschedules',array())->active()->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','commercial_type');}))->orderBy('_id', 'asc')->get()->toArray();
 
 			//echo"<pre>";print_r($services);exit;
 
-			$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->whereIn('service_id',$services)->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->get()->toArray();
+			//echo"<pre>";print_r($services);exit;
+
+			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->whereIn('service_id',$services)->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->get()->toArray();
 
 
-			//echo"<pre>";print_r($ratecard);exit;
+			//echo"<pre>";print_r($services);exit;
 
 			$fp = fopen('no_schdule.csv', 'w');
 
-			$header = array('Ratecard ID','Service ID','Service Name','Amount','Vendor ID','Vendor Name','Vendor City','Vendor Location','Commercial Type');
+			$header = array('Service ID','Service Name','Vendor ID','Vendor Name','Vendor City','Vendor Location','Commercial Type');
 
-			foreach ($ratecard as $key => $value) 
+			foreach ($services as $key => $value) 
 			{
 				
 
-				if(!isset($value['service']['name'])){
-					$ratecard[$key]['service']['name'] = '';
-				}
-
-				if(!isset($value['price'])){
-					$ratecard[$key]['price'] = '';
+				if(!isset($value['name'])){
+					$services[$key]['name'] = '';
 				}
 
 				if(!isset($value['finder_id'])){
-					$ratecard[$key]['finder_id'] = '';
+					$services[$key]['finder_id'] = '';
 				}
 
 				if(!isset($value['finder']['title'])){
-					$ratecard[$key]['finder']['title'] = '';
+					$services[$key]['finder']['title'] = '';
 				}
 
-				if(!isset($value['finder']['city']['name'])){
-					$ratecard[$key]['finder']['city']['name'] = '';
+				if(!isset($value['city']['name'])){
+					$services[$key]['city']['name'] = '';
 				}
 
-				if(!isset($value['finder']['location']['name'])){
-					$ratecard[$key]['finder']['location']['name'] = '';
+				if(!isset($value['location']['name'])){
+					$services[$key]['location']['name'] = '';
 				}
 
 				if(!isset($value['finder']['commercial_type_status'])){
-					$ratecard[$key]['finder']['commercial_type_status'] = '';
+					$services[$key]['finder']['commercial_type_status'] = '';
 				}
 
 			}
 
 			fputcsv($fp, $header);
 			
-			foreach ($ratecard as $value) {  
-				
+			foreach ($services as $value) {  
 
-				$fields = array($value['_id'],$value['service_id'],$value['service']['name'],$value['price'],$value['finder_id'],$value['finder']['title'],$value['finder']['city']['name'],$value['finder']['location']['name'],$value['finder']['commercial_type_status']);
+				$fields = array($value['_id'],$value['name'],$value['finder_id'],$value['finder']['title'],$value['city']['name'],$value['location']['name'],$value['finder']['commercial_type_status']);
 
 				fputcsv($fp, $fields);
 			}
@@ -1511,6 +1508,110 @@ class DebugController extends \BaseController {
 
 
 		}
+
+
+		public function reviewAddress(){
+
+			$capture = Capture::where('capture_type','reviewposted')->orderBy('_id', 'desc')->get()->toArray();
+
+			$fp = fopen('review_to_win_address.csv', 'w');
+
+			$header = array('Customer Name','Customer Mobile','Customer Address');
+
+			foreach ($capture as $key => $value) 
+			{
+				
+				if(!isset($value['name'])){
+					$capture[$key]['name'] = '';
+				}
+
+				if(!isset($value['mobile'])){
+					$capture[$key]['mobile'] = '';
+				}
+
+				if(!isset($value['address'])){
+					$capture[$key]['address'] = '';
+				}
+			}
+
+			fputcsv($fp, $header);
+			
+			foreach ($capture as $value) {  
+				
+
+				$fields = array($value['name'],$value['mobile'],$value['address']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+
+
+		}
+
+
+		public function dumpNo(){
+
+			$array = array('40','131','170','227','400','401','402','424','442','523','530','569','576','608','613','645','714','728','731','752','816','823','903','941','983','1020','1080','1140','1233','1259','1261','1263','1293','1295','1349','1376','1388','1413','1421','1422','1428','1431','1449','1450','1451','1452','1455','1456','1457','1458','1459','1460','1484','1486','1487','1488','1494','1523','1563','1579','1580','1581','1582','1584','1587','1602','1605','1606','1607','1611','1639','1646','1647','1669','1672','1739','1750','1814','1820','1824','1835','1845','1863','1867','1875','1878','1880','1887','1895','1935','1938','1939','1962','1985','2079','2157','2196','2198','2199','2200','2201','2207','2208','2216','2244','2297','2421','2425','2426','2427','2428','2628','2650','2701','2774','2777','2778','2806','2821','2824','2828','2833','2851','2852','2890','2997','3012','3105','3109','3296','3305','3344','3378','3382','3415','3416','3564','3612','3921','4029','4059','4142','4145','4168','4230','4315','4352','4417','4491','4534','4694','4767','4773','4823','4837','4929','5077','5500','5733','5895','5902','5950','5958','5965','6005','6010','6044','6126','6128','6149','6197','6210','6218','6229','6234','6268','6327','6329','6330','6332','6384','6387','6422','6426','6452','6496','6511','6531','6551','6574','6671','6686','6698','6896','6922','6923','6944','6969','6975','6976','7064','7150','5241','6241','14','927','1623','1719','1846','2025','2160','3807','4045','4048','4226','4681','5529','5560','5723','5851','5973','6019','6248','6310','6315','6348','6413','6419','6707');
+
+			/*$destinationPath = public_path();
+            $fileName = "finder_dump.csv";
+            $filePath = $destinationPath.'/'.$fileName;
+
+            $csv_to_array = $this->csv_to_array($filePath);
+
+            if($csv_to_array){
+
+                foreach ($csv_to_array as $key => $value) {
+
+                    if($value['Vendor ID'] != ''){
+
+                    	$finder = Finder::find((int) $value['Vendor ID']);
+
+                    	if($finder){
+
+                    		$contact = $finder->contact;
+
+                    		$contact['phone'] = $value['Vendor Number'];
+
+                    		$finder->contact = $contact;
+                    		$finder->update();
+
+                    		echo $finder->_id.' , ';
+
+                    	}
+
+                    }
+
+                }
+            }*/
+
+		}
+
+		public function csv_to_array($filename='', $delimiter=',')
+	    {
+	        if(!file_exists($filename) || !is_readable($filename))
+	            return FALSE;
+	     
+	        $header = NULL;
+	        $data = array();
+	        if (($handle = fopen($filename, 'r')) !== FALSE)
+	        {
+	            while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
+	            {
+	                if(!$header)
+	                    $header = $row;
+	                else
+	                    $data[] = array_combine($header, $row);
+	            }
+	            fclose($handle);
+	        }
+	        return $data;
+	    }
+
+
 
 
 
