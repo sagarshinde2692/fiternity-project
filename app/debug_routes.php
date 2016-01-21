@@ -168,6 +168,7 @@ Route::get('moveratecard', function() {
 
 
 Route::get('reverse_moveratecard', function() { 
+	// $items = Service::active()->orderBy('_id')->where('_id',24)->lists('_id');
 	$items = Service::active()->orderBy('_id')->lists('_id');
 
 	foreach ($items as $key => $item) {
@@ -181,27 +182,58 @@ Route::get('reverse_moveratecard', function() {
 			if(count($ratecards) > 0 && isset($ratecards)){
 				$serviceratecards = [];
 				foreach ($ratecards as $key => $val) {
-					$duration_slug 	= 	"";
-					$ratecard 		= 	$val;
+
+					$duration_slug 	= 	"trial";
 
 					if($val['duration'] != '' && $val['validity'] != ''){
 						$previous_duration  = $val['duration'];
 						$durationObj 		= Duration::active()->where('days', intval($val['validity']) )->where('sessions', intval($val['duration']) )->first();
 						$duration_slug 		= (isset($durationObj->slug)) ? intval($durationObj->slug) : "";
 					}
+					
+					$ratecard = [
+					'order'=> (isset($val['order'])) ? $val['order'] : '0',
+					'type'=> (isset($val['type'])) ? $val['type'] : '',
+					'price'=> (isset($val['price'])) ? $val['price'] : '',
+					'special_price'=> (isset($val['special_price'])) ? $val['special_price'] : '',
+					'remarks'=> (isset($val['remarks'])) ? $val['remarks'] : '',
+					
+					'duration'=> $duration_slug,
+					'days'=> intval($val['validity']),
+					'sessions'=> intval($val['duration']),
+					
+					'show_on_fitmania'=> (isset($val['show_on_fitmania'])) ? $val['show_on_fitmania'] : '',
+					'direct_payment_enable'=> (isset($val['direct_payment_enable'])) ? $val['direct_payment_enable'] : '0',
+					'featured_offer'=> (isset($val['featured_offer'])) ? $val['featured_offer'] : '0'
+					];
 
-					$ratecard['duration'] = $duration_slug;
-					$ratecard['days'] = intval($val['validity']);
-					$ratecard['sessions'] = intval($val['duration']);
-					$ratecard['featured_offer'] = '0';
 
-					if(isset($val['duration_type']) && $val['duration_type'] == 'meal' ){
-						$ratecard['duration'] = '1-meal';
-						$ratecard['days'] = 0;
+					if($ratecard['days'] != '' && $ratecard['days'] != 0){
+
+						if(intval($ratecard['days'])%360 == 0){
+							$year_val  = intval(intval($ratecard['days'])/360);
+							if(intval($year_val) > 1){
+								$year_append = "years";
+							}else{
+								$year_append = "year";
+							}
+							$ratecard['duration'] = $year_val." ".$year_append;
+						}
+
+						if(intval($ratecard['days'])%30 == 0){
+							$month_val  = intval(intval($ratecard['days'])/30);
+							if(intval($month_val) > 1){
+								$month_append = "months";
+							}else{
+								$month_append = "month";
+							}
+							$ratecard['duration'] = $month_val." ".$month_append;
+						}
 					}
-
 					array_push($serviceratecards, $ratecard);
 				}//foreach ratecards
+
+				// return $serviceratecards;
 				array_set($servicedata, 'ratecards', array_values($serviceratecards));
 			}
 			array_set($servicedata, 'updated_at', $Serviceobj->updated_at);
