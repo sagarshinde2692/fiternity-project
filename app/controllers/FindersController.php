@@ -96,7 +96,7 @@ class FindersController extends \BaseController {
 					$associate_finder = Finder::active()->whereIn('_id',$associate_finder)->get(array('_id','title','slug'))->toArray();
 					$finder['associate_finder'] = $associate_finder;
 				}
-			
+
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
@@ -487,11 +487,11 @@ class FindersController extends \BaseController {
 
 
 			$message = array(
-            	'type'    => get_class($e),
-               	'message' => $e->getMessage(),
-               	'file'    => $e->getFile(),
-                'line'    => $e->getLine(),
-            );
+				'type'    => get_class($e),
+				'message' => $e->getMessage(),
+				'file'    => $e->getFile(),
+				'line'    => $e->getLine(),
+				);
 
 			$resp 	= 	array('status' => 400,'message' => $message);
 			Log::info('Trial Daily Summary Cron : fial',$message);
@@ -510,7 +510,7 @@ class FindersController extends \BaseController {
 
 		return Response::json($resp);
 
-			
+
 	}
 
 	public function checkbooktrialdaliysummary($date){
@@ -813,14 +813,14 @@ class FindersController extends \BaseController {
 		
 		// return $finderdata;
 		$success = $finder->update($finderdata);
-		return $finder;
+		// return $finder;
 
 		if($finder->update($finderdata)){
 			//updating elastic search	
-			$this->pushfinder2elastic($finderslug); 
+			// $this->pushfinder2elastic($finderslug); 
 			//sending email
 			$email_template = 'emails.review';
-			$email_template_data = array( 'vendor' 	=>	ucwords($finderslug) ,  'date' 	=>	date("h:i:sa") );
+			$email_template_data = array( 'vendor' 	=>	ucwords($finderslug) , 'review' => $data['description'] ,  'date' 	=>	date("h:i:sa") );
 			$email_message_data = array(
 				'to' => Config::get('mail.to_neha'), 
 				'reciver_name' => 'Fitternity',
@@ -828,8 +828,8 @@ class FindersController extends \BaseController {
 				'email_subject' => 'Review given for - ' .ucwords($finderslug)
 				);
 			$email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
-				$message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
-					// $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+				// $message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+				$message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
 			});
 
 			//sending response
