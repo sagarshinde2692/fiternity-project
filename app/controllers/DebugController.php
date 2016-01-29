@@ -1328,12 +1328,63 @@ class DebugController extends \BaseController {
 
 		public function csvPaidTrial(){
 
+			ini_set('memory_limit','2048M');
+
+			$services = Service::where('trialschedules','exists',true)->active()->get(array('trialschedules','finder_id'))->toArray();
+
+			$finder = array();
+
+			foreach ($services as $key => $value) {
+
+				if(!empty($value['trialschedules'])){
+
+					if(!isset($finder[$value['finder_id']]['ne'])){
+
+						$finder[$value['finder_id']]['ne'] = 1;
+
+					}else{
+
+						$finder[$value['finder_id']]['ne'] += 1;
+					}
+
+				}else{
+
+					if(!isset($finder[$value['finder_id']]['e'])){
+
+						$finder[$value['finder_id']]['e'] = 1;
+
+					}else{
+
+						$finder[$value['finder_id']]['e'] += 1;
+					}
+
+				}
+
+			}
+
+			$hesh = array();
+
+			foreach ($finder as $key => $value) {
+
+				if(isset($value['e']) && !isset($value['ne']))
+				{
+					$hesh[] = $key;
+				}
+			}
+
+			$category = array(42,45,40,25);
+
+			$finders = Finder::whereIn('_id',$hesh)->whereNotIn('category_id',$category)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
+
+
+			//echo"<pre>";print_r($hesh);exit;
+
 			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->where('type','trial')->where('price','>',0)->get()->toArray();
 
 			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->where('type','workout session')->get()->toArray();
 
-			$services = Service::where('trialschedules','exists',true)->where('trialschedules',array())->active()->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','commercial_type');}))->orderBy('_id', 'asc')->get()->toArray();
-
+			/*$services = Service::where('trialschedules','exists',true)->where('trialschedules',array())->active()->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','commercial_type');}))->orderBy('_id', 'asc')->get()->toArray();
+*/
 			//echo"<pre>";print_r($services);exit;
 
 			//echo"<pre>";print_r($services);exit;
@@ -1343,45 +1394,45 @@ class DebugController extends \BaseController {
 
 			//echo"<pre>";print_r($services);exit;
 
-			$fp = fopen('no_schdule.csv', 'w');
+			$fp = fopen('finder_with_no_schdule.csv', 'w');
 
-			$header = array('Service ID','Service Name','Vendor ID','Vendor Name','Vendor City','Vendor Location','Commercial Type');
+			$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type');
 
-			foreach ($services as $key => $value) 
+			foreach ($finders as $key => $value) 
 			{
 				
 
-				if(!isset($value['name'])){
-					$services[$key]['name'] = '';
+				if(!isset($value['_id'])){
+					$finders[$key]['_id'] = '';
 				}
 
-				if(!isset($value['finder_id'])){
-					$services[$key]['finder_id'] = '';
-				}
-
-				if(!isset($value['finder']['title'])){
-					$services[$key]['finder']['title'] = '';
+				if(!isset($value['title'])){
+					$finders[$key]['title'] = '';
 				}
 
 				if(!isset($value['city']['name'])){
-					$services[$key]['city']['name'] = '';
+					$finders[$key]['city']['name'] = '';
 				}
 
 				if(!isset($value['location']['name'])){
-					$services[$key]['location']['name'] = '';
+					$finders[$key]['location']['name'] = '';
 				}
 
-				if(!isset($value['finder']['commercial_type_status'])){
-					$services[$key]['finder']['commercial_type_status'] = '';
+				if(!isset($value['category']['name'])){
+					$finders[$key]['category']['name'] = '';
+				}
+
+				if(!isset($value['commercial_type_status'])){
+					$finders[$key]['commercial_type_status'] = '';
 				}
 
 			}
 
 			fputcsv($fp, $header);
 			
-			foreach ($services as $value) {  
+			foreach ($finders as $value) {  
 
-				$fields = array($value['_id'],$value['name'],$value['finder_id'],$value['finder']['title'],$value['city']['name'],$value['location']['name'],$value['finder']['commercial_type_status']);
+				$fields = array($value['_id'],$value['title'],$value['city']['name'],$value['location']['name'],$value['category']['name'],$value['commercial_type_status']);
 
 				fputcsv($fp, $fields);
 			}
