@@ -189,6 +189,37 @@ Class FinderMailer extends Mailer {
 
 	}
 
+
+	public function emailToFitmaniaVendors ($to, $name, $data){
+
+		if($to != ''){		
+			$bcc_emailids  =  	(!is_array($to)) ? array_merge( explode(',', $to), Config::get('mail.bcc_emailds_fitmaniasale') ) : array_merge($to, Config::get('mail.bcc_emailds_fitmaniasale'));
+			// $bcc_emailids 	=  	array_merge(explode(',', $to),Config::get('mail.bcc_emailds_fitmaniasale'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		} 
+
+		$email_template_customer 	= 	'emails.order.fitmania_offer_vendor_groupby2';
+		$template_data 				= 	$data;
+		// $bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
+		$subject  					=   'FitMania 2016 and other important updates from Fitternity I A note from CEO';
+
+		$message_data 	= array(
+			'user_email' => Config::get('mail.to_mailus'),
+			// 'user_email' => 'sanjaysahu@fitternity.com',
+			'user_name' => ucwords($name),
+			'bcc_emailids' => $bcc_emailids,
+			// 'bcc_emailids' => ['sanjaysahu@fitternity.com'],
+			'email_subject' => $subject
+			);
+
+		$label = 'BuySrvFitmaniaGroupbyFinder-F';
+		$priority = 1;
+		
+		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+
+	}
+
 	public function buyServiceMembershipThroughFitmania ($data){
 
 		$email_template 	= 	'emails.order.fitmania_membership_vendor_v1';

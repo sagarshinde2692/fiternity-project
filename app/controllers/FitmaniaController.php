@@ -1398,5 +1398,48 @@ public function resendEmailsForWorngFinder (){
 
 
 
+public function emailToFitmaniaVendors (){
+	
+	$corders = [];
+
+	//For Orders
+	$match 			=	array('fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
+	$finders 		=	Order::whereIn('type',$match)->where('payment_status','<>','cancel')->where(function($query){
+		$query->orWhere('status','1')->orWhere('abondon_status','bought_closed');
+	})->get()->groupBy('finder_id');
+
+	// return $finders;
+
+	foreach ($finders as $key => $customer) {
+		$orders  =  	(!is_array($customer)) ? $customer->toArray() : $customer;
+		if(count($orders) > 0){
+			$data['finder_id'] 		=	$orders[0]['finder_id'];
+			$finder_name 			=	$orders[0]['finder_name'];
+			$finder 				=	Finder::find(intval($orders[0]['finder_id']));
+			$finder_vcc_email		=	($finder->finder_vcc_email) ? $finder->finder_vcc_email : [];
+			$peppertapobj 			= 	Peppertap::where('status','=', 0)->take(1)->get(['code','_id'])->toArray();
+			$peppertap_ids 			=  	array_map('intval', array_pluck($peppertapobj, '_id'));
+			$data['codes'] 			=	$peppertapobj;
+
+			// $update = Peppertap::whereIn('_id', $peppertap_ids)->update(['status' => 1]);
+			$queid = "";
+			$queid = $this->findermailer->emailToFitmaniaVendors($finder_vcc_email, $finder_name, $data);
+			echo $queid." - ".$data['finder_id']. var_dump($finder_vcc_email)." <br><pre> ".print_r($peppertap_ids)." - </pre><pre> ".print_r($peppertapobj)."<br>" ;
+			// return $data['corders'];
+			echo "==================================================================================================================== <br><br>";
+			// exit();
+		}
+	}
+	// return $corders;
+
+
+	return "email send";
+	
+
+}
+
+
+
+
 
 }
