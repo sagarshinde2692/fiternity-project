@@ -48,6 +48,32 @@ class OrderController extends \BaseController {
 			$orderdata 	=	$order->update($data);
 			//send welcome email to payment gateway customer
 
+			try {
+
+				if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
+
+					$trial = Booktrial::find((int) $order->referal_trial_id);
+
+					if($trial){
+
+						$bookdata = array();
+
+						array_set($bookdata, 'going_status', 4);
+						array_set($bookdata, 'going_status_txt', 'purchased');
+						array_set($bookdata, 'booktrial_actions', '');
+						array_set($bookdata, 'followup_date', '');
+						array_set($bookdata, 'followup_date_time', '');
+
+						$trial->update($bookdata);
+					}
+				}
+				
+			} catch (Exception $e) {
+
+				Log::error($e);
+				
+			}	
+
 			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
