@@ -286,15 +286,16 @@ Class CustomerMailer extends Mailer {
 		$label = 'SendPgOrder-C';
 		$priority = 1;
 		
-		$this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+		// $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 
 		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		array_set($message_data, 'user_name', 'Fitternity');
+		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
+		// array_set($message_data, 'user_name', 'Fitternity');
 
-		$label = 'SendPgOrder-Us';
+		// $label = 'SendPgOrder-Us';
+		// $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
 		
-		return $this->sendToWorker($email_template_mailus, $template_data, $message_data, $label);
+		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
 	}
 
 
