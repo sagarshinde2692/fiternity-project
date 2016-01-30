@@ -1,5 +1,7 @@
 <?php
 
+Route::get('migrations/{entiy?}', 'MigrationsController@vendor');
+
 
 Route::get('/importcode', function() {  
 
