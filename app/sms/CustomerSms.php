@@ -179,7 +179,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". We will get in touch with you shortly to help you get started. In the meantime you can reach us on ".Config::get('app.customer_care_number')." for any queries. Team Fitternity";
+		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of membership at ".ucwords($data['finder_name']).". We will get in touch with you shortly to help you get started. In the meantime you can reach us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
 
 		if($data['type'] == 'arsenalmembership'){
 			if($data['service_duration'] == 'Renew'){
@@ -199,7 +199,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for requesting purchase of ". ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on ".Config::get('app.customer_care_number')." for any queries. Team Fitternity";
+		$message = "Hi ".ucwords($data['customer_name']).". Thank you for purchasing of membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
 
 		$label = 'PgOrder-C';
 		$priority = 1;
