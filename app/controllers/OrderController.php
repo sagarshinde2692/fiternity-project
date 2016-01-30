@@ -191,7 +191,7 @@ class OrderController extends \BaseController {
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
 		if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
 			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[1]."-".$date_arr[0]."-".$date_arr[2]));
+			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
 			array_set($data, 'preferred_starting_date', $preferred_starting_date);
 		}
 		// return $data;
@@ -394,7 +394,7 @@ class OrderController extends \BaseController {
 		
 		if(trim(Input::json()->get('preferred_starting_date')) != '-'){
 			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[1]."-".$date_arr[0]."-".$date_arr[2]));
+			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
 			array_set($data, 'preferred_starting_date', $preferred_starting_date);
 		}
 

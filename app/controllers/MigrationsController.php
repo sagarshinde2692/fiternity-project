@@ -51,6 +51,12 @@ class MigrationsController extends \BaseController {
 						'primary' =>  array_map('intval', $finder->facilities),
 						'secondary' =>  array_map('intval', $finder->offerings)
 					],
+					'filters' 	=>  [
+						'primary' 	=>  intval($finder->category_id),
+						
+						'primary' =>  array_map('intval', $finder->facilities),
+						'secondary' =>  array_map('intval', $finder->offerings)
+					],
 					'hidden' =>  $finder->status,
 					'created_at' =>  $finder->created_at,
 					'updated_at' =>  $finder->updated_at
@@ -66,7 +72,7 @@ class MigrationsController extends \BaseController {
 
 
 
-					
+
 
 					$vendor 		=	new Vendor($vendorData);
 					$vendor->_id 	=	intval($finder->_id);
