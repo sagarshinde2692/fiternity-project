@@ -42,8 +42,14 @@ class MigrationsController extends \BaseController {
 					$business_type 		= $business_type_arr[intval($finder->business_type)];
 					$vendor_type 		= $finder_type_arr[intval($finder->finder_type)];
 
-					$email = $phone = $point_of_contact = [];
+					$email = $phone = $point_of_contact = $images = $videos = [];
 
+					$images['cover']  	=	$finder->coverimage;
+					$images['logo']  	= 	$finder->logo;
+					$images['gallery']  = 	($finder->photos) ? $finder->photos : [];
+					$videos       		= 	($finder->videos) ? $finder->videos : [];
+					
+					// $rating[]			
 					$vendorData = [
 					'name' =>  trim($finder->title),
 					'slug' =>  trim($finder->slug),
@@ -51,11 +57,11 @@ class MigrationsController extends \BaseController {
 					'city_id' 	=>  intval($finder->city_id),
 					'locations' 	=>  [
 						'primary' 	=>  intval($finder->location_id),
-						'secondary' =>  array_map('intval', $finder->locationtags),
+						'secondary' =>  array_map('intval', $finder->locationtags)
 					],
 					'categorys' 	=>  [
 						'primary' 	=>  intval($finder->category_id),
-						'secondary' =>  array_map('intval', $finder->categorytags),
+						'secondary' =>  array_map('intval', $finder->categorytags)
 					],
 					'filters' 	=>  [
 						'primary' =>  array_map('intval', $finder->facilities),
@@ -70,6 +76,10 @@ class MigrationsController extends \BaseController {
 						'email' =>  $email,
 						'phone' =>  $phone,
 						'point_of_contact' =>  $point_of_contact
+					],
+					'media' 	=>  [
+						'images' =>  $images,
+						'videos' =>  $videos
 					],
 					'info' 	=>  [
 						'about' 	=>  ($finder->info['about']) ? trim($finder->info['about']) : "",
