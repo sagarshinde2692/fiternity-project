@@ -51,7 +51,7 @@
 						</p>
 						<p style="font-size:15px;color:#464646">
 							We'll email you whenever someone asked to join your community. 
-							But if you have any other questions either email us at <a href="mailto:info@fitternity.com">info@fitternity.com</a> or call us on +91 92222 21131 .
+							But if you have any other questions either email us at <a href="mailto:info@fitternity.com">info@fitternity.com</a> or call us on {{Config::get('app.customer_care_number')}} .
 						</p>
 						<br>
 						<p style="font-size:15px;color:#464646;text-align:justify;">
@@ -96,7 +96,7 @@
 				<table bgcolor="#ecf0f1" width="100%" >
 					<tr align="center">
 						<td>Mail Us: <a href="mailto:info@fitternity.com">info@fitternity.com</a></td>
-						<td>Call Us: +91 92222 21131</td>
+						<td>Call Us: {{Config::get('app.customer_care_number')}}</td>
 					</tr>
 				</table>
 			</div>

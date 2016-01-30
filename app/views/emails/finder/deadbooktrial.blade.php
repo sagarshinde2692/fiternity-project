@@ -347,7 +347,7 @@
 
             <p style="padding-top:20px">You could reach out to the customer directly and take it forward.</p>
             <p style="padding-top:20px">If there is any update at our end regarding this customer we shall let you know.</p>
-            <p style="padding-top:20px">If you have any questions or need any support please reply to this mail or call us on +91 92222 21131.</p>
+            <p style="padding-top:20px">If you have any questions or need any support please reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
             <p style="padding-top:20px">Regards</p>
             <p style="padding-top:20px">TEAM FITTERNITY </p>
           </td>
@@ -394,7 +394,7 @@
       <tbody>
         <tr style="background-color:#fff">
           <td width="160"><a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/105/fitternity_transparent.png" alt="" border="0"></a></td>
-          <td align="center" style="color:#666; font-family:Arial, sans serif; font-size:13px;" width="200">Call -          022 6122 2222</td>
+          <td align="center" style="color:#666; font-family:Arial, sans serif; font-size:13px;" width="200">Call - {{Config::get('app.customer_care_number')}}</td>
           <td width="197" style="text-align:right"><a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/Facebooklogopic.png" width="25" height="25" alt="Facebook" title="Facebook" border="0"></a> <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/twitter-icon.png" width="25" height="25" alt="Twitter" title="Twitter" border="0"></a> <a href="http://www.pinterest.com/fitternityindia/?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img src="http://email.fitternity.com/105/pinterest-logo.png" width="25" height="25" alt="Pinterest" title="Pinterest" border="0"></a> <a href="http://www.instagram.com/fitternity" target="_blank"><img src="http://email.fitternity.com/105/instagram_icon.png" width="25" height="25" alt="Instagram" title="Instagram" border="0"></a></td>
         </tr>
       </tbody>

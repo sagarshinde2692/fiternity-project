@@ -252,6 +252,8 @@ return array(
 			'path'							=> 'ozonetel/',
 			'url'							=> 'http://b.fitn.in/ozonetel/',
 		),
-	),	
+	),
+
+	'customer_care_number' => '+912261222233',
 
 );

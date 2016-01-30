@@ -179,7 +179,7 @@ Hi {{ $customer_name }}!</span></p>
 
 <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e"><span style="color:#ec8601; font-weight:600;">3. Call us for help</span>
 
- <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on +91922221131 or 02261222222<hr />
+ <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#222;">Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call {{Config::get('app.customer_care_number')}}<hr />
   
 </p>
 

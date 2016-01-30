@@ -322,7 +322,7 @@
 
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph"> 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding: 20px 0px; " st-content="fulltext-paragraph"> In case of any queries please reach out to your respective Fitternity Relationship Manager or call us on 022-61222232</p>                                                    
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding: 20px 0px; " st-content="fulltext-paragraph"> In case of any queries please reach out to your respective Fitternity Relationship Manager or call us on {{Config::get('app.customer_care_number')}}</p>                                                    
 
 
                                                     </td>
@@ -397,7 +397,7 @@
             <tr>
                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                     <p>Contact us
-                        <br /> Phone: <a style="text-decoration:none;color:#f9a91e"> 022 61222222  |  +91 92222 21131</a>
+                        <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
                         <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                     </p>
                 </td>

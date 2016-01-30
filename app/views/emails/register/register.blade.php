@@ -500,7 +500,7 @@
                                                         </tr>
                                                         <tr>
                                                             <td align="left" valign="top" style="font-family: 'Open Sans', Arial, sans-serif; color:#7f8c8d; line-height:26px; font-size:13px;">
-                                                                Need someone to guide you through the process and ensure you start your fitness journey? Reach out to our Fitness Concierge Managers by requesting a call back or calling us on 022-61222222.
+                                                                Need someone to guide you through the process and ensure you start your fitness journey? Reach out to our Fitness Concierge Managers by requesting a call back or calling us on {{Config::get('app.customer_care_number')}}.
                                                             </td>
                                                         </tr>
                                                     </table>

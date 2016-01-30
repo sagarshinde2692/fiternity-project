@@ -317,7 +317,7 @@
                                      </tr>
                                      <tr style="background-color:#f6f6f6;">
                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph"> 
-                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Please call us in case of any queries - you can reach your assigned Relationship Manager directly or call us on 02261222232.</p>
+                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Please call us in case of any queries - you can reach your assigned Relationship Manager directly or call us on {{Config::get('app.customer_care_number')}}.</p>
                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Regards,<br />
                                                 TEAM FITTERNITY</p>
 
@@ -389,7 +389,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e;"> 02261222232</a>
+                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e;"> {{Config::get('app.customer_care_number')}}</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                 </p>
             </td>

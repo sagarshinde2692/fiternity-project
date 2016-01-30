@@ -20,7 +20,7 @@
 			<tr><td>Contact Person: </td><td>{{ ucwords($finder_poc_for_customer_name) }}</td></tr>
 		</table>
 
-		<p>If you need to change the time or day of the session just reply to this mail or call us on +91 92222 21131.</p>
+		<p>If you need to change the time or day of the session just reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
 		<p>We shall be sending you a reminder message to ensure you don't miss out on the workout. We hope you have a great session. </p>
 		<p>Regards<br>TEAM FITTERNITY</p>
 	</div>
