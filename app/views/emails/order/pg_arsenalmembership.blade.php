@@ -182,7 +182,7 @@
 
                        <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Delivery: Kits will be delievered between 15th to 25th October 2015.</p> 
 
-                        <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
+                        <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">{{Config::get('app.customer_care_number')}}</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
 
                         
                         <p style="padding-top:25px; padding-bottom:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Regards, <br />Team Fitternity</p>

@@ -246,7 +246,7 @@
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> 
                                                              <span style="font-weight:bold; color: #666666;" >
                                                                  Please {{ link_to('http://www.fitternity.com/'.$finder_slug, 'Click here', array("style"=>"text-decoration:none; color:#f9a91e; cursor:pointer;") ) }} 
-                                                                 book another trial session or you could also call us on +91 9222221131 for any assistance.
+                                                                 book another trial session or you could also call us on {{Config::get('app.customer_care_number')}} for any assistance.
                                                              </span><br/>
                                                          </p> <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color: #666666;" >Regards<br/>
                                                          TEAM FITTERNITY
@@ -306,7 +306,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                <br /> Phone: <a style="text-decoration:none; color:#ffffff"> 022 61222222  |  +91 92222 21131</a>
+                <br /> Phone: <a style="text-decoration:none; color:#ffffff">{{Config::get('app.customer_care_number')}}</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                 </p>
             </td>

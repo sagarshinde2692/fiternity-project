@@ -11,9 +11,9 @@ Class FinderSms extends VersionNextSms{
 		$cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
 
 		if($data['show_location_flag']){
-			$message 	=	"We have received a workout session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on +91 92222 21131 for any queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a workout session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
 		}else{
-			$message 	=	"We have received a workout session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on +91 92222 21131 for any queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a workout session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
 		}
 
 		$label = 'BookTrial-F';
@@ -29,9 +29,9 @@ Class FinderSms extends VersionNextSms{
 		$cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
 
 		if($data['show_location_flag']){
-			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on ".Config::get('app.customer_care_number')." for queries. Regards - Team Fitternity.";
 		}else{
-			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on ".Config::get('app.customer_care_number')." for queries. Regards - Team Fitternity.";
 		}
 
 		$label = 'RescheduledTrial-F';
@@ -44,9 +44,9 @@ Class FinderSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
 		if($data['show_location_flag']){
-			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on ".Config::get('app.customer_care_number')." for queries. Regards - Team Fitternity.";
 		}else{
-			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a workout / trial session request from ".ucwords($data['customer_name'])." for ".ucwords($data['finder_name']).". The slot has been confirmed for ".date(' jSF\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please call us on ".Config::get('app.customer_care_number')." for queries. Regards - Team Fitternity.";
 		}
 
 		$label = 'BookTrialReminder-F';
@@ -82,9 +82,9 @@ Class FinderSms extends VersionNextSms{
 		$cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
 
 		if($data['show_location_flag']){
-			$message 	=	"We have received a cancellation request for session booked for ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).".Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a cancellation request for session booked for ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).".Please call us on ".Config::get('app.customer_care_number')." for queries. Regards - Team Fitternity.";
 		}else{
-			$message 	=	"We have received a cancellation request for session booked for ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).". Please call us on +91 92222 21131 for queries. Regards - Team Fitternity.";
+			$message 	=	"We have received a cancellation request for session booked for ".ucwords($data['customer_name'])." $cusomterno for ".ucwords($data['finder_name']).". Please call us on ".Config::get('app.customer_care_number')." for queries. Regards - Team Fitternity.";
 		}
 
 		$label = 'CancelBookTrial-F';

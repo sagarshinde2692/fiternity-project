@@ -180,7 +180,7 @@
 
                   <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">Our team will reach out to you to get the cash pick up details. Once the cash has been collected, you will receive a purchase confirmation.</p>
 
-                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">+91-92222 21131</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
+                  <p style="padding-top:5px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">{{Config::get('app.customer_care_number')}}</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
 
                   <p style="padding-top:15px; padding-bottom:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Cheers, <br />Team Fitternity</p>
                 </td>

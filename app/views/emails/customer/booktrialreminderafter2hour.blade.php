@@ -257,7 +257,7 @@
 
                                                      <tr style="background-color:#f6f6f6;">
                                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                                            <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on +91 92222 21131.</p>
+                                                            <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
                                                             <p style="padding-top:10px;">Regards<br/>
                                                                 TEAM FITTERNITY
                                                             </p>
@@ -307,7 +307,7 @@
                 <tr>
                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                         <p>Contact us
-                            <br /> Phone: <a style="text-decoration:none;color:#ffffff"> 022 61222222  |  +91 92222 21131</a>
+                            <br /> Phone: <a style="text-decoration:none;color:#ffffff">{{Config::get('app.customer_care_number')}}</a>
                             <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                         </p>
                     </td>

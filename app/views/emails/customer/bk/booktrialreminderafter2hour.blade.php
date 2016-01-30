@@ -9,7 +9,7 @@
 
 		<p>Please access this link to review: {{ link_to('http://www.fitternity.com/'.$finder_slug, ucwords($finder_name) ) }}<br></p>
 
-		<p>Request you to please share feedback about your experience with Fitternity. If there is anything we could do to improve your interaction - we would like to know. You could just reply to this mail or call me us on +91 9222221131.<br></p>
+		<p>Request you to please share feedback about your experience with Fitternity. If there is anything we could do to improve your interaction - we would like to know. You could just reply to this mail or call me us on {{Config::get('app.customer_care_number')}}.<br></p>
 
 		<p>Regards<br>TEAM FITTERNITY</p>
 	</div>

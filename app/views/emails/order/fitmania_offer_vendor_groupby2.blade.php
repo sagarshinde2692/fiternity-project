@@ -362,7 +362,7 @@
                                                     <tr style="background-color:#f6f6f6;">
                                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:0px 20px;;" st-content="fulltext-paragraph">
 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding: 20px 0px; " st-content="fulltext-paragraph"> In case of any queries please reach out to us on <a style="text-decoration:none;" href="mailto:business@fitternity.com">business@fitternity.com</a> or call us on <a style="color: #f9a91e;" href="tel:02261222233">022-61222233</a></p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding: 20px 0px; " st-content="fulltext-paragraph"> In case of any queries please reach out to us on <a style="text-decoration:none;" href="mailto:business@fitternity.com">business@fitternity.com</a> or call us on <a style="color: #f9a91e;">{{Config::get('app.customer_care_number')}}</a></p>
                                                         </td>
                                                     </tr>
 
