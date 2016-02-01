@@ -568,9 +568,30 @@ Route::get('/updateservices', function() {
 					array_push($service_workoutsessionschedules, $weekwiseslot);
 				}
 			}
+			$service_batches = [];
+			if(isset($data['batches'])){
+			if(count($data['batches']) > 0 && isset($data['batches'])){
+				foreach ($data['batches'] as $key => $batch) {
+					$goodbatch = [];
+					$eachbatch = [];
+					foreach ($batch as $key => $trials) {
+						$eachbatch["weekday"] = $trials["weekday"];
+						$eachbatch["slots"] = [];
+						foreach ($trials['slots'] as $k => $val) {
+							// print_r($val);
+							array_push($eachbatch["slots"],$val);
+						}
+						array_push($goodbatch, $eachbatch);
+					}
+				array_push($service_batches, $goodbatch);	
+				}
+					// return $service_batches;
+			}
+		}
 
 			array_set($Servicedata, 'workoutsessionschedules', $service_workoutsessionschedules);
 			array_set($Servicedata, 'trialschedules', $service_trialschedules);
+			array_set($Servicedata, 'batches', $service_batches);
 			$response = $Service->update($Servicedata);
 			echo "<br>$response";
 			// if($val == 4){ exit(); }
