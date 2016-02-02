@@ -22,7 +22,7 @@ class MigrationsController extends \BaseController {
 	 */
 	public function vendor(){
 
-		$finder_ids	=	Finder::active()->take(10)->lists('_id');
+		$finder_ids	=	Finder::active()->take(1000)->lists('_id');
 
 		if($finder_ids){ 
 
