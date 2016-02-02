@@ -45,6 +45,45 @@ class MigrationsController extends \BaseController {
 					$email = $phone = $point_of_contact = $images = $videos = $services_arr = [];
 					$line1 = $line2 = $line3 = "";
 
+					//temp_finder_vcc_email_arr temp_finder_vcc_mobile_arr
+					$temp_point_of_contact_arr = [];
+					if(isset($finder->finder_poc_for_customer_name) || isset($finder->finder_poc_for_customer_mobile)){
+						$point_of_contact_arr = [
+								'name'  =>  (isset($finder->finder_poc_for_customer_name)) ? trim($finder->finder_poc_for_customer_name) : "",
+								'email'  =>   "",
+								'mobile'  =>  (isset($finder->finder_poc_for_customer_mobile)) ? trim($finder->finder_poc_for_customer_mobile) : "",
+								'landline'  =>  "",
+								'used_for'  =>  ["point_of_contact_customer"]
+						];
+						array_push($temp_point_of_contact_arr, $point_of_contact_arr);
+					}
+
+					$temp_finder_vcc_email_arr  	=  (isset($finder->finder_vcc_email)) ? explode(",", str_replace("/", ",", trim($finder->finder_vcc_email)) ) : [];
+					$temp_finder_vcc_mobile_arr  	=  (isset($finder->finder_vcc_mobile)) ? explode(",", str_replace("/", ",", trim($finder->finder_vcc_mobile)) ) : [];
+					$finder_vcc_email_cnt 			=  count($temp_finder_vcc_email_arr);
+					$finder_vcc_mobile_cnt 			=  count($temp_finder_vcc_mobile_arr);
+
+					for ($i=0; $i < max([intval($finder_vcc_email_cnt),intval($finder_vcc_mobile_cnt)]); $i++) { 
+						$point_of_contact_arr = [
+								'name'  =>  "",
+								'mobile'  =>  "",
+								'landline'  =>  "",
+								'email'  =>   (isset($temp_finder_vcc_email_arr[$i])) ? trim($temp_finder_vcc_email_arr[$i]) : "",
+								'used_for'  =>  ["vendor_communication_contact"]
+						];
+
+						if(isset($temp_finder_vcc_mobile_arr[$i])  && $temp_finder_vcc_mobile_arr[$i] != "" ){
+							$varx = $temp_finder_vcc_mobile_arr[$i];
+							if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33')){
+								$point_of_contact_arr['landline'] = ltrim($varx,"+");
+							}else{
+								$point_of_contact_arr['mobile'] = ltrim($varx,"+");
+							}
+						}
+						array_push($temp_point_of_contact_arr, $point_of_contact_arr);
+
+					} // temp_finder_vcc_email temp_finder_vcc_mobile_arr
+
 
 					if(isset($finder->contact['email']) && $finder->contact['email'] != ""){
 						$email = 	array_map('trim', explode(",",str_replace("/", ",", trim($finder->contact['email']) )) );
@@ -56,10 +95,11 @@ class MigrationsController extends \BaseController {
 						
 						if(count($phone_arr) > 0){
 							foreach ($phone_arr as $key => $value) {
-								if(starts_with($value, '02') || starts_with($value, '2') || starts_with($value, '33')){
-									array_push($phone['landline'], ltrim($value,"+"));
+								$varx = $value;
+								if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33')){
+									array_push($phone['landline'], ltrim($varx,"+"));
 								}else{
-									array_push($phone['mobile'], ltrim($value,"+"));
+									array_push($phone['mobile'], ltrim($varx,"+"));
 								}
 							}
 						}
@@ -110,11 +150,9 @@ class MigrationsController extends \BaseController {
 						}
 					}
 
-
 					if(isset($finder->info['service']) && $finder->info['service'] != ""){
 						$services_arr = 	array_map('trim', explode(",", strip_tags(str_replace("</li>", ",", trim($finder->info['service']) ))) ) ;
 					}
-
 
 					$images['cover']  	=	$finder->coverimage;
 					$images['logo']  	= 	$finder->logo;
@@ -131,7 +169,7 @@ class MigrationsController extends \BaseController {
 					'categorys' 	=>  [ 'primary' 	=>  intval($finder->category_id), 'secondary' =>  array_map('intval', $finder->categorytags) ],
 					'filters' 	=>  [ 'primary' =>  array_map('intval', $finder->facilities), 'secondary' =>  array_map('intval', $finder->offerings) ],
 					'types' 	=>  [ 'commercials' =>  $commercial_type, 'business' =>  $business_type, 'vendor' =>  $vendor_type ],
-					'contact' 	=>  ['email' =>  $email,'phone' =>  $phone,'point_of_contact' =>  $point_of_contact],
+					'contact' 	=>  ['email' =>  $email, 'phone' =>  $phone, 'point_of_contact' =>  $temp_point_of_contact_arr],
 					'media' 	=>  [
 						'images' =>  $images,
 						'videos' =>  $videos
@@ -154,6 +192,10 @@ class MigrationsController extends \BaseController {
 					'rating' 	=>  [
 						'avg' =>  $finder->average_rating,
 						'count' =>  intval($finder->total_rating_count)
+					],
+					'detail_rating' =>  [
+						'avg' =>    (isset($finder->detail_rating_summary_average)) ? $finder->detail_rating_summary_average : [],
+						'count' =>  (isset($finder->detail_rating_summary_count))   ?  array_map('intval', $finder->detail_rating_summary_count) : []
 					],
 					'seo' 	=>  [
 						'title' 	=>  ($finder->meta['title']) ? strip_tags(trim($finder->meta['title'])) : "",
