@@ -22,7 +22,7 @@ class MigrationsController extends \BaseController {
 	 */
 	public function vendor(){
 
-		$finder_ids	=	Finder::active()->take(1000)->lists('_id');
+		$finder_ids	=	Finder::active()->take(100)->lists('_id');
 
 		if($finder_ids){ 
 
@@ -74,10 +74,13 @@ class MigrationsController extends \BaseController {
 
 						if(isset($temp_finder_vcc_mobile_arr[$i])  && $temp_finder_vcc_mobile_arr[$i] != "" ){
 							$varx = $temp_finder_vcc_mobile_arr[$i];
-							if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33')){
+							if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33') || starts_with($varx, '011') || starts_with($varx, '1') || starts_with($varx, '11')){
 								$point_of_contact_arr['landline'] = ltrim($varx,"+");
 							}else{
-								$point_of_contact_arr['mobile'] = ltrim($varx,"+");
+								$find_arr= ["+","+(91)-","(91)","(91)-","91-"];
+								$replace_arr= ["","","","",""];
+								$clean_mobile_no = trim(str_replace($find_arr, $replace_arr, $varx));
+								$point_of_contact_arr['mobile'] = ltrim($clean_mobile_no,"+");
 							}
 						}
 						array_push($temp_point_of_contact_arr, $point_of_contact_arr);
@@ -96,10 +99,13 @@ class MigrationsController extends \BaseController {
 						if(count($phone_arr) > 0){
 							foreach ($phone_arr as $key => $value) {
 								$varx = $value;
-								if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33')){
+								if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33') || starts_with($varx, '011') || starts_with($varx, '1') || starts_with($varx, '11')){
 									array_push($phone['landline'], ltrim($varx,"+"));
 								}else{
-									array_push($phone['mobile'], ltrim($varx,"+"));
+									$find_arr= ["+","+(91)-","(91)","(91)-","91-"];
+									$replace_arr= ["","","","",""];
+									$clean_mobile_no = trim(str_replace($find_arr, $replace_arr, $varx));
+									array_push($phone['mobile'], ltrim($clean_mobile_no,"+"));
 								}
 							}
 						}
