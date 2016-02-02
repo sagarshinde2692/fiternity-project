@@ -193,7 +193,10 @@ class MigrationsController extends \BaseController {
 						'pincode' 	=>  "",
 						'landmark' 	=>  ($finder->landmark) ? strip_tags($finder->landmark) : ""
 					],
-					'geo' 	=>  [ 'lat' =>  $finder->lat, 'long' =>  $finder->lon ],
+					'geometry' => [
+						'type' 	=> "Point",
+						'coordinates' 	=>  [$finder->lat, $finder->lon],
+					],
 					'rating' 	=>  [
 						'avg' =>  $finder->average_rating,
 						'count' =>  intval($finder->total_rating_count)
@@ -206,11 +209,12 @@ class MigrationsController extends \BaseController {
 						'title' 	=>  ($finder->meta['title']) ? strip_tags(trim($finder->meta['title'])) : "",
 						'description' 	=>  ($finder->meta['description']) ? strip_tags(trim($finder->meta['description'])) : "",
 						'keywords' 	=>  (isset($finder->meta['keywords']) && $finder->meta['keywords'] != "") ? strip_tags(trim($finder->meta['keywords'])) : "",
-						'ogtags_title' 	=>  "",
-						'ogtags_description' 	=>   "",
-						'ogtags_image' 	=>   ""
+						'og_title' 	=>  "",
+						'og_description' 	=>   "",
+						'og_image' 	=>   ""
 					],
 					'hidden' =>  $finder->status,
+					'order' =>  0,
 					'created_at' =>  $finder->created_at,
 					'updated_at' =>  $finder->updated_at
 					];
