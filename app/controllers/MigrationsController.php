@@ -189,8 +189,7 @@ class MigrationsController extends \BaseController {
 					'address' 	=>  [
 						'line1' 	=>  trim($line1),
 						'line2' 	=>  trim($line2),
-						'line3' 	=>  trim($line3),
-						'state' 	=>  "",
+						'line3' 	=>  trim($line3),						
 						'pincode' 	=>  "",
 						'landmark' 	=>  ($finder->landmark) ? strip_tags($finder->landmark) : ""
 					],
