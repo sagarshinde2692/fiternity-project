@@ -714,7 +714,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$booktrialid 						=	Booktrial::max('_id') + 1;
 			$finderid 							= 	(int) Input::json()->get('finder_id');
-			$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+			$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find($finderid);
 			
 			$customer_id 						=	$this->autoRegisterCustomer($data);
 			$customer_name 						=	Input::json()->get('customer_name'); 
@@ -735,7 +735,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$description =  $what_i_should_carry = $what_i_should_expect = '';
 			if($service_id != ''){
-				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->where('_id','=', intval($service_id))->first()->toArray();
+				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->find($service_id);
 
 				if((isset($serviceArr['category']['description']) && $serviceArr['category']['description'] != '')){
 					$description = $serviceArr['category']['description'];

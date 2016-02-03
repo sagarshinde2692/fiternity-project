@@ -119,41 +119,49 @@ class MigrationsController extends \BaseController {
 						$temp_address_arr = explode(",",strip_tags($finder->contact['address']));
 						$temp_address_arr_cnt = count($temp_address_arr);
 
-						switch ($temp_address_arr_cnt) {
-							case 3:
-							$line1 = $temp_address_arr[0];
-							$line2 = $temp_address_arr[1];
-							$line3 = $temp_address_arr[2];
-							break;
+						$line1 = rtrim(implode(array_slice($temp_address_arr, 0, $temp_address_arr_cnt)), ",");
+						$line2 = rtrim(implode(array_slice($temp_address_arr, $temp_address_arr_cnt * 1, $temp_address_arr_cnt * 2)), ",");
+						$line3 = rtrim(implode(array_slice($temp_address_arr, $temp_address_arr_cnt * 2, $temp_address_arr_cnt * 3)), ",");
 
-							case 4:
-							$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
-							$line2 = $temp_address_arr[2];
-							$line3 = $temp_address_arr[3];
-							break;
+						echo "<pre>"; print_r($temp_address_arr);
+						echo $line1;
+						exit();
+						// switch ($temp_address_arr_cnt) {
+						// 	case 3:
+						// 	$line1 = $temp_address_arr[0];
+						// 	$line2 = $temp_address_arr[1];
+						// 	$line3 = $temp_address_arr[2];
+						// 	break;
 
-							case 5:
-							$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
-							$line2 = $temp_address_arr[2]. ",". $temp_address_arr[3];
-							$line3 = $temp_address_arr[4];
-							break;
+						// 	case 4:
+						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
+						// 	$line2 = $temp_address_arr[2];
+						// 	$line3 = $temp_address_arr[3];
+						// 	break;
 
-							case 6:
-							$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
-							$line2 = $temp_address_arr[2]. ",". $temp_address_arr[3];
-							$line3 = $temp_address_arr[4]. ",". $temp_address_arr[5];
-							break;
+						// 	case 5:
+						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
+						// 	$line2 = $temp_address_arr[2]. ",". $temp_address_arr[3];
+						// 	$line3 = $temp_address_arr[4];
+						// 	break;
 
-							case 7:
-							$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1]. ",". $temp_address_arr[2];
-							$line2 = $temp_address_arr[3]. ",". $temp_address_arr[4];
-							$line3 = $temp_address_arr[5]. ",". $temp_address_arr[6];
-							break;
+						// 	case 6:
+						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
+						// 	$line2 = $temp_address_arr[2]. ",". $temp_address_arr[3];
+						// 	$line3 = $temp_address_arr[4]. ",". $temp_address_arr[5];
+						// 	break;
+
+						// 	case 7:
+						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1]. ",". $temp_address_arr[2];
+						// 	$line2 = $temp_address_arr[3]. ",". $temp_address_arr[4];
+						// 	$line3 = $temp_address_arr[5]. ",". $temp_address_arr[6];
+						// 	break;
 							
-							default:
-							$line1 = implode($temp_address_arr);
-							break;
-						}
+						// 	default:
+						// 	$line1 = implode($temp_address_arr);
+						// 	break;
+						// }
+
 					}
 
 					if(isset($finder->info['service']) && $finder->info['service'] != ""){
