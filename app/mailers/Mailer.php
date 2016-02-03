@@ -157,9 +157,10 @@ abstract Class Mailer {
 		$email_html = View::make($email_template, $template_data)->render();
 		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 		
-		if($email_template == "emails.customer.booktrialreminderbefore12hour"){
-			Log::info($email_html);
-		}
+		// if($email_template == "emails.customer.booktrialreminderbefore12hour"){
+		// 	// print_r($payload);exit();
+		// 	// Log::info($email_html);
+		// }
 
 		$route	= 'email';
 		$result  = $this->sidekiq->sendToQueue($payload,$route);
