@@ -17,8 +17,72 @@ class MigrationsController extends \BaseController {
 
 	
 
+
 	/**
-	 * Return author detail.
+	 * Migration for categorys
+	 */
+	public function category(){
+		$ids	=	Findercategory::active()->take(300)->lists('_id');
+
+		if($ids){ 
+			DB::connection('mongodb2')->table('vendorcategories')->truncate(); 
+			foreach ($ids as $key => $id) {
+				$findercategory = Findercategory::find(intval($id));
+				$insertData = [
+					'name' =>  trim($findercategory->name),
+					'slug' =>  trim($findercategory->slug),
+					'slug' =>  trim($findercategory->slug),
+					'slug' =>  trim($findercategory->slug),
+					'detail_rating' =>  [
+						'avg' =>    (isset($finder->detail_rating_summary_average)) ? $finder->detail_rating_summary_average : [],
+						'count' =>  (isset($finder->detail_rating_summary_count))   ?  array_map('intval', $finder->detail_rating_summary_count) : []
+					],
+					'seo' 	=>  [
+						'title' 	=>  ($findercategory->meta['title']) ? strip_tags(trim($findercategory->meta['title'])) : "",
+						'description' 	=>  ($findercategory->meta['description']) ? strip_tags(trim($findercategory->meta['description'])) : "",
+						'keywords' 	=>  (isset($findercategory->meta['keywords']) && $findercategory->meta['keywords'] != "") ? strip_tags(trim($findercategory->meta['keywords'])) : ""
+					],
+					'hidden' =>  $findercategory->status,
+					'order' =>  0,
+					'created_at' =>  $findercategory->created_at,
+					'updated_at' =>  $findercategory->updated_at
+				];
+
+				$entity 		=	new Vendorcategory($insertData);
+				$entity->_id 	=	intval($findercategory->_id);
+				$entity->save();
+			}
+		}//ids
+		
+	}
+
+
+	/**
+	 * Migration for locations
+	 */
+	public function location(){
+		$ids	=	Location::active()->take(300)->lists('_id');
+
+		if($ids){ 
+			DB::connection('mongodb2')->table('vendorlocations')->truncate(); 
+			foreach ($ids as $key => $id) {
+				$location = Location::find(intval($id));
+
+
+				$entity 		=	new Vendorcategory($insertData);
+				$entity->_id 	=	intval($location->_id);
+				$entity->save();
+
+			}
+		}//ids
+		
+	}
+
+
+
+
+	/**
+	 * Migration for vendors
 	 */
 	public function vendor(){
 
@@ -26,7 +90,7 @@ class MigrationsController extends \BaseController {
 
 		if($finder_ids){ 
 
-			DB::connection('mongodb2')->table('finders')->truncate(); 
+			DB::connection('mongodb2')->table('vendors')->truncate(); 
 
 			$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'freespecial', 3 => 'cos');
 			$business_type_arr = array( 0 => 'infrastructure', 1 => 'noninfrastructure');
@@ -118,50 +182,11 @@ class MigrationsController extends \BaseController {
 
 						$temp_address_arr = explode(",",strip_tags($finder->contact['address']));
 						$temp_address_arr_cnt = count($temp_address_arr);
-
-						$line1 = rtrim(implode(array_slice($temp_address_arr, 0, $temp_address_arr_cnt)), ",");
-						$line2 = rtrim(implode(array_slice($temp_address_arr, $temp_address_arr_cnt * 1, $temp_address_arr_cnt * 2)), ",");
-						$line3 = rtrim(implode(array_slice($temp_address_arr, $temp_address_arr_cnt * 2, $temp_address_arr_cnt * 3)), ",");
-
-						echo "<pre>"; print_r($temp_address_arr);
-						echo $line1;
-						exit();
-						// switch ($temp_address_arr_cnt) {
-						// 	case 3:
-						// 	$line1 = $temp_address_arr[0];
-						// 	$line2 = $temp_address_arr[1];
-						// 	$line3 = $temp_address_arr[2];
-						// 	break;
-
-						// 	case 4:
-						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
-						// 	$line2 = $temp_address_arr[2];
-						// 	$line3 = $temp_address_arr[3];
-						// 	break;
-
-						// 	case 5:
-						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
-						// 	$line2 = $temp_address_arr[2]. ",". $temp_address_arr[3];
-						// 	$line3 = $temp_address_arr[4];
-						// 	break;
-
-						// 	case 6:
-						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1];
-						// 	$line2 = $temp_address_arr[2]. ",". $temp_address_arr[3];
-						// 	$line3 = $temp_address_arr[4]. ",". $temp_address_arr[5];
-						// 	break;
-
-						// 	case 7:
-						// 	$line1 = $temp_address_arr[0]. ",". $temp_address_arr[1]. ",". $temp_address_arr[2];
-						// 	$line2 = $temp_address_arr[3]. ",". $temp_address_arr[4];
-						// 	$line3 = $temp_address_arr[5]. ",". $temp_address_arr[6];
-						// 	break;
-							
-						// 	default:
-						// 	$line1 = implode($temp_address_arr);
-						// 	break;
-						// }
-
+						$count = $temp_address_arr_cnt / 3;
+						$line1 = rtrim(implode(array_slice($temp_address_arr, 0, $count)), ",");
+						$line2 = rtrim(implode(array_slice($temp_address_arr, $count * 1, $count * 2)), ",");
+						$line3 = rtrim(implode(array_slice($temp_address_arr, $count * 2, $count * 3)), ",");
+						// echo "<pre>"; print_r($temp_address_arr); echo $line1; exit();
 					}
 
 					if(isset($finder->info['service']) && $finder->info['service'] != ""){
@@ -179,9 +204,9 @@ class MigrationsController extends \BaseController {
 					'slug' =>  trim($finder->slug),
 					'country_id' =>  intval($finder->country_id),
 					'city_id' 	=>  intval($finder->city_id),
-					'locations' 	=>  [ 'primary' 	=>  intval($finder->location_id), 'secondary' =>  array_map('intval', $finder->locationtags) ],
-					'categorys' 	=>  [ 'primary' 	=>  intval($finder->category_id), 'secondary' =>  array_map('intval', $finder->categorytags) ],
-					'filters' 	=>  [ 'primary' =>  array_map('intval', $finder->facilities), 'secondary' =>  array_map('intval', $finder->offerings) ],
+					'location' 	=>  [ 'primary' 	=>  intval($finder->location_id), 'secondary' =>  array_map('intval', $finder->locationtags) ],
+					'category' 	=>  [ 'primary' 	=>  intval($finder->category_id), 'secondary' =>  array_map('intval', $finder->categorytags) ],
+					'filter' 	=>  [ 'primary' =>  array_map('intval', $finder->facilities), 'secondary' =>  array_map('intval', $finder->offerings) ],
 					'types' 	=>  [ 'commercials' =>  $commercial_type, 'business' =>  $business_type, 'vendor' =>  $vendor_type ],
 					'contact' 	=>  ['email' =>  $email, 'phone' =>  $phone, 'point_of_contact' =>  $temp_point_of_contact_arr],
 					'media' 	=>  [
@@ -250,6 +275,14 @@ class MigrationsController extends \BaseController {
 		}//finder_ids
 
 	}
+
+
+
+
+
+
+
+
 
 
 
