@@ -1328,9 +1328,140 @@ class DebugController extends \BaseController {
 
 		public function csvPaidTrial(){
 
-			ini_set('memory_limit','2048M');
+			$review = Review::raw(function($collection) {
 
-			$services = Service::where('trialschedules','exists',true)->active()->get(array('trialschedules','finder_id'))->toArray();
+	            $aggregate = [];
+
+	            $group = array(
+	                        '$group' => array(
+	                            '_id' => array(
+	                                'finder_id' => '$finder_id',
+	                                'month' => array('$month'=>'$created_at'),
+	                                'year' => array('$year'=>'$created_at'),
+	                            ),
+	                            'count' => array(
+	                                '$sum' => 1
+	                            )
+	                        )
+	                    );
+
+	            $aggregate[] = $group;
+
+	            return $collection->aggregate($aggregate); 
+
+	        });
+
+	        $request = array();
+
+	        foreach ($review['result'] as $key => $value) {
+
+	            if(isset($value['_id']['finder_id'])){
+	                $request[$value['_id']['finder_id']][$value['_id']['year']][$value['_id']['month']] = $value['count'];
+	            }
+
+	        }
+
+	        $city = array();
+
+	        $abondant = array();
+
+	        foreach ($request as $key => $value) {
+
+	        	$finder = Finder::find((int) $key);
+
+	        	if($finder){
+	        		$city[$finder->city_id][$finder->_id] = $value;
+	        	}else{
+	        		$abondant[$key] = $value;
+	        	}
+	        }
+
+	        //echo"<pre>";print_r($city);exit;
+
+	        $data = array();
+
+			$hesh = 0;
+
+	        foreach ($city as $city_key => $finders) {
+
+	        	//echo"<pre>";print_r($city_key);exit;
+
+	        	foreach ($finders as $finders_key => $year) {
+
+
+	        		foreach ($year as $year_key => $month) {
+
+	        			//echo"<pre>";print_r($month);exit;
+
+	        			//
+
+	        			foreach ($month as $month_key => $count) {
+
+
+	        				if(!isset($data[$city_key][$year_key][$month_key])){
+	        					//echo $count.' , ';
+	        					$data[$city_key][(int)$year_key][(int)$month_key] = (int)$count;
+	        				}else{
+	        					//echo '2';
+	        					$data[$city_key][(int)$year_key][(int)$month_key] += (int) $count;
+	        				}
+
+	        				$hesh += (int) $count;
+	        			}
+
+	        		}
+	        	}
+
+	        	
+	        }
+
+	        //echo"<pre>";print_r($data);
+
+			//echo"<pre>";print_r($hesh);
+
+			//echo"<pre>";print_r($abondant);
+
+
+	        $result = array();
+
+	  		$cities = array('1'=>'Mumbai','2'=>'Pune','3'=>'Banglore','4'=>'Delhi','8'=>'Gurgaon');
+	  		$counts = 0;
+
+	  		foreach ($data as $city_id => $years) {
+
+
+
+	  			foreach ($years as $year => $months) {
+
+	  				foreach ($months as $month => $count) {
+
+	  					
+
+	  					$result[$counts]['city'] = $cities[$city_id];
+	  					$result[$counts]['year'] = $year;
+	  					$result[$counts]['month'] = $month;
+	  					$result[$counts]['year_month'] = $year.'-'.$month.'-01';
+	  					$result[$counts]['count'] = $count;
+
+	  					$counts++;
+	  				}
+	  			}
+
+
+	  			
+	  		}
+
+	  		//echo"<pre>";print_r($result);exit;
+
+			//echo"<pre>";print_r($data);
+
+			//echo"<pre>";print_r($hesh);
+
+			//echo"<pre>";print_r($abondant);exit;
+
+
+
+			/*$services = Service::where('trialschedules','exists',true)->active()->get(array('trialschedules','finder_id'))->toArray();
 
 			$finder = array();
 
@@ -1375,7 +1506,7 @@ class DebugController extends \BaseController {
 			$category = array(42,45,40,25);
 
 			$finders = Finder::whereIn('_id',$hesh)->whereNotIn('category_id',$category)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
-
+*/
 
 			//echo"<pre>";print_r($hesh);exit;
 
@@ -1394,45 +1525,17 @@ class DebugController extends \BaseController {
 
 			//echo"<pre>";print_r($services);exit;
 
-			$fp = fopen('finder_with_no_schdule.csv', 'w');
+			$fp = fopen('reviews.csv', 'w');
 
-			$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type');
+			$header = array('City','Year','Month','Year Month','Count');
 
-			foreach ($finders as $key => $value) 
-			{
-				
-
-				if(!isset($value['_id'])){
-					$finders[$key]['_id'] = '';
-				}
-
-				if(!isset($value['title'])){
-					$finders[$key]['title'] = '';
-				}
-
-				if(!isset($value['city']['name'])){
-					$finders[$key]['city']['name'] = '';
-				}
-
-				if(!isset($value['location']['name'])){
-					$finders[$key]['location']['name'] = '';
-				}
-
-				if(!isset($value['category']['name'])){
-					$finders[$key]['category']['name'] = '';
-				}
-
-				if(!isset($value['commercial_type_status'])){
-					$finders[$key]['commercial_type_status'] = '';
-				}
-
-			}
+			
 
 			fputcsv($fp, $header);
 			
-			foreach ($finders as $value) {  
+			foreach ($result as $value) {  
 
-				$fields = array($value['_id'],$value['title'],$value['city']['name'],$value['location']['name'],$value['category']['name'],$value['commercial_type_status']);
+				$fields = array($value['city'],$value['year'],$value['month'],$value['year_month'],$value['count']);
 
 				fputcsv($fp, $fields);
 			}
