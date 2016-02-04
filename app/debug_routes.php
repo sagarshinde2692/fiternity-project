@@ -1,6 +1,10 @@
 <?php
 
-Route::get('migrations/{entiy?}', 'MigrationsController@vendor');
+Route::get('migrations/category', 'MigrationsController@category');
+Route::get('migrations/location', 'MigrationsController@location');
+Route::get('migrations/offerings', 'MigrationsController@offerings');
+Route::get('migrations/facilities', 'MigrationsController@facilities');
+Route::get('migrations/vendors', 'MigrationsController@vendors');
 
 
 Route::get('/importcode', function() {  
