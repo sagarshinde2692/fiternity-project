@@ -1330,71 +1330,11 @@ class DebugController extends \BaseController {
 
 			ini_set('memory_limit','2048M');
 
-			$services = Service::where('trialschedules','exists',true)->active()->get(array('trialschedules','finder_id'))->toArray();
+			$finder_id = Ratecard::where('direct_payment_enable','1')->lists('finder_id');
 
-			$finder = array();
+			$finders = Finder::active()->whereIn('_id',$finder_id)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
 
-			foreach ($services as $key => $value) {
-
-				if(!empty($value['trialschedules'])){
-
-					if(!isset($finder[$value['finder_id']]['ne'])){
-
-						$finder[$value['finder_id']]['ne'] = 1;
-
-					}else{
-
-						$finder[$value['finder_id']]['ne'] += 1;
-					}
-
-				}else{
-
-					if(!isset($finder[$value['finder_id']]['e'])){
-
-						$finder[$value['finder_id']]['e'] = 1;
-
-					}else{
-
-						$finder[$value['finder_id']]['e'] += 1;
-					}
-
-				}
-
-			}
-
-			$hesh = array();
-
-			foreach ($finder as $key => $value) {
-
-				if(isset($value['e']) && !isset($value['ne']))
-				{
-					$hesh[] = $key;
-				}
-			}
-
-			$category = array(42,45,40,25);
-
-			$finders = Finder::whereIn('_id',$hesh)->whereNotIn('category_id',$category)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
-
-
-			//echo"<pre>";print_r($hesh);exit;
-
-			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->where('type','trial')->where('price','>',0)->get()->toArray();
-
-			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->where('type','workout session')->get()->toArray();
-
-			/*$services = Service::where('trialschedules','exists',true)->where('trialschedules',array())->active()->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('finder'=>function($query){$query->select('_id','title','commercial_type');}))->orderBy('_id', 'asc')->get()->toArray();
-*/
-			//echo"<pre>";print_r($services);exit;
-
-			//echo"<pre>";print_r($services);exit;
-
-			//$ratecard = Ratecard::with(array('service'=>function($query){$query->select('_id','name');}))->whereIn('service_id',$services)->with(array('finder'=>function($query){$query->select('_id','title','city_id','location_id')->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}));}))->get()->toArray();
-
-
-			//echo"<pre>";print_r($services);exit;
-
-			$fp = fopen('finder_with_no_schdule.csv', 'w');
+			$fp = fopen('finder_with_direct_payment_enable.csv', 'w');
 
 			$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type');
 
@@ -1411,7 +1351,7 @@ class DebugController extends \BaseController {
 				}
 
 				if(!isset($value['city']['name'])){
-					$finders[$key]['city']['name'] = '';
+					$finders[$key]['city']['name'] = '';	
 				}
 
 				if(!isset($value['location']['name'])){
