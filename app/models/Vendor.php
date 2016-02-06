@@ -11,7 +11,7 @@ class Vendor extends  \Basemodel {
 
 	protected $connection = 'mongodb2';
 	
-	protected $collection = "finders";
+	protected $collection = "vendors";
 	
 
 

@@ -753,13 +753,6 @@ class SchedulebooktrialsController extends \BaseController {
 					}
 				}
 
-				if((isset($serviceArr['category']['what_i_should_expect']) && $serviceArr['category']['what_i_should_expect'] != '')){
-					$what_i_should_expect = $serviceArr['category']['what_i_should_expect'];
-				}else{
-					if((isset($serviceArr['subcategory']['what_i_should_expect']) && $serviceArr['subcategory']['what_i_should_expect'] != '')){
-						$what_i_should_expect = $serviceArr['subcategory']['what_i_should_expect'];
-					}
-				}
 
 
 				if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
