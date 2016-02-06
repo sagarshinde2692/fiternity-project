@@ -23,7 +23,7 @@ class OzonetelCollectDtmf {
         $this->doc->appendChild($this->collect_dtmf);
     }
 
-    function __construct3($max_digits, $term_char, $time_out=4000) { //time out in ms
+    function __construct3($max_digits, $term_char, $time_out=5000) { //time out in ms
         $this->doc = new DOMDocument("1.0", "UTF-8");
         $this->collect_dtmf = $this->doc->createElement("response");
         $this->collect_dtmf->setAttribute("l", $max_digits);
@@ -47,7 +47,7 @@ class OzonetelCollectDtmf {
     }
 
     public function setTimeOut($timeOut) {
-        $this->collect_dtmf->setAttribute("o", $timeOut = 4000);
+        $this->collect_dtmf->setAttribute("o", $timeOut = 5000);
         //time out in ms default is 4000ms,
     }
 
