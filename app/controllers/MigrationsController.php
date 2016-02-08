@@ -414,6 +414,48 @@ class MigrationsController extends \BaseController {
 
 
 
+	/**
+	 * Migration for vendorservicecategory
+	 */
+	public function vendorservicecategory(){
+		$ids	=	Servicecategory::active()->take(1000)->lists('_id');
+
+		if($ids){ 
+			DB::connection('mongodb2')->table('vendorservicecategories')->truncate(); 
+
+			foreach ($ids as $key => $id) {
+				$servicecategory = Servicecategory::find(intval($id));
+
+				$insertData = [
+					'name' =>  trim($servicecategory->name),
+					'slug' =>  trim($servicecategory->slug),
+					'parent_id' =>  intval($servicecategory->parent_id),
+					// 'parent_name' =>  trim($servicecategory->parent_name),
+					'description' =>  trim($servicecategory->description),
+					'what_i_should_carry' =>  trim($servicecategory->what_i_should_carry),
+					'what_i_should_expect' =>  trim($servicecategory->what_i_should_expect),
+					'seo' 	=>  [
+						'title' 	=>  ($servicecategory->meta['title']) ? strip_tags(trim($servicecategory->meta['title'])) : "",
+						'description' 	=>  ($servicecategory->meta['description']) ? strip_tags(trim($servicecategory->meta['description'])) : "",
+						'keywords' 	=>  (isset($servicecategory->meta['keywords']) && $servicecategory->meta['keywords'] != "") ? strip_tags(trim($servicecategory->meta['keywords'])) : "",
+						'og_title' 	=>  "",
+						'og_description' 	=>   "",
+						'og_image' 	=>   ""
+					],
+					'order' =>  0,
+					'hidden' =>  ($servicecategory->status == "1") ? false : true,
+					'created_at' =>  $servicecategory->created_at,
+					'updated_at' =>  $servicecategory->updated_at
+				];
+
+				$entity 		=	new Vendorservicecategory($insertData);
+				$entity->setConnection('mongodb2');
+				$entity->_id 	=	intval($servicecategory->_id);
+				$entity->save();
+			}
+		}//ids
+		
+	}
 
 
 

@@ -5,6 +5,7 @@ Route::get('migrations/location', 'MigrationsController@location');
 Route::get('migrations/offerings', 'MigrationsController@offerings');
 Route::get('migrations/facilities', 'MigrationsController@facilities');
 Route::get('migrations/vendors', 'MigrationsController@vendors');
+Route::get('migrations/vendorservicecategory', 'MigrationsController@vendorservicecategory');
 
 
 Route::get('/importcode', function() {  
