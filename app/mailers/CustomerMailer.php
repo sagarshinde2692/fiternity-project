@@ -168,7 +168,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_customer = 	'emails.customer.fitcardcodwelcomemail';
 		$email_template_mailus = 	'emails.customer.fitcardcodwelcomemail_mailus';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
 		
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
@@ -198,7 +198,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_customer = 	'emails.customer.fitcardpaymentgatewaywelcomemail';
 		$email_template_mailus = 	'emails.customer.fitcardpaymentgatewaywelcomemail_mailus';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
+		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
 
 		$message_data 	= array(
 			'user_email' => $data['customer_email'],
@@ -226,7 +226,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.cod_'.strtolower($data['type']);
 		$email_template_mailus 		= 	'emails.order.cod_'.strtolower($data['type']).'_mailus';
 		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
 		$subject 					= 	'';
 
 		if($data['type'] == 'memberships'){
@@ -269,7 +269,7 @@ Class CustomerMailer extends Mailer {
 		$email_template_customer 	= 	'emails.order.pg_'.strtolower($data['type']);
 		$email_template_mailus 		= 	'emails.order.pg_'.strtolower($data['type']).'_mailus';
 		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_sanjay');
+		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
 		$subject 					= 	'';
 		
 		if($data['type'] == 'memberships'){
