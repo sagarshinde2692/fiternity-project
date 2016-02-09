@@ -621,28 +621,17 @@ class OzonetelsController extends \BaseController {
 		try{
 
 			$response = $this->misscall('sms');
+
+			if($response['status'] == 200){
 		
-			$ozonetel_missedcall = $response['ozonetel_missedcall'];
+				$ozonetel_missedcall = $response['ozonetel_missedcall'];
 
-			if($ozonetel_missedcall->customer_number != ''){
+				if($ozonetel_missedcall->customer_number != ''){
 
-				$current_date = time();
-				$before4jan = strtotime("4 January 2016");
-				$before12jan = strtotime("12 January 2016");
-				$message = '';
-				$label = 'FitmaniaSms';
+					$label = '48HrsSms';
 
-				if($current_date <= $before4jan){
-
-					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-11th Jan 2016. 2000+ brands across 15+ categories. Pre-register for insider info and chance to WIN a VIP Fitness Transformation. Click - http://bit.ly/22rA1ll TC Apply";
-
-				}elseif($current_date > $before4jan && $current_date <= $before12jan){
-
-					$message = "Hello! FitMania is India's biggest fitness SALE. Buy 1 month membership of Gyms/Studios @ Rs 99 only/ Buy 3-12 month memberships @ upto 80% off. Dates 4-11th Jan 2016. 2000+ brands across 15+ categories. The smartest way to stick to your New Year resolution to be FIT in 2016. Buy Now! http://bit.ly/22rA1ll TC Apply";
-				}
-			
-				if($message != ''){
-
+					$message = 'Thank you for contacting Fitternity. Your Fitness Concierge will call within 48hrs for a solution on your fitness membership. Fitternity Helpline - 0226122223';
+				
 					$data = array();
 
 					$data['label'] = $label;
@@ -651,21 +640,17 @@ class OzonetelsController extends \BaseController {
 
 					$update['sms_general'] = $this->customersms->generalSms($data);
 					$update['sms_message'] = $message;
-
+				
 				}else{
 
-					$update['error_message'] = 'missed call after limitd date';
-
+					$update['error_message'] = 'contact number is null';
 				}
-			
-			}else{
 
-				$update['error_message'] = 'contact number is null';
+				$ozonetel_missedcall->update($update);
+
+				$response = array('status'=>200,'message'=>'success');
+
 			}
-
-			$ozonetel_missedcall->update($update);
-
-			$response = array('status'=>200,'message'=>'success');
 
 		}catch (Exception $e) {
 
