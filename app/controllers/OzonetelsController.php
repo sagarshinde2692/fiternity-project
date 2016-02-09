@@ -630,7 +630,7 @@ class OzonetelsController extends \BaseController {
 
 					$label = '48HrsSms';
 
-					$message = 'Thank you for contacting Fitternity. Your Fitness Concierge will call within 48hrs for a solution on your fitness membership. Fitternity Helpline - 0226122223';
+					$message = 'Thank you for contacting Fitternity. Your Fitness Concierge will call within 48hrs for a solution on your fitness membership. Fitternity Helpline - 02261222223';
 				
 					$data = array();
 
