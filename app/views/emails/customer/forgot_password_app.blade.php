@@ -241,39 +241,79 @@
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph">If you didn&#39;t request this, you can safely ignore this email.</p>
 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph">Your password won&#39;t change until you use the authorisation code.</p>
-                                                        
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color: #666666;" >Regards<br/>
-                                                         TEAM FITTERNITY
-                                                     </p>
+                                                            
+                                                            
 
-                                                 </td>
-                                             </tr>
+                                                        </td>
+                                                    </tr>
 
 
-                                             <tr style="background-color:#f6f6f6;">
-                                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
+                                                    <tr style="background-color:#f6f6f6;">
+                                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
 
 
 
-                                                </td>
-                                            </tr>
+                                                        </td>
+                                                    </tr>
 
 
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="block"> 
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns"  style="table-layout:fixed;">
+            <tbody>
+             <tr>
+              <td align="center">
+                 <table bgcolor="#f6f6f6" width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth" modulebg="edit">
+                    <tbody>
+                      <!-- Title -->
+
+
+                      <tr>
+                          <td>
+                           <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
+                            <tbody>
+
+                             <tr>
+                              <td>
+
+
+
+
+
+
+
+                                <tr style="background-color:#f6f6f6;">
+                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
+                                        
+                                        <p style="padding-top:10px;">Regards<br/>
+                                            TEAM FITTERNITY
+                                        </p>
+
+                                    </td>
+                                </tr>
+
+
+                            </td>
+                        </tr> </tbody>
                     </table>
-                    
-
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table></td></tr></tbody></table>
 </div>
-
-
 <div class="block">
     <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
         <tbody>
@@ -300,7 +340,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                <br /> Phone: <a style="text-decoration:none; color:#ffffff">{{Config::get('app.customer_care_number')}}</a>
+                    <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
                 </p>
             </td>
