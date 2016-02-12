@@ -589,14 +589,14 @@ class CustomerController extends \BaseController {
 
 		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$location = (isset($customer['location'])) ? $customer['location'] : "";
-		$customerData =  unset($customer['password']);
+		unset($customer['password']);
 
 		// "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
 			"exp" => Config::get('app.jwt.exp'),
-			"customer" => $customerData
+			"customer" => $customer
 			);
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
@@ -605,7 +605,7 @@ class CustomerController extends \BaseController {
 
 
 
-		return array('status' => 200,'message' => 'successfull login', 'token' => $token, 'customer' => $customer));
+		return array('status' => 200,'message' => 'successfull login', 'token' => $token);
 	}
 
 
