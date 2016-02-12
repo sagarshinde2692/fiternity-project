@@ -89,6 +89,13 @@ class FindersController extends \BaseController {
 				// }
 				// array_set($finder, 'services', $servicesArr);
 
+
+				if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
+                   	$finderarr['ozonetelno']['phone_number'] = '+'.$finderarr['ozonetelno']['phone_number'];
+					$finder['ozonetelno'] = $finderarr['ozonetelno'];
+               	}
+
+
 				$finder['associate_finder'] = null;
 				if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
 
