@@ -75,6 +75,12 @@ Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => '
 Route::get('customerdetail/{customerid}',  array('as' => 'customer.customerdetail','uses' => 'CustomerController@customerDetail'));
 Route::get('foryou/{customeremail}/{lat?}/{lon?}',  array('as' => 'customer.foryou','uses' => 'CustomerController@foryou'));
 
+Route::get('reviews/email/{customeremail}/{from?}/{size?}',  array('as' => 'customer.reviewsbyemail','uses' => 'CustomerController@reviewListingByEmail'));
+Route::get('bookmarks/email/{customeremail}',  array('as' => 'customer.bookmarksbyemail','uses' => 'CustomerController@getBookmarksByEmail'));
+Route::get('updatebookmarks/email/{customeremail}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarksbyemail','uses' => 'CustomerController@updateBookmarksByEmail'));
+Route::get('customerdetail/email/{customeremail}',  array('as' => 'customer.customerdetailbyemail','uses' => 'CustomerController@customerDetailByEmail'));
+
+
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));

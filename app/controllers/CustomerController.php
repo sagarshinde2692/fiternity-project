@@ -927,6 +927,20 @@ class CustomerController extends \BaseController {
 		return $decodedToken;
 	}
 
+	public function reviewListingByEmail($customer_email, $from = '', $size = ''){
+
+		$customer = Customer::where('email',$customer_email)->first();
+
+		if($customer){
+
+			return $this->reviewListing($customer->_id,$from,$size);
+
+		}else{
+
+			return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+		}
+
+	}
 
 	public function reviewListing($customer_id, $from = '', $size = ''){
 		
@@ -967,6 +981,21 @@ class CustomerController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
+	public function getBookmarksByEmail($customer_email){
+
+		$customer = Customer::where('email',$customer_email)->first();
+
+		if($customer){
+
+			return $this->getBookmarks($customer->_id);
+
+		}else{
+
+			return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+		}
+
+	}
+
 
 	public function getBookmarks($customer_id){
 		
@@ -975,18 +1004,33 @@ class CustomerController extends \BaseController {
 
 		if(empty($finderids)){
 			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
-return Response::json($responseData, 200);
-}
+		return Response::json($responseData, 200);
+		}
 
-$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-->with('offerings')
-->whereIn('_id', $finderids)
-->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
+		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with('offerings')
+		->whereIn('_id', $finderids)
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
-$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
-return Response::json($responseData, 200);
-}
+		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
+		return Response::json($responseData, 200);
+	}
+
+	public function updateBookmarksByEmail($customer_id, $finder_id, $remove = ''){
+
+		$customer = Customer::where('email',$customer_email)->first();
+
+		if($customer){
+
+			return $this->getBookmarks($customer->_id,$finder_id,$remove);
+
+		}else{
+
+			return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+		}
+
+	}
 
 public function updateBookmarks($customer_id, $finder_id, $remove = ''){
 
@@ -1129,6 +1173,21 @@ public function editBookmarks($finder_id, $remove = ''){
 	$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
 	
 	return Response::json($responseData, 200);
+}
+
+public function customerDetailByEmail($customer_email){
+
+	$customer = Customer::where('email',$customer_email)->first();	
+
+	if($customer){
+
+		return $this->customerDetail($customer->_id);
+
+	}else{
+
+		return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+	}
+
 }
 
 public function customerDetail($customer_id){
