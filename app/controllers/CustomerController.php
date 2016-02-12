@@ -587,10 +587,9 @@ class CustomerController extends \BaseController {
 
 	public function createToken($customer){
 
-		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
-		$location = (isset($customer['location'])) ? $customer['location'] : "";
+		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+		$customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
 		unset($customer['password']);
-
 		// "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
