@@ -590,9 +590,10 @@ class CustomerController extends \BaseController {
 		$customer = array_except($customer->toArray(), array('password'));
 		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
-
+		$customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+		
 		// unset($customer['password']);
-		$data => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location']));
+		$data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location']));
 
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),

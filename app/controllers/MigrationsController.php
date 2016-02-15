@@ -17,6 +17,107 @@ class MigrationsController extends \BaseController {
 
 	
 
+	/**
+	 * Migration for country
+	 */
+	public function country(){
+		// $ids	=	Country::active()->take(1)->lists('_id');
+		$ids	=	Country::active()->lists('_id');
+
+		if($ids){ 
+			DB::connection('mongodb2')->table('countries')->truncate(); 
+
+			foreach ($ids as $key => $id) {
+				$Country = Country::find(intval($id));
+
+				$insertData = [
+				'name' =>  trim($Country->name),
+				'slug' =>  trim($Country->slug),
+				'order' =>  0,
+				'hidden' =>  ($Country->status == "1") ? false : true,
+				'created_at' =>  (isset($Country->created_at)) ? $Country->created_at : $Country->updated_at,
+				'updated_at' =>  $Country->updated_at
+				];
+
+				$entity 		=	new Country($insertData);
+				$entity->setConnection('mongodb2');
+				$entity->_id 	=	intval($Country->_id);
+				$entity->save();
+			}
+		}//ids
+		
+	}
+
+
+
+
+	/**
+	 * Migration for City
+	 */
+	public function city(){
+		// $ids	=	City::active()->take(1)->lists('_id');
+		$ids	=	City::take(10)->lists('_id');
+
+		if($ids){ 
+			DB::connection('mongodb2')->table('cities')->truncate(); 
+
+			foreach ($ids as $key => $id) {
+				// return $City = City::with('findercategorys')->with('categorytags')->with('locations')->with('locationtags')->find(intval($id));
+				$City = City::find(intval($id));
+
+				$insertData = [
+				'name' =>  trim($City->name),
+				'slug' =>  trim($City->slug),
+				'order' =>  0,
+				'hidden' =>  (isset($City->status) && $City->status == "1")  ? 	 false : true,
+				'created_at' =>  (isset($City->created_at)) ? $City->created_at : $City->updated_at,
+				'updated_at' =>  $City->updated_at
+				];
+
+				$entity 		=	new City($insertData);
+				$entity->setConnection('mongodb2');
+				$entity->_id 	=	intval($City->_id);
+				$entity->save();
+			}
+		}//ids
+		
+	}
+	
+
+
+
+	/**
+	 * Migration for Locationcluster
+	 */
+	public function locationcluster(){
+		$ids	=	Locationcluster::take(100)->lists('_id');
+
+		if($ids){ 
+			DB::connection('mongodb2')->table('locationclusters')->truncate(); 
+
+			foreach ($ids as $key => $id) {
+				// return $Locationcluster = Locationcluster::with('findercategorys')->with('categorytags')->with('locations')->with('locationtags')->find(intval($id));
+				$Locationcluster = Locationcluster::find(intval($id));
+
+				$insertData = [
+				'name' =>  trim($Locationcluster->name),
+				'slug' =>  trim($Locationcluster->slug),
+				'city_id' =>  intval($Locationcluster->city_id),
+				'order' =>  0,
+				'hidden' =>  (isset($Locationcluster->status) && $Locationcluster->status == "1")  ?  false : true,
+				'created_at' =>  (isset($Locationcluster->created_at)) ? $Locationcluster->created_at : $Locationcluster->updated_at,
+				'updated_at' =>  $Locationcluster->updated_at
+				];
+
+				$entity 		=	new Locationcluster($insertData);
+				$entity->setConnection('mongodb2');
+				$entity->_id 	=	intval($Locationcluster->_id);
+				$entity->save();
+			}
+		}//ids
+		
+	}
+
 
 	/**
 	 * Migration for categorys
@@ -29,19 +130,41 @@ class MigrationsController extends \BaseController {
 			foreach ($ids as $key => $id) {
 				$findercategory = Findercategory::find(intval($id));
 				$insertData = [
-					'name' =>  trim($findercategory->name),
-					'slug' =>  trim($findercategory->slug),
-					'detail_rating' =>  $findercategory->detail_rating,
-					'seo' 	=>  [
-						'title' 	=>  ($findercategory->meta['title']) ? strip_tags(trim($findercategory->meta['title'])) : "",
-						'description' 	=>  ($findercategory->meta['description']) ? strip_tags(trim($findercategory->meta['description'])) : "",
-						'keywords' 	=>  (isset($findercategory->meta['keywords']) && $findercategory->meta['keywords'] != "") ? strip_tags(trim($findercategory->meta['keywords'])) : ""
-					],
-					'order' =>  intval($findercategory->ordering),
-					'hidden' =>  ($findercategory->status == "1") ? false : true,
-					'created_at' =>  $findercategory->created_at,
-					'updated_at' =>  $findercategory->updated_at
+				'name' =>  trim($findercategory->name),
+				'slug' =>  trim($findercategory->slug),
+				'detail_rating' =>  $findercategory->detail_rating,
+				'seo' 	=>  [
+				'title' 	=>  ($findercategory->meta['title']) ? strip_tags(trim($findercategory->meta['title'])) : "",
+				'description' 	=>  ($findercategory->meta['description']) ? strip_tags(trim($findercategory->meta['description'])) : "",
+				'keywords' 	=>  (isset($findercategory->meta['keywords']) && $findercategory->meta['keywords'] != "") ? strip_tags(trim($findercategory->meta['keywords'])) : ""
+				],
+				'order' =>  intval($findercategory->ordering),
+				'hidden' =>  ($findercategory->status == "1") ? false : true,
+				'created_at' =>  (isset($findercategory->created_at)) ? $findercategory->created_at : $findercategory->updated_at,
+				'updated_at' =>  $findercategory->updated_at
 				];
+
+				if(isset($findercategory->cities) && count($findercategory->cities) > 0){
+
+					foreach ($findercategory->cities as $key => $value) {
+						// return $newcity 				=	DB::connection('mongodb2')->table('cities')->where('_id', intval($value))->first();
+						$newcity 				=	DB::connection('mongodb2')->table('cities')->where('_id', intval($value))->first();
+						// return $newcity['vendorcategories'];
+						$vendorcategories 		= 	[];
+						if(isset($newcity['vendorcategories'])) {
+							// echo "<br> exist";	
+							$vendorcategories 		= $newcity['vendorcategories'];
+							array_push($vendorcategories, $findercategory->_id);
+						}else{
+							// echo "<br> not exist";	
+							array_push($vendorcategories, $findercategory->_id);
+						}
+
+						echo  "<br> $value : ";print_r($vendorcategories);
+						$updatecity 		=	DB::connection('mongodb2')->table('cities')->where('_id', intval($value))->update(array('vendorcategories' => array_map('intval', array_unique($vendorcategories)) )); 
+					}
+				}
+
 				
 				// merging findercategorytag
 				if($findercategory->slug){
@@ -51,6 +174,7 @@ class MigrationsController extends \BaseController {
 						$insertData['cities'] = (isset($findercategorytag->cities)) ? array_map('intval', $findercategorytag->cities) : [];
 						$insertData['vendors'] = (isset($findercategorytag->finders)) ? array_map('intval', $findercategorytag->finders) : [];
 						$insertData['offering_header'] = (isset($findercategorytag->offering_header)) ? trim($findercategorytag->offering_header) : "";
+
 					}else{
 						echo "<br> Does not exist " .$findercategory->slug;
 					}
@@ -78,14 +202,15 @@ class MigrationsController extends \BaseController {
 				$location = Location::find(intval($id));
 
 				$insertData = [
-					'name' =>  trim($location->name),
-					'slug' =>  trim($location->slug),
-					'cities' =>  array_map('intval', $location->cities),
-					'location_group' =>  trim($location->location_group),
-					'order' =>  count($location->ordering),
-					'hidden' =>  ($location->status == "1") ? false : true,
-					'created_at' =>  $location->created_at,
-					'updated_at' =>  $location->updated_at
+				'name' =>  trim($location->name),
+				'slug' =>  trim($location->slug),
+				// 'cities' =>  array_map('intval', $location->cities),
+				'city_id' =>  intval($location->cities[0]),
+				'location_group' =>  trim($location->location_group),
+				'order' =>  count($location->ordering),
+				'hidden' =>  ($location->status == "1") ? false : true,
+				'created_at' =>  (isset($location->created_at)) ? $location->created_at : $location->updated_at,
+				'updated_at' =>  $location->updated_at
 				];
 
 				if($location->lat != "" && $location->lon != "" ){
@@ -110,6 +235,27 @@ class MigrationsController extends \BaseController {
 				$entity 		=	new Vendorlocation($insertData);
 				$entity->_id 	=	intval($location->_id);
 				$entity->save();
+
+				// if(isset($location->cities) && count($location->cities) > 0){
+
+				// 	foreach ($location->cities as $key => $value) {
+				// 		// return $newcity 				=	DB::connection('mongodb2')->table('cities')->where('_id', intval($value))->first();
+				// 		$newcity 				=	DB::connection('mongodb2')->table('cities')->where('_id', intval($value))->first();
+				// 		// return $newcity['vendorlocations'];
+				// 		$vendorlocations 		= 	[];
+				// 		if(isset($newcity['vendorlocations'])) {
+				// 			// echo "<br> exist";	
+				// 			$vendorlocations 		= $newcity['vendorlocations'];
+				// 			array_push($vendorlocations, $location->_id);
+				// 		}else{
+				// 			// echo "<br> not exist";	
+				// 			array_push($vendorlocations, $location->_id);
+				// 		}
+
+				// 		echo  "<br> $value : ";print_r($vendorlocations);
+				// 		$updatecity 		=	DB::connection('mongodb2')->table('cities')->where('_id', intval($value))->update(array('vendorlocations' => array_map('intval', array_unique($vendorlocations)) )); 
+				// 	}
+				// }
 
 			}
 		}//ids
@@ -138,14 +284,14 @@ class MigrationsController extends \BaseController {
 
 				if($findercategory){
 					$insertData = [
-						'name' =>  trim($offering->name),
-						'slug' =>  url_slug([$offering->name]),
-						'vendorcategories' =>  [ intval($findercategory->_id) ],
-						'vendors' => (isset($offering->finders)) ? array_map('intval', $offering->finders) : [],
-						'order' =>  intval($offering->ordering),
-						'hidden' =>  ($offering->status == "1") ? false : true,
-						'created_at' =>  $offering->created_at,
-						'updated_at' =>  $offering->updated_at
+					'name' =>  trim($offering->name),
+					'slug' =>  url_slug([$offering->name]),
+					'vendorcategories' =>  [ intval($findercategory->_id) ],
+					'vendors' => (isset($offering->finders)) ? array_map('intval', $offering->finders) : [],
+					'order' =>  intval($offering->ordering),
+					'hidden' =>  ($offering->status == "1") ? false : true,
+					'created_at' =>  $offering->created_at,
+					'updated_at' =>  $offering->updated_at
 					];
 
 					$entity 		=	new Offering($insertData);
@@ -174,14 +320,14 @@ class MigrationsController extends \BaseController {
 				$facility = Facility::find(intval($id));
 
 				$insertData = [
-					'name' =>  trim($facility->name),
-					'slug' =>  trim($facility->slug),
-					'vendorcategories' =>  [ ],
-					'vendors' => (isset($facility->finders)) ? array_map('intval', $facility->finders) : [],
-					'order' =>  0,
-					'hidden' =>  ($facility->status == "1") ? false : true,
-					'created_at' =>  $facility->created_at,
-					'updated_at' =>  $facility->updated_at
+				'name' =>  trim($facility->name),
+				'slug' =>  trim($facility->slug),
+				'vendorcategories' =>  [ ],
+				'vendors' => (isset($facility->finders)) ? array_map('intval', $facility->finders) : [],
+				'order' =>  0,
+				'hidden' =>  ($facility->status == "1") ? false : true,
+				'created_at' =>  $facility->created_at,
+				'updated_at' =>  $facility->updated_at
 				];
 
 				$entity 		=	new Facility($insertData);
@@ -228,11 +374,11 @@ class MigrationsController extends \BaseController {
 					$temp_point_of_contact_arr = [];
 					if(isset($finder->finder_poc_for_customer_name) || isset($finder->finder_poc_for_customer_mobile)){
 						$point_of_contact_arr = [
-								'name'  =>  (isset($finder->finder_poc_for_customer_name)) ? trim($finder->finder_poc_for_customer_name) : "",
-								'email'  =>   "",
-								'mobile'  =>  (isset($finder->finder_poc_for_customer_mobile)) ? trim($finder->finder_poc_for_customer_mobile) : "",
-								'landline'  =>  "",
-								'used_for'  =>  ["point_of_contact_customer"]
+						'name'  =>  (isset($finder->finder_poc_for_customer_name)) ? trim($finder->finder_poc_for_customer_name) : "",
+						'email'  =>   "",
+						'mobile'  =>  (isset($finder->finder_poc_for_customer_mobile)) ? trim($finder->finder_poc_for_customer_mobile) : "",
+						'landline'  =>  "",
+						'used_for'  =>  ["point_of_contact_customer"]
 						];
 						array_push($temp_point_of_contact_arr, $point_of_contact_arr);
 					}
@@ -244,11 +390,11 @@ class MigrationsController extends \BaseController {
 
 					for ($i=0; $i < max([intval($finder_vcc_email_cnt),intval($finder_vcc_mobile_cnt)]); $i++) { 
 						$point_of_contact_arr = [
-								'name'  =>  "",
-								'mobile'  =>  "",
-								'landline'  =>  "",
-								'email'  =>   (isset($temp_finder_vcc_email_arr[$i])) ? trim($temp_finder_vcc_email_arr[$i]) : "",
-								'used_for'  =>  ["vendor_communication_contact"]
+						'name'  =>  "",
+						'mobile'  =>  "",
+						'landline'  =>  "",
+						'email'  =>   (isset($temp_finder_vcc_email_arr[$i])) ? trim($temp_finder_vcc_email_arr[$i]) : "",
+						'used_for'  =>  ["vendor_communication_contact"]
 						];
 
 						if(isset($temp_finder_vcc_mobile_arr[$i])  && $temp_finder_vcc_mobile_arr[$i] != "" ){
@@ -343,41 +489,41 @@ class MigrationsController extends \BaseController {
 					'types' 	=>  [ 'commercials' =>  $commercial_type, 'business' =>  $business_type, 'vendor' =>  $vendor_type ],
 					'contact' 	=>  ['email' =>  $email, 'phone' =>  $phone, 'point_of_contact' =>  $temp_point_of_contact_arr],
 					'media' 	=>  [
-						'images' =>  $images,
-						'videos' =>  $videos
+					'images' =>  $images,
+					'videos' =>  $videos
 					],
 					'info' 	=>  [
-						'about' 	=>  ($finder->info['about']) ? trim($finder->info['about']) : "",
-						'additional_info' 	=>  ($finder->info['additional_info']) ? trim($finder->info['additional_info']) : "",
-						'timing' 	=>  ($finder->info['timing']) ? trim($finder->info['timing']) : "",
-						'service' 	=>  $services_arr
+					'about' 	=>  ($finder->info['about']) ? trim($finder->info['about']) : "",
+					'additional_info' 	=>  ($finder->info['additional_info']) ? trim($finder->info['additional_info']) : "",
+					'timing' 	=>  ($finder->info['timing']) ? trim($finder->info['timing']) : "",
+					'service' 	=>  $services_arr
 					],
 					'address' 	=>  [
-						'line1' 	=>  trim($line1),
-						'line2' 	=>  trim($line2),
-						'line3' 	=>  trim($line3),						
-						'pincode' 	=>  "",
-						'landmark' 	=>  ($finder->landmark) ? strip_tags($finder->landmark) : ""
+					'line1' 	=>  trim($line1),
+					'line2' 	=>  trim($line2),
+					'line3' 	=>  trim($line3),						
+					'pincode' 	=>  "",
+					'landmark' 	=>  ($finder->landmark) ? strip_tags($finder->landmark) : ""
 					],
 					'geometry' => [
-						'type' 	=> "Point",
-						'coordinates' 	=>  [$finder->lat, $finder->lon],
+					'type' 	=> "Point",
+					'coordinates' 	=>  [$finder->lat, $finder->lon],
 					],
 					'rating' 	=>  [
-						'avg' =>  $finder->average_rating,
-						'count' =>  intval($finder->total_rating_count)
+					'avg' =>  $finder->average_rating,
+					'count' =>  intval($finder->total_rating_count)
 					],
 					'detail_rating' =>  [
-						'avg' =>    (isset($finder->detail_rating_summary_average)) ? $finder->detail_rating_summary_average : [],
-						'count' =>  (isset($finder->detail_rating_summary_count))   ?  array_map('intval', $finder->detail_rating_summary_count) : []
+					'avg' =>    (isset($finder->detail_rating_summary_average)) ? $finder->detail_rating_summary_average : [],
+					'count' =>  (isset($finder->detail_rating_summary_count))   ?  array_map('intval', $finder->detail_rating_summary_count) : []
 					],
 					'seo' 	=>  [
-						'title' 	=>  ($finder->meta['title']) ? strip_tags(trim($finder->meta['title'])) : "",
-						'description' 	=>  ($finder->meta['description']) ? strip_tags(trim($finder->meta['description'])) : "",
-						'keywords' 	=>  (isset($finder->meta['keywords']) && $finder->meta['keywords'] != "") ? strip_tags(trim($finder->meta['keywords'])) : "",
-						'og_title' 	=>  "",
-						'og_description' 	=>   "",
-						'og_image' 	=>   ""
+					'title' 	=>  ($finder->meta['title']) ? strip_tags(trim($finder->meta['title'])) : "",
+					'description' 	=>  ($finder->meta['description']) ? strip_tags(trim($finder->meta['description'])) : "",
+					'keywords' 	=>  (isset($finder->meta['keywords']) && $finder->meta['keywords'] != "") ? strip_tags(trim($finder->meta['keywords'])) : "",
+					'og_title' 	=>  "",
+					'og_description' 	=>   "",
+					'og_image' 	=>   ""
 					],
 					'hidden' =>  $finder->status,
 					'order' =>  0,
@@ -427,25 +573,25 @@ class MigrationsController extends \BaseController {
 				$servicecategory = Servicecategory::find(intval($id));
 
 				$insertData = [
-					'name' =>  trim($servicecategory->name),
-					'slug' =>  trim($servicecategory->slug),
-					'parent_id' =>  intval($servicecategory->parent_id),
+				'name' =>  trim($servicecategory->name),
+				'slug' =>  trim($servicecategory->slug),
+				'parent_id' =>  intval($servicecategory->parent_id),
 					// 'parent_name' =>  trim($servicecategory->parent_name),
-					'description' =>  trim($servicecategory->description),
-					'what_i_should_carry' =>  trim($servicecategory->what_i_should_carry),
-					'what_i_should_expect' =>  trim($servicecategory->what_i_should_expect),
-					'seo' 	=>  [
-						'title' 	=>  ($servicecategory->meta['title']) ? strip_tags(trim($servicecategory->meta['title'])) : "",
-						'description' 	=>  ($servicecategory->meta['description']) ? strip_tags(trim($servicecategory->meta['description'])) : "",
-						'keywords' 	=>  (isset($servicecategory->meta['keywords']) && $servicecategory->meta['keywords'] != "") ? strip_tags(trim($servicecategory->meta['keywords'])) : "",
-						'og_title' 	=>  "",
-						'og_description' 	=>   "",
-						'og_image' 	=>   ""
-					],
-					'order' =>  0,
-					'hidden' =>  ($servicecategory->status == "1") ? false : true,
-					'created_at' =>  $servicecategory->created_at,
-					'updated_at' =>  $servicecategory->updated_at
+				'description' =>  trim($servicecategory->description),
+				'what_i_should_carry' =>  trim($servicecategory->what_i_should_carry),
+				'what_i_should_expect' =>  trim($servicecategory->what_i_should_expect),
+				'seo' 	=>  [
+				'title' 	=>  ($servicecategory->meta['title']) ? strip_tags(trim($servicecategory->meta['title'])) : "",
+				'description' 	=>  ($servicecategory->meta['description']) ? strip_tags(trim($servicecategory->meta['description'])) : "",
+				'keywords' 	=>  (isset($servicecategory->meta['keywords']) && $servicecategory->meta['keywords'] != "") ? strip_tags(trim($servicecategory->meta['keywords'])) : "",
+				'og_title' 	=>  "",
+				'og_description' 	=>   "",
+				'og_image' 	=>   ""
+				],
+				'order' =>  0,
+				'hidden' =>  ($servicecategory->status == "1") ? false : true,
+				'created_at' =>  $servicecategory->created_at,
+				'updated_at' =>  $servicecategory->updated_at
 				];
 
 				$entity 		=	new Vendorservicecategory($insertData);

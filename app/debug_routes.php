@@ -1,5 +1,8 @@
 <?php
 
+Route::get('migrations/country', 'MigrationsController@country');
+Route::get('migrations/city', 'MigrationsController@city');
+Route::get('migrations/locationcluster', 'MigrationsController@locationcluster');
 Route::get('migrations/category', 'MigrationsController@category');
 Route::get('migrations/location', 'MigrationsController@location');
 Route::get('migrations/offerings', 'MigrationsController@offerings');
