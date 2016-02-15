@@ -1113,35 +1113,37 @@ public function getAllTrials(){
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
 
-	$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
+	return $this->getAutoBookTrials($decoded->customer->email);
+	
+	// $selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 
-	$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-	->where('customer_email', '=', $decoded->customer->email)
-	->whereIn('booktrial_type', array('auto'))
-	->orderBy('_id', 'desc')
-	->get($selectfields)->toArray();
+	// $trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+	// ->where('customer_email', '=', $decoded->customer->email)
+	// ->whereIn('booktrial_type', array('auto'))
+	// ->orderBy('_id', 'desc')
+	// ->get($selectfields)->toArray();
 
-	if(!$trials){
-		return $this->responseNotFound('Customer does not exist');
-	}
+	// if(!$trials){
+	// 	return $this->responseNotFound('Customer does not exist');
+	// }
 
-	if(count($trials) < 1){
-		$response 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
-		return Response::json($response,200);
-	}
+	// if(count($trials) < 1){
+	// 	$response 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
+	// 	return Response::json($response,200);
+	// }
 
-	$customertrials  = 	$trial = array();
-	$currentDateTime =	\Carbon\Carbon::now();
+	// $customertrials  = 	$trial = array();
+	// $currentDateTime =	\Carbon\Carbon::now();
 
-	foreach ($trials as $trial){
-		$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
-		$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-		array_set($trial, 'passed', $slot_datetime_pass_status);
-		array_push($customertrials, $trial);
-	}
+	// foreach ($trials as $trial){
+	// 	$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
+	// 	$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+	// 	array_set($trial, 'passed', $slot_datetime_pass_status);
+	// 	array_push($customertrials, $trial);
+	// }
 
-	$response 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
-	return Response::json($response,200);
+	// $response 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
+	// return Response::json($response,200);
 }
 
 public function editBookmarks($finder_id, $remove = ''){
