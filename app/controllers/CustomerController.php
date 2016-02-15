@@ -25,7 +25,7 @@ class CustomerController extends \BaseController {
 
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect');
 		$trials 		=	Booktrial::where('customer_email', '=', $customeremail)
 		->whereIn('booktrial_type', array('auto'))
 		->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
@@ -1067,7 +1067,7 @@ public function getAllOrders($offset = 0, $limit = 10){
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
 
-	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->orWhere('status',"1")->orWhere('order_action','bought')->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 	$response 		= 	['status' => 200, 'orders' => $orders,  'message' => 'List for orders'];
 
 	return Response::json($response, 200);
