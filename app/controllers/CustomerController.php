@@ -590,20 +590,21 @@ class CustomerController extends \BaseController {
 		$customer = array_except($customer->toArray(), array('password'));
 		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+
 		// unset($customer['password']);
-		// "customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
+		$data => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location']));
+
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
 			"exp" => Config::get('app.jwt.exp'),
-			"customer" => $customer
+			"customer" => $data
 			);
+		
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
 
 		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
-
-
 
 		return array('status' => 200,'message' => 'successfull login', 'token' => $token);
 	}
