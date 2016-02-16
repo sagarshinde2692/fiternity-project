@@ -588,19 +588,25 @@ class CustomerController extends \BaseController {
 	public function createToken($customer){
 
 		$customer = array_except($customer->toArray(), array('password'));
+
+		$customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
+		$customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
+		$customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
+		$customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
+		$customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+		$customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+		$customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
 		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
-		$customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
-		
-		// unset($customer['password']);
-		$data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location']));
+
+		$data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],"contact_no"=>$customer['contact_no'],"location"=>$customer['location'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location']));	
 
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
 			"exp" => Config::get('app.jwt.exp'),
 			"customer" => $data
-			);
+		);
 		
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
