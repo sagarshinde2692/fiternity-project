@@ -235,8 +235,8 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         <hr width="100px">
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a workout session at <strong>{{ ucwords($finder_name) }}. </strong></p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your session has been <strong>CONFIRMED.</strong> </p>                                                        
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a trial session at <strong>{{ ucwords($finder_name) }}. </strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your trial session has been <strong>CONFIRMED.</strong> </p>                                                        
                                                     </td>
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
@@ -282,6 +282,11 @@
                                                                             <?php if(isset($service_name) && $service_name != ""){ ?> 
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Workout Form</p> 
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_name)  }}</p>
+                                                                            <?php }?>
+
+                                                                            <?php if(isset($amount) && $amount != ""){ ?> 
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Amount </p> 
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($amount)  }}</p>
                                                                             <?php }?>
 
                                                                             <?php if(isset($code) && $code != ""){ ?> 
