@@ -821,6 +821,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$additional_info					= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
 
+			$orderid 	=	(int) Input::json()->get('order_id');
+			$order 		= 	Order::findOrFail($orderid);
+
 			$booktrialdata = array(
 				'booktrialid'					=>		intval($booktrialid),
 				'campaign'						=>		$campaign,
@@ -869,7 +872,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'booktrial_actions'				=>		'call to confirm trial',
 				'source'						=>		'website',
 				'origin'						=>		'auto',
-				'additional_info'				=>		$additional_info	
+				'additional_info'				=>		$additional_info,
+				'amount'						=>		$order->amount;
 				);
 
 			// return $this->customersms->bookTrial($booktrialdata);

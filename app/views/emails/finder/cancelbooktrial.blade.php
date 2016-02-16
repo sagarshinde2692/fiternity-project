@@ -233,8 +233,9 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
-                                                        <p>Hi, Greetings from Fitternity</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a cancellation request received for session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif. The session stated below has been cancelled</p>
+                                                        <p>Hi,</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Greetings from Fitternity</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a cancellation request received for trial session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif. Please note the trial session stated below has been cancelled</p>
                                                 </td>
                                             </tr>
                                          
@@ -287,6 +288,11 @@
                                                                             <?php if(isset($service_name) && $service_name != ""){ ?> 
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Workout Form:</p> 
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_name)  }}</p>
+                                                                            <?php }?>
+
+                                                                            <?php if(isset($code) && $code != ""){ ?> 
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
                                                                             <?php }?>
 
                                                                         </td>
@@ -352,7 +358,7 @@
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
                     <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_vendor_email')}}"> {{Config::get('app.contact_us_vendor_email')}}</a>                       
                 </p>
             </td>
         </tr>

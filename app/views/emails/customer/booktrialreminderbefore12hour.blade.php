@@ -235,8 +235,8 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you are all geared up for your upcoming workout session at <strong>{{ ucwords($finder_name) }}</strong> on <strong>{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Here are a few details you should know and might want to follow before your workout session, to make the most out of it:</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you are all geared up for your upcoming trial session at <strong>{{ ucwords($finder_name) }}</strong> on <strong>{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Here are a few details you should know and might want to follow before your trial session, to make the most out of it:</p>
 
                                                         <?php if(isset($description) && $description != ""){ ?> 
                                                         <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px;" st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;" > What is {{ ucwords($service_name)  }} ?</span><br/>
@@ -256,9 +256,9 @@
                                                     </div>
                                                     <?php }?>
 
-                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:15px 0px; " st-content="fulltext-paragraph"> Post your workout should you wish to purchase a membership, we’ve got you covered with exciting insider discounts valid only for Fitternity users. </p>
+                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:15px 0px; " st-content="fulltext-paragraph"> Post your trial, should you wish to purchase a membership, we’ve got you covered with exciting insider discounts valid only for Fitternity users. </p>
 
-                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:5px; " st-content="fulltext-paragraph"> Whats more? You also get a <strong>discount coupon (additonal Rs. 500 off) </strong>which you can unlock post attending your trial. Further details on the discount coupon will follow.  </p>
+                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:5px; " st-content="fulltext-paragraph"> What's more? You also get a <strong>discount coupon (additonal Rs. 250 off) </strong>which you can unlock post attending your trial. Further details on the discount coupon will follow.  </p>
 
                                                 </td>
                                             </tr>
@@ -311,7 +311,7 @@
                                                 <tr>
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
                                                      <?php if(isset($customer_name) && $customer_name != ""){ ?> 
-                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Session booked for:</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Trial Session booked for:</p>
                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
                                                      <?php }?>
                                                      <?php if(isset($finder_name) && $finder_name != ""){ ?> 
@@ -394,7 +394,7 @@
                             </tr>
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
+                                    <p>Should you feel the need to change either the time or day of the trial session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
                                     <p style="padding-top:10px;">Regards<br/>
                                         TEAM FITTERNITY
                                     </p>
@@ -445,7 +445,7 @@
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
                     <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                        
                 </p>
             </td>
         </tr>

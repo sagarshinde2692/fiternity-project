@@ -235,20 +235,21 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         <hr width="100px">
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Basis your request - we have re-scheduled your session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Basis your request - we have re-scheduled your trial session at {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your trial session has been <strong>CONFIRMED.</strong> </p> 
                                                     </td>   
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td>
                                                         <hr style="width:30%;" />    
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Here are the details</strong></p>  
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Your booking details</strong></p>
                                                         <!-- col 1 -->
                                                         <table width="260px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
                                                             <tbody>
                                                                 <tr>
                                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
                                                                         <?php if(isset($finder_name) && $finder_name != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Session booked for:</p>
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Trial Session booked for:</p>
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
                                                                         <?php }?>
 
@@ -383,7 +384,7 @@
 
                                         <tr style="background-color:#f6f6f6;">
                                             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                                <p>We shall be sending you a reminder message to ensure you don't miss out on the workout. We hope you have a great session</p>
+                                                <p>We shall be sending you a reminder message to ensure you don't miss out on the workout. We hope you have a great trial session</p>
                                                 <p style="padding-top:10px;">Regards<br/>
                                                     TEAM FITTERNITY
                                                 </p>
@@ -427,7 +428,7 @@
                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                         <p>Contact us
                             <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                            <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                            <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                       
                         </p>
                     </td>
                 </tr>

@@ -237,16 +237,16 @@
                                                             <img width="50px;" src="http://email.fitternity.com/195/no.png"  /></p>
                                                             <p>Hi {{  ucwords($customer_name) }},</p>
 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">This is regarding the workout session  at <strong>{{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif </strong> booked through <a style="color:#F9a91e; text-decoration:none;" href="http://www.fitternity.com" target="_blank">Fitternity.com</a> </p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">This is regarding the trial session at <strong>{{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif </strong> booked through <a style="color:#F9a91e; text-decoration:none;" href="http://www.fitternity.com" target="_blank">Fitternity</a> </p>
 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Basis your request – we have cancelled the session. </p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Basis your request – we have cancelled the trial session. </p>
 
 
 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> 
                                                              <span style="font-weight:bold; color: #666666;" >
                                                                  Please {{ link_to('http://www.fitternity.com/'.$finder_slug, 'Click here', array("style"=>"text-decoration:none; color:#f9a91e; cursor:pointer;") ) }} 
-                                                                 book another trial session or you could also call us on {{Config::get('app.customer_care_number')}} for any assistance.
+                                                                 to book another trial session or you could also call us on {{Config::get('app.customer_care_number')}} for any assistance.
                                                              </span><br/>
                                                          
                                                      </p>
@@ -341,8 +341,8 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                    <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
+                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                       
                 </p>
             </td>
         </tr>

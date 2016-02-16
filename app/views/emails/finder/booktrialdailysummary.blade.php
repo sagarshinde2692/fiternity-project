@@ -233,14 +233,16 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
-                                                        <p>Hi, Greetings from Fitternity, </p>
+                                                        <p>Hi,</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> Greetings from Fitternity</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Please find below the daily report on customers who have booked sessions for tomorrow</p>
                                                 </td>
                                             </tr>
                                          
                                 <tr style="background-color:#f6f6f6;">
                                                     <td>
                                                         <hr style="width:30%;" />    
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Daily report on customers who have booked sessions for tomorrow, Here are the details :</strong></p>  
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Here are the details:</strong></p>  
                                                         <!-- col 1 -->
                                                          <table  width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
                                                           <tbody>
@@ -282,11 +284,18 @@
                   <tbody>
                    <!-- image 2 -->
                    <!-- end of image2 -->
+                   <tr style="background-color:#f6f6f6;">
+                    <hr style="width:30%;" />
+                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
+                                                       
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Customers who attended session Today</p>
+                                                </td>
+                                            </tr>
                    <tr>
-                    <td>
+                    <td>    
                      <!-- start of text content table -->  
                      <hr style="width:30%;" />    
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Customers who attended session on Today, Here are the details :</strong></p> 
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Here are the details :</strong></p> 
                      <table  width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
                       <tbody>
                       
@@ -383,7 +392,7 @@
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
                     <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_vendor_email')}}"> {{Config::get('app.contact_us_vendor_email')}}</a>                       
                 </p>
             </td>
         </tr>

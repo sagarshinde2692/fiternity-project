@@ -235,29 +235,29 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you had a chance to attend the workout session at <strong>{{ ucwords($finder_name) }}</strong> on <strong> {{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you had a chance to attend the trial session at <strong>{{ ucwords($finder_name) }}</strong> on <strong> {{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:30px; " st-content="fulltext-paragraph">
                                                             <img width="50px;" src="http://email.fitternity.com/195/yes.png"  /></p>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> If you have attended the session – please share your review about <strong>{{ ucwords($finder_name) }}</strong> and <strong>win exciting merchandise</strong> (trendy coasters, cool sipper bottles, kick-ass workout tees or functional backpacks) and also get a <strong>discount coupon worth Rs. 500</strong>  to avail when you purchase the membership.</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> If you have attended the trial session – please share your review about <strong>{{ ucwords($finder_name) }}</strong> and <strong>win any one of these exciting merchandises</strong> (trendy coasters, cool sipper bottles, kick-ass workout tees or functional backpacks) and also get a <strong>discount coupon worth Rs. 250</strong>  to avail when you purchase the membership.</p>
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; " st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;" > Review now! By clicking on this link - {{ link_to('http://www.fitternity.com/'.$finder_slug.'/'.$booktrialid, ucwords($finder_name), array("style"=>"text-decoration:underline; color:#f9a91e; cursor:pointer;") ) }}</span>
                                                             </p>
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:40px; padding-bottom:10px; " st-content="fulltext-paragraph">
                                                                 <img width="50px;" src="http://email.fitternity.com/195/no.png"  /></p>
-                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color: #666666;" >Haven’t attended the session? Don’t fret, we’ve got you covered. <br />
+                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <span style="font-weight:bold; color: #666666;" >Haven’t attended the trial session? Don’t fret, we’ve got you covered. <br />
                                                                 <span style="color:#f9a91e;"> {{ link_to('http://www.fitternity.com/'.$finder_slug, 'Click here', array("style"=>"text-decoration:underline; color:#f9a91e; cursor:pointer;") ) }} </span> to put in a reschedule request now!
                                                                 </span><br/>
 
                                                             </p>
 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 11px; text-align:left;line-height: 23px;" st-content="fulltext-paragraph"> 
-                                                             *Note: Re-scheduling a particular session more than once, may attract a chargeable trial fee.</p>
+                                                             *Note: Re-scheduling a particular trial session more than once, may attract a chargeable trial fee.</p>
                                                          </td>
                                                      </tr>
 
 
                                                      <tr style="background-color:#f6f6f6;">
                                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                                            <p>Should you feel the need to change either the time or day of the session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
+                                                            <p>Should you feel the need to change either the time or day of the trial session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
                                                             <p style="padding-top:10px;">Regards<br/>
                                                                 TEAM FITTERNITY
                                                             </p>
@@ -308,7 +308,7 @@
                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                         <p>Contact us
                             <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                            <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                            <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                       
                         </p>
                     </td>
                 </tr>

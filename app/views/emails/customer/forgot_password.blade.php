@@ -236,15 +236,16 @@
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:10px; " st-content="fulltext-paragraph">
                                                             <p>Hello {{  ucwords($name) }},</p>
 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">We received a request to reset the password associated with this e-mail address. If you made this request, please follow the instructions below. </p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">We have received a request to reset the password associated with this e-mail address. If you made this request, please follow the instructions below. </p>
 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph">Click on the link below to reset your password using our secure server </p>
 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"><a href="https://www.fitternity.com/forgot/{{$token}}" style="text-decoration:none"><span style="color:#ec8601;font-weight:400">Reset your password</span></a></p>
 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph">If you did not request to have your password reset you can safely ignore this email.</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph">In case you have not requested to have your password reset, you can safely ignore this email.</p>
 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph">If clicking the link does not seem to work, you can copy and paste the link into your browser's address window, or retype it there. Once you have returned to Fitternity, we will give instructions for resetting your password. </p>
+                                                            
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph">In case you’re not redirected to Fitternity, upon clicking this link, you may copy and paste the link into your browser's address bar or alternatively retype the link there. Once you’ve been re-directed to Fitternity, we shall give instructions for resetting your password.</p>
                                                         
                                                             
                                                      </p>
@@ -340,7 +341,7 @@
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
                 <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                       
                 </p>
             </td>
         </tr>
