@@ -29,7 +29,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BookTrial-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 	}
 
 	public function rescheduledBookTrial ($data){
@@ -52,7 +52,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'RescheduledTrial-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 	}
 
 	//currently not using reminder
@@ -72,7 +72,7 @@ Class FinderMailer extends Mailer {
 		$label = 'TrialRmdBefore12Hr-F';
 		$priority = 0;
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority, $delay);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label, $priority, $delay);
 	}
 
 	public function sendBookTrialDaliySummary ($data){
@@ -99,7 +99,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'TrialDaliySummary-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -126,7 +126,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuyServiceFitmania-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -153,7 +153,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuySrvFitmaniaWrongCustomer-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -185,7 +185,7 @@ Class FinderMailer extends Mailer {
 		$label = 'BuySrvFitmaniaGroupbyFinder-F';
 		$priority = 1;
 		
-		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+		return $this->sendToWorker('vendor',$email_template_customer, $template_data, $message_data, $label, $priority);
 
 	}
 
@@ -216,7 +216,7 @@ Class FinderMailer extends Mailer {
 		$label = 'BuySrvFitmaniaGroupbyFinder-F';
 		$priority = 1;
 		
-		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+		return $this->sendToWorker('vendor',$email_template_customer, $template_data, $message_data, $label, $priority);
 
 	}
 
@@ -244,7 +244,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuySrvMbrFitM-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -272,7 +272,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuySrvHltTifFitM-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -295,7 +295,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'ResendFitmania-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -318,7 +318,31 @@ Class FinderMailer extends Mailer {
 
 		$label = 'CancelTrial-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
+	}
+
+	public function sendPgOrderMail ($data){
+
+		$email_template 	= 	'emails.order.pg_'.strtolower($data['type']).'_finder';
+		$template_data 				= 	$data;
+		if($data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		}
+
+		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+		
+		$message_data 	= array(
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' =>  $data['finder_poc_for_customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+		);
+
+		$label = 'SendPgOrder-F';
+
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 	}
 
 }

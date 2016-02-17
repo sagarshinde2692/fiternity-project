@@ -9,6 +9,8 @@
 
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Mailers\FinderMailer as FinderMailer;
+use App\Sms\FinderSms as FinderSms;
 use App\Services\Sidekiq as Sidekiq;
 
 class OrderController extends \BaseController {
@@ -77,6 +79,7 @@ class OrderController extends \BaseController {
 			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
+				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
 			} 
 			
