@@ -823,6 +823,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$orderid 	=	(int) Input::json()->get('order_id');
 			$order 		= 	Order::findOrFail($orderid);
+			$type 		= 	$order->type;
 
 			$booktrialdata = array(
 				'booktrialid'					=>		intval($booktrialid),
@@ -873,8 +874,9 @@ class SchedulebooktrialsController extends \BaseController {
 				'source'						=>		'website',
 				'origin'						=>		'auto',
 				'additional_info'				=>		$additional_info,
-				'amount'						=>		$order->amount;
-				);
+				'amount'						=>		$order->amount
+				
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;

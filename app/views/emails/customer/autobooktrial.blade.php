@@ -209,6 +209,8 @@
     </style>
 </head>
 
+<?php $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'workout' : 'trial'; ?>
+
 <body style=" background-image:url(http://email.fitternity.com/195/pat2.png)">
     <div class="block">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;">
@@ -235,8 +237,8 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         <hr width="100px">
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a trial session at <strong>{{ ucwords($finder_name) }}. </strong></p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your trial session has been <strong>CONFIRMED.</strong> </p>                                                        
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a {{$trial_type}} session at <strong>{{ ucwords($finder_name) }}. </strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your {{$trial_type}} session has been <strong>CONFIRMED.</strong> </p>                                                        
                                                     </td>
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
@@ -249,7 +251,7 @@
                                                                 <tr>
                                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
                                                                         <?php if(isset($finder_name) && $finder_name != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Trial Session booked for:</p>
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{$trial_type}} session booked for:</p>
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
                                                                         <?php }?>
 
@@ -305,7 +307,12 @@
 
                                                             </tbody>
                                                         </table>
-                                                        
+                                                            
+                                                    </td>
+                                                </tr>
+                                                <tr style="background-color:#f6f6f6;">
+                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; padding:20px; font-weight:700; text-transform:uppercase;" st-content="fulltext-paragraph"> Want to cancel or re-schedule your trial session?<br /><br />
+                                                        <a href="http://fitternity.com/profile/{{$customer_email}}/b/$_id" target="_blank" style="background-color:#4cc8de;border:1px solid #4cc8de;border-radius:3px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; text-transform:uppercase;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:8px 20px;"><strong>Click here </strong><br /></a>
                                                     </td>
                                                 </tr>
 
@@ -352,7 +359,7 @@
                                                     </tr>
                                                     <tr style="background-color:#f6f6f6;">
                                                         <td width="100%" align="center" class="devicewidth">
-                                                            <img width="100%" src="http://email.fitternity.com/195/Timeline-v2.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;">
+                                                            <img width="100%" src="http://email.fitternity.com/207/{{$trial_type}}.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;">  
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -363,7 +370,7 @@
                             </table>
                         </td>
                     </tr>
-                </tbody>
+                </tbody>  
 
             </table>
         </div>
@@ -376,7 +383,11 @@
                     <tbody>
                       <!-- Title -->
 
-
+                      <tr style="background-color:#f6f6f6;">
+                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; padding:20px; font-weight:700; text-transform:uppercase;" st-content="fulltext-paragraph"> To Kickstart your fitness journey on fitternity<br /><br />
+                            <a href="http://fitternity.com/profile/{{$customer_email}}" target="_blank" style="background-color:#4cc8de;border:1px solid #4cc8de;border-radius:3px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; text-transform:uppercase;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:8px 20px;"><strong>Click here </strong><br /></a>
+                        </td>
+                      </tr>   
                       <tr>
                           <td>
                              <table width="580" cellpadding="0" cellspacing="0" border="0" align="center" class="devicewidth">
@@ -393,7 +404,7 @@
 
                                         <tr style="background-color:#f6f6f6;">
                                             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                                <p>Should you feel the need to change either the time or day of the trial session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
+                                                <p>Should you feel the need to change either the time or day of the {{$trial_type}} session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
                                                 <p style="padding-top:10px;">Regards<br/>
                                                     TEAM FITTERNITY
                                                 </p>

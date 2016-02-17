@@ -209,6 +209,8 @@
     </style>
 </head>
 
+<?php $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'Workout' : 'Trial'; ?>
+
 <body style="background-image:url(http://email.fitternity.com/195/pat2.png)">
     <div class="block">
         <table width="100%" cellpadding="0" cellspacing="0" border="0" id="backgroundTable" st-sortable="3columns" style="table-layout:fixed;">
@@ -235,7 +237,7 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi,</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> Greetings from Fitternity</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> This is regarding a trial booked by a customer on our website for {{ ucwords($finder_name) }} @if ($show_location_flag), {{ ucwords($finder_location) }} @endif.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> This is regarding a {{$trial_type}} Session booked by a customer on our website for {{ ucwords($finder_name) }} @if ($show_location_flag), {{ ucwords($finder_location) }} @endif.</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> We have been trying to reach the customer over the last few days but have not been able to connect. </p>
                                                 </td>
                                             </tr>
