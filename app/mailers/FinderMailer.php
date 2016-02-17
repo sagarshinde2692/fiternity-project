@@ -323,7 +323,7 @@ Class FinderMailer extends Mailer {
 
 	public function sendPgOrderMail ($data){
 
-		$email_template 	= 	'emails.order.pg_'.strtolower($data['type']).'_finder';
+		$email_template 	= 	'emails.order.pg_'.strtolower($data['type']).'_vendor';
 		$template_data 				= 	$data;
 		if($data['finder_vcc_email'] != ''){
 			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
