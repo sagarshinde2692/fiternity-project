@@ -1507,4 +1507,68 @@ public function getCustomerDetail(){
 	}
 
 
+	public function isRegistered($email,$id = false,$collection = false){
+
+		$customer = Customer::where('email',$email)->first();	
+
+		if($customer){
+
+			return Response::json(array('status' => 200,'message' => 'registered'),200);
+
+		}else{
+
+			$data = array();
+
+			if($id){
+
+				if($collection){
+
+					if($collection == 'trial'){
+
+						$trial = Booktrial::find((int) $id);
+
+						if($trial){
+
+							$data['name'] = $trial->customer_name;
+							$data['email'] = $trial->customer_email;
+							$data['contact_no'] = $trial->customer_phone;
+
+						}
+
+					}elseif($collection == 'order'){
+
+						$order = Order::find((int) $id);
+
+						if($order){
+
+							$data['name'] = $order->customer_name;
+							$data['email'] = $order->customer_email;
+							$data['contact_no'] = $order->customer_phone;
+
+						}
+
+					}
+
+				}else{
+
+					$trial = Booktrial::find((int) $id);
+
+					if($trial){
+
+						$data['name'] = $trial->customer_name;
+						$data['email'] = $trial->customer_email;
+						$data['contact_no'] = $trial->customer_phone;
+
+					}
+
+				}
+
+			}
+
+			return Response::json(array('status' => 201,'message' => 'not registered','data'=>$data),201);
+		}
+
+	}
+
+
 }
