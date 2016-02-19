@@ -209,7 +209,7 @@
     </style>
 </head>
 
-<?php $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'Workout' : 'Trial'; ?>
+<?php $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'workout' : 'trial'; ?>
 
 <body style="background-image:url(http://email.fitternity.com/195/pat2.png)">
     <div class="block">
@@ -265,6 +265,11 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ ucwords($finder_poc_for_customer_name) }}</p>
                                                                         <?php }?>
 
+                                                                        <?php if(isset($code) && $code != ""){ ?> 
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
+                                                                        <?php }?>
+
                                                                         
                                                                     </td>
                                                                 </tr>
@@ -292,10 +297,7 @@
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_name)  }}</p>
                                                                             <?php }?>
 
-                                                                            <?php if(isset($code) && $code != ""){ ?> 
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }}</p>
-                                                                            <?php }?>
+                                                                            
 
 
                                                                         </td>

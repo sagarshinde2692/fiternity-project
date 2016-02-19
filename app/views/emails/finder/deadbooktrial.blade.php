@@ -209,7 +209,7 @@
     </style>
 </head>
 
-<?php $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'Workout' : 'Trial'; ?>
+<?php $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'workout' : 'trial'; ?>
 
 <body style="background-image:url(http://email.fitternity.com/195/pat2.png)">
     <div class="block">
