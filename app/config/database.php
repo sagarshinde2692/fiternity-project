@@ -49,15 +49,15 @@ return array(
 
 		'mongodb' => array(
 		    'driver'   => 'mongodb',
-		    // 'host'     => 'localhost',
-		    'host'     => '52.77.247.239',
+		     'host'     => 'localhost',
+		    //'host'     => '52.77.247.239',
 		    'port'     => 27017,
 		    // 'username' => 'fituser',
 		    // 'password' => '65e4d4c196aa6229cf2ad0ff252658c7',
 		    'database' => 'fitadmin'
 		),
 
-		'mongodb2' => array(
+		/*'mongodb2' => array(
 		    'driver'   => 'mongodb',
 		    'host'     => 'localhost',
 		    // 'host'     => '52.77.247.239',
@@ -103,7 +103,7 @@ return array(
 			'username' => 'root',
 			'password' => '',
 			'prefix'   => '',
-			),
+			),*/
 
 		),
 

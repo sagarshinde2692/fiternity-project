@@ -360,12 +360,6 @@
                          </tr>
 
                          <tr style="background-color:#f6f6f6;">
-                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; padding:20px; font-weight:700; text-transform:uppercase;" st-content="fulltext-paragraph"> Want to cancel or re-schedule your trial session?<br /><br />
-                                <a href="http://fitternity.com/profile/{{$customer_email}}/b/$_id" target="_blank" style="background-color:#4cc8de;border:1px solid #4cc8de;border-radius:3px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; text-transform:uppercase;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:8px 20px;"><strong>Click here </strong><br /></a>
-                            </td>
-                        </tr>
-
-                         <tr style="background-color:#f6f6f6;">
                             <td>
                                 <hr style="width:30%;" />
                                 <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">How do I get there?</strong></p>
@@ -401,10 +395,10 @@
                                 </table></td>
                             </tr>
                             <tr style="background-color:#f6f6f6;">
-                              <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; padding:20px; font-weight:700; text-transform:uppercase;" st-content="fulltext-paragraph"> To Kickstart your fitness journey on fitternity<br /><br />
-                                  <a href="http://fitternity.com/profile/{{$customer_email}}" target="_blank" style="background-color:#4cc8de;border:1px solid #4cc8de;border-radius:3px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; text-transform:uppercase;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:8px 20px;"><strong>Click here </strong><br /></a>
-                              </td>
-                            </tr>  
+                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; padding:20px; font-weight:700; text-transform:uppercase;" st-content="fulltext-paragraph"> manage booking<br /><br />
+                                    <a href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank" style="background-color:#4cc8de;border:1px solid #4cc8de;border-radius:3px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; text-transform:uppercase;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:8px 20px;"><strong>view profile</strong><br /></a>
+                                </td>
+                            </tr> 
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
                                     <p>Should you feel the need to change either the time or day of the {{$trial_type}} Session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>

@@ -14,7 +14,7 @@ use App\Sms\FinderSms as FinderSms;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Fitnessforce as Fitnessforce;
 use Carbon\Carbon;
-use \IronWorker; 
+//use \IronWorker; 
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\OzontelOutboundCall as OzontelOutboundCall;
 
@@ -43,10 +43,10 @@ class SchedulebooktrialsController extends \BaseController {
 		$this->sidekiq 	=	$sidekiq;
 		$this->ozontelOutboundCall 	=	$ozontelOutboundCall;
 
-		$this->worker = new IronWorker(array(
+		/*$this->worker = new IronWorker(array(
 			'token' => Config::get('queue.connections.ironworker.token'),
 			'project_id' => Config::get('queue.connections.ironworker.project')
-			));
+			));*/
 	}
 
 	/**
@@ -1456,9 +1456,9 @@ public function rescheduledBookTrial(){
 
 		$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 		$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
-		$send_alert	 						=	(isset($data['send_alert']) && $data['send_alert'] != '') ? $data['send_alert'] : "";
+		$send_alert	 						=	true;
 
-		$update_only_info	 				=	(isset($data['update_only_info']) && $data['update_only_info'] != '') ? $data['update_only_info'] : "";
+		$update_only_info	 				=	'';
 		$send_post_reminder_communication	=	(isset($data['send_post_reminder_communication']) && $data['send_post_reminder_communication'] != '') ? $data['send_post_reminder_communication'] : "";
 		$send_purchase_communication		=	(isset($data['send_purchase_communication']) && $data['send_purchase_communication'] != '') ? $data['send_purchase_communication'] : "";
 		$deadbooktrial						=	(isset($data['deadbooktrial']) && $data['deadbooktrial'] != '') ? $data['deadbooktrial'] : "";
@@ -1711,7 +1711,7 @@ public function toQueueRescheduledBookTrial($job,$data){
 		$send_alert = $data['send_alert'];
 		$update_only_info = $data['update_only_info'];
 		$send_post_reminder_communication = $data['send_post_reminder_communication'];
-		$booktrialdata = $data['booktrialdata'];
+		$booktrialdata = Booktrial::find($booktrialid)->toArray();//$data['booktrialdata'];
 		$delayReminderTimeBefore12Hour = $data['delayReminderTimeBefore12Hour'];
 		$twelveHourDiffInMin = $data['twelveHourDiffInMin'];
 		$oneHourDiffInMin = $data['oneHourDiffInMin'];
@@ -2206,6 +2206,8 @@ public function deleteTask($id){
 }
 
 public function ozonetelOutbound($booktrialdata,$schedule_date_starttime){
+
+	return 'ozonetelOutbound';
 
 	$created_date = new MongoDate(strtotime(date('Y-m-d H:m:s', strtotime($booktrialdata['created_at']))));
 	$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
