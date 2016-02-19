@@ -394,11 +394,53 @@
                                     </tbody>
                                 </table></td>
                             </tr>
-                            <tr style="background-color:#f6f6f6;">
-                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; padding:20px; font-weight:700; text-transform:uppercase;" st-content="fulltext-paragraph"> manage booking<br /><br />
-                                    <a href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank" style="background-color:#4cc8de;border:1px solid #4cc8de;border-radius:3px;color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; text-transform:uppercase;text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:8px 20px;"><strong>view profile</strong><br /></a>
-                                </td>
-                            </tr> 
+                            <tr>
+                                    <td>
+                                        <table style="background-color:#4cc8de;" border="0" cellpadding="0" cellspacing="0" id="templateColumns">
+                                            <tr>
+                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
+                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                                        <tr>
+                                                            <td valign="top" class="leftColumnContent">
+                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
+                                                                        <img width="40px" src="http://email.fitternity.com/207/manage.png" />
+                                                                        <br />Manage your bookings</p>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
+                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                                        <tr>
+                                                            <td valign="top" class="leftColumnContent">
+                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
+                                                                        <img width="40px" src="http://email.fitternity.com/207/profile.png" />
+                                                                        <br />Access your user profile </p>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
+                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                                        <tr>
+                                                            <td valign="top" class="leftColumnContent">
+                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
+                                                                        <img width="40px" src="http://email.fitternity.com/207/track.png" />
+                                                                        <br />Track your fitness journey </p>
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr> 
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
                                     <p>Should you feel the need to change either the time or day of the {{$trial_type}} Session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
