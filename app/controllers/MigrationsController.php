@@ -68,6 +68,7 @@ class MigrationsController extends \BaseController {
 				$insertData = [
 				'name' =>  trim($City->name),
 				'slug' =>  trim($City->slug),
+				'country_id' =>  intval($City->country_id),
 				'order' =>  0,
 				'hidden' =>  (isset($City->status) && $City->status == "1")  ? 	 false : true,
 				'created_at' =>  (isset($City->created_at)) ? $City->created_at : $City->updated_at,
