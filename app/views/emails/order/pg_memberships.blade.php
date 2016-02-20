@@ -239,7 +239,7 @@
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }}!</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you purchasing for membership at <strong>{{  ucwords($finder_name) }}, ucwords($finder_location) }}</strong> through Fitternity. We are very excited to be part of your fitness journey.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you purchasing for membership at <strong> {{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</strong> through Fitternity. We are very excited to be part of your fitness journey.</p>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -258,7 +258,7 @@
                                                         <?php }?>
 
                                                         <?php if(isset($finder_name) && $finder_name != ""){ ?>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination:</strong> {{  ucwords($finder_name) }}, ucwords($finder_location) }}</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination:</strong> {{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</p>
                                                         <?php }?>
 
                                                         <?php if(isset($service_name) && $service_name != ""){ ?>
@@ -303,7 +303,7 @@
                                                          <?php }?>
 
                                                         <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != "" && isset($finder_poc_for_customer_no) && $finder_poc_for_customer_no != ""){ ?>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Contact details:</strong> {{$finder_poc_for_customer_name}} ({{finder_poc_for_customer_no}})</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Contact details:</strong> {{$finder_poc_for_customer_name}} ({{$finder_poc_for_customer_no}})</p>
                                                          <?php }?>
 
                                                     </td>

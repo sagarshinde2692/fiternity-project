@@ -18,13 +18,15 @@ class OrderController extends \BaseController {
 	protected $customermailer;
 	protected $customersms;
 	protected $sidekiq;
+	protected $findermailer;
+	
 
-
-	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, Sidekiq $sidekiq) {
+	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, Sidekiq $sidekiq,FinderMailer $findermailer) {
 		parent::__construct();	
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
 		$this->sidekiq 				= 	$sidekiq;
+		$this->findermailer		=	$findermailer;
 		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
 	}
 
@@ -80,7 +82,7 @@ class OrderController extends \BaseController {
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
-				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+				$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 			} 
 			
 			//SEND payment gateway SMS TO CUSTOMER
