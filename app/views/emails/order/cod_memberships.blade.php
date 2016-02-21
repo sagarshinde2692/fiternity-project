@@ -239,7 +239,7 @@
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }}!</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for requesting purchase of  <strong>{{  ucwords($finder_name) }}, ucwords($finder_location) }}</strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for requesting purchase of  <strong>{{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</strong></p>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -259,7 +259,7 @@
                                                         <?php }?>
 
                                                         <?php if(isset($finder_location) && $service_name != ""){ ?>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; " st-content="fulltext-paragraph"> <strong>Name of the service provider:</strong>{{  ucwords($finder_name) }}, ucwords($finder_location) }}</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; " st-content="fulltext-paragraph"> <strong>Name of the service provider:</strong>{{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</p>
                                                         <?php }?>
                                                         
                                                         <?php if(isset($preferred_starting_date) && $preferred_starting_date != "" && $preferred_starting_date != "-"){ ?>

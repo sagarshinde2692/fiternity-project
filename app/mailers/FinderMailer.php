@@ -345,4 +345,28 @@ Class FinderMailer extends Mailer {
 		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 	}
 
+	public function sendCodOrderMail ($data){
+
+		$email_template 	= 	'emails.order.cod_memberships_vendor';
+		$template_data 				= 	$data;
+		if($data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+		}else{
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		}
+
+		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+		
+		$message_data 	= array(
+			'user_email' => Config::get('mail.to_mailus'),
+			'user_name' =>  $data['finder_poc_for_customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+		);
+
+		$label = 'SendPgOrder-F';
+
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
+	}
+
 }
