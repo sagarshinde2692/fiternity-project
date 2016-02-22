@@ -25,7 +25,7 @@ class CustomerController extends \BaseController {
 
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect');
 		$trials 		=	Booktrial::where('customer_email', '=', $customeremail)
 		->whereIn('booktrial_type', array('auto'))
 		->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
@@ -587,15 +587,27 @@ class CustomerController extends \BaseController {
 
 	public function createToken($customer){
 
-		$mob = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
-		$location = (isset($customer['location'])) ? $customer['location'] : "";
+		$customer = array_except($customer->toArray(), array('password'));
+
+		$customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
+		$customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
+		$customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
+		$customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
+		$customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+		$customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+		$customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+		$customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+
+		$data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],"contact_no"=>$customer['contact_no'],"location"=>$customer['location'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location']));	
 
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
 			"exp" => Config::get('app.jwt.exp'),
-			"customer" => array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],'extra'=>array('mob'=>$mob,'location'=>$location))
-			);
+			"customer" => $data
+		);
+		
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
 
@@ -923,6 +935,20 @@ class CustomerController extends \BaseController {
 		return $decodedToken;
 	}
 
+	public function reviewListingByEmail($customer_email, $from = '', $size = ''){
+
+		$customer = Customer::where('email',$customer_email)->first();
+
+		if($customer){
+
+			return $this->reviewListing($customer->_id,$from,$size);
+
+		}else{
+
+			return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+		}
+
+	}
 
 	public function reviewListing($customer_id, $from = '', $size = ''){
 		
@@ -963,6 +989,21 @@ class CustomerController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
+	public function getBookmarksByEmail($customer_email){
+
+		$customer = Customer::where('email',$customer_email)->first();
+
+		if($customer){
+
+			return $this->getBookmarks($customer->_id);
+
+		}else{
+
+			return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+		}
+
+	}
+
 
 	public function getBookmarks($customer_id){
 		
@@ -971,18 +1012,33 @@ class CustomerController extends \BaseController {
 
 		if(empty($finderids)){
 			$responseData 		= 	['bookmarks' => [],  'message' => 'No bookmarks yet :)'];
-return Response::json($responseData, 200);
-}
+		return Response::json($responseData, 200);
+		}
 
-$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
-->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-->with('offerings')
-->whereIn('_id', $finderids)
-->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
+		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with('offerings')
+		->whereIn('_id', $finderids)
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
-$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
-return Response::json($responseData, 200);
-}
+		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
+		return Response::json($responseData, 200);
+	}
+
+	public function updateBookmarksByEmail($customer_id, $finder_id, $remove = ''){
+
+		$customer = Customer::where('email',$customer_email)->first();
+
+		if($customer){
+
+			return $this->getBookmarks($customer->_id,$finder_id,$remove);
+
+		}else{
+
+			return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+		}
+
+	}
 
 public function updateBookmarks($customer_id, $finder_id, $remove = ''){
 
@@ -1017,7 +1073,7 @@ public function getAllOrders($offset = 0, $limit = 10){
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
 
-	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->where(function($query){$query->orWhere('status',"1")->orWhere('order_action','bought');})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 	$response 		= 	['status' => 200, 'orders' => $orders,  'message' => 'List for orders'];
 
 	return Response::json($response, 200);
@@ -1063,35 +1119,37 @@ public function getAllTrials(){
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
 
-	$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
+	return $this->getAutoBookTrials($decoded->customer->email);
+	
+	// $selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt');
 
-	$trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-	->where('customer_email', '=', $decoded->customer->email)
-	->whereIn('booktrial_type', array('auto'))
-	->orderBy('_id', 'desc')
-	->get($selectfields)->toArray();
+	// $trials 		=	Booktrial::with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+	// ->where('customer_email', '=', $decoded->customer->email)
+	// ->whereIn('booktrial_type', array('auto'))
+	// ->orderBy('_id', 'desc')
+	// ->get($selectfields)->toArray();
 
-	if(!$trials){
-		return $this->responseNotFound('Customer does not exist');
-	}
+	// if(!$trials){
+	// 	return $this->responseNotFound('Customer does not exist');
+	// }
 
-	if(count($trials) < 1){
-		$response 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
-		return Response::json($response,200);
-	}
+	// if(count($trials) < 1){
+	// 	$response 	= 	array('status' => 200,'trials' => $trials,'message' => 'No trials scheduled yet :)');
+	// 	return Response::json($response,200);
+	// }
 
-	$customertrials  = 	$trial = array();
-	$currentDateTime =	\Carbon\Carbon::now();
+	// $customertrials  = 	$trial = array();
+	// $currentDateTime =	\Carbon\Carbon::now();
 
-	foreach ($trials as $trial){
-		$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
-		$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-		array_set($trial, 'passed', $slot_datetime_pass_status);
-		array_push($customertrials, $trial);
-	}
+	// foreach ($trials as $trial){
+	// 	$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
+	// 	$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+	// 	array_set($trial, 'passed', $slot_datetime_pass_status);
+	// 	array_push($customertrials, $trial);
+	// }
 
-	$response 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
-	return Response::json($response,200);
+	// $response 	= 	array('status' => 200,'trials' => $customertrials,'message' => 'List of scheduled trials');
+	// return Response::json($response,200);
 }
 
 public function editBookmarks($finder_id, $remove = ''){
@@ -1125,6 +1183,21 @@ public function editBookmarks($finder_id, $remove = ''){
 	$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => $message];
 	
 	return Response::json($responseData, 200);
+}
+
+public function customerDetailByEmail($customer_email){
+
+	$customer = Customer::where('email',$customer_email)->first();	
+
+	if($customer){
+
+		return $this->customerDetail($customer->_id);
+
+	}else{
+
+		return Response::json(array('status' => 400,'message' => 'customer not present'),400);
+	}
+
 }
 
 public function customerDetail($customer_id){
@@ -1430,6 +1503,70 @@ public function getCustomerDetail(){
 		$return = array('finder'=>$finder,'offer'=>$offer,'article'=>$article);
 
 		return $return;
+
+	}
+
+
+	public function isRegistered($email,$id = false,$collection = false){
+
+		$customer = Customer::where('email',$email)->first();	
+
+		if($customer){
+
+			return Response::json(array('status' => 200,'message' => 'registered'),200);
+
+		}else{
+
+			$data = array();
+
+			if($id){
+
+				if($collection){
+
+					if($collection == 'trial'){
+
+						$trial = Booktrial::find((int) $id);
+
+						if($trial){
+
+							$data['name'] = $trial->customer_name;
+							$data['email'] = $trial->customer_email;
+							$data['contact_no'] = $trial->customer_phone;
+
+						}
+
+					}elseif($collection == 'order'){
+
+						$order = Order::find((int) $id);
+
+						if($order){
+
+							$data['name'] = $order->customer_name;
+							$data['email'] = $order->customer_email;
+							$data['contact_no'] = $order->customer_phone;
+
+						}
+
+					}
+
+				}else{
+
+					$trial = Booktrial::find((int) $id);
+
+					if($trial){
+
+						$data['name'] = $trial->customer_name;
+						$data['email'] = $trial->customer_email;
+						$data['contact_no'] = $trial->customer_phone;
+
+					}
+
+				}
+
+			}
+
+			return Response::json(array('status' => 201,'message' => 'not registered','data'=>$data),201);
+		}
 
 	}
 

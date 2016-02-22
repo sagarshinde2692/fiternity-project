@@ -75,6 +75,13 @@ Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => '
 Route::get('customerdetail/{customerid}',  array('as' => 'customer.customerdetail','uses' => 'CustomerController@customerDetail'));
 Route::get('foryou/{customeremail}/{lat?}/{lon?}',  array('as' => 'customer.foryou','uses' => 'CustomerController@foryou'));
 
+Route::get('reviews/email/{customeremail}/{from?}/{size?}',  array('as' => 'customer.reviewsbyemail','uses' => 'CustomerController@reviewListingByEmail'));
+Route::get('bookmarks/email/{customeremail}',  array('as' => 'customer.bookmarksbyemail','uses' => 'CustomerController@getBookmarksByEmail'));
+Route::get('updatebookmarks/email/{customeremail}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarksbyemail','uses' => 'CustomerController@updateBookmarksByEmail'));
+Route::get('customerdetail/email/{customeremail}',  array('as' => 'customer.customerdetailbyemail','uses' => 'CustomerController@customerDetailByEmail'));
+Route::get('isregistered/{email}/{id?}/{collection?}',  array('as' => 'customer.isregistered','uses' => 'CustomerController@isRegistered'));
+
+
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
@@ -263,7 +270,6 @@ Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','use
 Route::post('manual2ndbooktrial', array('as' => 'finders.storemanual2ndbooktrial','uses' => 'SchedulebooktrialsController@manual2ndBookTrial'));
 Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
 Route::post('rescheduledbooktrial', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
-Route::get('cancelbooktrial/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
