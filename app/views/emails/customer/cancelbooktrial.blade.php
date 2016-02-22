@@ -237,7 +237,7 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:10px; " st-content="fulltext-paragraph">
                                                             <img width="50px;" src="http://email.fitternity.com/195/no.png"  /></p>
-                                                            <p>Hi {{  ucwords($customer_name) }},</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hi {{  ucwords($customer_name) }},</p>
 
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">This is regarding the {{$trial_type}} session at <strong>{{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif </strong> booked through <a style="color:#F9a91e; text-decoration:none;" href="http://www.fitternity.com" target="_blank">Fitternity</a> </p>
 

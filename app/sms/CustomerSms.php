@@ -8,10 +8,12 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
+
 		if($data['show_location_flag']){
-			$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your trial session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])." - ".ucwords($data['finder_location'])." is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
+			$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your ".$session_type." session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])." - ".ucwords($data['finder_location'])." is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
 		}else{
-			$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your trial session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])."  is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
+			$message 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your ".$session_type." session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])."  is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
 		}
 		
 		$label = 'BookTrial-C';
@@ -26,10 +28,12 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
+
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
 		}
 		
 		$label = 'RescheduledTrial-C';
@@ -41,8 +45,10 @@ Class CustomerSms extends VersionNextSms{
 	public function bookTrialReminderBefore1Min ($data, $delay){
 
 		//testing for berfore12hour template
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
+
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your workout session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the session. Incase if you would like to reschedule or cancel your session call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+		$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the session. Incase if you would like to reschedule or cancel your session call us on ".Config::get('app.customer_care_number')." or reply to this message.";
 		
 		$label = 'TrialRmdBefore12Hr-C';
 
@@ -53,7 +59,7 @@ Class CustomerSms extends VersionNextSms{
 
 		/*$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Please note the address: ".ucwords($data['finder_name']).", ".ucwords(strip_tags($data['finder_address'])).", ".ucwords($data['finder_location']).". Contact person: ".ucwords($data['finder_poc_for_customer_name']).". Have a great workout!";*/
 
-		$message = "Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug']." Contact person: ".ucwords($data['finder_poc_for_customer_name'])." have a great workout!";
+		$message = "Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug']." Contact person: ".ucwords($data['finder_poc_for_customer_name'])." have a great ".$session_type."!";
 		
 		$label = 'TrialRmdBefore1Hr-C';
 
@@ -73,10 +79,12 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
+
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your trial session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the trial session. If you wish to reschedule or cancel your trial session call us on ".Config::get('app.customer_care_number')." or mail us on support@fitternity.com. Regards - Team Fitternity";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the ".$session_type." session. If you wish to reschedule or cancel your ".$session_type." session call us on ".Config::get('app.customer_care_number')." or mail us on support@fitternity.com. Regards - Team Fitternity";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your trial session at ".ucwords($data['finder_name'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the trial session. If you wish to reschedule or cancel your trial session call us on ".Config::get('app.customer_care_number')." or mail us on support@fitternity.com. Regards - Team Fitternity";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the ".$session_type." session. If you wish to reschedule or cancel your ".$session_type." session call us on ".Config::get('app.customer_care_number')." or mail us on support@fitternity.com. Regards - Team Fitternity";
 		}
 
 		$label = 'TrialRmdBefore12Hr-C';
@@ -135,11 +143,13 @@ Class CustomerSms extends VersionNextSms{
 
 	public function cancelBookTrial ($data){
 
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
+
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your workout session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
 		}
 
 		$label = 'CancelTrial-C';
@@ -154,7 +164,7 @@ Class CustomerSms extends VersionNextSms{
 		if($data['finder_category_id'] == 45){
 			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for your request to avail the healthy food trial pack. We will get in touch with you shortly. Team Fitternity.";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a trial session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity.";
 		}
 
 		$label = 'ManualBookTrial-C';

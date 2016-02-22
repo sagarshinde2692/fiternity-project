@@ -235,7 +235,7 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
-                                                        <p>Hi {{ ucwords($customer_name) }},</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hi {{ ucwords($customer_name) }},</p>
                                                         
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you are all geared up for your upcoming {{$trial_type}} session at <strong>{{ ucwords($finder_name) }}</strong> on <strong>{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Here are a few details you should know and might want to follow before your {{$trial_type}} session, to make the most out of it:</p>

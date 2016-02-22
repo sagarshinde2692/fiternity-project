@@ -233,7 +233,7 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
-                                                        <p>Hi  {{ ucwords($customer_name) }},</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hi  {{ ucwords($customer_name) }},</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Congratulations! </p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> We are very excited to get you started on your fitness journey with <strong>{{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</strong> </p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 18px; text-align:left;line-height: 23px; padding-top:30px; " st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;"> Details about your subscription:</span>
