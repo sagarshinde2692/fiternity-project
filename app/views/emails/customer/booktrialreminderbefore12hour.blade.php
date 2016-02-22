@@ -237,8 +237,8 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }},</p>
                                                         
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you are all geared up for your upcoming {{$trial_type}} Session at <strong>{{ ucwords($finder_name) }}</strong> on <strong>{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Here are a few details you should know and might want to follow before your {{$trial_type}} Session, to make the most out of it:</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hope you are all geared up for your upcoming {{$trial_type}} session at <strong>{{ ucwords($finder_name) }}</strong> on <strong>{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) ) }}.</strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:20px 0px; " st-content="fulltext-paragraph"> Here are a few details you should know and might want to follow before your {{$trial_type}} session, to make the most out of it:</p>
 
                                                         <?php if(isset($description) && $description != ""){ ?> 
                                                         <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px;" st-content="fulltext-paragraph"><span style="font-weight:bold; color:#f9a91e;" > What is {{ ucwords($service_name)  }} ?</span><br/>
@@ -313,7 +313,7 @@
                                                 <tr>
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
                                                      <?php if(isset($customer_name) && $customer_name != ""){ ?> 
-                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{$trial_type}} Session booked for:</p>
+                                                     <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{$trial_type}} session booked for:</p>
                                                      <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
                                                      <?php }?>
                                                      <?php if(isset($finder_name) && $finder_name != ""){ ?> 
@@ -443,7 +443,7 @@
                                 </tr> 
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p>Should you feel the need to change either the time or day of the {{$trial_type}} Session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
+                                    <p>Should you feel the need to change either the time or day of the {{$trial_type}} session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
                                     <p style="padding-top:10px;">Regards<br/>
                                         TEAM FITTERNITY
                                     </p>

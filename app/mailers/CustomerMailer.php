@@ -10,10 +10,10 @@ Class CustomerMailer extends Mailer {
 		// $email_template = 'emails.test';
 		$email_template = 	'emails.customer.autobooktrial';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
@@ -30,10 +30,10 @@ Class CustomerMailer extends Mailer {
 		// $email_template = 'emails.test';
 		$email_template = 	'emails.customer.rescheduledautobooktrial';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been re-scheduled | Fitternity'
@@ -50,10 +50,10 @@ Class CustomerMailer extends Mailer {
 
 		$email_template = 	'emails.customer.booktrialreminderbefore12hour';
 		$template_data 	= 	$data;
-		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
-		$bcc_emailids 	= 	array_flatten($emails);
+		
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 		$message_data 	= 	array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'bookTrialReminderBefore12Hour Reminder Book a Trial'
@@ -66,10 +66,10 @@ Class CustomerMailer extends Mailer {
 
 		$email_template = 	'emails.customer.booktrialreminderafter2hour';
 		$template_data 	= 	$data;
-		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
-		$bcc_emailids 	= 	array_flatten($emails);
+		
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 		$message_data 	= 	array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'bookTrialReminderAfter2Hour Reminder Book a Trial'
@@ -85,10 +85,10 @@ Class CustomerMailer extends Mailer {
 
 		$email_template = 	'emails.customer.booktrialreminderbefore12hour';
 		$template_data 	= 	$data;
-		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
-		$bcc_emailids 	= 	array_flatten($emails);
+		
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 		$message_data 	= 	array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity'
@@ -105,10 +105,10 @@ Class CustomerMailer extends Mailer {
 
 		$email_template = 'emails.customer.booktrialreminderafter2hour';
 		$template_data 	= $data;
-		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
-		$bcc_emailids 	= 	array_flatten($emails);
+		
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity'
@@ -125,7 +125,7 @@ Class CustomerMailer extends Mailer {
 		// $email_template = 'emails.test';
 		$email_template = 	'emails.customer.manualbooktrial';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
 			'user_email' => Config::get('mail.to_neha'),
@@ -146,7 +146,7 @@ Class CustomerMailer extends Mailer {
 		// $email_template = 'emails.test';
 		$email_template = 	'emails.customer.manual2ndbooktrial';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
 			'user_email' => Config::get('mail.to_neha'),
@@ -171,7 +171,7 @@ Class CustomerMailer extends Mailer {
 		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
 		
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Acknowledgement email - Regarding your purchase request for FitCard'
@@ -201,7 +201,7 @@ Class CustomerMailer extends Mailer {
 		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_sanjay');
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Welcome mail - Welcome to the FitCard clan!'
@@ -242,7 +242,7 @@ Class CustomerMailer extends Mailer {
 		}
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -277,7 +277,7 @@ Class CustomerMailer extends Mailer {
 		}
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -307,7 +307,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -329,7 +329,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Please ignore previous mail - Regarding your purchase of membership on FitMania';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -375,7 +375,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -405,7 +405,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -433,7 +433,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -519,7 +519,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Regarding your purchase on Arsernal Membership by Fitternity';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -548,7 +548,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Regarding your purchase on  Membership by Fitternity';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -576,7 +576,7 @@ Class CustomerMailer extends Mailer {
 		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => $subject
@@ -592,10 +592,10 @@ Class CustomerMailer extends Mailer {
 		
 		$email_template = 	'emails.customer.cancelbooktrial';
 		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
-			'user_email' => $data['customer_email'],
+			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been cancelled | Fitternity'

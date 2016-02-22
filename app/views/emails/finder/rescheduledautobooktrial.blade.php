@@ -237,7 +237,7 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi,</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> Greetings from Fitternity</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a {{$trial_type}} Session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a {{$trial_type}} session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
                                                 </td>
                                             </tr>
                                          
@@ -310,7 +310,7 @@
                         
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p style="padding-top:10px">If this {{$trial_type}} Session cannot be managed / fulfilled at your end - please let us know at the earliest. You can reply to this mail or call us on {{Config::get('app.customer_care_number')}}. </p>
+                                    <p style="padding-top:10px">If this {{$trial_type}} session cannot be managed / fulfilled at your end - please let us know at the earliest. You can reply to this mail or call us on {{Config::get('app.customer_care_number')}}. </p>
                                     <p style="padding-top:10px">Regards</p>
                                     <p>TEAM FITTERNITY</p>
                                 </td>

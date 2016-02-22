@@ -251,7 +251,7 @@
                                                                 <tr>
                                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
                                                                         <?php if(isset($finder_name) && $finder_name != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ucwords($trial_type)}} Session booked for:</p>
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ucwords($trial_type)}} session booked for:</p>
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
                                                                         <?php }?>
 
@@ -265,7 +265,11 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
                                                                         <?php }?>
 
-                                                                        
+                                                                        <?php if(isset($code) && $code != ""){ ?> 
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }} (please flash this code at the service provider location)</p>
+                                                                        <?php }?>
+    
                                                                     </td>
                                                                 </tr>
                                                             </tbody>
@@ -294,12 +298,6 @@
 
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Free Trial</p>
                                                                             <?php } ?>  
-
-                                                                            <?php if(isset($code) && $code != ""){ ?> 
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }} (please flash this code at the service provider location)</p>
-                                                                            <?php }?>
-
 
                                                                         </td>
                                                                     </tr>
