@@ -291,7 +291,7 @@ class MigrationsController extends \BaseController {
 					'vendors' => (isset($offering->finders)) ? array_map('intval', $offering->finders) : [],
 					'order' =>  intval($offering->ordering),
 					'hidden' =>  ($offering->status == "1") ? false : true,
-					'created_at' =>  $offering->created_at,
+					'created_at' =>  (isset($offering->created_at)) ? $offering->created_at : $offering->updated_at,
 					'updated_at' =>  $offering->updated_at
 					];
 
@@ -327,7 +327,7 @@ class MigrationsController extends \BaseController {
 				'vendors' => (isset($facility->finders)) ? array_map('intval', $facility->finders) : [],
 				'order' =>  0,
 				'hidden' =>  ($facility->status == "1") ? false : true,
-				'created_at' =>  $facility->created_at,
+				'created_at' =>  (isset($facility->created_at)) ? $facility->created_at : $facility->updated_at,
 				'updated_at' =>  $facility->updated_at
 				];
 
@@ -348,14 +348,15 @@ class MigrationsController extends \BaseController {
 	 */
 	public function vendors(){
 
-		$finder_ids	=	Finder::active()->take(10)->lists('_id');
+		// $finder_ids	=	Finder::take(10000)->lists('_id');
+		$finder_ids	=	Finder::where('_id',1)->lists('_id');
 
 		if($finder_ids){ 
 
 			DB::connection('mongodb2')->table('vendors')->truncate(); 
 
 			$commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'freespecial', 3 => 'cos');
-			$business_type_arr = array( 0 => 'infrastructure', 1 => 'noninfrastructure');
+			$business_type_arr = array( 0 => 'noninfrastructure', 1 => 'infrastructure');
 			$finder_type_arr = array( 0 => 'free', 1 => 'paid');
 
 			foreach ($finder_ids as $key => $finder_id) {
@@ -452,7 +453,14 @@ class MigrationsController extends \BaseController {
 					}
 
 					if(isset($finder->info['service']) && $finder->info['service'] != ""){
-						$services_arr = 	array_map('trim', explode(",", strip_tags(str_replace("</li>", ",", trim($finder->info['service']) ))) ) ;
+						$services_arr_tmp 	= 	array_map('trim', explode(",", strip_tags(str_replace("</li>", ",", trim($finder->info['service']) ))) ) ;
+						$services_arr 		= 	[] ;
+
+						foreach ($services_arr_tmp as $kk => $vv) {
+							if(!empty($vv) || $vv != ""){
+								array_push($services_arr, $vv);
+							}
+						}
 					}
 
 					$images['cover']  	=	$finder->coverimage;
@@ -462,15 +470,19 @@ class MigrationsController extends \BaseController {
 					
 
 					//for locationtags
-					$old_locationtag_slugs_arr	=	Locationtag::active()->whereIn('_id', array_map('intval', $finder->locationtags))->lists('slug');
+					$old_locationtag_slugs_arr	=	Locationtag::whereIn('_id', array_map('intval', $finder->locationtags))->lists('slug');
+					// dd($old_locationtag_slugs_arr);
+
 					$new_locationtag_ids_arr	=	Vendorlocation::whereIn('slug', $old_locationtag_slugs_arr)->lists('_id');
+					// dd($new_locationtag_ids_arr);
 
 					//for categorytags
-					$old_categorytag_slugs_arr	=	Findercategorytag::active()->whereIn('_id', array_map('intval', $finder->categorytags))->lists('slug');
-					$new_categorytag_ids_arr	=	Vendorcategory::active()->whereIn('slug', $old_categorytag_slugs_arr)->lists('_id');
+					$old_categorytag_slugs_arr	=	Findercategorytag::whereIn('_id', array_map('intval', $finder->categorytags))->lists('slug');
+					// dd($old_categorytag_slugs_arr);
+					$new_categorytag_ids_arr	=	Vendorcategory::whereIn('slug', $old_categorytag_slugs_arr)->lists('_id');
 
 					//for offerings
-					$old_offering_name_arr		=	Offering::active()->whereIn('_id', array_map('intval', $finder->offerings))->lists('name');
+					$old_offering_name_arr		=	Offering::whereIn('_id', array_map('intval', $finder->offerings))->lists('name');
 					$old_offering_slugs_arr		=	[];
 					foreach ($old_offering_name_arr as $key => $value) {
 						array_push($old_offering_slugs_arr, url_slug([$value]));
@@ -486,8 +498,11 @@ class MigrationsController extends \BaseController {
 					'city_id' 	=>  intval($finder->city_id),
 					'location' 	=>  [ 'primary' 	=>  intval($finder->location_id), 'secondary' =>  array_map('intval', array_unique($new_locationtag_ids_arr)) ],
 					'category' 	=>  [ 'primary' 	=>  intval($finder->category_id), 'secondary' =>  array_map('intval', array_unique($new_categorytag_ids_arr)) ],
-					'filter' 	=>  [ 'primary' =>  array_map('intval', $finder->facilities), 'secondary' =>  array_map('intval', array_unique($new_offering_ids_arr)) ],
-					'types' 	=>  [ 'commercials' =>  $commercial_type, 'business' =>  $business_type, 'vendor' =>  $vendor_type ],
+					// 'filter' 	=>  [ 'primary' =>  array_map('intval', $finder->facilities), 'secondary' =>  array_map('intval', array_unique($new_offering_ids_arr)) ],
+					'facilities' 	=>  array_map('intval', $finder->facilities),
+					'offerings' 	=>  array_map('intval', array_unique($new_offering_ids_arr)),
+					// 'types' 	=>  [ 'commercials' =>  $commercial_type, 'business' =>  $business_type, 'vendor' =>  $vendor_type ],
+					'types' 	=>  [ 'commercials' =>  $commercial_type, 'business' =>  $business_type],
 					'contact' 	=>  ['email' =>  $email, 'phone' =>  $phone, 'point_of_contact' =>  $temp_point_of_contact_arr],
 					'media' 	=>  [
 					'images' =>  $images,
@@ -526,18 +541,18 @@ class MigrationsController extends \BaseController {
 					'og_description' 	=>   "",
 					'og_image' 	=>   ""
 					],
-					'hidden' =>  $finder->status,
+					'hidden' =>  ($finder->status == "1") ? false : true,
 					'order' =>  0,
-					'created_at' =>  $finder->created_at,
+					'created_at' =>  (isset($finder->created_at)) ? $finder->created_at : $finder->updated_at,
 					'updated_at' =>  $finder->updated_at
 					];
 
 					if($finder->what_i_should_carry){
-						$vendorData ['what_i_should_carry'] = $finder->what_i_should_carry;
+						$vendorData ['what_i_should_carry'] = strip_tags($finder->what_i_should_carry);
 					}
 
 					if($finder->what_i_should_expect){
-						$vendorData ['what_i_should_expect'] = $finder->what_i_should_expect;
+						$vendorData ['what_i_should_expect'] = strip_tags($finder->what_i_should_expect);
 					}
 
 
@@ -591,7 +606,7 @@ class MigrationsController extends \BaseController {
 				],
 				'order' =>  0,
 				'hidden' =>  ($servicecategory->status == "1") ? false : true,
-				'created_at' =>  $servicecategory->created_at,
+				'created_at' =>  (isset($servicecategory->created_at)) ? $servicecategory->created_at : $servicecategory->updated_at,
 				'updated_at' =>  $servicecategory->updated_at
 				];
 
