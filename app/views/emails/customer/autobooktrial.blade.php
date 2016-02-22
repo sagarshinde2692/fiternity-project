@@ -296,7 +296,7 @@
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Rs {{ $amount }}</p>
                                                                             <?php } else { ?>
 
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Free Trial</p>
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Free Trial Via Fitternity</p>
                                                                             <?php } ?>  
 
                                                                         </td>
