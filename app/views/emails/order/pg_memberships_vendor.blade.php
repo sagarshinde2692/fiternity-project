@@ -268,10 +268,8 @@
                                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ date('d-m-Y', strtotime($preferred_starting_date) ) }}</p>
                                                                         <?php }?>
 
-                                                                        <?php if(isset($preferred_starting_date) && $preferred_starting_date != "" && $preferred_starting_date != "-"){ ?>
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Start Time:</p> 
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ date('h:i A', strtotime($preferred_starting_date) ) }}</p>
-                                                                        <?php }?>
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Payment Mode :</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Online</p>
 
                                                                     </td>
                                                                 </tr>
@@ -317,8 +315,7 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($finder_location) }}</p>
                                                                         <?php }?>
 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Payment Mode :</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Online</p>
+                                                                       
 
                                                                         
 
@@ -338,7 +335,7 @@
 
                                    
 
-                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">You could reach out to the customer directly and take it forward.<br />If there is any update at our end regarding this customer we shall let you know.<br /><br />If you have any questions or need any support please reply to this mail or call us on  <a style="color: #f9a91e;"href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}</a>
+                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">You could reach out to the customer directly and co-ordinate the starting date<br />If there is any update at our end regarding this customer we shall let you know.<br /><br />If you have any questions or need any support please reply to this mail or call us on  <a style="color: #f9a91e;"href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}</a>
                                     <br />
                                     <br />Regards,
                                     <br />Team Fitternity </p>
