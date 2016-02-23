@@ -335,8 +335,14 @@
                         
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p style="padding-top:10px">Regards</p>
-                                    <p>TEAM FITTERNITY</p>
+
+                                   
+
+                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">You could reach out to the customer directly and take it forward.<br />If there is any update at our end regarding this customer we shall let you know.<br /><br />If you have any questions or need any support please reply to this mail or call us on  <a style="color: #f9a91e;"href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}</a>
+                                    <br />
+                                    <br />Regards,
+                                    <br />Team Fitternity </p>
+
                                 </td>
                             </tr>
 
