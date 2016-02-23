@@ -353,10 +353,6 @@ class OrderController extends \BaseController {
 			return Response::json($resp,404);			
 		}
 
-		if (!in_array($data['preferred_starting_date'], $this->ordertypes)) {
-			$resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
-			return Response::json($resp,404);			
-		}
 
 		//Validation base on order type
 		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){

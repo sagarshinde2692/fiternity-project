@@ -31,9 +31,9 @@ Class CustomerSms extends VersionNextSms{
 		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
 		}
 		
 		$label = 'RescheduledTrial-C';
