@@ -99,8 +99,17 @@ Class FinderSms extends VersionNextSms{
 		return $this->sendToWorker($to, $message, $label);
 	}
 
+	public function sendPgOrderSms ($data){
 
+		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
 
-	
+		$message 	=	"Hi. Greetings from Fitternity! We have processed a membership sale for ".ucwords($data['finder_name']).". Customer name: ".ucwords($data['customer_name'])." Membership purchased: ".ucwords($data['service_name']).". The details of the transaction have been shared with you on email. If you have any questions or need assistance call us on ".Config::get('app.customer_care_number')." or email us on info@fitternity.com.";
+
+		$label = 'PgOrder-V';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
+	}
+
 
 }

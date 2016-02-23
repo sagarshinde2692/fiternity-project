@@ -308,6 +308,53 @@
                                                             
                                                     </td>
                                                 </tr>
+                                                <tr>
+                                                    <td>
+                                                        <table style="background-color:#4cc8de;" border="0" cellpadding="0" cellspacing="0" id="templateColumns">
+                                                            <tr>
+                                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
+                                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                                                        <tr>
+                                                                            <td valign="top" class="leftColumnContent">
+                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://apistg.fitn.in:3030/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
+                                                                                        <img width="40px" src="http://email.fitternity.com/207/manage.png" />
+                                                                                        <br />Manage your bookings</p>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
+                                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                                                        <tr>
+                                                                            <td valign="top" class="leftColumnContent">
+                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://apistg.fitn.in:3030/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
+                                                                                        <img width="40px" src="http://email.fitternity.com/207/profile.png" />
+                                                                                        <br />Access your user profile </p>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
+                                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                                                                        <tr>
+                                                                            <td valign="top" class="leftColumnContent">
+                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://apistg.fitn.in:3030/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
+                                                                                        <img width="40px" src="http://email.fitternity.com/207/track.png" />
+                                                                                        <br />Track your fitness journey </p>
+                                                                                </a>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
                                                 
 
                                                 <tr style="background-color:#f6f6f6;">
@@ -377,53 +424,7 @@
                     <tbody>
                       <!-- Title -->
 
-                      <tr>
-                                    <td>
-                                        <table style="background-color:#4cc8de;" border="0" cellpadding="0" cellspacing="0" id="templateColumns">
-                                            <tr>
-                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
-                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                                        <tr>
-                                                            <td valign="top" class="leftColumnContent">
-                                                                <a style="text-decoration:none; color:#ffffff;" href="http://apistg.fitn.in:3030/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
-                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
-                                                                        <img width="40px" src="http://email.fitternity.com/207/manage.png" />
-                                                                        <br />Manage your bookings</p>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
-                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                                        <tr>
-                                                            <td valign="top" class="leftColumnContent">
-                                                                <a style="text-decoration:none; color:#ffffff;" href="http://apistg.fitn.in:3030/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
-                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
-                                                                        <img width="40px" src="http://email.fitternity.com/207/profile.png" />
-                                                                        <br />Access your user profile </p>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
-                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                                        <tr>
-                                                            <td valign="top" class="leftColumnContent">
-                                                                <a style="text-decoration:none; color:#ffffff;" href="http://apistg.fitn.in:3030/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
-                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
-                                                                        <img width="40px" src="http://email.fitternity.com/207/track.png" />
-                                                                        <br />Track your fitness journey </p>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
+                      
 
                       <tr>
                           <td>

@@ -244,7 +244,7 @@
                                 <tr style="background-color:#f6f6f6;">
                                                     <td>
                                                         <hr style="width:30%;" />    
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Here are the details :</strong></p>  
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Booking stated below is cancelled </strong></p>  
                                                         <!-- col 1 -->
                                                         <table width="260px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
                                                             <tbody>

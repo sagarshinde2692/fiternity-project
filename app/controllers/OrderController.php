@@ -19,14 +19,15 @@ class OrderController extends \BaseController {
 	protected $customersms;
 	protected $sidekiq;
 	protected $findermailer;
+	protected $findersms;
 
-
-	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, Sidekiq $sidekiq,FinderMailer $findermailer) {
+	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, Sidekiq $sidekiq,FinderMailer $findermailer, FinderSms $findersms) {
 		parent::__construct();	
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
+		$this->findersms 			=	$findersms;
 		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways');
 	}
 
@@ -47,9 +48,11 @@ class OrderController extends \BaseController {
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
 		if(Input::json()->get('status') == 'success'){
+
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
 			$orderdata 	=	$order->update($data);
+
 			//send welcome email to payment gateway customer
 
 			try {
@@ -85,8 +88,10 @@ class OrderController extends \BaseController {
 				$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 			} 
 			
-			//SEND payment gateway SMS TO CUSTOMER
+			//SEND payment gateway SMS TO CUSTOMER and vendor
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
+			$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
+
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 			return Response::json($resp);
 		}
@@ -240,7 +245,7 @@ class OrderController extends \BaseController {
 
 		//SEND COD EMAIL TO CUSTOMER
 		$sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
-		$sndCodEmail	= 	$this->findermailer->sendCodOrderMail($order->toArray());
+		//$sndCodEmail	= 	$this->findermailer->sendCodOrderMail($order->toArray());
 
 		//SEND COD SMS TO CUSTOMER
 		$sndCodSms	= 	$this->customersms->sendCodOrderSms($order->toArray());
@@ -348,8 +353,14 @@ class OrderController extends \BaseController {
 			return Response::json($resp,404);			
 		}
 
+		if (!in_array($data['preferred_starting_date'], $this->ordertypes)) {
+			$resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
+			return Response::json($resp,404);			
+		}
+
 		//Validation base on order type
 		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
+
 			if( empty($data['serviceoffer_id']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - serviceoffer_id");
 				return Response::json($resp,404);				
@@ -443,7 +454,9 @@ class OrderController extends \BaseController {
 			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;	
-			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;	
+			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+			$finder_lon							= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";	
 
 			array_set($data, 'finder_city', trim($finder_city));
 			array_set($data, 'finder_location', trim($finder_location));
@@ -454,6 +467,8 @@ class OrderController extends \BaseController {
 			array_set($data, 'finder_poc_for_customer_no', trim($finder_poc_for_customer_no));
 			array_set($data, 'show_location_flag', $show_location_flag);
 			array_set($data, 'share_customer_no', $share_customer_no);
+			array_set($data, 'finder_lon', $finder_lon);
+			array_set($data, 'finder_lat', $finder_lat);
 
 		}
 
