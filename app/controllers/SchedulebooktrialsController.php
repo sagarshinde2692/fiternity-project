@@ -1670,12 +1670,13 @@ $payload = array(
 	'oneHourDiffInMin'=>$oneHourDiffInMin,
 	'delayReminderTimeBefore1Hour'=>$delayReminderTimeBefore1Hour,
 	'delayReminderTimeAfter2Hour'=>$delayReminderTimeAfter2Hour,
+	'reminderTimeAfter1Hour'=> $reminderTimeAfter1Hour,
 	'finder'=>$finder,
 	'old_going_status'=>$old_going_status,
 	'old_schedule_date'=>$old_schedule_date,
 	'old_schedule_slot_start_time'=>$old_schedule_slot_start_time,
 	'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
-	);
+);
 
 $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
 $booktrial->update(array('reschedule_redis_id'=>$redisid));
@@ -1704,6 +1705,7 @@ public function toQueueRescheduledBookTrial($job,$data){
 		$oneHourDiffInMin = $data['oneHourDiffInMin'];
 		$delayReminderTimeBefore1Hour = $data['delayReminderTimeBefore1Hour'];
 		$delayReminderTimeAfter2Hour = $data['delayReminderTimeAfter2Hour'];
+		$reminderTimeAfter1Hour = $data['reminderTimeAfter1Hour'];
 		$finder = $data['finder'];
 		$old_going_status = $data['old_going_status'];
 		$old_schedule_date = $data['old_schedule_date'];
