@@ -31,9 +31,9 @@ Class CustomerSms extends VersionNextSms{
 		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').".";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').".";
 		}
 		
 		$label = 'RescheduledTrial-C';
@@ -48,7 +48,7 @@ Class CustomerSms extends VersionNextSms{
 		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the session. Incase if you would like to reschedule or cancel your session call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+		$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the session. Incase if you would like to reschedule or cancel your session call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').".";
 		
 		$label = 'TrialRmdBefore12Hr-C';
 
@@ -82,9 +82,9 @@ Class CustomerSms extends VersionNextSms{
 		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the ".$session_type." session. If you wish to reschedule or cancel your ".$session_type." session call us on ".Config::get('app.customer_care_number')." or mail us on support@fitternity.com. Regards - Team Fitternity";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the ".$session_type." session. If you wish to reschedule or cancel your ".$session_type." session call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').". Regards - Team Fitternity";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the ".$session_type." session. If you wish to reschedule or cancel your ".$session_type." session call us on ".Config::get('app.customer_care_number')." or mail us on support@fitternity.com. Regards - Team Fitternity";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Here is a reminder for your ".$session_type." session at ".ucwords($data['finder_name'])." scheduled for ".ucwords($data['service_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We have sent you a mail on essentials you need to carry for the ".$session_type." session. If you wish to reschedule or cancel your ".$session_type." session call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').". Regards - Team Fitternity";
 		}
 
 		$label = 'TrialRmdBefore12Hr-C';
@@ -147,9 +147,9 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 		if($data['show_location_flag']){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').".";
 		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or reply to this message.";
+			$message 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session at ".ucwords($data['finder_name'])." has been cancelled basis your request. Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').".";
 		}
 
 		$label = 'CancelTrial-C';
