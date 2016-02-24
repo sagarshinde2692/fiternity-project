@@ -273,13 +273,6 @@
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Preferred Starting Date: </strong>{{ date(' jS F\, Y \(l\) ', strtotime($preferred_starting_date) ) }}</p>
                                                         <?php }?>
                                                         
-                                                        <?php 
-
-                                                        if(isset($amount_finder) && $amount_finder != ""){
-                                                            $amount = $amount_finder;
-                                                        }
-
-                                                        ?>
                                                         <?php if(isset($amount) && $amount != ""){ ?>
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;" st-content="fulltext-paragraph"> <strong>Amount: </strong> Rs.{{$amount}}</p>
                                                         <?php }?>
