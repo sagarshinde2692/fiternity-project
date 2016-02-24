@@ -233,8 +233,9 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
-                                                        <p>Hello,</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There is a Call back request from {{ $findertitle }}.</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph" >Hello,</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph" >Greetings from Fitternity</p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">We have processed a membership purchase for <strong>{{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</strong> on Fitternity</p>
                                                 </td>
                                             </tr>
                                          
@@ -247,20 +248,28 @@
                                                             <tbody>
                                                                 <tr>
                                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                                        <?php if(isset($name) && $name != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">User Name:</p>
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($name) }}</p>
+                                                                        <?php if(isset($customer_name) && $customer_name != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">Name of the customer:</p>
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_name) }}</p>
                                                                         <?php }?>
 
-                                                                        <?php if(isset($email) && $email != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">User Email:</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ $email }}</p>
+                                                                        <?php if(isset($customer_phone) && $customer_phone != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Number of the customer:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ $customer_phone }}</p>
                                                                         <?php }?>
 
-                                                                        <?php if(isset($phone) && $phone != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">User Phone:</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ $phone }}</p>
+                                                                        <?php if(isset($customer_email) && $customer_email != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">E-mail ID of the customer:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ $customer_email }}</p>
                                                                         <?php }?>
+
+                                                                        <?php if(isset($preferred_starting_date) && $preferred_starting_date != "" && $preferred_starting_date != "-"){ ?>
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Start Date:</p> 
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ date('d-m-Y', strtotime($preferred_starting_date) ) }}</p>
+                                                                        <?php }?>
+
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Payment Mode :</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Online</p>
 
                                                                     </td>
                                                                 </tr>
@@ -273,15 +282,42 @@
                                                                     <tr>
                                                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
 
-                                                                        <?php if(isset($location) && $location != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">User Location:</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ $location }}</p>
+                                                                        <?php 
+
+                                                                            if(isset($amount_finder) && $amount_finder != ""){
+                                                                                $amount = $amount_finder;
+                                                                            }
+
+                                                                        ?>
+
+                                                                        <?php if(isset($amount) && $amount != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Amount:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">Rs.{{$amount}}</p>
                                                                         <?php }?>
-    
-                                                                        <?php if(isset($date) && $date != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Date:</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ $date }}</p>
+
+                                                                        <?php if(isset($_id) && $_id != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Subscription code:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ $_id }}</p>
                                                                         <?php }?>
+
+                                                                        <?php if(isset($service_name) && $service_name != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Membership Detail:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_name) }}</p>
+                                                                        <?php }?>
+
+                                                                        <?php if(isset($service_duration) && $service_duration != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Membership Duration:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_duration) }}</p>
+                                                                        <?php }?>
+
+                                                                        <?php if(isset($finder_location) && $finder_location != ""){ ?> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Branch:</p> 
+                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($finder_location) }}</p>
+                                                                        <?php }?>
+
+                                                                       
+
+                                                                        
 
                                                                         </td>
                                                                     </tr>
@@ -296,8 +332,14 @@
                         
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p style="padding-top:10px">Regards</p>
-                                    <p>TEAM FITTERNITY</p>
+
+                                   
+
+                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">You could reach out to the customer directly and co-ordinate the starting date<br />If there is any update at our end regarding this customer we shall let you know.<br /><br />If you have any questions or need any support please reply to this mail or call us on  <a style="color: #f9a91e;"href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}</a>
+                                    <br />
+                                    <br />Regards,
+                                    <br />Team Fitternity </p>
+
                                 </td>
                             </tr>
 

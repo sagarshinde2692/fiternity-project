@@ -14,65 +14,54 @@ Class FinderMailer extends Mailer {
 		// $email_template = 'emails.test';
 		$email_template = 'emails.finder.autobooktrial';
 		$template_data 	= $data;
+
 		if($data['finder_vcc_email'] != ''){
-			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
 		}else{
-			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
-		} 
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$bcc_emailids = array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
-			'user_email' => Config::get('mail.to_mailus'),
-			'user_name' =>  $data['finder_poc_for_customer_name'],
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Session request from customer '.ucwords($data['customer_name']).' at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
-			);
+		);
 
 		$label = 'BookTrial-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 	}
 
 	public function rescheduledBookTrial ($data){
 
-		// $email_template = 'emails.test';
 		$email_template = 'emails.finder.rescheduledautobooktrial';
 		$template_data 	= $data;
+
 		if($data['finder_vcc_email'] != ''){
-			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
 		}else{
-			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
 		} 
 
+		$user_name = ucwords($data['finder_name']);
+
+		$bcc_emailids = array(Config::get('mail.to_mailus'));
+
 		$message_data 	= array(
-			'user_email' => Config::get('mail.to_mailus'),
-			'user_name' =>  $data['finder_poc_for_customer_name'],
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Reschedule request from customer '.ucwords($data['customer_name']).' for a session | Fitternity'
-			);
+		);
 
 		$label = 'RescheduledTrial-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
-	}
-
-	//currently not using reminder
-	public function bookTrialReminderBefore12Hour ($data, $delay){
-
-		$email_template = 'emails.finder.autobooktrial_reminder';
-		$template_data 	= $data;
-		$emails 		= 	Config::get('mail.bcc_emailds_autobook_trial');
-		$bcc_emailids 	= 	array_flatten($emails);
-		$message_data 	= array(
-			'user_email' => $data['customer_email'],
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Reminder Mail: Request For Book a Trial'
-			);
-		
-		$label = 'TrialRmdBefore12Hr-F';
-		$priority = 0;
-
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label, $priority, $delay);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 	}
 
 	public function sendBookTrialDaliySummary ($data){
@@ -81,25 +70,26 @@ Class FinderMailer extends Mailer {
 		$template_data 	= $data;
 
 		if($data['finder_vcc_email'] != ''){
-
-			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_finderdailsummary'));
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
 		}else{
-
-			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_finderdailsummary');
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
 		} 
 
+		$user_name = ucwords($data['finder_name_base_locationtags']);
+
+		$bcc_emailids = array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
-			'user_email' => Config::get('mail.to_mailus'),
-			'user_name' =>  $data['finder_poc_for_customer_name'],
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Daily report on customers who have booked sessions for tomorrow with '.ucwords($data['finder_name_base_locationtags'])
-			);
+		);
 		// echo "<pre>";print_r($data);exit;
 
 		$label = 'TrialDaliySummary-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -126,7 +116,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuyServiceFitmania-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -153,7 +143,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuySrvFitmaniaWrongCustomer-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -185,7 +175,7 @@ Class FinderMailer extends Mailer {
 		$label = 'BuySrvFitmaniaGroupbyFinder-F';
 		$priority = 1;
 		
-		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+		return $this->sendToWorker('vendor',$email_template_customer, $template_data, $message_data, $label, $priority);
 
 	}
 
@@ -216,7 +206,7 @@ Class FinderMailer extends Mailer {
 		$label = 'BuySrvFitmaniaGroupbyFinder-F';
 		$priority = 1;
 		
-		return $this->sendToWorker($email_template_customer, $template_data, $message_data, $label, $priority);
+		return $this->sendToWorker('vendor',$email_template_customer, $template_data, $message_data, $label, $priority);
 
 	}
 
@@ -244,7 +234,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuySrvMbrFitM-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -272,7 +262,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'BuySrvHltTifFitM-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -295,7 +285,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'ResendFitmania-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 
 	}
 
@@ -303,22 +293,85 @@ Class FinderMailer extends Mailer {
 		
 		$email_template = 'emails.finder.cancelbooktrial';
 		$template_data 	= $data;
+
 		if($data['finder_vcc_email'] != ''){
-			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_autobook_trial'));
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
 		}else{
-			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_autobook_trial');
-		} 
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$bcc_emailids = array(Config::get('mail.to_mailus')); 
 
 		$message_data 	= array(
-			'user_email' => Config::get('mail.to_mailus'),
-			'user_name' =>  $data['finder_poc_for_customer_name'],
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
 			'bcc_emailids' => $bcc_emailids,
 			'email_subject' => 'Cancellation of session booked by customer '.ucwords($data['customer_name']).' | Fitternity'
-			);
+		);
 
 		$label = 'CancelTrial-F';
 
-		return $this->sendToWorker($email_template, $template_data, $message_data, $label);
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
+	}
+
+	public function sendPgOrderMail ($data){
+
+		$email_template 	= 	'emails.order.pg_'.strtolower($data['type']).'_vendor';
+		$template_data 				= 	$data;
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$bcc_emailids = array(Config::get('mail.to_mailus'));
+
+		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+		
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+		);
+
+		$label = 'SendPgOrder-F';
+
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
+	}
+
+	public function sendCodOrderMail ($data){
+
+		$email_template 	= 	'emails.order.cod_memberships_vendor';
+		$template_data 				= 	$data;
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$bcc_emailids = array(Config::get('mail.to_mailus'));
+
+		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+		
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $subject
+		);
+
+		$label = 'SendPgOrder-F';
+
+		return $this->sendToWorker('vendor',$email_template, $template_data, $message_data, $label);
 	}
 
 }
