@@ -254,6 +254,8 @@ return array(
 		),
 	),
 
-	'customer_care_number' => '+912261222233',
+	'customer_care_number' => '02261222233',
+	'contact_us_vendor_email' => 'business@fitternity.com',
+	'contact_us_customer_email' => 'support@fitternity.com',
 
 );

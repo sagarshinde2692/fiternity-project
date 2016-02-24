@@ -144,7 +144,7 @@ abstract Class Mailer {
 
 	}*/
 
-	public function sendToWorker($email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+	public function sendToWorker($to = '',$email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
 		//used to test email instantly
 		// $this->sendEmail($email_template,$template_data,$message_data);
@@ -155,12 +155,8 @@ abstract Class Mailer {
 		}
 	
 		$email_html = View::make($email_template, $template_data)->render();
-		$payload = array('email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
-		
-		// if($email_template == "emails.customer.booktrialreminderbefore12hour"){
-		// 	// print_r($payload);exit();
-		// 	// Log::info($email_html);
-		// }
+
+		$payload = array('to'=>$to,'email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 
 		$route	= 'email';
 		$result  = $this->sidekiq->sendToQueue($payload,$route);
