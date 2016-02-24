@@ -348,8 +348,8 @@ class MigrationsController extends \BaseController {
 	 */
 	public function vendors(){
 
-		// $finder_ids	=	Finder::take(10000)->lists('_id');
-		$finder_ids	=	Finder::where('_id',1)->lists('_id');
+		$finder_ids	=	Finder::take(10000)->lists('_id');
+		// $finder_ids	=	Finder::where('_id',1)->lists('_id');
 
 		if($finder_ids){ 
 
@@ -441,9 +441,10 @@ class MigrationsController extends \BaseController {
 
 					// dd($phone);
 
+
 					if(isset($finder->contact['address']) && $finder->contact['address'] != ""){
 
-						$temp_address_arr = explode(",",strip_tags($finder->contact['address']));
+						$temp_address_arr = explode(",", str_replace("&amp;", "&",str_replace("&nbsp;", "", strip_tags( $finder->contact['address'] ))) );
 						$temp_address_arr_cnt = count($temp_address_arr);
 						$count = $temp_address_arr_cnt / 3;
 						$line1 = rtrim(implode(array_slice($temp_address_arr, 0, $count)), ",");
@@ -469,26 +470,34 @@ class MigrationsController extends \BaseController {
 					$videos       		= 	($finder->videos) ? $finder->videos : [];
 					
 
-					//for locationtags
-					$old_locationtag_slugs_arr	=	Locationtag::whereIn('_id', array_map('intval', $finder->locationtags))->lists('slug');
-					// dd($old_locationtag_slugs_arr);
 
-					$new_locationtag_ids_arr	=	Vendorlocation::whereIn('slug', $old_locationtag_slugs_arr)->lists('_id');
-					// dd($new_locationtag_ids_arr);
+
+					//for locationtags
+					$new_locationtag_ids_arr	= [];
+					if(isset($finder->locationtags) && !empty($finder->locationtags)){
+						$old_locationtag_slugs_arr	=	Locationtag::whereIn('_id', array_map('intval', $finder->locationtags))->lists('slug');
+						$new_locationtag_ids_arr	=	Vendorlocation::whereIn('slug', $old_locationtag_slugs_arr)->lists('_id');
+						// dd($new_locationtag_ids_arr);
+					}
 
 					//for categorytags
-					$old_categorytag_slugs_arr	=	Findercategorytag::whereIn('_id', array_map('intval', $finder->categorytags))->lists('slug');
-					// dd($old_categorytag_slugs_arr);
-					$new_categorytag_ids_arr	=	Vendorcategory::whereIn('slug', $old_categorytag_slugs_arr)->lists('_id');
+					$new_categorytag_ids_arr	= [];
+					if(isset($finder->categorytags) && !empty($finder->categorytags)){
+						$old_categorytag_slugs_arr	=	Findercategorytag::whereIn('_id', array_map('intval', $finder->categorytags))->lists('slug');
+						$new_categorytag_ids_arr	=	Vendorcategory::whereIn('slug', $old_categorytag_slugs_arr)->lists('_id');
+					}
+
 
 					//for offerings
-					$old_offering_name_arr		=	Offering::whereIn('_id', array_map('intval', $finder->offerings))->lists('name');
-					$old_offering_slugs_arr		=	[];
-					foreach ($old_offering_name_arr as $key => $value) {
-						array_push($old_offering_slugs_arr, url_slug([$value]));
+					$old_offering_slugs_arr	= [];
+					if(isset($finder->offerings) && !empty($finder->offerings)){
+						$old_offering_name_arr		=	Offering::whereIn('_id', array_map('intval', $finder->offerings))->lists('name');
+						$old_offering_slugs_arr		=	[];
+						foreach ($old_offering_name_arr as $key => $value) {
+							array_push($old_offering_slugs_arr, url_slug([$value]));
+						}
+						$new_offering_ids_arr	=	DB::connection('mongodb2')->table('offerings')->whereIn('slug', $old_offering_slugs_arr)->lists('_id');
 					}
-					$new_offering_ids_arr	=	DB::connection('mongodb2')->table('offerings')->whereIn('slug', $old_offering_slugs_arr)->lists('_id');
-
 
 					// $rating[]			
 					$vendorData = [
@@ -523,7 +532,7 @@ class MigrationsController extends \BaseController {
 					],
 					'geometry' => [
 					'type' 	=> "Point",
-					'coordinates' 	=>  [$finder->lat, $finder->lon],
+					'coordinates' 	=>  [$finder->lon, $finder->lat],
 					],
 					'rating' 	=>  [
 					'avg' =>  $finder->average_rating,
@@ -534,9 +543,9 @@ class MigrationsController extends \BaseController {
 					'count' =>  (isset($finder->detail_rating_summary_count))   ?  array_map('intval', $finder->detail_rating_summary_count) : []
 					],
 					'seo' 	=>  [
-					'title' 	=>  ($finder->meta['title']) ? strip_tags(trim($finder->meta['title'])) : "",
-					'description' 	=>  ($finder->meta['description']) ? strip_tags(trim($finder->meta['description'])) : "",
-					'keywords' 	=>  (isset($finder->meta['keywords']) && $finder->meta['keywords'] != "") ? strip_tags(trim($finder->meta['keywords'])) : "",
+					'title' 	=>  ($finder->meta['title']) ? str_replace("&amp;", "&",str_replace("&nbsp;", "", strip_tags($finder->meta['title']))) : "",
+					'description' 	=>  ($finder->meta['description']) ? str_replace("&amp;", "&",str_replace("&nbsp;", "", strip_tags($finder->meta['description']))) : "",
+					'keywords' 	=>  (isset($finder->meta['keywords']) && $finder->meta['keywords'] != "") ? str_replace("&amp;", "&",str_replace("&nbsp;", "", strip_tags($finder->meta['keywords']))) : "",
 					'og_title' 	=>  "",
 					'og_description' 	=>   "",
 					'og_image' 	=>   ""
@@ -548,11 +557,13 @@ class MigrationsController extends \BaseController {
 					];
 
 					if($finder->what_i_should_carry){
-						$vendorData ['what_i_should_carry'] = strip_tags($finder->what_i_should_carry);
+
+						
+						$vendorData ['what_i_should_carry'] = str_replace("&amp;", "&",str_replace("&nbsp;", "", strip_tags($finder->what_i_should_carry)));
 					}
 
 					if($finder->what_i_should_expect){
-						$vendorData ['what_i_should_expect'] = strip_tags($finder->what_i_should_expect);
+						$vendorData ['what_i_should_expect'] = str_replace("&amp;", "&",str_replace("&nbsp;", "", strip_tags($finder->what_i_should_expect)));
 					}
 
 
