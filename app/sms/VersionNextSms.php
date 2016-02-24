@@ -172,6 +172,14 @@ abstract Class VersionNextSms {
         if ($delay instanceof \Carbon\Carbon){
             return max(0, $delay->timestamp - $this->getTime());
         }
+
+        if(isset($delay['date'])){
+
+            $time = strtotime($delay['date']) - $this->getTime();
+
+            return $time;
+        }
+        
         // echo (int) $delay; exit;
         return (int) $delay;
     }
