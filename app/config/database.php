@@ -62,9 +62,6 @@ return array(
 		    'host'     => 'localhost',
 		    // 'host'     => '52.77.247.239',
 		    'port'     => 27017,
-		    // 'username' => 'fituser',
-		    // 'password' => '65e4d4c196aa6229cf2ad0ff252658c7',
-		    // 'database' => 'fitapi'
 		    'database' => 'fitapi'
 		),
 
@@ -74,8 +71,6 @@ return array(
 		    'host'     => 'localhost',
 		    // 'host'     => '52.77.247.239',
 		    'port'     => 27017,
-		    // 'username' => 'fituser',
-		    // 'password' => '65e4d4c196aa6229cf2ad0ff252658c7',
 		    'database' => 'fitadminnew'
 		),
 
