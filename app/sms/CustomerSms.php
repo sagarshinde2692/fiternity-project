@@ -129,9 +129,9 @@ Class CustomerSms extends VersionNextSms{
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
 		if($data['show_location_flag']){
-			$message 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 500 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
+			$message 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 250 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
 		}else{
-			$message 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 500 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
+			$message 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 250 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
 		}
 
 		$label = 'TrialRmdAfter2Hr-C';
