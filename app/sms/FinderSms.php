@@ -32,11 +32,10 @@ Class FinderSms extends VersionNextSms{
 
 		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
-
 		if($data['show_location_flag']){
-			$message = "We have received a re-schedule request for a earlier ".$session_type." booked. Session for ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." is now re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to email sent for more details & call us on ".Config::get('app.customer_care_number')." for queries";
+			$message = "We have received a re-schedule request for a earlier ".$session_type." booked. ".ucwords($data['service_name'])." ".$session_type." session for ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." is now re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to email sent for more details & call us on ".Config::get('app.customer_care_number')." for queries";
 		}else{
-			$message = "We have received a re-schedule request for a earlier ".$session_type." booked. Session for ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name'])." is now re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to email sent for more details & call us on ".Config::get('app.customer_care_number')." for queries";
+			$message = "We have received a re-schedule request for a earlier ".$session_type." booked. ".ucwords($data['service_name'])." ".$session_type." session for ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name'])." is now re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to email sent for more details & call us on ".Config::get('app.customer_care_number')." for queries";
 		}
 
 		$label = 'RescheduledTrial-F';
