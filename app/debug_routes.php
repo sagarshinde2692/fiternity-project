@@ -1,5 +1,10 @@
 <?php
 
+
+
+#####################################################################################
+/************************ MIGRATIONS SECTION START HERE ***************************/
+
 Route::get('migrations/country', 'MigrationsController@country');
 Route::get('migrations/city', 'MigrationsController@city');
 Route::get('migrations/locationcluster', 'MigrationsController@locationcluster');
@@ -9,6 +14,15 @@ Route::get('migrations/offerings', 'MigrationsController@offerings');
 Route::get('migrations/facilities', 'MigrationsController@facilities');
 Route::get('migrations/vendors', 'MigrationsController@vendors');
 Route::get('migrations/vendorservicecategory', 'MigrationsController@vendorservicecategory');
+
+
+
+
+############################################################################################
+/************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
+
+Route::get('reversemigrations/country', 'ReversemigrationsController@country');
+
 
 
 Route::get('/importcode', function() {  
