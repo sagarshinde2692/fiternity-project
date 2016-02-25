@@ -1,18 +1,20 @@
 <?PHP
 
 /** 
- * ControllerName : MigrationsController.
- * Maintains a list of functions used for MigrationsController.
+ * ControllerName : ReversemigrationsController.
+ * Maintains a list of functions used for ReversemigrationsController.
  *
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
 
-class MigrationsController extends \BaseController {
+class ReversemigrationsController extends \BaseController {
 
+
+	protected $time = 60;
 
 	public function __construct() {
-		parent::__construct();	
+
 	}
 
 	
@@ -21,11 +23,11 @@ class MigrationsController extends \BaseController {
 	 * Migration for country
 	 */
 	public function country(){
-		// $ids	=	Country::active()->take(1)->lists('_id');
-		$ids	=	Country::lists('_id');
+
+		$ids	=	DB::connection('mongodb2')->table('countries')->lists('_id');
 
 		if($ids){ 
-			DB::connection('mongodb2')->table('countries')->truncate(); 
+			DB::connection('mongodb3')->table('countries')->truncate(); 
 
 			foreach ($ids as $key => $id) {
 				$Country = Country::find(intval($id));
@@ -40,7 +42,7 @@ class MigrationsController extends \BaseController {
 				];
 
 				$entity 		=	new Country($insertData);
-				$entity->setConnection('mongodb2');
+				$entity->setConnection('mongodb3');
 				$entity->_id 	=	intval($Country->_id);
 				$entity->save();
 			}
