@@ -348,6 +348,8 @@ class MigrationsController extends \BaseController {
 	 */
 	public function vendors(){
 
+		ini_set('max_execution_time', 300);
+
 		$finder_ids	=	Finder::take(10000)->lists('_id');
 		// $finder_ids	=	Finder::where('_id',1)->lists('_id');
 
