@@ -671,6 +671,61 @@ class OzonetelsController extends \BaseController {
 
 	}
 
+	public function smsb(){
+
+		try{
+
+			$response = $this->misscall('sms');
+
+			if($response['status'] == 200){
+		
+				$ozonetel_missedcall = $response['ozonetel_missedcall'];
+
+				if($ozonetel_missedcall->customer_number != ''){
+
+					$label = '48HrsSms';
+
+					$message = 'Thank you for contacting Fitternity. Your Fitness Concierge will call within 48hrs for a solution on your fitness membership. Fitternity Helpline - 02261222223';
+				
+					$data = array();
+
+					$data['label'] = $label;
+					$data['message'] = $message;
+					$data['to'] = $ozonetel_missedcall->cid;
+
+					$update['sms_general'] = $this->customersms->generalSms($data);
+					$update['sms_message'] = $message;
+				
+				}else{
+
+					$update['error_message'] = 'contact number is null';
+				}
+
+				$ozonetel_missedcall->update($update);
+
+				$response = array('status'=>200,'message'=>'success');
+
+			}
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
+
+	}
+
 	public function misscall($type){
 
 		try{

@@ -414,6 +414,7 @@ Route::get('ozonetel/outboundcallsend/{phone_number}',  array('as' => 'ozonetel.
 Route::get('ozonetel/outboundcallrecive/{id}',  array('as' => 'ozonetel.outboundCallRecive','uses' => 'OzonetelsController@outboundCallRecive'));
 Route::get('ozonetel/outbound/{id}',  array('as' => 'ozonetel.outbound','uses' => 'OzonetelsController@outbound'));
 Route::get('ozonetel/missedcall/sms',  array('as' => 'ozonetel.sms','uses' => 'OzonetelsController@sms'));
+Route::get('ozonetel/missedcall/smsb',  array('as' => 'ozonetel.smsb','uses' => 'OzonetelsController@smsb'));
 
 /******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################
