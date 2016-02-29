@@ -69,11 +69,11 @@ Class FinderMailer extends Mailer {
 		$email_template = 'emails.finder.booktrialdailysummary';
 		$template_data 	= $data;
 
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_finderdailsummary'));
 		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		} 
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_finderdailsummary');
+		}
 
 		$user_name = ucwords($data['finder_name_base_locationtags']);
 
@@ -321,10 +321,10 @@ Class FinderMailer extends Mailer {
 		$email_template 	= 	'emails.order.pg_'.strtolower($data['type']).'_vendor';
 		$template_data 				= 	$data;
 
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		if(isset($data['finder_vcc_email'] ) && $data['finder_vcc_email'] != ''){
+			$bcc_emailids 	=  	array_merge(explode(',', $data['finder_vcc_email']),Config::get('mail.bcc_emailds_finder_purchase'));
 		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
+			$bcc_emailids 	= 	Config::get('mail.bcc_emailds_finder_purchase');
 		}
 
 		$user_name = ucwords($data['finder_name']);
