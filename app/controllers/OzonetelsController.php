@@ -628,9 +628,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = '48HrsSms';
+					$label = 'BoughtMembership';
 
-					$message = 'Thank you for contacting Fitternity. Your Fitness Concierge will call within 48hrs for a solution on your fitness membership. Fitternity Helpline - 02261222223';
+					$message = 'Thank you! Fitternity is excited about you buying a fitness membership. We will call you to get the details. You will get a call if you WIN in our Lucky Draw.';
 				
 					$data = array();
 
@@ -683,9 +683,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = '48HrsSms';
+					$label = 'NotBoughtMembership';
 
-					$message = 'Thank you for contacting Fitternity. Your Fitness Concierge will call within 48hrs for a solution on your fitness membership. Fitternity Helpline - 02261222223';
+					$message = 'Thank you for letting us know you haven’t purchased a membership yet. The Fitternity Fitness Concierge will call you with great offers on memberships.';
 				
 					$data = array();
 
