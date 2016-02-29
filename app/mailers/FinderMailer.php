@@ -68,7 +68,7 @@ Class FinderMailer extends Mailer {
 
 		$email_template = 'emails.finder.booktrialdailysummary';
 		$template_data 	= $data;
-		
+
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);
 		}else{
@@ -77,7 +77,7 @@ Class FinderMailer extends Mailer {
 
 		$user_name = ucwords($data['finder_name_base_locationtags']);
 
-		$bcc_emailids = array(Config::get('mail.bcc_emailds_finderdailsummary'));
+		$bcc_emailids = Config::get('mail.bcc_emailds_finderdailsummary');
 
 		$message_data 	= array(
 			'user_email' => $user_email,
@@ -329,7 +329,7 @@ Class FinderMailer extends Mailer {
 
 		$user_name = ucwords($data['finder_name']);
 
-		$bcc_emailids = array(Config::get('mail.bcc_emailds_finder_purchase'));
+		$bcc_emailids = Config::get('mail.bcc_emailds_finder_purchase');
 
 		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
 		
