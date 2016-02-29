@@ -236,169 +236,172 @@
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hi,</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> Greetings from Fitternity</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Please find below the daily report on customers who have booked sessions for tomorrow</p>
-                                                </td>
-                                            </tr>
-                                         
-                                <tr style="background-color:#f6f6f6;">
+                                                    </td>
+                                                </tr>
+                                                
+                                                <tr style="background-color:#f6f6f6;">
                                                     <td>
                                                         <hr style="width:30%;" />    
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Here are the details:</strong></p>  
                                                         <!-- col 1 -->
-                                                         <table  width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                        @if(count($scheduletrials) > 0)
+                                                        <table  width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
                                                           <tbody>
-                                                           <!-- Spacing -->
+                                                             <!-- Spacing -->
 
-                                                           <tr>
-                                                            <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                                                             <p style="font-weight:light">Customer Info:   </p>
-                                                             </td>
-                                                             <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                                                               <p style="font-weight:light">Scheduled Date</td>
-                                                                <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                                                                 <p style="font-weight:light">Scheduled Slot</td> <td width="96" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                                                                   <p style="font-weight:light">Subscription Code   
+                                                             <tr>
+                                                                <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
+                                                                   <p style="font-weight:light">Customer Info:   </p>
+                                                               </td>
+                                                               <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                 <p style="font-weight:light">Scheduled Date</td>
+                                                                    <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                       <p style="font-weight:light">Scheduled Slot</td> <td width="96" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                         <p style="font-weight:light">Subscription Code   
 
-                                                                   </td> <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                                                                   <p style="font-weight:light">Workout Form 
+                                                                         </td> <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
+                                                                         <p style="font-weight:light">Workout Form 
 
-                                                                   </td> <td width="156" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                                                                   <p style="font-weight:light">Contact person name (provided to the customer) 
+                                                                         </td> <td width="156" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                         <p style="font-weight:light">Contact person name (provided to the customer) 
 
-                                                                   </tr>
+                                                                         </tr>
 
-                                                                   @foreach($scheduletrials as $key => $value)
-                                                                   <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
-                                                                    <td style="padding:10px;"> {{ ucwords($value['customer_name']) }} <?php if($value['customer_phone'] != ''){?> <br>({{ $value['customer_phone'] }}) <?php } ?> </td>
-                                                                    <td > {{ $value['schedule_date'] }}  </td>
-                                                                    <td> {{ $value['schedule_slot'] }}  </td> 
-                                                                    <td> {{ $value['code']}} </td> 
-                                                                    <td>{{ ucwords($value['service_name']) }}  </td> 
-                                                                    <td> {{ ucwords($value['finder_poc_for_customer_name']) }}  </td>
-                                                                  </tr>
-                                                                  @endforeach
+                                                                         @foreach($scheduletrials as $key => $value)
+                                                                         <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
+                                                                            <td style="padding:10px;"> {{ ucwords($value['customer_name']) }} <?php if($value['customer_phone'] != ''){?> <br>({{ $value['customer_phone'] }}) <?php } ?> </td>
+                                                                            <td > {{ $value['schedule_date'] }}  </td>
+                                                                            <td> {{ $value['schedule_slot'] }}  </td> 
+                                                                            <td> {{ $value['code']}} </td> 
+                                                                            <td>{{ ucwords($value['service_name']) }}  </td> 
+                                                                            <td> {{ ucwords($value['finder_poc_for_customer_name']) }}  </td>
+                                                                        </tr>
+                                                                        @endforeach
 
-                                                                </tbody>
-                                                              </table>
+                                                                    </tbody>
+                                                                </table>
+                                                                @endif
+                                                                @if(count($todaytrials) > 0)
+                                                                <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                  <tbody>
+                                                                     <!-- image 2 -->
+                                                                     <!-- end of image2 -->
+                                                                     <tr style="background-color:#f6f6f6;">
+                                                                        <hr style="width:30%;" />
+                                                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
+                                                                         
+                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Customers who attended session Today</p>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>    
+                                                                           <!-- start of text content table -->  
+                                                                           <hr style="width:30%;" />    
+                                                                           <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Here are the details :</strong></p> 
+                                                                           <table  width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
+                                                                              <tbody>
+                                                                                  
+                                                                                <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
+                                                                                   <p style="font-weight:light">Customer Info:   </p>
+                                                                               </td>
+                                                                               <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                                 <p style="font-weight:light">Scheduled Date</td>
+                                                                                    <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                                       <p style="font-weight:light">Scheduled Slot</td> <td width="96" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                                         <p style="font-weight:light">Subscription Code   
+
+                                                                                         </td> <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
+                                                                                         <p style="font-weight:light">Workout Form 
+
+                                                                                         </td> <td width="156" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
+                                                                                         <p style="font-weight:light">Contact person name (provided to the customer) 
+
+                                                                                         </tr>
+
+                                                                                         @foreach($todaytrials as $key => $value)
+                                                                                         <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
+                                                                                            <td style="padding:10px;"> {{ ucwords($value['customer_name']) }} <?php if($value['customer_phone'] != ''){?> <br>({{ $value['customer_phone'] }}) <?php } ?> </td>
+                                                                                            <td > {{ $value['schedule_date'] }}  </td>
+                                                                                            <td> {{ $value['schedule_slot'] }}  </td> 
+                                                                                            <td> {{ $value['code']}} </td> 
+                                                                                            <td>{{ ucwords($value['service_name']) }}  </td> 
+                                                                                            <td> {{ ucwords($value['finder_poc_for_customer_name']) }}  </td>
+                                                                                        </tr>
+                                                                                        @endforeach
+
+                                                                                    </tbody>
+                                                                                </table>
+                                                                                @endif
+                                                                            </td>
+                                                                        </tr>
+                                                                        <!-- end of text content table -->
+                                                                    </tbody>
+                                                                </table>
+                                                                
+                                                            </td>
+                                                        </tr>
+
                                                         
-                                                        <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                  <tbody>
-                   <!-- image 2 -->
-                   <!-- end of image2 -->
-                   <tr style="background-color:#f6f6f6;">
-                    <hr style="width:30%;" />
-                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
-                                                       
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Customers who attended session Today</p>
-                                                </td>
-                                            </tr>
-                   <tr>
-                    <td>    
-                     <!-- start of text content table -->  
-                     <hr style="width:30%;" />    
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Here are the details :</strong></p> 
-                     <table  width="100%" align="center" border="0" cellpadding="0" cellspacing="0" class="devicewidthinner">
-                      <tbody>
-                      
-                        <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                         <p style="font-weight:light">Customer Info:   </p>
-                         </td>
-                         <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                           <p style="font-weight:light">Scheduled Date</td>
-                            <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                             <p style="font-weight:light">Scheduled Slot</td> <td width="96" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Subscription Code   
+                                                        <tr style="background-color:#f6f6f6;">
+                                                            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
+                                                                
+                                                                <p style="padding-top:10px;">Regards<br/>
+                                                                    TEAM FITTERNITY
+                                                                </p>
 
-                               </td> <td height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Workout Form 
+                                                            </td>
+                                                        </tr>
 
-                               </td> <td width="156" height="64" style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px; color: #ec8601;" st-title="3col-title1">
-                               <p style="font-weight:light">Contact person name (provided to the customer) 
 
-                               </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
 
-                               @foreach($todaytrials as $key => $value)
-                               <tr style="font-family: Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 20px;  " st-title="3col-title1">
-                                <td style="padding:10px;"> {{ ucwords($value['customer_name']) }} <?php if($value['customer_phone'] != ''){?> <br>({{ $value['customer_phone'] }}) <?php } ?> </td>
-                                <td > {{ $value['schedule_date'] }}  </td>
-                                <td> {{ $value['schedule_slot'] }}  </td> 
-                                <td> {{ $value['code']}} </td> 
-                                <td>{{ ucwords($value['service_name']) }}  </td> 
-                                <td> {{ ucwords($value['finder_poc_for_customer_name']) }}  </td>
-                              </tr>
-                              @endforeach
 
-                            </tbody>
-                          </table>
-                        </td>
-                      </tr>
-                      <!-- end of text content table -->
+                            </td>
+                        </tr>
                     </tbody>
-                  </table>
-                                                        
-                                                    </td>
-                                                </tr>
-
-                        
-                            <tr style="background-color:#f6f6f6;">
-                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    
-                                    <p style="padding-top:10px;">Regards<br/>
-                                        TEAM FITTERNITY
-                                    </p>
-
-                                </td>
-                            </tr>
+                </table>
+            </div>
 
 
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+            <div class="block">
+                <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
+                    <tbody>
+                        <tr>
+                            <td align="center">
+                                <table cellspacing="0" cellpadding="15" align="center" class="devicewidth">
+                                    <tbody>
+                                        <tr>
+                                            <td style="text-align:center;">
+                                                <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
+                                                <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
+                                                <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="block">
+                <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
+                    <tr>
+                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
+                            <p>Contact us
+                                <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
+                                <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_vendor_email')}}"> {{Config::get('app.contact_us_vendor_email')}}</a>                       
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
+        </body>
 
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-
-<div class="block">
-    <table bgcolor="#f6f6f6" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
-        <tbody>
-            <tr>
-                <td align="center">
-                    <table cellspacing="0" cellpadding="15" align="center" class="devicewidth">
-                        <tbody>
-                            <tr>
-                                <td style="text-align:center;">
-                                    <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
-                                    <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
-                                    <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-<div class="block">
-    <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
-        <tr>
-            <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
-                <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_vendor_email')}}"> {{Config::get('app.contact_us_vendor_email')}}</a>                       
-                </p>
-            </td>
-        </tr>
-    </table>
-</div>
-
-</body>
-
-</html>
+        </html>
