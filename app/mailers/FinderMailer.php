@@ -329,7 +329,7 @@ Class FinderMailer extends Mailer {
 
 		$user_name = ucwords($data['finder_name']);
 
-		$bcc_emailids = Config::get('mail.bcc_emailds_finder_purchase');
+		$bcc_emailids = Config::get('mail.bcc_emailds_purchase');
 
 		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
 		
@@ -358,7 +358,7 @@ Class FinderMailer extends Mailer {
 
 		$user_name = ucwords($data['finder_name']);
 
-		$bcc_emailids = array(Config::get('mail.to_mailus'));
+		$bcc_emailids = Config::get('mail.bcc_emailds_purchase');
 
 		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
 		
