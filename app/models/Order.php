@@ -4,7 +4,7 @@ class Order extends \Basemodel {
 
 	protected $collection = "orders";
 
-	protected $dates = array('preferred_starting_date');
+	protected $dates = array('preferred_starting_date','start_date');
 
 	
 	public function setIdAttribute($value){
