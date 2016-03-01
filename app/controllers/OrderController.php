@@ -435,6 +435,7 @@ class OrderController extends \BaseController {
 			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
 			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
 			array_set($data, 'preferred_starting_date', $preferred_starting_date);
+			array_set($data, 'start_date', $preferred_starting_date);
 		}
 
 
@@ -465,8 +466,12 @@ class OrderController extends \BaseController {
 			array_set($data, 'share_customer_no', $share_customer_no);
 			array_set($data, 'finder_lon', $finder_lon);
 			array_set($data, 'finder_lat', $finder_lat);
+			array_set($data, 'finder_branch', trim($finder_location));
 
 		}
+
+		array_set($data, 'service_name_purchase', $data['service_name']);
+		array_set($data, 'service_duration_purchase', $data['service_duration']);
 
 		array_set($data, 'status', '0');
 		array_set($data, 'email_body2', trim($email_body2));
