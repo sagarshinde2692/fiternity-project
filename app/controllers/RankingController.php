@@ -66,6 +66,7 @@ class RankingController extends \BaseController {
                             ->with('offerings')
                             ->with('facilities')
                             ->with('services')
+                            ->with(array('ozonetelno'=>function($query){$query->where('status','=','1')->select('phone_number');}))
                             ->active()
                             ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
@@ -75,7 +76,7 @@ class RankingController extends \BaseController {
                             ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
-                            ->get();  
+                            ->get(); 
       
         foreach ($items as $finderdocument) {           
                 $data = $finderdocument->toArray();
@@ -89,6 +90,10 @@ class RankingController extends \BaseController {
                 else
                 {
                     $clusterid  = $data['location']['locationcluster_id'];
+                }
+
+                if(isset($data['ozonetelno']) && $data['ozonetelno'] != ''){
+                    $data['ozonetelno']['phone_number'] = '+'.$data['ozonetelno']['phone_number'];
                 }
                                 
                 $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
