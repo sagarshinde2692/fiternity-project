@@ -643,7 +643,8 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'price_rangeval'                =>      $rangeval,
                 'servicelist'                   =>      $servicenamelist,
                 'show_offers'                   =>      $offer_counter,
-                'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0)
+                'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
+                'ozonetel_number'               =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno']['phone_number'] : "",
                 //'trialschedules'                =>      $trialdata,
                 );                
 $postfields_data['servicephotos'] = $picslist;
