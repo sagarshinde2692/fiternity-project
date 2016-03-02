@@ -66,7 +66,7 @@ class RankingController extends \BaseController {
                             ->with('offerings')
                             ->with('facilities')
                             ->with('services')
-                            ->with(array('ozonetelno'=>function($query){$query->where('status','=','1')->select('phone_number');}))
+                            ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
                             ->active()
                             ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
