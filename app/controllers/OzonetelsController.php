@@ -640,6 +640,7 @@ class OzonetelsController extends \BaseController {
 
 					$update['sms_general'] = $this->customersms->generalSms($data);
 					$update['sms_message'] = $message;
+					$update['label'] = $label;
 				
 				}else{
 
@@ -695,6 +696,7 @@ class OzonetelsController extends \BaseController {
 
 					$update['sms_general'] = $this->customersms->generalSms($data);
 					$update['sms_message'] = $message;
+					$update['label'] = $label;
 				
 				}else{
 
