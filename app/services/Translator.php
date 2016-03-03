@@ -97,8 +97,8 @@ class Translator {
 			$resultobject->price_rangeval = $result['price_rangeval'];
 			$resultobject->servicelist = isset($result['servicelist']) ? $result['servicelist'] : array();
 			$resultobject->servicephotos = isset($result['servicephotos']) ? $result['servicephotos'] : array();
-			//$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : '';
-			//$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : '';
+			$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
+			$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
 			$finder->object = $resultobject;
 			array_push($finderresult_response->results->resultlist, $finder);			
 		}
@@ -230,8 +230,8 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->price_rangeval = $result['price_rangeval'];
 			$resultobject->servicelist = isset($result['servicelist']) ? $result['servicelist'] : array();
 			$resultobject->servicephotos = isset($result['servicephotos']) ? $result['servicephotos'] : array();
-			//$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : '';
-			//$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : '';
+			$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : '';
+			$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : '';
 			$finder->object = $resultobject;
 			array_push($finderresult_response->results->resultlist, $finder);			
 		}

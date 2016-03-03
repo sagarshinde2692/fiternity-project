@@ -29,7 +29,8 @@ class FinderObject {
 
 	public function __construct(){	
 		$this->contact = new \stdClass();	
-		$this->geolocation = new \stdClass();			
+		$this->geolocation = new \stdClass();
+		$this->ozonetelno = new \stdClass();			
 	}
 
 	public $id;		
@@ -67,7 +68,8 @@ class FinderObject {
 	public $locationcluster;
 	public $price_rangeval;
 	public $servicelist;
-	public $servicephotos;	
+	public $servicephotos;
+	public $ozonetelno;
 }
 
 ?>
