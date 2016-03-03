@@ -192,9 +192,9 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 				$resultobject = new FinderObject();			
 				$resultobject->id = $result['_id'];				
 				$resultobject->category = $result['category'];
-				$resultobject->categorytags = $result['categorytags'];
+				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
 				$resultobject->location = $result['location'];	
-				$resultobject->locationtags = $result['locationtags'];
+				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
 				$resultobject->average_rating = $result['average_rating'];
 				$resultobject->membership_discount = $result['membership_discount'];
 				$resultobject->country = $result['country'];
@@ -211,7 +211,7 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->finder_type = $result['finder_type'];
 			$resultobject->business_type = $result['business_type'];
 			$resultobject->fitternityno = $result['fitternityno'];
-			$resultobject->facilities = $result['facilities'];
+			$resultobject->facilities = empty($result['facilities']) ? array() : $result['facilities'];
 			$resultobject->logo = $result['logo'];
 			$resultobject->geolocation->lat = $result['geolocation']['lat'];
 			$resultobject->geolocation->long = $result['geolocation']['lon'];
