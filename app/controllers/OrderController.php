@@ -55,6 +55,9 @@ class OrderController extends \BaseController {
 
 			//send welcome email to payment gateway customer
 
+
+			$finder = Finder::find((int)$order->finder_id);
+
 			try {
 
 				if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
@@ -85,12 +88,20 @@ class OrderController extends \BaseController {
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
-				$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
+
+				//no email to Healthy Snacks Beverages and Healthy Tiffins
+				if($finder->category_id != 42 || $finder->category_id != 45){
+					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
+				}
 			} 
 			
 			//SEND payment gateway SMS TO CUSTOMER and vendor
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
-			$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
+
+			//no sms to Healthy Snacks Beverages and Healthy Tiffins
+			if($finder->category_id != 42 || $finder->category_id != 45){
+				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
+			}
 
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 			return Response::json($resp);
