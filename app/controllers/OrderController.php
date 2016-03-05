@@ -626,6 +626,14 @@ class OrderController extends \BaseController {
 
 		$orderdata 		=	Order::find(intval($orderid));
 
+		if(isset($orderdata->start_date) && $orderdata->start_date == ""){
+			unset($orderdata->start_date);
+		}
+
+		if(isset($orderdata->preferred_starting_date) && $orderdata->preferred_starting_date == ""){
+			unset($orderdata->preferred_starting_date);
+		}
+
 		if(!$orderdata){
 			return $this->responseNotFound('Order does not exist');
 		}
