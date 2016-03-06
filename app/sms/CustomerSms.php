@@ -210,7 +210,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		if($data['customer_phone'] == 'womens-day'){
+		if($data['type'] == 'womens-day'){
 
 			$message = "Hi ".ucwords($data['customer_name']).". Thank you for purchasing of membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].".  We will be sending you an email with the all details you need to start the membership. Call us on ".Config::get('app.customer_care_number')." for any queries.";
 		}else{
