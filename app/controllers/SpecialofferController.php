@@ -706,9 +706,7 @@ return Response::json($responsedata, 200);
 
 		//same_vendor_service
 		$serviceoffers 			= 	Serviceoffer::where('finder_id', '=', $servicefinderid)->whereNotIn('ratecard_id', [$serviceratecardid])
-		->where(function($query){
-			$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
-		})
+		->where('type', '=', "womens-day")
 		->with('finder')->with('ratecard')->with('service')->timeout(400000000)->get()->take(5)->toArray();	
 		foreach ($serviceoffers as $key => $service) {
 			$data = $this->transformDod($service);
@@ -719,9 +717,7 @@ return Response::json($responsedata, 200);
 		//same_category_service
 		$services_ids			=	Service::active()->where('servicecategory_id', '=', $servicecategoryid)->where('location_id', '=', $servicelocationid)->lists('_id');		
 		$serviceoffers 			= 	Serviceoffer::whereIn('service_id', $services_ids)->whereNotIn('ratecard_id', [$serviceratecardid])
-		->where(function($query){
-			$query->orWhere('active', '=', 1)->orWhere('type', '=', "fitmania-membership-giveaways");
-		})
+		->where('type', '=', "womens-day")
 		->with('finder')->with('ratecard')->with('service')->timeout(400000000)->get()->take(5)->toArray();	
 		foreach ($serviceoffers as $key => $service) {
 			$data = $this->transformDod($service);

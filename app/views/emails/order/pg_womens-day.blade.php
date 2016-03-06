@@ -228,10 +228,10 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td width="100%" align="center" class="devicewidth">
-                                                        <<a href="http://www.fitternity.com" target="_blank"><img width="40%" src="http://email.fitternity.com/211/women's.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
+                                                        <a href="http://www.fitternity.com" target="_blank"><img width="40%" src="http://email.fitternity.com/211/women's.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">
                                                             Hi {{ $customer_name }}!
-                                                            <br /> Thank you purchasing for membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.</p>
+                                                            <br /> Thank you purchasing for membership on Fitternity. We are very excited to be part of your fitness journey.</p>
                                                         </td>
                                                     </tr>
                                                     <tr style="background-color:#f6f6f6;">
@@ -377,104 +377,6 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="block">
-                    <table bgcolor="#e9e9e9" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed; ">
-                        <tbody>
-
-                            <tr style="background-color:#f6f6f6;">
-                                <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding:20px;" st-content="fulltext-paragraph">
-                                    <p>But wait there is more!
-                                        <br />We have collaborated with some of the best brands to offer you awesome deals!</p>
-                                        <hr width="100px">
-                                        <table width="180px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
-                                            <tbody>
-                                                <tr>
-                                                    <td width="100%" align="center" class="devicewidth">
-                                                        <a href="http://shop.peppertap.com/welcome" target="_blank"><img width="100%" src="http://email.fitternity.com/199/peppertap.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;"></a>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">  &nbsp;
-                                                            <?php if(isset($peppertap_code) && $peppertap_code != ""){ ?>  <strong>Use Code:</strong> {{ $peppertap_code }} <?php } ?>
-                                                            </p>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <table width="180px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                                <tbody>
-                                                    <tr>
-                                                        <td width="100%" align="center" class="devicewidth">
-                                                            <a href="http://www.holachef.com/" target="_blank"><img width="100%" src="http://email.fitternity.com/199/hola.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;"></a>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Use Code:</strong> FITNFINE</p>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                            <table width="180px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                                <tbody>
-                                                    <tr>
-                                                        <td width="100%" align="center" class="devicewidth">
-                                                            <a href="http://www.myglamm.com/" target="_blank"><img width="100%" src="http://email.fitternity.com/199/myglamm1.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;"></a>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Use Code:</strong> FST500</p>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    <tr style="background-color:#f6f6f6;">
-                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding: 0 20px;" st-content="fulltext-paragraph">
-                                          <table width="180px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
-                                            <tbody>
-                                                <tr>
-                                                    <td width="100%" align="center" class="devicewidth">
-                                                        <a href="http://www.vistarooms.com/ambassador_website/vista_ambassador/" target="_blank"><img width="100%" src="http://email.fitternity.com/200/vistarooms.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;"></a>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"><strong>Use Code:</strong> VISTAMANIA </p>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table width="180px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                            <tbody>
-                                                <tr>
-                                                    <td width="100%" align="center" class="devicewidth">
-                                                        <a href="http://www.stretchery.com" target="_blank"><img width="100%" src="http://email.fitternity.com/199/stretchery.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;"></a>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"><strong>Use Code:</strong> ACTIVE</p>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        <table width="180px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                            <tbody>
-                                                <tr>
-                                                    <td width="100%" align="center" class="devicewidth">
-                                                        <a href="http://www.haptik.co/" target="_blank"><img width="100%" src="http://email.fitternity.com/199/haptik.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;"></a>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">&nbsp;  </p>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr> 
-
-                                <tr>
-                                    <td align="center">
-                                        <table width="580" cellspacing="0" cellpadding="15" align="center" class="devicewidth">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="text-align:center;">
-                                                        <a href="https://www.facebook.com/fitternity?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/facebook.png" width="25" alt="Facebook" title="Facebook" border="0" /></a>
-                                                        <a href="https://twitter.com/FitternityIndia?utm_source=Test+Users&utm_campaign=cabe466217-Newsletter_20_june_146_20_2014&utm_medium=email&utm_term=0_c2c1b21204-cabe466217-" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/twitter.png" width="25" alt="Twitter" title="Twitter" border="0"></a>
-                                                        <a href="http://www.instagram.com/fitternity" target="_blank"><img style="padding:5px;" src="http://email.fitternity.com/140/instagram.png" width="25" alt="Instagram" title="Instagram" border="0"></a>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
-
-
-                            </tbody>
-                        </table>
-                    </div>
                     <div class="block">
                         <table bgcolor="#3E3E3E" width="580px" cellpadding="0" align="center" cellspacing="0" border="0" st-sortable="postfooter" class="devicewidth" style="table-layout:fixed;">
                             <tr>
