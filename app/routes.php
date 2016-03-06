@@ -368,6 +368,25 @@ Route::get('fitmaniaresendemailsworngfinder', 'FitmaniaController@resendEmailsFo
 Route::get('email2fitmaniavendors', 'FitmaniaController@emailToFitmaniaVendors');
 
 
+
+######################################################################################################################
+/******************************** Special Offer Section *****************************************************/
+Route::get('specialoffermembership/{city?}/{offertype?}/{from?}/{size?}', 'SpecialofferController@getMembership');
+Route::post('searchspecialoffermembership', 'SpecialofferController@serachMembership');
+Route::post('buyfitmaniaoffer', 'SpecialofferController@buyOffer');
+Route::post('searchofferfinders', 'SpecialofferController@serachFinders');
+Route::get('fitmaniaservicedetail/{serviceid}/{offerid}', 'SpecialofferController@serviceDetail');
+Route::get('checkfitmaniaorder/{orderid}', 'SpecialofferController@checkFitmaniaOrder');
+Route::get('updatecityid/', 'SpecialofferController@updateCityIdFromFinderCityId');
+Route::get('checkcouponcode/{code}', 'SpecialofferController@checkCouponcode');
+Route::get('checkbuyablevalue/{offerid}', 'SpecialofferController@checkBuyableValue');
+Route::get('updateexplorecategoryoffers/{cityid?}', 'SpecialofferController@exploreCategoryOffers');
+Route::get('updateexplorelocationclusteroffers/{cityid?}', 'SpecialofferController@exploreLocationClusterOffers');
+Route::get('categorycitywisesuccesspage/{city?}/{from?}/{size?}', 'SpecialofferController@categoryCitywiseSuccessPage');
+
+######################################################################################################################
+/******************************** End Special Offer Section *****************************************************/
+
 // Route::get('fitmaniahealthytiffin/{city?}/{from?}/{size?}/{category_cluster?}', 'FitmaniaController@getDealOfDayHealthyTiffin');
 
 // Route::get('fitmaniazumba/{city?}/{location_cluster?}', 'FitmaniaController@getDealOfDayZumba');

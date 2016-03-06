@@ -235,6 +235,7 @@ class MigrationsController extends \BaseController {
 
 				$entity 		=	new Vendorlocation($insertData);
 				$entity->_id 	=	intval($location->_id);
+				echo $entity->_id;
 				$entity->save();
 
 				// if(isset($location->cities) && count($location->cities) > 0){
