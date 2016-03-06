@@ -405,7 +405,6 @@ public function serachMembership(){
 	$end_price					=	(Input::json()->get('end_price')) ? intval(Input::json()->get('end_price')) : "";
 	$start_duration				=	(Input::json()->get('start_duration')) ? intval(Input::json()->get('start_duration')) : "";
 	$end_duration				=	(Input::json()->get('end_duration')) ? intval(Input::json()->get('end_duration')) : "";
-
 	$fitmaniamemberships 		=	[];
 
 	$serviceoffersquery  			= 	Serviceoffer::where('city_id', '=', $city_id)->where("type" , "=" , "womens-day");
@@ -1182,7 +1181,7 @@ public function exploreCategoryOffers($city_id = 1){
 			$servicecategory_name  	= 	$k;
 			$servicecategory_id  	= 	array_map('intval', explode(',', $v)) ;
 			$services				=	Service::active()->whereIn('servicecategory_id', $servicecategory_id)->lists('_id');
-			$serviceoffers_cnt  	= 	Serviceoffer::where("type" ,  ['womens-day'])->whereIn("service_id" , $services)->count();
+			$serviceoffers_cnt  	= 	Serviceoffer::where("type" ,  'womens-day')->whereIn("service_id" , $services)->count();
 			$offer = ['category_name' => $servicecategory_name,'category_id' => $servicecategory_id,'cnt'=>$serviceoffers_cnt];
 			array_push($explore_category_offers, $offer);
 		}
