@@ -353,7 +353,7 @@ Route::post('searchfitmaniamembership', 'FitmaniaController@serachMembership');
 Route::post('searchfitmaniadoddow', 'FitmaniaController@serachDodAndDow');
 Route::post('buyfitmaniaoffer', 'FitmaniaController@buyOffer');
 Route::post('searchfitmaniafinders', 'FitmaniaController@serachFinders');
-Route::get('fitmaniaservicedetail/{serviceid}/{offerid}', 'FitmaniaController@serviceDetail');
+// Route::get('fitmaniaservicedetail/{serviceid}/{offerid}', 'FitmaniaController@serviceDetail');
 Route::get('maintainactiveflag/{serviceid?}', 'FitmaniaController@maintainActiveFlag');
 Route::get('checkfitmaniaorder/{orderid}', 'FitmaniaController@checkFitmaniaOrder');
 Route::get('updatecityid/', 'FitmaniaController@updateCityIdFromFinderCityId');
