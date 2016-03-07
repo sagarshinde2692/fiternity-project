@@ -320,6 +320,7 @@ Class FinderMailer extends Mailer {
 
 		$email_template 	= 	'emails.order.pg_'.strtolower($data['type']).'_vendor';
 		$template_data 				= 	$data;
+		$subject = "";
 
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);
@@ -330,8 +331,12 @@ Class FinderMailer extends Mailer {
 		$user_name = ucwords($data['finder_name']);
 
 		$bcc_emailids = Config::get('mail.bcc_emailds_purchase');
-
-		$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+		if($data['type'] == 'memberships'){
+			$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+		}
+		if($data['type'] == 'womens-day'){
+			$subject  = "Women's Day Offer availed on Fitternity - ".ucwords($data['customer_name'])." purchased membership for ".ucwords($data['finder_name']);
+		}
 		
 		$message_data 	= array(
 			'user_email' => $user_email,

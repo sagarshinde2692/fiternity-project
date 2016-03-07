@@ -275,6 +275,9 @@ Class CustomerMailer extends Mailer {
 		if($data['type'] == 'memberships'){
 			$subject  = 'Fitternity - Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
 		}
+		if($data['type'] == 'womens-day'){
+			$subject  = 'Regarding your purchase on Womens Day Sale by Fitternity';
+		}
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
