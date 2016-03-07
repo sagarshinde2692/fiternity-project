@@ -228,10 +228,10 @@
                                                 </tr>
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td width="100%" align="center" class="devicewidth">
-                                                        <<a href="http://www.fitternity.com" target="_blank"><img width="40%" src="http://email.fitternity.com/211/women's.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
+                                                        <a href="http://www.fitternity.com" target="_blank"><img width="40%" src="http://email.fitternity.com/211/women's.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; "></a>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 16px; text-align:center;line-height: 25px; padding: 30px;  " st-content="fulltext-paragraph">
                                                             Hi {{ $customer_name }}!
-                                                            <br /> Thank you purchasing for membership on FitMania Sale by Fitternity. We are very excited to be part of your fitness journey.</p>
+                                                            <br /> Thank you purchasing for membership on Fitternity. We are very excited to be part of your fitness journey.</p>
                                                         </td>
                                                     </tr>
                                                     <tr style="background-color:#f6f6f6;">
