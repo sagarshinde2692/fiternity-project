@@ -1602,6 +1602,39 @@ class DebugController extends \BaseController {
 	        return $data;
 	    }
 
+	    public function dumpMissedcallNo(){
+
+			/*$missedcall_no = array(
+					array('number'=>'+912233010068','type'=>'yes','batch'=>1),
+					array('number'=>'+912233010069','type'=>'no','batch'=>1),
+					array('number'=>'+912233010070','type'=>'reschedule','batch'=>1)
+			);*/
+
+			$missedcall_no = array(
+					array('number'=>'+912233010074','type'=>'yes','batch'=>1),
+					array('number'=>'+912233010075','type'=>'no','batch'=>1),
+					array('number'=>'+912233010076','type'=>'reschedule','batch'=>1),
+
+					array('number'=>'+912233010078','type'=>'yes','batch'=>2),
+					array('number'=>'+912233010079','type'=>'no','batch'=>2),
+					array('number'=>'+912233010080','type'=>'reschedule','batch'=>2),
+
+					array('number'=>'+912233010087','type'=>'yes','batch'=>3),
+					array('number'=>'+912233010089','type'=>'no','batch'=>3),
+					array('number'=>'+912233010090','type'=>'reschedule','batch'=>3)
+			);
+
+			foreach ($missedcall_no as $key => $value) {
+
+				$pk = Ozonetelmissedcallno::max('_id') + 1;
+				$number = new Ozonetelmissedcallno($value);
+				$number->_id 	= 	$pk;
+				$number->save();
+
+			}	
+
+		}
+
 
 
 
