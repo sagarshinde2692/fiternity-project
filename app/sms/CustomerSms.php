@@ -367,7 +367,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		$message = "Thank you for confirming the session at ".ucwords($data['finder_name'])." on ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Hope you have a great workout. If you need further assistance call us on 02261222233. Regards - Team Fitternity";
+		$message = "Thank you for confirming the session at ".ucwords($data['finder_name'])." on ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Hope you have a great workout. If you need further assistance call us on ".Config::get('app.customer_care_number').". Regards - Team Fitternity";
 
 		$label = 'ConfirmTrial-C';
 
@@ -379,7 +379,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		$message = "Your trial session at ".ucwords($data['finder_name'])." has been cancelled. Book a trial from over 1,000+ options across yoga, crossfit, zumba, kickboxing and more on www.fitternity.com. Call 02261222233 for assistance. Regards - Team Fitternity";
+		$message = "Your trial session at ".ucwords($data['finder_name'])." has been cancelled. Book a trial from over 1,000+ options across yoga, crossfit, zumba, kickboxing and more on www.fitternity.com. Call ".Config::get('app.customer_care_number')." for assistance. Regards - Team Fitternity";
 
 		$label = 'CancelTrial-C';
 

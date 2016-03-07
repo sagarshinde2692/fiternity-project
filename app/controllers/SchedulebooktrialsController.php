@@ -2097,7 +2097,6 @@ public function ozonetelOutbound($booktrialdata,$schedule_date_starttime){
 	$pre18 = date("Y-m-d H:i:s", $scheduled_sec-(60*60*18));
 	
 	$hour24 = 60*60*24 ;
-	$hour2 = 60*60*2 ;
 
 	if($diff_sec >= $hour24){
 		$ozonetel_date = $pre18;	

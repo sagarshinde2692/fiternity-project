@@ -748,6 +748,30 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_missedcall->called_at = isset($request['call_time']) ? strtotime($request['call_time']) : '';
 			$ozonetel_missedcall->save();
 
+			if($type == 'confirm' || $type == 'cancel' || $type == 'reschedule'){
+
+				$missedcall_status = array('confirm'=>1,'cancel'=>2,'reschedule'=>3);
+
+				$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->first();
+
+				$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+				
+				$data = array();
+
+				$data['finder_name'] = $booktrial->finder_name;
+				$data['customer_phone'] = $ozonetel_missedcall->customer_number;
+				$data['schedule_date_time'] = $booktrial->schedule_date_time;
+
+				switch ($type) {
+					case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
+					case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);break;
+					case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
+				}
+
+				$booktrial->missedcall_status = $missedcall_status[$type];
+				$booktrial->update();
+			}
+
 			$response = array('status'=>200,'message'=>'success','ozonetel_missedcall'=> $ozonetel_missedcall );
 
 		}catch (Exception $e) {
@@ -766,6 +790,79 @@ class OzonetelsController extends \BaseController {
         }
 
         return $response;
+
+	}
+
+	public function confirmTrial(){
+
+		try{
+
+			$response = $this->misscall('confirm');
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
+
+	}
+
+	public function cancelTrial(){
+
+		try{
+
+			$response = $this->misscall('cancel');
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
+
+	}
+
+	public function rescheduleTrial(){
+
+		try{
+
+			$response = $this->misscall('reschedule');
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
 
 	}
 
