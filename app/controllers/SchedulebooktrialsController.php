@@ -1024,8 +1024,6 @@ class SchedulebooktrialsController extends \BaseController {
 			// send error message if any thing is missing	
 		$data = Input::json()->all();
 
-				echo "<pre>";print_r($data);exit;
-
 		if(empty($data['customer_name'])){
 			$resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
 			return  Response::json($resp, 400);
