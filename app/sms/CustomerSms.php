@@ -316,6 +316,89 @@ Class CustomerSms extends VersionNextSms{
 		return $this->sendToWorker($to, $message, $label);
 	}
 
+	public function missedCallDelay ($data,$delay){
+
+		$current_date = date('Y-m-d 00:00:00');
+
+        $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
+        $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+
+		$booktrial  = \Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+		if(!empty($booktrial) && isset($booktrial->missedcall_batch) && $booktrial->missedcall_batch != ''){
+			$batch = $booktrial->missedcall_batch + 1;
+		}else{
+			$batch = 1;
+		}
+
+		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->get()->toArray();
+
+		if(empty($missedcall_no)){
+
+			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->get()->toArray();
+		}
+
+		foreach ($missedcall_no as $key => $value) {
+
+			switch ($value['type']) {
+				case 'yes': $yes = $value['number'];break;
+				case 'no': $no = $value['number'];break;
+				case 'reschedule': $reschedule = $value['number'];break;
+			}
+
+		}
+	
+		$slot_date 			=	date('d-m-Y', strtotime($data['schedule_date']));
+		$datetime 			=	strtoupper($slot_date ." ".$data['schedule_slot_start_time']);
+
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+		$message = "Regarding your session at ".ucwords($data['finder_name'])." on ".$datetime.". Do you plan to attend? Reply by missed call. Yes: ".$yes." No: ".$no." Reschedule: ".$reschedule. ", Regards Fitternity";
+
+		$label = 'MissedCall-C';
+		$priority = 0;
+
+		$booktrial = \Booktrial::find((int) $data['_id']);
+		$booktrial->missedcall_batch = $batch;
+		$booktrial->update();
+
+		return $this->sendToWorker($to, $message, $label, $priority, $delay);
+	}
+
+	public function confirmTrial($data){
+
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+
+		$message = "Thank you for confirming the session at ".ucwords($data['finder_name'])." on ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Hope you have a great workout. If you need further assistance call us on 02261222233. Regards - Team Fitternity";
+
+		$label = 'ConfirmTrial-C';
+
+		return $this->sendToWorker($to, $message, $label);
+
+	}
+
+	public function cancelTrial($data){
+
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+
+		$message = "Your trial session at ".ucwords($data['finder_name'])." has been cancelled. Book a trial from over 1,000+ options across yoga, crossfit, zumba, kickboxing and more on www.fitternity.com. Call 02261222233 for assistance. Regards - Team Fitternity";
+
+		$label = 'CancelTrial-C';
+
+		return $this->sendToWorker($to, $message, $label);
+
+	}
+
+	public function rescheduleTrial($data){
+
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
+
+		$message = "We have received your reschedule request for trial session at ".ucwords($data['finder_name']).". You will receive a call from our team shortly. Regards - Team Fitternity";
+
+		$label = 'RescheduleTrial-C';
+
+		return $this->sendToWorker($to, $message, $label);
+
+	}
+
 
 
 }
