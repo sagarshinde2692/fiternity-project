@@ -769,6 +769,7 @@ class OzonetelsController extends \BaseController {
 				}
 
 				$booktrial->missedcall_status = $missedcall_status[$type];
+				$booktrial->source_flag = 'missedcall';
 				$booktrial->update();
 			}
 
