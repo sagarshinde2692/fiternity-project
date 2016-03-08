@@ -351,7 +351,7 @@ Class CustomerSms extends VersionNextSms{
 		$datetime 			=	strtoupper($slot_date ." ".$data['schedule_slot_start_time']);
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message = "Regarding your session at ".ucwords($data['finder_name'])." on ".$datetime.". Do you plan to attend? Reply by missed call. Yes: ".$yes." No: ".$no." Reschedule: ".$reschedule. ", Regards Fitternity";
+		$message = "Hi ".$data['customer_name']." This is regarding your session with ".ucwords($data['finder_name'])." - "ucwords($data['finder_location'])" on ".$datetime.". Do you plan to attend? Reply by missed call. Yes will go: ".$yes." No - cancel it: ".$no." Want to reschedule: ".$reschedule. ", Regards - Team Fitternity";
 
 		$label = 'MissedCall-C';
 		$priority = 0;
@@ -379,7 +379,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		$message = "Your trial session at ".ucwords($data['finder_name'])." has been cancelled. Book a trial from over 1,000+ options across yoga, crossfit, zumba, kickboxing and more on www.fitternity.com. Call ".Config::get('app.customer_care_number')." for assistance. Regards - Team Fitternity";
+		$message = "Your session at ".ucwords($data['finder_name'])." has been cancelled. Book a trial from over 1,000+ options across yoga, crossfit, zumba, kickboxing and more on www.fitternity.com. Call ".Config::get('app.customer_care_number')." for assistance. Regards - Team Fitternity";
 
 		$label = 'CancelTrial-C';
 
