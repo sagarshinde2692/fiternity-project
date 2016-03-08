@@ -20,12 +20,10 @@ class TempsController extends \BaseController {
 
             $data = Input::json()->all();
 
-            $temp_id    =   Temp::max('_id') + 1;
             $temp = new Temp($data);
-            $temp->_id = $temp_id;
             $temp->save();
 
-            $response =  array('status' => 200,'id' => $temp->_id,'message'=>'Added Successfull');
+            $response =  array('status' => 200,'message'=>'Added Successfull');
 
         }catch (Exception $e) {
 
