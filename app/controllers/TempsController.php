@@ -45,18 +45,18 @@ class TempsController extends \BaseController {
         
     }
 
-    public function delete($customer_phone){
+    public function delete($mobile){
 
-        if(isset($customer_phone) && $customer_phone != '')
+        if(isset($mobile) && $mobile != '')
         {
 
-            $temp = Temp::where('customer_phone',$customer_phone)->delete();
+            $temp = Temp::where('mobile',$mobile)->delete();
 
             $response  =   array('status' => 200,'message' => "Deleted Successfull");
 
         }else{
 
-            $response  =   array('status' => 400,'message' => "customer phone is required or empty");
+            $response  =   array('status' => 400,'message' => "mobile is required or empty");
         }
 
         
