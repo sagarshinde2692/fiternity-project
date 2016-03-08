@@ -397,6 +397,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+		$otp	 					=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
 
 		
 		$booktrialdata = array(
@@ -423,8 +424,10 @@ class SchedulebooktrialsController extends \BaseController {
 			'booktrial_actions'		=>		'call to set up trial',
 			'source'				=>		'website',	
 			'origin'				=>		'manual',
-			'additional_info'		=>		$additional_info
-			);
+			'additional_info'		=>		$additional_info,
+			'otp'					=>		$otp,
+
+		);
 
 		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
@@ -699,6 +702,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 			$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
+			$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
 			$slot_times 						=	explode('-',$data['schedule_slot']);
 			$schedule_slot_start_time 			=	$slot_times[0];
 			$schedule_slot_end_time 			=	$slot_times[1];
@@ -861,7 +865,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'source'						=>		'website',
 				'origin'						=>		'auto',
 				'additional_info'				=>		$additional_info,
-				'amount'						=>		$order->amount
+				'amount'						=>		$order->amount,
+				'otp'							=>		$order->otp
 				
 			);
 
@@ -1068,6 +1073,7 @@ public function bookTrialFree(){
 
 		$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 		$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
+		$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
 		$slot_times 						=	explode('-',$data['schedule_slot']);
 		$schedule_slot_start_time 			=	$slot_times[0];
 		$schedule_slot_end_time 			=	$slot_times[1];
@@ -1234,8 +1240,9 @@ public function bookTrialFree(){
 			'booktrial_actions'				=>		'call to confirm trial',
 			'source'						=>		'website',
 			'origin'						=>		'auto',
-			'additional_info'				=>		$additional_info	
-			);
+			'additional_info'				=>		$additional_info,
+			'otp'							=>		$otp	
+		);
 
 				// return $this->customersms->bookTrial($booktrialdata);
 				// return $booktrialdata;
