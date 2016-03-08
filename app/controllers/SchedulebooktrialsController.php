@@ -698,6 +698,7 @@ class SchedulebooktrialsController extends \BaseController {
 		try {
 
 			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
+			$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? intval($data['otp']) : "";
 			$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
 			$slot_times 						=	explode('-',$data['schedule_slot']);
 			$schedule_slot_start_time 			=	$slot_times[0];
@@ -861,7 +862,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'source'						=>		'website',
 				'origin'						=>		'auto',
 				'additional_info'				=>		$additional_info,
-				'amount'						=>		$order->amount
+				'amount'						=>		$order->amount,
+				'otp'							=> 		$otp,
 				
 				);
 
@@ -884,7 +886,7 @@ class SchedulebooktrialsController extends \BaseController {
 		if($trialbooked == true){
 
 			$orderid = (int) Input::json()->get('order_id');
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'ozonetel');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
 			$booktrial->update(array('redis_id'=>$redisid));
 
 		}
@@ -1253,7 +1255,7 @@ class SchedulebooktrialsController extends \BaseController {
 		//if vendor type is free special dont send communication
 			Log::info('finder commercial_type  -- '. $finder['commercial_type']);
 			if($finder['commercial_type'] != '2'){
-				$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'ozonetel');
+				$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
 				$booktrial->update(array('redis_id'=>$redisid));
 			}
 		}
@@ -1678,7 +1680,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
 				);
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'ozonetel');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
 			$booktrial->update(array('reschedule_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -1849,7 +1851,7 @@ public function cancel($id){
 
 	if($trialbooked == true ){
 
-		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'ozonetel');
+		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
 		$booktrial->update(array('cancel_redis_id'=>$redisid));
 
 		$resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -2114,6 +2116,9 @@ public function deleteTask($id){
 
 			$ozonetel_date = date("Y-m-d H:i:s", $scheduled_sec-$hour4);
 
+			Log::info('ozonetel_date  -- '. $ozonetel_date);
+
+
 			return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
 
 		}
@@ -2128,6 +2133,9 @@ public function deleteTask($id){
 			$ozonetel_date_sec = strtotime($ozonetel_date);
 
 			if($ozonetel_date_sec > $created_sec){
+
+				Log::info('ozonetel_date  -- '. $ozonetel_date);
+
 				return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
 			}
 
