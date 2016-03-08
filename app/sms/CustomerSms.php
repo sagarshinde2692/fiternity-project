@@ -351,7 +351,7 @@ Class CustomerSms extends VersionNextSms{
 		$datetime 			=	strtoupper($slot_date ." ".$data['schedule_slot_start_time']);
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message = "Hi ".$data['customer_name']." This is regarding your session with ".ucwords($data['finder_name'])." - "ucwords($data['finder_location'])" on ".$datetime.". Do you plan to attend? Reply by missed call. Yes will go: ".$yes." No - cancel it: ".$no." Want to reschedule: ".$reschedule. ", Regards - Team Fitternity";
+		$message = "Hi ".$data['customer_name']." This is regarding your session with ".ucwords($data['finder_name'])." - ".ucwords($data['finder_location'])." on ".$datetime.". Do you plan to attend? Reply by missed call. Yes will go: ".$yes." No - cancel it: ".$no." Want to reschedule: ".$reschedule. ", Regards - Team Fitternity";
 
 		$label = 'MissedCall-C';
 		$priority = 0;
