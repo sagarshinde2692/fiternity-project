@@ -884,7 +884,7 @@ class SchedulebooktrialsController extends \BaseController {
 		if($trialbooked == true){
 
 			$orderid = (int) Input::json()->get('order_id');
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'ozonetel');
 			$booktrial->update(array('redis_id'=>$redisid));
 
 		}
@@ -1253,7 +1253,7 @@ class SchedulebooktrialsController extends \BaseController {
 		//if vendor type is free special dont send communication
 			Log::info('finder commercial_type  -- '. $finder['commercial_type']);
 			if($finder['commercial_type'] != '2'){
-				$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+				$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'ozonetel');
 				$booktrial->update(array('redis_id'=>$redisid));
 			}
 		}
@@ -1678,7 +1678,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
 				);
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
+			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'ozonetel');
 			$booktrial->update(array('reschedule_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -1849,7 +1849,7 @@ public function cancel($id){
 
 	if($trialbooked == true ){
 
-		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+		$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'ozonetel');
 		$booktrial->update(array('cancel_redis_id'=>$redisid));
 
 		$resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
