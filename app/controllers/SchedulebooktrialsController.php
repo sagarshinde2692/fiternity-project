@@ -2114,7 +2114,7 @@ public function deleteTask($id){
 			$booktrial = Booktrial::find((int) $booktrialdata['_id']);
 			$booktrial->update(array('outbound_sms_status'=>'1'));
 
-			$ozonetel_date = date("Y-m-d H:i:s", $scheduled_sec-$hour4);
+			$ozonetel_date = date("Y-m-d H:i:s", strtotime($schedule_date . "-4 hours"));
 
 			Log::info('ozonetel_date  -- '. $ozonetel_date);
 

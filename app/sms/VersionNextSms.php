@@ -166,21 +166,24 @@ abstract Class VersionNextSms {
     protected function getSeconds($delay){
 
         if ($delay instanceof DateTime){
+
             return max(0, $delay->getTimestamp() - $this->getTime());
-        }
 
-        if ($delay instanceof \Carbon\Carbon){
+        }elseif ($delay instanceof \Carbon\Carbon){
+
             return max(0, $delay->timestamp - $this->getTime());
-        }
 
-        if(isset($delay['date'])){
+        }elseif(isset($delay['date'])){
 
             $time = strtotime($delay['date']) - $this->getTime();
 
             return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();   
         }
         
-        // echo (int) $delay; exit;
         return (int) $delay;
     }
 
@@ -238,10 +241,19 @@ abstract Class VersionNextSms {
 
     public function sendToWorker($to, $message, $label = 'label', $priority = 0, $delay = 0){
 
+
+        if($label == 'MissedCall-C'){
+            \Log::info('delay 1  -- '. $delay);
+        }
+
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
         }
-    
+
+        if($label == 'MissedCall-C'){
+            \Log::info('delay  -- '. $delay);
+        }
+                
         $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'priority'=>$priority,'label' => $label);
         
         $route  = 'sms';
