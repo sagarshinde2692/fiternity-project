@@ -1861,6 +1861,7 @@ public function cancel($id){
 	array_set($bookdata, 'followup_date', '');
 	array_set($bookdata, 'followup_date_time', '');
 	array_set($bookdata, 'source_flag', 'customer');
+	array_set($bookdata, 'final_lead_stage', 'cancel_stage');
 	$trialbooked 		= 	$booktrial->update($bookdata);
 
 	if($trialbooked == true ){
