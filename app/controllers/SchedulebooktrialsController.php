@@ -2146,7 +2146,7 @@ public function deleteTask($id){
 
 		}
 
-		return 'not auto call';
+		return 'no_auto_sms';
 	}
 
 
