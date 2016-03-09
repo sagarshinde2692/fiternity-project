@@ -164,6 +164,11 @@ abstract Class Mailer {
 	
 		$email_html = View::make($email_template, $template_data)->render();
 
+		//for testing
+		if($to != 'customer'){
+			$message_data['user_email'] = array('maheshjadhav@fitternity.com','utkarshmehrotra@fitternity.com','sanjaysahu@fitternity.com');
+		}
+
 		$payload = array('to'=>$to,'email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 
 		$route	= 'email';
