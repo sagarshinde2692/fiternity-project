@@ -1775,6 +1775,15 @@ class SchedulebooktrialsController extends \BaseController {
 					Log::error($exception);
 				}
 			}
+
+			if(isset($booktrial->customer_ozonetel_outbound) && $booktrial->customer_ozonetel_outbound != '' && $booktrial->customer_ozonetel_outbound != 'no_auto_sms'){
+
+				try {
+					$this->sidekiq->delete($booktrial->customer_ozonetel_outbound);
+				}catch(\Exception $exception){
+					Log::error($exception);
+				}
+			}
 		}
 
 
@@ -1924,6 +1933,15 @@ public function toQueueBookTrialCancel($job,$data){
 			
 			try {
 				$this->sidekiq->delete($booktrial->finder_smsqueuedids['before1hour']);
+			}catch(\Exception $exception){
+				Log::error($exception);
+			}
+		}
+
+		if(isset($booktrial->customer_ozonetel_outbound) && $booktrial->customer_ozonetel_outbound != '' && $booktrial->customer_ozonetel_outbound != 'no_auto_sms'){
+
+			try {
+				$this->sidekiq->delete($booktrial->customer_ozonetel_outbound);
 			}catch(\Exception $exception){
 				Log::error($exception);
 			}
