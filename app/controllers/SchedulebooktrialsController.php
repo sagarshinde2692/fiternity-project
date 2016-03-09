@@ -423,8 +423,9 @@ class SchedulebooktrialsController extends \BaseController {
 			'booktrial_actions'		=>		'call to set up trial',
 			'source'				=>		'website',	
 			'origin'				=>		'manual',
-			'additional_info'		=>		$additional_info
-			);
+			'additional_info'		=>		$additional_info,
+			'source_flag'			=> 		'customer',
+		);
 
 		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
@@ -864,8 +865,9 @@ class SchedulebooktrialsController extends \BaseController {
 				'additional_info'				=>		$additional_info,
 				'amount'						=>		$order->amount,
 				'otp'							=> 		$otp,
+				'source_flag'					=> 		'customer',
 				
-				);
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1236,8 +1238,9 @@ class SchedulebooktrialsController extends \BaseController {
 				'booktrial_actions'				=>		'call to confirm trial',
 				'source'						=>		'website',
 				'origin'						=>		'auto',
-				'additional_info'				=>		$additional_info	
-				);
+				'additional_info'				=>		$additional_info,
+				'source_flag'					=> 		'customer',	
+			);
 
 				// return $this->customersms->bookTrial($booktrialdata);
 				// return $booktrialdata;
@@ -1645,7 +1648,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'show_location_flag'			=> 		$show_location_flag,
 				'share_customer_no'				=> 		$share_customer_no,
 				'device_id'						=>		$device_id,
-				);
+				'source_flag'					=> 		'customer',
+			);
 
 			if($update_only_info == ''){
 				array_set($booktrialdata, 'schedule_slot_start_time', $schedule_slot_start_time);
@@ -1847,6 +1851,7 @@ public function cancel($id){
 	array_set($bookdata, 'booktrial_actions', '');
 	array_set($bookdata, 'followup_date', '');
 	array_set($bookdata, 'followup_date_time', '');
+	array_set($bookdata, 'source_flag', 'customer');
 	$trialbooked 		= 	$booktrial->update($bookdata);
 
 	if($trialbooked == true ){
