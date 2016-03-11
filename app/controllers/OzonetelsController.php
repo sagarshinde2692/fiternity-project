@@ -756,21 +756,23 @@ class OzonetelsController extends \BaseController {
 
 				$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
 				
-				$data = array();
+				if($booktrial){
+					$data = array();
 
-				$data['finder_name'] = $booktrial->finder_name;
-				$data['customer_phone'] = $ozonetel_missedcall->customer_number;
-				$data['schedule_date_time'] = $booktrial->schedule_date_time;
+					$data['finder_name'] = $booktrial->finder_name;
+					$data['customer_phone'] = $ozonetel_missedcall->customer_number;
+					$data['schedule_date_time'] = $booktrial->schedule_date_time;
 
-				switch ($type) {
-					case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
-					case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);break;
-					case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
+					switch ($type) {
+						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
+						case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);break;
+						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
+					}
+
+					$booktrial->missedcall_status = $missedcall_status[$type];
+					$booktrial->source_flag = 'missedcall';
+					$booktrial->update();
 				}
-
-				$booktrial->missedcall_status = $missedcall_status[$type];
-				$booktrial->source_flag = 'missedcall';
-				$booktrial->update();
 			}
 
 			$response = array('status'=>200,'message'=>'success','ozonetel_missedcall'=> $ozonetel_missedcall );
