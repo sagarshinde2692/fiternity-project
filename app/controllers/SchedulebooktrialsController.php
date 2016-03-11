@@ -1241,7 +1241,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'source'						=>		'website',
 				'origin'						=>		'auto',
 				'additional_info'				=>		$additional_info,
-				'otp'							=>		$otp
+				'otp'							=>		$otp,
 				'source_flag'					=> 		'customer',	
 			);
 
