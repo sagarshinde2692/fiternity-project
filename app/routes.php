@@ -434,6 +434,9 @@ Route::get('ozonetel/outboundcallrecive/{id}',  array('as' => 'ozonetel.outbound
 Route::get('ozonetel/outbound/{id}',  array('as' => 'ozonetel.outbound','uses' => 'OzonetelsController@outbound'));
 Route::get('ozonetel/missedcall/sms',  array('as' => 'ozonetel.sms','uses' => 'OzonetelsController@sms'));
 Route::get('ozonetel/missedcall/smsb',  array('as' => 'ozonetel.smsb','uses' => 'OzonetelsController@smsb'));
+Route::get('ozonetel/confirmtrial',  array('as' => 'ozonetel.confirmtrial','uses' => 'OzonetelsController@confirmTrial'));
+Route::get('ozonetel/canceltrial',  array('as' => 'ozonetel.canceltrial','uses' => 'OzonetelsController@cancelTrial'));
+Route::get('ozonetel/rescheduletrial',  array('as' => 'ozonetel.rescheduletrial','uses' => 'OzonetelsController@rescheduleTrial'));
 
 /******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################

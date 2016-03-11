@@ -166,21 +166,24 @@ abstract Class VersionNextSms {
     protected function getSeconds($delay){
 
         if ($delay instanceof DateTime){
+
             return max(0, $delay->getTimestamp() - $this->getTime());
-        }
 
-        if ($delay instanceof \Carbon\Carbon){
+        }elseif ($delay instanceof \Carbon\Carbon){
+
             return max(0, $delay->timestamp - $this->getTime());
-        }
 
-        if(isset($delay['date'])){
+        }elseif(isset($delay['date'])){
 
             $time = strtotime($delay['date']) - $this->getTime();
 
             return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();   
         }
         
-        // echo (int) $delay; exit;
         return (int) $delay;
     }
 
@@ -241,7 +244,7 @@ abstract Class VersionNextSms {
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
         }
-    
+
         $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'priority'=>$priority,'label' => $label);
         
         $route  = 'sms';
