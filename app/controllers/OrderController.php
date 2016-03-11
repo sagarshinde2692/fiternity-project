@@ -84,13 +84,15 @@ class OrderController extends \BaseController {
 				
 			}	
 
+			$abundant_category = array(42,45);	
+
 			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
-				if($finder->category_id != 42 || $finder->category_id != 45){
+				if(!in_array($finder->category_id, $abundant_category)){
 					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 				}
 			} 
@@ -99,7 +101,7 @@ class OrderController extends \BaseController {
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
-			if($finder->category_id != 42 || $finder->category_id != 45){
+			if(!in_array($finder->category_id, $abundant_category)){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
