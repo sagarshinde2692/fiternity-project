@@ -2118,7 +2118,7 @@ public function deleteTask($id){
 
 	public function autoSms($booktrialdata,$schedule_date_starttime){
 
-		/*$created_date =  strtotime($booktrialdata['created_at']);
+		$created_date =  strtotime($booktrialdata['created_at']);
 		$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
 		$created_sec = $created_date;
@@ -2169,7 +2169,7 @@ public function deleteTask($id){
 				return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
 			}
 
-		}*/
+		}
 
 		return 'no_auto_sms';
 	}
