@@ -79,25 +79,28 @@ abstract Class Mailer {
 	 * @return int
 	 */
 	protected function getSeconds($delay){
-		
-		if ($delay instanceof DateTime){
-			return max(0, $delay->getTimestamp() - $this->getTime());
-		}
 
-		if ($delay instanceof \Carbon\Carbon){
-			return max(0, $delay->timestamp - $this->getTime());
-		}
+        if ($delay instanceof DateTime){
 
-		if(isset($delay['date'])){
+            return max(0, $delay->getTimestamp() - $this->getTime());
+
+        }elseif ($delay instanceof \Carbon\Carbon){
+
+            return max(0, $delay->timestamp - $this->getTime());
+
+        }elseif(isset($delay['date'])){
 
             $time = strtotime($delay['date']) - $this->getTime();
 
             return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();   
         }
         
-		// echo (int) $delay; exit;
-		return (int) $delay;
-	}
+        return (int) $delay;
+    }
 
 	/**
 	 * Get the current UNIX timestamp.
