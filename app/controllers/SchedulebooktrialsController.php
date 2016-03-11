@@ -1493,6 +1493,8 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
 
+			$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
+
 			$description =  $what_i_should_carry = $what_i_should_expect = '';
 			if($service_id != ''){
 				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->where('_id','=', intval($service_id))->first()->toArray();
@@ -1651,6 +1653,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'show_location_flag'			=> 		$show_location_flag,
 				'share_customer_no'				=> 		$share_customer_no,
 				'device_id'						=>		$device_id,
+				'otp'							=> 		$otp,
 				'source_flag'					=> 		'customer',
 			);
 
