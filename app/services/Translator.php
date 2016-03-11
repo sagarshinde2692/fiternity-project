@@ -77,7 +77,7 @@ class Translator {
 			$resultobject->commercial_type = $result['commercial_type'];
 			$resultobject->finder_type = $result['finder_type'];
 			$resultobject->business_type = $result['business_type'];
-			$resultobject->fitternityno = $result['fitternityno'];
+			$resultobject->fitternityno = '+917506122637';
 			$resultobject->facilities = empty($result['facilities']) ? array() : $result['facilities'];
 			$resultobject->logo = $result['logo'];
 			$resultobject->geolocation->lat = $result['geolocation']['lat'];
@@ -210,7 +210,7 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->commercial_type = $result['commercial_type'];
 			$resultobject->finder_type = $result['finder_type'];
 			$resultobject->business_type = $result['business_type'];
-			$resultobject->fitternityno = $result['fitternityno'];
+			$resultobject->fitternityno = '+917506122637';
 			$resultobject->facilities = empty($result['facilities']) ? array() : $result['facilities'];
 			$resultobject->logo = $result['logo'];
 			$resultobject->geolocation->lat = $result['geolocation']['lat'];
