@@ -2118,58 +2118,57 @@ public function deleteTask($id){
 
 	public function autoSms($booktrialdata,$schedule_date_starttime){
 
-		$created_date =  strtotime($booktrialdata['created_at']);
-		$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+		// $created_date =  strtotime($booktrialdata['created_at']);
+		// $schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
-		$created_sec = $created_date;
-		$scheduled_sec = strtotime($schedule_date);
-		$diff_sec = (int) ($scheduled_sec - $created_sec) ;
-		$hour = (int) date("G", strtotime($schedule_date));
-		$min = (int) date("i", strtotime($schedule_date));
-		$hour2 = 60*60*2;
-		$hour4 = 60*60*4;
+		// $created_sec = $created_date;
+		// $scheduled_sec = strtotime($schedule_date);
+		// $diff_sec = (int) ($scheduled_sec - $created_sec) ;
+		// $hour = (int) date("G", strtotime($schedule_date));
+		// $min = (int) date("i", strtotime($schedule_date));
+		// $hour2 = 60*60*2;
+		// $hour4 = 60*60*4;
 
-		if($hour >= 11 && $hour <= 22){
+		// if($hour >= 11 && $hour <= 22){
 
-			if($hour == 22 && $min > 0){
+		// 	if($hour == 22 && $min > 0){
 
-				break;
-			}
+		// 		break;
+		// 	}
 
-			if($diff_sec < $hour4){
+		// 	if($diff_sec < $hour4){
+		// 		break;
+		// 	}
 
-				break;
-			}
+		// 	$booktrial = Booktrial::find((int) $booktrialdata['_id']);
+		// 	$booktrial->update(array('outbound_sms_status'=>'1'));
 
-			$booktrial = Booktrial::find((int) $booktrialdata['_id']);
-			$booktrial->update(array('outbound_sms_status'=>'1'));
+		// 	$ozonetel_date = date("Y-m-d H:i:s", strtotime($schedule_date . "-4 hours"));
 
-			$ozonetel_date = date("Y-m-d H:i:s", strtotime($schedule_date . "-4 hours"));
-
-			Log::info('ozonetel_date  -- '. $ozonetel_date);
-
-
-			return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
-
-		}
+		// 	Log::info('ozonetel_date  -- '. $ozonetel_date);
 
 
-		if($hour >= 6 && $hour <= 10){
+		// 	return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
 
-			$booktrial = Booktrial::find((int) $booktrialdata['_id']);
-			$booktrial->update(array('outbound_sms_status'=>'1'));
+		// }
 
-			$ozonetel_date = date("Y-m-d 21:00:00", strtotime($schedule_date . "-1 days"));
-			$ozonetel_date_sec = strtotime($ozonetel_date);
 
-			if($ozonetel_date_sec > $created_sec){
+		// if($hour >= 6 && $hour <= 10){
 
-				Log::info('ozonetel_date  -- '. $ozonetel_date);
+		// 	$booktrial = Booktrial::find((int) $booktrialdata['_id']);
+		// 	$booktrial->update(array('outbound_sms_status'=>'1'));
 
-				return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
-			}
+		// 	$ozonetel_date = date("Y-m-d 21:00:00", strtotime($schedule_date . "-1 days"));
+		// 	$ozonetel_date_sec = strtotime($ozonetel_date);
 
-		}
+		// 	if($ozonetel_date_sec > $created_sec){
+
+		// 		Log::info('ozonetel_date  -- '. $ozonetel_date);
+
+		// 		return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
+		// 	}
+
+		// }
 
 		return 'no_auto_sms';
 	}
