@@ -729,6 +729,25 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
 
+			$final_lead_stage = '';
+			$final_lead_status = '';
+
+			if(isset($finder['commercial_type']) && $finder['commercial_type'] != ''){
+
+				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
+
+					$final_lead_stage = 'trial_stage';
+					$final_lead_status = 'booked';
+
+				}else{
+
+					$final_lead_stage = 'booking_stage';
+					$final_lead_status = 'call_to_confirm';
+
+				}
+
+			}
+
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
 			// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
@@ -870,8 +889,9 @@ class SchedulebooktrialsController extends \BaseController {
 				'amount'						=>		$order->amount,
 				'otp'							=> 		$otp,
 				'source_flag'					=> 		'customer',
-				'final_lead_stage'				=>		'booking_stage',
-				'final_lead_status'				=>		'call_to_confirm'
+
+				'final_lead_stage'				=>		$final_lead_stage,
+				'final_lead_status'				=>		$final_lead_status
 			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
@@ -1105,6 +1125,26 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
 
+
+			$final_lead_stage = '';
+			$final_lead_status = '';
+
+			if(isset($finder['commercial_type']) && $finder['commercial_type'] != ''){
+
+				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
+
+					$final_lead_stage = 'trial_stage';
+					$final_lead_status = 'booked';
+
+				}else{
+
+					$final_lead_stage = 'booking_stage';
+					$final_lead_status = 'call_to_confirm';
+
+				}
+
+			}
+
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
 			// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
@@ -1247,8 +1287,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'additional_info'				=>		$additional_info,
 				'otp'							=>		$otp,
 				'source_flag'					=> 		'customer',
-				'final_lead_stage'					=>		'booking_stage',
-				'final_lead_status'					=>		'call_to_confirm'
+				'final_lead_stage'				=>		$final_lead_stage,
+				'final_lead_status'				=>		$final_lead_status
 			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
