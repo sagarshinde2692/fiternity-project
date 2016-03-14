@@ -737,7 +737,7 @@ class SchedulebooktrialsController extends \BaseController {
 				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
 
 					$final_lead_stage = 'trial_stage';
-					$final_lead_status = 'booked';
+					$final_lead_status = 'confirmed';
 
 				}else{
 
@@ -1134,7 +1134,7 @@ class SchedulebooktrialsController extends \BaseController {
 				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
 
 					$final_lead_stage = 'trial_stage';
-					$final_lead_status = 'booked';
+					$final_lead_status = 'confirmed';
 
 				}else{
 
