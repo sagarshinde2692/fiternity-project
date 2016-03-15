@@ -391,8 +391,9 @@ class HomeController extends BaseController {
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 		$finders 			= 		Finder::whereIn('_id', $finder_ids)
 												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-												->get(array('_id','slug','title','location_id','location','services'))->toArray();;
+												->get(array('_id','slug','title','location_id','location','city_id','city','services'))->toArray();;
 
 		$finderArr = [];
 		foreach ($finders as $key => $value) {
