@@ -347,23 +347,23 @@ class HomeController extends BaseController {
 
 		switch ($location_cluster) {
 			case 'north':
-				$finder_ids		=		array(6995,6999);
+			$finder_ids		=		array(6995,6999);
 			break;
 
 			case 'south':
-				$finder_ids		=		array(6988,6991,6993,7006, 7439, 7441);
+			$finder_ids		=		array(6988,6991,6993,7006, 7439, 7441);
 			break;	
 
 			case 'east':
-				$finder_ids		=		array(7017);
+			$finder_ids		=		array(7017);
 			break;	
 
 			case 'west':
-				$finder_ids		=		array(7360);
+			$finder_ids		=		array(7360);
 			break;	
 
 			case 'gurgaon':
-				$finder_ids		=		array(6992,7440);
+			$finder_ids		=		array(6992,7440);
 			break;	
 		}
 
@@ -388,10 +388,20 @@ class HomeController extends BaseController {
 	public function landingcrushFinders(){
 
 		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
-		$finders 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get(array('_id','slug','title','location_id','location'));
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
+		$finders 			= 		Finder::whereIn('_id', $finder_ids)
+												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+												->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+												->get(array('_id','slug','title','location_id','location','services'))->toArray();;
 
-		$responseArr 		= 		['finders' => $finders, 'gallery' => $gallery, 'count' => count($finder_ids)];
+		$finderArr = [];
+		foreach ($finders as $key => $value) {
+			$finderobj 	= 	array_except($value, array('services')); 
+			array_set($finderobj, 'services', pluck( $value['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory']  ));
+			array_push($finderArr, $finderobj);
+		}
+
+		$responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finder_ids)];
 		return Response::json($responseArr);
 	}
 	
