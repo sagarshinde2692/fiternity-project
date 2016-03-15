@@ -388,8 +388,8 @@ class HomeController extends BaseController {
 	public function landingcrushFinders(){
 
 		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
-		$finders 			= 		Finder::whereIn('_id', $finder_ids)->where('city_id', 4)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get(array('_id','slug','title','location_id','location'));
-		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->where('city_id', 4)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
+		$finders 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get(array('_id','slug','title','location_id','location'));
+		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 
 		$responseArr 		= 		['finders' => $finders, 'gallery' => $gallery, 'count' => count($finder_ids)];
 		return Response::json($responseArr);
