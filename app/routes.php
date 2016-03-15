@@ -30,6 +30,8 @@ Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 Route::get('/specialoffers_finder', 'HomeController@specialoffers_finder');
 Route::get('/yfc_finders', 'HomeController@yfc_finders');
 Route::get('landingzumba', 'HomeController@landingzumba');
+Route::get('landingcrushfinders/', 'HomeController@landingcrushFinders');
+Route::get('landingcrushlocationclusterwise/{location_cluster}', 'HomeController@landingcrushLocationClusterWise');
 
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
 Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');

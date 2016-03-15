@@ -141,6 +141,7 @@ class HomeController extends BaseController {
 		return Response::json(Cache::tags('home_by_city')->get($city));
 	}
 
+
 	public function getHomePageDatav3($city = 'mumbai',$cache = true){   
 
 		$home_by_city = $cache ? Cache::tags('home_by_city_v3')->has($city) : false;
@@ -342,6 +343,56 @@ class HomeController extends BaseController {
 	}
 
 	
+	public function landingcrushLocationClusterWise($location_cluster){
+
+		switch ($location_cluster) {
+			case 'north':
+				$finder_ids		=		array(6995,6999);
+			break;
+
+			case 'south':
+				$finder_ids		=		array(6988,6991,6993,7006, 7439, 7441);
+			break;	
+
+			case 'east':
+				$finder_ids		=		array(7017);
+			break;	
+
+			case 'west':
+				$finder_ids		=		array(7360);
+			break;	
+
+			case 'gurgaon':
+				$finder_ids		=		array(6992,7440);
+			break;	
+		}
+
+		// $finder_ids		=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
+		$finders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with('categorytags')
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->whereIn('_id', $finder_ids)
+		->where('city_id', 4)
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact','budget','price_range'))->toArray();
+
+		$finderArr = [];
+		foreach ($finders as $key => $value) {
+			$finderobj 	= 	array_except($value, array('categorytags')); 
+			array_set($finderobj, 'categorytags', pluck( $value['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
+			array_push($finderArr, $finderobj);
+		}
+		$responseArr = ['finders' => $finderArr, 'count' => count($finder_ids), 'location_cluster' => $location_cluster];
+		return Response::json($responseArr);
+	}
+
+
+	public function landingcrushFinders(){
+
+		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
+		$finders 			= 		Finder::whereIn('_id', $finder_ids)->where('city_id', 4)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get(array('_id','slug','title','location_id','location'));
+		$responseArr 		= 		['finders' => $finders, 'count' => count($finder_ids)];
+		return Response::json($responseArr);
+	}
 	
 
 
