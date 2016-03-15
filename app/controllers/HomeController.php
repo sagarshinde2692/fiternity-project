@@ -372,7 +372,6 @@ class HomeController extends BaseController {
 		->with('categorytags')
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 		->whereIn('_id', $finder_ids)
-		->where('city_id', 4)
 		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','contact','budget','price_range'))->toArray();
 
 		$finderArr = [];
