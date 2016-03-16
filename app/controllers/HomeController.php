@@ -346,6 +346,10 @@ class HomeController extends BaseController {
 	public function landingcrushLocationClusterWise($location_cluster){
 
 		switch ($location_cluster) {
+			case 'all':
+			$finder_ids		=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
+			break;
+
 			case 'north':
 			$finder_ids		=		array(6995,6999);
 			break;
