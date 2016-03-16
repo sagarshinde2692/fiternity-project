@@ -71,7 +71,7 @@ class Translator {
 			$resultobject->info_service_list = array();//$result['info_service_list'];
 			$resultobject->contact->address = $result['contact']['address'];
 			$resultobject->contact->email = isset($result['contact']['email']) ? $result['contact']['email'] : "";
-			$resultobject->contact->phone = $result['contact']['phone'];
+			$resultobject->contact->phone = ''; //$result['contact']['phone'];
 			$resultobject->contact->website = $result['contact']['website'];
 			$resultobject->coverimage = $result['coverimage'];
 			$resultobject->commercial_type = $result['commercial_type'];
@@ -204,7 +204,7 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->info_service_list = array();//$result['info_service_list'];
 			$resultobject->contact->address = $result['contact']['address'];
 			$resultobject->contact->email = $result['contact']['email'];
-			$resultobject->contact->phone = $result['contact']['phone'];
+			$resultobject->contact->phone = ''; //$result['contact']['phone'];
 			$resultobject->contact->website = $result['contact']['website'];
 			$resultobject->coverimage = $result['coverimage'];
 			$resultobject->commercial_type = $result['commercial_type'];
