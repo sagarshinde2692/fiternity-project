@@ -77,6 +77,8 @@ class CustomerController extends \BaseController {
 				$hour = 60*60;
 				$hour12 = 60*60*12;
 
+				$trial_message = '';
+
 				if($time_diff <= $hour12 && isset($trial['what_i_should_carry']) && $trial['what_i_should_carry'] != ''){
 					$trial_message = 'What to carry : '.strip_tags($trial['what_i_should_carry']);
 				}
