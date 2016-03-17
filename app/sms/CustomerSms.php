@@ -22,8 +22,20 @@ Class CustomerSms extends VersionNextSms{
 		return $this->sendToWorker($to, $message, $label, $priority);
 	}
 
+	public function bookTrialFreeSpecial ($data){
 
+		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
+
+		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a ".$session_type." session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity.";
+
+		$label = 'BookTrialFreeSpecial-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $message, $label, $priority);
+	}
+	
 	public function rescheduledBookTrial ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
