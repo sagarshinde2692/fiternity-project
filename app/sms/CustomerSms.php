@@ -28,7 +28,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
-		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a ".$session_type." session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity.";
+		$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a ".$session_type." session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your ".$session_type." session. Thanks - Team Fitternity.";
 
 		$label = 'BookTrialFreeSpecial-C';
 		$priority = 1;
