@@ -23,7 +23,19 @@ Route::get('migrations/vendorservicecategory', 'MigrationsController@vendorservi
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
+Route::get('updateratecards', function() {  
 
+	$finder_ids		=	Finder::whereIn('commercial_type',[0,2])->lists('_id');
+	$ratecard_ids	=	Ratecard::whereIn('finder_id', array_map('intval', $finder_ids) )->lists('_id');
+
+	// return $ratecard_ids;
+	foreach ($ratecard_ids as $key => $id) {
+		$ratecard 	=	Ratecard::find(intval($id));
+		$data 			= 	[ 'direct_payment_enable' => '0' ];
+		$success_order 	=	$ratecard->update($data);
+	}
+	echo "done";
+});
 
 Route::get('/importcode', function() {  
 
