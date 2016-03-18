@@ -961,6 +961,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
 			array_set($data, 'status', '1');
+			array_set($data, 'order_action', 'bought');
 			array_set($data, 'booktrial_id', (int)$booktrialid);
 			$orderdata 	=	$order->update($data);
 
