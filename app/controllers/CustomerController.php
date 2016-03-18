@@ -44,6 +44,8 @@ class CustomerController extends \BaseController {
 		$passedtrials = [];
 		
 		foreach ($trials as $trial){
+
+			array_set($trial, 'message', '');
 			array_set($trial, 'finder_offerings', []);
 
 			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
@@ -58,10 +60,35 @@ class CustomerController extends \BaseController {
 
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+
+			
 			array_set($trial, 'passed', $slot_datetime_pass_status);
 			if($slot_datetime_pass_status){
+
+				$trial_message = 'Hope you had a chance to attend the session . If you attended - rate your experience and win awesome merchandise and unlock Rs. 250 off';
+
+				array_set($trial, 'message', $trial_message);
+
 				array_push($passedtrials, $trial);
 			}else{
+
+				$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+
+				$hour = 60*60;
+				$hour12 = 60*60*12;
+
+				$trial_message = '';
+
+				if($time_diff <= $hour12 && isset($trial['what_i_should_carry']) && $trial['what_i_should_carry'] != ''){
+					$trial_message = 'What to carry : '.strip_tags($trial['what_i_should_carry']);
+				}
+
+				if($time_diff <= $hour && isset($trial['finder']['finder_poc_for_customer_name']) && $trial['finder']['finder_poc_for_customer_name'] != ''){
+					$trial_message = "Hope you are ready for your session, Contact person: ".ucwords($trial['finder']['finder_poc_for_customer_name'])." have a great workout!";
+				}
+
+				array_set($trial, 'message', $trial_message);
+
 				array_push($upcomingtrials, $trial);	
 			}
 		}

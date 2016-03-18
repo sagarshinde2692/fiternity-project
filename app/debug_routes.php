@@ -1469,6 +1469,6 @@ Route::get('csv/membershipfitmania',  array('as' => 'debug.membershipfitmania','
 Route::get('csv/reviewaddress',  array('as' => 'debug.reviewaddress','uses' => 'DebugController@reviewAddress'));
 Route::get('dumpno',  array('as' => 'debug.dumpno','uses' => 'DebugController@dumpNo'));
 Route::get('dumpmissedcallno',  array('as' => 'debug.dumpmissedcallno','uses' => 'DebugController@dumpMissedcallNo'));
-
+Route::get('top10finder',  array('as' => 'debug.top10finder','uses' => 'DebugController@top10Finder'));
 
 

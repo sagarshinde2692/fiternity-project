@@ -901,7 +901,6 @@ class DebugController extends \BaseController {
 
 			}
 
-
 			fputcsv($fp, $header);
 			
 			foreach ($capture as $value) {  
@@ -1634,6 +1633,92 @@ class DebugController extends \BaseController {
 			}	
 
 		}
+
+		public function top10Finder(){
+
+			ini_set('allow_url_fopen', 'On');
+			ini_set('allow_url_include', 'On');
+
+
+			$cities = array('1'=>'Mumbai','2'=>'Pune','3'=>'Banglore','4'=>'Delhi','8'=>'Gurgaon');
+
+			$trialRequest = Booktrial::raw(function($collection){
+
+	            $aggregate = [];
+
+	            $match['$match']['finder_id']['$ne'] = 3305;
+
+            	$aggregate[] = $match;
+
+	            $group = array(
+	                        '$group' => array(
+	                            '_id' => array(
+	                                'finder_id' => '$finder_id',
+	                                'city_id'	=> '$city_id'
+	                            ),
+	                            'count' => array(
+	                                '$sum' => 1
+	                            )
+	                        )
+	                    );
+
+	            $aggregate[] = $group;
+
+	            return $collection->aggregate($aggregate);
+
+	        });
+
+	        foreach ($trialRequest['result'] as $key => $value) {
+
+	        	$request[$value['_id']['city_id']][$value['_id']['finder_id']] = $value['count'];
+	        }
+
+	        foreach ($request as $city_id => $finder) {
+
+	        	arsort($request[$city_id]);
+
+	        	$i = 1;
+
+	        	foreach ($request[$city_id] as $finder_id => $count) {
+
+	        		$vendor = Finder::find((int) $finder_id);
+	        		
+	        		$array['finder_id'] = $finder_id;
+	        		$array['finder_name'] = ucwords($vendor->title);
+	        		$array['city_id'] = $city_id;
+	        		$array['city_name'] = $cities[$city_id];
+	        		$array['count'] = $count;
+
+	        		$hesh[] = $array;
+
+	        		if($i == 10){
+	        			break;
+	        		}
+
+	        		$i += 1;
+	        		
+	        	}
+	        }
+
+	        $fp = fopen('top10vendors.csv', 'w');
+
+			$header = array('City Name','City ID','Vendor Name','Vendor ID','Booktrial Count');
+
+			fputcsv($fp, $header);
+			
+			foreach ($hesh as $value) {  
+				
+				$fields = array($value['city_name'],$value['city_id'],$value['finder_name'],$value['finder_id'],$value['count']);
+
+				fputcsv($fp, $fields);
+			}
+
+			fclose($fp);
+
+			return 'done';
+
+	       
+	}
 
 
 

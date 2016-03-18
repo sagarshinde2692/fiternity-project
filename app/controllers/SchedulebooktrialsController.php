@@ -729,23 +729,22 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
 
+			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
+
 			$final_lead_stage = '';
 			$final_lead_status = '';
 
-			if(isset($finder['commercial_type']) && $finder['commercial_type'] != ''){
+			$confirmed = array(1,3);
 
-				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
+			if(in_array($finder_commercial_type, $confirmed)){
 
-					$final_lead_stage = 'trial_stage';
-					$final_lead_status = 'confirmed';
+				$final_lead_stage = 'trial_stage';
+				$final_lead_status = 'confirmed';
 
-				}else{
+			}else{
 
-					$final_lead_stage = 'booking_stage';
-					$final_lead_status = 'call_to_confirm';
-
-				}
-
+				$final_lead_stage = 'booking_stage';
+				$final_lead_status = 'call_to_confirm';
 			}
 
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -962,6 +961,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
 			array_set($data, 'status', '1');
+			array_set($data, 'order_action', 'bought');
 			array_set($data, 'booktrial_id', (int)$booktrialid);
 			$orderdata 	=	$order->update($data);
 
@@ -1124,25 +1124,22 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
-
+			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
 
 			$final_lead_stage = '';
 			$final_lead_status = '';
 
-			if(isset($finder['commercial_type']) && $finder['commercial_type'] != ''){
+			$confirmed = array(1,3);
 
-				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
+			if(in_array($finder_commercial_type, $confirmed)){
 
-					$final_lead_stage = 'trial_stage';
-					$final_lead_status = 'confirmed';
+				$final_lead_stage = 'trial_stage';
+				$final_lead_status = 'confirmed';
 
-				}else{
+			}else{
 
-					$final_lead_stage = 'booking_stage';
-					$final_lead_status = 'call_to_confirm';
-
-				}
-
+				$final_lead_stage = 'booking_stage';
+				$final_lead_status = 'call_to_confirm';
 			}
 
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -1309,6 +1306,11 @@ class SchedulebooktrialsController extends \BaseController {
 			if($finder['commercial_type'] != '2'){
 				$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
 				$booktrial->update(array('redis_id'=>$redisid));
+			}else{
+
+				$customer_sms_free_special = $this->customersms->bookTrialFreeSpecial($booktrialdata);
+				$booktrial->customer_sms_free_special = $customer_sms_free_special;
+				$booktrial->update();
 			}
 		}
 
@@ -1353,7 +1355,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
-
+		
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
 			//Send Instant (Email) To Customer & Finder
@@ -1403,7 +1405,6 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
 
 			//update queue ids for booktiral
-			$booktrial 		= 	Booktrial::findOrFail($booktrialid);
 			$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids,
 				'customer_smsqueuedids' => $customer_sms_messageids,
 				'customer_notificationqueuedids' => $customer_notification_messageids,
@@ -1411,6 +1412,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'finder_smsqueuedids' => $finer_sms_messageids,
 				'customer_auto_sms' => $customer_auto_sms
 			);
+
+			$booktrial 		= 	Booktrial::findOrFail($booktrialid);
 
 			$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
 
