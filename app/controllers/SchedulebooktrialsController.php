@@ -729,23 +729,22 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
 
+			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
+
 			$final_lead_stage = '';
 			$final_lead_status = '';
 
-			if(isset($finder['commercial_type']) && $finder['commercial_type'] != ''){
+			$confirmed = array(1,3);
 
-				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
+			if(in_array($finder_commercial_type, $confirmed)){
 
-					$final_lead_stage = 'trial_stage';
-					$final_lead_status = 'confirmed';
+				$final_lead_stage = 'trial_stage';
+				$final_lead_status = 'confirmed';
 
-				}else{
+			}else{
 
-					$final_lead_stage = 'booking_stage';
-					$final_lead_status = 'call_to_confirm';
-
-				}
-
+				$final_lead_stage = 'booking_stage';
+				$final_lead_status = 'call_to_confirm';
 			}
 
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -1124,25 +1123,22 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
-
+			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
 
 			$final_lead_stage = '';
 			$final_lead_status = '';
 
-			if(isset($finder['commercial_type']) && $finder['commercial_type'] != ''){
+			$confirmed = array(1,3);
 
-				if($finder['commercial_type'] == 1 && $finder['commercial_type'] == 3){
+			if(in_array($finder_commercial_type, $confirmed)){
 
-					$final_lead_stage = 'trial_stage';
-					$final_lead_status = 'confirmed';
+				$final_lead_stage = 'trial_stage';
+				$final_lead_status = 'confirmed';
 
-				}else{
+			}else{
 
-					$final_lead_stage = 'booking_stage';
-					$final_lead_status = 'call_to_confirm';
-
-				}
-
+				$final_lead_stage = 'booking_stage';
+				$final_lead_status = 'call_to_confirm';
 			}
 
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
