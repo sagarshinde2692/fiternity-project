@@ -1756,7 +1756,7 @@ class DebugController extends \BaseController {
 		$finders = Finder::whereIn('_id',$hesh)->whereNotIn('category_id',$category)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
 
 		$fp = fopen('finder_with_no_schdule.csv', 'w');
-		$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type');
+		$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type','Status');
 
 		foreach ($finders as $key => $value) 
 		{
@@ -1779,11 +1779,16 @@ class DebugController extends \BaseController {
 			if(!isset($value['commercial_type_status'])){
 				$finders[$key]['commercial_type_status'] = '';
 			}
+
 		}
+
 		fputcsv($fp, $header);
 		
 		foreach ($finders as $value) {  
-			$fields = array($value['_id'],$value['title'],$value['city']['name'],$value['location']['name'],$value['category']['name'],$value['commercial_type_status']);
+
+			$status = ($value['status'] == '1') ? 'Active' : 'Inactive';
+
+			$fields = array($value['_id'],$value['title'],$value['city']['name'],$value['location']['name'],$value['category']['name'],$value['commercial_type_status'],$status);
 			fputcsv($fp, $fields);
 		}
 
