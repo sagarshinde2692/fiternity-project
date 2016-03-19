@@ -23,6 +23,7 @@ require __DIR__.'/debug_routes.php';
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
 Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
+Route::get('/homev4/{city?}', 'HomeController@getHomePageDatav4');
 Route::get('footer/{city?}', 'HomeController@getFooterByCity');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
