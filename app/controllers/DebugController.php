@@ -1721,9 +1721,175 @@ class DebugController extends \BaseController {
 	}
 
 
+	public function finderWithNoSchedule(){
+
+		ini_set('memory_limit','2048M');
+		ini_set('max_execution_time', 300);
+
+		$services = Service::where('trialschedules','exists',true)->active()->get(array('trialschedules','finder_id'))->toArray();
+		$finder = array();
+		foreach ($services as $key => $value) {
+			if(!empty($value['trialschedules'])){
+				if(!isset($finder[$value['finder_id']]['ne'])){
+					$finder[$value['finder_id']]['ne'] = 1;
+				}else{
+					$finder[$value['finder_id']]['ne'] += 1;
+				}
+			}else{
+				if(!isset($finder[$value['finder_id']]['e'])){
+					$finder[$value['finder_id']]['e'] = 1;
+				}else{
+					$finder[$value['finder_id']]['e'] += 1;
+				}
+			}
+		}
+		$hesh = array();
+		foreach ($finder as $key => $value) {
+			if(isset($value['e']) && !isset($value['ne']))
+			{
+				$hesh[] = $key;
+			}
+		}
+
+		$category = array(42,45,40,25);
+
+		$finders = Finder::whereIn('_id',$hesh)->whereNotIn('category_id',$category)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
+
+		$fp = fopen('finder_with_no_schdule.csv', 'w');
+		$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type');
+
+		foreach ($finders as $key => $value) 
+		{
+			
+			if(!isset($value['_id'])){
+				$finders[$key]['_id'] = '';
+			}
+			if(!isset($value['title'])){
+				$finders[$key]['title'] = '';
+			}
+			if(!isset($value['city']['name'])){
+				$finders[$key]['city']['name'] = '';
+			}
+			if(!isset($value['location']['name'])){
+				$finders[$key]['location']['name'] = '';
+			}
+			if(!isset($value['category']['name'])){
+				$finders[$key]['category']['name'] = '';
+			}
+			if(!isset($value['commercial_type_status'])){
+				$finders[$key]['commercial_type_status'] = '';
+			}
+		}
+		fputcsv($fp, $header);
+		
+		foreach ($finders as $value) {  
+			$fields = array($value['_id'],$value['title'],$value['city']['name'],$value['location']['name'],$value['category']['name'],$value['commercial_type_status']);
+			fputcsv($fp, $fields);
+		}
+
+		fclose($fp);
+
+		return 'done';
+	}
 
 
+	public function finderStatus(){
 
+		$homepage = Homepage::get()->toArray();
 
+		$finder_status = array();
+		$array = array();
+
+		foreach ($homepage as $key => $value) {
+
+			$array['footer_block1_ids'] = explode(',',$value['footer_block1_ids']);
+			$array['footer_block2_ids'] = explode(',',$value['footer_block2_ids']);
+			$array['footer_block3_ids'] = explode(',',$value['footer_block3_ids']);
+			$array['footer_block4_ids'] = explode(',',$value['footer_block4_ids']);
+			$array['footer_block5_ids'] = explode(',',$value['footer_block5_ids']);
+			$array['gym_finders'] = explode(',',$value['gym_finders']);
+			$array['yoga_finders'] = explode(',',$value['yoga_finders']);
+			$array['zumba_finders'] = explode(',',$value['zumba_finders']);
+
+			foreach ($array as $col) {
+				foreach ($col as $finder_id) {
+
+					if(!in_array($finder_id, $finder_status)){
+						$finder_status[] = $finder_id;
+					}
+				}
+			}
+
+		}
+
+		$array = array();
+
+		$collection = Findercollection::get()->toArray();
+
+		foreach ($collection as $key => $value) {
+
+			$array['finder_ids'] = explode(',',$value['finder_ids']);
+
+			foreach ($array['finder_ids'] as $finder_id) {
+
+				if(!in_array($finder_id, $finder_status)){
+					$finder_status[] = $finder_id;
+				}
+			}
+		}
+
+		$data = array();
+
+		foreach ($finder_status as $finder_id) {
+
+			if($finder_id != ''){
+
+				$finder = Finder::with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->find((int) $finder_id);
+
+				if($finder){
+
+					$finder = $finder->toArray();
+
+					$hesh['_id'] = $finder_id;
+					$hesh['title'] = $finder['title'];
+					$hesh['city_name'] = $finder['city']['name'];
+					$hesh['location_name'] = $finder['location']['name'];
+					$hesh['category_name'] = $finder['category']['name'];
+					$hesh['commercial_type_status'] = $finder['commercial_type_status'];
+					$hesh['status'] = ($finder['status'] == '1') ? 'Active' : 'Inactive';
+
+				}else{
+
+					$hesh['_id'] = $finder_id;
+					$hesh['title'] = '';
+					$hesh['city_name'] = '';
+					$hesh['location_name'] = '';
+					$hesh['category_name'] = '';
+					$hesh['commercial_type_status'] = '';
+					$hesh['status'] = 'Deleted';
+
+				}
+
+				$data[] = $hesh;
+			}
+		}
+
+		$fp = fopen('finder_status.csv', 'w');
+
+		$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type','Status');
+
+		fputcsv($fp, $header);
+		
+		foreach ($data as $value) {  
+			$fields = array($value['_id'],$value['title'],$value['city_name'],$value['location_name'],$value['category_name'],$value['commercial_type_status'],$value['status']);
+			fputcsv($fp, $fields);
+		}
+
+		fclose($fp);
+
+		return 'done';
 
 	}
+
+
+}
