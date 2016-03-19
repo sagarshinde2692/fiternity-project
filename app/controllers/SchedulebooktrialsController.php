@@ -2168,7 +2168,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function autoSms($booktrialdata,$schedule_date_starttime){
 		
-		$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+		/*$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
 		$created_sec = time();
 		$scheduled_sec = strtotime($schedule_date);
@@ -2210,7 +2210,7 @@ class SchedulebooktrialsController extends \BaseController {
 				return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
 			}
 
-		}
+		}*/
 
 		return 'no_auto_sms';
 	}
