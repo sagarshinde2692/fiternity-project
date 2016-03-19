@@ -6,7 +6,7 @@ Class FinderSms extends VersionNextSms{
 
 	public function bookTrial ($data){
 
-		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
+		$to 		=  	array('9730401839','9920864894');array_merge(explode(',', $data['finder_vcc_mobile']));
 
 		$cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
 
@@ -26,7 +26,7 @@ Class FinderSms extends VersionNextSms{
 
 	public function rescheduledBookTrial ($data){
 
-		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
+		$to 		=  	array('9730401839','9920864894');array_merge(explode(',', $data['finder_vcc_mobile']));
 
 		$cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
 
@@ -46,7 +46,7 @@ Class FinderSms extends VersionNextSms{
 	//currently not using reminder
 	public function bookTrialReminder ($datshow_location_flaga, $delay){
 
-		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
+		$to 		=  	array('9730401839','9920864894');array_merge(explode(',', $data['finder_vcc_mobile']));
 
 		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
@@ -64,7 +64,7 @@ Class FinderSms extends VersionNextSms{
 
 	public function bookTrialReminderBefore1Hour ($data, $delay){
 
-		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
+		$to 		=  	array('9730401839','9920864894');array_merge(explode(',', $data['finder_vcc_mobile']));
 
         $cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
 
@@ -84,7 +84,7 @@ Class FinderSms extends VersionNextSms{
 
 	public function cancelBookTrial ($data){
 
-		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
+		$to 		=  	array('9730401839','9920864894');array_merge(explode(',', $data['finder_vcc_mobile']));
 
 		$cusomterno = ($data['share_customer_no'] == true && $data['customer_phone'] != '') ? "(".$data['customer_phone'].")" : '';
 
@@ -101,7 +101,7 @@ Class FinderSms extends VersionNextSms{
 
 	public function sendPgOrderSms ($data){
 
-		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
+		$to 		=  	array('9730401839','9920864894');array_merge(explode(',', $data['finder_vcc_mobile']));
 
 		$message 	=	"Hi. Greetings from Fitternity! We have processed a membership sale for ".ucwords($data['finder_name']).". Customer name: ".ucwords($data['customer_name'])." Membership purchased: ".ucwords($data['service_name']).". The details of the transaction have been shared with you on email. If you have any questions or need assistance call us on ".Config::get('app.customer_care_number')." or email us on info@fitternity.com.";
 
