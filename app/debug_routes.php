@@ -25,6 +25,68 @@ Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 
 
+
+
+
+Route::get('/updatebatches', function() { 
+
+	$items = Service::active()->orderBy('_id')->lists('_id');
+	// $items = Service::whereIn('_id',[1])->orderBy('_id')->lists('_id');
+	foreach ($items as $key => $item) {
+		$Service 	=	Service::find(intval($item),['_id','batches']);
+
+		if($Service && count($Service['batches']) > 0 && isset($Service['batches'])){
+			// return $Service;
+			$Servicedata = array();
+			$data 				=	$Service->toArray();
+			$service_batches 	= 	[];
+
+			foreach ($Service['batches'] as $key => $batch) {
+				$batchdata 	= [];
+
+				foreach ($batch as $key => $trials) {
+					$weekdaydata 			= 	[];
+					$weekdaydata["weekday"] = 	$trials["weekday"];
+					$weekdaydata["slots"] 	= 	[];
+					if(count($trials['slots']) > 0 && isset($trials['slots'])){
+						foreach ($trials['slots'] as $k => $val) {
+							array_push($weekdaydata["slots"], $val);
+						}
+						array_values($weekdaydata["slots"]);
+					}
+					array_push($batchdata, $weekdaydata);
+					array_values($batchdata);
+				}
+				array_push($service_batches, $batchdata);	
+				array_values($service_batches);
+
+			}
+			// return $service_batches;
+
+			array_set($Servicedata, 'batches', $service_batches);
+			$response = $Service->update($Servicedata);
+			echo "<br>$response";
+		}
+	}
+
+});
+
+
+
+Route::get('updateratecards', function() {  
+
+	$finder_ids		=	Finder::whereIn('commercial_type',[0,2])->lists('_id');
+	$ratecard_ids	=	Ratecard::whereIn('finder_id', array_map('intval', $finder_ids) )->lists('_id');
+
+	// return $ratecard_ids;
+	foreach ($ratecard_ids as $key => $id) {
+		$ratecard 	=	Ratecard::find(intval($id));
+		$data 			= 	[ 'direct_payment_enable' => '0' ];
+		$success_order 	=	$ratecard->update($data);
+	}
+	echo "done";
+});
+
 Route::get('/importcode', function() {  
 
 	$serviceoffers	 = 	Serviceoffer::whereIn('finder_id', [7154])->get();	
@@ -592,24 +654,24 @@ Route::get('/updateservices', function() {
 			}
 			$service_batches = [];
 			if(isset($data['batches'])){
-			if(count($data['batches']) > 0 && isset($data['batches'])){
-				foreach ($data['batches'] as $key => $batch) {
-					$goodbatch = [];
-					$eachbatch = [];
-					foreach ($batch as $key => $trials) {
-						$eachbatch["weekday"] = $trials["weekday"];
-						$eachbatch["slots"] = [];
-						foreach ($trials['slots'] as $k => $val) {
+				if(count($data['batches']) > 0 && isset($data['batches'])){
+					foreach ($data['batches'] as $key => $batch) {
+						$goodbatch = [];
+						$eachbatch = [];
+						foreach ($batch as $key => $trials) {
+							$eachbatch["weekday"] = $trials["weekday"];
+							$eachbatch["slots"] = [];
+							foreach ($trials['slots'] as $k => $val) {
 							// print_r($val);
-							array_push($eachbatch["slots"],$val);
+								array_push($eachbatch["slots"],$val);
+							}
+							array_push($goodbatch, $eachbatch);
 						}
-						array_push($goodbatch, $eachbatch);
+						array_push($service_batches, $goodbatch);	
 					}
-				array_push($service_batches, $goodbatch);	
-				}
 					// return $service_batches;
+				}
 			}
-		}
 
 			array_set($Servicedata, 'workoutsessionschedules', $service_workoutsessionschedules);
 			array_set($Servicedata, 'trialschedules', $service_trialschedules);
