@@ -254,7 +254,19 @@ class OrderController extends \BaseController {
 		$order->_id 		= 	$orderid;
 		$orderstatus   		= 	$order->save();
 
+		$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+		$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
+		if($device_type != '' && $gcm_reg_id != ''){
+
+			$reg_data = array();
+
+			$reg_data['customer_id'] = $customer_id;
+			$reg_data['reg_id'] = $gcm_reg_id;
+			$reg_data['type'] = $device_type;
+
+			$this->addRegId($reg_data);
+		}
 
 		//SEND COD EMAIL TO CUSTOMER
 		$sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
@@ -443,7 +455,21 @@ class OrderController extends \BaseController {
 		}
 
 		array_set($data, 'customer_id', intval($customer_id));
-		
+
+		$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+		$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+		if($device_type != '' && $gcm_reg_id != ''){
+
+			$reg_data = array();
+
+			$reg_data['customer_id'] = $customer_id;
+			$reg_data['reg_id'] = $gcm_reg_id;
+			$reg_data['type'] = $device_type;
+
+			$this->addRegId($reg_data);
+		}
+
 		if(trim(Input::json()->get('preferred_starting_date')) != '-'){
 			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
 			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
@@ -665,7 +691,12 @@ class OrderController extends \BaseController {
 
 	}
 
+	public function addRegId($data){
 
+		$response = add_reg_id($data);
+
+		return Response::json($response,$response['status']);
+	}
 
 
 }

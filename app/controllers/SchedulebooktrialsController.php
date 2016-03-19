@@ -1142,6 +1142,20 @@ class SchedulebooktrialsController extends \BaseController {
 				$final_lead_status = 'call_to_confirm';
 			}
 
+			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+			if($device_type != '' && $gcm_reg_id != ''){
+
+				$reg_data = array();
+
+				$reg_data['customer_id'] = $customer_id;
+				$reg_data['reg_id'] = $gcm_reg_id;
+				$reg_data['type'] = $device_type;
+
+				$this->addRegId($reg_data);
+			}
+
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
 			// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
@@ -2215,5 +2229,11 @@ class SchedulebooktrialsController extends \BaseController {
 		return 'no_auto_sms';
 	}
 
+	public function addRegId($data){
+
+		$response = add_reg_id($data);
+
+		return Response::json($response,$response['status']);
+	}
 
 }
