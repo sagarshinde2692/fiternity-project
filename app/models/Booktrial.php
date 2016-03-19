@@ -5,7 +5,7 @@ class Booktrial extends \Basemodel {
 
 	protected $collection = "booktrials";
 
-	protected $dates = array('schedule_date','schedule_date_time');
+	protected $dates = array('schedule_date','schedule_date_time','missedcall_date');
 
 	public function setIdAttribute($value){
 		

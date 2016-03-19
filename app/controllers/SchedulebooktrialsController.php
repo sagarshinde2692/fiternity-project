@@ -1704,6 +1704,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_id'						=>		$device_id,
 				'otp'							=> 		$otp,
 				'source_flag'					=> 		'customer',
+				'_id'							=> 		$id
 			);
 
 			if($update_only_info == ''){
@@ -2166,11 +2167,10 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 	public function autoSms($booktrialdata,$schedule_date_starttime){
-
-		$created_date =  strtotime($booktrialdata['created_at']);
+		
 		$schedule_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
-		$created_sec = $created_date;
+		$created_sec = time();
 		$scheduled_sec = strtotime($schedule_date);
 		$diff_sec = (int) ($scheduled_sec - $created_sec) ;
 		$hour = (int) date("G", strtotime($schedule_date));
