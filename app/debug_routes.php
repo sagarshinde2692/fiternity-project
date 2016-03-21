@@ -25,6 +25,45 @@ Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 
 
+Route::get('/attachcustomernumber', function() { 
+
+	// $customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->count();
+	// $customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->take(10)->skip(0)->orderBy('_id')->lists('_id');
+	// $customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->take(5000)->skip(0)->orderBy('_id')->lists('_id');
+	$customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->orderBy('_id')->lists('_id');
+
+	foreach ($customers as $key => $item) {
+		
+		$Customer 	=	Customer::find(intval($item));
+
+		if($Customer){
+
+			$customer_phone = "";
+			$Booktrial 	=	Booktrial::where('customer_email', $Customer['email'])->first();
+			if($Booktrial && isset($Booktrial['customer_phone']) && $Booktrial['customer_phone'] != '' ){
+				$customer_phone = trim($Booktrial['customer_phone']);
+			}
+			
+			if($customer_phone != ""){
+				$Order 	=	Order::where('customer_email', $Customer['email'])->first();
+				if($Order && isset($Order['customer_phone']) && $Order['customer_phone'] != '' ){
+					$customer_phone = trim($Order['customer_phone']);
+				}
+			}
+
+			if($customer_phone != ""){
+				$Capture 	=	Capture::where('customer_email', $Customer['email'])->first();
+				if($Capture && isset($Capture['mobile']) && $Capture['mobile'] != '' ){
+					$customer_phone = trim($Capture['mobile']);
+				}
+			}
+			$customer_phone = str_replace("+", "", $customer_phone);
+			$response = $Customer->update(['contact_no' => trim($customer_phone) ]);	
+		}
+	}
+	echo 'done';
+
+});
 
 
 
