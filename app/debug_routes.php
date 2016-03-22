@@ -379,24 +379,27 @@ Route::get('exportcustomer', function() {
 	'Content-type'        => 'application/csv'
 	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
 	,   'Content-type'        => 'text/csv'
-	,   'Content-Disposition' => 'attachment; filename=export_booktrial_customer.csv'
+	,   'Content-Disposition' => 'attachment; filename=export_customer.csv'
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
 
 	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, CUSTOMER GENDER, CUSTOMER LOCATION, CUSTOMER CITY  \n";
-	$customers 	= 	Customer::get()->toArray();
-
+	$customers 	= 	Customer::take(1000)->skip(0)->orderBy('_id', 'asc')->get()->toArray();
+	$customer_city 			=  "";
 	foreach ($customers as $key => $value) {
 		// var_dump($value;)exit();
 		$id 					= 		(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
-		$customer_name 			= 		(isset($value['name']) && $value['name'] !="") ? $value['name'] : "-";
-		$customer_email 		= 		(isset($value['email']) && $value['email'] !="") ? $value['email'] : "-";
-		$customer_phone 		= 		(isset($value['contact_no']) && $value['contact_no'] !="") ? $value['contact_no'] : "-";
-		$customer_gender 		= 		(isset($value['gender']) && $value['gender'] !="") ? $value['gender'] : "-";
-		$customer_location 		= 		(isset($value['location']) && $value['location'] !="") ? $value['location'] : "-";
-		$city 					= 		City::find(intval($value['city_id']));
-		$customer_city 			= 		(isset($city) && $city->name != "") ? $city->name : "-";
+		$customer_name 			= 		(isset($value['name']) && $value['name'] !="") ? str_replace(',', '|', $value['name']) : "-";
+		$customer_email 		= 		(isset($value['email']) && $value['email'] !="") ? str_replace(',', '|', $value['email']) : "-";
+		$customer_phone 		= 		(isset($value['contact_no']) && $value['contact_no'] !="") ? str_replace(',', '|', $value['contact_no']) : "-";
+		$customer_gender 		= 		(isset($value['gender']) && $value['gender'] !="") ? str_replace(',', '|', $value['gender']) : "-";
+		$customer_location 		= 		(isset($value['location']) && $value['location'] !="") ? str_replace(',', '|', $value['location'] ): "-";
+
+		if(isset($value['city_id']) && $value['city_id'] != ""){
+			$city 					= 		City::find(intval($value['city_id']));
+			$customer_city 			= 		(isset($city) && $city->name != "") ? $city->name : "-";
+		}
 
 		$output .= "$id, $customer_name, $customer_email, $customer_phone, $customer_gender, $customer_location, $customer_city \n";
 	}
