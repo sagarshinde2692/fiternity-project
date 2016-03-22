@@ -44,8 +44,6 @@ class CustomerController extends \BaseController {
 		$passedtrials = [];
 		
 		foreach ($trials as $trial){
-
-			array_set($trial, 'message', '');
 			array_set($trial, 'finder_offerings', []);
 
 			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
@@ -60,50 +58,13 @@ class CustomerController extends \BaseController {
 
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-
-			
 			array_set($trial, 'passed', $slot_datetime_pass_status);
-
 			if($slot_datetime_pass_status){
-
-				$time_diff = strtotime($currentDateTime) - strtotime($scheduleDateTime);
-				$hour2 = 60*60*2;
-
-				$trial_message = '';
-
-				if($time_diff >= $hour2){
-
-					$trial_message = nl2br("Hope you had a chance to attend the session.\nIf you attended, rate your experience and win awesome merchandise and unlock Rs. 250 off");
-				}
-
-				array_set($trial, 'message', $trial_message);
-
 				array_push($passedtrials, $trial);
-				
 			}else{
-
-				$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
-
-				$hour = 60*60;
-				$hour12 = 60*60*12;
-
-				$trial_message = '';
-
-				if($time_diff <= $hour12 && isset($trial['what_i_should_carry']) && $trial['what_i_should_carry'] != ''){
-					$trial_message = nl2br('What to carry : '.str_replace("Optional","\nOptional ",strip_tags($trial['what_i_should_carry'])));
-				}
-
-				if($time_diff <= $hour && isset($trial['finder']['finder_poc_for_customer_name']) && $trial['finder']['finder_poc_for_customer_name'] != ''){
-					$trial_message = nl2br("Hope you are ready for your session.\nContact person : ".ucwords($trial['finder']['finder_poc_for_customer_name'])."\nHave a great workout!");
-				}
-
-				array_set($trial, 'message', $trial_message);
-
 				array_push($upcomingtrials, $trial);	
 			}
-
 		}
-
 		// array_push($customertrials, $trial);
 		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'message' => 'List of scheduled trials');
 		return Response::json($resp,200);
@@ -1386,7 +1347,7 @@ public function getCustomerDetail(){
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with('locationtags')
-			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			if(!empty($finder_id)){
 
@@ -1397,7 +1358,7 @@ public function getCustomerDetail(){
 
 			$offer = $offer_query->take($limit)->get()->toArray();
 
-			$finder = $finder_query->take($limit)->get(array('_id','location_id','category_id','categorytags','locationtags','title','city_id','total_rating_count','average_rating'))->toArray();
+			$finder = $finder_query->take($limit)->get(array('_id','location_id','category_id','categorytags','locationtags','title','city_id','total_rating_count','average_rating','slug'))->toArray();
 
 			foreach ($finder as $finder_key => $finder_value) {
 
@@ -1422,32 +1383,37 @@ public function getCustomerDetail(){
 
 			foreach ($offer as $offer_key => $offer_value) {
 
-				foreach ($offer_value['service'] as $key => $value) {
+				// echo "<pre>";print_r($offer_value);exit();
 
-					unset($offer[$offer_key]['service']['serviceratecard']);
+				if(isset($offer_value['service']) && !empty($offer_value['service'])){
+
+					foreach ($offer_value['service'] as $key => $value) {
+
+						unset($offer[$offer_key]['service']['serviceratecard']);
+					}
+
+					$offer_finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+					->with('categorytags')
+					->with('locationtags')
+					->find((int) $offer_value['finder_id'],array('_id','location_id','category_id','categorytags','locationtags','title','city_id','total_rating_count','average_rating','slug'))
+					->toArray();
+
+					foreach ($offer_finder['categorytags'] as $key => $value) {
+
+						unset($offer_finder['categorytags'][$key]['finders']);
+						unset($offer_finder['categorytags'][$key]['cities']);
+					}
+
+					foreach ($offer_finder['locationtags'] as $key => $value) {
+
+						unset($offer_finder['locationtags'][$key]['finders']);
+						unset($offer_finder['locationtags'][$key]['cities']);
+					}
+
+					$offer[$offer_key]['finder'] = $offer_finder;
 				}
-
-				$offer_finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with('categorytags')
-				->with('locationtags')
-				->find((int) $offer_value['finder_id'],array('_id','location_id','category_id','categorytags','locationtags','title','city_id','total_rating_count','average_rating'))
-				->toArray();
-
-				foreach ($offer_finder['categorytags'] as $key => $value) {
-
-					unset($offer_finder['categorytags'][$key]['finders']);
-					unset($offer_finder['categorytags'][$key]['cities']);
-				}
-
-				foreach ($offer_finder['locationtags'] as $key => $value) {
-
-					unset($offer_finder['locationtags'][$key]['finders']);
-					unset($offer_finder['locationtags'][$key]['cities']);
-				}
-
-				$offer[$offer_key]['finder'] = $offer_finder;
 
 			}
 
@@ -1470,7 +1436,7 @@ public function getCustomerDetail(){
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with('locationtags')
-			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			if(!empty($finder_id)){
 
@@ -1479,7 +1445,7 @@ public function getCustomerDetail(){
 				$offer_query->whereIn('finder_id',$finder_id);
 			}
 
-			$finder = $finder_query->take($limit)->get(array('_id','location_id','category_id','categorytags','locationtags','title','city_id'))->toArray();
+			$finder = $finder_query->take($limit)->get(array('_id','location_id','category_id','categorytags','locationtags','title','slug','city_id'))->toArray();
 
 			$offer = $offer_query->take($limit)->get()->toArray();
 
@@ -1607,15 +1573,6 @@ public function getCustomerDetail(){
 			return Response::json(array('status' => 201,'message' => 'not registered','data'=>$data),201);
 		}
 
-	}
-
-	public function addRegId(){
-
-		$data = Input::json()->all();
-
-		$response = add_reg_id($data);
-
-		return Response::json($response,$response['status']);
 	}
 
 
