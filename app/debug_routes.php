@@ -384,59 +384,22 @@ Route::get('exportcustomer', function() {
 	,   'Pragma'              => 'public'
 	];
 
-	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER CITY,  \n";
+	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, CUSTOMER GENDER, CUSTOMER LOCATION, CUSTOMER CITY  \n";
+	$customers 	= 	Customer::get()->toArray();
 
-	$finders 	= 	Finder::active()->where('location_id', 5 )->get(array('_id'))->toArray();
-	$finder_ids 	= 	array_map('intval', array_pluck($finders, '_id'));
-	$items = $items = Booktrial::where('finder_id', 'exists', true )->whereIn('finder_id', $finder_ids  )->get();
-
-
-	foreach ($items as $key => $value) {
+	foreach ($customers as $key => $value) {
 		// var_dump($value;)exit();
-		$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
-		$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
-		$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
-		$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
-		$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? $value['finder_name'] : "-";
-		$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
+		$id 					= 		(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
+		$customer_name 			= 		(isset($value['name']) && $value['name'] !="") ? $value['name'] : "-";
+		$customer_email 		= 		(isset($value['email']) && $value['email'] !="") ? $value['email'] : "-";
+		$customer_phone 		= 		(isset($value['contact_no']) && $value['contact_no'] !="") ? $value['contact_no'] : "-";
+		$customer_gender 		= 		(isset($value['gender']) && $value['gender'] !="") ? $value['gender'] : "-";
+		$customer_location 		= 		(isset($value['location']) && $value['location'] !="") ? $value['location'] : "-";
+		$city 					= 		City::find(intval($value['city_id']));
+		$customer_city 			= 		(isset($city) && $city->name != "") ? $city->name : "-";
 
-		if(isset($value['finder_id']) && $value['finder_id'] != '5000'){
-			$finder = Finder::with('city')->with('location')->find(intval($value['finder_id']));
-			$finder_name = $finder->title;
-			$finder_city = (isset($finder->city->name) && $finder->city->name !="") ? $finder->city->name : "-"; 
-		}else{
-			$city = City::find(intval($value['city_id']));
-			$finder_city = $city->name;
-		}
-		$output .= "$id, $customer_name, $customer_email, $customer_phone, $finder_name, $finder_city \n";
+		$output .= "$id, $customer_name, $customer_email, $customer_phone, $customer_gender, $customer_location, $customer_city \n";
 	}
-
-	// //CAPTURE
-	// $headers = [
-	// 'Content-type'        => 'application/csv'
-	// ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
-	// ,   'Content-type'        => 'text/csv'
-	// ,   'Content-Disposition' => 'attachment; filename=export_capture_customer.csv'
-	// ,   'Expires'             => '0'
-	// ,   'Pragma'              => 'public'
-	// ];
-
-	// $output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER CITY,  \n";
-	// $items = $items = Capture::get();
-
-	// foreach ($items as $key => $value) {
-	// 	// var_dump($value;)exit();
-	// 	$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
-	// 	$customer_name 			= 	(isset($value['name']) && $value['name'] !="") ? $value['name'] : "-";
-	// 	$customer_email 		= 	(isset($value['email']) && $value['email'] !="") ? $value['email'] : "-";
-	// 	$customer_phone 		= 	(isset($value['phone']) && $value['phone'] !="") ? $value['phone'] : "-";
-	// 	$city 					= 	(isset($value['city']) && $value['city'] !="") ? $value['city'] : "-";
-	// 	$location 				= 	(isset($value['location']) && $value['location'] !="") ? $value['location'] : "-";
-
-	
-	// 	$output .= "$id, $customer_name, $customer_email, $customer_phone, $city, $location \n";
-	// 	// var_dump($output);exit;
-	// }
 
 	return Response::make(rtrim($output, "\n"), 200, $headers);
 
