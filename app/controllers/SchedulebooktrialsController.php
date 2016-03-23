@@ -651,11 +651,11 @@ class SchedulebooktrialsController extends \BaseController {
 			$customerData = [];
 
 			try{
-				if(!isset($customer->contact_no) && $customer->contact_no != ""){
-					$customerData['contact_no'] = $data['customer_phone'];
+				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+					$customerData['contact_no'] = trim($data['customer_phone']);
 				}
 
-				if($data['otp'] != ""){
+				if(isset($data['otp']) &&  $data['otp'] != ""){
 					$customerData['contact_no_verify_status'] = "yes";
 				}
 
