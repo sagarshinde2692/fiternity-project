@@ -411,6 +411,7 @@ Route::get('exportcustomer', function() {
 
 Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_date, $end_date) { 
 	// return $reminderTimeAfter12Min 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
+	ini_set('max_execution_time', 300);
 
 	$file_name = $type."_".$start_date."_".$end_date;
 
@@ -481,7 +482,8 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 	if($type == 'booktrial' || $type == 'booktrials'){
 
 		$output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION, FINDER CITY, FINDER CATEGORY, SERVICE NAME, SERVICE CATEGORY, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
-		$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->get();
+		$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->where('city_id', 1)->take(10000)->skip(10000)->get();
+		// $items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->get();
 
 		foreach ($items as $key => $value) {
 			// var_dump($value;)exit();
