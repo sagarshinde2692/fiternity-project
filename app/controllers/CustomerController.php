@@ -1505,7 +1505,7 @@ public function getCustomerDetail(){
 
 		}
 
-		$return = array('finder'=>$finder,'offer'=>$offer,'article'=>$article);
+		$return = array('finder'=>$finder,'offer'=>$offer,'article'=>$article, 'meta' => ['finder_url' => Config::get('app.s3_finderurl'),'article_url' => Config::get('app.s3_articleurl')]);
 
 		return $return;
 
