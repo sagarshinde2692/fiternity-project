@@ -173,10 +173,13 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		if($data['finder_category_id'] == 45){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for your request to avail the healthy food trial pack. We will get in touch with you shortly. Team Fitternity.";
-		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity.";
+		switch ($data['finder_category_id']) {
+
+			case 41 : $message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. We will get in touch with you shortly regarding your personal training trial with ".ucwords($data['finder_name'])." . In case of any other queries call us on ".Config::get('app.contact_us_customer_email').". Regards - Team Fitternity"; break;
+
+			case 45 : $message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for your request to avail the healthy food trial pack. We will get in touch with you shortly. Team Fitternity."; break;
+
+			default: $message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity."; break;
 		}
 
 		$label = 'ManualBookTrial-C';

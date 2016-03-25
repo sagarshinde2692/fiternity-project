@@ -398,6 +398,9 @@ class SchedulebooktrialsController extends \BaseController {
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 		$otp	 					=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
+		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', $data['customer_address']) : "";
+		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
+
 
 
 		$booktrialdata = array(
@@ -428,8 +431,14 @@ class SchedulebooktrialsController extends \BaseController {
 			'otp'					=>		$otp,
 			'source_flag'			=> 		'customer',
 			'final_lead_stage'			=>		'booking_stage',	
-			'final_lead_status'			=>		'slot_not_fixed'
-			);
+			'final_lead_status'			=>		'slot_not_fixed',
+			'customer_address'		=> 		$customer_address,
+			'customer_note'		=>		$customer_note
+		);
+
+		(isset($data['customer_address']) && $data['customer_address'] != ''){
+			$booktrialdata['customer_address_array'] = $data['customer_address'];
+		}
 
 		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
@@ -636,9 +645,16 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->email = $data['customer_email'];
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
+
 			if(isset($customer['customer_phone'])){
 				$customer->contact_no = $data['customer_phone'];
 			}
+
+			if(isset($customer['customer_address']) && !empty($customer['customer_address']) ){
+				$customer->address = implode(",", $data['customer_address']);
+				$customer->address_array = $data['customer_address'];
+			}
+
 			$customer->identity = 'email';
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
