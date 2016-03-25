@@ -65,7 +65,15 @@ class CustomerController extends \BaseController {
 			array_set($trial, 'passed', $slot_datetime_pass_status);
 			if($slot_datetime_pass_status){
 
-				$trial_message = 'Hope you had a chance to attend the session . If you attended - rate your experience and win awesome merchandise and unlock Rs. 250 off';
+				$time_diff = strtotime($currentDateTime) - strtotime($scheduleDateTime);
+				$hour2 = 60*60*2;
+
+				$trial_message = '';
+
+				if($time_diff >= $hour2){
+
+					$trial_message = 'Hope you had a chance to attend the session . If you attended - rate your experience and win awesome merchandise and unlock Rs. 250 off';
+				}
 
 				array_set($trial, 'message', $trial_message);
 

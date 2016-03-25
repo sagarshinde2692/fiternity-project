@@ -870,5 +870,76 @@ class OzonetelsController extends \BaseController {
 
 	}
 
+	public function callback(){
+
+		try{
+
+			if(isset($_REQUEST['data']) && $_REQUEST['data'] != ''){
+				
+				$data = json_decode($_REQUEST['data'],true);
+
+				$insert["monitor_ucid"] = (isset($data["monitorUCID"]) && $data["monitorUCID"] != '') ? $data["monitorUCID"] : '';
+			    $insert["uui"] = (isset($data["UUI"]) && $data["UUI"] != '') ? $data["UUI"] : '';
+			    $insert["did"] = (isset($data["Did"]) && $data["Did"] != '') ? $data["Did"] : '';
+			    $insert["location"] = (isset($data["Location"]) && $data["Location"] != '') ? $data["Location"] : '';
+			    $insert["caller_id"] = (isset($data["CallerID"]) && $data["CallerID"] != '') ? $data["CallerID"] : '';
+			    $insert["phone_name"] = (isset($data["PhoneName"]) && $data["PhoneName"] != '') ? $data["PhoneName"] : '';
+			    $insert["skill"] = (isset($data["Skill"]) && $data["Skill"] != '') ? $data["Skill"] : '';   
+			    $insert["time_to_answer"] = (isset($data["TimeToAnswer"]) && $data["TimeToAnswer"] != '') ? $data["TimeToAnswer"] : '';
+			    $insert["duration"] = (isset($data["Duration"]) && $data["Duration"] != '') ? $data["Duration"] : '';
+			    $insert["fall_back_rule"] = (isset($data["FallBackRule"]) && $data["FallBackRule"] != '') ? $data["FallBackRule"] : '';
+			    $insert["dialed_number"] = (isset($data["DialedNumber"]) && $data["DialedNumber"] != '') ? $data["DialedNumber"] : '';
+			    $insert["type"] = (isset($data["Type"]) && $data["Type"] != '') ? $data["Type"] : '';
+			    $insert["agent_id"] = (isset($data["AgentID"]) && $data["AgentID"] != '') ? $data["AgentID"] : '';
+			    $insert["agent_unique_id"] = (isset($data["AgentUniqueID"]) && $data["AgentUniqueID"] != '') ? $data["AgentUniqueID"] : '';
+			    $insert["disposition"] = (isset($data["Disposition"]) && $data["Disposition"] != '') ? $data["Disposition"] : '';
+			    $insert["hangup_by"] = (isset($data["HangupBy"]) && $data["HangupBy"] != '') ? $data["HangupBy"] : '';
+			    $insert["status"] = (isset($data["Status"]) && $data["Status"] != '') ? strtolower($data["Status"]) : '';
+			    $insert["audio_file"] = (isset($data["AudioFile"]) && $data["AudioFile"] != '') ? $data["AudioFile"] : '';
+			    $insert["transfer_type"] = (isset($data["TransferType"]) && $data["TransferType"] != '') ? $data["TransferType"] : '';
+			    $insert["transferred_to"] = (isset($data["TransferredTo"]) && $data["TransferredTo"] != '') ? $data["TransferredTo"] : '';
+			    $insert["comments"] = (isset($data["Comments"]) && $data["Comments"] != '') ? $data["Comments"] : '';
+			    $insert["dial_status"] = (isset($data["DialStatus"]) && $data["DialStatus"] != '') ? strtolower($data["DialStatus"]) : '';
+			    $insert["api_key"] = (isset($data["Apikey"]) && $data["Apikey"] != '') ? $data["Apikey"] : '';
+
+
+			    if(isset($data["StartTime"]) && $data["StartTime"] != ''){
+			    	$insert["start_time"] = date('Y-m-d h:i:s', strtotime($data['StartTime']));
+			    }
+
+			    if(isset($data["EndTime"]) && $data["EndTime"] != ''){
+			    	$insert["end_time"] = date('Y-m-d h:i:s', strtotime($data['EndTime']));
+			    }
+
+				$ozonetel_callback = new Ozonetelcallback($insert);
+				$ozonetel_callback->_id = Ozonetelcallback::max('_id') + 1;
+				$ozonetel_callback->save();
+
+				$response = array('status'=>200,'message'=>'success');
+
+			}else{
+
+				$response = array('status'=>400,'message'=>'data is empty');
+			}
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
+
+	}
+
 
  }

@@ -35,7 +35,7 @@ Class CustomerSms extends VersionNextSms{
 
 		return $this->sendToWorker($to, $message, $label, $priority);
 	}
-	
+
 	public function rescheduledBookTrial ($data){
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
