@@ -398,7 +398,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 		$otp	 					=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
-		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', $data['customer_address']) : "";
+		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
 		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
 
 
