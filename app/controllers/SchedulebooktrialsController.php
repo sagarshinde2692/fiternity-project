@@ -651,7 +651,7 @@ class SchedulebooktrialsController extends \BaseController {
 			}
 
 			if(isset($customer['customer_address']) && !empty($customer['customer_address']) ){
-				$customer->address = implode(",", $data['customer_address']);
+				$customer->address = implode(",", array_values($data['customer_address']));
 				$customer->address_array = $data['customer_address'];
 			}
 
