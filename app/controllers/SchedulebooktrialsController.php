@@ -74,10 +74,10 @@ class SchedulebooktrialsController extends \BaseController {
 			$slots = array();
 			foreach ($item['slots'] as $slot) {
 				$booktrialslotcnt = Booktrial::where('finder_id', '=', $finderid)
-					->where('service_name', '=', $item['name'])
-					->where('schedule_date', '=', new DateTime($date) )
-					->where('schedule_slot', '=', $slot['slot_time'])
-					->count();
+				->where('service_name', '=', $item['name'])
+				->where('schedule_date', '=', new DateTime($date) )
+				->where('schedule_slot', '=', $slot['slot_time'])
+				->count();
 				// var_dump($booktrialslotcnt);
 
 				$slot_status 		= 	($slot['limit'] > $booktrialslotcnt) ? "available" : "full";
@@ -300,9 +300,9 @@ class SchedulebooktrialsController extends \BaseController {
 	public function getBookTrial($finderid,$date = null){
 		$finderid 	= 	(int) $finderid;
 		$items 		= 	Booktrial::where('finder_id', '=', $finderid)
-			->where('service_name', '=', 'gyms' )
-			->where('schedule_date', '=', new DateTime($date) )
-			->get(array('customer_name','service_name','finder_id','schedule_date','schedule_slot'));
+		->where('service_name', '=', 'gyms' )
+		->where('schedule_date', '=', new DateTime($date) )
+		->get(array('customer_name','service_name','finder_id','schedule_date','schedule_slot'));
 		return $items;
 	}
 
@@ -325,7 +325,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer_reminder_need_status = Input::json()->get('customer_reminder_need_status');
 		$booktrialdata = array(
 			'customer_reminder_need_status' 		=>		$customer_reminder_need_status
-		);
+			);
 		$booktiral 				= 	Booktrial::findOrFail($booktrial_id);
 		$booktiral_response 	=	$booktiral->update($booktrialdata);
 
@@ -398,6 +398,9 @@ class SchedulebooktrialsController extends \BaseController {
 		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
 		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 		$otp	 					=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
+		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', $data['customer_address']) : "";
+		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
+
 
 
 		$booktrialdata = array(
@@ -428,8 +431,14 @@ class SchedulebooktrialsController extends \BaseController {
 			'otp'					=>		$otp,
 			'source_flag'			=> 		'customer',
 			'final_lead_stage'			=>		'booking_stage',	
-			'final_lead_status'			=>		'slot_not_fixed'
+			'final_lead_status'			=>		'slot_not_fixed',
+			'customer_address'		=> 		$customer_address,
+			'customer_note'		=>		$customer_note
 		);
+
+		(isset($data['customer_address']) && $data['customer_address'] != ''){
+			$booktrialdata['customer_address_array'] = $data['customer_address'];
+		}
 
 		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
@@ -543,7 +552,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'source'				=>		'website',
 			'additional_info'		=>		$additional_info
 
-		);
+			);
 
 		foreach ($finder_ids as $key => $finder_id) {
 
@@ -603,13 +612,13 @@ class SchedulebooktrialsController extends \BaseController {
 				try{
 					$value->update($queueddata);
 					$response[$key] = [  	'status'=>200,
-						'message'=>'Sucessfull',
-						'id'=>$value->_id
+					'message'=>'Sucessfull',
+					'id'=>$value->_id
 					];
 				}catch(Exception $e){
 					$response[$key] = [  	'status'=>400,
-						'message'=>'Update error',
-						'id'=>$value->_id
+					'message'=>'Update error',
+					'id'=>$value->_id
 					];
 				}
 			}else{
@@ -636,9 +645,16 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->email = $data['customer_email'];
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
+
 			if(isset($customer['customer_phone'])){
 				$customer->contact_no = $data['customer_phone'];
 			}
+
+			if(isset($customer['customer_address']) && !empty($customer['customer_address']) ){
+				$customer->address = implode(",", $data['customer_address']);
+				$customer->address_array = $data['customer_address'];
+			}
+
 			$customer->identity = 'email';
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
@@ -646,9 +662,32 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->save();
 
 			return $inserted_id;
+		}else{
+
+			$customerData = [];
+
+			try{
+				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+					$customerData['contact_no'] = trim($data['customer_phone']);
+				}
+
+				if(isset($data['otp']) &&  $data['otp'] != ""){
+					$customerData['contact_no_verify_status'] = "yes";
+				}
+
+				if(count($customerData) > 0){
+					$customer->update($customerData);	
+				}
+				
+			} catch(ValidationException $e){
+				
+				Log::error($e);
+
+			}
+
+			return $customer->_id;
 		}
 
-		return $customer->_id;
 	}
 
 	public function bookTrialPaid(){
@@ -891,7 +930,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 				'final_lead_stage'				=>		$final_lead_stage,
 				'final_lead_status'				=>		$final_lead_status
-			);
+				);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1023,7 +1062,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'finder_emailqueuedids' => $finder_email_messageids,
 				'finder_smsqueuedids' => $finer_sms_messageids,
 				'customer_auto_sms' => $customer_auto_sms
-			);
+				);
 
 			$fitness_force  = 	$this->fitnessforce->createAppointment(['booktrial'=>$booktrial,'finder'=>$finder]);
 
@@ -1140,6 +1179,20 @@ class SchedulebooktrialsController extends \BaseController {
 
 				$final_lead_stage = 'booking_stage';
 				$final_lead_status = 'call_to_confirm';
+			}
+
+			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+			if($device_type != '' && $gcm_reg_id != ''){
+
+				$reg_data = array();
+
+				$reg_data['customer_id'] = $customer_id;
+				$reg_data['reg_id'] = $gcm_reg_id;
+				$reg_data['type'] = $device_type;
+
+				$this->addRegId($reg_data);
 			}
 
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -1286,7 +1339,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'source_flag'					=> 		'customer',
 				'final_lead_stage'				=>		$final_lead_stage,
 				'final_lead_status'				=>		$final_lead_status
-			);
+				);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1355,7 +1408,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
-		
+
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
 			//Send Instant (Email) To Customer & Finder
@@ -1411,7 +1464,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'finder_emailqueuedids' => $finder_email_messageids,
 				'finder_smsqueuedids' => $finer_sms_messageids,
 				'customer_auto_sms' => $customer_auto_sms
-			);
+				);
 
 			$booktrial 		= 	Booktrial::findOrFail($booktrialid);
 
@@ -1705,6 +1758,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'otp'							=> 		$otp,
 				'source_flag'					=> 		'customer',
 				'_id'							=> 		$id
+
 			);
 
 			if($update_only_info == ''){
@@ -1738,7 +1792,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'old_schedule_date'=>$old_schedule_date,
 				'old_schedule_slot_start_time'=>$old_schedule_slot_start_time,
 				'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
-			);
+				);
 
 			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
 			$booktrial->update(array('reschedule_redis_id'=>$redisid));
@@ -2068,7 +2122,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'booktrial_actions'				=>		"",
 				'followup_date'					=>		"",
 				'followup_date_time'			=>		""
-			);
+				);
 
 			$this->customermailer->cancelBookTrial($emaildata);
 			$this->findermailer->cancelBookTrial($emaildata);
@@ -2215,5 +2269,11 @@ class SchedulebooktrialsController extends \BaseController {
 		return 'no_auto_sms';
 	}
 
+	public function addRegId($data){
+
+		$response = add_reg_id($data);
+
+		return Response::json($response,$response['status']);
+	}
 
 }

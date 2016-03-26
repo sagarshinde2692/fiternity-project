@@ -450,6 +450,22 @@
                                             </td>
                                         </tr>
 
+                                        <?php if(isset($city_id) && $city_id != "" && $city_id != 2){ ?> 
+                                            <tr style="background-color:#f6f6f6;">
+                                               <td style="font-family:Roboto, Arial, sans-serif; font-size: 22px; text-align:center;line-height: 25px; color: #464646; font-weight:bolder; padding:20px; text-transform:uppercase;" st-content="fulltext-paragraph"> Treat yourself to a healthy meal after a good workout
+                                               </td>
+                                           </tr>
+                                           <tr style="background-color:#f6f6f6;">
+                                               <td style="font-family:Roboto, Arial, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; " st-content="fulltext-paragraph">
+                                                    <a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/215/smoke.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; ">
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <tr style="background-color:#f6f6f6;">
+                                                <td style="font-family:Roboto, Arial, sans-serif; font-size: 22px; text-align:center;line-height: 25px; color: #f9a91e; font-weight:bolder; padding:20px" st-content="fulltext-paragraph"> Flash this voucher at the restaurant upon entry in order to avail this voucher
+                                                </td>
+                                            </tr>
+                                        <?php } ?>
 
                                     </td>
                                 </tr> </tbody>

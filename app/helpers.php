@@ -1090,4 +1090,80 @@ if (!function_exists(('get_elastic_autosuggest_allfitness_doc'))){
         return $postfields_data;
     }
 }
+
+if (!function_exists(('add_reg_id'))){
+
+    function add_reg_id($data){
+
+        try{
+
+            $rules = [
+                'reg_id' => 'required',
+                'type' => 'required',
+            ];
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+
+                return array('status' => 400,'message' => error_message($validator->errors()));
+            }
+
+            $device = Device::where('reg_id',$data['reg_id'])->first();
+
+            if($device){
+
+                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : $device->customer_id;
+                $device->update();
+
+            }else{
+
+                $device_id = Device::max('_id') + 1;
+                $device = new Device();
+                $device->_id = $device_id;
+                $device->reg_id = $data['reg_id'];
+                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : '';
+                $device->type = $data['type'];
+                $device->status = "1";
+                $device->save();
+
+            }
+
+            $response = array('status'=>200,'message'=>'success');
+
+        }catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return $response;
+    }
+}
+
+if (!function_exists(('error_message'))){
+
+    function error_message($errors){
+
+        $errors = json_decode(json_encode($errors));
+        $message = array();
+        foreach ($errors as $key => $value) {
+            $message[$key] = $value[0];
+        }
+
+        $message = implode(',', array_values($message));
+
+        return $message;
+    }
+}
+
 ?>

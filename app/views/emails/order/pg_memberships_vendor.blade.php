@@ -235,7 +235,17 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph" >Hello,</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph" >Greetings from Fitternity</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">We have processed a membership purchase for <strong>{{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</strong> on Fitternity</p>
+
+                                                        <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+
+                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">We have processed a membership purchase for personal training with <strong>{{  ucwords($finder_name) }}</strong> on Fitternity</p>
+
+                                                        <?php } else { ?>`
+
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">We have processed a membership purchase for <strong>{{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</strong> on Fitternity</p>
+
+                                                        <?php } ?>
+
                                                 </td>
                                             </tr>
                                          
@@ -277,7 +287,6 @@
                                                         </table>
                                                         
                                                         <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                                            <tbody>
                                                                 <tbody>
                                                                     <tr>
                                                                         <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
@@ -310,20 +319,19 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($service_duration) }}</p>
                                                                         <?php }?>
 
+
+
                                                                         <?php if(isset($finder_location) && $finder_location != ""){ ?> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Branch:</p> 
-                                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($finder_location) }}</p>
+                                                                            <?php if(isset($finder_category_id) && $finder_category_id != 41) { ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Branch:</p> 
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($finder_location) }}</p>
+                                                                            <?php }?>
                                                                         <?php }?>
-
-                                                                       
-
-                                                                        
 
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
 
-                                                            </tbody>
                                                         </table>
                                                         
                                                     </td>

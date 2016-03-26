@@ -23,6 +23,7 @@ require __DIR__.'/debug_routes.php';
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
 Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
+Route::get('/homev4/{city?}', 'HomeController@getHomePageDatav4');
 Route::get('footer/{city?}', 'HomeController@getFooterByCity');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
@@ -82,6 +83,7 @@ Route::get('bookmarks/email/{customeremail}',  array('as' => 'customer.bookmarks
 Route::get('updatebookmarks/email/{customeremail}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarksbyemail','uses' => 'CustomerController@updateBookmarksByEmail'));
 Route::get('customerdetail/email/{customeremail}',  array('as' => 'customer.customerdetailbyemail','uses' => 'CustomerController@customerDetailByEmail'));
 Route::get('isregistered/{email}/{id?}/{collection?}',  array('as' => 'customer.isregistered','uses' => 'CustomerController@isRegistered'));
+Route::post('customer/addregid', array('as' => 'customer.addregid','uses' => 'CustomerController@addRegId'));
 
 
 Route::group(array('before' => 'validatetoken'), function() {
