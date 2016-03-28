@@ -436,7 +436,7 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_note'		=>		$customer_note
 		);
 
-		(isset($data['customer_address']) && $data['customer_address'] != ''){
+		if(isset($data['customer_address']) && $data['customer_address'] != ''){
 			$booktrialdata['customer_address_array'] = $data['customer_address'];
 		}
 
