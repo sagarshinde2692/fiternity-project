@@ -175,7 +175,7 @@ Class CustomerSms extends VersionNextSms{
 
 		switch ($data['finder_category_id']) {
 
-			case 41 : $message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. We will get in touch with you shortly regarding your personal training trial with ".ucwords($data['finder_name'])." . In case of any other queries call us on ".Config::get('app.contact_us_customer_email').". Regards - Team Fitternity"; break;
+			case 41 : $message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. We will get in touch with you shortly regarding your personal training trial with ".ucwords($data['finder_name'])." . In case of any other queries call us on ".Config::get('app.customer_care_number').". Regards - Team Fitternity"; break;
 
 			case 45 : $message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for your request to avail the healthy food trial pack. We will get in touch with you shortly. Team Fitternity."; break;
 
