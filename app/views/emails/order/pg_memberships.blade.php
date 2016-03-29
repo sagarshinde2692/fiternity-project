@@ -239,7 +239,17 @@
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p>Hi {{ ucwords($customer_name) }}!</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for purchasing the membership at <strong> {{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</strong> through Fitternity. We are very excited to be part of your fitness journey.</p>
+
+                                                        <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+
+                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for purchasing your fitness membership on Fitternity.com! We are excited to have you started Personal Training with <strong> {{  ucwords($finder_name) }}</strong> - we truly hope a great experience for you.</p>
+
+                                                        <?php } else { ?>
+
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for purchasing the membership at <strong> {{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</strong> through Fitternity. We are very excited to be part of your fitness journey.</p>
+
+                                                        <?php } ?>
+                   
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -258,7 +268,11 @@
                                                         <?php }?>
 
                                                         <?php if(isset($finder_name) && $finder_name != ""){ ?>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination:</strong> {{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</p>
+                                                            <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Name of Trainer:</strong> {{  ucwords($finder_name) }}</p>
+                                                            <?php } else { ?>
+                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Fitness Destination:</strong> {{  ucwords($finder_name) }}, {{ ucwords($finder_location) }}</p>
+                                                            <?php } ?>
                                                         <?php }?>
 
                                                         <?php if(isset($service_name) && $service_name != ""){ ?>

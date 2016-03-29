@@ -103,7 +103,17 @@ Class FinderSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['finder_vcc_mobile']));
 
-		$message 	=	"Hi. Greetings from Fitternity! We have processed a membership sale for ".ucwords($data['finder_name']).". Customer name: ".ucwords($data['customer_name'])." Membership purchased: ".ucwords($data['service_name']).". The details of the transaction have been shared with you on email. If you have any questions or need assistance call us on ".Config::get('app.customer_care_number')." or email us on info@fitternity.com.";
+		$service_duration = (isset($data['service_duration']) && $data['service_duration'] != '') ? $data['service_duration'] : '';
+
+        if(isset($data['finder_category_id']) && $data['finder_category_id'] == 41){
+
+			$message = "Hey ".ucwords($data['finder_name']).", Greetings from Fitternity! ".ucwords($data['customer_name'])." has purchased a ".$service_duration." personal training membership with you. The subscription code is: ".ucwords($data['_id']).". Please refer to the email sent for more details. Incase of any queries call us on ".Config::get('app.customer_care_number').". Regards - Team Fitternity";
+
+		}else{
+
+			$message 	=	"Hi. Greetings from Fitternity! We have processed a membership sale for ".ucwords($data['finder_name']).". Customer name: ".ucwords($data['customer_name'])." Membership purchased: ".ucwords($data['service_name']).". The details of the transaction have been shared with you on email. If you have any questions or need assistance call us on ".Config::get('app.customer_care_number')." or email us on info@fitternity.com.";
+
+		}
 
 		$label = 'PgOrder-V';
 		$priority = 1;
