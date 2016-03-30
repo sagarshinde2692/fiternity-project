@@ -69,10 +69,11 @@ class RankingController extends \BaseController {
         */
         $timestamp =  date('Y-m-d');
         $index_name = $this->name.$timestamp;
-              
+
         /*
        creating new index appended with timestamp
         */
+
        $url = $this->elasticsearch_url."$index_name";
        $request = array(
         'url' =>  $url,
@@ -301,6 +302,7 @@ class RankingController extends \BaseController {
     public function IndexRankMongo2Elastic($index_name, $city_id){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
+         ini_set('max_execution_time', 30000);
         $citykist      =    array(1,2,3,4,8);
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
@@ -311,14 +313,14 @@ class RankingController extends \BaseController {
         ->with('offerings')
         ->with('facilities')
         ->with('services')
-        ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+        ->with(array('ozonetelno'=>function($query){$query->select('phone_number','extension')->where('status','=','1');}))
         ->active()
         ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
                             //->whereIn('_id', array(1))
         ->where('city_id', $city_id)
         ->where('status', '=', '1')
-        ->take(5000)->skip(0)
+        ->take(10000)->skip(0)
         ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
@@ -376,9 +378,11 @@ class RankingController extends \BaseController {
      $postdata['rankv2'] = $score + $catval;
      $postfields_data = json_encode($postdata);             
      $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-     // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
+      //$posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
      $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
-     echo "<br>$posturl    ---  ".es_curl_request($request);
+     $curl_response = es_curl_request($request);
+     echo json_encode($curl_response);
+     //echo "<br>$posturl    ---  ".es_curl_request($request);
  }
 
 
