@@ -386,18 +386,21 @@ class SchedulebooktrialsController extends \BaseController {
 		$finder_name 				=	Input::json()->get('finder_name');
 		$finder						=	Finder::active()->where('_id','=',intval($finder_id))->first();
 		$customer_id				= 	$this->autoRegisterCustomer($data);
-		$customer_name				= 	(Input::has('customer_name') && Input::json()->get('customer_name') != '') ? Input::json()->get('customer_name') : "";
-		$customer_email				= 	(Input::has('customer_email') && Input::json()->get('customer_email') != '') ? Input::json()->get('customer_email') : "";
-		$customer_phone				= 	(Input::has('customer_phone') && Input::json()->get('customer_phone') != '') ? Input::json()->get('customer_phone') : "";
+		$customer_name				= 	$data['customer_name'];
+		$customer_email				= 	$data['customer_email'];
+		$customer_phone				= 	$data['customer_phone'];
 
-		$preferred_location			= 	(Input::has('preferred_location') && Input::json()->get('preferred_location') != '') ? Input::json()->get('preferred_location') : "";
-		$preferred_service			= 	(Input::has('preferred_service') && Input::json()->get('preferred_service') != '') ? Input::json()->get('preferred_service') : "";
-		$preferred_day				= 	(Input::has('preferred_day') && Input::json()->get('preferred_day') != '') ? Input::json()->get('preferred_day') : "";
-		$preferred_time				= 	(Input::has('preferred_time') && Input::json()->get('preferred_time') != '') ? Input::json()->get('preferred_time') : "";
-		$device_id					= 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
-		$premium_session 			=	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
-		$additional_info			= 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
+		$preferred_location			= 	(isset($data['preferred_location']) && $data['preferred_location'] != '') ? $data['preferred_location'] : "";
+		$preferred_service			= 	(isset($data['preferred_service']) && $data['preferred_service'] != '') ? $data['preferred_service'] : "";
+		$preferred_day				= 	(isset($data['preferred_day']) && $data['preferred_day'] != '') ? $data['preferred_day'] : "";
+		$preferred_time				= 	(isset($data['preferred_time']) && $data['preferred_time'] != '') ? $data['preferred_time'] : "";
+		$device_id					= 	(isset($data['device_id']) && $data['device_id'] != '') ? $data['device_id'] : "";
+		$premium_session 			=	(isset($data['premium_session'])) ? (boolean) $data['premium_session'] : false;
+		$additional_info			= 	(isset($data['additional_info']) && $data['additional_info'] != '') ? $data['additional_info'] : "";
 		$otp	 					=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
+		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
+		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
+
 
 
 		$booktrialdata = array(
@@ -428,8 +431,30 @@ class SchedulebooktrialsController extends \BaseController {
 			'otp'					=>		$otp,
 			'source_flag'			=> 		'customer',
 			'final_lead_stage'			=>		'booking_stage',	
-			'final_lead_status'			=>		'slot_not_fixed'
-			);
+			'final_lead_status'			=>		'slot_not_fixed',
+			'customer_address'		=> 		$customer_address,
+			'customer_note'		=>		$customer_note
+		);
+
+
+		if(isset($data['customer_address']) && $data['customer_address'] != ''){
+			$booktrialdata['customer_address_array'] = $data['customer_address'];
+		}
+
+		$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+		$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+		if($device_type != '' && $gcm_reg_id != ''){
+
+			$reg_data = array();
+
+			$reg_data['customer_id'] = $customer_id;
+			$reg_data['reg_id'] = $gcm_reg_id;
+			$reg_data['type'] = $device_type;
+
+			$this->addRegId($reg_data);
+		}
+			
 
 		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
@@ -636,9 +661,16 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->email = $data['customer_email'];
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
+
 			if(isset($customer['customer_phone'])){
 				$customer->contact_no = $data['customer_phone'];
 			}
+
+			if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+				$customer->address = implode(",", array_values($data['customer_address']));
+				$customer->address_array = $data['customer_address'];
+			}
+
 			$customer->identity = 'email';
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
@@ -673,6 +705,7 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 
 	}
+
 
 	public function bookTrialPaid(){
 

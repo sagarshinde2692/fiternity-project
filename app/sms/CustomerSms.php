@@ -173,10 +173,13 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		if($data['finder_category_id'] == 45){
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for your request to avail the healthy food trial pack. We will get in touch with you shortly. Team Fitternity.";
-		}else{
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity.";
+		switch ($data['finder_category_id']) {
+
+			case 41 : $message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. We will get in touch with you shortly regarding your personal training trial with ".ucwords($data['finder_name'])." . In case of any other queries call us on ".Config::get('app.customer_care_number').". Regards - Team Fitternity"; break;
+
+			case 45 : $message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for your request to avail the healthy food trial pack. We will get in touch with you shortly. Team Fitternity."; break;
+
+			default: $message 	=	"Hey ".ucwords($data['customer_name']).". Thank you for requesting a session at ".ucwords($data['finder_name'])." through fitternity. Our team will get in touch with you shortly and help you arrange your session. Thanks - Team Fitternity."; break;
 		}
 
 		$label = 'ManualBookTrial-C';
@@ -222,12 +225,20 @@ Class CustomerSms extends VersionNextSms{
 
 		$to 		=  	array_merge(explode(',', $data['customer_phone']));
 
-		if($data['type'] == 'womens-day'){
+		if(isset($data['finder_category_id']) && $data['finder_category_id'] == 41){
 
-			$message = "Hi ".ucwords($data['customer_name']).". Thank you for purchasing of membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].".  We will be sending you an email with the all details you need to start the membership. Call us on ".Config::get('app.customer_care_number')." for any queries.";
+			$message = "Hey ".ucwords($data['customer_name']).", Thank you for purchasing membership for personal training with ".ucwords($data['finder_name']).". Your subscription code is: ".$data['_id']." . For any queries call us on ".Config::get('app.customer_care_number').". Regards - Team Fitternity";
+
 		}else{
 
-			$message = "Hi ".ucwords($data['customer_name']).". Thank you for purchasing of membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
+			if($data['type'] == 'womens-day'){
+
+				$message = "Hi ".ucwords($data['customer_name']).". Thank you for purchasing of membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].".  We will be sending you an email with the all details you need to start the membership. Call us on ".Config::get('app.customer_care_number')." for any queries.";
+			}else{
+
+				$message = "Hi ".ucwords($data['customer_name']).". Thank you for purchasing of membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
+			}
+
 		}
 
 		$label = 'PgOrder-C';

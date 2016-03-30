@@ -591,6 +591,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
             $key3 = trim($key1," ");
             $info_service_list = explode("</li><li>", $key3);
         }
+   
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
@@ -644,7 +645,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'servicelist'                   =>      $servicenamelist,
                 'show_offers'                   =>      $offer_counter,
                 'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
-                'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : "",
+                'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : new stdClass(),
                 //'trialschedules'                =>      $trialdata,
                 );                
 $postfields_data['servicephotos'] = $picslist;
