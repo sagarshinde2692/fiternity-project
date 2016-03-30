@@ -137,7 +137,7 @@ class RankingSearchController extends \BaseController
 }';
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $body
@@ -394,7 +394,7 @@ public function getRankedFinderResultsMobile()
 }';
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $body
@@ -521,7 +521,7 @@ public function getRankedFinderResultsApp()
     '.$sort.'
 }';
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_search",
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $body
