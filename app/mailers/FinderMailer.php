@@ -210,6 +210,31 @@ Class FinderMailer extends Mailer {
 
 	}
 
+
+	public function emailToPersonalTrainers ($to, $name, $data){
+
+		// $bcc_emailids  				=  	(!is_array($to)) ? explode(',', $to) : [];
+		$bcc_emailids  				=  	(!is_array($to)) ? array_merge( explode(',', $to), ['mitmehta@fitternity.com','utkarshmehrotra@fitternity.com','shiprabaxi@fitternity.com'] ) : [];
+		$email_template_customer 	= 	'emails.finder.personal_trainer';
+		$template_data 				= 	$data;
+		$subject  					=   'Personal Trainer category live : Process for lead and sales generation | Fitternity';
+
+		$message_data 	= array(
+			// 'user_email' => Config::get('mail.to_mailus'),
+			'user_email' => 'sanjaysahu@fitternity.com',
+			'user_name' => ucwords($name),
+			'bcc_emailids' => $bcc_emailids,
+			// 'bcc_emailids' => ['sanjaysahu@fitternity.com'],
+			'email_subject' => $subject
+			);
+
+		$label = 'EmailToPersonalTrainers-F';
+		$priority = 1;
+		
+		return $this->sendToWorker('vendor',$email_template_customer, $template_data, $message_data, $label, $priority);
+
+	}
+
 	public function buyServiceMembershipThroughFitmania ($data){
 
 		$email_template 	= 	'emails.order.fitmania_membership_vendor_v1';

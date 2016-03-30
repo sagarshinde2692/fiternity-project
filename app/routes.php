@@ -370,6 +370,7 @@ Route::get('fitmaniaresendemails', 'FitmaniaController@resendEmails');
 Route::get('fitmaniaresendemailsworngcustomer', 'FitmaniaController@resendEmailsForWorngCustomer');
 Route::get('fitmaniaresendemailsworngfinder', 'FitmaniaController@resendEmailsForWorngFinder');
 Route::get('email2fitmaniavendors', 'FitmaniaController@emailToFitmaniaVendors');
+Route::get('email2personaltrainers', 'OrderController@emailToPersonalTrainers');
 
 
 

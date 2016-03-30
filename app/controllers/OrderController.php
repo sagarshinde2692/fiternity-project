@@ -55,7 +55,6 @@ class OrderController extends \BaseController {
 
 			//send welcome email to payment gateway customer
 
-
 			$finder = Finder::find((int)$order->finder_id);
 
 			try {
@@ -696,6 +695,42 @@ class OrderController extends \BaseController {
 		$response = add_reg_id($data);
 
 		return Response::json($response,$response['status']);
+	}
+
+
+
+
+
+	public function emailToPersonalTrainers (){
+
+		$match 			=	array(41);
+   		// $finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->where('_id',7241)->get()->toArray();
+   		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
+
+		// return $finders;
+
+		foreach ($finders as $key => $finder) {
+			$finder_id				=	(isset($finder['_id'])) ? $finder['_id'] : [];
+			$finder_name			=	(isset($finder['title'])) ? $finder['title'] : "";
+			$finder_vcc_email		=	(isset($finder['finder_vcc_email'])) ? $finder['finder_vcc_email'] : "";
+			// $finder_vcc_email		=   "sanjay.id7@gmail.com";
+			// echo  $finder_id .$finder_name ." - ". $finder_vcc_email. " <br>" ;
+
+
+			if($finder_name !="" && $finder_vcc_email !=""){
+				$queid 	=	"";
+				$data  	=	$finder;
+				$queid 	=	$this->findermailer->emailToPersonalTrainers($finder_vcc_email, $finder_name, $data);
+				echo " <br>". $queid ." - ". $finder_id ." - ".$finder_name ." - ". $finder_vcc_email. " <br>" ;
+				echo "==================================================================================================================== <br><br>";
+			}
+
+		}
+		// return $corders;
+
+		return "email send";
+
+
 	}
 
 
