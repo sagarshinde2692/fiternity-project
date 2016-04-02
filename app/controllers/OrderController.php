@@ -293,6 +293,7 @@ class OrderController extends \BaseController {
 		// $userdata	=	array_except(Input::all(), array());
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		$postdata		=	Input::json()->all();
 
 		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
 		// $required_fiels = ['customer_name', ];
@@ -469,7 +470,7 @@ class OrderController extends \BaseController {
 			$this->addRegId($reg_data);
 		}
 
-		if(isset(Input::json()->get('preferred_starting_date')) && Input::json()->get('preferred_starting_date')  != '') {
+		if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
 
 			if(trim(Input::json()->get('preferred_starting_date')) != '-'){
 				$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
