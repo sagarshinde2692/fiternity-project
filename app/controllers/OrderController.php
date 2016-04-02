@@ -469,11 +469,14 @@ class OrderController extends \BaseController {
 			$this->addRegId($reg_data);
 		}
 
-		if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
-			array_set($data, 'preferred_starting_date', $preferred_starting_date);
-			array_set($data, 'start_date', $preferred_starting_date);
+		if(isset(Input::json()->get('preferred_starting_date')) && Input::json()->get('preferred_starting_date')  != '') {
+
+			if(trim(Input::json()->get('preferred_starting_date')) != '-'){
+				$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+				$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+				array_set($data, 'start_date', $preferred_starting_date);
+				array_set($data, 'preferred_starting_date', $preferred_starting_date);
+			}
 		}
 
 
