@@ -122,4 +122,15 @@ Class FinderSms extends VersionNextSms{
 	}
 
 
+
+	public function buyLandingpagePurchaseEefashrof ($data, $count){
+
+		$to 		=  	['9730401839','9773348762'];
+		$message 	=	"We have received the payment for ".ucwords($data['customer_name'])."for The 21 day Dupernova Challenge with Eefa Shrof. The details of the customer are: Customer Name: ".ucwords($data['customer_name'])." Contact Number: ".$data['customer_phone']." Count: ".$count;
+		$label 		= 	'buyLandingpagePurchaseEefashrof-F';
+
+		return $this->sendToWorker($to, $message, $label);
+	}
+
+
 }

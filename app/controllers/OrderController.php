@@ -625,6 +625,11 @@ class OrderController extends \BaseController {
 			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
 		}
 
+		if($orderData['type'] == 'eefashrof'){
+			$salecount 			= 	Order::where('type', 'eefashrof')->where('status', '1')->count();
+			$sndsSmsVendor		= 	$this->findersms->buyLandingpagePurchaseEefashrof($orderData,$salecount);
+		}
+		
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
 
 		return Response::json($resp,200);		
@@ -705,7 +710,7 @@ class OrderController extends \BaseController {
 
 		$match 			=	array(41);
    		// $finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->where('_id',7241)->get()->toArray();
-   		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
+		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
 
 		// return $finders;
 
