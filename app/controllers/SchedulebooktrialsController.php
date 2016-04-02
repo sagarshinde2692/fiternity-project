@@ -1199,14 +1199,14 @@ class SchedulebooktrialsController extends \BaseController {
 			}
 
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
-			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+			$reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
-			if($device_type != '' && $gcm_reg_id != ''){
+			if($device_type != '' && $reg_id != ''){
 
 				$reg_data = array();
 
 				$reg_data['customer_id'] = $customer_id;
-				$reg_data['reg_id'] = $gcm_reg_id;
+				$reg_data['reg_id'] = $reg_id;
 				$reg_data['type'] = $device_type;
 
 				$this->addRegId($reg_data);
