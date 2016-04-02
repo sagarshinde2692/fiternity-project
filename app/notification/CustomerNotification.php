@@ -4,79 +4,94 @@ use Config;
 
 Class CustomerNotification extends Notification{
 
-	public function bookTrialReminderBefore1Min ($data, $delay){
-		
-		$to 				=  	trim($data['device_id']);
+	public function bookTrial ($data){
 
-		$title				=   "Fitternity Trial";
+		$to 		=  	array($data['reg_id']);
 
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"trial";
-
-		$slug 				= 	$data['finder_slug'];
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
 		if($data['show_location_flag']){
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		
+			$text 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your ".$session_type." session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])." - ".ucwords($data['finder_location'])." is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
 		}else{
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
+			$text 	=	"Hi ".ucwords($data['customer_name']).". Thank you for using Fitternity. Your ".$session_type." session for ".ucwords($data['service_name'])." at ".ucwords($data['finder_name'])."  is confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity.";
 		}
+		
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
 
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		$label = 'BookTrial-C';
+		$priority = 1;
+
+		return $this->sendToWorker($to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
 	}
 
 
 
-	public function bookTrialReminderBefore5Hour ($data, $delay){
+	public function rescheduledBookTrial ($data){
 
-		$to 				=  	trim($data['device_id']);
+		$to 		=  	array($data['reg_id']);
 
-		$title				=   "Fitternity Trial";
-
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"trial";
-
-		$slug 				= 	$data['finder_slug'];
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
 		if($data['show_location_flag']){
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		
+			$text 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').".";
 		}else{
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
+			$text 	=	"Hey ".ucwords($data['customer_name']).". Your ".$session_type." session is re-scheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." at for ".ucwords($data['service_name'])." ".ucwords($data['finder_name']).". Thank you for using Fitternity. For any queries call us on ".Config::get('app.customer_care_number')." or mail us on ".Config::get('app.contact_us_customer_email').".";
 		}
 
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+		
+		$label = 'RescheduledTrial-C';
+		$priority = 1;
+
+
+		return $this->sendToWorker($to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
 	}
+
+
+	public function bookTrialReminderBefore1Hour ($data, $delay){
+
+		$to 		=  	array($data['reg_id']);
+		$bity_url 	= 	$google_pin = "";
+		
+		if($data['show_location_flag']){
+			$text 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug']." Contact person: ".ucwords($data['finder_poc_for_customer_name']).$google_pin." have a great workout!";
+		}else{
+			$text 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location']).". For address please refer to http://www.fitternity.com/".$data['finder_slug']." ".$google_pin." have a great workout!";
+		}
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+
+		$label = 'TrialRmdBefore1Hr-C';
+		$priority = 0;
+
+		return $this->sendToWorker($to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
+	}
+
 
 	public function bookTrialReminderAfter2Hour ($data, $delay){
 
-		$to 				=  	trim($data['device_id']);
-
-		$title				=   "Publish Review";
-
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"offer";
-
-		$slug 				= 	$data['finder_slug'];
+		$to 		=  	array($data['reg_id']);
 
 		if($data['show_location_flag']){
-
-			$message 	=	"Hope you had a good experience at your trial session with ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". Write a review and stand a chance to win exciting goodies.";
-		
+			$text 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 250 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
 		}else{
-			
-			$message 	=	"Hope you had a good experience at your trial session with ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug']." Write a review and stand a chance to win exciting goodies.";
+			$text 	=	"Hope you had a chance to attend the session ".ucwords($data['finder_name']).". If you attended- rate your experience and win awesome merchandise and unlock Rs. 250 off. Click here to post a review: http://www.fitternity.com/".$data['finder_slug'];
 		}
-		
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
 
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+
+		$label = 'TrialRmdAfter2Hr-C';
+		$priority = 0;
+
+		return $this->sendToWorker($to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
 	}
 
 

@@ -15,7 +15,7 @@ Class Sidekiq {
 
     public function __construct() {
 
-        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg','outbound'=>'trig/outbound','fitmaniabuyable'=>'trig/fitmaniabuyable');
+        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg','outbound'=>'trig/outbound','fitmaniabuyable'=>'trig/fitmaniabuyable','notify'=>'trig/notify');
         $this->initClient();
     }
 
