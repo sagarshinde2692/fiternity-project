@@ -53,6 +53,7 @@ class VendorpanelController extends BaseController {
         return $renewal_totalsales;
     }
 
+    
     private function getNonRenewalTotalSalesCountAmount($finder){
 
         $finder_id      =   intval($finder->_id);
