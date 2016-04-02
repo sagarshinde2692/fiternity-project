@@ -17,6 +17,19 @@ require __DIR__.'/debug_routes.php';
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
+
+
+##############################################################################
+/******************** VENDOR PANEL SECTION START HERE ***********************/
+Route::get('/vendorsummary/sales/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summarysales','uses' => 'VendorpanelController@getSummarySales'));
+
+
+
+/******************** VENDOR PANEL SECTION END HERE ********************/
+##############################################################################
+
+
+
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
 
