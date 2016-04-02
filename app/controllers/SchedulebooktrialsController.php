@@ -803,6 +803,21 @@ class SchedulebooktrialsController extends \BaseController {
 				$final_lead_status = 'call_to_confirm';
 			}
 
+			$reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+
+			if($device_type != '' && $reg_id != ''){
+
+				$reg_data = array();
+
+				$reg_data['customer_id'] = $customer_id;
+				$reg_data['reg_id'] = $reg_id;
+				$reg_data['type'] = $device_type;
+
+				$this->addRegId($reg_data);
+			}
+
+
 			// $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
 			// $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			// $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
@@ -946,8 +961,12 @@ class SchedulebooktrialsController extends \BaseController {
 				'source_flag'					=> 		'customer',
 
 				'final_lead_stage'				=>		$final_lead_stage,
-				'final_lead_status'				=>		$final_lead_status
-				);
+				'final_lead_status'				=>		$final_lead_status,
+
+				'reg_id'						=>		$reg_id,
+				'device_type'					=>		$device_type
+
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1041,33 +1060,45 @@ class SchedulebooktrialsController extends \BaseController {
 			if($twelveHourDiffInMin >= (12 * 60)){
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+
+				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				}
+
 			}else{
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-			}
 
-			if(isset($data['device_id']) && $data['device_id'] != ''){
-				if($fiveHourDiffInMin >= (5 * 60)){
-					$sndBefore5HourNotificationCustomer					=	'';
-					$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
+				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				}
+
 			}
 
 			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
 			if($oneHourDiffInMin >= 60){
-				$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+
 				$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-				$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
 				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
+
+				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+					$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				}else{
+					$customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+				}
+
 			}
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
 			$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
-			$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
-			$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
+			
+			if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
+				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+			}else{
+				$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+			}
+
 
 
 			//update queue ids for booktiral
@@ -1198,8 +1229,8 @@ class SchedulebooktrialsController extends \BaseController {
 				$final_lead_status = 'call_to_confirm';
 			}
 
+			$reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
-			$reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
 			if($device_type != '' && $reg_id != ''){
 
@@ -1355,8 +1386,10 @@ class SchedulebooktrialsController extends \BaseController {
 				'otp'							=>		$otp,
 				'source_flag'					=> 		'customer',
 				'final_lead_stage'				=>		$final_lead_stage,
-				'final_lead_status'				=>		$final_lead_status
-				);
+				'final_lead_status'				=>		$final_lead_status,
+				'reg_id'						=>		$reg_id,
+				'device_type'					=>		$device_type
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1446,33 +1479,45 @@ class SchedulebooktrialsController extends \BaseController {
 			if($twelveHourDiffInMin >= (12 * 60)){
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+
+				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				}
+
 			}else{
 				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-			}
 
-			if(isset($data['device_id']) && $data['device_id'] != ''){
-				if($fiveHourDiffInMin >= (5 * 60)){
-					$sndBefore5HourNotificationCustomer					=	'';
-					$customer_notification_messageids['before5hour'] 	= 	$sndBefore5HourNotificationCustomer;
+				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 				}
+
 			}
 
 			//Send Reminder Notiication (Sms) Before 1 Hour To Customer
 			if($oneHourDiffInMin >= 60){
-				$sndBefore1HourSmsCustomer					=	$this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+
 				$sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-				$customer_sms_messageids['before1hour'] 	= 	$sndBefore1HourSmsCustomer;
 				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
+
+				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+					$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				}else{
+					$customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+				}
+
 			}
 
 			//Send Post Trial Notificaiton After 2 Hours Need to Write
 			$sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourSmsCustomer							= 	$this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-			$sndAfter2HourNotificationCustomer					= 	$this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
-			$customer_sms_messageids['after2hour'] 				= 	$sndAfter2HourSmsCustomer;
-			$customer_notification_messageids['after2hour'] 	= 	$sndAfter2HourNotificationCustomer;
+			
+			if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
+				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+			}else{
+				$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+			}
+
 
 			//update queue ids for booktiral
 			$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids,
