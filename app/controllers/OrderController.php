@@ -28,7 +28,7 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof');
 	}
 
 
@@ -629,7 +629,7 @@ class OrderController extends \BaseController {
 			$salecount 			= 	Order::where('type', 'eefashrof')->where('status', '1')->count();
 			$sndsSmsVendor		= 	$this->findersms->buyLandingpagePurchaseEefashrof($orderData,$salecount);
 		}
-		
+
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
 
 		return Response::json($resp,200);		
