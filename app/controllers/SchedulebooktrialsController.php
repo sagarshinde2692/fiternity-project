@@ -1106,7 +1106,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids,
 				'customer_smsqueuedids' => $customer_sms_messageids,
-				'customer_notificationqueuedids' => $customer_notification_messageids,
+				'customer_notification_messageids' => $customer_notification_messageids,
 				'finder_emailqueuedids' => $finder_email_messageids,
 				'finder_smsqueuedids' => $finer_sms_messageids,
 				'customer_auto_sms' => $customer_auto_sms
@@ -1522,7 +1522,7 @@ class SchedulebooktrialsController extends \BaseController {
 			//update queue ids for booktiral
 			$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids,
 				'customer_smsqueuedids' => $customer_sms_messageids,
-				'customer_notificationqueuedids' => $customer_notification_messageids,
+				'customer_notification_messageids' => $customer_notification_messageids,
 				'finder_emailqueuedids' => $finder_email_messageids,
 				'finder_smsqueuedids' => $finer_sms_messageids,
 				'customer_auto_sms' => $customer_auto_sms
@@ -2062,7 +2062,7 @@ class SchedulebooktrialsController extends \BaseController {
 				//update queue ids for booktiral
 				$booktrial 		= 	Booktrial::findOrFail($booktrialid);
 				$queueddata 	= 	array('customer_emailqueuedids' => $customer_email_messageids,
-					'customer_notificationqueuedids' => $customer_notification_messageids,
+					'customer_notification_messageids' => $customer_notification_messageids,
 					'customer_smsqueuedids' => $customer_sms_messageids,
 					'finder_emailqueuedids' => $finder_email_messageids,
 					'finder_smsqueuedids' => $finer_sms_messageids);
