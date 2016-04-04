@@ -401,6 +401,9 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
 		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
 
+		$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+		$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+
 
 
 		$booktrialdata = array(
@@ -433,7 +436,10 @@ class SchedulebooktrialsController extends \BaseController {
 			'final_lead_stage'			=>		'booking_stage',	
 			'final_lead_status'			=>		'slot_not_fixed',
 			'customer_address'		=> 		$customer_address,
-			'customer_note'		=>		$customer_note
+			'customer_note'		=>		$customer_note,
+
+			'social_referrer'			=>		$social_referrer,
+			'transacted_after'		=>		$transacted_after
 		);
 
 
@@ -805,6 +811,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+			$social_referrer							= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$transacted_after					= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 			if($device_type != '' && $reg_id != ''){
 
@@ -964,7 +972,10 @@ class SchedulebooktrialsController extends \BaseController {
 				'final_lead_status'				=>		$final_lead_status,
 
 				'reg_id'						=>		$reg_id,
-				'device_type'					=>		$device_type
+				'device_type'					=>		$device_type,
+
+				'social_referrer'						=>		$social_referrer,
+				'transacted_after'				=>		$transacted_after
 
 			);
 
@@ -1232,6 +1243,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
 
+			$social_referrer						= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$transacted_after						= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+
 			if($device_type != '' && $reg_id != ''){
 
 				$reg_data = array();
@@ -1388,7 +1402,11 @@ class SchedulebooktrialsController extends \BaseController {
 				'final_lead_stage'				=>		$final_lead_stage,
 				'final_lead_status'				=>		$final_lead_status,
 				'reg_id'						=>		$reg_id,
-				'device_type'					=>		$device_type
+				'device_type'					=>		$device_type,
+
+				'social_referrer'						=>		$social_referrer,
+				'transacted_after'				=>		$transacted_after
+
 			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
