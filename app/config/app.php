@@ -130,7 +130,7 @@ return array(
 		'Hugofirth\Mailchimp\MailchimpServiceProvider',	
 		'Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider',
 		'Indatus\Dispatcher\ServiceProvider',
-		'Aloha\Twilio\TwilioServiceProvider',
+		// 'Aloha\Twilio\TwilioServiceProvider',
 		'Hernandev\HipchatLaravel\HipchatLaravelServiceProvider',
 		'Aws\Laravel\AwsServiceProvider',
 		),
@@ -203,7 +203,7 @@ return array(
 		'Moloquent'       	=> 'Jenssegers\Mongodb\Model',
 		'MailchimpWrapper'  => 'Hugofirth\Mailchimp\Facades\MailchimpWrapper',
 		'PushNotification' 	=> 'Davibennun\LaravelPushNotification\Facades\PushNotification',
-		'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
+		// 'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 		'AWS' 				=> 'Aws\Laravel\AwsFacade',
 

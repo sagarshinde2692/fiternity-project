@@ -559,6 +559,7 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'buyLandingpagePurchase-C';
 		
+		// var_dump($template_data);exit();
 		$this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label);
 
 		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');

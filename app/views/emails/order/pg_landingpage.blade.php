@@ -236,7 +236,7 @@
                                                         <p>Hi, {{  ucwords($customer_name) }}</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:25px; " st-content="fulltext-paragraph"> Greetings from Fitternity.</p>
                                                         <?php if(isset($email_body1) && $email_body1 != ""){ ?> 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:25px; " st-content="fulltext-paragraph">{{email_body1}}</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:25px; " st-content="fulltext-paragraph">{{$email_body1}}</p>
                                                         <?php }?>
                                                 </td>
                                             </tr>
@@ -278,10 +278,10 @@
                                                     </td>
                                             </tr>
 
-                            <?php if(isset($email_body1) && $email_body1 != ""){ ?> 
+                            <?php if(isset($email_body2) && $email_body2 != ""){ ?> 
                              <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p style="padding-top:25px">{{email_body2}}</p>
+                                    <p style="padding-top:25px">{{$email_body2}}</p>
                                 </td>
                             </tr>
                             <?php }?>

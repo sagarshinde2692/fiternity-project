@@ -28,7 +28,7 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof');
 	}
 
 
@@ -293,6 +293,7 @@ class OrderController extends \BaseController {
 		// $userdata	=	array_except(Input::all(), array());
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		$postdata		=	Input::json()->all();
 
 		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
 		// $required_fiels = ['customer_name', ];
@@ -416,7 +417,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type for sms body and email body  zumbathon','booiaka
-		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon'){
+		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon' || $data['type'] == 'eefashrof' ){
 			if( empty($data['sms_body']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - sms_body");
 				return Response::json($resp,404);				
@@ -469,11 +470,14 @@ class OrderController extends \BaseController {
 			$this->addRegId($reg_data);
 		}
 
-		if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
-			array_set($data, 'preferred_starting_date', $preferred_starting_date);
-			array_set($data, 'start_date', $preferred_starting_date);
+		if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+
+			if(trim(Input::json()->get('preferred_starting_date')) != '-'){
+				$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+				$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+				array_set($data, 'start_date', $preferred_starting_date);
+				array_set($data, 'preferred_starting_date', $preferred_starting_date);
+			}
 		}
 
 
@@ -625,6 +629,11 @@ class OrderController extends \BaseController {
 			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
 		}
 
+		if($orderData['type'] == 'eefashrof'){
+			$salecount 			= 	Order::where('type', 'eefashrof')->where('status', '1')->count();
+			$sndsSmsVendor		= 	$this->findersms->buyLandingpagePurchaseEefashrof($orderData,$salecount);
+		}
+
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
 
 		return Response::json($resp,200);		
@@ -705,7 +714,7 @@ class OrderController extends \BaseController {
 
 		$match 			=	array(41);
    		// $finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->where('_id',7241)->get()->toArray();
-   		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
+		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
 
 		// return $finders;
 

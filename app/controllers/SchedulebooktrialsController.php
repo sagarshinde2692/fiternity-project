@@ -236,7 +236,8 @@ class SchedulebooktrialsController extends \BaseController {
 	 * @return Response
 	 */
 
-	public function getServiceSchedule($serviceid, $date = null, $noofdays = null){
+	public function getServiceSchedule($serviceid, $date = null, $noofdays = null, $schedulesof = null){
+
 
 		// $dobj = new DateTime;print_r($dobj);exit;
 		$currentDateTime 	=	\Carbon\Carbon::now();
@@ -247,6 +248,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		$finderid 			= 	intval($item['finder_id']);
 		$noofdays 			=  	($noofdays == null) ? 1 : $noofdays;
+		$schedulesof 		=  	($schedulesof == null) ? 'trialschedules' : $schedulesof;
 		$serviceschedules 	= 	array();
 
 		for ($j = 0; $j < $noofdays; $j++) {
@@ -256,11 +258,22 @@ class SchedulebooktrialsController extends \BaseController {
 			$weekday 		= 	strtolower(date( "l", $timestamp));
 			// echo "$dt -- $weekday <br>";
 
-			$weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
-				if($value['weekday'] == $weekday){
-					return $value;
-				}
-			}));
+			if($schedulesof == 'trialschedules'){
+
+				$weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
+					if($value['weekday'] == $weekday){
+						return $value;
+					}
+				}));
+				
+			}else{
+
+				$weekdayslots = head(array_where($item['workoutsessionschedules'], function($key, $value) use ($weekday){
+					if($value['weekday'] == $weekday){
+						return $value;
+					}
+				}));
+			}
 
 			// print_pretty($weekdayslots);
 
@@ -403,8 +416,6 @@ class SchedulebooktrialsController extends \BaseController {
 
 		$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
 		$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
-
-
 
 
 		$booktrialdata = array(
