@@ -1,65 +1,15 @@
 <?PHP namespace App\Notification;
 
-use Queue;
-
-use PushNotification;
+use App\Services\Sidekiq as Sidekiq;
 
 abstract Class Notification {
 
-	public function sendTo($to, $message, $delay = null, $title = "Fitternity", $booktrialid, $type = "generic", $slug){
+    protected $sidekiq;
 
-        // return "$to, $message, $delay, $title , $booktrialid, $type , $slug";
+    public function __construct(Sidekiq $sidekiq) {
 
-		if($delay == null){
-
-            try {
-                $messageid = Queue::push(function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
-
-                    $job_id = $job->getJobId(); 
-                    $msg = strip_tags($message);
-                    try{
-                        PushNotification::app('appNameAndroid')->to($to)->send($msg, array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
-                    }catch(\Exception $e){
-                        // do nothing... php will ignore and continue    
-                    }
-                    $job->delete();  
-
-                }, array(), 'pullapp');
-
-                return $messageid;
-
-            } catch(\Exception $e){
-                // do nothing
-            }
-
-
-        }else{
-
-            $seconds    =   $this->getSeconds($delay);
-
-            try {
-                $messageid  =   Queue::later($seconds, function($job) use ($to, $message, $title, $booktrialid, $type, $slug){ 
-
-                    $job_id = $job->getJobId();
-
-                    $msg = strip_tags($message); 
-                    try{
-                        PushNotification::app('appNameAndroid')->to($to)->send($msg , array('title' => $title, 'id' => $booktrialid, 'type' => $type, 'slug' => $slug));
-                    }catch (\Exception $e){
-                        // do nothing... php will ignore and continue    
-                    }
-                    $job->delete();  
-
-                }, array(), 'pullapp');
-
-                return $messageid;
-            } catch(\Exception $e){
-                // do nothing
-            }
-        }
-
+        $this->sidekiq = $sidekiq;
     }
-
 
     /**
      * Calculate the number of seconds with the given delay.
@@ -70,13 +20,24 @@ abstract Class Notification {
     protected function getSeconds($delay){
 
         if ($delay instanceof DateTime){
-            return max(0, $delay->getTimestamp() - $this->getTime());
-        }
 
-        if ($delay instanceof \Carbon\Carbon){
+            return max(0, $delay->getTimestamp() - $this->getTime());
+
+        }elseif ($delay instanceof \Carbon\Carbon){
+
             return max(0, $delay->timestamp - $this->getTime());
+
+        }elseif(isset($delay['date'])){
+
+            $time = strtotime($delay['date']) - $this->getTime();
+
+            return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();   
         }
-        // echo (int) $delay; exit;
+        
         return (int) $delay;
     }
 
@@ -87,6 +48,26 @@ abstract Class Notification {
      */
     public function getTime(){
         return time();
+    }
+
+
+    public function sendToWorker($device_type, $to, $text,  $notif_id, $notif_type, $notif_object, $label = 'label', $priority = 0, $delay = 0){
+
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+    
+        $payload = array('to'=>$to,'text'=>$text,'notif_id'=>$notif_id,'notif_type'=>$notif_type,'notif_object'=>$notif_object,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+        
+        $route  = $device_type;
+        $result  = $this->sidekiq->sendToQueue($payload,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+
     }
 
 

@@ -4,79 +4,120 @@ use Config;
 
 Class CustomerNotification extends Notification{
 
-	public function bookTrialReminderBefore1Min ($data, $delay){
+	public function bookTrial ($data){
+
+		$to 		=  	array($data['reg_id']);
+
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
+
+		$text = "Your ".$session_type." session with ".ucwords($data['finder_name'])." has been confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Know the details of your trial.";
 		
-		$to 				=  	trim($data['device_id']);
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
 
-		$title				=   "Fitternity Trial";
+		$label = 'BookTrial-C';
+		$priority = 1;
+		$device_type = $data['device_type'];
 
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"trial";
-
-		$slug 				= 	$data['finder_slug'];
-
-		if($data['show_location_flag']){
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		
-		}else{
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		}
-
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
 	}
 
 
 
-	public function bookTrialReminderBefore5Hour ($data, $delay){
+	public function rescheduledBookTrial ($data){
 
-		$to 				=  	trim($data['device_id']);
+		$to 		=  	array($data['reg_id']);
 
-		$title				=   "Fitternity Trial";
+		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
 
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"trial";
-
-		$slug 				= 	$data['finder_slug'];
-
-		if($data['show_location_flag']){
+		$text = "Your ".$session_type." session with ".ucwords($data['finder_name'])." has been rescheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We hope you have a good session.";
 		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		
-		}else{
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		}
 
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+		
+		$label = 'RescheduledTrial-C';
+		$priority = 1;
+		$device_type = $data['device_type'];
+
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
 	}
+
+	
+
+
+	public function bookTrialReminderBefore12Hour ($data, $delay){
+
+		$to 		=  	array($data['reg_id']);
+		$bity_url 	= 	$google_pin = "";
+		
+		$text = "Get ready for your trial at ".ucwords($data['finder_name'])."! Prep yourself with what to expect and more…";
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+
+		$label = 'TrialRmdBefore12Hr-C';
+		$priority = 0;
+		$device_type = $data['device_type'];
+
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
+	}
+
+
+	public function bookTrialReminderBefore1Hour ($data, $delay){
+
+		$to 		=  	array($data['reg_id']);
+		$bity_url 	= 	$google_pin = "";
+		
+		$text = ucwords($data['finder_name'])." are waiting for you! Here is the best route to make it to your session";
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+
+		$label = 'TrialRmdBefore1Hr-C';
+		$priority = 0;
+		$device_type = $data['device_type'];
+
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
+	}
+
 
 	public function bookTrialReminderAfter2Hour ($data, $delay){
 
-		$to 				=  	trim($data['device_id']);
+		$to 		=  	array($data['reg_id']);
 
-		$title				=   "Publish Review";
+		$text = "We hope you had a good session at ".ucwords($data['finder_name']).". Share your feedback and get Rs. 250/- off on your purchase!";
 
-		$booktrialid 		= 	$data['booktrialid'];
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
 
-		$type 				= 	"offer";
+		$label = 'TrialRmdAfter2Hr-C';
+		$priority = 0;
+		$device_type = $data['device_type'];
 
-		$slug 				= 	$data['finder_slug'];
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
+	}
 
-		if($data['show_location_flag']){
+	public function cancelBookTrial ($data){
 
-			$message 	=	"Hope you had a good experience at your trial session with ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". Write a review and stand a chance to win exciting goodies.";
-		
-		}else{
-			
-			$message 	=	"Hope you had a good experience at your trial session with ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug']." Write a review and stand a chance to win exciting goodies.";
-		}
-		
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		$to 		=  	array($data['reg_id']);
 
+		$text = "Your session at ".ucwords($data['finder_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." has been cancelled. Keep your fitness going, explore over 1500+ fitness options here!";
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+
+		$label = 'CancelTrial-C';
+		$priority = 0;
+		$device_type = $data['device_type'];
+
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
 	}
 
 

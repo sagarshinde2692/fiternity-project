@@ -47,7 +47,7 @@ Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}'
 
 Route::get('offers/{city?}/{from?}/{size?}', 'HomeController@getOffers');
 Route::get('offertabs/{city?}', 'HomeController@getOffersTabs');
-Route::get('offertabsoffers/{city}/{captionslug}/{slug}', 'HomeController@getOffersTabsOffers');
+Route::get('offertabsoffers/{city}/{captionslug}/{slug}', 'HomeController@getOffersTabsOffersV1');
 Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferings');
 
 
@@ -197,6 +197,7 @@ Route::get('indexrankmongo2elastic', array('as' => 'elasticsearch.indexrankmongo
 Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageautosuggestsetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
 Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
 Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexservicerankmongo2elastic','uses' => 'ServiceRankingController@IndexServiceRankMongo2Elastic'));
+Route::get('rollingbuildfindersearch', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -370,6 +371,7 @@ Route::get('fitmaniaresendemails', 'FitmaniaController@resendEmails');
 Route::get('fitmaniaresendemailsworngcustomer', 'FitmaniaController@resendEmailsForWorngCustomer');
 Route::get('fitmaniaresendemailsworngfinder', 'FitmaniaController@resendEmailsForWorngFinder');
 Route::get('email2fitmaniavendors', 'FitmaniaController@emailToFitmaniaVendors');
+Route::get('email2personaltrainers', 'OrderController@emailToPersonalTrainers');
 
 
 
