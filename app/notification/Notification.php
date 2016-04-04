@@ -57,9 +57,9 @@ abstract Class Notification {
             $delay = $this->getSeconds($delay);
         }
     
-        $payload = array('device_type'=>$device_type,'to'=>$to,'text'=>$text,'notif_id'=>$notif_id,'notif_type'=>$notif_type,'notif_object'=>$notif_object,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+        $payload = array('to'=>$to,'text'=>$text,'notif_id'=>$notif_id,'notif_type'=>$notif_type,'notif_object'=>$notif_object,'delay'=>$delay,'priority'=>$priority,'label' => $label);
         
-        $route  = 'notify';
+        $route  = $device_type;
         $result  = $this->sidekiq->sendToQueue($payload,$route);
 
         if($result['status'] == 200){
