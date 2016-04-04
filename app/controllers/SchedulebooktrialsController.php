@@ -2246,7 +2246,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 			if(isset($booktrialdata->customer_id) && $booktrialdata->customer_id != '' && $reg_id == '' && $device_type == ''){
 
-				$device = Device::where('customer_id',($int)$booktrialdata->customer_id)->orderBy('_id', 'desc')->first();
+				$device = Device::where('customer_id',(int)$booktrialdata->customer_id)->orderBy('_id', 'desc')->first();
 
 				if($device){
 
