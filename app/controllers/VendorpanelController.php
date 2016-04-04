@@ -9,8 +9,7 @@ class VendorpanelController extends BaseController {
 	}
 
 
-
-
+    
 	public function getSummarySales($vendor_id, $start_date = NULL, $end_date = NULL){
 
         $finder = 	Finder::where('_id', '=', intval($vendor_id))->get()->first();
