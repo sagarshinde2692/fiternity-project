@@ -9,6 +9,7 @@
  */
 
 
+use App\Services\Jwtauth as Jwtauth;
 use App\Services\Salessummary as Salessummary;
 use App\Services\Trialssummary as Trialssummary;
 
@@ -16,13 +17,23 @@ use App\Services\Trialssummary as Trialssummary;
 class VendorpanelController extends BaseController
 {
 
+    protected $jwtauth;
     protected $salessummary;
     protected $trialssummary;
 
-    public function __construct(Salessummary $salessummary,Trialssummary $trialssummary) {
-        $this->salessummary		=	$salessummary;
+    public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary) {
+        $this->jwtauth		        =	$jwtauth;
+        $this->salessummary		    =	$salessummary;
         $this->trialssummary		=	$trialssummary;
     }
+
+
+    public function doVendorLogin(){
+
+        $credentials    =   Input::json()->all();
+        return $this->jwtauth->vendorLogin($credentials);
+    }
+
 
 
     public function getSummarySales($vendor_ids, $start_date = NULL, $end_date = NULL)

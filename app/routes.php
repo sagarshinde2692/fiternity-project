@@ -21,6 +21,7 @@ require __DIR__.'/debug_routes.php';
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
+Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 Route::get('/vendorsummary/sales/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summarysales','uses' => 'VendorpanelController@getSummarySales'));
 Route::get('/vendorsummary/trials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summarytrials','uses' => 'VendorpanelController@getSummaryTrials'));
 
