@@ -31,7 +31,6 @@ class VendorpanelController extends BaseController
         $end_date               =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
         //return "<br> today_date : $today_date  <br>  start_date : $start_date  <br> end_date : $end_date ";
 
-
         foreach ($finder_ids as $finder_id){
             $finderData     = [];
             $finder         = Finder::where('_id', '=', intval($finder_id))->get()->first();
