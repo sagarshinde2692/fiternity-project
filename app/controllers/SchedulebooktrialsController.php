@@ -668,10 +668,10 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function autoRegisterCustomer($data){
 
-		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
 		if(!$customer) {
+			
 			$inserted_id = Customer::max('_id') + 1;
 			$customer = new Customer();
 			$customer->_id = $inserted_id;
@@ -680,7 +680,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
 
-			if(isset($customer['customer_phone'])){
+			if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
 				$customer->contact_no = $data['customer_phone'];
 			}
 
@@ -696,17 +696,24 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->save();
 
 			return $inserted_id;
+
 		}else{
 
 			$customerData = [];
 
 			try{
+
 				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
 					$customerData['contact_no'] = trim($data['customer_phone']);
 				}
 
 				if(isset($data['otp']) &&  $data['otp'] != ""){
 					$customerData['contact_no_verify_status'] = "yes";
+				}
+
+				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+					$customerData['address'] = implode(",", array_values($data['customer_address']));
+					$customerData['address_array'] = $data['customer_address'];
 				}
 
 				if(count($customerData) > 0){
