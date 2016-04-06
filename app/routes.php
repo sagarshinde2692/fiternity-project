@@ -47,7 +47,7 @@ Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}'
 
 Route::get('offers/{city?}/{from?}/{size?}', 'HomeController@getOffers');
 Route::get('offertabs/{city?}', 'HomeController@getOffersTabs');
-Route::get('offertabsoffers/{city}/{captionslug}/{slug}', 'HomeController@getOffersTabsOffers');
+Route::get('offertabsoffers/{city}/{captionslug}/{slug}', 'HomeController@getOffersTabsOffersV1');
 Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferings');
 
 
@@ -278,7 +278,7 @@ Route::post('rescheduledbooktrial', array('as' => 'customer.rescheduledbooktrial
 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
-Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
+Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}/{schedulesof?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 
@@ -371,6 +371,7 @@ Route::get('fitmaniaresendemails', 'FitmaniaController@resendEmails');
 Route::get('fitmaniaresendemailsworngcustomer', 'FitmaniaController@resendEmailsForWorngCustomer');
 Route::get('fitmaniaresendemailsworngfinder', 'FitmaniaController@resendEmailsForWorngFinder');
 Route::get('email2fitmaniavendors', 'FitmaniaController@emailToFitmaniaVendors');
+Route::get('email2personaltrainers', 'OrderController@emailToPersonalTrainers');
 
 
 
@@ -442,6 +443,7 @@ Route::get('ozonetel/missedcall/smsb',  array('as' => 'ozonetel.smsb','uses' => 
 Route::get('ozonetel/confirmtrial',  array('as' => 'ozonetel.confirmtrial','uses' => 'OzonetelsController@confirmTrial'));
 Route::get('ozonetel/canceltrial',  array('as' => 'ozonetel.canceltrial','uses' => 'OzonetelsController@cancelTrial'));
 Route::get('ozonetel/rescheduletrial',  array('as' => 'ozonetel.rescheduletrial','uses' => 'OzonetelsController@rescheduleTrial'));
+Route::post('callcenter/callback',  array('as' => 'ozonetel.callback','uses' => 'OzonetelsController@callback'));
 
 /******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################

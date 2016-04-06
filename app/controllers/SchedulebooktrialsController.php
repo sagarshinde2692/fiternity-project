@@ -236,7 +236,8 @@ class SchedulebooktrialsController extends \BaseController {
 	 * @return Response
 	 */
 
-	public function getServiceSchedule($serviceid, $date = null, $noofdays = null){
+	public function getServiceSchedule($serviceid, $date = null, $noofdays = null, $schedulesof = null){
+
 
 		// $dobj = new DateTime;print_r($dobj);exit;
 		$currentDateTime 	=	\Carbon\Carbon::now();
@@ -247,6 +248,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		$finderid 			= 	intval($item['finder_id']);
 		$noofdays 			=  	($noofdays == null) ? 1 : $noofdays;
+		$schedulesof 		=  	($schedulesof == null) ? 'trialschedules' : $schedulesof;
 		$serviceschedules 	= 	array();
 
 		for ($j = 0; $j < $noofdays; $j++) {
@@ -256,11 +258,22 @@ class SchedulebooktrialsController extends \BaseController {
 			$weekday 		= 	strtolower(date( "l", $timestamp));
 			// echo "$dt -- $weekday <br>";
 
-			$weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
-				if($value['weekday'] == $weekday){
-					return $value;
-				}
-			}));
+			if($schedulesof == 'trialschedules'){
+
+				$weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
+					if($value['weekday'] == $weekday){
+						return $value;
+					}
+				}));
+				
+			}else{
+
+				$weekdayslots = head(array_where($item['workoutsessionschedules'], function($key, $value) use ($weekday){
+					if($value['weekday'] == $weekday){
+						return $value;
+					}
+				}));
+			}
 
 			// print_pretty($weekdayslots);
 
@@ -401,6 +414,8 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
 		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
 
+		$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+		$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 
 		$booktrialdata = array(
@@ -433,7 +448,10 @@ class SchedulebooktrialsController extends \BaseController {
 			'final_lead_stage'			=>		'booking_stage',	
 			'final_lead_status'			=>		'slot_not_fixed',
 			'customer_address'		=> 		$customer_address,
-			'customer_note'		=>		$customer_note
+			'customer_note'		=>		$customer_note,
+
+			'social_referrer'				=>		$social_referrer,
+			'transacted_after'				=>		$transacted_after
 		);
 
 
@@ -650,10 +668,10 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function autoRegisterCustomer($data){
 
-		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
 		if(!$customer) {
+
 			$inserted_id = Customer::max('_id') + 1;
 			$customer = new Customer();
 			$customer->_id = $inserted_id;
@@ -662,7 +680,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
 
-			if(isset($customer['customer_phone'])){
+			if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
 				$customer->contact_no = $data['customer_phone'];
 			}
 
@@ -678,17 +696,24 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->save();
 
 			return $inserted_id;
+
 		}else{
 
 			$customerData = [];
 
 			try{
+
 				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
 					$customerData['contact_no'] = trim($data['customer_phone']);
 				}
 
 				if(isset($data['otp']) &&  $data['otp'] != ""){
 					$customerData['contact_no_verify_status'] = "yes";
+				}
+
+				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+					$customerData['address'] = implode(",", array_values($data['customer_address']));
+					$customerData['address_array'] = $data['customer_address'];
 				}
 
 				if(count($customerData) > 0){
@@ -786,6 +811,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$city_id 							=	(int) $finder['city_id'];
 
 			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
+
+			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 			$final_lead_stage = '';
 			$final_lead_status = '';
@@ -946,8 +974,11 @@ class SchedulebooktrialsController extends \BaseController {
 				'source_flag'					=> 		'customer',
 
 				'final_lead_stage'				=>		$final_lead_stage,
-				'final_lead_status'				=>		$final_lead_status
-				);
+				'final_lead_status'				=>		$final_lead_status,
+
+				'social_referrer'				=>		$social_referrer,
+				'transacted_after'				=>		$transacted_after
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1201,6 +1232,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
 			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
+			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+
 			if($device_type != '' && $gcm_reg_id != ''){
 
 				$reg_data = array();
@@ -1355,8 +1389,12 @@ class SchedulebooktrialsController extends \BaseController {
 				'otp'							=>		$otp,
 				'source_flag'					=> 		'customer',
 				'final_lead_stage'				=>		$final_lead_stage,
-				'final_lead_status'				=>		$final_lead_status
-				);
+				'final_lead_status'				=>		$final_lead_status,
+
+				'social_referrer'				=>		$social_referrer,
+				'transacted_after'				=>		$transacted_after
+
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;

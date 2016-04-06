@@ -282,17 +282,17 @@ class HomeController extends BaseController {
 
 
 			$gyms_finders 		=		Finder::active()->whereIn('_id', $gym_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');})) 
-											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-											->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
-											->toArray();
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
+			->toArray();
 			$yoga_finders 		=		Finder::active()->whereIn('_id', $yoga_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');})) 
-											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-											->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
-											->toArray();
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
+			->toArray();
 			$dance_finders 		=		Finder::active()->whereIn('_id', $zumba_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');})) 
-											->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-											->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
-											->toArray();																							
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
+			->toArray();																							
 
 			array_set($popular_finders,  'gyms', $gyms_finders);		
 			array_set($popular_finders,  'yoga', $yoga_finders);		
@@ -517,11 +517,11 @@ class HomeController extends BaseController {
 		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 		$finders 			= 		Finder::whereIn('_id', $finder_ids)
-												->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-												->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-												->get(array('_id','slug','title','category_id','category','location_id','location','city_id','city','contact','services'))->toArray();;
+		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+		->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+		->get(array('_id','slug','title','category_id','category','location_id','location','city_id','city','contact','services'))->toArray();;
 
 		$finderArr = [];
 		foreach ($finders as $key => $value) {
@@ -890,6 +890,47 @@ class HomeController extends BaseController {
 
 		$data['services'] = $services;
 		return Response::json($data, 200);
+	}
+
+
+
+	public function getOffersTabsOffersV1($city, $captionslug, $slug){
+
+		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		if(!$citydata){
+			return $this->responseNotFound('City does not exist');
+		}
+		$city_name 				= 	$citydata['name'];
+		$city_id				= 	(int) $citydata['_id'];	
+
+		$slugname 				= 	strtolower(trim($slug));
+		$captionslug 			= 	strtolower(trim($captionslug));
+		$offertabobj 			=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first();
+
+		if(count($offertabobj) < 1){
+			$responsedata 	= ['offers' => [],  'message' => 'No Offers Exist'];
+			return Response::json($responsedata, 200);
+		}
+
+		$offertabdata 			= 	$offertabobj->toArray();
+		$slug_array 			=  	array_map('strtolower', array_only($offertabdata, array('1_title', '2_title','3_title','4_title')));
+		$slug_index 			= 	array_search($slugname,$offertabdata); 
+		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
+		$offersids 				=   array_map('intval', explode(',', $offertabdata[$ratecardids_index]));
+
+		$offers 				= 	[];
+		$offers_records 		= 	Serviceoffer::with('finder')->with('service')->whereIn('_id', $offersids)->get();
+		foreach ($offers_records as $key => $record) {
+			array_push($offers, $record);
+		}
+
+		if(count($offers) > 0){
+			$responsedata 	= ['offers' => $offers,  'message' => 'Offers Lists'];
+		}else{
+			$responsedata 	= ['offers' => [],  'message' => 'No Offers Exist'];
+		}
+		return Response::json($responsedata, 200);
+		
 	}
 
 

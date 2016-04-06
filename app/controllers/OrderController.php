@@ -28,7 +28,7 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof');
 	}
 
 
@@ -54,7 +54,6 @@ class OrderController extends \BaseController {
 			$orderdata 	=	$order->update($data);
 
 			//send welcome email to payment gateway customer
-
 
 			$finder = Finder::find((int)$order->finder_id);
 
@@ -294,6 +293,7 @@ class OrderController extends \BaseController {
 		// $userdata	=	array_except(Input::all(), array());
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		$postdata		=	Input::json()->all();
 
 		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
 		// $required_fiels = ['customer_name', ];
@@ -417,7 +417,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type for sms body and email body  zumbathon','booiaka
-		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon'){
+		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon' || $data['type'] == 'eefashrof' ){
 			if( empty($data['sms_body']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - sms_body");
 				return Response::json($resp,404);				
@@ -470,11 +470,14 @@ class OrderController extends \BaseController {
 			$this->addRegId($reg_data);
 		}
 
-		if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
-			array_set($data, 'preferred_starting_date', $preferred_starting_date);
-			array_set($data, 'start_date', $preferred_starting_date);
+		if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+
+			if(trim(Input::json()->get('preferred_starting_date')) != '-'){
+				$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+				$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+				array_set($data, 'start_date', $preferred_starting_date);
+				array_set($data, 'preferred_starting_date', $preferred_starting_date);
+			}
 		}
 
 
@@ -546,10 +549,10 @@ class OrderController extends \BaseController {
 
 	public function autoRegisterCustomer($data){
 
-		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
 		if(!$customer) {
+			
 			$inserted_id = Customer::max('_id') + 1;
 			$customer = new Customer();
 			$customer->_id = $inserted_id;
@@ -557,9 +560,16 @@ class OrderController extends \BaseController {
 			$customer->email = $data['customer_email'];
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
-			if(isset($customer['customer_phone'])){
+
+			if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
 				$customer->contact_no = $data['customer_phone'];
 			}
+
+			if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+				$customer->address = implode(",", array_values($data['customer_address']));
+				$customer->address_array = $data['customer_address'];
+			}
+
 			$customer->identity = 'email';
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
@@ -567,9 +577,39 @@ class OrderController extends \BaseController {
 			$customer->save();
 
 			return $inserted_id;
-		}  
 
-		return $customer->_id;
+		}else{
+
+			$customerData = [];
+
+			try{
+
+				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+					$customerData['contact_no'] = trim($data['customer_phone']);
+				}
+
+				if(isset($data['otp']) &&  $data['otp'] != ""){
+					$customerData['contact_no_verify_status'] = "yes";
+				}
+
+				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+					$customerData['address'] = implode(",", array_values($data['customer_address']));
+					$customerData['address_array'] = $data['customer_address'];
+				}
+
+				if(count($customerData) > 0){
+					$customer->update($customerData);	
+				}
+				
+			} catch(ValidationException $e){
+				
+				Log::error($e);
+
+			}
+
+			return $customer->_id;
+		}
+
 	}
 
 
@@ -624,6 +664,11 @@ class OrderController extends \BaseController {
 			$order->update(['email_not_sent'=>'buyLandingpagePurchase']);
 		}else{
 			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
+		}
+
+		if($orderData['type'] == 'eefashrof'){
+			$salecount 			= 	Order::where('type', 'eefashrof')->where('status', '1')->count();
+			$sndsSmsVendor		= 	$this->findersms->buyLandingpagePurchaseEefashrof($orderData,$salecount);
 		}
 
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
@@ -696,6 +741,42 @@ class OrderController extends \BaseController {
 		$response = add_reg_id($data);
 
 		return Response::json($response,$response['status']);
+	}
+
+
+
+
+
+	public function emailToPersonalTrainers (){
+
+		$match 			=	array(41);
+   		// $finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->where('_id',7241)->get()->toArray();
+		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
+
+		// return $finders;
+
+		foreach ($finders as $key => $finder) {
+			$finder_id				=	(isset($finder['_id'])) ? $finder['_id'] : [];
+			$finder_name			=	(isset($finder['title'])) ? $finder['title'] : "";
+			$finder_vcc_email		=	(isset($finder['finder_vcc_email'])) ? $finder['finder_vcc_email'] : "";
+			// $finder_vcc_email		=   "sanjay.id7@gmail.com";
+			// echo  $finder_id .$finder_name ." - ". $finder_vcc_email. " <br>" ;
+
+
+			if($finder_name !="" && $finder_vcc_email !=""){
+				$queid 	=	"";
+				$data  	=	$finder;
+				$queid 	=	$this->findermailer->emailToPersonalTrainers($finder_vcc_email, $finder_name, $data);
+				echo " <br>". $queid ." - ". $finder_id ." - ".$finder_name ." - ". $finder_vcc_email. " <br>" ;
+				echo "==================================================================================================================== <br><br>";
+			}
+
+		}
+		// return $corders;
+
+		return "email send";
+
+
 	}
 
 

@@ -628,9 +628,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = 'BoughtMembership';
+					$label = 'Additional10Discount';
 
-					$message = 'Thank you! Fitternity is excited about you buying a fitness membership. We will call you to get the details. You will get a call if you WIN in our Lucky Draw.';
+					$message = "Congratualtions! You've unlocked an Additional 10% discount on Fitternity discounts of upto 50% - Our Fitness Concierge will get in touch with you within 48hrs to get you the membership of your choice. You + Fitternity = A Fitter You!";
 				
 					$data = array();
 
@@ -769,6 +769,7 @@ class OzonetelsController extends \BaseController {
 						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
 					}
 
+					$booktrial->missedcall_date = date('Y-m-d h:i:s');
 					$booktrial->missedcall_status = $missedcall_status[$type];
 					$booktrial->source_flag = 'missedcall';
 					$booktrial->update();
@@ -849,6 +850,83 @@ class OzonetelsController extends \BaseController {
 		try{
 
 			$response = $this->misscall('reschedule');
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
+
+	}
+
+	public function callback(){
+
+		try{
+
+			if(isset($_REQUEST['data']) && $_REQUEST['data'] != ''){
+				
+				$data = json_decode($_REQUEST['data'],true);
+
+				$insert["agent_phone_number"] = (isset($data["AgentPhoneNumber"]) && $data["AgentPhoneNumber"] != '') ? $data["AgentPhoneNumber"] : '';
+				$insert["dial_status"] = (isset($data["DialStatus"]) && $data["DialStatus"] != '') ? $data["DialStatus"] : '';
+				$insert["did"] = (isset($data["Did"]) && $data["Did"] != '') ? $data["Did"] : '';
+				$insert["monitor_ucid"] = (isset($data["monitorUCID"]) && $data["monitorUCID"] != '') ? $data["monitorUCID"] : '';
+				$insert["time_to_answer"] = (isset($data["TimeToAnswer"]) && $data["TimeToAnswer"] != '') ? $data["TimeToAnswer"] : '';
+				$insert["agent_id"] = (isset($data["AgentID"]) && $data["AgentID"] != '') ? $data["AgentID"] : '';
+				$insert["api_key"] = (isset($data["Apikey"]) && $data["Apikey"] != '') ? $data["Apikey"] : '';
+				$insert["hangup_by"] = (isset($data["HangupBy"]) && $data["HangupBy"] != '') ? $data["HangupBy"] : '';
+				$insert["location"] = (isset($data["Location"]) && $data["Location"] != '') ? $data["Location"] : '';
+				$insert["fall_back_rule"] = (isset($data["FallBackRule"]) && $data["FallBackRule"] != '') ? $data["FallBackRule"] : '';
+				$insert["duration"] = (isset($data["Duration"]) && $data["Duration"] != '') ? $data["Duration"] : '';
+				$insert["caller_id"] = (isset($data["CallerID"]) && $data["CallerID"] != '') ? $data["CallerID"] : '';
+				$insert["user_name"] = (isset($data["UserName"]) && $data["UserName"] != '') ? $data["UserName"] : '';
+				$insert["agent_unique_id"] = (isset($data["AgentUniqueID"]) && $data["AgentUniqueID"] != '') ? $data["AgentUniqueID"] : '';
+				$insert["transfer_type"] = (isset($data["TransferType"]) && $data["TransferType"] != '') ? $data["TransferType"] : '';
+				$insert["audio_file"] = (isset($data["AudioFile"]) && $data["AudioFile"] != '') ? $data["AudioFile"] : '';
+				$insert["phone_name"] = (isset($data["PhoneName"]) && $data["PhoneName"] != '') ? $data["PhoneName"] : '';
+				$insert["transferred_to"] = (isset($data["TransferredTo"]) && $data["TransferredTo"] != '') ? $data["TransferredTo"] : '';
+				$insert["agent_status"] = (isset($data["AgentStatus"]) && $data["AgentStatus"] != '') ? $data["AgentStatus"] : '';
+				$insert["comments"] = (isset($data["Comments"]) && $data["Comments"] != '') ? $data["Comments"] : '';
+				$insert["agent_name"] = (isset($data["AgentName"]) && $data["AgentName"] != '') ? $data["AgentName"] : '';
+				$insert["campaign_name"] = (isset($data["CampaignName"]) && $data["CampaignName"] != '') ? $data["CampaignName"] : '';
+				$insert["uui"] = (isset($data["UUI"]) && $data["UUI"] != '') ? $data["UUI"] : '';
+				$insert["disposition"] = (isset($data["Disposition"]) && $data["Disposition"] != '') ? $data["Disposition"] : '';
+				$insert["status"] = (isset($data["Status"]) && $data["Status"] != '') ? $data["Status"] : '';
+				$insert["type"] = (isset($data["Type"]) && $data["Type"] != '') ? $data["Type"] : '';
+				$insert["dialed_number"] = (isset($data["DialedNumber"]) && $data["DialedNumber"] != '') ? $data["DialedNumber"] : '';
+				$insert["customer_status"] = (isset($data["CustomerStatus"]) && $data["CustomerStatus"] != '') ? $data["CustomerStatus"] : '';
+			    $insert["skill"] = (isset($data["Skill"]) && $data["Skill"] != '') ? $data["Skill"] : '';
+
+			    if(isset($data["StartTime"]) && $data["StartTime"] != ''){
+			    	$insert["start_time"] = date('Y-m-d h:i:s', strtotime($data['StartTime']));
+			    }
+
+			    
+			    if(isset($data["EndTime"]) && $data["EndTime"] != ''){
+			    	$insert["end_time"] = date('Y-m-d h:i:s', strtotime($data['EndTime']));
+			    }
+
+				$ozonetel_callback = new Ozonetelcallback($insert);
+				$ozonetel_callback->_id = Ozonetelcallback::max('_id') + 1;
+				$ozonetel_callback->save();
+
+				$response = array('status'=>200,'message'=>'success');
+
+			}else{
+
+				$response = array('status'=>400,'message'=>'data is empty');
+			}
 
 		}catch (Exception $e) {
 
