@@ -671,7 +671,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
 		if(!$customer) {
-			
+
 			$inserted_id = Customer::max('_id') + 1;
 			$customer = new Customer();
 			$customer->_id = $inserted_id;
@@ -974,7 +974,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'source_flag'					=> 		'customer',
 
 				'final_lead_stage'				=>		$final_lead_stage,
-				'final_lead_status'				=>		$final_lead_status
+				'final_lead_status'				=>		$final_lead_status,
 
 				'social_referrer'				=>		$social_referrer,
 				'transacted_after'				=>		$transacted_after
