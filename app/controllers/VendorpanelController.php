@@ -36,13 +36,20 @@ class VendorpanelController extends BaseController
 
 
 
-    public function getSummarySales($vendor_ids, $start_date = NULL, $end_date = NULL)
+//    public function getSummarySales($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function getSummarySales($start_date = NULL, $end_date = NULL)
     {
-        $finderSaleSummaryArr   = [];
-        $finder_ids             =   explode(",",$vendor_ids);
-        $today_date             =   date("d-m-Y", time());
-        $start_date             =   ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)): $today_date;
-        $end_date               =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $jwt_token                  =   Request::header('Authorization');
+        $decoded_token              =   $this->jwtauth->decodeTokenVendorPanel($jwt_token);
+        $vendorArr                  =   $decoded_token['vendor'];
+        $vendor_ids                 =   array_unique(array_merge([$vendorArr['vendor_id']], $vendorArr['vendors']));
+        // print_r($vendor_ids);exit;
+
+        $finderSaleSummaryArr       =   [];
+        $finder_ids                 =   $vendor_ids;
+        $today_date                 =   date("d-m-Y", time());
+        $start_date                 =   ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)): $today_date;
+        $end_date                   =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
         //return "<br> today_date : $today_date  <br>  start_date : $start_date  <br> end_date : $end_date ";
 
         foreach ($finder_ids as $finder_id){

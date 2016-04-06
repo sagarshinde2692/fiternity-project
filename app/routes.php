@@ -14,15 +14,21 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 require __DIR__.'/debug_routes.php';
 
 
- // $queries = DB::getQueryLog();
- // var_dump($queries);
+// $queries = DB::getQueryLog();
+// var_dump($queries);
 
 
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
 Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
-Route::get('/vendorsummary/sales/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summarysales','uses' => 'VendorpanelController@getSummarySales'));
+
+Route::group(array('before' => 'validatevendor'), function() {
+//    Route::get('/vendorsummary/sales/{vendorid}/{start_date?}/{end_date?}', array('as' => 'vendor.summarysales', 'uses' => 'VendorpanelController@getSummarySales'));
+    Route::get('/vendorsummary/sales/{start_date?}/{end_date?}', array('as' => 'vendor.summarysales', 'uses' => 'VendorpanelController@getSummarySales'));
+
+});
+
 Route::get('/vendorsummary/trials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summarytrials','uses' => 'VendorpanelController@getSummaryTrials'));
 
 
@@ -205,7 +211,7 @@ Route::get('deleteindex/{index?}', array('as' => 'elasticsearch.deleteindex','us
 Route::get('managesetttings/{index?}', array('as' => 'elasticsearch.managesetttings','uses' => 'ElasticsearchController@manageSetttings'));
 Route::get('createtype/{type}', array('as' => 'elasticsearch.createtype','uses' => 'ElasticsearchController@createType'));
 Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','uses' => 'ElasticsearchController@checkMapping'));
-Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
+Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));
 Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
 Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexautosuggestdata','uses' => 'ElasticsearchController@indexautosuggestdata'));
 Route::get('indexrankmongo2elastic', array('as' => 'elasticsearch.indexrankmongo2elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
@@ -476,9 +482,9 @@ Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'B
 /******************** SECURITY SECTION START HERE *******************************/
 
 Route::group(array('before' => 'jwt'), function() {
-	
+
 	//finder info
-	Route::get('sfinderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail')); 
+	Route::get('sfinderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail'));
 
 	//booktrial
 	Route::post('sbooktrial', array('as' => 'finders.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialFree'));

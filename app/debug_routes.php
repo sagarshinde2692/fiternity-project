@@ -26,9 +26,9 @@ Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 Route::get('createvendoruser',function(){
 
-	return "you password - ". md5('sanjay');
+	// return "you password - ". md5('sanjay');
 
-	$user = ['name' => 'Sanjay Sahu', 'email' => 'sanjay.id7@gmail.com', 'password' => md5('sanjay')];
+	$user = ['status' => '1','name' => 'Sanjay Sahu', 'email' => 'sanjay.id7@gmail.com', 'password' => md5('sanjay'), 'vendor_id' => 1, 'vendors' => [1,2,3,4]];
 	Vendoruser::create($user);
 
 });

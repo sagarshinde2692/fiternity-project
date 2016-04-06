@@ -144,3 +144,30 @@ Route::filter('jwt',function(){
         return Response::json(array('status' => 405),405);
     }
 });
+
+
+
+Route::filter('validatevendor',function(){
+    
+    $jwt_token = Request::header('Authorization');
+
+    if(isset($jwt_token) && !empty($jwt_token)){
+        $jwt_key    =   Config::get('jwt.vendorpanel.key');
+        $jwt_alg    =   Config::get('jwt.vendorpanel.alg');
+
+        try{
+            $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        }catch(DomainException $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+        }catch(ExpiredException $e){
+            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+        }catch(SignatureInvalidException $e){
+            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+        }catch(Exception $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+        }
+    }else{
+        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
+    }
+
+});

@@ -15,7 +15,7 @@ return array(
 
 
 	'debug' => TRUE,
-	
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application URL
@@ -126,14 +126,14 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		'Jenssegers\Mongodb\MongodbServiceProvider',
-		'Shift31\LaravelElasticsearch\LaravelElasticsearchServiceProvider',	
-		'Hugofirth\Mailchimp\MailchimpServiceProvider',	
+		'Shift31\LaravelElasticsearch\LaravelElasticsearchServiceProvider',
+		'Hugofirth\Mailchimp\MailchimpServiceProvider',
 		'Davibennun\LaravelPushNotification\LaravelPushNotificationServiceProvider',
 		'Indatus\Dispatcher\ServiceProvider',
 		//'Aloha\Twilio\TwilioServiceProvider',
 		'Hernandev\HipchatLaravel\HipchatLaravelServiceProvider',
 		'Aws\Laravel\AwsServiceProvider',
-		),
+	),
 
 	/*
 	|--------------------------------------------------------------------------
@@ -207,7 +207,7 @@ return array(
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 		'AWS' 				=> 'Aws\Laravel\AwsFacade',
 
-		),
+	),
 
 	'cachetime' 					=> 	10,
 	'perpage' 						=> 	50,
@@ -234,14 +234,14 @@ return array(
 		'nbf' => time()+10, // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)
 		'alg' => 'HS256',
-		),
+	),
 
 	'forgot_password' => array(
 		'key' => 'fitternity', //secret key to encode token
 		'iat' => time(), // time when token is created
 		'exp' => time()+86400, // time when token gets expired (1 day)
 		'alg' => 'HS256',
-		),
+	),
 
 	'aws' => array(
 		'key' 								=> 'AKIAIRQP65VEX5N23QRQ',
@@ -251,8 +251,8 @@ return array(
 		'ozonetel' =>array(
 			'path'							=> 'ozonetel/',
 			'url'							=> 'http://b.fitn.in/ozonetel/',
-			),
 		),
+	),
 
 	'customer_care_number' => '02261222233',
 	'contact_us_vendor_email' => 'business@fitternity.com',
@@ -264,13 +264,13 @@ return array(
 		'cover_thumb' 		=> 'https://b.fitn.in/f/ct/',
 		'gallery' 			=> 'https://b.fitn.in/f/g/',
 		'gallery_thumb' 	=> 'https://b.fitn.in/f/gt/',
-		),
+	),
 
 	's3_articleurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/articles/covers/',
 		'cover_thumb' 	=> 'https://b.fitn.in/articles/thumbs/',
-		),
+	),
 
 
 
-	);
+);
