@@ -24,6 +24,40 @@ Route::get('migrations/vendorservicecategory', 'MigrationsController@vendorservi
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 
+Route::get('createvendoruser',function(){
+
+	// return "you password - ". md5('sanjay');
+
+	$user = ['status' => '1','name' => 'Sanjay Sahu', 'email' => 'sanjay.id7@gmail.com', 'password' => md5('sanjay'), 'vendor_id' => 1, 'vendors' => [1,2,3,4]];
+	Vendoruser::create($user);
+
+});
+
+
+Route::get('testencodedecode',function(){
+
+		$encode_val = JWT::encode('abc', 'my_key');
+		$decode_val = JWT::decode($encode_val, 'my_key', array('HS256'));
+
+//		echo "<br><br>$encode_val";
+//		echo "<br><br>$decode_val";
+//		exit();
+
+
+    try{
+        $decoded = JWT::decode($encode_val,'my_key', array('HS256'));
+    }catch(DomainException $e){
+        return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+    }catch(ExpiredException $e){
+        return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+    }catch(SignatureInvalidException $e){
+        return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+    }catch(Exception $e){
+        return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+    }
+
+//		$this->assertEquals(JWT::decode($msg, 'my_key', array('HS256')), 'abc');
+});
 
 Route::get('/attachcustomernumber', function() { 
 
