@@ -495,7 +495,8 @@ class OrderController extends \BaseController {
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;	
 			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
 			$finder_lon							= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
-			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";	
+			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+			$finder_category_id					= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";	
 
 			array_set($data, 'finder_city', trim($finder_city));
 			array_set($data, 'finder_location', trim($finder_location));
@@ -509,6 +510,7 @@ class OrderController extends \BaseController {
 			array_set($data, 'finder_lon', $finder_lon);
 			array_set($data, 'finder_lat', $finder_lat);
 			array_set($data, 'finder_branch', trim($finder_location));
+			array_set($data, 'finder_category_id', $finder_category_id);
 
 		}
 
@@ -565,10 +567,19 @@ class OrderController extends \BaseController {
 				$customer->contact_no = $data['customer_phone'];
 			}
 
-			if(isset($data['customer_address']) && !empty($data['customer_address']) ){
-				$customer->address = implode(",", array_values($data['customer_address']));
-				$customer->address_array = $data['customer_address'];
-			}
+			/*if(isset($data['customer_address'])){
+
+				if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+					$customer->address = implode(",", array_values($data['customer_address']));
+					$customer->address_array = $data['customer_address'];
+
+				}elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+					$customer->address = $data['customer_address'];
+				}
+
+			}*/
 
 			$customer->identity = 'email';
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);

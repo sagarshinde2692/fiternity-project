@@ -298,45 +298,47 @@
                                         </table>
                                     </td>
                                 </tr>
-                                <tr style="background-color:#f6f6f6;">
-                                    <td>
-                                     <hr style="color:#535353;" width="80%;">
-                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Start the membership</strong></p>
-                                        <table align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                            <tbody>
-                                                <tr>
-                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding:20px; " st-content="fulltext-paragraph">
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-bottom:10px;" st-content="fulltext-paragraph"> <strong>On your membership start date - visit the gym/studio and flash the subscription number.</strong></p>
+                                <?php if(isset($finder_category_id) && $finder_category_id != 41) { ?>
+                                    <tr style="background-color:#f6f6f6;">
+                                        <td>
+                                         <hr style="color:#535353;" width="80%;">
+                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:20px; padding-bottom:20px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Start the membership</strong></p>
+                                            <table align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding:20px; " st-content="fulltext-paragraph">
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-bottom:10px;" st-content="fulltext-paragraph"> <strong>On your membership start date - visit the gym/studio and flash the subscription number.</strong></p>
 
-                                                        <?php if(isset($finder_location) && $finder_location != ""){ ?>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Location:</strong> {{ucwords($finder_location)}}</p>
-                                                         <?php }?>
+                                                            <?php if(isset($finder_location) && $finder_location != ""){ ?>
+                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Location:</strong> {{ucwords($finder_location)}}</p>
+                                                             <?php }?>
 
-                                                        <?php if(isset($finder_address) && $finder_address != ""){ ?>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Address:</strong>{{ucwords(strip_tags($finder_address))}}</p>
+                                                            <?php if(isset($finder_address) && $finder_address != ""){ ?>
+                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> <strong>Address:</strong>{{ucwords(strip_tags($finder_address))}}</p>
 
-                                                            <?php if(isset($finder_lat) && $finder_lat != "" && isset($finder_lon) && $finder_lon != ""){ ?>
-                                                                <a href="https://maps.google.com/maps?q={{ $finder_lat }},{{ $finder_lon }}&ll={{ $finder_lat }},{{ $finder_lon }}">
-                                                                    <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
-                                                                </a>
+                                                                <?php if(isset($finder_lat) && $finder_lat != "" && isset($finder_lon) && $finder_lon != ""){ ?>
+                                                                    <a href="https://maps.google.com/maps?q={{ $finder_lat }},{{ $finder_lon }}&ll={{ $finder_lat }},{{ $finder_lon }}">
+                                                                        <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
+                                                                    </a>
 
-                                                                <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
-                                                                    <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get directions", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
-                                                                </p>
-                                                            <?php } ?>
+                                                                    <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
+                                                                        <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get directions", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
+                                                                    </p>
+                                                                <?php } ?>
 
-                                                         <?php }?>
+                                                             <?php }?>
 
-                                                        <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != "" && isset($finder_poc_for_customer_no) && $finder_poc_for_customer_no != ""){ ?>
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Contact details:</strong> {{$finder_poc_for_customer_name}} ({{$finder_poc_for_customer_no}})</p>
-                                                         <?php }?>
+                                                            <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != "" && isset($finder_poc_for_customer_no) && $finder_poc_for_customer_no != ""){ ?>
+                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px;  " st-content="fulltext-paragraph"> <strong>Contact details:</strong> {{$finder_poc_for_customer_name}} ({{$finder_poc_for_customer_no}})</p>
+                                                             <?php }?>
 
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </td>
-                                </tr>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
                                 <tr style="background-color:#f6f6f6;">
                                     <td>
                                         <hr style="color:#535353;" width="80%;">
@@ -356,23 +358,6 @@
                                     </td>
                                 </tr>
                                 
-                                 <?php if(isset($city_id) && $city_id != "" && $city_id != 2){ ?> 
-                                    <tr style="background-color:#f6f6f6;">
-                                       <td style="font-family:Roboto, Arial, sans-serif; font-size: 22px; text-align:center;line-height: 25px; color: #464646; font-weight:bolder; padding:20px; text-transform:uppercase;" st-content="fulltext-paragraph"> Treat yourself to a healthy meal after a good workout
-                                       </td>
-                                   </tr>
-                                   <tr style="background-color:#f6f6f6;">
-                                       <td style="font-family:Roboto, Arial, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; " st-content="fulltext-paragraph">
-                                            <a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/215/smoke.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; ">
-                                            </a>
-                                        </td>
-                                    </tr>
-                                    <tr style="background-color:#f6f6f6;">
-                                        <td style="font-family:Roboto, Arial, sans-serif; font-size: 22px; text-align:center;line-height: 25px; color: #f9a91e; font-weight:bolder; padding:20px" st-content="fulltext-paragraph"> Flash this voucher at the restaurant upon entry in order to avail this voucher
-                                        </td>
-                                    </tr>
-                                <?php } ?>
-
                             </tbody>
                         </table>
                     </td>
