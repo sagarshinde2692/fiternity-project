@@ -6,7 +6,7 @@ use \Ozonetelcapture;
 
 Class Ozonetelcallssummary {
 
-    public function getTotalOzonetelcallsCount($finder_id, $start_date, $end_date)
+    public function getOzonetelcallsSummary($finder_id, $start_date, $end_date)
     {
 
         $match['$match']['finder_id'] = $finder_id;

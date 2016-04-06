@@ -5,48 +5,44 @@ use \Booktrial;
 
 Class Trialssummary {
 
-    public function getBookedTrialsCount($finder_id, $start_date, $end_date)
+    public function getBookedTrials($finder_id, $start_date, $end_date)
     {
 
         return Booktrial
             ::  where('finder_id', '=', intval($finder_id))
             ->where('schedule_slot', 'exists', true)
             ->where('schedule_slot', '!=', "")
-            ->createdBetween($start_date, $end_date)
-            ->count();
+            ->createdBetween($start_date, $end_date);
     }
 
-    public function getAttendedTrialsCount($finder_id, $start_date, $end_date)
+    public function getAttendedTrials($finder_id, $start_date, $end_date)
     {
 
         return Booktrial
             ::  where('finder_id', '=', intval($finder_id))
             ->where('post_trial_status', 'attended')
-            ->createdBetween($start_date, $end_date)
-            ->count();
+            ->createdBetween($start_date, $end_date);
     }
 
-    public function getNotAttendedTrialsCount($finder_id, $start_date, $end_date)
+    public function getNotAttendedTrials($finder_id, $start_date, $end_date)
     {
 
         return Booktrial
             ::  where('finder_id', '=', intval($finder_id))
             ->whereIn('post_trial_status', array('no show', 'unavailable'))
-            ->createdBetween($start_date, $end_date)
-            ->count();
+            ->createdBetween($start_date, $end_date);
     }
 
-    public function getUnknownAttendedStatusTrialsCount($finder_id, $start_date, $end_date)
+    public function getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)
     {
 
         return Booktrial
             ::  where('finder_id', '=', intval($finder_id))
             ->where('unavailable_count_post_trial','>=','3')
-            ->createdBetween($start_date, $end_date)
-            ->count();
+            ->createdBetween($start_date, $end_date);
     }
 
-    public function getTrialsConvertedCount($finder_id, $start_date, $end_date)
+    public function getTrialsConverted($finder_id, $start_date, $end_date)
     {
 
         return Booktrial
@@ -56,11 +52,10 @@ Class Trialssummary {
                 $query->orwhere('going_status_txt', 'purchased')
                     ->orWhere('final_status', 'purchase_confirm');
             })
-            ->createdBetween($start_date, $end_date)
-            ->count();
+            ->createdBetween($start_date, $end_date);
     }
 
-    public function getNotInterestedCustomersCount($finder_id, $start_date, $end_date)
+    public function getNotInterestedCustomers($finder_id, $start_date, $end_date)
     {
 
         return Booktrial
@@ -71,7 +66,6 @@ Class Trialssummary {
                     ->orWhere('final_status', 'not_interested')
                     ->orWhere('post_trial_initail_status', 'not_interested');
             })
-            ->createdBetween($start_date, $end_date)
-            ->count();
+            ->createdBetween($start_date, $end_date);
     }
 }
