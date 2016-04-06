@@ -30,6 +30,7 @@ Route::group(array('before' => 'validatevendor'), function() {
 });
 
 Route::get('/vendorsummary/trials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summarytrials','uses' => 'VendorpanelController@getSummaryTrials'));
+Route::get('/vendorsummary/ozonetel/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summaryozonetelcalls','uses' => 'VendorpanelController@getSummaryOzonetelcalls'));
 
 
 

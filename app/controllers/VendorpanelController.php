@@ -12,6 +12,7 @@
 use App\Services\Jwtauth as Jwtauth;
 use App\Services\Salessummary as Salessummary;
 use App\Services\Trialssummary as Trialssummary;
+use App\Services\Ozonetelcallssummary as Ozonetelcallsssummary;
 
 
 class VendorpanelController extends BaseController
@@ -20,11 +21,13 @@ class VendorpanelController extends BaseController
     protected $jwtauth;
     protected $salessummary;
     protected $trialssummary;
+    protected $ozonetelcallsssummary;
 
-    public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary) {
-        $this->jwtauth		        =	$jwtauth;
-        $this->salessummary		    =	$salessummary;
-        $this->trialssummary		=	$trialssummary;
+    public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary, Ozonetelcallsssummary $ozonetelcallsssummary) {
+        $this->jwtauth		            =	$jwtauth;
+        $this->salessummary		        =	$salessummary;
+        $this->trialssummary		    =	$trialssummary;
+        $this->ozonetelcallsssummary	=	$ozonetelcallsssummary;
     }
 
 
@@ -135,5 +138,40 @@ class VendorpanelController extends BaseController
 
 
         return Response::json($finderTrialSummaryArr, 200);
+    }
+
+
+    public function getSummaryOzonetelcalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $ResultArr = [];
+        $finder_ids             =   explode(",",$vendor_ids);
+        $today_date             =   date("d-m-Y", time());
+        $start_date             =   ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)): $today_date;
+        $end_date               =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        //return "<br> today_date : $today_date  <br>  start_date : $start_date  <br> end_date : $end_date ";
+
+
+        foreach ($finder_ids as $finder_id){
+            $finderData     = [];
+            $finder         = Finder::where('_id', '=', intval($finder_id))->get()->first();
+            if (!$finder) {
+                continue;
+            }
+
+            $finder_id        = intval($finder_id);
+            $ozonetel_calls_summary = $this->ozonetelcallsssummary->getTotalOzonetelcallsCount($finder_id, $start_date, $end_date);
+
+
+            array_set($finderData, 'finder_id', intval($finder_id));
+            array_set($finderData, 'title', trim($finder->title));
+            array_set($finderData, 'slug', trim($finder->slug));
+            array_set($finderData, 'ozonetel_calls_summary', $ozonetel_calls_summary);
+
+            array_push($ResultArr, $finderData);
+        }
+
+
+        return Response::json($ResultArr, 200);
     }
 }

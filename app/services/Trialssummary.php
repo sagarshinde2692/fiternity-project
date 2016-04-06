@@ -51,8 +51,11 @@ Class Trialssummary {
 
         return Booktrial
             ::  where('finder_id', '=', intval($finder_id))
-            ->where('going_status_txt', 'purchased')
-            ->orwhere('final_status', 'purchase_confirm')
+            ->Where(function($query)
+            {
+                $query->orwhere('going_status_txt', 'purchased')
+                    ->orWhere('final_status', 'purchase_confirm');
+            })
             ->createdBetween($start_date, $end_date)
             ->count();
     }
@@ -62,9 +65,12 @@ Class Trialssummary {
 
         return Booktrial
             ::  where('finder_id', '=', intval($finder_id))
-            ->whereIn('going_status_txt', array('dead','cancel'))
-            ->orwhere('final_status', 'not_interested')
-            ->orwhere('post_trial_initail_status', 'not_interested')
+            ->Where(function($query)
+            {
+                $query->whereIn('going_status_txt', array('dead','cancel'))
+                    ->orWhere('final_status', 'not_interested')
+                    ->orWhere('post_trial_initail_status', 'not_interested');
+            })
             ->createdBetween($start_date, $end_date)
             ->count();
     }
