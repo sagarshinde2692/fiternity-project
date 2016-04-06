@@ -296,9 +296,9 @@ class RankingController extends \BaseController {
             'postfields' => $payload
             );      
         echo es_curl_request($request);
-
     }
 
+   
     public function IndexRankMongo2Elastic($index_name, $city_id){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
@@ -317,7 +317,7 @@ class RankingController extends \BaseController {
         ->active()
         ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
-                            //->whereIn('_id', array(1))
+                            //->whereIn('_id', array(579))
         ->where('city_id', $city_id)
         ->where('status', '=', '1')
         ->take(10000)->skip(0)
@@ -371,7 +371,7 @@ class RankingController extends \BaseController {
          $rangeval = 0;
          break;
      }                                                   
-     $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);             
+     $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);      
      $postdata['rank'] = $score;
      $catval = evalBaseCategoryScore($finderdocument['category_id']);
      $postdata['rankv1'] = $catval;
