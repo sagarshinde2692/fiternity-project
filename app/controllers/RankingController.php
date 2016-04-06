@@ -239,7 +239,15 @@ class RankingController extends \BaseController {
                     "facilities" : {"type" : "string", "index" : "not_analyzed"},
                     "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
                     "average_rating" : {"type" : "float", "index" : "not_analyzed"},
-                    "locationcluster" : {"type" : "string", "index" : "not_analyzed"}
+                    "locationcluster" : {"type" : "string", "index" : "not_analyzed"},
+                    "trials": {
+                        "properties": {
+                            "day" : {"type" : "string", "index" : "not_analyzed"},
+                            "start" : {"type" : "integer", "index" : "not_analyzed"},
+                            "end" : {"type" : "integer", "index" : "not_analyzed"}
+                        },
+                        "type": "nested"
+                    }
                 }
             }
         }';
@@ -320,7 +328,7 @@ class RankingController extends \BaseController {
                             //->whereIn('_id', array(579))
         ->where('city_id', $city_id)
         ->where('status', '=', '1')
-        ->take(10000)->skip(0)
+        ->take(100000)->skip(0)
         ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
@@ -377,9 +385,9 @@ class RankingController extends \BaseController {
      $postdata['rankv1'] = $catval;
      $postdata['rankv2'] = $score + $catval;
      $postfields_data = json_encode($postdata);             
-     $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-      //$posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
-     $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+     //$posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
+        $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
+     $request = array('url' => $posturl, 'port' => 9200, 'method' => 'PUT', 'postfields' => $postfields_data );
      $curl_response = es_curl_request($request);
      echo json_encode($curl_response);
      //echo "<br>$posturl    ---  ".es_curl_request($request);
