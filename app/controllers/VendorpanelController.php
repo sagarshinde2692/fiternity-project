@@ -20,75 +20,81 @@ class VendorpanelController extends BaseController
 {
 
     protected $jwtauth;
+    protected $vendorid;
+    protected $vendorids;
     protected $salessummary;
     protected $trialssummary;
     protected $ozonetelcallssummary;
     protected $reviewssummary;
 
-    public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary, Ozonetelcallsssummary $ozonetelcallsssummary,Reviewssummary $reviewssummary) {
-        $this->jwtauth		            =	$jwtauth;
-        $this->salessummary		        =	$salessummary;
-        $this->trialssummary		    =	$trialssummary;
-        $this->ozonetelcallssummary	=	$ozonetelcallsssummary;
+    public function __construct(
+
+        Jwtauth $jwtauth,
+        Salessummary $salessummary,
+        Trialssummary $trialssummary,
+        Ozonetelcallsssummary $ozonetelcallsssummary,
+        Reviewssummary $reviewssummary)
+    {
+
+        $this->jwtauth = $jwtauth;
+        $this->vendorid = $this->jwtauth->vendorIdFromToken();
+        $this->vendorids = $this->jwtauth->vendorIdsFromToken();
+        $this->salessummary = $salessummary;
+        $this->trialssummary = $trialssummary;
+        $this->ozonetelcallssummary = $ozonetelcallsssummary;
         $this->reviewssummary = $reviewssummary;
-    
     }
 
 
-    public function doVendorLogin(){
+    public function doVendorLogin()
+    {
 
-        $credentials    =   Input::json()->all();
+        $credentials = Input::json()->all();
         return $this->jwtauth->vendorLogin($credentials);
     }
 
 
-
-//    public function getSummarySales($vendor_ids, $start_date = NULL, $end_date = NULL)
     public function getSummarySales($start_date = NULL, $end_date = NULL)
     {
-        $jwt_token                  =   Request::header('Authorization');
-        $decoded_token              =   $this->jwtauth->decodeTokenVendorPanel($jwt_token);
-        $vendorArr                  =   $decoded_token['vendor'];
-        $vendor_ids                 =   array_unique(array_merge([$vendorArr['vendor_id']], $vendorArr['vendors']));
-        // print_r($vendor_ids);exit;
 
-        $finderSaleSummaryArr       =   [];
-        $finder_ids                 =   $vendor_ids;
-        $today_date                 =   date("d-m-Y", time());
-        $start_date                 =   ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)): $today_date;
-        $end_date                   =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $finderSaleSummaryArr = [];
+        $finder_ids = $this->vendorids;
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
         //return "<br> today_date : $today_date  <br>  start_date : $start_date  <br> end_date : $end_date ";
 
-        foreach ($finder_ids as $finder_id){
-            $finderData     = [];
-            $finder         = Finder::where('_id', '=', intval($finder_id))->get()->first();
+        foreach ($finder_ids as $finder_id) {
+            $finderData = [];
+            $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
             if (!$finder) {
                 continue;
             }
 
-            $finder_id                                              = intval($finder_id);
-            $renewal_nonrenewal_count_amount                        = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date);
-            $renewal_count_amount                                   = $this->salessummary->getRenewalCountAmount($finder_id, $start_date, $end_date);
-            $nonrenewal_count_amount                                = $this->salessummary->getNonRenewalCountAmount($finder_id, $start_date, $end_date);
 
-            $paymentgateway_cod_atthestudio_count_amount            = $this->salessummary->getPaymentGatewayCodAtthestudioSalesCountAmount($finder_id, $start_date, $end_date);
-            $paymentgateway_count_amount                            = $this->salessummary->getPaymentGatewaySalesCountAmount($finder_id, $start_date, $end_date);
-            $cod_count_amount                                       = $this->salessummary->getCodSalesCountAmount($finder_id, $start_date, $end_date);
-            $atthestudio_count_amount                               = $this->salessummary->getAtTheStudioSalesCountAmount($finder_id, $start_date, $end_date);
+            $finder_id = intval($finder_id);
+            $renewal_nonrenewal_count_amount = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date);
+            $renewal_count_amount = $this->salessummary->getRenewalCountAmount($finder_id, $start_date, $end_date);
+            $nonrenewal_count_amount = $this->salessummary->getNonRenewalCountAmount($finder_id, $start_date, $end_date);
 
-            $linksent_purchase_count_amount                         = $this->salessummary->getLinkSentPurchaseCountAmount($finder_id, $start_date, $end_date);
-            $linksent_notpurchase_count_amount                      = $this->salessummary->getLinkSentNotPurchaseCountAmount($finder_id, $start_date, $end_date);
+            $paymentgateway_cod_atthestudio_count_amount = $this->salessummary->getPaymentGatewayCodAtthestudioSalesCountAmount($finder_id, $start_date, $end_date);
+            $paymentgateway_count_amount = $this->salessummary->getPaymentGatewaySalesCountAmount($finder_id, $start_date, $end_date);
+            $cod_count_amount = $this->salessummary->getCodSalesCountAmount($finder_id, $start_date, $end_date);
+            $atthestudio_count_amount = $this->salessummary->getAtTheStudioSalesCountAmount($finder_id, $start_date, $end_date);
+
+            $linksent_purchase_count_amount = $this->salessummary->getLinkSentPurchaseCountAmount($finder_id, $start_date, $end_date);
+            $linksent_notpurchase_count_amount = $this->salessummary->getLinkSentNotPurchaseCountAmount($finder_id, $start_date, $end_date);
 
             $sales_summary = [
-                'renewal_nonrenewal'                    =>  $renewal_nonrenewal_count_amount,
-                'renewal'                               =>  $renewal_count_amount,
-                'nonrenewal'                            =>  $nonrenewal_count_amount,
-                'paymentgateway_cod_atthestudio'        =>  $paymentgateway_cod_atthestudio_count_amount,
-                'paymentgateway'                        =>  $paymentgateway_count_amount,
-                'cod'                                   =>  $cod_count_amount,
-                'atthestudio'                           =>  $atthestudio_count_amount,
-                'linksent_purchase'                     =>  $linksent_purchase_count_amount,
-                'linksent_notpurchase'                  =>  $linksent_notpurchase_count_amount,
+                'renewal_nonrenewal' => $renewal_nonrenewal_count_amount,
+                'renewal' => $renewal_count_amount,
+                'nonrenewal' => $nonrenewal_count_amount,
+                'paymentgateway_cod_atthestudio' => $paymentgateway_cod_atthestudio_count_amount,
+                'paymentgateway' => $paymentgateway_count_amount,
+                'cod' => $cod_count_amount,
+                'atthestudio' => $atthestudio_count_amount,
+                'linksent_purchase' => $linksent_purchase_count_amount,
+                'linksent_notpurchase' => $linksent_notpurchase_count_amount,
             ];
 
             array_set($finderData, 'finder_id', intval($finder_id));
@@ -103,11 +109,11 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function getSummaryTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function getSummaryTrials($start_date = NULL, $end_date = NULL)
     {
 
         $finderTrialSummaryArr = [];
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -145,11 +151,11 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function getSummaryOzonetelcalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function getSummaryOzonetelcalls($start_date = NULL, $end_date = NULL)
     {
 
         $ResultArr = [];
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -180,14 +186,14 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function getSummaryReviews($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function getSummaryReviews($start_date = NULL, $end_date = NULL)
     {
 
         $ResultArr = [];
 
         $req = Input::all();
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -220,12 +226,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listBookedTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listBookedTrials($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -238,11 +244,11 @@ class VendorpanelController extends BaseController
                 ->trialssummary
                 ->getBookedTrials($finder_id, $start_date, $end_date)
                 ->get(
-                    array('booktrial_actions','booktrial_type','code','customer_email',
-                    'customer_name','customer_phone','final_lead_stage','final_lead_status',
-                    'going_status','going_status_txt','missedcall_batch','origin',
-                    'premium_session','schedule_date','schedule_date_time','schedule_slot',
-                    'service_id','service_name','share_customer_no')
+                    array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                        'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                        'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                        'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                        'service_id', 'service_name', 'share_customer_no')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -255,12 +261,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listAttendedTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listAttendedTrials($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -273,11 +279,11 @@ class VendorpanelController extends BaseController
                 ->trialssummary
                 ->getAttendedTrials($finder_id, $start_date, $end_date)
                 ->get(
-                    array('booktrial_actions','booktrial_type','code','customer_email',
-                    'customer_name','customer_phone','final_lead_stage','final_lead_status',
-                    'going_status','going_status_txt','missedcall_batch','origin',
-                    'premium_session','schedule_date','schedule_date_time','schedule_slot',
-                    'service_id','service_name','share_customer_no')
+                    array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                        'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                        'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                        'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                        'service_id', 'service_name', 'share_customer_no')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -290,12 +296,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listNotAttendedTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listNotAttendedTrials($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -308,11 +314,11 @@ class VendorpanelController extends BaseController
                 ->trialssummary
                 ->getNotAttendedTrials($finder_id, $start_date, $end_date)
                 ->get(
-                    array('booktrial_actions','booktrial_type','code','customer_email',
-                    'customer_name','customer_phone','final_lead_stage','final_lead_status',
-                    'going_status','going_status_txt','missedcall_batch','origin',
-                    'premium_session','schedule_date','schedule_date_time','schedule_slot',
-                    'service_id','service_name','share_customer_no')
+                    array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                        'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                        'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                        'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                        'service_id', 'service_name', 'share_customer_no')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -325,12 +331,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listUnknownAttendedStatusTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listUnknownAttendedStatusTrials($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -343,11 +349,11 @@ class VendorpanelController extends BaseController
                 ->trialssummary
                 ->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)
                 ->get(
-                    array('booktrial_actions','booktrial_type','code','customer_email',
-                        'customer_name','customer_phone','final_lead_stage','final_lead_status',
-                        'going_status','going_status_txt','missedcall_batch','origin',
-                        'premium_session','schedule_date','schedule_date_time','schedule_slot',
-                        'service_id','service_name','share_customer_no')
+                    array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                        'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                        'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                        'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                        'service_id', 'service_name', 'share_customer_no')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -360,12 +366,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listTrialsConverted($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listTrialsConverted($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -378,11 +384,11 @@ class VendorpanelController extends BaseController
                 ->trialssummary
                 ->getTrialsConverted($finder_id, $start_date, $end_date)
                 ->get(
-                    array('booktrial_actions','booktrial_type','code','customer_email',
-                        'customer_name','customer_phone','final_lead_stage','final_lead_status',
-                        'going_status','going_status_txt','missedcall_batch','origin',
-                        'premium_session','schedule_date','schedule_date_time','schedule_slot',
-                        'service_id','service_name','share_customer_no')
+                    array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                        'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                        'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                        'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                        'service_id', 'service_name', 'share_customer_no')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -394,12 +400,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listNotInterestedCustomers($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listNotInterestedCustomers($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -412,11 +418,11 @@ class VendorpanelController extends BaseController
                 ->trialssummary
                 ->getNotInterestedCustomers($finder_id, $start_date, $end_date)
                 ->get(
-                    array('booktrial_actions','booktrial_type','code','customer_email',
-                        'customer_name','customer_phone','final_lead_stage','final_lead_status',
-                        'going_status','going_status_txt','missedcall_batch','origin',
-                        'premium_session','schedule_date','schedule_date_time','schedule_slot',
-                        'service_id','service_name','share_customer_no')
+                    array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                        'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                        'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                        'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                        'service_id', 'service_name', 'share_customer_no')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -429,12 +435,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listAnsweredCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listAnsweredCalls($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -444,7 +450,7 @@ class VendorpanelController extends BaseController
         foreach ($finder_ids as $finder_id) {
 
             $finder_id = intval($finder_id);
-            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            $finder = Finder::where('_id', '=', $finder_id)->get()->first();
             if (!$finder) {
                 continue;
             }
@@ -453,8 +459,8 @@ class VendorpanelController extends BaseController
                 ->ozonetelcallssummary
                 ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
                 ->get(
-                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
-                        'created_at','customer_contact_circle','customer_contact_operator')
+                    array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                        'created_at', 'customer_contact_circle', 'customer_contact_operator')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -467,13 +473,13 @@ class VendorpanelController extends BaseController
 
         return Response::json($results, 200);
     }
-    
-    public function listNotAnsweredCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+
+    public function listNotAnsweredCalls($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -483,7 +489,7 @@ class VendorpanelController extends BaseController
         foreach ($finder_ids as $finder_id) {
 
             $finder_id = intval($finder_id);
-            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            $finder = Finder::where('_id', '=', $finder_id)->get()->first();
             if (!$finder) {
                 continue;
             }
@@ -492,8 +498,8 @@ class VendorpanelController extends BaseController
                 ->ozonetelcallssummary
                 ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
                 ->get(
-                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
-                        'created_at','customer_contact_circle','customer_contact_operator')
+                    array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                        'created_at', 'customer_contact_circle', 'customer_contact_operator')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -506,14 +512,14 @@ class VendorpanelController extends BaseController
 
         return Response::json($results, 200);
     }
-    
-    
-    public function listCalledStatusCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+
+
+    public function listCalledStatusCalls($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -523,7 +529,7 @@ class VendorpanelController extends BaseController
         foreach ($finder_ids as $finder_id) {
 
             $finder_id = intval($finder_id);
-            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            $finder = Finder::where('_id', '=', $finder_id)->get()->first();
             if (!$finder) {
                 continue;
             }
@@ -532,8 +538,8 @@ class VendorpanelController extends BaseController
                 ->ozonetelcallssummary
                 ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
                 ->get(
-                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
-                        'created_at','customer_contact_circle','customer_contact_operator')
+                    array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                        'created_at', 'customer_contact_circle', 'customer_contact_operator')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));
@@ -548,12 +554,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    public function listTotalCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    public function listTotalCalls($start_date = NULL, $end_date = NULL)
     {
 
         $results = [];
 
-        $finder_ids = explode(",", $vendor_ids);
+        $finder_ids = $this->vendorids;
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -562,7 +568,7 @@ class VendorpanelController extends BaseController
         foreach ($finder_ids as $finder_id) {
 
             $finder_id = intval($finder_id);
-            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            $finder = Finder::where('_id', '=', $finder_id)->get()->first();
             if (!$finder) {
                 continue;
             }
@@ -571,8 +577,8 @@ class VendorpanelController extends BaseController
                 ->ozonetelcallssummary
                 ->getCallRecords($finder_id, $start_date, $end_date)
                 ->get(
-                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
-                        'created_at','customer_contact_circle','customer_contact_operator')
+                    array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                        'created_at', 'customer_contact_circle', 'customer_contact_operator')
                 );
 
             array_set($doc, 'finder_id', intval($finder_id));

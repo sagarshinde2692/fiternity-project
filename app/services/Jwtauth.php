@@ -2,7 +2,7 @@
 
 use \Vendoruser;
 use \JWT;
-use Config, Response, Validator;
+use Config, Response, Validator, Request;
 
 Class Jwtauth {
 
@@ -75,6 +75,27 @@ Class Jwtauth {
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key, array($jwt_alg));
         $decodedTokenArr        =   json_decode(json_encode($decodedToken), True);
         return $decodedTokenArr;
+    }
+
+
+    public function vendorIdFromToken(){
+
+        $jwt_token                  =   Request::header('Authorization');
+        $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
+        $vendorArr                  =   $decoded_token['vendor'];
+        $vendor_id                  =   $vendorArr['vendor_id'];
+        
+        return $vendor_id;
+    }
+
+    public function vendorIdsFromToken(){
+
+        $jwt_token                  =   Request::header('Authorization');
+        $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
+        $vendorArr                  =   $decoded_token['vendor'];
+        $vendor_ids                 =   array_unique(array_merge([$vendorArr['vendor_id']], $vendorArr['vendors']));
+
+        return $vendor_ids;
     }
 
 
