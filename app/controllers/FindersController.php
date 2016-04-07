@@ -92,7 +92,51 @@ class FindersController extends \BaseController {
 				// array_set($finder, 'services', $servicesArr);
 
 
-				if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
+				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
+
+						if(isset($finderarr['services']) && count($finderarr['services']) > 0){
+
+							$finder_gym_service  = [];
+
+							//for servcie category gym
+							$finder_gym_service = head(array_where($finderarr['services'], function($key, $value){
+									    if($value['category']['_id'] == 65){ return $value; } 
+								}));
+
+
+							$finder_gym_service_trialschedules_slots  = [];
+
+							if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
+
+								$slots_start_time_24_hour_format_Arr 	= [];
+								$slots_end_time_24_hour_format_Arr 		= [];
+
+								foreach ($finder_gym_service['trialschedules'] as $key => $trialschedule_weekday) {
+
+									if(isset($trialschedule_weekday['slots']) && count($trialschedule_weekday['slots']) > 0){
+										foreach ($trialschedule_weekday['slots'] as $key => $slot) {
+											array_push($slots_start_time_24_hour_format_Arr, intval($slot['start_time_24_hour_format']));
+											array_push($slots_end_time_24_hour_format_Arr, intval($slot['end_time_24_hour_format']));
+
+										}
+									}
+								}
+
+							}
+							// return $slots_start_time_24_hour_format_Arr;
+							$finder['opening_hour'] = $finderarr['ozonetelno'];
+							$finder['closing_hour'] = $finderarr['ozonetelno'];
+
+						}
+
+
+					
+
+               	}
+
+
+
+               	if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
                    	$finderarr['ozonetelno']['phone_number'] = '+'.$finderarr['ozonetelno']['phone_number'];
 					$finder['ozonetelno'] = $finderarr['ozonetelno'];
                	}
@@ -108,6 +152,7 @@ class FindersController extends \BaseController {
 
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
+				array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
