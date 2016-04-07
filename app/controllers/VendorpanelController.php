@@ -20,29 +20,21 @@ class VendorpanelController extends BaseController
 {
 
     protected $jwtauth;
-    protected $salessummary;
-    protected $trialssummary;
-<<<<<<< HEAD
-    protected $ozonetelcallsssummary;
     protected $vendorid;
     protected $vendorids;
-=======
+    protected $salessummary;
+    protected $trialssummary;
     protected $ozonetelcallssummary;
     protected $reviewssummary;
->>>>>>> b2b75cddd0938f97b041fd3991f38642624afd0f
 
     public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary, Ozonetelcallsssummary $ozonetelcallsssummary,Reviewssummary $reviewssummary) {
         $this->jwtauth		            =	$jwtauth;
-        $this->salessummary		        =	$salessummary;
-        $this->trialssummary		    =	$trialssummary;
-        $this->ozonetelcallsssummary	=	$ozonetelcallsssummary;
-<<<<<<< HEAD
         $this->vendorid                 =   $this->jwtauth->vendorIdFromToken();
         $this->vendorids                =   $this->jwtauth->vendorIdsFromToken();
-=======
-        $this->reviewssummary = $reviewssummary;
-    
->>>>>>> b2b75cddd0938f97b041fd3991f38642624afd0f
+        $this->salessummary             =   $salessummary;
+        $this->trialssummary            =   $trialssummary;
+        $this->ozonetelcallsssummary    =   $ozonetelcallsssummary;
+        $this->reviewssummary           =   $reviewssummary;    
     }
 
 
