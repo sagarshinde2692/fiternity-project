@@ -628,9 +628,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = 'BoughtMembership';
+					$label = 'Additional10Discount';
 
-					$message = 'Thank you! Fitternity is excited about you buying a fitness membership. We will call you to get the details. You will get a call if you WIN in our Lucky Draw.';
+					$message = "Congratualtions! You've unlocked an Additional 10% discount on Fitternity discounts of upto 50% - Our Fitness Concierge will get in touch with you within 48hrs to get you the membership of your choice. You + Fitternity = A Fitter You!";
 				
 					$data = array();
 

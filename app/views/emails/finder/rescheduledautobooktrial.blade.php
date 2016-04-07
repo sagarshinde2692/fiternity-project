@@ -237,7 +237,17 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hi,</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> Greetings from Fitternity</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a {{$trial_type}} session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
+
+                                                        <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a trial session booked earlier for personal training with {{ ucwords($finder_name) }}.</p>
+
+                                                        <?php } else { ?>
+
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a {{$trial_type}} session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
+
+                                                        <?php } ?>
+                                                        
                                                 </td>
                                             </tr>
                                          
@@ -263,6 +273,13 @@
                                                                         <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Contact person (name provided to the customer):</p>
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ ucwords($finder_poc_for_customer_name) }}</p>
+                                                                        <?php }?>
+
+                                                                        <?php if(isset($customer_address) && $customer_address != ""){ ?> 
+                                                                            <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Customer Address:</p> 
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_address) }}</p>
+                                                                            <?php }?>
                                                                         <?php }?>
 
                                                                     </td>

@@ -495,7 +495,8 @@ class OrderController extends \BaseController {
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;	
 			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
 			$finder_lon							= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
-			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";	
+			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+			$finder_category_id					= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";	
 
 			array_set($data, 'finder_city', trim($finder_city));
 			array_set($data, 'finder_location', trim($finder_location));
@@ -509,6 +510,7 @@ class OrderController extends \BaseController {
 			array_set($data, 'finder_lon', $finder_lon);
 			array_set($data, 'finder_lat', $finder_lat);
 			array_set($data, 'finder_branch', trim($finder_location));
+			array_set($data, 'finder_category_id', $finder_category_id);
 
 		}
 
@@ -549,10 +551,10 @@ class OrderController extends \BaseController {
 
 	public function autoRegisterCustomer($data){
 
-		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
 		if(!$customer) {
+			
 			$inserted_id = Customer::max('_id') + 1;
 			$customer = new Customer();
 			$customer->_id = $inserted_id;
@@ -560,9 +562,25 @@ class OrderController extends \BaseController {
 			$customer->email = $data['customer_email'];
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
-			if(isset($customer['customer_phone'])){
+
+			if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
 				$customer->contact_no = $data['customer_phone'];
 			}
+
+			/*if(isset($data['customer_address'])){
+
+				if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+					$customer->address = implode(",", array_values($data['customer_address']));
+					$customer->address_array = $data['customer_address'];
+
+				}elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+					$customer->address = $data['customer_address'];
+				}
+
+			}*/
+
 			$customer->identity = 'email';
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
@@ -570,9 +588,39 @@ class OrderController extends \BaseController {
 			$customer->save();
 
 			return $inserted_id;
-		}  
 
-		return $customer->_id;
+		}else{
+
+			$customerData = [];
+
+			try{
+
+				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+					$customerData['contact_no'] = trim($data['customer_phone']);
+				}
+
+				if(isset($data['otp']) &&  $data['otp'] != ""){
+					$customerData['contact_no_verify_status'] = "yes";
+				}
+
+				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+					$customerData['address'] = implode(",", array_values($data['customer_address']));
+					$customerData['address_array'] = $data['customer_address'];
+				}
+
+				if(count($customerData) > 0){
+					$customer->update($customerData);	
+				}
+				
+			} catch(ValidationException $e){
+				
+				Log::error($e);
+
+			}
+
+			return $customer->_id;
+		}
+
 	}
 
 

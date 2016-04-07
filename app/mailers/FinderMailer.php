@@ -25,11 +25,13 @@ Class FinderMailer extends Mailer {
 
 		$bcc_emailids = array(Config::get('mail.to_mailus'));
 
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
+
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  $user_name,
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Session request from customer '.ucwords($data['customer_name']).' at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
+			'email_subject' => 'Session request from customer '.ucwords($data['customer_name']).' '.$with_at.' '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
 		);
 
 		$label = 'BookTrial-F';
@@ -51,6 +53,8 @@ Class FinderMailer extends Mailer {
 		$user_name = ucwords($data['finder_name']);
 
 		$bcc_emailids = array(Config::get('mail.to_mailus'));
+
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
 
 		$message_data 	= array(
 			'user_email' => $user_email,
@@ -357,7 +361,12 @@ Class FinderMailer extends Mailer {
 
 		$bcc_emailids = Config::get('mail.bcc_emailds_purchase');
 		if($data['type'] == 'memberships'){
-			$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+
+			if(isset($data['finder_category_id']) && $data['finder_category_id'] == 41){
+				$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' with '.ucwords($data['finder_name']).' on Fitternity: '.ucwords($data['customer_name']);
+			}else{
+				$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
+			}
 		}
 		if($data['type'] == 'womens-day'){
 			$subject  = "Women's Day Offer availed on Fitternity - ".ucwords($data['customer_name'])." purchased membership for ".ucwords($data['finder_name']);

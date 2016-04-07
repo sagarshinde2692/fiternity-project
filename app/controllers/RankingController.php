@@ -239,7 +239,15 @@ class RankingController extends \BaseController {
                     "facilities" : {"type" : "string", "index" : "not_analyzed"},
                     "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
                     "average_rating" : {"type" : "float", "index" : "not_analyzed"},
-                    "locationcluster" : {"type" : "string", "index" : "not_analyzed"}
+                    "locationcluster" : {"type" : "string", "index" : "not_analyzed"},
+                    "trials": {
+                        "properties": {
+                            "day" : {"type" : "string", "index" : "not_analyzed"},
+                            "start" : {"type" : "integer", "index" : "not_analyzed"},
+                            "end" : {"type" : "integer", "index" : "not_analyzed"}
+                        },
+                        "type": "nested"
+                    }
                 }
             }
         }';
@@ -296,9 +304,9 @@ class RankingController extends \BaseController {
             'postfields' => $payload
             );      
         echo es_curl_request($request);
-
     }
 
+   
     public function IndexRankMongo2Elastic($index_name, $city_id){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
@@ -317,10 +325,10 @@ class RankingController extends \BaseController {
         ->active()
         ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
-                            //->whereIn('_id', array(1))
+                            //->whereIn('_id', array(579))
         ->where('city_id', $city_id)
         ->where('status', '=', '1')
-        ->take(10000)->skip(0)
+        ->take(100000)->skip(0)
         ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
@@ -371,15 +379,15 @@ class RankingController extends \BaseController {
          $rangeval = 0;
          break;
      }                                                   
-     $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);             
+     $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);      
      $postdata['rank'] = $score;
      $catval = evalBaseCategoryScore($finderdocument['category_id']);
      $postdata['rankv1'] = $catval;
      $postdata['rankv2'] = $score + $catval;
      $postfields_data = json_encode($postdata);             
-     $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-      //$posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
-     $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+     //$posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
+        $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
+     $request = array('url' => $posturl, 'port' => 9200, 'method' => 'PUT', 'postfields' => $postfields_data );
      $curl_response = es_curl_request($request);
      echo json_encode($curl_response);
      //echo "<br>$posturl    ---  ".es_curl_request($request);

@@ -508,7 +508,9 @@ class EmailSmsApiController extends \BaseController {
 			'phone' => Input::json()->get('phone'),
 			'preferred_time' => Input::json()->get('preferred_time'),
 			'date' => date("h:i:sa"),
-			'referrer' =>  (Input::json()->get('referrer')) ? Input::json()->get('referrer') : 'fitternity'  
+			'referrer' =>  (Input::json()->get('referrer')) ? Input::json()->get('referrer') : 'fitternity',
+			'social_referrer' =>  (Input::json()->get('social_referrer')) ? Input::json()->get('social_referrer') : '',
+			'transacted_after' =>  (Input::json()->get('transacted_after')) ? Input::json()->get('transacted_after') : ''  
 		);
 
 		array_set($data, 'capture_status', 'yet to connect');

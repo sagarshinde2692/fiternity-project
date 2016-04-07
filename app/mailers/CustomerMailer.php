@@ -12,12 +12,14 @@ Class CustomerMailer extends Mailer {
 		$template_data 	= 	$data;
 		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
-			);
+			'email_subject' => 'Your session '.$with_at.' '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
+		);
 
 		$label = 'BookTrial-C';
 		$priority = 1;
@@ -32,11 +34,13 @@ Class CustomerMailer extends Mailer {
 		$template_data 	= 	$data;
 		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been re-scheduled | Fitternity'
+			'email_subject' => 'Your session '.$with_at.' '.ucwords($data['finder_name']).' has been re-scheduled | Fitternity'
 			);
 
 		$label = 'RescheduledTrial-C';
@@ -87,11 +91,14 @@ Class CustomerMailer extends Mailer {
 		$template_data 	= 	$data;
 		
 		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
+
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
+
 		$message_data 	= 	array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity'
+			'email_subject' => 'Regarding your session '.$with_at.' '.ucwords($data['finder_name']).' | Fitternity'
 			);
 
 		$label = 'TrialRmdBefore12Hr-C';
@@ -105,13 +112,15 @@ Class CustomerMailer extends Mailer {
 
 		$email_template = 'emails.customer.booktrialreminderafter2hour';
 		$template_data 	= $data;
+
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
 		
 		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity'
+			'email_subject' => 'Feedback and subscription '.$with_at.' '.ucwords($data['finder_name']).' | Fitternity'
 			);
 
 		$label = 'TrialRmdAfter2Hr-C';
@@ -271,9 +280,11 @@ Class CustomerMailer extends Mailer {
 		$template_data 				= 	$data;
 		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
 		$subject 					= 	'';
-		
+
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
+
 		if($data['type'] == 'memberships'){
-			$subject  = 'Fitternity - Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
+			$subject  = 'Fitternity - Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " ".$with_at." ". ucwords($data['finder_name']);
 		}
 		if($data['type'] == 'womens-day'){
 			$subject  = 'Regarding your purchase on Womens Day Sale by Fitternity';
@@ -598,11 +609,13 @@ Class CustomerMailer extends Mailer {
 		$template_data 	= 	$data;
 		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
+		$with_at = (isset($data['finder_category_id']) && $data['finder_category_id'] == 41) ? "with" : "at";
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been cancelled | Fitternity'
+			'email_subject' => 'Your session '.$with_at.' '.ucwords($data['finder_name']).' has been cancelled | Fitternity'
 			);
 
 		$label = 'CancelTrial-C';

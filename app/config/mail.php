@@ -164,7 +164,7 @@ return array(
 	// 'bcc_emailds_autobook_trial' 					=> 	array('sanjay.fitternity@gmail.com'),
 
 	'bcc_emailds_autobook_trial' 					=> 	array('mailus@fitternity.com'),
-	'bcc_emailds_finderdailsummary' 				=> 	array('mailus@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com'),
+	'bcc_emailds_finderdailsummary' 				=> 	array('mailus@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com','apoorvasharma@fitternity.com'),
 	'bcc_forgot_password' 							=> 	array('mailus@fitternity.com'),
 	'bcc_forgot_password_app' 						=> 	array('ut.mehrotra@gmail.com','mailus@fitternity.com'),
 

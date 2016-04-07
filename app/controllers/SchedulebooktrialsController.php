@@ -414,6 +414,8 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
 		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
 
+		$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+		$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 
 		$booktrialdata = array(
@@ -446,7 +448,10 @@ class SchedulebooktrialsController extends \BaseController {
 			'final_lead_stage'			=>		'booking_stage',	
 			'final_lead_status'			=>		'slot_not_fixed',
 			'customer_address'		=> 		$customer_address,
-			'customer_note'		=>		$customer_note
+			'customer_note'		=>		$customer_note,
+
+			'social_referrer'				=>		$social_referrer,
+			'transacted_after'				=>		$transacted_after
 		);
 
 
@@ -663,10 +668,10 @@ class SchedulebooktrialsController extends \BaseController {
 
 	public function autoRegisterCustomer($data){
 
-		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
 		if(!$customer) {
+
 			$inserted_id = Customer::max('_id') + 1;
 			$customer = new Customer();
 			$customer->_id = $inserted_id;
@@ -675,13 +680,22 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
 
-			if(isset($customer['customer_phone'])){
+			if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
 				$customer->contact_no = $data['customer_phone'];
 			}
 
-			if(isset($data['customer_address']) && !empty($data['customer_address']) ){
-				$customer->address = implode(",", array_values($data['customer_address']));
-				$customer->address_array = $data['customer_address'];
+			if(isset($data['customer_address'])){
+
+				if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+					$customer->address = implode(",", array_values($data['customer_address']));
+					$customer->address_array = $data['customer_address'];
+
+				}elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+					$customer->address = $data['customer_address'];
+				}
+
 			}
 
 			$customer->identity = 'email';
@@ -691,17 +705,24 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer->save();
 
 			return $inserted_id;
+
 		}else{
 
 			$customerData = [];
 
 			try{
+
 				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
 					$customerData['contact_no'] = trim($data['customer_phone']);
 				}
 
 				if(isset($data['otp']) &&  $data['otp'] != ""){
 					$customerData['contact_no_verify_status'] = "yes";
+				}
+
+				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+					$customerData['address'] = implode(",", array_values($data['customer_address']));
+					$customerData['address_array'] = $data['customer_address'];
 				}
 
 				if(count($customerData) > 0){
@@ -799,6 +820,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$city_id 							=	(int) $finder['city_id'];
 
 			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
+
+			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 			$final_lead_stage = '';
 			$final_lead_status = '';
@@ -959,8 +983,11 @@ class SchedulebooktrialsController extends \BaseController {
 				'source_flag'					=> 		'customer',
 
 				'final_lead_stage'				=>		$final_lead_stage,
-				'final_lead_status'				=>		$final_lead_status
-				);
+				'final_lead_status'				=>		$final_lead_status,
+
+				'social_referrer'				=>		$social_referrer,
+				'transacted_after'				=>		$transacted_after
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1029,6 +1056,8 @@ class SchedulebooktrialsController extends \BaseController {
 			$order = Order::findOrFail($orderid);
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
+			$finder_category_id 				= (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
+
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
 			array_set($data, 'booktrial_id', (int)$booktrialid);
@@ -1052,11 +1081,15 @@ class SchedulebooktrialsController extends \BaseController {
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
-				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				if($finder_category_id != 41){
+					$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+					$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				}
 			}else{
-				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
-				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				if($finder_category_id != 41){
+					$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
+					$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				}
 			}
 
 			if(isset($data['device_id']) && $data['device_id'] != ''){
@@ -1194,6 +1227,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
 			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
+			$finder_category_id						= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
 			$final_lead_stage = '';
 			$final_lead_status = '';
@@ -1213,6 +1247,9 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
 			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 			if($device_type != '' && $gcm_reg_id != ''){
 
@@ -1368,8 +1405,13 @@ class SchedulebooktrialsController extends \BaseController {
 				'otp'							=>		$otp,
 				'source_flag'					=> 		'customer',
 				'final_lead_stage'				=>		$final_lead_stage,
-				'final_lead_status'				=>		$final_lead_status
-				);
+				'final_lead_status'				=>		$final_lead_status,
+
+				'social_referrer'				=>		$social_referrer,
+				'transacted_after'				=>		$transacted_after,
+				'finder_category_id'				=>		$finder_category_id
+
+			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
 			// return $booktrialdata;
@@ -1435,9 +1477,12 @@ class SchedulebooktrialsController extends \BaseController {
 			$fiveHourDiffInMin 					= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
 			$twelveHourDiffInMin 				= 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
 			$finderid 							= 	(int) $data['finder_id'];
+			
 
 			$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+
+			$finder_category_id 				= (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
@@ -1457,11 +1502,15 @@ class SchedulebooktrialsController extends \BaseController {
 
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
-				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				if($finder_category_id != 41){
+					$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+					$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				}
 			}else{
-				$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
-				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				if($finder_category_id != 41){
+					$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
+					$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+				}
 			}
 
 			if(isset($data['device_id']) && $data['device_id'] != ''){
@@ -1627,6 +1676,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
 
+			$finder_category_id						= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
+
 			$description =  $what_i_should_carry = $what_i_should_expect = '';
 			if($service_id != ''){
 				$serviceArr 						= 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->where('_id','=', intval($service_id))->first()->toArray();
@@ -1787,7 +1838,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_id'						=>		$device_id,
 				'otp'							=> 		$otp,
 				'source_flag'					=> 		'customer',
-				);
+				'finder_category_id'			=>		$finder_category_id
+			);
 
 			if($update_only_info == ''){
 				array_set($booktrialdata, 'schedule_slot_start_time', $schedule_slot_start_time);
@@ -1856,7 +1908,14 @@ class SchedulebooktrialsController extends \BaseController {
 			$old_schedule_slot_start_time = $data['old_schedule_slot_start_time'];
 			$old_schedule_slot_end_time = $data['old_schedule_slot_end_time'];
 
+
+			
+
 			$booktrial = Booktrial::find($booktrialid);
+
+			$booktrialdata = $booktrial->toArray();
+			
+			$finder_category_id = (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
 			//hit fitness force api start here
 			if(isset($finder['fitnessforce_key']) && $finder['fitnessforce_key'] != ''){
@@ -1947,11 +2006,15 @@ class SchedulebooktrialsController extends \BaseController {
 
 				//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 				if($twelveHourDiffInMin >= (12 * 60)){
-					$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-					$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+					if($finder_category_id != 41){
+						$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+						$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+					}
 				}else{
-					$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
-					$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+					if($finder_category_id != 41){
+						$sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
+						$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
+					}
 				}
 
 				//Send Reminder Notiication (Sms) Before 1 Hour To Customer

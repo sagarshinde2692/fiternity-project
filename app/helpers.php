@@ -591,7 +591,30 @@ if (!function_exists(('evalBaseCategoryScore'))){
             $key3 = trim($key1," ");
             $info_service_list = explode("</li><li>", $key3);
         }
-   
+
+        /*
+    
+        Build schedules array here for the finder for schedules/weekdays search
+        */
+
+        $weekdays = array();
+        $trial_slots = array();
+        
+         foreach ($data['services'] as $serv) {
+             if(isset($serv['trialschedules'])){
+                $trialschedules = $serv['trialschedules'];
+               
+                foreach ($trialschedules as $trial) {
+                   //echo json_encode($trial);
+                   array_push($weekdays, $trial['weekday']);
+                   foreach ($trial['slots'] as $slot) {
+                       array_push($trial_slots, array('day' => $trial['weekday'], 'start' => intval($slot['start_time_24_hour_format']), 'end' => intval($slot['end_time_24_hour_format'])));
+                   }
+                }
+            }   
+         }
+       
+
         try {
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
@@ -646,6 +669,8 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'show_offers'                   =>      $offer_counter,
                 'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
                 'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : new stdClass(),
+                'service_weekdays'              =>      $weekdays,
+                'trials'                        =>      $trial_slots
                 //'trialschedules'                =>      $trialdata,
                 );                
 $postfields_data['servicephotos'] = $picslist;
