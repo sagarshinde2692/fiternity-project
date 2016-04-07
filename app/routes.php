@@ -30,7 +30,14 @@ Route::group(array('before' => 'validatevendor'), function() {
 });
 
 Route::get('/vendorsummary/trials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summarytrials','uses' => 'VendorpanelController@getSummaryTrials'));
+Route::get('/vendorsummary/bookedtrials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.listBookedTrials','uses' => 'VendorpanelController@listBookedTrials'));
+Route::get('/vendorsummary/attendedtrials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.listAttendedTrials','uses' => 'VendorpanelController@listAttendedTrials'));
+Route::get('/vendorsummary/notattendedtrials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.listNotAttendedTrials','uses' => 'VendorpanelController@listNotAttendedTrials'));
+Route::get('/vendorsummary/unknownattendedstatustrials/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.listUnknownAttendedStatusTrials','uses' => 'VendorpanelController@listUnknownAttendedStatusTrials'));
+Route::get('/vendorsummary/trialsconverted/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.listTrialsConverted','uses' => 'VendorpanelController@listTrialsConverted'));
+Route::get('/vendorsummary/notinterestedcustomers/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.listNotInterestedCustomers','uses' => 'VendorpanelController@listNotInterestedCustomers'));
 Route::get('/vendorsummary/ozonetel/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summaryozonetelcalls','uses' => 'VendorpanelController@getSummaryOzonetelcalls'));
+Route::get('/vendorsummary/reviews/{vendorid}/{start_date?}/{end_date?}',  array('as' => 'vendor.summaryreviews','uses' => 'VendorpanelController@getSummaryReviews'));
 
 
 

@@ -13,6 +13,7 @@ use App\Services\Jwtauth as Jwtauth;
 use App\Services\Salessummary as Salessummary;
 use App\Services\Trialssummary as Trialssummary;
 use App\Services\Ozonetelcallssummary as Ozonetelcallsssummary;
+use App\Services\Reviewssummary as Reviewssummary;
 
 
 class VendorpanelController extends BaseController
@@ -21,17 +22,27 @@ class VendorpanelController extends BaseController
     protected $jwtauth;
     protected $salessummary;
     protected $trialssummary;
+<<<<<<< HEAD
     protected $ozonetelcallsssummary;
     protected $vendorid;
     protected $vendorids;
+=======
+    protected $ozonetelcallssummary;
+    protected $reviewssummary;
+>>>>>>> b2b75cddd0938f97b041fd3991f38642624afd0f
 
-    public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary, Ozonetelcallsssummary $ozonetelcallsssummary) {
+    public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary, Ozonetelcallsssummary $ozonetelcallsssummary,Reviewssummary $reviewssummary) {
         $this->jwtauth		            =	$jwtauth;
         $this->salessummary		        =	$salessummary;
         $this->trialssummary		    =	$trialssummary;
         $this->ozonetelcallsssummary	=	$ozonetelcallsssummary;
+<<<<<<< HEAD
         $this->vendorid                 =   $this->jwtauth->vendorIdFromToken();
         $this->vendorids                =   $this->jwtauth->vendorIdsFromToken();
+=======
+        $this->reviewssummary = $reviewssummary;
+    
+>>>>>>> b2b75cddd0938f97b041fd3991f38642624afd0f
     }
 
 
@@ -103,28 +114,28 @@ class VendorpanelController extends BaseController
     {
 
         $finderTrialSummaryArr = [];
-        $finder_ids             =   explode(",",$vendor_ids);
-        $today_date             =   date("d-m-Y", time());
-        $start_date             =   ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)): $today_date;
-        $end_date               =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
         //return "<br> today_date : $today_date  <br>  start_date : $start_date  <br> end_date : $end_date ";
 
 
-        foreach ($finder_ids as $finder_id){
-            $finderData     = [];
-            $finder         = Finder::where('_id', '=', intval($finder_id))->get()->first();
+        foreach ($finder_ids as $finder_id) {
+            $finderData = [];
+            $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
             if (!$finder) {
                 continue;
             }
 
-            $finder_id        = intval($finder_id);
+            $finder_id = intval($finder_id);
             $trials_summary = [
-                'BookedTrials' => $this->trialssummary->getBookedTrialsCount($finder_id, $start_date, $end_date),
-                'AttendedTrials' => $this->trialssummary->getAttendedTrialsCount($finder_id, $start_date, $end_date),
-                'NotAttendedTrials' => $this->trialssummary->getNotAttendedTrialsCount($finder_id, $start_date, $end_date),
-                'UnknownAttendedStatusTrials' => $this->trialssummary->getUnknownAttendedStatusTrialsCount($finder_id, $start_date, $end_date),
-                'TrialsConverted' => $this->trialssummary->getTrialsConvertedCount($finder_id, $start_date, $end_date),
-                'NotInterestedCustomers' => $this->trialssummary->getNotInterestedCustomersCount($finder_id, $start_date, $end_date),
+                'BookedTrials' => $this->trialssummary->getBookedTrials($finder_id, $start_date, $end_date)->count(),
+                'AttendedTrials' => $this->trialssummary->getAttendedTrials($finder_id, $start_date, $end_date)->count(),
+                'NotAttendedTrials' => $this->trialssummary->getNotAttendedTrials($finder_id, $start_date, $end_date)->count(),
+                'UnknownAttendedStatusTrials' => $this->trialssummary->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)->count(),
+                'TrialsConverted' => $this->trialssummary->getTrialsConverted($finder_id, $start_date, $end_date)->count(),
+                'NotInterestedCustomers' => $this->trialssummary->getNotInterestedCustomers($finder_id, $start_date, $end_date)->count(),
             ];
 
 
@@ -145,22 +156,22 @@ class VendorpanelController extends BaseController
     {
 
         $ResultArr = [];
-        $finder_ids             =   explode(",",$vendor_ids);
-        $today_date             =   date("d-m-Y", time());
-        $start_date             =   ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)): $today_date;
-        $end_date               =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
         //return "<br> today_date : $today_date  <br>  start_date : $start_date  <br> end_date : $end_date ";
 
 
-        foreach ($finder_ids as $finder_id){
-            $finderData     = [];
-            $finder         = Finder::where('_id', '=', intval($finder_id))->get()->first();
+        foreach ($finder_ids as $finder_id) {
+            $finderData = [];
+            $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
             if (!$finder) {
                 continue;
             }
 
-            $finder_id        = intval($finder_id);
-            $ozonetel_calls_summary = $this->ozonetelcallsssummary->getTotalOzonetelcallsCount($finder_id, $start_date, $end_date);
+            $finder_id = intval($finder_id);
+            $ozonetel_calls_summary = $this->ozonetelcallssummary->getOzonetelcallsSummary($finder_id, $start_date, $end_date);
 
 
             array_set($finderData, 'finder_id', intval($finder_id));
@@ -174,4 +185,254 @@ class VendorpanelController extends BaseController
 
         return Response::json($ResultArr, 200);
     }
+
+
+    public function getSummaryReviews($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $ResultArr = [];
+
+        $req = Input::all();
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $min_rating = isset($req['min_rating']) ? $req['min_rating'] : 0;
+        $max_rating = isset($req['max_rating']) ? $req['max_rating'] : 5;
+        //return "<br> today_date : $today_date  <br>  start_date : $start_date  <br> end_date : $end_date ";
+
+
+        foreach ($finder_ids as $finder_id) {
+            $finderData = [];
+            $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
+            if (!$finder) {
+                continue;
+            }
+
+            $finder_id = intval($finder_id);
+            $reviews_summary = $this->reviewssummary->getReviews($min_rating, $max_rating, $finder_id, $start_date, $end_date);
+
+
+            array_set($finderData, 'finder_id', intval($finder_id));
+            array_set($finderData, 'title', trim($finder->title));
+            array_set($finderData, 'slug', trim($finder->slug));
+            array_set($finderData, 'reviews_summary', $reviews_summary);
+
+            array_push($ResultArr, $finderData);
+        }
+
+
+        return Response::json($ResultArr, 200);
+    }
+
+
+    public function listBookedTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $BookedTrials = $this
+                ->trialssummary
+                ->getBookedTrials($finder_id, $start_date, $end_date)
+                ->get(
+                    array('booktrial_actions','booktrial_type','code','customer_email',
+                    'customer_name','customer_phone','final_lead_stage','final_lead_status',
+                    'going_status','going_status_txt','missedcall_batch','origin',
+                    'premium_session','schedule_date','schedule_date_time','schedule_slot',
+                    'service_id','service_name','share_customer_no')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'booked_trials', $BookedTrials);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+
+
+    public function listAttendedTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $AttendedTrials = $this
+                ->trialssummary
+                ->getAttendedTrials($finder_id, $start_date, $end_date)
+                ->get(
+                    array('booktrial_actions','booktrial_type','code','customer_email',
+                    'customer_name','customer_phone','final_lead_stage','final_lead_status',
+                    'going_status','going_status_txt','missedcall_batch','origin',
+                    'premium_session','schedule_date','schedule_date_time','schedule_slot',
+                    'service_id','service_name','share_customer_no')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'attended_trials', $AttendedTrials);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+
+
+    public function listNotAttendedTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $NotAttendedTrials = $this
+                ->trialssummary
+                ->getNotAttendedTrials($finder_id, $start_date, $end_date)
+                ->get(
+                    array('booktrial_actions','booktrial_type','code','customer_email',
+                    'customer_name','customer_phone','final_lead_stage','final_lead_status',
+                    'going_status','going_status_txt','missedcall_batch','origin',
+                    'premium_session','schedule_date','schedule_date_time','schedule_slot',
+                    'service_id','service_name','share_customer_no')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'not_attended_trials', $NotAttendedTrials);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+
+
+    public function listUnknownAttendedStatusTrials($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $UnknownAttendedStatusTrials = $this
+                ->trialssummary
+                ->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)
+                ->get(
+                    array('booktrial_actions','booktrial_type','code','customer_email',
+                        'customer_name','customer_phone','final_lead_stage','final_lead_status',
+                        'going_status','going_status_txt','missedcall_batch','origin',
+                        'premium_session','schedule_date','schedule_date_time','schedule_slot',
+                        'service_id','service_name','share_customer_no')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'unknown_attended_status_trials', $UnknownAttendedStatusTrials);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+
+
+    public function listTrialsConverted($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $TrialsConverted = $this
+                ->trialssummary
+                ->getTrialsConverted($finder_id, $start_date, $end_date)
+                ->get(
+                    array('booktrial_actions','booktrial_type','code','customer_email',
+                        'customer_name','customer_phone','final_lead_stage','final_lead_status',
+                        'going_status','going_status_txt','missedcall_batch','origin',
+                        'premium_session','schedule_date','schedule_date_time','schedule_slot',
+                        'service_id','service_name','share_customer_no')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'trials_converted', $TrialsConverted);
+            array_push($results, $doc);
+        }
+
+        return Response::json($results, 200);
+    }
+
+
+    public function listNotInterestedCustomers($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $NotInterestedCustomers = $this
+                ->trialssummary
+                ->getNotInterestedCustomers($finder_id, $start_date, $end_date)
+                ->get(
+                    array('booktrial_actions','booktrial_type','code','customer_email',
+                        'customer_name','customer_phone','final_lead_stage','final_lead_status',
+                        'going_status','going_status_txt','missedcall_batch','origin',
+                        'premium_session','schedule_date','schedule_date_time','schedule_slot',
+                        'service_id','service_name','share_customer_no')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'not_interested_customers', $NotInterestedCustomers);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+
 }
