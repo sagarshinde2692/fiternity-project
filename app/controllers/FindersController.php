@@ -91,6 +91,8 @@ class FindersController extends \BaseController {
 				// }
 				// array_set($finder, 'services', $servicesArr);
 
+				$finder['opening_hour'] =  null;
+				$finder['closing_hour'] = null;
 
 				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
@@ -124,13 +126,10 @@ class FindersController extends \BaseController {
 
 							}
 							// return $slots_start_time_24_hour_format_Arr;
-							$finder['opening_hour'] = $finderarr['ozonetelno'];
-							$finder['closing_hour'] = $finderarr['ozonetelno'];
+							$finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
+							$finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr);
 
 						}
-
-
-					
 
                	}
 
