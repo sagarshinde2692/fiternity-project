@@ -57,6 +57,21 @@ Class Ozonetelcallssummary {
                 return $request;
             });
     }
-    
+
+    public function getCallRecords($finder_id, $start_date, $end_date, $call_status = NULL)
+    {
+
+        if($call_status == NULL){
+            return Ozonetelcapture
+                ::  where('finder_id', '=', intval($finder_id))
+                ->createdBetween($start_date, $end_date);
+        }
+
+
+        return Ozonetelcapture
+            ::  where('finder_id', '=', intval($finder_id))
+            ->where('call_status', $call_status)
+            ->createdBetween($start_date, $end_date);
+    }
 
 }

@@ -29,7 +29,7 @@ class VendorpanelController extends BaseController
         $this->jwtauth		            =	$jwtauth;
         $this->salessummary		        =	$salessummary;
         $this->trialssummary		    =	$trialssummary;
-        $this->ozonetelcallsssummary	=	$ozonetelcallsssummary;
+        $this->ozonetelcallssummary	=	$ozonetelcallsssummary;
         $this->reviewssummary = $reviewssummary;
     
     }
@@ -428,4 +428,161 @@ class VendorpanelController extends BaseController
         return Response::json($results, 200);
     }
 
+
+    public function listAnsweredCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $call_status = 'answered';
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            if (!$finder) {
+                continue;
+            }
+
+            $data = $this
+                ->ozonetelcallssummary
+                ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                ->get(
+                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
+                        'created_at','customer_contact_circle','customer_contact_operator')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'title', trim($finder->title));
+            array_set($doc, 'slug', trim($finder->slug));
+            array_set($doc, 'data', $data);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+    
+    public function listNotAnsweredCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $call_status = 'not_answered';
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            if (!$finder) {
+                continue;
+            }
+
+            $data = $this
+                ->ozonetelcallssummary
+                ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                ->get(
+                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
+                        'created_at','customer_contact_circle','customer_contact_operator')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'title', trim($finder->title));
+            array_set($doc, 'slug', trim($finder->slug));
+            array_set($doc, 'data', $data);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+    
+    
+    public function listCalledStatusCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $call_status = 'called';
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            if (!$finder) {
+                continue;
+            }
+
+            $data = $this
+                ->ozonetelcallssummary
+                ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                ->get(
+                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
+                        'created_at','customer_contact_circle','customer_contact_operator')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'title', trim($finder->title));
+            array_set($doc, 'slug', trim($finder->slug));
+            array_set($doc, 'data', $data);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+
+
+    public function listTotalCalls($vendor_ids, $start_date = NULL, $end_date = NULL)
+    {
+
+        $results = [];
+
+        $finder_ids = explode(",", $vendor_ids);
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+
+        foreach ($finder_ids as $finder_id) {
+
+            $finder_id = intval($finder_id);
+            $finder         = Finder::where('_id', '=', $finder_id)->get()->first();
+            if (!$finder) {
+                continue;
+            }
+
+            $data = $this
+                ->ozonetelcallssummary
+                ->getCallRecords($finder_id, $start_date, $end_date)
+                ->get(
+                    array('ozonetel_no','customer_contact_no','call_duration','extension','call_status',
+                        'created_at','customer_contact_circle','customer_contact_operator')
+                );
+
+            array_set($doc, 'finder_id', intval($finder_id));
+            array_set($doc, 'title', trim($finder->title));
+            array_set($doc, 'slug', trim($finder->slug));
+            array_set($doc, 'data', $data);
+            array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
 }
