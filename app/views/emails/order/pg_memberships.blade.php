@@ -242,7 +242,7 @@
 
                                                         <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
 
-                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for purchasing your fitness membership on Fitternity.com! We are excited to have you started Personal Training with <strong> {{  ucwords($finder_name) }}</strong> - we truly hope a great experience for you.</p>
+                                                              <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for purchasing your fitness membership on Fitternity.com! We are excited to have you started for Personal Training with <strong> {{  ucwords($finder_name) }}</strong> - we truly hope a great experience for you.</p>
 
                                                         <?php } else { ?>
 

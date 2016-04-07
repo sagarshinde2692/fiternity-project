@@ -510,7 +510,8 @@ class EmailSmsApiController extends \BaseController {
 			'date' => date("h:i:sa"),
 			'referrer' =>  (Input::json()->get('referrer')) ? Input::json()->get('referrer') : 'fitternity',
 			'social_referrer' =>  (Input::json()->get('social_referrer')) ? Input::json()->get('social_referrer') : '',
-			'transacted_after' =>  (Input::json()->get('transacted_after')) ? Input::json()->get('transacted_after') : ''  
+			'transacted_after' =>  (Input::json()->get('transacted_after')) ? Input::json()->get('transacted_after') : '',
+			'referrer_object' =>  (Input::json()->get('referrer_object')) ? Input::json()->get('referrer_object') : ''
 		);
 
 		array_set($data, 'capture_status', 'yet to connect');
