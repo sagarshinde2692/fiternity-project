@@ -52,6 +52,7 @@ class FindersController extends \BaseController {
 			->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->with('findercollections')
 			->with('categorytags')
 			->with('locationtags')
 			->with('offerings')
@@ -75,7 +76,7 @@ class FindersController extends \BaseController {
 
 
 				// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
-				$finder 		= 	array_except($finderarr, array('coverimage','categorytags','locationtags','offerings','facilities','services')); 
+				$finder 		= 	array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services')); 
 				$coverimage  	=	($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
 
@@ -241,6 +242,8 @@ class FindersController extends \BaseController {
 		}	
 	}
 
+
+
 	public function finderServices($finderid){
 		$finderid 	=  	(int) $finderid;
 		$finder = Finder::active()->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))->where('_id','=',$finderid)->first();
@@ -256,6 +259,9 @@ class FindersController extends \BaseController {
 
 		return Response::json($data,200);
 	}
+
+
+
 
 	// public function ratecards($finderid){
 
