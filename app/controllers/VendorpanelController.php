@@ -22,12 +22,16 @@ class VendorpanelController extends BaseController
     protected $salessummary;
     protected $trialssummary;
     protected $ozonetelcallsssummary;
+    protected $vendorid;
+    protected $vendorids;
 
     public function __construct(Jwtauth $jwtauth, Salessummary $salessummary, Trialssummary $trialssummary, Ozonetelcallsssummary $ozonetelcallsssummary) {
         $this->jwtauth		            =	$jwtauth;
         $this->salessummary		        =	$salessummary;
         $this->trialssummary		    =	$trialssummary;
         $this->ozonetelcallsssummary	=	$ozonetelcallsssummary;
+        $this->vendorid                 =   $this->jwtauth->vendorIdFromToken();
+        $this->vendorids                =   $this->jwtauth->vendorIdsFromToken();
     }
 
 
@@ -42,14 +46,9 @@ class VendorpanelController extends BaseController
     //public function getSummarySales($vendor_ids, $start_date = NULL, $end_date = NULL)
     public function getSummarySales($start_date = NULL, $end_date = NULL)
     {
-        $jwt_token                  =   Request::header('Authorization');
-        $decoded_token              =   $this->jwtauth->decodeTokenVendorPanel($jwt_token);
-        $vendorArr                  =   $decoded_token['vendor'];
-        $vendor_ids                 =   array_unique(array_merge([$vendorArr['vendor_id']], $vendorArr['vendors']));
-        // print_r($vendor_ids);exit;
 
         $finderSaleSummaryArr       =   [];
-        $finder_ids                 =   $vendor_ids;
+        $finder_ids                 =   $this->vendorids;
         $today_date                 =   date("d-m-Y", time());
         $start_date                 =   ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)): $today_date;
         $end_date                   =   ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -62,10 +61,6 @@ class VendorpanelController extends BaseController
                 continue;
             }
 
-            $arr['count']  = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date)->count();
-            $arr['sum']  = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date)->sum('amount_finder');
-
-            return $arr;
 
             $finder_id                                              = intval($finder_id);
             $renewal_nonrenewal_count_amount                        = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date);
