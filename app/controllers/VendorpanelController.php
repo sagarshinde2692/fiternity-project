@@ -20,8 +20,6 @@ class VendorpanelController extends BaseController
 {
 
     protected $jwtauth;
-    protected $vendorid;
-    protected $vendorids;
     protected $salessummary;
     protected $trialssummary;
     protected $ozonetelcallssummary;
@@ -37,8 +35,6 @@ class VendorpanelController extends BaseController
     {
 
         $this->jwtauth = $jwtauth;
-        $this->vendorid = $this->jwtauth->vendorIdFromToken();
-        $this->vendorids = $this->jwtauth->vendorIdsFromToken();
         $this->salessummary = $salessummary;
         $this->trialssummary = $trialssummary;
         $this->ozonetelcallssummary = $ozonetelcallsssummary;
@@ -58,7 +54,7 @@ class VendorpanelController extends BaseController
     {
 
         $finderSaleSummaryArr = [];
-        $finder_ids = $this->vendorids;
+        $finder_ids =   $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -113,7 +109,7 @@ class VendorpanelController extends BaseController
     {
 
         $finderTrialSummaryArr = [];
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -155,7 +151,7 @@ class VendorpanelController extends BaseController
     {
 
         $ResultArr = [];
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -193,7 +189,7 @@ class VendorpanelController extends BaseController
 
         $req = Input::all();
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -231,7 +227,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -266,7 +262,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -301,7 +297,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -336,7 +332,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -371,7 +367,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -405,7 +401,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -440,7 +436,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -479,7 +475,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -519,7 +515,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
@@ -559,7 +555,7 @@ class VendorpanelController extends BaseController
 
         $results = [];
 
-        $finder_ids = $this->vendorids;
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;

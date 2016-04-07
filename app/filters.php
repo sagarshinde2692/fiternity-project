@@ -158,16 +158,16 @@ Route::filter('validatevendor',function(){
         try{
             $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
         }catch(DomainException $e){
-            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+            return Response::json(array('status' => 401,'message' => 'Token incorrect'),401);
         }catch(ExpiredException $e){
-            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+            return Response::json(array('status' => 401,'message' => 'Token expired'),401);
         }catch(SignatureInvalidException $e){
-            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+            return Response::json(array('status' => 401,'message' => 'Signature verification failed'),401);
         }catch(Exception $e){
-            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+            return Response::json(array('status' => 401,'message' => 'Token incorrect'),401);
         }
     }else{
-        return Response::json(array('status' => 400,'message' => 'Empty token or token should be string'),400);
+        return Response::json(array('status' => 401,'message' => 'Empty token or token should be string'),401);
     }
 
 });
