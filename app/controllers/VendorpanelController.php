@@ -39,7 +39,7 @@ class VendorpanelController extends BaseController
 
 
 
-//    public function getSummarySales($vendor_ids, $start_date = NULL, $end_date = NULL)
+    //public function getSummarySales($vendor_ids, $start_date = NULL, $end_date = NULL)
     public function getSummarySales($start_date = NULL, $end_date = NULL)
     {
         $jwt_token                  =   Request::header('Authorization');
@@ -61,6 +61,11 @@ class VendorpanelController extends BaseController
             if (!$finder) {
                 continue;
             }
+
+            $arr['count']  = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date)->count();
+            $arr['sum']  = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date)->sum('amount_finder');
+
+            return $arr;
 
             $finder_id                                              = intval($finder_id);
             $renewal_nonrenewal_count_amount                        = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date);

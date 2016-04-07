@@ -78,5 +78,15 @@ Class Jwtauth {
     }
 
 
+    public function vendorIdsFromToken(){
+
+        $jwt_token                  =   Request::header('Authorization');
+        $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
+        $vendorArr                  =   $decoded_token['vendor'];
+        $vendor_ids                 =   array_unique(array_merge([$vendorArr['vendor_id']], $vendorArr['vendors']));
+
+    }
+
+
 
 }                                       
