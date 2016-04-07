@@ -49,7 +49,7 @@ return array(
 
 		'mongodb' => array(
 		    'driver'   => 'mongodb',
-		    //'host'     => 'localhost',
+		    // 'host'     => 'localhost',
 		     'host'     => '52.77.247.239',
 		    'port'     => 27017,
 		    // 'username' => 'fituser',
