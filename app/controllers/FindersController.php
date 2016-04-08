@@ -108,10 +108,10 @@ class FindersController extends \BaseController {
 
 							$finder_gym_service_trialschedules_slots  = [];
 
-							if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
-
 								$slots_start_time_24_hour_format_Arr 	= [];
 								$slots_end_time_24_hour_format_Arr 		= [];
+
+							if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
 
 								foreach ($finder_gym_service['trialschedules'] as $key => $trialschedule_weekday) {
 
@@ -126,9 +126,13 @@ class FindersController extends \BaseController {
 
 							}
 							// return $slots_start_time_24_hour_format_Arr;
-							$finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
-							$finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr);
-
+							if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
+								$finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
+								$finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr);	
+							}else{
+								$finder['opening_hour'] = "";
+								$finder['closing_hour'] = "";	
+							}
 						}
 
                	}
