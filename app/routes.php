@@ -547,6 +547,7 @@ Route::get('updatepaymentbooking', 'KYUController@updatepaymentbooking');
 Route::post('getglobalsearchkeywordmatrix', 'KYUController@getglobalsearchkeywordmatrix');
 Route::post('getglobalsearchclickedmatrix', 'KYUController@getglobalsearchclickedmatrix');
 Route::post('getdailyvisitors', 'KYUController@getdailyvisitors');
+Route::get('rollingbuildautosearch', 'GlobalPushController@rollingbuildautosuggest');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
