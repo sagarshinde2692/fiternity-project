@@ -415,6 +415,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
 
 		$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+		$referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
 		$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 
@@ -451,7 +452,8 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_note'		=>		$customer_note,
 
 			'social_referrer'				=>		$social_referrer,
-			'transacted_after'				=>		$transacted_after
+			'transacted_after'				=>		$transacted_after,
+			'referrer_object'				=>		$referrer_object
 		);
 
 
@@ -822,6 +824,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
 
 			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
 			$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 			$final_lead_stage = '';
@@ -986,7 +989,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'final_lead_status'				=>		$final_lead_status,
 
 				'social_referrer'				=>		$social_referrer,
-				'transacted_after'				=>		$transacted_after
+				'transacted_after'				=>		$transacted_after,
+				'referrer_object'				=>		$referrer_object
 			);
 
 			// return $this->customersms->bookTrial($booktrialdata);
@@ -1249,6 +1253,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
 			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
 			$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
 			if($device_type != '' && $gcm_reg_id != ''){
@@ -1409,7 +1414,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 				'social_referrer'				=>		$social_referrer,
 				'transacted_after'				=>		$transacted_after,
-				'finder_category_id'				=>		$finder_category_id
+				'finder_category_id'				=>		$finder_category_id,
+				'referrer_object'				=>		$referrer_object
 
 			);
 
