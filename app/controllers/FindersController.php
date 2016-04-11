@@ -103,14 +103,12 @@ class FindersController extends \BaseController {
                         $slots_end_time_24_hour_format_Arr 			= [];
 
                         if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
-
                             $weekday 			= 	strtolower(date( "l", time()));
                             $weekdayslots       =   head(array_where($finder_gym_service['trialschedules'], function($key, $value) use ($weekday){
                                 if($value['weekday'] == $weekday){
                                     return $value;
                                 }
-                            }));
-
+                            }));// weekdayslots
 //                            return $weekdayslots;
 
                             if(isset($weekdayslots['slots']) && count($weekdayslots['slots']) > 0){
@@ -119,20 +117,21 @@ class FindersController extends \BaseController {
                                     array_push($slots_end_time_24_hour_format_Arr, intval($slot['end_time_24_hour_format']));
                                 }
                             }
-
                         }
 //                         return $slots_start_time_24_hour_format_Arr;
                         if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
-                            $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
-                            $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr);
+                            $opening_hour = min($slots_start_time_24_hour_format_Arr);
+                            $closing_hour = max($slots_end_time_24_hour_format_Arr);
+//                            $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
+//                            $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
+                            $finder['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
+                            $finder['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
                         }else{
                             $finder['opening_hour'] = "";
                             $finder['closing_hour'] = "";
                         }
                     }
-
                 }
-
 
 
                 if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
