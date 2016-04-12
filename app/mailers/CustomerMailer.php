@@ -137,7 +137,7 @@ Class CustomerMailer extends Mailer {
 		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
 
 		$message_data 	= array(
-			'user_email' => Config::get('mail.to_neha'),
+			'user_email' => Config::get('mail.to_mailus'),
 			// 'user_email' => 'ut.mehrotra@gmail.com',
 			'user_name' => $data['customer_name'],
 			'bcc_emailids' => $bcc_emailids,
