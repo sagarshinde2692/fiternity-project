@@ -1081,7 +1081,7 @@ class SchedulebooktrialsController extends \BaseController {
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 
 				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 				}
 
 			}
@@ -1093,7 +1093,7 @@ class SchedulebooktrialsController extends \BaseController {
 				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
 
 				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-					$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+					$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 				}else{
 					$customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 				}
@@ -1105,7 +1105,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
 			
 			if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
-				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			}else{
 				$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			}
@@ -1507,7 +1507,7 @@ class SchedulebooktrialsController extends \BaseController {
 				$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 
 				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+					$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 				}
 
 			}
@@ -1519,7 +1519,7 @@ class SchedulebooktrialsController extends \BaseController {
 				$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
 
 				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-					$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+					$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 				}else{
 					$customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 				}
@@ -1531,7 +1531,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
 			
 			if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
-				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			}else{
 				$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			}
@@ -2047,7 +2047,7 @@ class SchedulebooktrialsController extends \BaseController {
 					$customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
 
 					if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-						$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+						$customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
 					}
 
 				}
@@ -2059,7 +2059,7 @@ class SchedulebooktrialsController extends \BaseController {
 					$finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
 
 					if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-						$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+						$customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 					}else{
 						$customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
 					}
@@ -2071,7 +2071,7 @@ class SchedulebooktrialsController extends \BaseController {
 				$customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
 				
 				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
-					$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+					$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 				}else{
 					$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 				}
