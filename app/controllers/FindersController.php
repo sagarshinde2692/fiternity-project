@@ -84,52 +84,58 @@ class FindersController extends \BaseController {
                 // }
                 // array_set($finder, 'services', $servicesArr);
 
-                $finder['opening_hour'] =  null;
-                $finder['closing_hour'] = null;
+                $finder['today_opening_hour'] =  null;
+                $finder['today_closing_hour'] = null;
 
                 if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
                     if(isset($finderarr['services']) && count($finderarr['services']) > 0){
-
-                        $finder_gym_service  = [];
-
                         //for servcie category gym
+                        $finder_gym_service  = [];
                         $finder_gym_service = head(array_where($finderarr['services'], function($key, $value){
                             if($value['category']['_id'] == 65){ return $value; }
                         }));
 
-                        $finder_gym_service_trialschedules_slots  	= [];
-                        $slots_start_time_24_hour_format_Arr 		= [];
-                        $slots_end_time_24_hour_format_Arr 			= [];
-
                         if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
-                            $weekday 			= 	strtolower(date( "l", time()));
-                            $weekdayslots       =   head(array_where($finder_gym_service['trialschedules'], function($key, $value) use ($weekday){
-                                if($value['weekday'] == $weekday){
-                                    return $value;
-                                }
-                            }));// weekdayslots
-//                            return $weekdayslots;
+                            $all_weekdays                       =   $finder_gym_service['active_weekdays'];
+                            $today_weekday 		                = 	strtolower(date( "l", time()));
 
-                            if(isset($weekdayslots['slots']) && count($weekdayslots['slots']) > 0){
-                                foreach ($weekdayslots['slots'] as $key => $slot) {
-                                    array_push($slots_start_time_24_hour_format_Arr, intval($slot['start_time_24_hour_format']));
-                                    array_push($slots_end_time_24_hour_format_Arr, intval($slot['end_time_24_hour_format']));
+                            foreach ($all_weekdays as $weekday){
+                                $whole_week_open_close_hour_Arr             =   [];
+                                $slots_start_time_24_hour_format_Arr 		=   [];
+                                $slots_end_time_24_hour_format_Arr 			=   [];
+
+                                $weekdayslots       =   head(array_where($finder_gym_service['trialschedules'], function($key, $value) use ($weekday){
+                                    if($value['weekday'] == $weekday){
+                                        return $value;
+                                    }
+                                }));// weekdayslots
+
+                                if(isset($weekdayslots['slots']) && count($weekdayslots['slots']) > 0){
+                                    foreach ($weekdayslots['slots'] as $key => $slot) {
+                                        array_push($slots_start_time_24_hour_format_Arr, intval($slot['start_time_24_hour_format']));
+                                        array_push($slots_end_time_24_hour_format_Arr, intval($slot['end_time_24_hour_format']));
+                                    }
+                                    if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
+                                        $opening_hour = min($slots_start_time_24_hour_format_Arr);
+                                        $closing_hour = max($slots_end_time_24_hour_format_Arr);
+                                        //   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
+                                        //   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
+                                        if($today_weekday == $weekday){
+                                               $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
+                                               $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                        }
+                                        $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
+                                        $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                        array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
+                                    }
                                 }
                             }
-                        }
-//                         return $slots_start_time_24_hour_format_Arr;
-                        if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
-                            $opening_hour = min($slots_start_time_24_hour_format_Arr);
-                            $closing_hour = max($slots_end_time_24_hour_format_Arr);
-//                            $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
-//                            $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
-                            $finder['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
-                            $finder['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                        }else{
-                            $finder['opening_hour'] = "";
-                            $finder['closing_hour'] = "";
-                        }
+
+                            $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : [];
+
+                        }// trialschedules
+
                     }
                 }
 
