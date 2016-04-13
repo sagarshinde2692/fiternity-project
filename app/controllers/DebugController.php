@@ -1896,5 +1896,65 @@ class DebugController extends \BaseController {
 
 	}
 
+	public function testEmail(){
+
+		$template = Template::where('label','CustomerAutoTrail')->first();
+
+		$data = array(
+			'customer_name'=>'mahesh',
+			"customer_phone"=>'9920864894',
+			"customer_email" => "mjmjadhav@gmail.com",
+			"booktrialid"	=> 1,
+			"trial_type" => "test",
+			"finder_name" => "Eight packs",
+			"with_at"=>"at"
+		);
+
+		$with_at = 'at';
+
+		
+
+				//echo "<pre>";print_r($template);exit;
+
+		return $this->bladeCompile($template->subject,$data);
+
+
+
+				//echo "<pre>";print_r($template);exit;
+
+		//return View::make($template->email_text, $data)->render();
+
+
+				//echo "<pre>";print_r($template->emai_text);exit;
+
+	}
+
+	public function bladeCompile($value, array $args = array())
+	{
+	    $generated = \Blade::compileString($value);
+
+	    ob_start() and extract($args, EXTR_SKIP);
+
+	    // We'll include the view contents for parsing within a catcher
+	    // so we can avoid any WSOD errors. If an exception occurs we
+	    // will throw it out to the exception handler.
+	    try
+	    {
+	        eval('?>'.$generated);
+	    }
+
+	    // If we caught an exception, we'll silently flush the output
+	    // buffer so that no partially rendered views get thrown out
+	    // to the client and confuse the user with junk.
+	    catch (\Exception $e)
+	    {
+	        ob_get_clean(); throw $e;
+	    }
+
+	    $content = ob_get_clean();
+
+	    return $content;
+	}
+
 
 }
