@@ -198,6 +198,8 @@ Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageauto
 Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
 Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexservicerankmongo2elastic','uses' => 'ServiceRankingController@IndexServiceRankMongo2Elastic'));
 Route::get('rollingbuildfindersearch', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
+Route::get('rollingbuildserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
+Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################

@@ -54,10 +54,11 @@ class ServiceRankingController extends \BaseController {
         $this->popularity_min                   =   0;
     }
 
-    public function IndexServiceRankMongo2Elastic(){
+    public function IndexServiceRankMongo2Elastic($city, $index){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $citykist      =    array(1,2,3,4);
+        ini_set('max_execution_time', 30000);
+
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
                             ->with(array('city'=>function($query){$query->select('name');}))
                             ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -68,12 +69,14 @@ class ServiceRankingController extends \BaseController {
                             ->with('facilities')                            
                             ->active()
                             ->orderBy('_id')                            
-                            //->whereIn('_id', array(1664))
-                            ->whereIn('city_id', $citykist)
-                            ->take(10000)->skip(0)
-                            ->timeout(4000000000000)
-                            ->get(); 
-            
+                           ->where('city_id', intval($city))
+                            ->where('status', '=', '1')
+                            ->take(5000)->skip(0)
+                            ->timeout(400000000)
+                            // ->take(3000)->skip(0)
+                            //->take(3000)->skip(3000)
+                             ->get(); 
+           
         foreach ($items as $finderdocument) {          
                 $finderdata = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);                
@@ -105,11 +108,9 @@ class ServiceRankingController extends \BaseController {
                 $postdata['rankv1'] = $catval;
                 $postdata['rankv2'] = $score + $catval;                      
                 $postfields_data = json_encode($postdata);                                     
-                //echo pretty($postfields_data['rank']);exit;
-                //var_dump($postfields_data['rank']);exit;
-                //return $postfields_data;               
-                //$posturl = $this->elasticsearch_url . "fitternity/finder/" . $finderdocument['_id'];              
-                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."servicemarketplace1/service/" . $servicedata['_id'];
+
+                $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index/service/" . $servicedata['_id'];             
+                //$posturl = "http://localhost:9200/"."$index/service/" . $servicedata['_id'];
                 //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
@@ -225,5 +226,235 @@ class ServiceRankingController extends \BaseController {
         $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
 
         echo "<br>$posturl    ---  ".es_curl_request($request);
+    }
+
+    public function RollingBuildServiceIndex(){
+
+        $url = 'http://ESAdmin:fitternity2020@54.169.120.141:8050/';
+        $port = 8050;
+
+        $timestamp =  date('Y-m-d');
+        $index = 'fitternity_service'.$timestamp;
+        $index_build_url = $url.$index;
+
+         $request = array(
+            'url' =>  $index_build_url,
+            'port' => $port,
+            'method' => 'POST',
+            );
+
+        echo es_curl_request($request);  
+         sleep(5);
+
+        $request = array(
+            'url' =>   $index_build_url.'/_close',
+            'port' => $port,
+            'method' => 'POST',
+            );
+
+        echo es_curl_request($request);  
+         sleep(5);
+
+        $settings = '{
+            "analysis" : {
+                "analyzer":{
+                    "simple_analyzer": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
+                    },
+                    "snowball_analyzer": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
+                    },
+                    "shingle_analyzer": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_shingle","filter_worddelimiter","filter_snowball"]
+                    },
+                    "autocomplete_analyzer": {
+                        "type": "custom",
+                        "tokenizer": "standard",
+                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_edgengram","filter_worddelimiter","filter_snowball"]
+                    },
+                    "title_analyzer" :{
+                        "type" : "custom",
+                        "tokenizer" : "input_ngram_tokenizer",
+                        "filter" : ["standard","lowercase","delimiter-filter", "titlesynfilter"]
+                    }
+                },
+                "filter": {
+                    "filter_stop": {
+                        "type":       "stop",
+                        "stopwords":  "_english_",
+                        "ignore_case" : true
+                    },
+                    "filter_shingle": {
+                        "type": "shingle",
+                        "max_shingle_size": 2,
+                        "min_shingle_size": 2,
+                        "output_unigrams": true
+                    },
+                    "filter_snowball": {
+                        "type": "snowball",
+                        "language" : "english"
+                    },
+                    "filter_stemmer": {
+                        "type": "porter_stem",
+                        "language": "English"
+                    },
+                    "filter_ngram": {
+                        "type": "nGram",
+                        "min_gram": 3,
+                        "max_gram": 15
+                    },
+                    "filter_edgengram": {
+                        "type": "edgeNGram",
+                        "min_gram": 2,
+                        "max_gram": 15
+                    },
+                    "filter_worddelimiter": {
+                        "type": "word_delimiter"
+                    },
+                    "delimiter-filter": {
+                        "type": "word_delimiter",
+                        "preserve_original" : true
+                    },
+                    "titlesynfilter":{
+                        "type": "synonym",
+                        "synonyms" : [
+                        "golds, gold",
+                        "talwalkars,talwalkar",
+                        "yfc,your fitness club"
+                        ]
+                    }
+                },
+                "tokenizer": {
+                    "haystack_ngram_tokenizer": {
+                        "type": "nGram",
+                        "min_gram": 3,
+                        "max_gram": 15
+                    },
+                    "haystack_edgengram_tokenizer": {
+                        "type": "edgeNGram",
+                        "min_gram": 2,
+                        "max_gram": 15,
+                        "side": "front"
+                    },
+                    "input_ngram_tokenizer" : {
+                    "type": "edgeNGram",
+                    "min_gram": "2",
+                    "max_gram": "20"
+                    }
+                }
+            }
+        }';
+
+        $postfields_data    =   json_encode(json_decode($settings,true));
+
+        $request = array(
+            'url' => $index_build_url.'/_settings',
+            'port' => $port,
+            'postfields' => $postfields_data,
+            'method' => 'PUT',
+            );
+
+        echo es_curl_request($request); 
+         sleep(5);
+
+        $request = array(
+            'url' =>  $index_build_url.'/_open',
+            'port' => $port,
+            'method' => 'POST',
+            );
+
+        echo es_curl_request($request); 
+         sleep(5);
+
+        $serivcesmapping = '{
+            "service" :{
+                "_source" : {"enabled" : true },
+                "properties":{
+                    "name" : {"type" : "string", "index" : "not_analyzed"},
+                    "name_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "findername" : {"type" : "string", "index" : "not_analyzed"},
+                    "findername_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "finderslug" : {"type" : "string", "index" : "not_analyzed"},
+                    "finderslug_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "category" : {"type" : "string","index" : "not_analyzed"},
+                    "category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "subcategory" : {"type" : "string","index" : "not_analyzed"},
+                    "subcategory_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "location" : {"type" : "string", "index" : "not_analyzed"},
+                    "location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "session_type" : {"type" : "string","index" : "not_analyzed"},
+                    "workout_intensity" : {"type" : "string","index" : "not_analyzed"},
+                    "workout_tags" : {"type" : "string", "index" : "not_analyzed"},
+                    "city" : {"type" : "string","index" : "not_analyzed"},
+                    "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
+                    "ratecards": {
+                        "properties": {
+                            "duration" : {"type" : "string", "index" : "not_analyzed"},
+                            "price" : {"type" : "integer", "index" : "not_analyzed"},
+                            "special_price" : {"type" : "integer", "index" : "not_analyzed"}
+                        },
+                        "type": "nested"
+                    },
+                    "workoutsessionschedules": {
+                        "properties": {
+                            "weekday" : {"type" : "string", "index" : "not_analyzed"},
+                            "start_time" : {"type" : "string", "index" : "not_analyzed"},
+                            "start_time_24_hour_format" : {"type" : "float", "index" : "not_analyzed"},
+                            "price" : {"type" : "integer", "index" : "not_analyzed"}
+                        },
+                        "type": "nested"
+                    }
+                }
+            }
+        }';
+
+        $postfields_data    =   json_encode(json_decode($serivcesmapping,true));
+       
+        $request = array(
+            'url' => $index_build_url.'/service/_mapping',
+            'port' => $port,
+            'method' => 'PUT',
+            'postfields' => $postfields_data
+            );      
+        echo es_curl_request($request);
+         sleep(5);
+
+         $city_list = array(1,2,3,4,8);
+
+         foreach ($city_list as $city) {
+            $this->IndexServiceRankMongo2Elastic($city_list, $index);
+         }
+
+         $alias_request = '{
+            "actions": [ {
+                "remove": {
+                    "index": "*",
+                    "alias": "fitternity_service"
+                }
+            },
+            {
+                "add": {
+                    "index": "'.$index.'",
+                    "alias": "fitternity_service"
+                }
+            }]
+        }';
+
+        $url        =   $url."_aliases"; 
+        $payload =  json_encode(json_decode($alias_request,true)); 
+        $request = array(
+            'url' => $url,
+            'port' => $port,
+            'method' => 'POST',
+            'postfields' => $payload
+            );      
+        echo es_curl_request($request);
+
     }
 }
