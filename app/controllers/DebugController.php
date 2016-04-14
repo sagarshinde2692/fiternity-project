@@ -10,7 +10,7 @@
 // use Response;
 use App\Mailers\FinderMailer as FinderMailer;
 use Queue;
-
+use App\Mailers\CustomerMailer as CustomerMailer;
 
 class DebugController extends \BaseController {
 
@@ -1898,7 +1898,11 @@ class DebugController extends \BaseController {
 
 	public function testEmail(){
 
-		$template = Template::where('label','CustomerAutoTrail')->first();
+		$customermailer = new CustomerMailer();
+
+
+
+		/*$template = Template::where('label','CustomerAutoTrail')->first();
 
 		$data = array(
 			'customer_name'=>'mahesh',
@@ -1910,13 +1914,24 @@ class DebugController extends \BaseController {
 			"with_at"=>"at"
 		);
 
-		$with_at = 'at';
+
+		$email_template = 	$this->bladeCompile($template->email_text,$data);
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus')) ;
 
 		
 
-				//echo "<pre>";print_r($template);exit;
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $this->bladeCompile($template->subject,$data)
+		);
 
-		return $this->bladeCompile($template->subject,$data);
+		$label = 'BookTrial-C';
+		$priority = 1;*/
+
+		return $customermailer->testEmail();
+
 
 
 

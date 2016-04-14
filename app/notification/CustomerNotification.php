@@ -4,79 +4,110 @@ use Config;
 
 Class CustomerNotification extends Notification{
 
-	public function bookTrialReminderBefore1Min ($data, $delay){
+	public function bookTrial ($data){
+
+		$label = 'AutoTrial-Instant-Customer';
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
+	}
+
+	public function rescheduledBookTrial ($data){
+
+		$label = 'RescheduleTrial-Instant-Customer';
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
+	}
+
+	public function bookTrialReminderBefore12Hour ($data, $delay){
+
+		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
 		
-		$to 				=  	trim($data['device_id']);
-
-		$title				=   "Fitternity Trial";
-
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"trial";
-
-		$slug 				= 	$data['finder_slug'];
-
-		if($data['show_location_flag']){
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		
-		}else{
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		}
-
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
 
 
+	public function bookTrialReminderBefore1Hour ($data, $delay){
 
-	public function bookTrialReminderBefore5Hour ($data, $delay){
+		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
 
-		$to 				=  	trim($data['device_id']);
-
-		$title				=   "Fitternity Trial";
-
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"trial";
-
-		$slug 				= 	$data['finder_slug'];
-
-		if($data['show_location_flag']){
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
 		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		
-		}else{
-		
-			$message 	=	"Hey ".ucwords($data['customer_name']).". Hope you are ready for your session at ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug'].". View the details & get directions. Have a great workout!";
-		}
-
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
+
 
 	public function bookTrialReminderAfter2Hour ($data, $delay){
 
-		$to 				=  	trim($data['device_id']);
+		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
-		$title				=   "Publish Review";
-
-		$booktrialid 		= 	$data['booktrialid'];
-
-		$type 				= 	"offer";
-
-		$slug 				= 	$data['finder_slug'];
-
-		if($data['show_location_flag']){
-
-			$message 	=	"Hope you had a good experience at your trial session with ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." here http://www.fitternity.com/".$data['finder_slug'].". Write a review and stand a chance to win exciting goodies.";
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
 		
-		}else{
-			
-			$message 	=	"Hope you had a good experience at your trial session with ".ucwords($data['finder_name'])." here http://www.fitternity.com/".$data['finder_slug']." Write a review and stand a chance to win exciting goodies.";
-		}
-		
-		return $this->sendTo($to, $message, $delay, $title, $booktrialid, $type, $slug);
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
+	}
 
+	public function cancelBookTrial ($data){
+
+		$label = 'Cancel-Trial-Customer';
+
+		$notif_id = (int)$data['_id'];
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id']);
+		
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
+	}
+
+	public function common($label,$data,$notif_id,$notif_type,$notif_object,$delay = 0){
+
+		$template = \Template::where('label',$label)->first();
+
+		$device_type = $data['device_type'];
+		$to =  array($data['reg_id']);
+		$text = $this->bladeCompile($template->notification_text,$data);
+
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $delay);
+	}
+
+	public function bladeCompile($value, array $args = array())
+	{
+	    $generated = \Blade::compileString($value);
+
+	    ob_start() and extract($args, EXTR_SKIP);
+
+	    // We'll include the view contents for parsing within a catcher
+	    // so we can avoid any WSOD errors. If an exception occurs we
+	    // will throw it out to the exception handler.
+	    try
+	    {
+	        eval('?>'.$generated);
+	    }
+
+	    // If we caught an exception, we'll silently flush the output
+	    // buffer so that no partially rendered views get thrown out
+	    // to the client and confuse the user with junk.
+	    catch (\Exception $e)
+	    {
+	        ob_get_clean(); throw $e;
+	    }
+
+	    $content = ob_get_clean();
+
+	    return $content;
 	}
 
 

@@ -7,15 +7,15 @@ use \Log;
 Class Sidekiq {
     
     //protected $base_uri = 'http://localhost:3000/';
-    //protected $base_uri = 'http://kick.fitn.in/';
-    protected $base_uri = 'http://nw.fitn.in/';
+    protected $base_uri = 'http://kick.fitn.in/';
+    //protected $base_uri = 'http://nw.fitn.in/';
     protected $debug = false;
     protected $client;
     protected $route_type;
 
     public function __construct() {
 
-        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg','outbound'=>'trig/outbound','fitmaniabuyable'=>'trig/fitmaniabuyable');
+        $this->route_type = array('email'=>'trig/email','sms'=>'trig/sms','delete'=>'trig/delmsg','outbound'=>'trig/outbound','fitmaniabuyable'=>'trig/fitmaniabuyable','android'=>'trig/android','ios'=>'trig/ios');
         $this->initClient();
     }
 
