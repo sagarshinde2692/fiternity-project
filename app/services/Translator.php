@@ -171,6 +171,19 @@ class Translator {
 		$offval->count = $off['doc_count'];
 		array_push($finderresult_response->results->aggregationlist->offerings, $offval);
 	}
+	
+	if(isset($aggs['trialdays'])){
+
+
+	$finderresult_response->results->aggregationlist->trialdays = array();
+
+	foreach ($aggs['trialdays']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+	}
+	}
 	return $finderresult_response;
 }
 
@@ -245,7 +258,7 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 		switch ($bud['key']) {
 			case 'one':
 			$budval->key = 'less than 1000';
-			$budval->count = $bud['doc_count'];
+			$budval->count = $bud['doc_count'];			
 			break;
 			case 'two':
 			$budval->key = '1000-2500';
