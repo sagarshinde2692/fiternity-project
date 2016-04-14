@@ -73,7 +73,7 @@ class RankingController extends \BaseController {
         /*
        creating new index appended with timestamp
         */
-
+     
        $url = $this->elasticsearch_url."$index_name";
        $request = array(
         'url' =>  $url,
@@ -247,7 +247,8 @@ class RankingController extends \BaseController {
                             "end" : {"type" : "integer", "index" : "not_analyzed"}
                         },
                         "type": "nested"
-                    }
+                    },
+
                 }
             }
         }';
@@ -385,8 +386,8 @@ class RankingController extends \BaseController {
      $postdata['rankv1'] = $catval;
      $postdata['rankv2'] = $score + $catval;
      $postfields_data = json_encode($postdata);             
-     //$posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-        $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
+     $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
+     //$posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
      $request = array('url' => $posturl, 'port' => 9200, 'method' => 'PUT', 'postfields' => $postfields_data );
      $curl_response = es_curl_request($request);
      echo json_encode($curl_response);
