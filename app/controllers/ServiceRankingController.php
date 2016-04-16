@@ -60,401 +60,410 @@ class ServiceRankingController extends \BaseController {
         ini_set('max_execution_time', 30000);
 
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
-                            ->with(array('city'=>function($query){$query->select('name');}))
-                            ->with(array('category'=>function($query){$query->select('name','meta');}))
-                            ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
-                            ->with('categorytags')
-                            ->with('locationtags')
-                            ->with('offerings')
-                            ->with('facilities')                            
-                            ->active()
-                            ->orderBy('_id')                            
-                           ->where('city_id', intval($city))
-                            ->where('status', '=', '1')
-                            ->take(5000)->skip(0)
-                            ->timeout(400000000)
+        ->with(array('city'=>function($query){$query->select('name');}))
+        ->with(array('category'=>function($query){$query->select('name','meta');}))
+        ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+        ->with('categorytags')
+        ->with('locationtags')
+        ->with('offerings')
+        ->with('facilities')                            
+        ->active()
+        ->orderBy('_id')                            
+        ->where('city_id', intval($city))
+        ->where('status', '=', '1')
+        ->take(5000)->skip(0)
+        ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
-                             ->get(); 
-           
-        foreach ($items as $finderdocument) {          
+        ->get(); 
+
+        foreach ($items as $finderdocument) {    
+            try{      
                 $finderdata = $finderdocument->toArray();
                 $score = $this->generateRank($finderdocument);                
                 $serviceitems = Service::with('category')
-                                    ->with('subcategory')
-                                    ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
-                                    ->where('finder_id',$finderdata['_id'])                                    ->active()
-                                    ->latest()
-                                    ->get();
+                ->with('subcategory')
+                ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+                ->where('finder_id',$finderdata['_id'])                                    ->active()
+                ->latest()
+                ->get();
                 if(isset($serviceitems) && (!empty($serviceitems))){                                   
-                foreach ($serviceitems as $servicedocument) {                                 
-                $servicedata = $servicedocument->toArray();
-                $clusterid = '';             
-                if(!isset($servicedata['location']['locationcluster_id']))
-                {
-                     continue;
-                }
-                else
-                {
-                    $clusterid  = $servicedata['location']['locationcluster_id'];
-                }
-                             
-                $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();                
-                $locationcluster->toArray(); 
+                    foreach ($serviceitems as $servicedocument) {                                 
+                        $servicedata = $servicedocument->toArray();
+                        $clusterid = '';             
+                        if(!isset($servicedata['location']['locationcluster_id']))
+                        {
+                         continue;
+                     }
+                     else
+                     {
+                        $clusterid  = $servicedata['location']['locationcluster_id'];
+                    }
 
-                $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);             
-                $postdata['rank'] = $score;
-                $catval = evalBaseCategoryScore($finderdata['category_id']);
-                $postdata['rankv1'] = $catval;
-                $postdata['rankv2'] = $score + $catval;                      
-                $postfields_data = json_encode($postdata);                                     
+                    $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();                
+                    $locationcluster->toArray(); 
+
+                    $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);             
+                    $postdata['rank'] = $score;
+                    $catval = evalBaseCategoryScore($finderdata['category_id']);
+                    $postdata['rankv1'] = $catval;
+                    $postdata['rankv2'] = $score + $catval;                      
+                    $postfields_data = json_encode($postdata);                                     
 
                 $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index/service/" . $servicedata['_id'];             
-                //$posturl = "http://localhost:9200/"."$index/service/" . $servicedata['_id'];
+                //    $posturl = "http://localhost:9200/"."$index/service/" . $servicedata['_id'];
                 //$posturl = "http://localhost:9200/"."fitternity/finder/" . $finderdocument['_id'];
                 //$posturl = "ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/" . $finderdocument['_id'];
                 //$request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
-                $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
-                echo "<br>$posturl    ---  ".es_curl_request($request);
+                    $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+                    echo "<br>$posturl    ---  ".es_curl_request($request);
+                }
+            }
         }
-    }
-    }
-    }
-    public function generateRank($finderDocument = ''){
+
+        catch(Exception $e){
+           Log::error($e);
+       }
+   }
+}
+
+public function generateRank($finderDocument = ''){
         //$finderCategory = $finderDocument['category'];
-        $score = (8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/13;
-        return $score;
+    $score = (8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/13;
+    return $score;
 
+}
+
+public function evalProfileCompleteness($finderDocument = ''){
+
+    $aboutUs        = $finderDocument['info']['about'] != '' ? 1 : 0;
+    $rateCard       = (isset($finderDocument['ratecards']) && !empty($finderDocument['ratecards']) ? 1 : 0);
+    $schedule       = (isset($finderDocument['Schedule']) && !empty($finderDocument['Schedule']) ? 1 : 0);
+    $galleryImage   = $finderDocument['total_photos'] != '0' ? 1 : 0;
+    $coverImage     = $finderDocument['coverimage'] != '' ? 1 : 0;
+    $updatedFreq    = $this->updatedFrequencyScore(Carbon::now()->diffInDays($finderDocument['updated_at']));
+    $timings        = $finderDocument['info']['timing'] != ''? 1 : 0;
+
+    $profileCompleteScore   =       ($aboutUs + $rateCard*3 + $schedule*3 + $galleryImage*3 + $coverImage*1 + $updatedFreq + $timings*2)/14;
+    return $profileCompleteScore;
+}
+
+public function evalVendorType($finderDocument = ''){
+
+    switch($finderDocument['finder_type'])
+    {
+        case 0:
+        $val=0;
+        return $val;
+
+        case 1:
+        $val=1;
+        return $val;
+
+        case 2:
+        $val=0.7;
+        return $val;
+
+        case 3:
+        $val=0.4;
+        return $val;
+
+        default:
+        return 0;
     }
-    
-    public function evalProfileCompleteness($finderDocument = ''){
+}
 
-        $aboutUs        = $finderDocument['info']['about'] != '' ? 1 : 0;
-        $rateCard       = (isset($finderDocument['ratecards']) && !empty($finderDocument['ratecards']) ? 1 : 0);
-        $schedule       = (isset($finderDocument['Schedule']) && !empty($finderDocument['Schedule']) ? 1 : 0);
-        $galleryImage   = $finderDocument['total_photos'] != '0' ? 1 : 0;
-        $coverImage     = $finderDocument['coverimage'] != '' ? 1 : 0;
-        $updatedFreq    = $this->updatedFrequencyScore(Carbon::now()->diffInDays($finderDocument['updated_at']));
-        $timings        = $finderDocument['info']['timing'] != ''? 1 : 0;
+public function evalPopularity($finderDocument = ''){
 
-        $profileCompleteScore   =       ($aboutUs + $rateCard*3 + $schedule*3 + $galleryImage*3 + $coverImage*1 + $updatedFreq + $timings*2)/14;
-        return $profileCompleteScore;
-    }
+    $reviews =  isset($finderDocument['reviews']) ? $finderDocument['reviews'] : 0;
+    $trials  =  isset($finderDocument['trialsBooked']) ? $finderDocument['trialsBooked'] : 0;
+    $orders  =  isset($finderDocument['orders30days']) ? $finderDocument['orders30days'] : 0;
+    $popularity = intval($finderDocument['popularity']);
 
-    public function evalVendorType($finderDocument = ''){
-
-        switch($finderDocument['finder_type'])
-        {
-            case 0:
-                $val=0;
-                return $val;
-
-            case 1:
-                $val=1;
-                return $val;
-
-            case 2:
-                $val=0.7;
-                return $val;
-
-            case 3:
-                $val=0.4;
-                return $val;
-
-            default:
-                return 0;
-        }
-    }
-
-    public function evalPopularity($finderDocument = ''){
-
-        $reviews =  isset($finderDocument['reviews']) ? $finderDocument['reviews'] : 0;
-        $trials  =  isset($finderDocument['trialsBooked']) ? $finderDocument['trialsBooked'] : 0;
-        $orders  =  isset($finderDocument['orders30days']) ? $finderDocument['orders30days'] : 0;
-        $popularity = intval($finderDocument['popularity']);
-
-        $popularityScore  =  (($this->normalizingFunction($this->reviews_min, $this->reviews_max, intval($reviews))) + ($this->normalizingFunction($this->trials_min, $this->trials_max, intval($trials)))
-                                + 2*($this->normalizingFunction($this->orders_min, $this->orders_max, intval($orders))) + 2*($this->normalizingFunction($this->popularity_min, $this->popularity_max, intval($popularity))))/6;
-        return $popularityScore;
-    }
+    $popularityScore  =  (($this->normalizingFunction($this->reviews_min, $this->reviews_max, intval($reviews))) + ($this->normalizingFunction($this->trials_min, $this->trials_max, intval($trials)))
+        + 2*($this->normalizingFunction($this->orders_min, $this->orders_max, intval($orders))) + 2*($this->normalizingFunction($this->popularity_min, $this->popularity_max, intval($popularity))))/6;
+    return $popularityScore;
+}
     //tested
-    public function updatedFrequencyScore($LastUpdateDate = 0){
+public function updatedFrequencyScore($LastUpdateDate = 0){
 
-        $score  =  exp((-1)*pow(($LastUpdateDate - $this->gauss_offset) > 0 ? ($LastUpdateDate - $this->gauss_offset) : 0 , 2)/(2*$this->gauss_variance));
-        return $score;
+    $score  =  exp((-1)*pow(($LastUpdateDate - $this->gauss_offset) > 0 ? ($LastUpdateDate - $this->gauss_offset) : 0 , 2)/(2*$this->gauss_variance));
+    return $score;
 
+}
+
+public function normalizingFunction($Emin=0, $Emax=0, $Eval){
+    if($Emax == 0 || $Emax==$Emin){
+        return 0;
     }
 
-    public function normalizingFunction($Emin=0, $Emax=0, $Eval){
-        if($Emax == 0 || $Emax==$Emin){
-            return 0;
-        }
-        
-        $score  =  ($Eval-$Emin)/($Emax-$Emin);
-        return $score;
-    }
+    $score  =  ($Eval-$Emin)/($Emax-$Emin);
+    return $score;
+}
 
-    public function embedTrialsBooked(){
+public function embedTrialsBooked(){
 
         //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
-        $items = Finder::active()->orderBy('_id')->take(1000)->skip(4400)->get();        
-        foreach($items as $item)
-        {
-            $Reviews = Review::active()->where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->get()->count();
-            $Trials  = Booktrial::where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->get()->count();
-            $Orders  = Order::where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->where('status', '1')->get()->count();
+    $items = Finder::active()->orderBy('_id')->take(1000)->skip(4400)->get();        
+    foreach($items as $item)
+    {
+        $Reviews = Review::active()->where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->get()->count();
+        $Trials  = Booktrial::where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->get()->count();
+        $Orders  = Order::where('finder_id', $item['_id'])->where('created_at', '>', new DateTime('-30 days'))->where('status', '1')->get()->count();
 
-            $finderdata = array();
-            array_set($finderdata,'reviews', $Reviews);
-            array_set($finderdata,'trialsBooked', $Trials);
-            array_set($finderdata, 'orders30days', $Orders);
-            $resp = $item->update($finderdata);
-            echo $resp;
-        }
+        $finderdata = array();
+        array_set($finderdata,'reviews', $Reviews);
+        array_set($finderdata,'trialsBooked', $Trials);
+        array_set($finderdata, 'orders30days', $Orders);
+        $resp = $item->update($finderdata);
+        echo $resp;
     }
+}
 
-    public function getFinderCategory(){
+public function getFinderCategory(){
         //$finderid = array(1259);
         //$items = Finder::active()->with(array('category'=>function($query){$query->select('name','meta');}))->orderBy('_id')->whereIn('_id', $finderid)->get();
 
-        $next_date= date('Y-m-d', strtotime(Carbon::now(). ' - 30 days'));
-        return $next_date;
+    $next_date= date('Y-m-d', strtotime(Carbon::now(). ' - 30 days'));
+    return $next_date;
         //return $items;
-    }
-    public function pushdocument($posturl, $postfields_data){
+}
+public function pushdocument($posturl, $postfields_data){
 
-        $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
+    $request = array('url' => $posturl, 'port' => Config::get('elasticsearch.elasticsearch_port_new'), 'method' => 'PUT', 'postfields' => $postfields_data );
 
-        echo "<br>$posturl    ---  ".es_curl_request($request);
-    }
+    echo "<br>$posturl    ---  ".es_curl_request($request);
+}
 
-    public function RollingBuildServiceIndex(){
+public function RollingBuildServiceIndex(){
 
         $url = 'http://ESAdmin:fitternity2020@54.169.120.141:8050/';
         $port = 8050;
+ // $url = 'http://localhost:9200/';
+ // $port = 9200;
 
-        $timestamp =  date('Y-m-d');
-        $index = 'fitternity_service'.$timestamp;
-        $index_build_url = $url.$index;
+ $timestamp =  date('Y-m-d');
+ $index = 'fitternity_service'.$timestamp;
+ $index_build_url = $url.$index;
 
-         $request = array(
-            'url' =>  $index_build_url,
-            'port' => $port,
-            'method' => 'POST',
-            );
+ $request = array(
+    'url' =>  $index_build_url,
+    'port' => $port,
+    'method' => 'POST',
+    );
 
-        echo es_curl_request($request);  
-         sleep(5);
+ echo es_curl_request($request);  
+ sleep(5);
 
-        $request = array(
-            'url' =>   $index_build_url.'/_close',
-            'port' => $port,
-            'method' => 'POST',
-            );
+ $request = array(
+    'url' =>   $index_build_url.'/_close',
+    'port' => $port,
+    'method' => 'POST',
+    );
 
-        echo es_curl_request($request);  
-         sleep(5);
+ echo es_curl_request($request);  
+ sleep(5);
 
-        $settings = '{
-            "analysis" : {
-                "analyzer":{
-                    "simple_analyzer": {
-                        "type": "custom",
-                        "tokenizer": "standard",
-                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
-                    },
-                    "snowball_analyzer": {
-                        "type": "custom",
-                        "tokenizer": "standard",
-                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
-                    },
-                    "shingle_analyzer": {
-                        "type": "custom",
-                        "tokenizer": "standard",
-                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_shingle","filter_worddelimiter","filter_snowball"]
-                    },
-                    "autocomplete_analyzer": {
-                        "type": "custom",
-                        "tokenizer": "standard",
-                        "filter": ["standard","lowercase","asciifolding","filter_stop","filter_edgengram","filter_worddelimiter","filter_snowball"]
-                    },
-                    "title_analyzer" :{
-                        "type" : "custom",
-                        "tokenizer" : "input_ngram_tokenizer",
-                        "filter" : ["standard","lowercase","delimiter-filter", "titlesynfilter"]
-                    }
-                },
-                "filter": {
-                    "filter_stop": {
-                        "type":       "stop",
-                        "stopwords":  "_english_",
-                        "ignore_case" : true
-                    },
-                    "filter_shingle": {
-                        "type": "shingle",
-                        "max_shingle_size": 2,
-                        "min_shingle_size": 2,
-                        "output_unigrams": true
-                    },
-                    "filter_snowball": {
-                        "type": "snowball",
-                        "language" : "english"
-                    },
-                    "filter_stemmer": {
-                        "type": "porter_stem",
-                        "language": "English"
-                    },
-                    "filter_ngram": {
-                        "type": "nGram",
-                        "min_gram": 3,
-                        "max_gram": 15
-                    },
-                    "filter_edgengram": {
-                        "type": "edgeNGram",
-                        "min_gram": 2,
-                        "max_gram": 15
-                    },
-                    "filter_worddelimiter": {
-                        "type": "word_delimiter"
-                    },
-                    "delimiter-filter": {
-                        "type": "word_delimiter",
-                        "preserve_original" : true
-                    },
-                    "titlesynfilter":{
-                        "type": "synonym",
-                        "synonyms" : [
-                        "golds, gold",
-                        "talwalkars,talwalkar",
-                        "yfc,your fitness club"
-                        ]
-                    }
-                },
-                "tokenizer": {
-                    "haystack_ngram_tokenizer": {
-                        "type": "nGram",
-                        "min_gram": 3,
-                        "max_gram": 15
-                    },
-                    "haystack_edgengram_tokenizer": {
-                        "type": "edgeNGram",
-                        "min_gram": 2,
-                        "max_gram": 15,
-                        "side": "front"
-                    },
-                    "input_ngram_tokenizer" : {
-                    "type": "edgeNGram",
-                    "min_gram": "2",
-                    "max_gram": "20"
-                    }
-                }
-            }
-        }';
-
-        $postfields_data    =   json_encode(json_decode($settings,true));
-
-        $request = array(
-            'url' => $index_build_url.'/_settings',
-            'port' => $port,
-            'postfields' => $postfields_data,
-            'method' => 'PUT',
-            );
-
-        echo es_curl_request($request); 
-         sleep(5);
-
-        $request = array(
-            'url' =>  $index_build_url.'/_open',
-            'port' => $port,
-            'method' => 'POST',
-            );
-
-        echo es_curl_request($request); 
-         sleep(5);
-
-        $serivcesmapping = '{
-            "service" :{
-                "_source" : {"enabled" : true },
-                "properties":{
-                    "name" : {"type" : "string", "index" : "not_analyzed"},
-                    "name_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-                    "findername" : {"type" : "string", "index" : "not_analyzed"},
-                    "findername_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-                    "finderslug" : {"type" : "string", "index" : "not_analyzed"},
-                    "finderslug_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-                    "category" : {"type" : "string","index" : "not_analyzed"},
-                    "category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-                    "subcategory" : {"type" : "string","index" : "not_analyzed"},
-                    "subcategory_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-                    "location" : {"type" : "string", "index" : "not_analyzed"},
-                    "location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-                    "session_type" : {"type" : "string","index" : "not_analyzed"},
-                    "workout_intensity" : {"type" : "string","index" : "not_analyzed"},
-                    "workout_tags" : {"type" : "string", "index" : "not_analyzed"},
-                    "city" : {"type" : "string","index" : "not_analyzed"},
-                    "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
-                    "ratecards": {
-                        "properties": {
-                            "duration" : {"type" : "string", "index" : "not_analyzed"},
-                            "price" : {"type" : "integer", "index" : "not_analyzed"},
-                            "special_price" : {"type" : "integer", "index" : "not_analyzed"}
-                        },
-                        "type": "nested"
-                    },
-                    "workoutsessionschedules": {
-                        "properties": {
-                            "weekday" : {"type" : "string", "index" : "not_analyzed"},
-                            "start_time" : {"type" : "string", "index" : "not_analyzed"},
-                            "start_time_24_hour_format" : {"type" : "float", "index" : "not_analyzed"},
-                            "price" : {"type" : "integer", "index" : "not_analyzed"}
-                        },
-                        "type": "nested"
-                    }
-                }
-            }
-        }';
-
-        $postfields_data    =   json_encode(json_decode($serivcesmapping,true));
-       
-        $request = array(
-            'url' => $index_build_url.'/service/_mapping',
-            'port' => $port,
-            'method' => 'PUT',
-            'postfields' => $postfields_data
-            );      
-        echo es_curl_request($request);
-         sleep(5);
-
-         $city_list = array(1,2,3,4,8);
-
-         foreach ($city_list as $city) {
-            $this->IndexServiceRankMongo2Elastic($city_list, $index);
-         }
-
-         $alias_request = '{
-            "actions": [ {
-                "remove": {
-                    "index": "*",
-                    "alias": "fitternity_service"
-                }
+ $settings = '{
+    "analysis" : {
+        "analyzer":{
+            "simple_analyzer": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
             },
-            {
-                "add": {
-                    "index": "'.$index.'",
-                    "alias": "fitternity_service"
-                }
-            }]
-        }';
-
-        $url        =   $url."_aliases"; 
-        $payload =  json_encode(json_decode($alias_request,true)); 
-        $request = array(
-            'url' => $url,
-            'port' => $port,
-            'method' => 'POST',
-            'postfields' => $payload
-            );      
-        echo es_curl_request($request);
-
+            "snowball_analyzer": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": ["standard","lowercase","asciifolding","filter_stop","filter_worddelimiter"]
+            },
+            "shingle_analyzer": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": ["standard","lowercase","asciifolding","filter_stop","filter_shingle","filter_worddelimiter","filter_snowball"]
+            },
+            "autocomplete_analyzer": {
+                "type": "custom",
+                "tokenizer": "standard",
+                "filter": ["standard","lowercase","asciifolding","filter_stop","filter_edgengram","filter_worddelimiter","filter_snowball"]
+            },
+            "title_analyzer" :{
+                "type" : "custom",
+                "tokenizer" : "input_ngram_tokenizer",
+                "filter" : ["standard","lowercase","delimiter-filter", "titlesynfilter"]
+            }
+        },
+        "filter": {
+            "filter_stop": {
+                "type":       "stop",
+                "stopwords":  "_english_",
+                "ignore_case" : true
+            },
+            "filter_shingle": {
+                "type": "shingle",
+                "max_shingle_size": 2,
+                "min_shingle_size": 2,
+                "output_unigrams": true
+            },
+            "filter_snowball": {
+                "type": "snowball",
+                "language" : "english"
+            },
+            "filter_stemmer": {
+                "type": "porter_stem",
+                "language": "English"
+            },
+            "filter_ngram": {
+                "type": "nGram",
+                "min_gram": 3,
+                "max_gram": 15
+            },
+            "filter_edgengram": {
+                "type": "edgeNGram",
+                "min_gram": 2,
+                "max_gram": 15
+            },
+            "filter_worddelimiter": {
+                "type": "word_delimiter"
+            },
+            "delimiter-filter": {
+                "type": "word_delimiter",
+                "preserve_original" : true
+            },
+            "titlesynfilter":{
+                "type": "synonym",
+                "synonyms" : [
+                "golds, gold",
+                "talwalkars,talwalkar",
+                "yfc,your fitness club"
+                ]
+            }
+        },
+        "tokenizer": {
+            "haystack_ngram_tokenizer": {
+                "type": "nGram",
+                "min_gram": 3,
+                "max_gram": 15
+            },
+            "haystack_edgengram_tokenizer": {
+                "type": "edgeNGram",
+                "min_gram": 2,
+                "max_gram": 15,
+                "side": "front"
+            },
+            "input_ngram_tokenizer" : {
+                "type": "edgeNGram",
+                "min_gram": "2",
+                "max_gram": "20"
+            }
+        }
     }
+}';
+
+$postfields_data    =   json_encode(json_decode($settings,true));
+
+$request = array(
+    'url' => $index_build_url.'/_settings',
+    'port' => $port,
+    'postfields' => $postfields_data,
+    'method' => 'PUT',
+    );
+
+echo es_curl_request($request); 
+sleep(5);
+
+$request = array(
+    'url' =>  $index_build_url.'/_open',
+    'port' => $port,
+    'method' => 'POST',
+    );
+
+echo es_curl_request($request); 
+sleep(5);
+
+$serivcesmapping = '{
+    "service" :{
+        "_source" : {"enabled" : true },
+        "properties":{
+            "name" : {"type" : "string", "index" : "not_analyzed"},
+            "name_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+            "findername" : {"type" : "string", "index" : "not_analyzed"},
+            "findername_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+            "finderslug" : {"type" : "string", "index" : "not_analyzed"},
+            "finderslug_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+            "category" : {"type" : "string","index" : "not_analyzed"},
+            "category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+            "subcategory" : {"type" : "string","index" : "not_analyzed"},
+            "subcategory_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+            "location" : {"type" : "string", "index" : "not_analyzed"},
+            "location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+            "session_type" : {"type" : "string","index" : "not_analyzed"},
+            "workout_intensity" : {"type" : "string","index" : "not_analyzed"},
+            "workout_tags" : {"type" : "string", "index" : "not_analyzed"},
+            "city" : {"type" : "string","index" : "not_analyzed"},
+            "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
+            "ratecards": {
+                "properties": {
+                    "duration" : {"type" : "string", "index" : "not_analyzed"},
+                    "price" : {"type" : "integer", "index" : "not_analyzed"},
+                    "special_price" : {"type" : "integer", "index" : "not_analyzed"}
+                },
+                "type": "nested"
+            },
+            "workoutsessionschedules": {
+                "properties": {
+                    "weekday" : {"type" : "string", "index" : "not_analyzed"},
+                    "start_time" : {"type" : "string", "index" : "not_analyzed"},
+                    "start_time_24_hour_format" : {"type" : "float", "index" : "not_analyzed"},
+                    "price" : {"type" : "integer", "index" : "not_analyzed"}
+                },
+                "type": "nested"
+            }
+        }
+    }
+}';
+
+$postfields_data    =   json_encode(json_decode($serivcesmapping,true));
+
+$request = array(
+    'url' => $index_build_url.'/service/_mapping',
+    'port' => $port,
+    'method' => 'PUT',
+    'postfields' => $postfields_data
+    );      
+echo es_curl_request($request);
+sleep(5);
+
+$city_list = array(1,2,3,4,8);
+
+foreach ($city_list as $city) {
+    $this->IndexServiceRankMongo2Elastic($city, $index);
+}
+
+$alias_request = '{
+    "actions": [ {
+        "remove": {
+            "index": "*",
+            "alias": "fitternity_service"
+        }
+    },
+    {
+        "add": {
+            "index": "'.$index.'",
+            "alias": "fitternity_service"
+        }
+    }]
+}';
+
+$url        =   $url."_aliases"; 
+$payload =  json_encode(json_decode($alias_request,true)); 
+$request = array(
+    'url' => $url,
+    'port' => $port,
+    'method' => 'POST',
+    'postfields' => $payload
+    );      
+echo es_curl_request($request);
+
+}
 }
