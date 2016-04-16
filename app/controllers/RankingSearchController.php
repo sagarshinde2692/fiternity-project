@@ -61,32 +61,32 @@ class RankingSearchController extends \BaseController
         $trial_range_filter = '';
         if(($trial_time_from !== '')&&($trial_time_to !== '')){
             $trial_range_filter = '  {
-                                    "nested": {
-                                      "path": "trials",
-                                      "query": {
-                                        "filtered": {
-                                        "filter": {"bool": {"must": [
-                                          {"range": {
-                                            "start": {
-                                              "gte": '.$trial_time_from.'
-                                            }
-                                          }},
-                                          {
-                                            "range": {
-                                              "end": {
-                                                "lte": '.$trial_time_to.'
-                                              }
-                                            }
-                                          }
-                                        ]}}
-                                      }}
-                                    }
-                                  },';
+                "nested": {
+                  "path": "trials",
+                  "query": {
+                    "filtered": {
+                        "filter": {"bool": {"must": [
+                        {"range": {
+                            "start": {
+                              "gte": '.$trial_time_from.'
+                          }
+                      }},
+                      {
+                        "range": {
+                          "end": {
+                            "lte": '.$trial_time_to.'
+                        }
+                    }
+                }
+                ]}}
+            }}
         }
-        
+    },';
+}
 
-        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -336,33 +336,33 @@ public function getRankedFinderResultsMobile()
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.str_ireplace(',', '","',Input::json()->get('trialdays')).'"],"_cache": true}},'  : '';
 
     $trial_range_filter = '';
-        if(($trial_time_from !== '')&&($trial_time_to !== '')){
-            $trial_range_filter = '  {
-                                    "nested": {
-                                      "path": "trials",
-                                      "query": {
-                                        "filtered": {
-                                        "filter": {"bool": {"must": [
-                                          {"range": {
-                                            "start": {
-                                              "gte": '.$trial_time_from.'
-                                            }
-                                          }},
-                                          {
-                                            "range": {
-                                              "end": {
-                                                "lte": '.$trial_time_to.'
-                                              }
-                                            }
-                                          }
-                                        ]}}
-                                      }}
-                                    }
-                                  },';
-        }
+    if(($trial_time_from !== '')&&($trial_time_to !== '')){
+        $trial_range_filter = '  {
+            "nested": {
+              "path": "trials",
+              "query": {
+                "filtered": {
+                    "filter": {"bool": {"must": [
+                    {"range": {
+                        "start": {
+                          "gte": '.$trial_time_from.'
+                      }
+                  }},
+                  {
+                    "range": {
+                      "end": {
+                        "lte": '.$trial_time_to.'
+                    }
+                }
+            }
+            ]}}
+        }}
+    }
+},';
+}
 
-    $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-    $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -506,33 +506,33 @@ public function getRankedFinderResultsApp()
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
     
     $trial_range_filter = '';
-        if(($trial_time_from !== '')&&($trial_time_to !== '')){
-            $trial_range_filter = '  {
-                                    "nested": {
-                                      "path": "trials",
-                                      "query": {
-                                        "filtered": {
-                                        "filter": {"bool": {"must": [
-                                          {"range": {
-                                            "start": {
-                                              "gte": '.$trial_time_from.'
-                                            }
-                                          }},
-                                          {
-                                            "range": {
-                                              "end": {
-                                                "lte": '.$trial_time_to.'
-                                              }
-                                            }
-                                          }
-                                        ]}}
-                                      }}
-                                    }
-                                  },';
-        }
+    if(($trial_time_from !== '')&&($trial_time_to !== '')){
+        $trial_range_filter = '  {
+            "nested": {
+              "path": "trials",
+              "query": {
+                "filtered": {
+                    "filter": {"bool": {"must": [
+                    {"range": {
+                        "start": {
+                          "gte": '.$trial_time_from.'
+                      }
+                  }},
+                  {
+                    "range": {
+                      "end": {
+                        "lte": '.$trial_time_to.'
+                    }
+                }
+            }
+            ]}}
+        }}
+    }
+},';
+}
 
-    $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-    $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -670,36 +670,37 @@ public function getRankedFinderResultsAppv2()
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
     
     $trial_range_filter = '';
-        if(($trial_time_from !== '')&&($trial_time_to !== '')){
-            $trial_range_filter = '  {
-                                    "nested": {
-                                      "path": "trials",
-                                      "query": {
-                                        "filtered": {
-                                        "filter": {"bool": {"must": [
-                                          {"range": {
-                                            "start": {
-                                              "gte": '.$trial_time_from.'
-                                            }
-                                          }},
-                                          {
-                                            "range": {
-                                              "end": {
-                                                "lte": '.$trial_time_to.'
-                                              }
-                                            }
-                                          }
-                                        ]}}
-                                      }}
-                                    }
-                                  },';
-        }
+    if(($trial_time_from !== '')&&($trial_time_to !== '')){
+        $trial_range_filter = '  {
+            "nested": {
+              "path": "trials",
+              "query": {
+                "filtered": {
+                    "filter": {"bool": {"must": [
+                    {"range": {
+                        "start": {
+                          "gte": '.$trial_time_from.'
+                      }
+                  }},
+                  {
+                    "range": {
+                      "end": {
+                        "lte": '.$trial_time_to.'
+                    }
+                }
+            }
+            ]}}
+        }}
+    }
+},';
+}
 
-    $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-    $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
-
+        $mustfilter_post = '"must": ['.$must_filtervalue.']';
+          $filtervalue_post = trim($mustfilter_post,',');
         $filtervalue = trim($shouldfilter.$mustfilter,',');
 
         if($orderfield == 'popularity')
@@ -732,13 +733,51 @@ public function getRankedFinderResultsAppv2()
                 "bool" : {'.$filtervalue.'}
             },"_cache" : true';
         }
+        if($mustfilter != ''){
+             $filters_post = ',"post_filter": {
+                "bool" : {'.$filtervalue_post.'}
+            },';            
+        }
+        /*
 
-        $budgets_facets = '"budget": {"terms": {"field": "price_range","min_doc_count":0,"size":"500","order":{"_term": "asc"}}},';
-        $regions_facets = '"loccluster": {
+        Aggregations filters here for drilling down
+
+        */
+
+        $location_facets_filter = trim($location_filter.$category_filter,',');
+        $facilities_facets_filter = trim($location_filter.$regions_filter.$category_filter, ',');
+        $offerings_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
+        $budgets_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
+        $trialday_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter, ',');
+
+        $facilities_bool = '"filter": {
+            "bool" : { "must":['.$facilities_facets_filter.']}
+        }';
+
+        $offering_bool = '"filter": {
+            "bool" : {"must":['.$offerings_facets_filter.']}
+        }';
+
+        $budgets_bool = '"filter": {
+            "bool" : {"must":['.$budgets_facets_filter.']}
+        }';
+
+        $location_bool = '"filter": {
+            "bool" : {"must":['.$location_facets_filter.']}
+        }';
+
+        $trialdays_bool = '"filter": {
+            "bool" : {"must":['.$trialday_facets_filter.']}
+        }';
+
+        $regions_facets = '
+        "filtered_locations": { '.$location_bool.', 
+        "aggs":
+        { "loccluster": {
             "terms": {
                 "field": "locationcluster",
                 "min_doc_count":1
-                
+
             },"aggs": {
               "region": {
                 "terms": {
@@ -748,29 +787,79 @@ public function getRankedFinderResultsAppv2()
                     "order": {
                       "_term": "asc"
                   }
-                  
+
               }
           }
-      }
+      }}}
   },';
 
-  $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
-  $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $trialday_facets = '"trialdays": {"terms": {"field": "service_weekdays","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facilities_facets = '"facilities": {"terms": {"field": "facilities","include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets.$trialday_facets,',');
+  $facilities_facets = ' "filtered_facilities": {
+    '.$facilities_bool.',
+    "aggs": {
+        "facilities": {
+            "terms": {
+                "field": "facilities",
+                "include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$offerings_facets = ' "filtered_offerings": {
+    '.$offering_bool.',
+    "aggs": {
+        "offerings": {
+            "terms": {
+                "field": "offerings",
+                "min_doc_count": 1,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$budgets_facets = ' "filtered_budgets": {
+    '.$budgets_bool.',
+    "aggs": {
+        "budgets": {
+            "terms": {
+                "field": "price_range",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$trialdays_facets = ' "filtered_trials": {
+    '.$trialdays_bool.',
+    "aggs": {
+        "trialdays": {
+            "terms": {
+                "field": "service_weekdays",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+
+$category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+
+$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
 
   $body = '{
     "from": '.$from.',
     "size": '.$size.',
     "aggs": {'.$facetsvalue.'},
-    "query": {
-
-        "filtered": {
-            '.$filters.'
-        }
-    },
-    '.$sort.'
+    '.$filters_post.$sort.'
 }';
 
 $request = array(
