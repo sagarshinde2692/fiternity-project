@@ -68,7 +68,7 @@ Class FinderSms extends VersionNextSms{
 
 		$message = $this->bladeCompile($template->sms_text,$data);
 
-		return $this->sendToWorker($to, $message, $label, $priority, $delay);
+		return $this->sendToWorker($to, $message, $label, $delay);
 	}
 
 	public function bladeCompile($value, array $args = array())
