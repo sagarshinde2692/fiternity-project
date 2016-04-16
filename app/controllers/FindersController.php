@@ -39,7 +39,7 @@ class FindersController extends \BaseController {
     }
 
 
-    public function finderdetail($slug, $cache = false){
+    public function finderdetail($slug, $cache = true){
 
         $data 	=  array();
         $tslug 	= (string) strtolower($slug);
@@ -53,6 +53,7 @@ class FindersController extends \BaseController {
                 ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
                 ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
                 ->with('findercollections')
+                ->with('blogs')
                 ->with('categorytags')
                 ->with('locationtags')
                 ->with('offerings')
@@ -69,7 +70,7 @@ class FindersController extends \BaseController {
                 $finderarr = $finderarr->toArray();
 
                 // return  pluck( $finderarr['categorytags'] , array('name', '_id') );
-                $finder 		= 	array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services'));
+                $finder 		= 	array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
                 $coverimage  	=	($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
                 array_set($finder, 'coverimage', $coverimage);
 
@@ -157,6 +158,7 @@ class FindersController extends \BaseController {
                 array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches']  ));
                 array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
                 array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
+                array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
                 array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
                 array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
                 array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
@@ -182,6 +184,7 @@ class FindersController extends \BaseController {
                 $findercategoryid 	= (int) $finderdata['category_id'];
                 $finderlocationid 	= (int) $finderdata['location_id'];
 
+                $skip_categoryid_finders    = [25,42,45,46];
                 //if category is helath tifins or ditesion
 
                 if($findercategoryid == 25 || $findercategoryid == 42){
@@ -201,7 +204,8 @@ class FindersController extends \BaseController {
                     if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; }
 
                     $nearby_other_category 		= 	Finder::where('_id','!=',$finderid)
-                        ->where('category_id','=',$other_categoryid)
+//                        ->where('category_id','=',$other_categoryid)
+                        ->whereNotIn('category_id', $skip_categoryid_finders)
                         ->where('city_id','=', $finder_cityid)
                         ->where('status', '=', '1')
                         ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
@@ -228,7 +232,8 @@ class FindersController extends \BaseController {
 
 
                     $nearby_other_category 		= 	Finder::where('_id','!=',$finderid)
-                        ->where('category_id','=', 42)
+//                        ->where('category_id','=', 42)
+                        ->whereNotIn('category_id', $skip_categoryid_finders)
                         ->where('city_id','=', $finder_cityid)
                         ->where('status', '=', '1')
                         ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
@@ -256,6 +261,7 @@ class FindersController extends \BaseController {
 
 
                     $nearby_other_category 		= 	Finder::where('category_id','!=',$findercategoryid)
+                        ->whereNotIn('category_id', $skip_categoryid_finders)
                         ->where('location_id','=',$finderlocationid)
                         ->where('_id','!=',$finderid)
                         ->where('status', '=', '1')
