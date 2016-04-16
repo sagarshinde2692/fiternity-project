@@ -335,7 +335,8 @@ class RankingController extends \BaseController {
                             //->take(3000)->skip(3000)
         ->get(); 
 
-        foreach ($items as $finderdocument) {           
+        foreach ($items as $finderdocument) {  
+        try{         
             $data = $finderdocument->toArray();
             $score = $this->generateRank($finderdocument);
                 //$trialdata = get_elastic_finder_trialschedules($data);               
@@ -392,6 +393,10 @@ class RankingController extends \BaseController {
      $curl_response = es_curl_request($request);
      echo json_encode($curl_response);
      //echo "<br>$posturl    ---  ".es_curl_request($request);
+ }
+ catch(Exception $e){
+        Log::error($e);
+ }
  }
 
 
