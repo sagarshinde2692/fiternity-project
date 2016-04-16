@@ -329,13 +329,57 @@ class RankingController extends \BaseController {
                             //->whereIn('_id', array(579))
         ->where('city_id', $city_id)
         ->where('status', '=', '1')
-        ->take(100000)->skip(0)
+        ->take(100)->skip(0)
         ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
         ->get(); 
 
-        foreach ($items as $finderdocument) {           
+        foreach ($items as $finderdocument) {  
+        try{         
+
+            $ratecard_days = 0; $ratecard_money = 0;
+            $services = Ratecard::where('finder_id', intval($finderdocument['id']))->get();
+            $ratecard_count = 0;  $average_monthly = 0;
+            foreach ($services as $service) {
+                
+                switch($service['validity']){
+                    case 30:
+                    $ratecard_count = $ratecard_count + 1;
+                    $ratecard_money = $ratecard_money + intval($service['price']);
+                    break;
+                    case 90:
+                    $ratecard_count = $ratecard_count + 1;
+                    $average_one_month = intval($service['price'])/3;
+                    $ratecard_money = $ratecard_money + $average_one_month;
+                    break;
+                    case 120:
+                    $ratecard_count = $ratecard_count + 1;
+                    $average_one_month = intval($service['price'])/4;
+                    $ratecard_money = $ratecard_money + $average_one_month;
+                    break;
+                    case 180:
+                    $ratecard_count = $ratecard_count + 1;
+                    $average_one_month = intval($service['price'])/6;
+                    $ratecard_money = $ratecard_money + $average_one_month;
+                    break;
+                    case 360:
+                    $ratecard_count = $ratecard_count + 1;
+                    $average_one_month = intval($service['price'])/12;
+                    $ratecard_money = $ratecard_money + $average_one_month;
+                    break;
+                }
+           
+                echo $ratecard_money.'</br>';
+            }
+
+          
+            if(($ratecard_count !==0)){
+
+            $average_monthly = ($ratecard_money) / ($ratecard_count);
+            }
+
+
             $data = $finderdocument->toArray();
             $score = $this->generateRank($finderdocument);
                 //$trialdata = get_elastic_finder_trialschedules($data);               
@@ -385,13 +429,18 @@ class RankingController extends \BaseController {
      $catval = evalBaseCategoryScore($finderdocument['category_id']);
      $postdata['rankv1'] = $catval;
      $postdata['rankv2'] = $score + $catval;
+     $postdata['average_price'] = $average_monthly;
      $postfields_data = json_encode($postdata);             
      $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-        // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
+     //$posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
      $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
      $curl_response = es_curl_request($request);
      echo json_encode($curl_response);
      //echo "<br>$posturl    ---  ".es_curl_request($request);
+ }
+ catch(Exception $e){
+        Log::error($e);
+ }
  }
 
 
