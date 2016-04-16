@@ -341,6 +341,76 @@ class MigrationsController extends \BaseController {
 		
 	}
 
+	public function vendorPriceAverage(){
+
+		$finders = Finder::where('city_id',1)->where('commercial_type', 1)->where('status', '1')->take(3000)->skip(0)->get();
+		$fp = fopen('averagePriceMumbai.csv', 'w');
+	  $header =    ["Finder_name", "Finder_id", "Average_monthly", "Total_price", "Total_days", "Number_of_Ratecards"];
+	  fputcsv($fp, $header);	
+		foreach ($finders as $finder) {
+			
+			$ratecard_days = 0; $ratecard_money = 0;
+			$services = Ratecard::where('finder_id', intval($finder['id']))->get();
+			$ratecard_count = 0;
+			foreach ($services as $service) {
+				
+				// $ratecard_days = $ratecard_days + $service['validity'];
+				// $ratecard_money = $ratecard_money + $service['price'];
+				//	echo $service['price'];
+				switch($service['validity']){
+					case 30:
+					$ratecard_count = $ratecard_count + 1;
+					$ratecard_money = $ratecard_money + intval($service['price']);
+					break;
+					case 90:
+					$ratecard_count = $ratecard_count + 1;
+					$average_one_month = intval($service['price'])/3;
+					$ratecard_money = $ratecard_money + $average_one_month;
+					break;
+					case 120:
+					$ratecard_count = $ratecard_count + 1;
+					$average_one_month = intval($service['price'])/4;
+					$ratecard_money = $ratecard_money + $average_one_month;
+					break;
+					case 180:
+					$ratecard_count = $ratecard_count + 1;
+					$average_one_month = intval($service['price'])/6;
+					$ratecard_money = $ratecard_money + $average_one_month;
+					break;
+					case 360:
+					$ratecard_count = $ratecard_count + 1;
+					$average_one_month = intval($service['price'])/12;
+					$ratecard_money = $ratecard_money + $average_one_month;
+					break;
+				}
+			// 	$ratecards = $service['ratecards'];
+			// 	if(!is_null($ratecards)){
+			// 					foreach ($ratecards as $ratecard) {
+			// 	if(array_key_exists('days', $ratecard)&&array_key_exists('price', $ratecard)){
+			// 						// if(is_null($ratecard['days']) && is_null(var))
+			// 		$ratecard_days = $ratecard_days + isset($ratecard['days']) ? intval($ratecard['days']) :0;
+			// 		$ratecard_money = $ratecard_money + isset($ratecard['price']) ? intval($ratecard['price']) : 0;
+			// 	}
+			// }
+			// }
+				echo $ratecard_money.'</br>';
+			}
+
+			$average_monthly = 0;
+			if(($ratecard_count !==0)){
+
+			$average_monthly = ($ratecard_money) / ($ratecard_count);
+			}
+			 $fields = [$finder['title'], $finder['id'], $average_monthly, $ratecard_money , $ratecard_days, $ratecard_count];
+    
+    fputcsv($fp, $fields);
+		}
+		fclose($fp);
+  //return 'done';
+return Response::make(rtrim('averagePriceMumbai.csv', "\n"), 200, $header);
+
+	}
+
 
 
 
