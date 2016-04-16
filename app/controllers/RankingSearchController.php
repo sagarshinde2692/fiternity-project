@@ -734,7 +734,7 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
             },"_cache" : true';
         }
         if($mustfilter != ''){
-             $filters_post = ',"post_filter": {
+             $filters_post = '"post_filter": {
                 "bool" : {'.$filtervalue_post.'}
             },';            
         }
@@ -868,11 +868,12 @@ $request = array(
     'method' => 'POST',
     'postfields' => $body
     );
-echo ($body);exit;
+
+
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
-$searchresulteresponse = Translator::translate_searchresults($search_results1);
+$searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
 $searchresulteresponse->meta->number_of_records = $size;
 $searchresulteresponse->meta->from = $from;
 $searchresulteresponse->meta->sortfield = $orderfield;
