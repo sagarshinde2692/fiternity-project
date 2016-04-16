@@ -1,3 +1,8 @@
+
+# IDE files
+.idea
+
+
 /bootstrap/compiled.php
 /vendor
 composer.phar

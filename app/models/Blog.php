@@ -42,4 +42,8 @@ class Blog extends \Basemodel {
 		return $this->hasMany('Comment','blog_id');
 	}
 
+	public function finders(){
+		return $this->belongsToMany('Finder', null, 'blogs', 'finders');
+	}
+
 }

@@ -24,8 +24,121 @@ Route::get('migrations/vendorPriceAverage', 'MigrationsController@vendorPriceAve
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 
+Route::get('/updatemedia/findercoverimage', function() {
 
-Route::get('/attachcustomernumber', function() { 
+//	return $finders 	= Finder::where('coverimage', 'exists', true)->orWhere('coverimage',"!=", "")->count();
+//    $finders 	= Finder::where('coverimage', 'exists', true)->orWhere('coverimage',"!=", "")->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
+    $finders 	= Finder::where('coverimage', 'exists', true)->orWhere('coverimage',"!=", "")->orderBy('_id')->lists('_id');
+
+	foreach ($finders as $key => $item) {
+		$finder 	=	Finder::find(intval($item));
+		if($finder){
+            $finderData = [];
+            //Cover Image
+			$old_coverimage_name 		=	$finder->coverimage;
+			$new_coverimage_name 		=	pathinfo($old_coverimage_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_coverimage_name, PATHINFO_EXTENSION));
+			echo $finder->coverimage." - ".$new_coverimage_name."<br>";
+            if($new_coverimage_name == "."){
+                $finderData['coverimage']  = '';
+            }else{
+                $finderData['coverimage']  = trim($new_coverimage_name);
+            }
+            $response = $finder->update($finderData);
+		}
+	}
+
+	echo 'done';
+
+});
+
+
+Route::get('/updatemedia/finderlogo', function() {
+
+    $finders 	= Finder::where('logo', 'exists', true)->orWhere('logo',"!=", "")->orderBy('_id')->lists('_id');
+    foreach ($finders as $key => $item) {
+        $finder 	=	Finder::find(intval($item));
+        if($finder){
+            $finderData = [];
+            //Logo
+            $old_logo_name 		=	$finder->logo;
+            $new_logo_name 		=	pathinfo($old_logo_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_logo_name, PATHINFO_EXTENSION));
+            echo $finder->logo." - ".$new_logo_name."<br>";
+            if($new_logo_name == "."){
+                $finderData['logo']  = '';
+            }else{
+                $finderData['logo']  = trim($new_logo_name);
+            }
+            $response = $finder->update($finderData);
+        }
+    }
+    echo 'done';
+});
+
+
+
+
+Route::get('/updatemedia/finderlogo', function() {
+
+    $finders 	= Finder::where('logo', 'exists', true)->orWhere('logo',"!=", "")->orderBy('_id')->lists('_id');
+    foreach ($finders as $key => $item) {
+        $finder 	=	Finder::find(intval($item));
+        if($finder){
+            $finderData = [];
+            //Logo
+            $old_logo_name 		=	$finder->logo;
+            $new_logo_name 		=	pathinfo($old_logo_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_logo_name, PATHINFO_EXTENSION));
+            echo $finder->logo." - ".$new_logo_name."<br>";
+            if($new_logo_name == "."){
+                $finderData['logo']  = '';
+            }else{
+                $finderData['logo']  = trim($new_logo_name);
+            }
+            $response = $finder->update($finderData);
+        }
+    }
+    echo 'done';
+});
+
+
+Route::get('/updatemedia/findergallery', function() {
+
+//    $finders 	= Finder::where('photos', 'exists', true)->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
+    $finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
+    foreach ($finders as $key => $item) {
+        $finder 	=	Finder::find(intval($item));
+        if($finder){
+            $finderData = [];
+            $photoArr   = [];
+
+            if(isset($finder->photos) && count($finder->photos) > 0){
+                foreach ($finder->photos as $k => $photo){
+                    $old_url_name 		=	 $photo['url'];
+                    $new_url_name 		=	pathinfo($old_url_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_url_name, PATHINFO_EXTENSION));
+                    echo $finder->_id." - ".$new_url_name."<br>";
+                    if($new_url_name == "."){
+                        $url  = '';
+                    }else{
+                        $url  = trim($new_url_name);
+                    }
+                    $finder_gallery     = array('order' => $photo['order'], 'alt' => $photo['alt'], 'caption' => $photo['caption'], 'url' => $url);
+                    array_push($photoArr, $finder_gallery);
+                }
+            }
+
+            if(count($photoArr) > 0){
+                return $finderData['photos']  = $photoArr;
+                $response = $finder->update($finderData);
+            }
+
+        }
+    }
+    echo 'done';
+});
+
+
+
+
+	Route::get('/attachcustomernumber', function() {
 
 	// $customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->count();
 	// $customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->take(10)->skip(0)->orderBy('_id')->lists('_id');
