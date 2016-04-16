@@ -73,7 +73,7 @@ class RankingController extends \BaseController {
         /*
        creating new index appended with timestamp
         */
-
+     
        $url = $this->elasticsearch_url."$index_name";
        $request = array(
         'url' =>  $url,
@@ -247,7 +247,8 @@ class RankingController extends \BaseController {
                             "end" : {"type" : "integer", "index" : "not_analyzed"}
                         },
                         "type": "nested"
-                    }
+                    },
+
                 }
             }
         }';

@@ -684,9 +684,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = 'NotBoughtMembership';
+					$label = 'CrossfitAtFort';
 
-					$message = 'Thank you for letting us know you haven’t purchased a membership yet. The Fitternity Fitness Concierge will call you with great offers on memberships.';
+					$message = 'Thank you for your request! We will call you shortly with the different offers on Crossfit at Fort.';
 				
 					$data = array();
 
