@@ -696,7 +696,7 @@ public function getRankedFinderResultsAppv2()
 }
 
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+$must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
         $mustfilter_post = '"must": ['.$must_filtervalue.']';
@@ -862,9 +862,16 @@ $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budget
     '.$filters_post.$sort.'
 }';
 
+// $request = array(
+//     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity2016-04-16/finder/_search",
+//     'port' => 8050,
+//     'method' => 'POST',
+//     'postfields' => $body
+//     );
+
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-    'port' => 8050,
+    'url' => "http://localhost:9200/"."fitternity2016-04-16/finder/_search",
+    'port' => 9200,
     'method' => 'POST',
     'postfields' => $body
     );
