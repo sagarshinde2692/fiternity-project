@@ -862,19 +862,19 @@ $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budget
     '.$filters_post.$sort.'
 }';
 
-// $request = array(
-//     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity2016-04-16/finder/_search",
-//     'port' => 8050,
-//     'method' => 'POST',
-//     'postfields' => $body
-//     );
-
 $request = array(
-    'url' => "http://localhost:9200/"."fitternity2016-04-16/finder/_search",
-    'port' => 9200,
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
+    'port' => 8050,
     'method' => 'POST',
     'postfields' => $body
     );
+
+// $request = array(
+//     'url' => "http://localhost:9200/"."fitternity2016-04-16/finder/_search",
+//     'port' => 9200,
+//     'method' => 'POST',
+//     'postfields' => $body
+//     );
 
 
 $search_results     =   es_curl_request($request);
