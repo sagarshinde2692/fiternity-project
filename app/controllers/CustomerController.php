@@ -1282,7 +1282,7 @@ public function getCustomerDetail(){
 
 }
 
-	public function forYou($customer_email,$lat = 19.115490,$lon = 72.8726951){
+	public function forYou($customer_email,$city_id,$lat = false,$lon = false){
 
 		//blogs catgories
 		$cardio = 1;
@@ -1329,6 +1329,23 @@ public function getCustomerDetail(){
 		$finder = $offer = $article = $blog_category_id = $location_id = $category_id = array();
 
 		$limit = 5;
+
+		if($lat == false && $lon == false){
+
+			$city = City::find((int)$city_id);
+
+			if(isset($city->lat) && $city->lat != "" && isset($city->lon)  && $city->lon != ""){
+
+				$lat = $city->lat;
+				$lon = $city->lon;
+
+			}else{
+
+				$lat = 19.1154900;
+				$lon = 72.8726951;
+
+			}
+		}
 
 		$lonlat = [$lon,$lat];
 
