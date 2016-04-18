@@ -547,6 +547,10 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 case 'Healthy Tiffins':
                 $val =  1;
                 break;
+
+                default:
+
+                $val = 0;
             }
             return $val;
         }
@@ -555,6 +559,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
     if (!function_exists('get_elastic_finder_documentv2')) {
         function get_elastic_finder_documentv2($finderdata = array(), $locationcluster='', $rangeval =0) {
 
+            try{
             $data = $finderdata;
             $flag = false;
             $picslist = array();            
@@ -615,7 +620,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
          }
        
 
-        try {
+      
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
                 'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
@@ -676,9 +681,10 @@ if (!function_exists(('evalBaseCategoryScore'))){
 $postfields_data['servicephotos'] = $picslist;
 
 return $postfields_data;
-}catch(Swift_RfcComplianceException $exception){
+}
+catch(Exception $exception){
     Log::error($exception);
-    return [];
+    return array();
         }//catch
 
     }

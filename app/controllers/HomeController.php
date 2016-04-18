@@ -23,7 +23,7 @@ class HomeController extends BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
-			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39,46])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
@@ -832,7 +832,7 @@ class HomeController extends BaseController {
 
 	public function getOffersTabsOffers($city, $captionslug, $slug){
 
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$citydata 		=	City::where('slug', '=', strtolower($city))->first(array('name','slug'));
 		if(!$citydata){
 			return $this->responseNotFound('City does not exist');
 		}
@@ -841,7 +841,7 @@ class HomeController extends BaseController {
 
 		$slugname 				= 	strtolower(trim($slug));
 		$captionslug 			= 	strtolower(trim($captionslug));
-		$offerobj 				=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first();
+		$offerobj 				=	Offer::where('city_id', '=', $city_id)->where('slug', '=', strtolower($captionslug))->first();
 
 		if(count($offerobj) < 1){
 			$responsedata 	= ['services' => [],  'message' => 'No Service Exist'];
@@ -896,7 +896,7 @@ class HomeController extends BaseController {
 
 	public function getOffersTabsOffersV1($city, $captionslug, $slug){
 
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$citydata 		=	City::where('slug', '=', strtolower($city))->first(array('name','slug'));
 		if(!$citydata){
 			return $this->responseNotFound('City does not exist');
 		}
@@ -937,7 +937,7 @@ class HomeController extends BaseController {
 
 	public function getOffers($city = 'mumbai', $from = '', $size = ''){
 
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$citydata 		=	City::where('slug', '=', strtolower($city))->first(array('name','slug'));
 		if(!$citydata){
 			return $this->responseNotFound('City does not exist');
 		}
@@ -991,7 +991,7 @@ class HomeController extends BaseController {
 
 	public function getOffersTabs($city = 'mumbai'){
 
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$citydata 		=	City::where('slug', '=', strtolower($city))->first(array('name','slug'));
 		if(!$citydata){
 			return $this->responseNotFound('City does not exist');
 		}
@@ -1040,7 +1040,7 @@ class HomeController extends BaseController {
 
 	public function getCategorytagsOfferings($city = 'mumbai'){
 
-		$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+		$citydata 		=	City::where('slug', '=', strtolower($city))->first(array('name','slug'));
 		if(!$citydata){
 			return $this->responseNotFound('City does not exist');
 		}

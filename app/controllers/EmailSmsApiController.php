@@ -449,7 +449,6 @@ class EmailSmsApiController extends \BaseController {
 
 
 	public function landingpagecallback(){
-		
 		$emaildata = array(
 			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
 			'email_template_data' => $data = array(
@@ -483,7 +482,7 @@ class EmailSmsApiController extends \BaseController {
 		}
 
 
-		$resp 			= array('status' => 200,'message' => "Recieved the Request");
+		$resp 			= array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
 
