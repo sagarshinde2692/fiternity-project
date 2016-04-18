@@ -534,7 +534,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$sndInstantSmsCustomer			=	$this->customersms->manualBookTrial($booktrialdata);
 		}
 
-		$resp 	= 	array('status' => 200,'booktrialid',$booktrialid->_id, 'message' => "Book a Trial");
+		$resp 	= 	array('status' => 200,'booktrialid'=>$booktrialid->_id, 'message' => "Book a Trial");
 		return Response::json($resp,200);
 	}
 
