@@ -1546,7 +1546,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
 			$sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
 
-			$job->delete();exit;
+			//$job->delete();exit;
 
 			$customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
 			$customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
