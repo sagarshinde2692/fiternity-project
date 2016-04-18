@@ -1347,7 +1347,7 @@ public function getCustomerDetail(){
 			}
 		}
 
-		$lonlat = [$lon,$lat];
+		$lonlat = [(float)$lon,(float)$lat];
 
 		//echo "<pre>";print_r($lonlat);exit;
 
