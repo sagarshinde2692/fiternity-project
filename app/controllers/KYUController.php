@@ -29,7 +29,8 @@ class KYUController extends \BaseController
     $postfields_data = json_encode($event);             
     $posturl = "http://fitternityelk:admin@52.74.67.151:8060/"."kyulogs/logs/" ;      
     $request = array('url' => $posturl, 'port' => 8060, 'method' => 'POST', 'postfields' => $postfields_data );
-    echo "<br>$posturl    ---  ".es_curl_request($request);        
+    es_curl_request($request);        
+    echo "";
   }
 
   public function createkyucluster(){
