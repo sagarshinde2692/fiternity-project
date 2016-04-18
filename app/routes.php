@@ -52,6 +52,8 @@ Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferi
 
 
 Route::get('getcapturedetail/{captureid}', 'CaptureController@getCaptureDetail');
+Route::get('booktrialdetail/{captureid}', 'SchedulebooktrialsController@booktrialdetail');
+
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
 Route::get('/fitcardautobooktrials/{customeremail}',  array('as' => 'customer.fitcardautobooktrials','uses' => 'CustomerController@getFitcardAutoBookTrials'));

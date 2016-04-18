@@ -2421,5 +2421,17 @@ class SchedulebooktrialsController extends \BaseController {
 
 		return Response::json($response,$response['status']);
 	}
+	public function booktrialdetail($captureid){
+
+		$booktrial 		=	Booktrial::find($captureid);
+
+		if(!$booktrial){
+			return $this->responseNotFound('Request not found');
+		}
+
+		$responsedata 	= ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
+		return Response::json($responsedata, 200);
+
+	}
 
 }
