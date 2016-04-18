@@ -69,6 +69,8 @@ class FindersController extends \BaseController {
                 // $ratecards 			= 	Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
                 $finderarr = $finderarr->toArray();
 
+
+                 // return $finder;
                 // return  pluck( $finderarr['categorytags'] , array('name', '_id') );
                 $finder 		= 	array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
                 $coverimage  	=	($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
@@ -178,6 +180,26 @@ class FindersController extends \BaseController {
 
             if($finder){
 
+                $categoryTagDefinationArr     =   [];
+                
+                // $Findercategory         =   Findercategory::find(intval($finderarr['category_id']));                
+
+                $findercategorytag_ids      =   array_pluck(pluck( $finderarr['categorytags'] , array('_id')), '_id');
+                $Findercategorytags         =   Findercategorytag::whereIn('_id', $findercategorytag_ids)->get()->toArray();
+
+                foreach ($Findercategorytags as $key => $Findercategorytag) {
+                    if(isset($Findercategorytag['defination']) && isset($Findercategorytag['defination']) && count($Findercategorytag['defination']) > 0){
+                        $maxCnt                                 =   count($Findercategorytag['defination']) - 1;
+                        $categoryTagDefination['slug']          =   $Findercategorytag['slug'];
+                        $categoryTagDefination['defination']    =   $Findercategorytag['defination'][rand(0,$maxCnt)];
+                        array_push($categoryTagDefinationArr, $categoryTagDefination);
+                    }
+                }
+
+                // return $categoryTagDefinationArr;
+
+                 
+
                 $finderdata 		=	$finder;
                 $finderid 			= (int) $finderdata['_id'];
                 $finder_cityid 		= (int) $finderdata['city_id'];
@@ -275,7 +297,8 @@ class FindersController extends \BaseController {
                 }
 
                 $data['statusfinder'] 					= 		200;
-                $data['finder'] 						= 		$finder;
+                $data['finder']                         =       $finder;
+                $data['defination'] 					= 		['categorytags' => $categoryTagDefinationArr];
                 $data['nearby_same_category'] 			= 		$nearby_same_category;
                 $data['nearby_other_category'] 			= 		$nearby_other_category;
 

@@ -141,4 +141,20 @@ public function postCapture(){
 	return Response::json($storecapture, 200);
 }	
 
+public function getCaptureDetail($captureid){
+
+		$orderdata 		=	Capture::find($captureid);
+		if(isset($orderdata->preferred_starting_date) && $orderdata->preferred_starting_date == ""){
+			unset($orderdata->preferred_starting_date);
+		}
+
+		if(!$orderdata){
+			return $this->responseNotFound('Request not found');
+		}
+
+		$responsedata 	= ['capture' => $orderdata,  'message' => 'Request Detail'];
+		return Response::json($responsedata, 200);
+
+	}
+
 }
