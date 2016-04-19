@@ -1610,17 +1610,17 @@ class DebugController extends \BaseController {
 			);*/
 
 			$missedcall_no = array(
-					array('number'=>'+912233010074','type'=>'yes','batch'=>1),
-					array('number'=>'+912233010075','type'=>'no','batch'=>1),
-					array('number'=>'+912233010076','type'=>'reschedule','batch'=>1),
+					array('number'=>'+912233010074','type'=>'like','batch'=>1,'for'=>'N+2Trial'),
+					array('number'=>'+912233010075','type'=>'explore','batch'=>1,'for'=>'N+2Trial'),
+					array('number'=>'+912233010076','type'=>'notattended','batch'=>1,'for'=>'N+2Trial'),
 
-					array('number'=>'+912233010078','type'=>'yes','batch'=>2),
-					array('number'=>'+912233010079','type'=>'no','batch'=>2),
-					array('number'=>'+912233010080','type'=>'reschedule','batch'=>2),
+					array('number'=>'+912233010078','type'=>'like','batch'=>2,'for'=>'N+2Trial'),
+					array('number'=>'+912233010079','type'=>'explore','batch'=>2,'for'=>'N+2Trial'),
+					array('number'=>'+912233010080','type'=>'notattended','batch'=>2,'for'=>'N+2Trial'),
 
-					array('number'=>'+912233010087','type'=>'yes','batch'=>3),
-					array('number'=>'+912233010089','type'=>'no','batch'=>3),
-					array('number'=>'+912233010090','type'=>'reschedule','batch'=>3)
+					array('number'=>'+912233010087','type'=>'like','batch'=>3,'for'=>'N+2Trial'),
+					array('number'=>'+912233010089','type'=>'explore','batch'=>3,'for'=>'N+2Trial'),
+					array('number'=>'+912233010090','type'=>'notattended','batch'=>3,'for'=>'N+2Trial')
 			);
 
 			foreach ($missedcall_no as $key => $value) {
