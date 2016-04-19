@@ -1167,4 +1167,18 @@ if (!function_exists(('error_message'))){
     }
 }
 
+if (!function_exists(('error_message_array'))){
+
+    function error_message_array($errors){
+
+        $errors = json_decode(json_encode($errors));
+        $message = array();
+        foreach ($errors as $key => $value) {
+            $message[$key] = $value[0];
+        }
+
+        return $message;
+    }
+}
+
 ?>

@@ -647,4 +647,63 @@ class VendorpanelController extends BaseController
 
         return Response::json($results, 200);
     }
+
+
+    public function profile($finder_id)
+    {
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401,'message' => ['error' => 'Unauthorized to access this vendor profile'] ];
+            return  Response::json( $data, 401);
+        }
+        $finderdata = Finder::where('_id', '=', intval($finder_id))
+            ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            ->with('categorytags')
+            ->with('locationtags')
+            ->with('offerings')
+            ->with('facilities')
+            ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+            ->first();
+
+        $finder['_id'] = $finderdata['_id'];
+        $finder['category'] = $finderdata['category'];
+        $finder['city'] = $finderdata['city'];
+        $finder['location'] = $finderdata['location'];
+        $finder['ozonetelno'] = $finderdata['ozonetelno'];
+
+        $finderdata = $finderdata->toArray();
+
+        array_set($finder, 'categorytags', pluck( $finderdata['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
+        array_set($finder, 'locationtags', pluck( $finderdata['locationtags'] , array('_id', 'name', 'slug') ));
+        array_set($finder, 'offerings', pluck( $finderdata['offerings'] , array('_id', 'name', 'slug') ));
+        array_set($finder, 'facilities', pluck( $finderdata['facilities'] , array('_id', 'name', 'slug') ));
+
+        return Response::json($finder, 200);
+    }
+    
+    public function updateProfile($finder_id)
+    {
+
+//        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+//
+//        if (!(in_array($finder_id, $finder_ids))) {
+//            $data = ['status_code' => 401,'message' => ['error' => 'Unauthorized to update this vendor profile'] ];
+//            return  Response::json( $data, 401);
+//        }
+//
+//        $data = Input::json()->all();
+//        $validator = Validator::make($data, Finder::$update_rules);
+//
+//        if ($validator->fails()) {
+//            return Response::json(array('status' => 400,'message' =>error_message_array($validator->errors())),400);
+//        }
+//
+//        $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
+//        $finder->update($data);
+//        return Response::json($finder, 200);
+    }
 }

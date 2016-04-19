@@ -69,6 +69,12 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::get('/vendorsummary/reviews/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summaryreviews','uses' => 'VendorpanelController@getSummaryReviews'));
+
+	Route::get('/vendorsummary/profile/{finder_id?}',
+		array('as' => 'vendor.profile','uses' => 'VendorpanelController@profile'));
+
+//	Route::put('/vendorsummary/profile/{finder_id?}',
+//		array('as' => 'vendor.updateprofile','uses' => 'VendorpanelController@updateProfile'));
 });
 
 

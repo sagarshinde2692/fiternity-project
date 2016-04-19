@@ -24,6 +24,10 @@ class Finder extends  \Basemodel {
 	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
 	];
 
+	public static $update_rules = [
+		'name' => 'sometimes|required|string'
+	];
+
 	protected $appends = array('finder_coverimage','commercial_type_status', 'business_type_status');
 
 
