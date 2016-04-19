@@ -23,7 +23,7 @@ class HomeController extends BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];	
 
-			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39,46])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39,43])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
@@ -905,7 +905,7 @@ class HomeController extends BaseController {
 
 		$slugname 				= 	strtolower(trim($slug));
 		$captionslug 			= 	strtolower(trim($captionslug));
-		$offertabobj 			=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first();
+		 $offertabobj 			=	Offer::where('city_id', '=', $city_id)->where('slug', '=', $captionslug)->first();
 
 		if(count($offertabobj) < 1){
 			$responsedata 	= ['offers' => [],  'message' => 'No Offers Exist'];
@@ -913,9 +913,9 @@ class HomeController extends BaseController {
 		}
 
 		$offertabdata 			= 	$offertabobj->toArray();
-		$slug_array 			=  	array_map('strtolower', array_only($offertabdata, array('1_title', '2_title','3_title','4_title')));
-		$slug_index 			= 	array_search($slugname,$offertabdata); 
-		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
+		 $slug_array 			=  	array_map('strtolower', array_only($offertabdata, array('1_title', '2_title','3_title','4_title')));
+		 $slug_index 			= 	array_search($slugname,$offertabdata); 
+		$ratecardids_index 		=  	str_replace('title', 'ratecardids', $slug_index);
 		$offersids 				=   array_map('intval', explode(',', $offertabdata[$ratecardids_index]));
 
 		$offers 				= 	[];
