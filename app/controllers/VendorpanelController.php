@@ -14,6 +14,7 @@ use App\Services\Salessummary as Salessummary;
 use App\Services\Trialssummary as Trialssummary;
 use App\Services\Ozonetelcallssummary as Ozonetelcallsssummary;
 use App\Services\Reviewssummary as Reviewssummary;
+use App\Services\Statisticssummary as Statisticssummary;
 
 
 class VendorpanelController extends BaseController
@@ -24,6 +25,8 @@ class VendorpanelController extends BaseController
     protected $trialssummary;
     protected $ozonetelcallssummary;
     protected $reviewssummary;
+    protected $statisticssummary;
+
 
     public function __construct(
 
@@ -31,7 +34,8 @@ class VendorpanelController extends BaseController
         Salessummary $salessummary,
         Trialssummary $trialssummary,
         Ozonetelcallsssummary $ozonetelcallsssummary,
-        Reviewssummary $reviewssummary)
+        Reviewssummary $reviewssummary,
+        Statisticssummary $statisticssummary)
     {
 
         $this->jwtauth = $jwtauth;
@@ -39,6 +43,7 @@ class VendorpanelController extends BaseController
         $this->trialssummary = $trialssummary;
         $this->ozonetelcallssummary = $ozonetelcallsssummary;
         $this->reviewssummary = $reviewssummary;
+        $this->statisticssummary = $statisticssummary;
     }
 
 
@@ -221,7 +226,7 @@ class VendorpanelController extends BaseController
         return Response::json($ResultArr, 200);
     }
 
-
+    
     public function listBookedTrials($start_date = NULL, $end_date = NULL)
     {
 
@@ -582,6 +587,61 @@ class VendorpanelController extends BaseController
             array_set($doc, 'slug', trim($finder->slug));
             array_set($doc, 'data', $data);
             array_push($results, $doc);
+        }
+
+
+        return Response::json($results, 200);
+    }
+
+
+    public function getSummaryStatistics($date = NULL)
+    {
+
+        $results = [];
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+        $date = ($date != NULL) ? date("Y-m-d", strtotime($date)) : strtotime("today");
+
+
+        $previous_week = strtotime("-1 week +1 day",$date);
+        $previous_week_start = strtotime("last sunday midnight",$previous_week);
+        $previous_week_end = strtotime("next saturday",$previous_week_start);
+        $previous_week_start = date("Y-m-d",$previous_week_start);
+        $previous_week_end = date("Y-m-d",$previous_week_end);
+
+        $current_week_start = strtotime("last sunday midnight",$date);
+        $current_week_end = strtotime("next saturday",$date);
+        $current_week_start = date("Y-m-d",$current_week_start);
+        $current_week_end = date("Y-m-d",$current_week_end);
+
+
+        foreach ($finder_ids as $finder_id) {
+            $finderData = [];
+            $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
+            if (!$finder) {
+                continue;
+            }
+
+            $finder_id = intval($finder_id);
+            $data = [
+                'WeeklyDiffInTrials' => $this->statisticssummary->getWeeklyDiffInTrials
+                ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end),
+                'WeeklyDiffInLeads' => $this->statisticssummary->getWeeklyDiffInLeads
+                ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end),
+//                'WeeklyDiffInSales' => $this->statisticssummary->getWeeklyDiffInSales
+//                ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end),
+//                'WeeklyDiffInSalesOnlineAndCOD' => $this->statisticssummary->getWeeklyDiffInSalesOnlineAndCOD
+//                ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end),
+//                'WeeklyDiffInSalesAtVendor' => $this->statisticssummary->getWeeklyDiffInSalesAtVendor
+//                ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end)
+            ];
+
+
+            array_set($finderData, 'finder_id', intval($finder_id));
+            array_set($finderData, 'title', trim($finder->title));
+            array_set($finderData, 'slug', trim($finder->slug));
+            array_set($finderData, 'data', $data);
+
+            array_push($results, $finderData);
         }
 
 

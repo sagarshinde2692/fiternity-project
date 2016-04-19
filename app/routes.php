@@ -21,7 +21,7 @@ require __DIR__.'/debug_routes.php';
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
-Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
+	Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 
 Route::group(array('before' => 'validatevendor'), function() {
 
@@ -30,6 +30,9 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::get('/vendorsummary/trials/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summarytrials','uses' => 'VendorpanelController@getSummaryTrials'));
+
+	Route::get('/vendorsummary/statistics/{date?}',
+		array('as' => 'vendor.summarystatistics','uses' => 'VendorpanelController@getSummaryStatistics'));
 
 	Route::get('/vendorsummary/bookedtrials/{start_date?}/{end_date?}',
 		array('as' => 'vendor.listBookedTrials','uses' => 'VendorpanelController@listBookedTrials'));
