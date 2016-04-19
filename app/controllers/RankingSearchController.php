@@ -658,7 +658,25 @@ public function getRankedFinderResultsAppv2()
     $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
 
 
+    $offering_regex = $this->_getOfferingRegex($category);
+
     //return Input::json()->get('offset')['from'];
+    $must_not_filter = '';
+    
+    if($category === ''){
+        $must_not_filter = ',"bool": {
+                    "must_not": [{
+                        "terms": {
+                            "categorytags": [
+                                "healthy tiffins",
+                                "healthy snacks and beverages",
+                                "sport nutrition supliment stores",
+                                "dietitians and nutritionists"
+                            ]
+                        }
+                    }]
+                }';
+    }
 
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
@@ -735,7 +753,7 @@ $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$fac
         }
         if($mustfilter != ''){
              $filters_post = '"post_filter": {
-                "bool" : {'.$filtervalue_post.'}
+                "bool" : {'.$filtervalue_post.'}'.$must_not_filter.'
             },';            
         }
         /*
@@ -814,6 +832,7 @@ $offerings_facets = ' "filtered_offerings": {
         "offerings": {
             "terms": {
                 "field": "offerings",
+                "include" : "'.$offering_regex.'",
                 "min_doc_count": 1,
                 "size": 500,
                 "order":{"_term": "asc"}
@@ -862,11 +881,12 @@ $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budget
     '.$filters_post.$sort.'
 }';
 
+  $postfields_data    = json_encode(json_decode($body,true));     
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
     'port' => 8050,
     'method' => 'POST',
-    'postfields' => $body
+    'postfields' => $postfields_data
     );
 
 // $request = array(
@@ -879,7 +899,6 @@ $request = array(
 
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
-
 $searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
 $searchresulteresponse->meta->number_of_records = $size;
 $searchresulteresponse->meta->from = $from;
@@ -892,5 +911,78 @@ $response       =   json_decode($searchresulteresponse1,true);
 
 return Response::json($response);
 
+}
+
+private function _getOfferingRegex($category){
+    $regex = '';
+   
+    switch($category)
+    {
+        case 'gyms':
+        $regex = 'steam and sauna|juice bar|cycling studio|swimming pool|nutritional support|free wifi|strength training equipment|spinning|strectching area|personal training|24 hour facility|get your own trainer|music and video entertainment|massages|physiotherapy|cardio equipment';
+        break;
+
+         case 'yoga':
+        $regex = 'ashtanga yoga|aerial yoga|hatha yoga|vinyassa yoga|power yoga|prenatal yoga|hot yoga|hot yoga|post natal yoga|iyengar yoga';
+        break;
+
+         case 'zumba':
+        $regex = 'aqua zumba|zumba classes';
+        break;
+
+         case 'cross functional training':
+        $regex = 'trampoline workout|les mills|calisthenics|cross training|group x training|TRX training|combine training';
+        break;
+
+         case 'dance':
+        $regex = 'belly dancing|krumping|locking and poppin|b boying|contemporary|hip hop|free style|rumba|zouk|kathak|bharatanatyam|odissi|ballroom|tango|ballet|jazz|salsa|bollywood|cha cha ch|waltz|bachata|masala bhangra|samba|paso doble|rock n roll|jive|';
+        break;
+
+         case 'fitness studios':
+        $regex = 'dance|aerobics|pilates|zumba|yoga|functional training|mma and kickboxing';
+        break;
+
+         case 'crossfit':
+        $regex = 'workshops|kettlebell training|olympic lifting|indoor|outdoor|open box|cardio equipment|personal training|tyres & ropes|gymnastic routines|group training';
+        break;
+
+         case 'kick boxing':
+        $regex = '';
+        break;
+
+         case 'pilates':
+        $regex = 'reformer or stott pilates|mat pilates';
+        break;
+
+         case 'mma and kickboxing':
+        $regex = 'muay thai|kick boxing|capoeira|judo|kung fu|kalaripayattu|krav maga|tai chi|mixed martial arts|taekwondo|karate|jujitsu';
+        break;
+
+         case 'healthy tiffins':
+        $regex = 'only non veg|salad|calorie counted|cuisine - international|cuisine - jain|meal type - dinner only|vegan meals|meal type - lunch only|veg and non veg|meal type - lunch and dinner|trial available|only veg|cuisine - indian';
+        break;
+
+         case 'marathon training':
+        $regex = 'beach training|individual training|group training|road training';
+        break;
+
+         case 'swimming':
+        $regex = 'steam and sauna|jaccuzi|olympic pool|indoor pool|outdoor pool';
+        break;
+
+         case 'dietitians and nutritionists':
+        $regex = 'meals provided|body fat analysis|child nutrition|pregnancy nutrition|medical or disorder related|telephonic  or  online consultation|weight management|sports nutrition';
+        break;
+
+        case 'sport nutrition supliment stores':
+        $regex = 'Post Workout Supplements|pre workout Supplements|Accessories|Nutrition Bar|Protein Supplements|Energy & Endurance Supplements|Lean Muscle Gainer|Lean Mass Gainer|Weight Gainer|Fat Burners|Health & Wellness Supplements|Muscle Gainer|Soy Protein|Whey Protein|Fish Oil|Shakers|Mass Gainers|Food Supplements|';
+        break;
+
+        default :
+        $regex = "nothing";
+        break;
+    }
+
+    return strtolower($regex);
 }
 }

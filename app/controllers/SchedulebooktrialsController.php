@@ -534,7 +534,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$sndInstantSmsCustomer			=	$this->customersms->manualBookTrial($booktrialdata);
 		}
 
-		$resp 	= 	array('status' => 200,'message' => "Book a Trial");
+		$resp 	= 	array('status' => 200,'booktrial'=> $booktrial, 'message' => "Book a Trial");
 		return Response::json($resp,200);
 	}
 
@@ -2420,6 +2420,18 @@ class SchedulebooktrialsController extends \BaseController {
 		$response = add_reg_id($data);
 
 		return Response::json($response,$response['status']);
+	}
+	public function booktrialdetail($captureid){
+
+		$booktrial 		=	Booktrial::find(intval($captureid));
+
+		if(!$booktrial){
+			return $this->responseNotFound('Request not found');
+		}
+
+		$responsedata 	= ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
+		return Response::json($responsedata, 200);
+
 	}
 
 }

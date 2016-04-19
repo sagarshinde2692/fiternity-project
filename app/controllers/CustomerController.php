@@ -1336,8 +1336,8 @@ public function getCustomerDetail(){
 
 			if(isset($city->lat) && $city->lat != "" && isset($city->lon)  && $city->lon != ""){
 
-				$lat = $city->lat;
-				$lon = $city->lon;
+				$lat = (float)$city->lat;
+				$lon = (float)$city->lon;
 
 			}else{
 
@@ -1347,9 +1347,15 @@ public function getCustomerDetail(){
 			}
 		}
 
-		$lonlat = [$lon,$lat];
+		$lonlat = [(float)$lon,(float)$lat];
+
+		//echo "<pre>";print_r($lonlat);exit;
+
 
 		$location_id = Location::where('lonlat','near',$lonlat)->take($limit)->lists('_id');
+
+				//echo "<pre>";print_r($location_id);exit;
+
 
 		if(!empty($interest)){
 
@@ -1396,14 +1402,14 @@ public function getCustomerDetail(){
 
 
 			//offers and finder
-			$offer_query = Serviceoffer::with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			$offer_query = Serviceoffer::where('type',"mobile-only")->with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			$finder_query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with('locationtags')
-			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			if(!empty($finder_id)){
 
@@ -1483,16 +1489,20 @@ public function getCustomerDetail(){
 				$finder_id_query->whereIn('location_id',$location_id);
 			}
 
+					//echo "<pre>";print_r($location_id);exit;
+
 			$finder_id = $finder_id_query->lists('_id');
 
-			$offer_query = Serviceoffer::with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+					//echo "<pre>";print_r($finder_id);exit;
+
+			$offer_query = Serviceoffer::where('type',"mobile-only")->with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			$finder_query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with('locationtags')
-			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			if(!empty($finder_id)){
 
@@ -1530,9 +1540,12 @@ public function getCustomerDetail(){
 
 			foreach ($offer as $offer_key => $offer_value) {
 
-				foreach ($offer_value['service'] as $key => $value) {
+				if(isset($offer_value['service'])){
 
-					unset($offer[$offer_key]['service']['serviceratecard']);
+					foreach ($offer_value['service'] as $key => $value) {
+
+						unset($offer[$offer_key]['service']['serviceratecard']);
+					}
 				}
 
 				$offer_finder = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
