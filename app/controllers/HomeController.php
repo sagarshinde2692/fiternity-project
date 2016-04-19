@@ -913,9 +913,9 @@ class HomeController extends BaseController {
 		}
 
 		$offertabdata 			= 	$offertabobj->toArray();
-		 $slug_array 			=  	array_map('strtolower', array_only($offertabdata, array('1_title', '2_title','3_title','4_title')));
-		 $slug_index 			= 	array_search($slugname,$offertabdata); 
-		$ratecardids_index 		=  	str_replace('title', 'ratecardids', $slug_index);
+		$slug_array 			=  	array_map('strtolower', array_only($offertabdata, array('1_url', '2_url','3_url','4_url')));
+		$slug_index 			= 	array_search($slugname,$slug_array); 
+		$ratecardids_index 		=  	str_replace('url', 'ratecardids', $slug_index);
 		$offersids 				=   array_map('intval', explode(',', $offertabdata[$ratecardids_index]));
 
 		$offers 				= 	[];
