@@ -657,9 +657,26 @@ public function getRankedFinderResultsAppv2()
     $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
     $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
 
+
     $offering_regex = $this->_getOfferingRegex($category);
 
     //return Input::json()->get('offset')['from'];
+    $must_not_filter = '';
+    
+    if($category === ''){
+        $must_not_filter = ',"bool": {
+                    "must_not": [{
+                        "terms": {
+                            "categorytags": [
+                                "healthy tiffins",
+                                "healthy snacks and beverages",
+                                "sport nutrition supliment stores",
+                                "dietitians and nutritionists"
+                            ]
+                        }
+                    }]
+                }';
+    }
 
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
@@ -736,7 +753,7 @@ $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$fac
         }
         if($mustfilter != ''){
              $filters_post = '"post_filter": {
-                "bool" : {'.$filtervalue_post.'}
+                "bool" : {'.$filtervalue_post.'}'.$must_not_filter.'
             },';            
         }
         /*
@@ -864,11 +881,12 @@ $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budget
     '.$filters_post.$sort.'
 }';
 
+  $postfields_data    = json_encode(json_decode($body,true));     
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
     'port' => 8050,
     'method' => 'POST',
-    'postfields' => $body
+    'postfields' => $postfields_data
     );
 
 // $request = array(
@@ -881,7 +899,6 @@ $request = array(
 
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
-
 $searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
 $searchresulteresponse->meta->number_of_records = $size;
 $searchresulteresponse->meta->from = $from;
