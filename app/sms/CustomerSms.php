@@ -119,54 +119,16 @@ Class CustomerSms extends VersionNextSms{
 
 	public function missedCallDelay ($data,$delay){
 
-		$current_date = date('Y-m-d 00:00:00');
+		$label = 'Missedcall-N-3-Customer';
+		
+		$to = $data['customer_phone'];
 
-        $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
-        $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
-
-		$booktrial  = \Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
-		if(!empty($booktrial) && isset($booktrial->missedcall_batch) && $booktrial->missedcall_batch != ''){
-			$batch = $booktrial->missedcall_batch + 1;
-		}else{
-			$batch = 1;
-		}
-
-		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->get()->toArray();
-
-		if(empty($missedcall_no)){
-
-			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->get()->toArray();
-		}
-
-		foreach ($missedcall_no as $key => $value) {
-
-			switch ($value['type']) {
-				case 'yes': $yes = $value['number'];break;
-				case 'no': $no = $value['number'];break;
-				case 'reschedule': $reschedule = $value['number'];break;
-			}
-
-		}
-	
-		$slot_date 			=	date('d-m-Y', strtotime($data['schedule_date']));
-		$datetime 			=	strtoupper($slot_date ." ".$data['schedule_slot_start_time']);
-
-		$to 		=  	array_merge(explode(',', $data['customer_phone']));
-		$message = "Hi ".$data['customer_name']." This is regarding your session with ".ucwords($data['finder_name'])." - ".ucwords($data['finder_location'])." on ".$datetime.". Do you plan to attend? Reply by missed call. Yes will go: ".$yes." , No - cancel it: ".$no." , Want to reschedule: ".$reschedule. ", Regards - Team Fitternity";
-
-		$label = 'MissedCall-C';
-		$priority = 0;
-
-		$booktrial = \Booktrial::find((int) $data['_id']);
-		$booktrial->missedcall_batch = $batch;
-		$booktrial->update();
-
-		return $this->sendToWorker($to, $message, $label, $delay);
+		return $this->common($label,$to,$data,$delay);
 	}
 
 	public function confirmTrial($data){
 
-		$label = 'Missedcall-ConfirmTrial-Customer';
+		$label = 'Missedcall-Reply-N-3-ConfirmTrial-Customer';
 		
 		$to = $data['customer_phone'];
 
@@ -176,7 +138,7 @@ Class CustomerSms extends VersionNextSms{
 
 	public function cancelTrial($data){
 
-		$label = 'Missedcall-CancelTrial-Customer';
+		$label = 'Missedcall-Reply-N-3-CancelTrial-Customer';
 		
 		$to = $data['customer_phone'];
 
@@ -186,7 +148,97 @@ Class CustomerSms extends VersionNextSms{
 
 	public function rescheduleTrial($data){
 
-		$label = 'Missedcall-RescheduleTrial-Customer';
+		$label = 'Missedcall-Reply-N-3-RescheduleTrial-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function likedTrial($data){
+
+		$label = 'Missedcall-Reply-N+2-Liked-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function exploreTrial($data){
+
+		$label = 'Missedcall-Reply-N+2-Explore-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function notAttendedTrial($data){
+
+		$label = 'Missedcall-Reply-N+2-NotAttended-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function bookTrialReminderAfter2HourRegular($data){
+
+		$label = 'AutoTrial-ReminderAfter2HourRegular-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function orderAfter3Days($data,$delay){
+
+		$label = 'S+3-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+
+	}
+
+	public function orderRenewalMissedcall($data,$delay){
+
+		$label = 'Missedcall-Membership-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+
+	}
+
+	public function renewOrder($data){
+
+		$label = 'Missedcall-Reply-Membership-Renew-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function alreadyExtendedOrder($data){	
+
+		$label = 'Missedcall-Reply-Membership-AlreadyExtended-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function exploreOrder($data){
+
+		$label = 'Missedcall-Reply-Membership-Explore-Customer';
 		
 		$to = $data['customer_phone'];
 

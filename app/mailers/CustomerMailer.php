@@ -184,6 +184,30 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function orderAfter10Days($data, $delay){
+
+		$label = 'S+10-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data,$delay);
+	}
+
+	public function orderRenewalMissedcall($data, $delay){
+
+		$label = 'MembershipRenewal-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data,$delay);
+	}
+
 	public function common($label,$data,$message_data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();

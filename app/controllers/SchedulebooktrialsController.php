@@ -2378,11 +2378,11 @@ class SchedulebooktrialsController extends \BaseController {
 		$hour = (int) date("G", strtotime($schedule_date));
 		$min = (int) date("i", strtotime($schedule_date));
 		$hour2 = 60*60*2;
-		$hour4 = 60*60*4;
+		$hour3 = 60*60*3;
 
 		if($hour >= 11 && $hour <= 22){
 
-			if($diff_sec >= $hour4){
+			if($diff_sec >= $hour3){
 
 				$booktrial = Booktrial::find((int) $booktrialdata['_id']);
 				$booktrial->update(array('outbound_sms_status'=>'1'));
@@ -2391,7 +2391,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 				Log::info('ozonetel_date  -- '. $ozonetel_date);
 
-				return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
+				return $this->missedCall($booktrialdata,$ozonetel_date);
 
 			}
 
@@ -2409,13 +2409,56 @@ class SchedulebooktrialsController extends \BaseController {
 
 				Log::info('ozonetel_date  -- '. $ozonetel_date);
 
-				return $this->customersms->missedCallDelay($booktrialdata,$ozonetel_date);
+				return $this->missedCall($booktrialdata,$ozonetel_date);
 			}
 
 		}
 
 		return 'no_auto_sms';
 	}
+
+	public function missedCall($data,$ozonetel_date){
+
+		$current_date = date('Y-m-d 00:00:00');
+
+        $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
+        $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+
+		$booktrial  = \Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+		if(!empty($booktrial) && isset($booktrial->missedcall_batch) && $booktrial->missedcall_batch != ''){
+			$batch = $booktrial->missedcall_batch + 1;
+		}else{
+			$batch = 1;
+		}
+
+		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->get()->toArray();
+
+		if(empty($missedcall_no)){
+
+			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->get()->toArray();
+		}
+
+		foreach ($missedcall_no as $key => $value) {
+
+			switch ($value['type']) {
+				case 'yes': $data['yes'] = $value['number'];break;
+				case 'no': $data['no'] = $value['number'];break;
+				case 'reschedule': $data['reschedule'] = $value['number'];break;
+			}
+
+		}
+	
+		$slot_date 			=	date('d-m-Y', strtotime($data['schedule_date']));
+		$data['datetime'] 			=	strtoupper($slot_date ." ".$data['schedule_slot_start_time']);
+
+		$booktrial = \Booktrial::find((int) $data['_id']);
+		$booktrial->missedcall_batch = $batch;
+		$booktrial->update();
+
+		return $this->customersms->missedCallDelay($data,$ozonetel_date);
+	}
+
+
 
 	public function addRegId($data){
 

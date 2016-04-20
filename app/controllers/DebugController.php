@@ -1610,17 +1610,17 @@ class DebugController extends \BaseController {
 			);*/
 
 			$missedcall_no = array(
-					array('number'=>'+912233010074','type'=>'like','batch'=>1,'for'=>'N+2Trial'),
-					array('number'=>'+912233010075','type'=>'explore','batch'=>1,'for'=>'N+2Trial'),
-					array('number'=>'+912233010076','type'=>'notattended','batch'=>1,'for'=>'N+2Trial'),
+					array('number'=>'+912233010074','type'=>'renew','batch'=>1,'for'=>'N+OrderRenewal'),
+					array('number'=>'+912233010075','type'=>'alreadyextended','batch'=>1,'for'=>'OrderRenewal'),
+					array('number'=>'+912233010076','type'=>'explore','batch'=>1,'for'=>'OrderRenewal'),
 
-					array('number'=>'+912233010078','type'=>'like','batch'=>2,'for'=>'N+2Trial'),
-					array('number'=>'+912233010079','type'=>'explore','batch'=>2,'for'=>'N+2Trial'),
-					array('number'=>'+912233010080','type'=>'notattended','batch'=>2,'for'=>'N+2Trial'),
+					array('number'=>'+912233010078','type'=>'renew','batch'=>2,'for'=>'OrderRenewal'),
+					array('number'=>'+912233010079','type'=>'alreadyextended','batch'=>2,'for'=>'OrderRenewal'),
+					array('number'=>'+912233010080','type'=>'explore','batch'=>2,'for'=>'OrderRenewal'),
 
-					array('number'=>'+912233010087','type'=>'like','batch'=>3,'for'=>'N+2Trial'),
-					array('number'=>'+912233010089','type'=>'explore','batch'=>3,'for'=>'N+2Trial'),
-					array('number'=>'+912233010090','type'=>'notattended','batch'=>3,'for'=>'N+2Trial')
+					array('number'=>'+912233010087','type'=>'renew','batch'=>3,'for'=>'OrderRenewal'),
+					array('number'=>'+912233010089','type'=>'alreadyextended','batch'=>3,'for'=>'OrderRenewal'),
+					array('number'=>'+912233010090','type'=>'explore','batch'=>3,'for'=>'OrderRenewal')
 			);
 
 			foreach ($missedcall_no as $key => $value) {
@@ -1632,7 +1632,7 @@ class DebugController extends \BaseController {
 
 			}	
 
-		}
+		}	
 
 		public function top10Finder(){
 
