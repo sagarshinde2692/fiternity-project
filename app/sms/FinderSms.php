@@ -61,6 +61,35 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function confirmTrial($data){
+
+		$label = 'Missedcall-Reply-N-3-ConfirmTrial-Vendor';
+		
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function cancelTrial($data){
+
+		$label = 'Missedcall-Reply-N-3-CancelTrial-Vendor';
+		
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function rescheduleTrial($data){
+
+		$label = 'Missedcall-Reply-N-3-RescheduleTrial-Vendor';
+		
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+
+	}
 
 	public function common($label,$to,$data,$delay = 0){
 

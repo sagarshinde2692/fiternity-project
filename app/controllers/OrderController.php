@@ -111,13 +111,25 @@ class OrderController extends \BaseController {
 				$after3days = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * 3);
 				$after10days = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * 10);
 
-				if(isset($order->ratecard_id) && $order->ratecard_id != ""){
+				if(isset($order->ratecard_id) || isset($order->duration_day)){
 
-					$ratecard = Ratecard::find($order->ratecard_id);
+					$validity = 0;
 
-					if(isset($ratecard->validity) && $ratecard->validity != "" && $ratecard->validity >= 30){
+					if(isset($order->ratecard_id) && $order->ratecard_id != ""){
 
-						$validity = $ratecard->validity;
+						$ratecard = Ratecard::find($order->ratecard_id);
+
+						if(isset($ratecard->validity) && $ratecard->validity != ""){
+							$validity = (int)$ratecard->validity;
+						}	
+					}
+
+					if(isset($order->duration_day) && $order->duration_day != ""){
+						
+						$validity = (int)$order->duration_day;
+					}
+					
+					if($validity >= 30){
 
 						if($validity >= 30 && $validity < 90){
 
