@@ -209,7 +209,12 @@
     </style>
 </head>
 
-<?php $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'workout' : 'trial'; ?>
+<?php 
+
+    $trial_type = (isset($type) && $type != '' && $type == 'memberships') ? 'workout' : 'trial';
+    $pt = (isset($finder_category_id) && $finder_category_id == 41) ? 'with' : 'at' ;
+
+?>
 
 <body style=" background-image:url(http://email.fitternity.com/195/pat2.png)">
     <div class="block">
@@ -237,7 +242,7 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hi {{ ucwords($customer_name) }},</p>
                                                         <hr width="100px">
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a {{$trial_type}} session at <strong>{{ ucwords($finder_name) }}. </strong></p>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Thank you for making us a part of your fitness journey. We’re excited that you’ve taken the first step by booking a {{$trial_type}} session {{$pt}} <strong>{{ ucwords($finder_name) }}. </strong></p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding: 20px; " st-content="fulltext-paragraph"> Your {{$trial_type}} session has been <strong>CONFIRMED.</strong> </p>                                                        
                                                     </td>
                                                 </tr>
@@ -265,10 +270,26 @@
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ date(' jS F\, Y \(l\) ', strtotime($schedule_date_time) )  }}</p>
                                                                         <?php }?>
 
+
                                                                         <?php if(isset($code) && $code != ""){ ?> 
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
-                                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }} (please flash this code at the service provider location)</p>
+
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Subscription Code:</p>
+
+                                                                            <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }} (Please share this code with the trainer)</p>
+
+                                                                            <?php } else { ?>
+
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; padding-bottom:30px; " st-content="fulltext-paragraph">{{ $code }} (Please flash this code at the service provider location)</p>
+
+                                                                            <?php } ?>
+
                                                                         <?php }?>
+
+                                                                        
+                                                                            
+                                                                            
     
                                                                     </td>
                                                                 </tr>
@@ -316,7 +337,7 @@
                                                                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
                                                                         <tr>
                                                                             <td valign="top" class="leftColumnContent">
-                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$booktrialid}}" target="_blank">
                                                                                     <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
                                                                                         <img width="40px" src="http://email.fitternity.com/207/manage.png" />
                                                                                         <br />Manage your bookings</p>
@@ -329,7 +350,7 @@
                                                                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
                                                                         <tr>
                                                                             <td valign="top" class="leftColumnContent">
-                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$booktrialid}}" target="_blank">
                                                                                     <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
                                                                                         <img width="40px" src="http://email.fitternity.com/207/profile.png" />
                                                                                         <br />Access your user profile </p>
@@ -342,7 +363,7 @@
                                                                     <table border="0" cellpadding="10" cellspacing="0" width="100%">
                                                                         <tr>
                                                                             <td valign="top" class="leftColumnContent">
-                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
+                                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$booktrialid}}" target="_blank">
                                                                                     <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
                                                                                         <img width="40px" src="http://email.fitternity.com/207/track.png" />
                                                                                         <br />Track your fitness journey </p>
@@ -360,15 +381,32 @@
                                                 <tr style="background-color:#f6f6f6;">
                                                     <td>
                                                         <hr style="width:30%;" />
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:15px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">How do I get there?</strong></p>
+
+                                                        <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:15px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">Contact Details</strong></p>
+
+                                                        <?php } else { ?>
+
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; padding-top:30px; padding-bottom:15px; " st-content="fulltext-paragraph"><strong style="color:#f9a91e;">How do I get there?</strong></p>
+
+
+                                                        <?php } ?>
+
                                                         <!-- col 1 -->
                                                         <table width="250px;" border="0" align="left" cellpadding="0" cellspacing="0" class="devicewidth">
                                                             <tbody>
                                                                 <tr>
-                                                                    <?php if(isset($finder_address) && $finder_address != ""){ ?> 
-                                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646;; padding-top:10px; padding-left:20px; " st-content="fulltext-paragraph"> <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; font-weight:bold; text-align:left;line-height: 23px; " st-content="fulltext-paragraph"> Address:</p>
-                                                                        <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_address) }}</div>
-                                                                        <?php }?>
+                                                                    
+                                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646;; padding-top:10px; padding-left:20px; " st-content="fulltext-paragraph">
+
+                                                                        
+                                                                        <?php if(isset($finder_address) && $finder_address != ""){ ?>
+                                                                            <?php if(isset($finder_category_id) && $finder_category_id != 41) { ?>
+                                                                                <div style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Address:</div>
+                                                                                <div style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; " st-content="fulltext-paragraph">{{ ucwords($finder_address) }}</div>
+                                                                            <?php }?>
+                                                                        <?php } ?>
 
                                                                         <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
                                                                         <div style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Contact Person:</div>
@@ -383,34 +421,41 @@
                                                             </tbody>
                                                         </table>
                                                         
-                                                        <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
-                                                            <tbody>
-                                                                <tr>
-                                                                    <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646; padding-left:20px;" st-content="fulltext-paragraph">
-                                                                        <a href="https://maps.google.com/maps?q={{ $finder_lat }},{{ $finder_lon }}&ll={{ $finder_lat }},{{ $finder_lon }}">
-                                                                            <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
-                                                                        </a>
-                                                                        <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
-                                                                            <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get directions", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
-                                                                        </p>
-                                                                    </td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table></td>
+                                                        <?php if(isset($finder_category_id) && $finder_category_id != 41) { ?>
+                                                            <table width="300px;" align="left" border="0" cellpadding="0" cellspacing="0" class="devicewidth">
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;line-height: 23px; color: #464646; padding-left:20px;" st-content="fulltext-paragraph">
+                                                                            <a href="https://maps.google.com/maps?q={{ $finder_lat }},{{ $finder_lon }}&ll={{ $finder_lat }},{{ $finder_lon }}">
+                                                                                <img width="250px" src="http://maps.googleapis.com/maps/api/staticmap?center={{ $finder_lat }},{{ $finder_lon }}&markers=icon:http://tinyurl.com/2ftvtt6|78.0,79.0&zoom=14&size=300x100" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; padding-top:10px; padding-bottom:20px; ">                                                                       
+                                                                            </a>
+                                                                            <p style="margin: 0px;font-size: 14px;text-decoration: underline;color: black;text-align: left;"> 
+                                                                                <span style="color:#f9a91e;"> {{ link_to("https://maps.google.com/maps?q=$finder_lat,$finder_lon&ll=$finder_lat,$finder_lon", "Get directions", array("style"=>"text-decoration:underline; color:black; cursor:pointer;") ) }} </span> 
+                                                                            </p>
+                                                                        </td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        <?php } ?>
+
+                                                    </td>
                                                     </tr>
-                                                    <tr style="background-color:#f6f6f6;">
-                                                        <td width="100%" align="center" class="devicewidth">
-                                                            <img width="100%" src="http://email.fitternity.com/207/{{$trial_type}}.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;">  
-                                                        </td>
-                                                    </tr>
+                                                  
+                                                        <tr style="background-color:#f6f6f6;">
+                                                            <td width="100%" align="center" class="devicewidth">
+                                                                <img width="100%" src="http://email.fitternity.com/207/{{$trial_type}}.png" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none;">  
+                                                            </td>
+                                                        </tr>
                                                 </tbody>
                                             </table>
                                         </td>
                                     </tr>
+
                                 </tbody>
                             </table>
                         </td>
                     </tr>
+
                 </tbody>  
 
             </table>
@@ -434,12 +479,6 @@
                                    <tr>
                                       <td>
 
-
-
-
-
-
-
                                         <tr style="background-color:#f6f6f6;">
                                             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
                                                 <p>Should you feel the need to change either the time or day of the {{$trial_type}} session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
@@ -449,23 +488,6 @@
 
                                             </td>
                                         </tr>
-
-                                        <?php if(isset($city_id) && $city_id != "" && $city_id != 2){ ?> 
-                                            <tr style="background-color:#f6f6f6;">
-                                               <td style="font-family:Roboto, Arial, sans-serif; font-size: 22px; text-align:center;line-height: 25px; color: #464646; font-weight:bolder; padding:20px; text-transform:uppercase;" st-content="fulltext-paragraph"> Treat yourself to a healthy meal after a good workout
-                                               </td>
-                                           </tr>
-                                           <tr style="background-color:#f6f6f6;">
-                                               <td style="font-family:Roboto, Arial, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; " st-content="fulltext-paragraph">
-                                                    <a href="http://www.fitternity.com" target="_blank"><img src="http://email.fitternity.com/215/smoke.jpg" alt="" border="0" style="display:block; border:none; outline:none; text-decoration:none; ">
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                            <tr style="background-color:#f6f6f6;">
-                                                <td style="font-family:Roboto, Arial, sans-serif; font-size: 22px; text-align:center;line-height: 25px; color: #f9a91e; font-weight:bolder; padding:20px" st-content="fulltext-paragraph"> Flash this voucher at the restaurant upon entry in order to avail this voucher
-                                                </td>
-                                            </tr>
-                                        <?php } ?>
 
                                     </td>
                                 </tr> </tbody>

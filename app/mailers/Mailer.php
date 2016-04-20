@@ -157,10 +157,6 @@ abstract Class Mailer {
 
 	public function sendToWorker($to = '',$email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
-		//used to test email instantly
-		// $this->sendEmail($email_template,$template_data,$message_data);
-		// return '1';
-
 		if($delay !== 0){
 			$delay = $this->getSeconds($delay);
 		}
@@ -172,6 +168,25 @@ abstract Class Mailer {
 		}
 		
 		$payload = array('to'=>$to,'email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+		$route	= 'email';
+		$result  = $this->sidekiq->sendToQueue($payload,$route);
+
+		if($result['status'] == 200){
+			return $result['task_id'];
+		}else{
+			return $result['status'].':'.$result['reason'];
+		}
+
+	}
+
+	public function sendDbToWorker($to = '',$email_template, $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+	
+		$payload = array('to'=>$to,'email_html'=>$email_template,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 
 		$route	= 'email';
 		$result  = $this->sidekiq->sendToQueue($payload,$route);

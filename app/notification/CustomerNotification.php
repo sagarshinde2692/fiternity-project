@@ -6,118 +6,108 @@ Class CustomerNotification extends Notification{
 
 	public function bookTrial ($data){
 
-		$to 		=  	array($data['reg_id']);
+		$label = 'AutoTrial-Instant-Customer';
 
-		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
-
-		$text = "Your ".$session_type." session with ".ucwords($data['finder_name'])." has been confirmed for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". Know the details of your trial.";
-		
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id']);
 
-		$label = 'BookTrial-C';
-		$priority = 1;
-		$device_type = $data['device_type'];
-
-		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}
-
-
 
 	public function rescheduledBookTrial ($data){
 
-		$to 		=  	array($data['reg_id']);
-
-		$session_type = (isset($data['type']) && $data['type'] != '' && $data['type'] == 'memberships') ? 'workout' : 'trial';
-
-		$text = "Your ".$session_type." session with ".ucwords($data['finder_name'])." has been rescheduled for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) .". We hope you have a good session.";
-		
+		$label = 'RescheduleTrial-Instant-Customer';
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id']);
-		
-		$label = 'RescheduledTrial-C';
-		$priority = 1;
-		$device_type = $data['device_type'];
 
-		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}
-
-	
-
 
 	public function bookTrialReminderBefore12Hour ($data, $delay){
 
-		$to 		=  	array($data['reg_id']);
-		$bity_url 	= 	$google_pin = "";
-		
-		$text = "Get ready for your trial at ".ucwords($data['finder_name'])."! Prep yourself with what to expect and more…";
+		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id']);
-
-		$label = 'TrialRmdBefore12Hr-C';
-		$priority = 0;
-		$device_type = $data['device_type'];
-
-		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
+		
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
 
 
 	public function bookTrialReminderBefore1Hour ($data, $delay){
 
-		$to 		=  	array($data['reg_id']);
-		$bity_url 	= 	$google_pin = "";
-		
-		$text = ucwords($data['finder_name'])." are waiting for you! Here is the best route to make it to your session";
+		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id']);
-
-		$label = 'TrialRmdBefore1Hr-C';
-		$priority = 0;
-		$device_type = $data['device_type'];
-
-		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
+		
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
 
 
 	public function bookTrialReminderAfter2Hour ($data, $delay){
 
-		$to 		=  	array($data['reg_id']);
-
-		$text = "We hope you had a good session at ".ucwords($data['finder_name']).". Share your feedback and get Rs. 250/- off on your purchase!";
+		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id']);
-
-		$label = 'TrialRmdAfter2Hr-C';
-		$priority = 0;
-		$device_type = $data['device_type'];
-
-		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority, $delay);
+		
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
 
 	public function cancelBookTrial ($data){
 
-		$to 		=  	array($data['reg_id']);
-
-		$text = "Your session at ".ucwords($data['finder_name'])." for ".date(' jS F\, Y \(l\) ', strtotime($data['schedule_date_time']) ) .", ".date(' g\.i A', strtotime($data['schedule_date_time']) ) ." has been cancelled. Keep your fitness going, explore over 1500+ fitness options here!";
+		$label = 'Cancel-Trial-Customer';
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id']);
+		
+		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
+	}
 
-		$label = 'CancelTrial-C';
-		$priority = 0;
+	public function common($label,$data,$notif_id,$notif_type,$notif_object,$delay = 0){
+
+		$template = \Template::where('label',$label)->first();
+
 		$device_type = $data['device_type'];
+		$to =  array($data['reg_id']);
+		$text = $this->bladeCompile($template->notification_text,$data);
 
-		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $priority);
+		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $delay);
+	}
+
+	public function bladeCompile($value, array $args = array())
+	{
+	    $generated = \Blade::compileString($value);
+
+	    ob_start() and extract($args, EXTR_SKIP);
+
+	    // We'll include the view contents for parsing within a catcher
+	    // so we can avoid any WSOD errors. If an exception occurs we
+	    // will throw it out to the exception handler.
+	    try
+	    {
+	        eval('?>'.$generated);
+	    }
+
+	    // If we caught an exception, we'll silently flush the output
+	    // buffer so that no partially rendered views get thrown out
+	    // to the client and confuse the user with junk.
+	    catch (\Exception $e)
+	    {
+	        ob_get_clean(); throw $e;
+	    }
+
+	    $content = ob_get_clean();
+
+	    return $content;
 	}
 
 

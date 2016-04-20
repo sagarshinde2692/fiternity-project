@@ -28,14 +28,15 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof');
 	}
 
 
 	//capture order status for customer used membership by
 	public function captureOrderStatus(){
 
-		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		$data			= Input::json()->all();
+
 		if(empty($data['order_id'])){
 			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
 			return  Response::json($resp, 400);
@@ -104,6 +105,98 @@ class OrderController extends \BaseController {
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
+			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category)){
+
+				$preferred_starting_date = $order->preferred_starting_date;
+				$after3days = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * 3);
+				$after10days = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+
+				if(isset($order->ratecard_id) || isset($order->duration_day)){
+
+					$validity = 0;
+
+					if(isset($order->ratecard_id) && $order->ratecard_id != ""){
+
+						$ratecard = Ratecard::find($order->ratecard_id);
+
+						if(isset($ratecard->validity) && $ratecard->validity != ""){
+							$validity = (int)$ratecard->validity;
+						}	
+					}
+
+					if(isset($order->duration_day) && $order->duration_day != ""){
+						
+						$validity = (int)$order->duration_day;
+					}
+					
+					if($validity >= 30){
+
+						if($validity >= 30 && $validity < 90){
+
+							$renewal_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 7);
+						}
+
+						if($validity >= 90 && $validity < 180){
+
+							$renewal_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 15);
+						}
+
+						if($validity >= 180 && $validity < 360){
+
+							$renewal_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
+						}
+
+						if($validity >= 360){
+
+							$renewal_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
+						}
+
+						$order_data = $order->toArray();
+
+						$newOrder  = Order::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_renew_batch','exists',true)->orderBy('_id','desc')->first();
+						if(!empty($newOrder)){
+							$batch = $newOrder->missedcall_renew_batch + 1;
+						}else{
+							$batch = 1;
+						}
+
+						$order->missedcall_renew_batch = $batch;
+
+						$missedcall_no = Ozonetelmissedcallno::where('batch',$batch)->where('for','OrderRenewal')->get()->toArray();
+
+						if(empty($missedcall_no)){
+
+							$missedcall_no = Ozonetelmissedcallno::where('batch',1)->where('for','OrderRenewal')->get()->toArray();
+						}
+
+						foreach ($missedcall_no as $key => $value) {
+
+							switch ($value['type']) {
+								case 'renew': $renew = $value['number'];break;
+								case 'alreadyextended': $alreadyextended = $value['number'];break;
+								case 'explore': $explore = $value['number'];break;
+							}
+
+						}
+
+						$order_data['missedcall1'] = $renew;
+						$order_data['missedcall2'] = $alreadyextended;
+						$order_data['missedcall3'] = $explore;
+
+						$order->customer_email_renewal = $this->customermailer->orderRenewalMissedcall($order->toArray(),$renewal_date);
+						$order->customer_sms_renewal = $this->customersms->orderRenewalMissedcall($order->toArray(),$renewal_date);
+
+					}
+
+				}
+
+				$order->customer_sms_after3days = $this->customersms->orderAfter3Days($order->toArray(),$after3days);
+				$order->customer_email_after10days = $this->customermailer->orderAfter10Days($order->toArray(),$after10days);
+
+				$order->update();
+
+			}
+			
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 			return Response::json($resp);
 		}
@@ -293,6 +386,7 @@ class OrderController extends \BaseController {
 		// $userdata	=	array_except(Input::all(), array());
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		$postdata		=	Input::json()->all();
 
 		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
 		// $required_fiels = ['customer_name', ];
@@ -416,7 +510,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type for sms body and email body  zumbathon','booiaka
-		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon'){
+		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon' || $data['type'] == 'eefashrof' ){
 			if( empty($data['sms_body']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - sms_body");
 				return Response::json($resp,404);				
@@ -469,11 +563,14 @@ class OrderController extends \BaseController {
 			$this->addRegId($reg_data);
 		}
 
-		if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-			$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-			$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
-			array_set($data, 'preferred_starting_date', $preferred_starting_date);
-			array_set($data, 'start_date', $preferred_starting_date);
+		if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+
+			if(trim(Input::json()->get('preferred_starting_date')) != '-'){
+				$date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+				$preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+				array_set($data, 'start_date', $preferred_starting_date);
+				array_set($data, 'preferred_starting_date', $preferred_starting_date);
+			}
 		}
 
 
@@ -491,7 +588,9 @@ class OrderController extends \BaseController {
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;	
 			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
 			$finder_lon							= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
-			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";	
+			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+			$finder_category_id					= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
+			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
 
 			array_set($data, 'finder_city', trim($finder_city));
 			array_set($data, 'finder_location', trim($finder_location));
@@ -505,6 +604,8 @@ class OrderController extends \BaseController {
 			array_set($data, 'finder_lon', $finder_lon);
 			array_set($data, 'finder_lat', $finder_lat);
 			array_set($data, 'finder_branch', trim($finder_location));
+			array_set($data, 'finder_category_id', $finder_category_id);
+			array_set($data, 'finder_slug', $finder_slug);
 
 		}
 
@@ -545,10 +646,10 @@ class OrderController extends \BaseController {
 
 	public function autoRegisterCustomer($data){
 
-		$customerdata 	= 	$data;
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
 
 		if(!$customer) {
+			
 			$inserted_id = Customer::max('_id') + 1;
 			$customer = new Customer();
 			$customer->_id = $inserted_id;
@@ -556,9 +657,25 @@ class OrderController extends \BaseController {
 			$customer->email = $data['customer_email'];
 			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 			$customer->password = md5(time());
-			if(isset($customer['customer_phone'])){
+
+			if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
 				$customer->contact_no = $data['customer_phone'];
 			}
+
+			/*if(isset($data['customer_address'])){
+
+				if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+					$customer->address = implode(",", array_values($data['customer_address']));
+					$customer->address_array = $data['customer_address'];
+
+				}elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+					$customer->address = $data['customer_address'];
+				}
+
+			}*/
+
 			$customer->identity = 'email';
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
@@ -566,9 +683,39 @@ class OrderController extends \BaseController {
 			$customer->save();
 
 			return $inserted_id;
-		}  
 
-		return $customer->_id;
+		}else{
+
+			$customerData = [];
+
+			try{
+
+				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+					$customerData['contact_no'] = trim($data['customer_phone']);
+				}
+
+				if(isset($data['otp']) &&  $data['otp'] != ""){
+					$customerData['contact_no_verify_status'] = "yes";
+				}
+
+				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
+					$customerData['address'] = implode(",", array_values($data['customer_address']));
+					$customerData['address_array'] = $data['customer_address'];
+				}
+
+				if(count($customerData) > 0){
+					$customer->update($customerData);	
+				}
+				
+			} catch(ValidationException $e){
+				
+				Log::error($e);
+
+			}
+
+			return $customer->_id;
+		}
+
 	}
 
 
@@ -623,6 +770,11 @@ class OrderController extends \BaseController {
 			$order->update(['email_not_sent'=>'buyLandingpagePurchase']);
 		}else{
 			$sndsEmailCustomer		= 	$this->customermailer->buyLandingpagePurchase($orderData);
+		}
+
+		if($orderData['type'] == 'eefashrof'){
+			$salecount 			= 	Order::where('type', 'eefashrof')->where('status', '1')->count();
+			$sndsSmsVendor		= 	$this->findersms->buyLandingpagePurchaseEefashrof($orderData,$salecount);
 		}
 
 		$resp 	= 	array('status' => 200,'message' => "Successfully buy Membership :)");
@@ -705,7 +857,7 @@ class OrderController extends \BaseController {
 
 		$match 			=	array(41);
    		// $finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->where('_id',7241)->get()->toArray();
-   		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
+		$finders 		=	Finder::whereIn('category_id',$match)->where('status','1')->get()->toArray();
 
 		// return $finders;
 

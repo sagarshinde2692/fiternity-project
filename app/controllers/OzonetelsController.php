@@ -11,6 +11,8 @@ use App\Services\OzonetelResponse as OzonetelResponse;
 use App\Services\OzonetelCollectDtmf as OzonetelCollectDtmf;
 use App\Services\OzontelOutboundCall as OzontelOutboundCall;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\ShortenUrl as ShortenUrl;
+use App\Services\Sidekiq as Sidekiq;
 
 use Guzzle\Http\Client;
 
@@ -722,9 +724,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = 'BoughtMembership';
+					$label = 'Additional10Discount';
 
-					$message = 'Thank you! Fitternity is excited about you buying a fitness membership. We will call you to get the details. You will get a call if you WIN in our Lucky Draw.';
+					$message = "Congratualtions! You've unlocked an Additional 10% discount on Fitternity discounts of upto 50% - Our Fitness Concierge will get in touch with you within 48hrs to get you the membership of your choice. You + Fitternity = A Fitter You!";
 				
 					$data = array();
 
@@ -778,9 +780,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = 'NotBoughtMembership';
+					$label = 'CrossfitAtFort';
 
-					$message = 'Thank you for letting us know you haven’t purchased a membership yet. The Fitternity Fitness Concierge will call you with great offers on memberships.';
+					$message = 'Thank you for your request! We will call you shortly with the different offers on Crossfit at Fort.';
 				
 					$data = array();
 
@@ -849,13 +851,32 @@ class OzonetelsController extends \BaseController {
 				$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->first();
 
 				$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+
+				$finder = Finder::find((int) $booktrial->finder_id);
+
+				$finder_lat = $finder->lat;
+				$finder_lon = $finder->lon;
+
+				$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+				$shorten_url = new ShortenUrl();
+
+	            $url = $shorten_url->getShortenUrl($google_pin);
+
+	            if(isset($url['status']) &&  $url['status'] == 200){
+	                $google_pin = $url['url'];
+	            }
 				
 				if($booktrial){
+
+					$sidekiq = new Sidekiq();
+
 					$data = array();
 
 					$data['finder_name'] = $booktrial->finder_name;
 					$data['customer_phone'] = $ozonetel_missedcall->customer_number;
 					$data['schedule_date_time'] = $booktrial->schedule_date_time;
+					$data['google_pin'] = $google_pin;
 
 					switch ($type) {
 						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
@@ -863,14 +884,228 @@ class OzonetelsController extends \BaseController {
 						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
 					}
 
+					if($type == 'cancel' && $type == 'reschedule'){
+
+						if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
+
+							try {
+								$sidekiq->delete($booktrial->customer_emailqueuedids['after2hour']);
+							}catch(\Exception $exception){
+								Log::error($exception);
+							}
+						}
+
+						$booktrial_data = $booktrial->toArray();
+
+						$customer_emailqueuedids = (isset($booktrial_data['customer_emailqueuedids'])) ? $booktrial_data['customer_emailqueuedids'] : array();
+						$customer_emailqueuedids['after2hour'] = $this->customersms->bookTrialReminderAfter2HourRegular($booktrial_data);
+					}
+
 					$booktrial->missedcall_date = date('Y-m-d h:i:s');
 					$booktrial->missedcall_status = $missedcall_status[$type];
 					$booktrial->source_flag = 'missedcall';
+					$booktrial->customer_emailqueuedids = $customer_emailqueuedids;
 					$booktrial->update();
 				}
 			}
 
 			$response = array('status'=>200,'message'=>'success','ozonetel_missedcall'=> $ozonetel_missedcall );
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return $response;
+
+	}
+
+	public function misscallReview($type){
+
+		try{
+
+			$request = $_REQUEST;
+
+			$ozonetel_missedcall = new Ozonetelmissedcall();
+			$ozonetel_missedcall->_id = Ozonetelmissedcall::max('_id') + 1;
+			$ozonetel_missedcall->type = $type;
+			$ozonetel_missedcall->status = "1";
+			$ozonetel_missedcall->cid = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->customer_number = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->sid = isset($request['sid']) ? $request['sid'] : '';
+			$ozonetel_missedcall->called_number = isset($request['called_number']) ? $request['called_number'] : '';
+			$ozonetel_missedcall->circle = isset($request['circle']) ? $request['circle'] : '';
+			$ozonetel_missedcall->operator = isset($request['operator']) ? $request['operator'] : '';
+			$ozonetel_missedcall->call_time = isset($request['call_time']) ? $request['call_time'] : ''; 
+			$ozonetel_missedcall->called_at = isset($request['call_time']) ? strtotime($request['call_time']) : '';
+			$ozonetel_missedcall->for = "N+2Trial";
+			$ozonetel_missedcall->save();
+
+			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','N+2Trial')first();
+
+			$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_review_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+
+			$finder = Finder::find((int) $booktrial->finder_id);
+
+			$finder_lat = $finder->lat;
+			$finder_lon = $finder->lon;
+
+			$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+			$shorten_url = new ShortenUrl();
+
+            $url = $shorten_url->getShortenUrl($google_pin);
+
+            if(isset($url['status']) &&  $url['status'] == 200){
+                $google_pin = $url['url'];
+            }
+			
+			if($booktrial){
+
+				$data = array();
+
+				$data['customer_name'] = ucwords($booktrial->customer_name);
+				$data['customer_phone'] = $ozonetel_missedcall->customer_number;
+				$data['schedule_date_time'] = $booktrial->schedule_date_time;
+				$data['finder_name'] = $booktrial->finder_name;
+				$data['direct_payment_enable'] = false;
+				$data['service_link'] = "";
+				$data['google_pin'] = $google_pin;
+
+
+				if(isset($booktrial->service_id) && $booktrial->service_id != ""){
+
+					$service_id = (int)$booktrial->service_id;
+
+					$direct_payment_enable = Ratecard::where("direct_payment_enable","1")->where("service_id",$service_id)->lists("_id");
+
+					if(!empty($direct_payment_enable)){
+
+						$link = "www.fitternity.com/membershipbuy/".$finder_slug."/".$booktrial->service_id;
+						$short_url = "";
+
+		                $shorten_url = new ShortenUrl();
+
+		                $url = $shorten_url->getShortenUrl($link);
+
+		                if(isset($url['status']) &&  $url['status'] == 200){
+		                    $short_url = $url['url'];
+		                }
+
+		                $data['direct_payment_enable'] = true;
+		                $data['service_link'] = $short_url;
+					}
+	            }
+
+				switch ($type) {
+					case 'like': $booktrial->missedcall_review_sms = $this->customersms->likedTrial($data);break;
+					case 'explore': $booktrial->missedcall_review_sms = $this->customersms->exploreTrial($data);break;
+					case 'notattended': $booktrial->missedcall_review_sms = $this->customersms->notAttendedTrial($data);break;
+				}
+
+				$booktrial->missedcall_review_date = date('Y-m-d h:i:s');
+				$booktrial->missedcall_review_status = $type;
+				$booktrial->source_flag = 'missedcall';
+				$booktrial->update();
+
+				$ozonetel_missedcall->update(array('trial_id'=>$booktrial->_id));
+			}
+
+			$response = array('status'=>200,'message'=>'success');
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return $response;
+
+	}
+
+	public function misscallOrder($type){
+
+		try{
+
+			$request = $_REQUEST;
+
+			$ozonetel_missedcall = new Ozonetelmissedcall();
+			$ozonetel_missedcall->_id = Ozonetelmissedcall::max('_id') + 1;
+			$ozonetel_missedcall->type = $type;
+			$ozonetel_missedcall->status = "1";
+			$ozonetel_missedcall->cid = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->customer_number = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->sid = isset($request['sid']) ? $request['sid'] : '';
+			$ozonetel_missedcall->called_number = isset($request['called_number']) ? $request['called_number'] : '';
+			$ozonetel_missedcall->circle = isset($request['circle']) ? $request['circle'] : '';
+			$ozonetel_missedcall->operator = isset($request['operator']) ? $request['operator'] : '';
+			$ozonetel_missedcall->call_time = isset($request['call_time']) ? $request['call_time'] : ''; 
+			$ozonetel_missedcall->called_at = isset($request['call_time']) ? strtotime($request['call_time']) : '';
+			$ozonetel_missedcall->for = "OrderRenewal";
+			$ozonetel_missedcall->save();
+
+			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','OrderRenewal')->first();
+
+			$order = Order::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_renew_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+
+			$finder = Finder::find((int) $order->finder_id);
+
+			$finder_lat = $finder->lat;
+			$finder_lon = $finder->lon;
+
+			$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+			$shorten_url = new ShortenUrl();
+
+            $url = $shorten_url->getShortenUrl($google_pin);
+
+            if(isset($url['status']) &&  $url['status'] == 200){
+                $google_pin = $url['url'];
+            }
+			
+			if($order){
+
+				$data = array();
+
+				$data['customer_name'] = ucwords($order->customer_name);
+				$data['customer_phone'] = $ozonetel_missedcall->customer_number;
+				$data['finder_name'] = $order->finder_name;
+				$data['google_pin'] = $google_pin;
+
+				switch ($type) {
+					case 'renew': $booktrial->missedcall_sms = $this->customersms->renewOrder($data);break;
+					case 'alreadyextended': $booktrial->missedcall_sms = $this->customersms->alreadyExtendedOrder($data);break;
+					case 'explore': $booktrial->missedcall_sms = $this->customersms->exploreOrder($data);break;
+				}
+
+				$order->missedcall_renew_date = date('Y-m-d h:i:s');
+				$order->missedcall_renew_status = $type;
+				$order->source_flag = 'missedcall';
+				$order->update();
+
+				$ozonetel_missedcall->update(array('order_id'=>$order->_id));
+			}
+
+			$response = array('status'=>200,'message'=>'success');
 
 		}catch (Exception $e) {
 

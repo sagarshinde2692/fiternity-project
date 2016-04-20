@@ -4,512 +4,130 @@ use Config,Mail;
 
 Class CustomerMailer extends Mailer {
 
-
 	public function bookTrial ($data){
 
-		// $email_template = 'emails.test';
-		$email_template = 	'emails.customer.autobooktrial';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
+		$label = 'AutoTrial-Instant-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been confirmed | Fitternity'
-			);
+			'user_name' => $data['customer_name']
+		);
 
-		$label = 'BookTrial-C';
-		$priority = 1;
+		return $this->common($label,$data,$message_data);
 
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority);
 	}
 
 	public function rescheduledBookTrial ($data){
 
-		// $email_template = 'emails.test';
-		$email_template = 	'emails.customer.rescheduledautobooktrial';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
+		$label = 'RescheduleTrial-Instant-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been re-scheduled | Fitternity'
-			);
+			'user_name' => $data['customer_name']
+		);
 
-		$label = 'RescheduledTrial-C';
-		$priority = 1;
-
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority);
-	}
-
-	//used for testing purpose
-	public function bookTrialReminderBefore1Min ($data, $delay){
-
-		$email_template = 	'emails.customer.booktrialreminderbefore12hour';
-		$template_data 	= 	$data;
-		
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
-		$message_data 	= 	array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'bookTrialReminderBefore12Hour Reminder Book a Trial'
-			);
-		// return $this->sendTo($email_template, $template_data, $message_data, $delay);
-
-		$label = 'TrialRmdBefore1Min-C';
-		
-		$this->sendToWorker('customer',$email_template, $template_data, $message_data, $label);
-
-		$email_template = 	'emails.customer.booktrialreminderafter2hour';
-		$template_data 	= 	$data;
-		
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
-		$message_data 	= 	array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'bookTrialReminderAfter2Hour Reminder Book a Trial'
-			);
-
-		$label = 'TrialRmdAfter2Hr-C';
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label);
+		return $this->common($label,$data,$message_data);
 	}
 
 
 	public function bookTrialReminderBefore12Hour ($data, $delay){
 
-		$email_template = 	'emails.customer.booktrialreminderbefore12hour';
-		$template_data 	= 	$data;
-		
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
-		$message_data 	= 	array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Regarding your session at '.ucwords($data['finder_name']).' | Fitternity'
-			);
+		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
-		$label = 'TrialRmdBefore12Hr-C';
-		$priority = 0;
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority, $delay);
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data,$delay);
 	}
 
 
 	public function bookTrialReminderAfter2Hour ($data, $delay){
 
-		$email_template = 'emails.customer.booktrialreminderafter2hour';
-		$template_data 	= $data;
-		
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
+		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Feedback and subscription at '.ucwords($data['finder_name']).' | Fitternity'
-			);
+			'user_name' => $data['customer_name']
+		);
 
-		$label = 'TrialRmdAfter2Hr-C';
-		$priority = 0;
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority, $delay);
+		return $this->common($label,$data,$message_data,$delay);
 	}
 
 	public function manualBookTrial ($data){
 
-		// $email_template = 'emails.test';
-		$email_template = 	'emails.customer.manualbooktrial';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
+		$label = 'ManualTrial-Customer';
 
 		$message_data 	= array(
-			'user_email' => Config::get('mail.to_neha'),
-			// 'user_email' => 'ut.mehrotra@gmail.com',
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Request For Manual Book a Trial'
-			);
+			'user_email' => array(Config::get('mail.to_mailus')),
+			'user_name' => $data['customer_name']
+		);
 
-		$label = 'ManualBookTrial-C';
-		$priority = 1;
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority);
+		return $this->common($label,$data,$message_data,$delay);
+
 	}
 
-	public function manual2ndBookTrial ($data){
-
-		// $email_template = 'emails.test';
-		$email_template = 	'emails.customer.manual2ndbooktrial';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
-
-		$message_data 	= array(
-			'user_email' => Config::get('mail.to_neha'),
-			// 'user_email' => 'ut.mehrotra@gmail.com',
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Request For Manual Second Book a Trial'
-			);
-
-		$label = 'Manual2ndBookTrial-C';
-		$priority = 1;
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority);
-	}
-
-	public function fitcardCodWelcomeMail ($data){
-
-		// $email_template = 'emails.test';
-		$email_template_customer = 	'emails.customer.fitcardcodwelcomemail';
-		$email_template_mailus = 	'emails.customer.fitcardcodwelcomemail_mailus';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
-		
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Acknowledgement email - Regarding your purchase request for FitCard'
-			);
-
-
-		$label = 'FitcardCod-C';
-		$priority = 1;
-		
-		$this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
-		
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-
-		$label = 'FitcardCod-Us';
-		
-		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
-	}
-
-
-	public function fitcardPaymentGateWelcomeMail ($data){
-
-		// return $data; exit;
-		$email_template_customer = 	'emails.customer.fitcardpaymentgatewaywelcomemail';
-		$email_template_mailus = 	'emails.customer.fitcardpaymentgatewaywelcomemail_mailus';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_emailds_mailus');
-
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Welcome mail - Welcome to the FitCard clan!'
-			);
-
-		$label = 'FitcardPaymentGate-C';
-		$priority = 1;
-		
-		$this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
-
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-
-		$label = 'FitcardPaymentGate-Us';
-		
-		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
-	}
-
-
+	
 	public function sendCodOrderMail ($data){
 
-		$email_template_customer 	= 	'emails.order.cod_'.strtolower($data['type']);
-		$email_template_mailus 		= 	'emails.order.cod_'.strtolower($data['type']).'_mailus';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject 					= 	'';
-
-		if($data['type'] == 'memberships'){
-			$subject  = 'Fitternity - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
-		}
-
-		if($data['type'] == 'arsenalmembership'){
-			$subject  = 'Fitternity - Acknowledgement of request to purchase Arsenal Mumbai Membership';
-		}
-
-		if($data['type'] == 'fitmaniaservice'){
-			$subject  = 'FitMania Sale - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
-		}
+		$label = 'Order-COD-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
+			'user_name' => $data['customer_name']
+		);
 
-
-		$label = 'SendCodOrder-C';
-		$priority = 1;
-		
-		$this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
-		
-		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-		
-		$label = 'SendCodOrder-Us';
-		
-		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
+		return $this->common($label,$data,$message_data);
 	}
 
 
 	public function sendPgOrderMail ($data){
 
-		$email_template_customer 	= 	'emails.order.pg_'.strtolower($data['type']);
-		$email_template_mailus 		= 	'emails.order.pg_'.strtolower($data['type']).'_mailus';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject 					= 	'';
-		
-		if($data['type'] == 'memberships'){
-			$subject  = 'Fitternity - Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
-		}
-		if($data['type'] == 'womens-day'){
-			$subject  = 'Regarding your purchase on Womens Day Sale by Fitternity';
-		}
+		$label = 'Order-PG-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
+			'user_name' => $data['customer_name']
+		);
 
-		$label = 'SendPgOrder-C';
-		$priority = 1;
-		
-		// $this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
-
-		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		// array_set($message_data, 'user_name', 'Fitternity');
-
-		// $label = 'SendPgOrder-Us';
-		// $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
-		
-		return $this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
+		return $this->common($label,$data,$message_data);
 	}
-
-
-	public function buyServiceThroughFitmania ($data){
-
-		$email_template_customer 	= 	'emails.order.fitmania_offer';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
-
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
-
-		$label = 'BuySrvFitmania-C';
-		$priority = 1;
-		
-		return $this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
-
-	}
-
-
-	public function buyServiceThroughFitmaniaWorngCustomer ($data){
-
-		$email_template_customer 	= 	'emails.order.fitmania_offer_wrong_customer';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Please ignore previous mail - Regarding your purchase of membership on FitMania';
-
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
-
-		$label = 'BuySrvFitmaniaWrongCustomer-C';
-		$priority = 1;
-		
-		return $this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
-
-	}
-
-
-	public function resendCustomerGroupBy ($to, $name, $data){
-
-		$email_template_customer 	= 	'emails.order.fitmania_offer_wrong_customer1';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_fitmaniasale');
-		$subject  					=   'Here is your purchase summary for FitMania 2016 - 6th Jan';
-
-		$message_data 	= array(
-			'user_email' => $to,
-			'user_name' => $name,
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
-
-		$label = 'BuySrvFitmaniaWrongCustomer-C';
-		$priority = 1;
-		
-		return $this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label, $priority);
-
-	}
-
-
-
-	public function buyServiceThroughFitmaniaResend1 ($data){
-
-		$email_template_customer 	= 	'emails.order.fitmanianew_offer_template';
-		$email_template_mailus 		= 	'emails.order.fitmania_offer_mailus';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
-
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
-
-		$label = 'BuySrvFitMResend1-C';
-		
-		return $this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label);
-
-		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		// array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		// array_set($message_data, 'user_name', 'Fitternity');
-
-		/*$label = 'BuyArsenalMembership-Us';
-		$priority = 0;
-		$delay = 0;
-		
-		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label, $priority, $delay);*/
-	}
-
-	public function buyServiceMembershipThroughFitmania ($data){
-
-		$email_template_customer 	= 	'emails.order.fitmania_membership_template_v1';
-		$email_template_mailus 		= 	'emails.order.fitmania_membership_mailus';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
-
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
-
-		$label = 'BuySrvMbrFitM-C';
-		
-		$this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label);
-
-		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-
-		$label = 'BuySrvMbrFitM-Us';
-		
-		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
-	}
-
-	public function buyServiceHealthyTiffinThroughFitmania ($data){
-
-		$email_template_customer 	= 	'emails.order.fitmania_healthytiffin_v1';
-		$email_template_mailus 		= 	'emails.order.fitmania_healthytiffin_mailus';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
-
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
-
-		$label = 'BuySrvHltTifFitM-C';
-		
-		$this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label);
-
-		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-
-		$label = 'BuySrvHltTifFitM-Us';
-		
-		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
-	}
-
 
 	public function forgotPassword ($data){
 
-		$email_template = 	'emails.customer.forgot_password';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_forgot_password');
+		$label = 'ForgotPassword-Customer';
 
 		$message_data 	= array(
-			'user_email' => $data['email'],
-			'user_name' => $data['name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your Password Reset Request for Fitternity'
-			);
+			'user_email' => array($data['email']),
+			'user_name' => $data['name']
+		);
 
-		$label = 'ForgotPwd-C';
-		$priority = 1;
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority);
+		return $this->common($label,$data,$message_data);
 	}
 
 	public function forgotPasswordApp ($data){
 
-		$email_template = 	'emails.customer.forgot_password_app';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_forgot_password_app');
+		$label = 'ForgotPassword-App-Customer';
 
 		$message_data 	= array(
-			'user_email' => $data['email'],
-			'user_name' => $data['name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your Password Reset Request for Fitternity'
-			);
+			'user_email' => array($data['email']),
+			'user_name' => $data['name']
+		);
 
-		$label = 'ForgotPwdApp-C';
-		$priority = 1;
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label, $priority);
+		return $this->common($label,$data,$message_data);
 	}
 
 	public function register($data){
 
-		$email_template = 	'emails.customer.register';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	Config::get('mail.bcc_register');
+		$label = 'Register-Customer';
 
 		$message_data 	= array(
-			'user_email' => $data['email'],
-			'user_name' => $data['name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Welcome to Fitternity'
-			);
+			'user_email' => array($data['email']),
+			'user_name' => $data['name']
+		);
 
-		$label = 'Register-C';
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label);
+		return $this->common($label,$data,$message_data);
 	}
 
 
@@ -541,72 +159,95 @@ Class CustomerMailer extends Mailer {
 		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
 	}
 
-
 	public function buyLandingpagePurchase ($data){
 
-		$email_template_customer 	= 	'emails.order.pg_landingpage';
-		$email_template_mailus 		= 	'emails.order.pg_landingpage_mailus';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject  					=   'Regarding your purchase on  Membership by Fitternity';
+		$label = 'Purchase-LandingPage-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
+			'user_name' => $data['customer_name']
+		);
 
-		$label = 'buyLandingpagePurchase-C';
-		
-		$this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label);
-
-		// array_set($message_data, 'user_email', 'sanjay.id7@gmail.com');
-		array_set($message_data, 'user_email', 'mailus@fitternity.com');
-		array_set($message_data, 'user_name', 'Fitternity');
-
-		$label = 'buyLandingpagePurchase-Us';
-		
-		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
+		return $this->common($label,$data,$message_data);
 	}
 
-
-	public function resendFitmaniaCustomerEmail ($data){
-
-		$email_template_customer 	= 	'emails.order.fitmania_customer_resend';
-		$template_data 				= 	$data;
-		$bcc_emailids 				= 	Config::get('mail.bcc_emailds_mailus');
-		$subject  					=   'Regarding your purchase on FitMania Sale by Fitternity';
-
-		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => $subject
-			);
-
-		$label = 'ResendFitmania-C';
-		
-		return  $this->sendToWorker('customer',$email_template_customer, $template_data, $message_data, $label);
-
-	}
 
 	public function cancelBookTrial($data){
 		
-		$email_template = 	'emails.customer.cancelbooktrial';
-		$template_data 	= 	$data;
-		$bcc_emailids 	= 	array(Config::get('mail.to_mailus'));
+		$label = 'Cancel-Trial-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name'],
-			'bcc_emailids' => $bcc_emailids,
-			'email_subject' => 'Your session at '.ucwords($data['finder_name']).' has been cancelled | Fitternity'
-			);
+			'user_name' => $data['customer_name']
+		);
 
-		$label = 'CancelTrial-C';
-		
-		return $this->sendToWorker('customer',$email_template, $template_data, $message_data, $label);
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function orderAfter10Days($data, $delay){
+
+		$label = 'S+10-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data,$delay);
+	}
+
+	public function orderRenewalMissedcall($data, $delay){
+
+		$label = 'MembershipRenewal-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data,$delay);
+	}
+
+	public function common($label,$data,$message_data,$delay = 0){
+
+		$template = \Template::where('label',$label)->first();
+
+		$email_template = 	$this->bladeCompile($template->email_text,$data);
+		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
+
+		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
+
+		$message_data['email_subject'] = $email_subject;
+
+		return $this->sendDbToWorker('customer',$email_template, $message_data, $label, $delay);
+
+	}
+
+	public function bladeCompile($value, array $args = array())
+	{
+	    $generated = \Blade::compileString($value);
+
+	    ob_start() and extract($args, EXTR_SKIP);
+
+	    // We'll include the view contents for parsing within a catcher
+	    // so we can avoid any WSOD errors. If an exception occurs we
+	    // will throw it out to the exception handler.
+	    try
+	    {
+	        eval('?>'.$generated);
+	    }
+
+	    // If we caught an exception, we'll silently flush the output
+	    // buffer so that no partially rendered views get thrown out
+	    // to the client and confuse the user with junk.
+	    catch (\Exception $e)
+	    {
+	        ob_get_clean(); throw $e;
+	    }
+
+	    $content = ob_get_clean();
+
+	    return $content;
 	}
 
 }

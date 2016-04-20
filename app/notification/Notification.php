@@ -59,7 +59,7 @@ abstract Class Notification {
         
 
         if($device_type == 'ios'){
-            $app_payload = array("aps"=>array("alert"=>array("body"=>$text),"sound"=>"default"),'notif_id'=>$notif_id,'notif_type'=>$notif_type,'notif_object'=>$notif_object);
+            $app_payload = array("aps"=>array("alert"=>array("body"=>$text)),'notif_id'=>$notif_id,'notif_type'=>$notif_type,'notif_object'=>$notif_object);
         }else{
             $app_payload = array('text'=>$text,'notif_id'=>$notif_id,'notif_type'=>$notif_type,'notif_object'=>$notif_object);
         }
