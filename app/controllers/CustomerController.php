@@ -1402,14 +1402,14 @@ public function getCustomerDetail(){
 
 
 			//offers and finder
-			$offer_query = Serviceoffer::where('type',"mobile-only")->with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			$offer_query = Serviceoffer::where('type',"mobile-only")->with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			$finder_query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with('locationtags')
-			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			if(!empty($finder_id)){
 
@@ -1495,14 +1495,14 @@ public function getCustomerDetail(){
 
 					//echo "<pre>";print_r($finder_id);exit;
 
-			$offer_query = Serviceoffer::with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			$offer_query = Serviceoffer::where('type',"mobile-only")->with(array('service'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			$finder_query = Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with('categorytags')
 			->with('locationtags')
-			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}));
+			->with(array('services'=>function($query){$query->select('_id','finder_id','name','lat','lon','address','show_on','status','trialschedules')->where('status','=','1')->orderBy('ordering', 'ASC');}));
 
 			if(!empty($finder_id)){
 
