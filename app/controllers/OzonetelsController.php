@@ -757,6 +757,21 @@ class OzonetelsController extends \BaseController {
 				$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->first();
 
 				$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+
+				$finder = Finder::find((int) $booktrial->finder_id);
+
+				$finder_lat = $finder->lat;
+				$finder_lon = $finder->lon;
+
+				$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+				$shorten_url = new ShortenUrl();
+
+	            $url = $shorten_url->getShortenUrl($google_pin);
+
+	            if(isset($url['status']) &&  $url['status'] == 200){
+	                $google_pin = $url['url'];
+	            }
 				
 				if($booktrial){
 
@@ -767,6 +782,7 @@ class OzonetelsController extends \BaseController {
 					$data['finder_name'] = $booktrial->finder_name;
 					$data['customer_phone'] = $ozonetel_missedcall->customer_number;
 					$data['schedule_date_time'] = $booktrial->schedule_date_time;
+					$data['google_pin'] = $google_pin;
 
 					switch ($type) {
 						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
@@ -844,6 +860,21 @@ class OzonetelsController extends \BaseController {
 			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','N+2Trial')first();
 
 			$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_review_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+
+			$finder = Finder::find((int) $booktrial->finder_id);
+
+			$finder_lat = $finder->lat;
+			$finder_lon = $finder->lon;
+
+			$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+			$shorten_url = new ShortenUrl();
+
+            $url = $shorten_url->getShortenUrl($google_pin);
+
+            if(isset($url['status']) &&  $url['status'] == 200){
+                $google_pin = $url['url'];
+            }
 			
 			if($booktrial){
 
@@ -855,6 +886,7 @@ class OzonetelsController extends \BaseController {
 				$data['finder_name'] = $booktrial->finder_name;
 				$data['direct_payment_enable'] = false;
 				$data['service_link'] = "";
+				$data['google_pin'] = $google_pin;
 
 
 				if(isset($booktrial->service_id) && $booktrial->service_id != ""){
@@ -940,6 +972,21 @@ class OzonetelsController extends \BaseController {
 			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','OrderRenewal')->first();
 
 			$order = Order::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_renew_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+
+			$finder = Finder::find((int) $order->finder_id);
+
+			$finder_lat = $finder->lat;
+			$finder_lon = $finder->lon;
+
+			$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+			$shorten_url = new ShortenUrl();
+
+            $url = $shorten_url->getShortenUrl($google_pin);
+
+            if(isset($url['status']) &&  $url['status'] == 200){
+                $google_pin = $url['url'];
+            }
 			
 			if($order){
 
@@ -948,6 +995,7 @@ class OzonetelsController extends \BaseController {
 				$data['customer_name'] = ucwords($order->customer_name);
 				$data['customer_phone'] = $ozonetel_missedcall->customer_number;
 				$data['finder_name'] = $order->finder_name;
+				$data['google_pin'] = $google_pin;
 
 				switch ($type) {
 					case 'renew': $booktrial->missedcall_sms = $this->customersms->renewOrder($data);break;
