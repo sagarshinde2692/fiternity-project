@@ -664,7 +664,7 @@ public function getRankedFinderResultsAppv2()
     $must_not_filter = '';
     
     if($category === ''){
-        $must_not_filter = ',"bool": {
+        $must_not_filter = ',
                     "must_not": [{
                         "terms": {
                             "categorytags": [
@@ -675,7 +675,7 @@ public function getRankedFinderResultsAppv2()
                             ]
                         }
                     }]
-                }';
+                ';
     }
 
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
@@ -751,11 +751,13 @@ $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$fac
                 "bool" : {'.$filtervalue.'}
             },"_cache" : true';
         }
+
         if($mustfilter != ''){
              $filters_post = '"post_filter": {
-                "bool" : {'.$filtervalue_post.'}'.$must_not_filter.'
-            },';            
+                "bool" : {'.$filtervalue_post.$must_not_filter.'
+            }},';            
         }
+
         /*
 
         Aggregations filters here for drilling down
@@ -873,20 +875,20 @@ $trialdays_facets = ' "filtered_trials": {
 $category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
 
 $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
-
+ 
   $body = '{
     "from": '.$from.',
     "size": '.$size.',
     "aggs": {'.$facetsvalue.'},
     '.$filters_post.$sort.'
 }';
-
-  $postfields_data    = json_encode(json_decode($body,true));     
+    
+ 
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
     'port' => 8050,
     'method' => 'POST',
-    'postfields' => $postfields_data
+    'postfields' => $body
     );
 
 // $request = array(
