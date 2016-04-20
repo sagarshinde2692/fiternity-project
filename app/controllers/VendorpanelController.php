@@ -362,6 +362,151 @@ class VendorpanelController extends BaseController
     }
 
 
+    public function getTrialsList($finder_id, $type, $start_date = NULL, $end_date = NULL)
+    {
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+        $req = Input::all();
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+
+        $finder_id = intval($finder_id);
+        $result = $this->trialsListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+        return Response::json($result, 200);
+
+    }
+
+
+    private function trialsListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset){
+
+        $result = [];
+
+        switch ($type){
+            case 'booked':
+                $result['count'] = $this
+                    ->trialssummary
+                    ->getBookedTrials($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->trialssummary
+                    ->getBookedTrials($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                            'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                            'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                            'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                            'service_id', 'service_name', 'share_customer_no')
+                    );
+                break;
+            case 'attended':
+                $result['count'] = $this
+                    ->trialssummary
+                    ->getAttendedTrials($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->trialssummary
+                    ->getAttendedTrials($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                            'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                            'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                            'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                            'service_id', 'service_name', 'share_customer_no')
+                    );
+                break;
+            case 'notattended':
+                $result['count'] = $this
+                    ->trialssummary
+                    ->getNotAttendedTrials($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->trialssummary
+                    ->getNotAttendedTrials($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                            'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                            'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                            'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                            'service_id', 'service_name', 'share_customer_no')
+                    );
+                break;
+            case 'unknownattendedstatus':
+                $result['count'] = $this
+                    ->trialssummary
+                    ->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->trialssummary
+                    ->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                            'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                            'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                            'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                            'service_id', 'service_name', 'share_customer_no')
+                    );
+                break;
+            case 'converted':
+                $result['count'] = $this
+                    ->trialssummary
+                    ->getTrialsConverted($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->trialssummary
+                    ->getTrialsConverted($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                            'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                            'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                            'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                            'service_id', 'service_name', 'share_customer_no')
+                    );
+                break;
+            case 'notinterestedcustomers':
+                $result['count'] = $this
+                    ->trialssummary
+                    ->getNotInterestedCustomers($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->trialssummary
+                    ->getNotInterestedCustomers($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                            'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                            'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                            'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                            'service_id', 'service_name', 'share_customer_no')
+                    );
+                break;
+            default:
+                break;
+        }
+
+        return $result;
+    }
+
+
     public function getSummaryOzonetelcalls($finder_id, $start_date = NULL, $end_date = NULL)
     {
 
@@ -380,6 +525,115 @@ class VendorpanelController extends BaseController
         $ozonetel_calls_summary = $this->ozonetelcallssummary->getOzonetelcallsSummary($finder_id, $start_date, $end_date);
 
         return Response::json($ozonetel_calls_summary, 200);
+    }
+
+
+    public function getOzonetelList($finder_id, $type, $start_date = NULL, $end_date = NULL)
+    {
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+        $req = Input::all();
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+
+        $finder_id = intval($finder_id);
+        $result = $this->ozonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+        return Response::json($result, 200);
+
+    }
+
+
+    private function OzonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset){
+
+        $result = [];
+
+        switch ($type){
+
+            case 'total':
+                $result['count'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date)
+                    ->count();
+
+                $result['data'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                    );
+                break;
+            case 'answered':
+
+                $call_status = 'answered';
+                $result['count'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                    ->count();
+
+                $result['data'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                    );
+                break;
+            case 'notanswered':
+
+                $call_status = 'not_answered';
+
+                $result['count'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                    ->count();
+
+                $result['data'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                    );
+                break;
+            case 'called':
+
+                $call_status = 'called';
+                $result['count'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                    ->count();
+
+                $result['data'] = $this
+                    ->ozonetelcallssummary
+                    ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                    );
+                break;
+            default:
+                break;
+        }
+
+        return $result;
     }
 
 
@@ -408,428 +662,6 @@ class VendorpanelController extends BaseController
 
 
         return Response::json($reviews_summary, 200);
-    }
-
-
-    public function listBookedTrials($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->trialssummary
-            ->getBookedTrials($finder_id, $start_date, $end_date)
-            ->count();
-        $data = $this
-            ->trialssummary
-            ->getBookedTrials($finder_id, $start_date, $end_date)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
-                    'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
-                    'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
-                    'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                    'service_id', 'service_name', 'share_customer_no')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listAttendedTrials($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->trialssummary
-            ->getAttendedTrials($finder_id, $start_date, $end_date)
-            ->count();
-        $data = $this
-            ->trialssummary
-            ->getAttendedTrials($finder_id, $start_date, $end_date)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
-                    'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
-                    'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
-                    'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                    'service_id', 'service_name', 'share_customer_no')
-            );
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listNotAttendedTrials($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->trialssummary
-            ->getNotAttendedTrials($finder_id, $start_date, $end_date)
-            ->count();
-        $data = $this
-            ->trialssummary
-            ->getNotAttendedTrials($finder_id, $start_date, $end_date)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
-                    'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
-                    'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
-                    'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                    'service_id', 'service_name', 'share_customer_no')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listUnknownAttendedStatusTrials($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->trialssummary
-            ->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)
-            ->count();
-        $data = $this
-            ->trialssummary
-            ->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
-                    'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
-                    'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
-                    'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                    'service_id', 'service_name', 'share_customer_no')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listTrialsConverted($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->trialssummary
-            ->getTrialsConverted($finder_id, $start_date, $end_date)
-            ->count();
-        $data = $this
-            ->trialssummary
-            ->getTrialsConverted($finder_id, $start_date, $end_date)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
-                    'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
-                    'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
-                    'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                    'service_id', 'service_name', 'share_customer_no')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listNotInterestedCustomers($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->trialssummary
-            ->getNotInterestedCustomers($finder_id, $start_date, $end_date)
-            ->count();
-        $data = $this
-            ->trialssummary
-            ->getNotInterestedCustomers($finder_id, $start_date, $end_date)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
-                    'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
-                    'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
-                    'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                    'service_id', 'service_name', 'share_customer_no')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listAnsweredCalls($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-        $call_status = 'answered';
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
-            ->count();
-
-        $data = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                    'created_at', 'customer_contact_circle', 'customer_contact_operator')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-    public function listNotAnsweredCalls($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-        $call_status = 'not_answered';
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-        $count = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
-            ->count();
-        $data = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                    'created_at', 'customer_contact_circle', 'customer_contact_operator')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listCalledStatusCalls($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-        $call_status = 'called';
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-
-        $count = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
-            ->count();
-        $data = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date, $call_status)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                    'created_at', 'customer_contact_circle', 'customer_contact_operator')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
-    }
-
-
-    public function listTotalCalls($finder_id, $start_date = NULL, $end_date = NULL)
-    {
-
-        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-
-        if (!(in_array($finder_id, $finder_ids))) {
-            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
-            return Response::json($data, 401);
-        }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
-
-        $req = Input::all();
-        $limit = isset($req['limit']) ? $req['limit'] : 10;
-        $offset = isset($req['offset']) ? $req['offset'] : 0;
-
-        $finder_id = intval($finder_id);
-        $result = [];
-
-        $count = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date)
-            ->count();
-        $data = $this
-            ->ozonetelcallssummary
-            ->getCallRecords($finder_id, $start_date, $end_date)
-            ->take($limit)
-            ->skip($offset)
-            ->get(
-                array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                    'created_at', 'customer_contact_circle', 'customer_contact_operator')
-            );
-
-        $result['count'] = $count;
-        $result['data'] = $data;
-
-        return Response::json($result, 200);
     }
 
 
@@ -919,6 +751,7 @@ class VendorpanelController extends BaseController
 
         return Response::json($finder, 200);
     }
+
 
     public function updateProfile($finder_id)
     {
