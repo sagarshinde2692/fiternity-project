@@ -180,13 +180,15 @@ abstract Class Mailer {
 
 	}
 
-	public function sendDbToWorker($to = '',$email_template, $message_data = [], $label = 'label', $priority = 0, $delay = 0){
+	public function sendDbToWorker($to = '',$email_template, $message_data = [], $label = 'label', $delay = 0){
+
+		\Log::info('email - '.$label.' -- '. $delay);
 
 		if($delay !== 0){
 			$delay = $this->getSeconds($delay);
 		}
 	
-		$payload = array('to'=>$to,'email_html'=>$email_template,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+		$payload = array('to'=>$to,'email_html'=>$email_template,'user_data'=>$message_data,'delay'=>$delay,'label' => $label);
 
 		$route	= 'email';
 		$result  = $this->sidekiq->sendToQueue($payload,$route);

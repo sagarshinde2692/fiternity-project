@@ -51,7 +51,9 @@ abstract Class Notification {
     }
 
 
-    public function sendToWorker($device_type, $to, $text,  $notif_id, $notif_type, $notif_object, $label = 'label', $priority = 0, $delay = 0){
+    public function sendToWorker($device_type, $to, $text,  $notif_id, $notif_type, $notif_object, $label = 'label', $delay = 0){
+
+        \Log::info('Notification - '.$label.' -- '. $delay);
 
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
@@ -64,7 +66,7 @@ abstract Class Notification {
             $app_payload = array('text'=>$text,'notif_id'=>$notif_id,'notif_type'=>$notif_type,'notif_object'=>$notif_object);
         }
 
-        $payload = array('to'=>$to,'delay'=>$delay,'priority'=>$priority,'label' => $label,'app_payload'=>$app_payload);
+        $payload = array('to'=>$to,'delay'=>$delay,'label' => $label,'app_payload'=>$app_payload);
         
         $route  = $device_type;
         $result  = $this->sidekiq->sendToQueue($payload,$route);
