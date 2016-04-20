@@ -137,7 +137,7 @@ Class FinderMailer extends Mailer {
 
 		$message_data['email_subject'] = $email_subject;
 
-		return $this->sendDbToWorker('customer',$email_template, $message_data, $label, $delay);
+		return $this->sendDbToWorker('vendor',$email_template, $message_data, $label, $delay);
 
 	}
 
