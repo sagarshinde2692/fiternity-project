@@ -71,31 +71,267 @@ class VendorpanelController extends BaseController
 
 
         $finder_id = intval($finder_id);
-        $renewal_nonrenewal_count_amount = $this->salessummary->getRenewalNonRenewalCountAmount($finder_id, $start_date, $end_date);
-        $renewal_count_amount = $this->salessummary->getRenewalCountAmount($finder_id, $start_date, $end_date);
-        $nonrenewal_count_amount = $this->salessummary->getNonRenewalCountAmount($finder_id, $start_date, $end_date);
+        $result = [];
 
-        $paymentgateway_cod_atthestudio_count_amount = $this->salessummary->getPaymentGatewayCodAtthestudioSalesCountAmount($finder_id, $start_date, $end_date);
-        $paymentgateway_count_amount = $this->salessummary->getPaymentGatewaySalesCountAmount($finder_id, $start_date, $end_date);
-        $cod_count_amount = $this->salessummary->getCodSalesCountAmount($finder_id, $start_date, $end_date);
-        $atthestudio_count_amount = $this->salessummary->getAtTheStudioSalesCountAmount($finder_id, $start_date, $end_date);
+        $result['renewal_nonrenewal']['count'] = $this
+            ->salessummary
+            ->getRenewalNonRenewal($finder_id, $start_date, $end_date)
+            ->count();
+        $result['renewal_nonrenewal']['amount'] = $this
+            ->salessummary
+            ->getRenewalNonRenewal($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
 
-        $linksent_purchase_count_amount = $this->salessummary->getLinkSentPurchaseCountAmount($finder_id, $start_date, $end_date);
-        $linksent_notpurchase_count_amount = $this->salessummary->getLinkSentNotPurchaseCountAmount($finder_id, $start_date, $end_date);
+        $result['renewal']['count'] = $this
+            ->salessummary
+            ->getRenewal($finder_id, $start_date, $end_date)
+            ->count();
+        $result['renewal']['amount'] = $this
+            ->salessummary
+            ->getRenewal($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
 
-        $sales_summary = [
-            'renewal_nonrenewal' => $renewal_nonrenewal_count_amount,
-            'renewal' => $renewal_count_amount,
-            'nonrenewal' => $nonrenewal_count_amount,
-            'paymentgateway_cod_atthestudio' => $paymentgateway_cod_atthestudio_count_amount,
-            'paymentgateway' => $paymentgateway_count_amount,
-            'cod' => $cod_count_amount,
-            'atthestudio' => $atthestudio_count_amount,
-            'linksent_purchase' => $linksent_purchase_count_amount,
-            'linksent_notpurchase' => $linksent_notpurchase_count_amount,
-        ];
+        $result['nonrenewal']['count'] = $this
+            ->salessummary
+            ->getNonRenewal($finder_id, $start_date, $end_date)
+            ->count();
+        $result['nonrenewal']['amount'] = $this
+            ->salessummary
+            ->getNonRenewal($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
 
-        return Response::json($sales_summary, 200);
+        $result['paymentgateway_cod_atthestudio']['count'] = $this
+            ->salessummary
+            ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['paymentgateway_cod_atthestudio']['amount'] = $this
+            ->salessummary
+            ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['paymentgateway']['count'] = $this
+            ->salessummary
+            ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['paymentgateway']['amount'] = $this
+            ->salessummary
+            ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['cod']['count'] = $this
+            ->salessummary
+            ->getCODSales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['cod']['amount'] = $this
+            ->salessummary
+            ->getCODSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['atthestudio']['count'] = $this
+            ->salessummary
+            ->getAtthestudioSales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['atthestudio']['amount'] = $this
+            ->salessummary
+            ->getAtthestudioSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['linksent_purchase']['count'] = $this
+            ->salessummary
+            ->getLinkSentPurchase($finder_id, $start_date, $end_date)
+            ->count();
+        $result['linksent_purchase']['amount'] = $this
+            ->salessummary
+            ->getLinkSentPurchase($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['linksent_notpurchase']['count'] = $this
+            ->salessummary
+            ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
+            ->count();
+        $result['linksent_notpurchase']['amount'] = $this
+            ->salessummary
+            ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        return Response::json($result, 200);
+    }
+
+
+    public function getSalesList($finder_id, $type, $start_date = NULL, $end_date = NULL)
+    {
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+
+        $req = Input::all();
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+
+        $finder_id = intval($finder_id);
+        $result = $this->salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+        return Response::json($result, 200);
+
+    }
+
+
+    private function salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset){
+
+        $result = [];
+
+        switch ($type){
+            case 'renewal_nonrenewal':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getRenewalNonRenewal($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getRenewalNonRenewal($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id','finder_id')
+                    );
+                break;
+            case 'renewal':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getRenewal($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getRenewal($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id')
+                    );
+                break;
+            case 'nonrenewal':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getNonRenewal($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getNonRenewal($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id','finder_id')
+                    );
+                break;
+            case 'paymentgateway_cod_atthestudio':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id')
+                    );
+                break;
+            case 'paymentgateway':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id')
+                    );
+                break;
+            case 'cod':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getCodSales($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getCodSales($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id')
+                    );
+                break;
+            case 'atthestudio':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getAtthestudioSales($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getAtthestudioSales($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id')
+                    );
+                break;
+            case 'linksentpurchase':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getLinkSentPurchase($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getLinkSentPurchase($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id')
+                    );
+                break;
+            case 'linksentnotpurchase':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
+                            'amount_finder','payment_mode','booktrial_id')
+                    );
+                break;
+            default:
+                break;
+        }
+
+        foreach ($result['data'] as $row){
+            $row['membership_origin'] = ($row['customer_took_trial_before'] == 'yes') ?  "post trial" : "direct";
+            $row['purchase_mode'] = ($row['payment_mode'] == 'atthevendor') ?  "direct" : "through fitternity";
+        }
+
+        return $result;
     }
 
 

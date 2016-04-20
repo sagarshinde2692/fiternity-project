@@ -4,6 +4,8 @@ class Order extends \Basemodel {
 
 	protected $collection = "orders";
 
+	protected $appends = array('customer_took_trial_before');
+
 	protected $dates = array('preferred_starting_date','start_date');
 
 	
@@ -41,6 +43,26 @@ class Order extends \Basemodel {
 		$this->attributes['amount'] = intval($value);
 	}
 
+	public function getCustomerTookTrialBeforeAttribute(){
+
+		$tooktrialbefore = "no";
+//		print_r($this); exit;
+//		echo $this->finder_id; exit;
+		if(isset($this->customer_email) && $this->customer_email != "" && isset($this->finder_id) && $this->finder_id != 0){
+
+			$booktrialcount = Booktrial::where('customer_email',$this->customer_email)
+				->where('finder_id',intval($this->finder_id))
+				->count();
+			$tooktrialbefore = ($booktrialcount > 0) ? "yes" : "no";
+
+		}
+
+		return $tooktrialbefore;
+	}
+
+
+
+
 	public function finder(){
 		return $this->belongsTo('Finder');
 	}
@@ -48,5 +70,6 @@ class Order extends \Basemodel {
 	public function serviceoffer(){
 		return $this->belongsTo('Serviceoffer');
 	}
-	
+
+
 }

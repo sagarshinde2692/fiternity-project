@@ -27,6 +27,9 @@ Route::group(array('before' => 'validatevendor'), function() {
 
     Route::get('/vendorsummary/sales/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summarysales', 'uses' => 'VendorpanelController@getSummarySales'));
+	
+	Route::get('/vendorsummary/sales/{finder_id?}/{type?}/{start_date?}/{end_date?}',
+		array('as' => 'vendor.saleslist', 'uses' => 'VendorpanelController@getSalesList'));
 
 	Route::get('/vendorsummary/trials/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summarytrials','uses' => 'VendorpanelController@getSummaryTrials'));
