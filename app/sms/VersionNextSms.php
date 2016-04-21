@@ -241,7 +241,12 @@ abstract Class VersionNextSms {
 
     public function sendToWorker($to, $message, $label = 'label', $delay = 0){
 
-        \Log::info('sms - '.$label.' -- '. $delay);
+        if(is_array($delay))
+        {
+            \Log::info('email - '.$label.' -- '. $delay['date']);
+        }else{
+            \Log::info('email - '.$label.' -- '. $delay);
+        }
 
         if($delay !== 0){
             $delay = $this->getSeconds($delay);

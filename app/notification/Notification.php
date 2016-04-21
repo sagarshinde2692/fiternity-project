@@ -53,7 +53,12 @@ abstract Class Notification {
 
     public function sendToWorker($device_type, $to, $text,  $notif_id, $notif_type, $notif_object, $label = 'label', $delay = 0){
 
-        \Log::info('Notification - '.$label.' -- '. $delay);
+        if(is_array($delay))
+        {
+            \Log::info('email - '.$label.' -- '. $delay['date']);
+        }else{
+            \Log::info('email - '.$label.' -- '. $delay);
+        }
 
         if($delay !== 0){
             $delay = $this->getSeconds($delay);

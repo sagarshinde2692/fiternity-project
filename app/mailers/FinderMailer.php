@@ -27,7 +27,7 @@ Class FinderMailer extends Mailer {
 
 	public function rescheduledBookTrial ($data){
 
-		$label = 'AutoTrial-Instant-Vendor';
+		$label = 'RescheduleTrial-Instant-Vendor';
 		
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);
