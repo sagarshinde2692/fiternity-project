@@ -784,7 +784,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email 					=	Input::json()->get('customer_email');
 			$customer_phone 					=	Input::json()->get('customer_phone');
 			$fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
-			$type								= 	(Input::json()->get('type')) ? intval(Input::json()->get('type')) : '';
+			$type								= 	(Input::json()->get('type')) ? Input::json()->get('type') : '';
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
@@ -1221,7 +1221,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_email 					=	Input::json()->get('customer_email');
 			$customer_phone 					=	Input::json()->get('customer_phone');
 			$fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
-			$type								= 	(Input::json()->get('type')) ? intval(Input::json()->get('type')) : '';
+			$type								= 	(Input::json()->get('type')) ? Input::json()->get('type') : '';
 
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
