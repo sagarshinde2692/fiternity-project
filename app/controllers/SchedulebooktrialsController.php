@@ -872,6 +872,9 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$finder_lat				=	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon				=	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+
+			$google_pin				=	$this->googlePin($finder_lat,$finder_lon);
+
 			$finder_photos			= 	[];
 			if(isset($finder['photos']) && count($finder['photos']) > 0){
 				foreach ($finder['photos'] as $key => $value) {
@@ -975,7 +978,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_type'					=>		$device_type,
 
 				'social_referrer'						=>		$social_referrer,
-				'transacted_after'				=>		$transacted_after
+				'transacted_after'				=>		$transacted_after,
+				'google_pin'					=>		$google_pin
 
 			);
 
@@ -1226,6 +1230,8 @@ class SchedulebooktrialsController extends \BaseController {
 			$city_id 							=	(int) $finder['city_id'];
 			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
 
+			$google_pin							=	$this->googlePin($finder_lat,$finder_lon);
+
 			$final_lead_stage = '';
 			$final_lead_status = '';
 
@@ -1407,7 +1413,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_type'					=>		$device_type,
 
 				'social_referrer'						=>		$social_referrer,
-				'transacted_after'				=>		$transacted_after
+				'transacted_after'				=>		$transacted_after,
+				'google_pin'					=>		$google_pin
 
 			);
 
@@ -1675,6 +1682,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+
+			$google_pin							=	$this->googlePin($finder_lat,$finder_lon);
+
 			$city_id 							=	(int) $finder['city_id'];
 
 			$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
@@ -1844,7 +1854,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'source_flag'					=> 		'customer',
 
 				'reg_id'						=> 		$reg_id,
-				'device_type'					=> 		$device_type
+				'device_type'					=> 		$device_type,
+				'google_pin'					=>		$google_pin
 			);
 
 
@@ -2240,6 +2251,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
+			$google_pin							=	$this->googlePin($finder_lat,$finder_lon);
 
 			$finder_vcc_email = "";
 			if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
@@ -2309,7 +2321,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'followup_date_time'			=>		"",
 				'reg_id'						=>		$reg_id,
 				'device_type'					=>		$device_type,
-				'type'							=>		$booktrialdata->type
+				'type'							=>		$booktrialdata->type,
+				'google_pin'					=>		$google_pin
 			);
 
 			$this->customermailer->cancelBookTrial($emaildata);
@@ -2511,6 +2524,21 @@ class SchedulebooktrialsController extends \BaseController {
 		$response = add_reg_id($data);
 
 		return Response::json($response,$response['status']);
+	}
+
+	public function googlePin($lat,$lon){
+
+		$google_pin = "https://maps.google.com/maps?q=".$lat.",".$lon."&ll=".$lat.",".$lon;
+
+		$shorten_url = new ShortenUrl();
+
+        $url = $shorten_url->getShortenUrl($google_pin);
+
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $google_pin = $url['url'];
+        }
+
+        return $google_pin;
 	}
 
 }
