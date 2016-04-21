@@ -8,8 +8,6 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'AutoTrial-Instant-Customer';
 
-		\Log::info($data['type']);
-
 		if(isset($data['type']) && $data['type'] === "vip_booktrials"){
 
 			$label = 'VipTrial-Instant-Customer';
