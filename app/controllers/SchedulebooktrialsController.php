@@ -1112,7 +1112,7 @@ class SchedulebooktrialsController extends \BaseController {
 			if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
 				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			}else{
-				$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+				$customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
 			}
 
 
@@ -1543,7 +1543,7 @@ class SchedulebooktrialsController extends \BaseController {
 			if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
 				$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 			}else{
-				$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+				$customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
 			}
 
 
@@ -2087,7 +2087,7 @@ class SchedulebooktrialsController extends \BaseController {
 				if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){	
 					$customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
 				}else{
-					$customer_sms_messageids['after2hour'] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+					$customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
 				}
 
 
@@ -2518,6 +2518,47 @@ class SchedulebooktrialsController extends \BaseController {
 		$booktrial->update();
 
 		return $this->customersms->missedCallDelay($data,$ozonetel_date);
+	}
+
+	public function missedCallReview($data,$delayReminderTimeAfter2Hour){
+
+		$current_date = date('Y-m-d 00:00:00');
+
+        $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
+        $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+
+		$booktrial  = \Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_review_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+		if(!empty($booktrial) && isset($booktrial->missedcall_review_batch) && $booktrial->missedcall_review_batch != ''){
+			$batch = $booktrial->missedcall_review_batch + 1;
+		}else{
+			$batch = 1;
+		}
+
+		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->get()->toArray();
+
+		if(empty($missedcall_no)){
+
+			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->get()->toArray();
+		}
+
+		foreach ($missedcall_no as $key => $value) {
+
+			switch ($value['type']) {
+				case 'like': $data['missedcall1'] = $value['number'];break;
+				case 'explore': $data['missedcall2'] = $value['number'];break;
+				case 'notattended': $data['missedcall3'] = $value['number'];break;
+			}
+
+		}
+	
+		$slot_date 			=	date('d-m-Y', strtotime($data['schedule_date']));
+		$data['datetime'] 			=	strtoupper($slot_date ." ".$data['schedule_slot_start_time']);
+
+		$booktrial = \Booktrial::find((int) $data['_id']);
+		$booktrial->missedcall_batch = $batch;
+		$booktrial->update();
+
+		return $this->customersms->bookTrialReminderAfter2Hour($data, $delayReminderTimeAfter2Hour);
 	}
 
 	public function addRegId($data){
