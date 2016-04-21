@@ -55,9 +55,9 @@ abstract Class Notification {
 
         if(is_array($delay))
         {
-            \Log::info('email - '.$label.' -- '. $delay['date']);
+            \Log::info('notification - '.$label.' -- '. $delay['date']);
         }else{
-            \Log::info('email - '.$label.' -- '. $delay);
+            \Log::info('notification - '.$label.' -- '. $delay);
         }
 
         if($delay !== 0){

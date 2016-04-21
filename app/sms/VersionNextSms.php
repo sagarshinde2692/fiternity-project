@@ -243,9 +243,9 @@ abstract Class VersionNextSms {
 
         if(is_array($delay))
         {
-            \Log::info('email - '.$label.' -- '. $delay['date']);
+            \Log::info('sms - '.$label.' -- '. $delay['date']);
         }else{
-            \Log::info('email - '.$label.' -- '. $delay);
+            \Log::info('sms - '.$label.' -- '. $delay);
         }
 
         if($delay !== 0){
