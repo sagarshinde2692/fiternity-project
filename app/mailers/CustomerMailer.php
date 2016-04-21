@@ -8,6 +8,11 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'AutoTrial-Instant-Customer';
 
+		if(isset($data['type']) && $data['type'] == "vip_booktrials"){
+
+			$label = 'VipTrial-Instant-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']

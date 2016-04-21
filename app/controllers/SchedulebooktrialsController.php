@@ -2308,7 +2308,8 @@ class SchedulebooktrialsController extends \BaseController {
 				'followup_date'					=>		"",
 				'followup_date_time'			=>		"",
 				'reg_id'						=>		$reg_id,
-				'device_type'					=>		$device_type
+				'device_type'					=>		$device_type,
+				'type'							=>		$booktrialdata->type
 			);
 
 			$this->customermailer->cancelBookTrial($emaildata);

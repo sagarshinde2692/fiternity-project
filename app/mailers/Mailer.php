@@ -199,6 +199,10 @@ abstract Class Mailer {
 		if($delay !== 0){
 			$delay = $this->getSeconds($delay);
 		}
+
+		if($to != 'customer'){
+			$message_data['user_email'] = array('maheshjadhav@fitternity.com','harshitagupta@fitternity.com');
+		}
 	
 		$payload = array('to'=>$to,'email_html'=>$email_template,'user_data'=>$message_data,'delay'=>$delay,'label' => $label);
 
