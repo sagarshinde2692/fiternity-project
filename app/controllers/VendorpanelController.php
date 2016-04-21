@@ -182,11 +182,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    private function salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset){
+    private function salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset)
+    {
 
         $result = [];
 
-        switch ($type){
+        switch ($type) {
             case 'renewal_nonrenewal':
                 $result['count'] = $this
                     ->salessummary
@@ -198,8 +199,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id','finder_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id', 'finder_id','created_at')
                     );
                 break;
             case 'renewal':
@@ -213,8 +214,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
             case 'nonrenewal':
@@ -228,8 +229,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id','finder_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id', 'finder_id','created_at')
                     );
                 break;
             case 'paymentgateway_cod_atthestudio':
@@ -243,8 +244,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
             case 'paymentgateway':
@@ -258,8 +259,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
             case 'cod':
@@ -273,8 +274,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
             case 'atthestudio':
@@ -288,8 +289,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
             case 'linksentpurchase':
@@ -303,8 +304,8 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
             case 'linksentnotpurchase':
@@ -318,17 +319,17 @@ class VendorpanelController extends BaseController
                     ->take($limit)
                     ->skip($offset)
                     ->get(
-                        array('customer_email','customer_name','customer_phone','service_id','service_name','service_duration',
-                            'amount_finder','payment_mode','booktrial_id')
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
             default:
                 break;
         }
 
-        foreach ($result['data'] as $row){
-            $row['membership_origin'] = ($row['customer_took_trial_before'] == 'yes') ?  "post trial" : "direct";
-            $row['purchase_mode'] = ($row['payment_mode'] == 'atthevendor') ?  "direct" : "through fitternity";
+        foreach ($result['data'] as $row) {
+            $row['membership_origin'] = ($row['customer_took_trial_before'] == 'yes') ? "post trial" : "direct";
+            $row['purchase_mode'] = ($row['payment_mode'] == 'atthevendor') ? "direct" : "through fitternity";
         }
 
         return $result;
@@ -386,11 +387,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    private function trialsListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset){
+    private function trialsListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset)
+    {
 
         $result = [];
 
-        switch ($type){
+        switch ($type) {
             case 'booked':
                 $result['count'] = $this
                     ->trialssummary
@@ -406,7 +408,7 @@ class VendorpanelController extends BaseController
                             'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
                             'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
                             'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                            'service_id', 'service_name', 'share_customer_no')
+                            'service_id', 'service_name', 'share_customer_no','created_at')
                     );
                 break;
             case 'attended':
@@ -424,7 +426,7 @@ class VendorpanelController extends BaseController
                             'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
                             'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
                             'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                            'service_id', 'service_name', 'share_customer_no')
+                            'service_id', 'service_name', 'share_customer_no','created_at')
                     );
                 break;
             case 'notattended':
@@ -442,7 +444,7 @@ class VendorpanelController extends BaseController
                             'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
                             'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
                             'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                            'service_id', 'service_name', 'share_customer_no')
+                            'service_id', 'service_name', 'share_customer_no','created_at')
                     );
                 break;
             case 'unknownattendedstatus':
@@ -460,7 +462,7 @@ class VendorpanelController extends BaseController
                             'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
                             'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
                             'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                            'service_id', 'service_name', 'share_customer_no')
+                            'service_id', 'service_name', 'share_customer_no','created_at')
                     );
                 break;
             case 'converted':
@@ -478,7 +480,7 @@ class VendorpanelController extends BaseController
                             'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
                             'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
                             'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                            'service_id', 'service_name', 'share_customer_no')
+                            'service_id', 'service_name', 'share_customer_no','created_at')
                     );
                 break;
             case 'notinterestedcustomers':
@@ -496,7 +498,7 @@ class VendorpanelController extends BaseController
                             'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
                             'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
                             'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                            'service_id', 'service_name', 'share_customer_no')
+                            'service_id', 'service_name', 'share_customer_no','created_at')
                     );
                 break;
             default:
@@ -552,11 +554,12 @@ class VendorpanelController extends BaseController
     }
 
 
-    private function OzonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset){
+    private function OzonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset)
+    {
 
         $result = [];
 
-        switch ($type){
+        switch ($type) {
 
             case 'total':
                 $result['count'] = $this
@@ -571,7 +574,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
                     );
                 break;
             case 'answered':
@@ -589,7 +592,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
                     );
                 break;
             case 'notanswered':
@@ -608,7 +611,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
                     );
                 break;
             case 'called':
@@ -626,7 +629,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
                     );
                 break;
             default:
