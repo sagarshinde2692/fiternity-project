@@ -16,9 +16,9 @@ use App\Services\Ozonetelcallssummary as Ozonetelcallsssummary;
 use App\Services\Reviewssummary as Reviewssummary;
 use App\Services\Statisticssummary as Statisticssummary;
 
-use \Order;
-use \Capture;
-use \Booktrial;
+// use \Order;
+// use \Capture;
+// use \Booktrial;
 
 
 
@@ -580,7 +580,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at','aws_file_name')
                     );
                 break;
             case 'answered':
@@ -598,7 +598,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at','aws_file_name')
                     );
                 break;
             case 'notanswered':
@@ -617,7 +617,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at','aws_file_name')
                     );
                 break;
             case 'called':
@@ -635,7 +635,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('ozonetel_no', 'customer_contact_no', 'call_duration', 'extension', 'call_status',
-                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at')
+                            'created_at', 'customer_contact_circle', 'customer_contact_operator','created_at','aws_file_name')
                     );
                 break;
             default:
