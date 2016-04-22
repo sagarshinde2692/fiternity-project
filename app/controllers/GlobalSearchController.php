@@ -1506,7 +1506,7 @@ $budgets_facets = ' "filtered_budgets": {
     }
 },';
 
-$category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+$category_facets = '"category": {"terms": {"field": "categorytags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
 
 $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$location_facets.$category_facets,',');
 
