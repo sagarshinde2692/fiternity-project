@@ -206,7 +206,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
-                            'amount_finder', 'payment_mode', 'booktrial_id', 'finder_id','created_at')
+                            'amount_finder', 'payment_mode', 'booktrial_id', 'finder_id','created_at', 'renewal')
                     );
                 break;
             case 'renewal':
