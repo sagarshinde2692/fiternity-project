@@ -23,7 +23,7 @@ Class Reviewssummary {
             ->createdBetween($start_date, $end_date)
             ->take($limit)
             ->skip($offset)
-            ->get(array('rating','detail_rating','description','customer_id','customer'));
+            ->get(array('rating','detail_rating','description','customer_id','customer','created_at'));
 
         $reviewData['count'] =  $count;
         $reviewData['data'] =  $data;

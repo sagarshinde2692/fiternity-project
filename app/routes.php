@@ -23,7 +23,7 @@ require __DIR__.'/debug_routes.php';
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
-	Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
+Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 
 Route::group(array('before' => 'validatevendor'), function() {
 
