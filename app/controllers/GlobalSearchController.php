@@ -1670,8 +1670,7 @@ $query = '{
     "size": '.$size.',
     "aggs" :{
         '.$facetsvalue.'
-    },   
-    "min_score": 20,
+    },       
     "query": {
         "filtered": {
             "query": {
@@ -1754,7 +1753,7 @@ $query = '{
         }
     }'.$filters_post.$sort_clause.'
 }';
-
+//return $query;exit;
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv2/finder/_search",
     'port' => 8050,
