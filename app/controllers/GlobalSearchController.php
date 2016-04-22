@@ -1771,7 +1771,7 @@ $searchresulteresponse->meta->from = $from;
 $searchresulteresponse->meta->sortfield = $sort;
 $searchresulteresponse->meta->sortorder = $order;
 $searchresulteresponse->meta->categoryfilters = $category;
-$searchresulteresponse->meta->locationfilter = $location;
+$searchresulteresponse->meta->locationfilters = $location;
 
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
