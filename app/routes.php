@@ -27,9 +27,18 @@ require __DIR__.'/debug_routes.php';
 
 Route::group(array('before' => 'validatevendor'), function() {
 
-    Route::get('/vendorsummary/sales/{finder_id?}/{start_date?}/{end_date?}',
+    Route::get('/vendorsummary/listVendors',
+		array('as' => 'vendor.summaryvendor', 'uses' => 'VendorpanelController@getVendorsList'));
+
+	Route::get('/vendorsummary/{finder_id?}',
+		array('as' => 'vendor.summaryvendor', 'uses' => 'VendorpanelController@getVendorDetails'));
+
+	Route::get('/vendorsummary/{finder_id?}/contract',
+		array('as' => 'vendor.summarycontract', 'uses' => 'VendorpanelController@getContractualInfo'));
+
+	Route::get('/vendorsummary/sales/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summarysales', 'uses' => 'VendorpanelController@getSummarySales'));
-	
+
 	Route::get('/vendorsummary/sales/{finder_id?}/{type?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.saleslist', 'uses' => 'VendorpanelController@getSalesList'));
 

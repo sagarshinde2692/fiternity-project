@@ -21,7 +21,7 @@ class Finder extends  \Basemodel {
 	'location_id' => 'required',
 	'category_id' => 'required',
 	'finder_logo' => 'mimes:jpeg,png|image|max:2000',
-	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
+	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000',
 	];
 
 	public static $update_rules = [

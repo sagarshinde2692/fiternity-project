@@ -19,6 +19,7 @@ use App\Services\Statisticssummary as Statisticssummary;
 use \Order;
 use \Capture;
 use \Booktrial;
+use \Finder;
 
 
 
@@ -702,8 +703,8 @@ class VendorpanelController extends BaseController
             ($finder_id, $previous_week_start, $previous_week_end, $current_week_start, $current_week_end),
             'WeeklyDiffInLeads' => $this->statisticssummary->getWeeklyDiffInLeads
             ($finder_id, $previous_week_start, $previous_week_end, $current_week_start, $current_week_end),
-//                'WeeklyDiffInSales' => $this->statisticssummary->getWeeklyDiffInSales
-//                ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end),
+//            'WeeklyDiffInSales' => $this->statisticssummary->getWeeklyDiffInSales
+//            ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end),
 //                'WeeklyDiffInSalesOnlineAndCOD' => $this->statisticssummary->getWeeklyDiffInSalesOnlineAndCOD
 //                ($finder_id,$previous_week_start,$previous_week_end,$current_week_start,$current_week_end),
 //                'WeeklyDiffInSalesAtVendor' => $this->statisticssummary->getWeeklyDiffInSalesAtVendor
@@ -747,7 +748,65 @@ class VendorpanelController extends BaseController
     }
 
 
+    public function getVendorsList(){
 
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        $data =  Finder::whereIn('_id', $finder_ids)
+            ->get(array('_id','slug','title','logo','location_id','location'));
+
+        return Response::json($data, 200);
+
+    }
+
+
+    public function getVendorDetails($finder_id){
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+        $finder_id = intval($finder_id);
+
+        $data =  Finder::where('_id', '=', $finder_id)
+            ->with(array('location'=>function($query){$query->select('name','city');}))
+            ->get(array('_id','slug','title','logo','location_id','location','total_photos'))
+            ->first();
+
+        $data['total_photos'] = $data['total_photos'] != '' ? intval($data['total_photos']) : 0;
+        $data['logo'] =         Config::get("app.s3_finder_url") . 'l/' . $data['logo'];
+        return Response::json($data, 200);
+
+    }
+
+
+    public function getContractualInfo($finder_id){
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+        $finder_id = intval($finder_id);
+
+        $data =  Findercommercial::where('finder_id', '=', $finder_id)
+            ->get(
+                array(
+                    '_id','aquired_person','aquired_date','contract_start_date',
+                    'contract_end_date','contract_duration','commision','listing_fee'
+                )
+            )
+            ->first();
+
+        $data['contract_duration'] = $data['contract_duration'] . ' Months';
+        $data['listing_fee'] = intval($data['listing_fee']);
+
+        return Response::json($data, 200);
+
+    }
 
 
     public function profile($finder_id)
