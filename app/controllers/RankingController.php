@@ -482,11 +482,11 @@ public function evalVendorType($finderDocument = ''){
         return $val;
 
         case 2:
-        $val=0.7;
+        $val=0.3;
         return $val;
 
         case 3:
-        $val=0.4;
+        $val=0.9;
         return $val;
 
         default:
