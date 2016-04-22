@@ -68,4 +68,14 @@ Class Trialssummary {
             })
             ->createdBetween($start_date, $end_date);
     }
+
+    public function getUpcomingTrials($finder_id)
+    {
+
+        return Booktrial
+            ::  where('finder_id', '=', intval($finder_id))
+            ->where('schedule_slot', 'exists', true)
+            ->where('schedule_slot', '!=', "")
+            ->where('schedule_date',  '>=', new \DateTime( date("d-m-Y", time()) ));
+    }
 }

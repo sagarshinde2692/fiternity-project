@@ -14,6 +14,8 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 require __DIR__.'/debug_routes.php';
 
 
+
+
 // $queries = DB::getQueryLog();
 // var_dump($queries);
 
@@ -48,6 +50,9 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::get('/vendorsummary/reviews/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summaryreviews','uses' => 'VendorpanelController@getSummaryReviews'));
+
+	Route::get('/vendorsummary/inquiries/{finder_id?}/{start_date?}/{end_date?}',
+		array('as' => 'vendor.totalinquiries','uses' => 'VendorpanelController@getTotalInquires'));
 
 	Route::get('/vendorsummary/profile/{finder_id?}',
 		array('as' => 'vendor.profile','uses' => 'VendorpanelController@profile'));
