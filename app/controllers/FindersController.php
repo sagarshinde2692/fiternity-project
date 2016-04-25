@@ -491,7 +491,11 @@ class FindersController extends \BaseController {
 
             // $tommorowDateTime 	=	date('d-m-Y', strtotime('02-09-2015'));
             $tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
-            $finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
+            //$finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
+
+            $final_lead_status = array('rescheduled','confirmed');
+
+            $finders            =   Booktrial::where('final_lead_stage', 'trial_stage')->whereIn('final_lead_status',$final_lead_status)->where('schedule_date', '=', new DateTime($tommorowDateTime))->get()->groupBy('finder_id')->toArray();
             // $finders 			=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($tommorowDateTime))->where('finder_id', '=',3305)->get()->groupBy('finder_id')->toArray();
 
             // echo $todayDateTime 		=	date('d-m-Y', strtotime(Carbon::now()) );
@@ -538,7 +542,11 @@ class FindersController extends \BaseController {
                     }
 
                     $todayDateTime 		=	date('d-m-Y', strtotime(Carbon::now()) );
-                    $todaytrialarr 		=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($todayDateTime))->where('finder_id', intval($finder->_id) )->get();
+
+                    //$todaytrialarr 		=	Booktrial::where('going_status', 1)->where('schedule_date', '=', new DateTime($todayDateTime))->where('finder_id', intval($finder->_id) )->get();
+
+                    $todaytrialarr         =   Booktrial::where('final_lead_stage', 'trial_stage')->whereIn('final_lead_status',$final_lead_status)->where('schedule_date', '=', new DateTime($todayDateTime))->where('finder_id', intval($finder->_id) )->get();
+
                     $todaytrialdata = array();
                     if($todaytrialarr){
                         foreach ($todaytrialarr as $key => $value) {
