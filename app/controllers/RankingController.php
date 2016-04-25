@@ -331,7 +331,7 @@ class RankingController extends \BaseController {
                             //->whereIn('_id', array(579))
        ->where('city_id', $city_id)
        ->where('status', '=', '1')
-       ->take(500)->skip(0)
+       ->take(50000)->skip(0)
        ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
