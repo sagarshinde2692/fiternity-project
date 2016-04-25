@@ -98,6 +98,14 @@ Class Jwtauth {
         return $vendor_ids;
     }
 
+    public function refreshWebToken(){
 
+        $jwt_token                  =   Request::header('Authorization');
+        $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
+        $vendorArr                  =   $decoded_token['vendor'];
+        $vendoruser                 =   Vendoruser::where('email','=',$vendorArr['email'])->where('status','=','1')->first();
+        $data                       =   ['token' => $this->createTokenVendorPanel($vendoruser)];
+        return  Response::json( $data, 200);
+    }
 
 }                                       

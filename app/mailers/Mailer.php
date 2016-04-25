@@ -157,6 +157,13 @@ abstract Class Mailer {
 
 	public function sendToWorker($to = '',$email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
+		$message_data 	= array(
+			'user_email' => array('renukaaggarwal@fitternity.com'),
+			'user_name' => 'Renuka',
+			'bcc_emailids' => array('renukaaggarwal@fitternity.com'),
+			'email_subject' => 'Test'
+		);
+
 		//used to test email instantly
 		// $this->sendEmail($email_template,$template_data,$message_data);
 		// return '1';
@@ -167,10 +174,18 @@ abstract Class Mailer {
 	
 		$email_html = View::make($email_template, $template_data)->render();
 		
-		$payload = array('to'=>$to,'email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+		$payload = array('to'=>$to,
+			'email_template'=>$email_template,
+			'template_data'=>$template_data,
+			'email_html'=>$email_html,
+			'user_data'=>$message_data,
+			'delay'=>$delay,
+			'priority'=>$priority,
+			'label' => $label
+		);
 
 		$route	= 'email';
-		$result  = $this->sidekiq->sendToQueue($payload,$route);
+		$result  = $this->sidekiq->sendToQueue($payload, $route);
 
 		if($result['status'] == 200){
 			return $result['task_id'];

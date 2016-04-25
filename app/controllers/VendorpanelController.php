@@ -59,6 +59,11 @@ class VendorpanelController extends BaseController
         $credentials = Input::json()->all();
         return $this->jwtauth->vendorLogin($credentials);
     }
+    
+    public function refreshWebToken()
+    {
+        return $this->jwtauth->refreshWebToken();
+    }
 
 
     public function getSummarySales($finder_id, $start_date = NULL, $end_date = NULL)

@@ -16,6 +16,8 @@ use App\Services\Fitnessforce as Fitnessforce;
 use Carbon\Carbon;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\OzontelOutboundCall as OzontelOutboundCall;
+use App\Services\Jwtauth as Jwtauth;
+
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -29,8 +31,20 @@ class SchedulebooktrialsController extends \BaseController {
 	protected $worker;
 	protected $sidekiq;
 	protected $ozontelOutboundCall;
+	protected $jwtauth;
 
-	public function __construct(CustomerMailer $customermailer, FinderMailer $findermailer, CustomerSms $customersms, FinderSms $findersms, CustomerNotification $customernotification, Fitnessforce $fitnessforce,Sidekiq $sidekiq,OzontelOutboundCall $ozontelOutboundCall) {
+
+	public function __construct(
+		CustomerMailer $customermailer,
+		FinderMailer $findermailer,
+		CustomerSms $customersms,
+		FinderSms $findersms,
+		CustomerNotification $customernotification,
+		Fitnessforce $fitnessforce,
+		Sidekiq $sidekiq,
+		OzontelOutboundCall $ozontelOutboundCall,
+		Jwtauth $jwtauth
+	) {
 		//parent::__construct();	
 		date_default_timezone_set("Asia/Kolkata");
 		$this->customermailer			=	$customermailer;
@@ -41,6 +55,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$this->fitnessforce 			=	$fitnessforce;
 		$this->sidekiq 	=	$sidekiq;
 		$this->ozontelOutboundCall 	=	$ozontelOutboundCall;
+		$this->jwtauth 	=	$jwtauth;
 	}
 
 	/**
@@ -58,7 +73,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$finderid 				= 	(int) $finderid;
 		$date 					=  	($date == null) ? Carbon::now() : $date;
 		$timestamp 				= 	strtotime($date);
-		$weekday 				= 	strtolower(date( "l", $timestamp));
+		$weekday 				= 	strtolower(date( "l",$timestamp));
 
 		// echo "$date  --- $timestamp -- $weekday";exit;
 		//finder schedule trials
@@ -1975,7 +1990,28 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 
 
-	public function cancel($id){
+	public function cancelTrialSessionByVendor($finder_id, $trial_id){
+
+		$data = Input::json()->all();
+		$reason = isset($data['reason']) ? $data['reason'] : '';
+
+		$finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+		if (!(in_array($finder_id, $finder_ids))) {
+			$data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
+			return Response::json($data, 401);
+		}
+
+		return $this->cancel($trial_id, 'vendor', $reason);
+	}
+
+
+	/**
+	 * @param $id
+	 * @return mixed
+     */
+	public function cancel($id, $source_flag='customer', $reason=''){
+
 
 		$id 				= 	(int) $id;
 		$bookdata 			= 	array();
@@ -1985,13 +2021,14 @@ class SchedulebooktrialsController extends \BaseController {
 		array_set($bookdata, 'booktrial_actions', '');
 		array_set($bookdata, 'followup_date', '');
 		array_set($bookdata, 'followup_date_time', '');
-		array_set($bookdata, 'source_flag', 'customer');
+		array_set($bookdata, 'source_flag', $source_flag);
+		array_set($bookdata, 'reason', $reason);
 		array_set($bookdata, 'final_lead_stage', 'cancel_stage');
 		$trialbooked 		= 	$booktrial->update($bookdata);
 
 		if($trialbooked == true ){
 
-			$redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
 			$booktrial->update(array('cancel_redis_id'=>$redisid));
 
 			$resp 	= 	array('status' => 200, 'message' => "Trial Canceled");

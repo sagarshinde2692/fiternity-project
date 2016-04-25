@@ -27,7 +27,10 @@ Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'Vendorpanel
 
 Route::group(array('before' => 'validatevendor'), function() {
 
-    Route::get('/vendorsummary/listVendors',
+	Route::get('/refreshWebToken',
+		array('as' => 'vendor.refreshWebToken', 'uses' => 'VendorpanelController@refreshWebToken'));
+
+	Route::get('/vendorsummary/listVendors',
 		array('as' => 'vendor.summaryvendor', 'uses' => 'VendorpanelController@getVendorsList'));
 
 	Route::get('/vendorsummary/{finder_id?}',
@@ -65,6 +68,10 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::get('/vendorsummary/profile/{finder_id?}',
 		array('as' => 'vendor.profile','uses' => 'VendorpanelController@profile'));
+
+	Route::get('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',
+		array('as' => 'vendor.cancelTrialSessionByVendor','uses' => 'SchedulebooktrialsController@cancelTrialSessionByVendor'));
+
 
 //	Route::put('/vendorsummary/profile/{finder_id?}',
 //		array('as' => 'vendor.updateprofile','uses' => 'VendorpanelController@updateProfile'));
