@@ -802,11 +802,11 @@ class FindersController extends \BaseController {
             'description' => $data['description'],
             'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
             'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
+            'source' => (isset($data['source'])) ? $data['source'] : 'customer',
             'status' => '1'
         ];
 
-
-
+        $reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
 
         $finderobj = Finder::where('_id', intval($data['finder_id']))->first();
         //$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
