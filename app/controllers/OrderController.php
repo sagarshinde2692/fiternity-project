@@ -108,8 +108,8 @@ class OrderController extends \BaseController {
 			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category)){
 
 				$preferred_starting_date = $order->preferred_starting_date;
-				$after3days = \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
-				$after10days = \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+				$after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
+				$after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
 
 				if(isset($order->ratecard_id) || isset($order->duration_day)){
 
@@ -133,22 +133,22 @@ class OrderController extends \BaseController {
 
 						if($validity >= 30 && $validity < 90){
 
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 7);
+							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 7);
 						}
 
 						if($validity >= 90 && $validity < 180){
 
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 15);
+							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 15);
 						}
 
 						if($validity >= 180 && $validity < 360){
 
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
+							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
 						}
 
 						if($validity >= 360){
 
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d h:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
+							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
 						}
 
 						$order_data = $order->toArray();
