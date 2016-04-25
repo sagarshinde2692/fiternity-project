@@ -638,8 +638,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 // 'category_metadescription'      =>      (isset($data['category']['meta']['description']) && $data['category']['meta']['description'] != '') ? strtolower($data['category']['meta']['description']) : "", 
                 'categorytags'                  =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
                 'categorytags_snow'             =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
-                'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',
-                'coverimage'                    =>      (isset($data['coverimage'])) ? $data['coverimage'] : '',
+                'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',                
                 'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
                 'commercial_type'               =>      (isset($data['commercial_type'])) ? $data['commercial_type'] : '',
                 'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
@@ -677,7 +676,9 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'service_weekdays'              =>      $weekdays,
                 'trials'                        =>      $trial_slots
                 //'trialschedules'                =>      $trialdata,
-                );                
+                );    
+
+$postfields_data['coverimage']  =   ($data['coverimage'] != '') ? $data['coverimage'] : 'default/'.$data['category_id'].'-'.rand(1, 4).'.jpg';            
 $postfields_data['servicephotos'] = $picslist;
 
 return $postfields_data;
