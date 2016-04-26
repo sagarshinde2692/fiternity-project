@@ -879,10 +879,10 @@ class OzonetelsController extends \BaseController {
 					$data['schedule_date_time'] = $booktrial->schedule_date_time;
 					$data['google_pin'] = $google_pin;
 
+					Log::info('Missedcall N-3 - '.$type);
+
 					switch ($type) {
-
-						Log::info('Missedcall N-3 - '.$type);
-
+						
 						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
 						case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);break;
 						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
