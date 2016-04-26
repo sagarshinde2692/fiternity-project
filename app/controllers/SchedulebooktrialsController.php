@@ -1838,6 +1838,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$reminder_need_status 				=	(isset($data['reminder_need_status']) && $data['reminder_need_status'] != '') ? $data['reminder_need_status'] : "";
 			$membership_bought_at 				=	(isset($data['membership_bought_at']) && $data['membership_bought_at'] != '') ? $data['membership_bought_at'] : "";
 
+			$final_lead_stage = 'trial_stage';
+			$final_lead_status = 'rescheduled';
+
 			$booktrialdata = array(
 				'booktrialid' 					=>		$booktrialid,
 				'menmbership_bought' 			=>		$menmbership_bought,
@@ -1892,7 +1895,11 @@ class SchedulebooktrialsController extends \BaseController {
 				'device_id'						=>		$device_id,
 				'otp'							=> 		$otp,
 				'source_flag'					=> 		'customer',
-				'finder_category_id'			=>		$finder_category_id
+				'finder_category_id'			=>		$finder_category_id,
+
+				'final_lead_stage'				=>		$final_lead_stage,
+				'final_lead_status'				=>		$final_lead_status,
+
 			);
 
 			if($update_only_info == ''){

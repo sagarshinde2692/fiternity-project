@@ -80,78 +80,22 @@ class OzonetelsController extends \BaseController {
 					$this->ozonetelResponse->addHangup();
 				}else{
 
-					/*$this->ozonetelResponse->addPlayText("Call diverted to another number");
-	    			$this->ozonetelResponse->addDial('02261222225',"true");
-	    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);*/
+					$finder = Finder::findOrFail($capture->finder_id);
 
-				    /*$finder = Finder::findOrFail($capture->finder_id);
-		   
-			    	if($finder){
-			    		$phone = $finder->contact['phone'];
-			    		$phone = explode(',', $phone);
+					if($finder){
 
-			    		if(isset($phone[1]) && $phone[1] != ''){
-			    			$contact_no = (string)trim($phone[1]);
-			    			$this->ozonetelResponse->addPlayText("Call diverted to another number");
-			    			$this->ozonetelResponse->addDial($contact_no,"true");
-			    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-						}else{
-			    			$this->ozonetelResponse->addHangup();
-			    		}
-			    		
-			    	}else{
-			    		$this->ozonetelResponse->addHangup();
-			    	}*/
+						$commercial_type = (int)$finder->commercial_type;
 
-			    	$finder_array = array("Your Fitness Club","Mickey Mehta's 360 Wellness","Powerhouse Gym","CrossFit Blackfire","Activ8","48 Fitness");
+				    	$premium_vendor = array(1,3);
 
-                    $abanduntFinder = Finder::active()->where(function ($query) use ($finder_array){ 
+				    	if(in_array($commercial_type, $premium_vendor)){
 
-                            foreach ($finder_array as $value) {
+	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
+	                        $this->ozonetelResponse->addDial('7506122592',"true");
+	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+	                        
+	                    }else{
 
-                                $query->orWhere('title','like','%'.$value.'%');
-                            }
-                        })->lists('_id');
-
-
-                    if(!empty($abanduntFinder)){
-
-                        $abanduntFinder = array_map('intval', $abanduntFinder);
-
-                        if(in_array($capture->finder_id, $abanduntFinder)){
-
-                            $this->ozonetelResponse->addPlayText("Call diverted to another number");
-                            $this->ozonetelResponse->addDial('7506122592',"true");
-                            $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-                            
-                        }else{
-
-                            $finder = Finder::findOrFail($capture->finder_id);
-               
-                            if($finder){
-                                $phone = $finder->contact['phone'];
-                                $phone = explode(',', $phone);
-
-                                if(isset($phone[1]) && $phone[1] != ''){
-                                    $contact_no = (string)trim($phone[1]);
-                                    $this->ozonetelResponse->addPlayText("Call diverted to another number");
-                                    $this->ozonetelResponse->addDial($contact_no,"true");
-                                    $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-                                }else{
-                                    $this->ozonetelResponse->addHangup();
-                                }
-                                
-                            }else{
-                                $this->ozonetelResponse->addHangup();
-                            }
-
-                        }
-
-                    }else{
-
-                        $finder = Finder::findOrFail($capture->finder_id);
-               
-                        if($finder){
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
 
@@ -163,12 +107,13 @@ class OzonetelsController extends \BaseController {
                             }else{
                                 $this->ozonetelResponse->addHangup();
                             }
-                            
-                        }else{
-                            $this->ozonetelResponse->addHangup();
-                        }
-                    }
 
+	                    }
+
+	                }else{
+	                    
+	                    $this->ozonetelResponse->addHangup();
+	                }
 
 				}
 
@@ -229,79 +174,22 @@ class OzonetelsController extends \BaseController {
 					$this->ozonetelResponse->addHangup();
 				}else{
 
-					/*$this->ozonetelResponse->addPlayText("Call diverted to another number");
-	    			$this->ozonetelResponse->addDial('02261222225',"true");
-	    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);*/
+					$finder = Finder::findOrFail($capture->finder_id);
 
-				    /*$finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
-		   
-			    	if($finderDetails){
-			    		$phone = $finderDetails->finder->contact['phone'];
-			    		$phone = explode(',', $phone);
-			    		
-			    		if(isset($phone[1]) && $phone[1] != ''){
-			    			$contact_no = (string)trim($phone[1]);
-			    			$this->ozonetelResponse->addPlayText("Call diverted to another number");
-			    			$this->ozonetelResponse->addDial($contact_no,"true");
-			    			$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-			    		}else{
-			    			$this->ozonetelResponse->addHangup();
-			    		}
-			    		
-			    	}else{
-			    		$this->ozonetelResponse->addHangup();
-			    	}*/
+					if($finder){
 
+						$commercial_type = (int)$finder->commercial_type;
 
-			    	$finder_array = array("Your Fitness Club","Mickey Mehta's 360 Wellness","Powerhouse Gym","CrossFit Blackfire","Activ8","48 Fitness");
+				    	$premium_vendor = array(1,3);
 
-                    $abanduntFinder = Finder::active()->where(function ($query) use ($finder_array){ 
+				    	if(in_array($commercial_type, $premium_vendor)){
 
-                            foreach ($finder_array as $value) {
+	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
+	                        $this->ozonetelResponse->addDial('7506122592',"true");
+	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+	                        
+	                    }else{
 
-                                $query->orWhere('title','like','%'.$value.'%');
-                            }
-                        })->lists('_id');
-
-
-                    if(!empty($abanduntFinder)){
-
-                        $abanduntFinder = array_map('intval', $abanduntFinder);
-
-                        if(in_array($capture->finder_id, $abanduntFinder)){
-
-                            $this->ozonetelResponse->addPlayText("Call diverted to another number");
-                            $this->ozonetelResponse->addDial('7506122592',"true");
-                            $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-                            
-                        }else{
-
-                            $finder = Finder::findOrFail($capture->finder_id);
-               
-                            if($finder){
-                                $phone = $finder->contact['phone'];
-                                $phone = explode(',', $phone);
-
-                                if(isset($phone[1]) && $phone[1] != ''){
-                                    $contact_no = (string)trim($phone[1]);
-                                    $this->ozonetelResponse->addPlayText("Call diverted to another number");
-                                    $this->ozonetelResponse->addDial($contact_no,"true");
-                                    $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-                                }else{
-                                    $this->ozonetelResponse->addHangup();
-                                }
-                                
-                            }else{
-                                $this->ozonetelResponse->addHangup();
-                            }
-
-                        }
-
-                    }else{
-
-                        $finder = Finder::findOrFail($capture->finder_id);
-               
-                        if($finder){
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
 
@@ -313,13 +201,13 @@ class OzonetelsController extends \BaseController {
                             }else{
                                 $this->ozonetelResponse->addHangup();
                             }
-                            
-                        }else{
-                            $this->ozonetelResponse->addHangup();
-                        }
-                    }
 
+	                    }
 
+	                }else{
+	                    
+	                    $this->ozonetelResponse->addHangup();
+	                }
 				}
 
 			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
