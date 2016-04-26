@@ -880,6 +880,9 @@ class OzonetelsController extends \BaseController {
 					$data['google_pin'] = $google_pin;
 
 					switch ($type) {
+
+						Log::info('Missedcall N-3 - '$type);
+
 						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
 						case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);break;
 						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
@@ -936,6 +939,8 @@ class OzonetelsController extends \BaseController {
 	}
 
 	public function misscallReview($type){
+
+		Log::info('Missedcall N+2 - '$type);
 
 		try{
 
@@ -1048,6 +1053,8 @@ class OzonetelsController extends \BaseController {
 	}
 
 	public function misscallOrder($type){
+
+		Log::info('Missedcall Order Renew - '$type);
 
 		try{
 
