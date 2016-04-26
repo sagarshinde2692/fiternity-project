@@ -885,6 +885,8 @@ class OzonetelsController extends \BaseController {
 						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
 					}
 
+					$customer_emailqueuedids = array();
+
 					if($type == 'cancel' && $type == 'reschedule'){
 
 						if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
