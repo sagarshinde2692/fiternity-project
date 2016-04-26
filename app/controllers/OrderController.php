@@ -153,7 +153,7 @@ class OrderController extends \BaseController {
 
 						$order_data = $order->toArray();
 
-						$newOrder  = Order::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_renew_batch','exists',true)->orderBy('_id','desc')->first();
+						$newOrder  = Order::where('_id','!=',(int) $order_data['_id'])->where('customer_phone','LIKE','%'.substr($order_data['customer_phone'], -8).'%')->where('missedcall_renew_batch','exists',true)->orderBy('_id','desc')->first();
 						if(!empty($newOrder)){
 							$batch = $newOrder->missedcall_renew_batch + 1;
 						}else{
@@ -183,15 +183,15 @@ class OrderController extends \BaseController {
 						$order_data['missedcall2'] = $alreadyextended;
 						$order_data['missedcall3'] = $explore;
 
-						$order->customer_email_renewal = $this->customermailer->orderRenewalMissedcall($order->toArray(),$renewal_date);
-						$order->customer_sms_renewal = $this->customersms->orderRenewalMissedcall($order->toArray(),$renewal_date);
+						$order->customer_email_renewal = $this->customermailer->orderRenewalMissedcall($order_data,$renewal_date);
+						$order->customer_sms_renewal = $this->customersms->orderRenewalMissedcall($order_data,$renewal_date);
 
 					}
 
 				}
 
-				$order->customer_sms_after3days = $this->customersms->orderAfter3Days($order->toArray(),$after3days);
-				$order->customer_email_after10days = $this->customermailer->orderAfter10Days($order->toArray(),$after10days);
+				$order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
+				$order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
 
 				$order->update();
 
