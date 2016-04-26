@@ -2493,11 +2493,11 @@ class SchedulebooktrialsController extends \BaseController {
 			$batch = 1;
 		}
 
-		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->get()->toArray();
+		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->where('for','N-3Trial')->get()->toArray();
 
 		if(empty($missedcall_no)){
 
-			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->get()->toArray();
+			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->where('for','N-3Trial')->get()->toArray();
 		}
 
 		foreach ($missedcall_no as $key => $value) {
@@ -2534,11 +2534,11 @@ class SchedulebooktrialsController extends \BaseController {
 			$batch = 1;
 		}
 
-		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->get()->toArray();
+		$missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->where('for','N+2Trial')->get()->toArray();
 
 		if(empty($missedcall_no)){
 
-			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->get()->toArray();
+			$missedcall_no = \Ozonetelmissedcallno::where('batch',1)->where('for','N+2Trial')->get()->toArray();
 		}
 
 		foreach ($missedcall_no as $key => $value) {
