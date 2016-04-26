@@ -887,7 +887,9 @@ class OzonetelsController extends \BaseController {
 
 					$customer_emailqueuedids = array();
 
-					if($type == 'cancel' && $type == 'reschedule'){
+					$in_array = array('cancel','reschedule');
+
+					if(in_array($type,$in_array)){
 
 						if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
 
