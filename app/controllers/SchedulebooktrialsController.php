@@ -2555,7 +2555,7 @@ class SchedulebooktrialsController extends \BaseController {
 		$data['datetime'] 			=	strtoupper($slot_date ." ".$data['schedule_slot_start_time']);
 
 		$booktrial = \Booktrial::find((int) $data['_id']);
-		$booktrial->missedcall_batch = $batch;
+		$booktrial->missedcall_review_batch = $batch;
 		$booktrial->update();
 
 		return $this->customersms->bookTrialReminderAfter2Hour($data, $delayReminderTimeAfter2Hour);
