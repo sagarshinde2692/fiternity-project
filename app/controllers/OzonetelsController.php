@@ -874,6 +874,7 @@ class OzonetelsController extends \BaseController {
 					$data = array();
 
 					$data['finder_name'] = $booktrial->finder_name;
+					$data['customer_name'] = ucwords($booktrial->customer_name);
 					$data['customer_phone'] = $ozonetel_missedcall->customer_number;
 					$data['schedule_date_time'] = $booktrial->schedule_date_time;
 					$data['google_pin'] = $google_pin;
