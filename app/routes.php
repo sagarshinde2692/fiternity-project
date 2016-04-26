@@ -72,6 +72,9 @@ Route::group(array('before' => 'validatevendor'), function() {
 	Route::get('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',
 		array('as' => 'vendor.cancelTrialSessionByVendor','uses' => 'SchedulebooktrialsController@cancelTrialSessionByVendor'));
 
+	Route::post('/vendorsummary/{finder_id?}/reviews/{review_id?}/reply',
+		array('as' => 'vendor.reviewReplyByVendor','uses' => 'VendorpanelController@reviewReplyByVendor'));
+
 
 //	Route::put('/vendorsummary/profile/{finder_id?}',
 //		array('as' => 'vendor.updateprofile','uses' => 'VendorpanelController@updateProfile'));

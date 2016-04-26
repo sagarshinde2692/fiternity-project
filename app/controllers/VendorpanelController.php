@@ -883,4 +883,36 @@ class VendorpanelController extends BaseController
 //        $finder->update($data);
 //        return Response::json($finder, 200);
     }
+
+    public function reviewReplyByVendor($finder_id, $review_id)
+    {
+        $data = Input::json()->all();
+
+        if(empty($data['reply'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - reply");
+            return  Response::json($resp, 400);
+        }
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
+            return Response::json($data, 401);
+        }
+
+        $reviewData = Review::find((int) $review_id);
+
+        if($reviewData){
+            $reviewData->update(array('reply' => $data['reply']));
+            $resp 	= 	'Success';
+            return  Response::json($resp, 200);
+
+        }
+        else{
+            $resp 	= 	array('status' => 400,'message' => "Invalid Id");
+            return  Response::json($resp, 400);
+        }
+
+
+    }
 }

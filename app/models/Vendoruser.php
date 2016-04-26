@@ -11,14 +11,11 @@ class Vendoruser extends  \Basemodel {
 
 	protected $connection = 'mongodb2';
 	
-	protected $collection = "vendorusers";
+	protected $collection = "users";
 
 
 	public function setIdAttribute($value){
 
 		$this->attributes['_id'] = $value;
 	}
-	
-
-
 }

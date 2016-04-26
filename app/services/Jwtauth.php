@@ -26,7 +26,7 @@ Class Jwtauth {
             return  Response::json($data, 400);
         }
 
-        $vendoruser = Vendoruser::where('email','=',$credentials['email'])->where('status','=','1')->first();
+        $vendoruser = Vendoruser::where('email','=',$credentials['email'])->where('hidden',false)->first();
         if(empty($vendoruser)){
             $data = ['status_code' => 400,'message' => ['error' => 'Customer does not exists'] ];
             return  Response::json( $data, 400);
