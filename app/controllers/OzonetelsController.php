@@ -951,7 +951,7 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_missedcall->for = "N+2Trial";
 			$ozonetel_missedcall->save();
 
-			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','N+2Trial')first();
+			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','N+2Trial')->first();
 
 			$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_review_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
 
