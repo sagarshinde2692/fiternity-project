@@ -146,7 +146,7 @@ class ServiceController extends \BaseController {
 			'workout_intensity' => (isset($item['workout_intensity']) && $item['workout_intensity'] != '') ? strtolower($item['workout_intensity']) : "",
 			'workout_tags' => (isset($item['workout_tags']) && !empty($item['workout_tags'])) ? array_map('strtolower',$item['workout_tags']) : "",
 			'short_description' => (isset($item['short_description']) && $item['short_description'] != '') ? $item['short_description'] : "", 
-			'batches' => (isset($item['body']) && $item['body'] != '') ? $item['batches'] : "", 
+			'batches' => (isset($item['batches']) && $item['batches'] != '') ? $item['batches'] : [], 
 			'body' => (isset($item['body']) && $item['body'] != '') ? $item['body'] : "", 
 			'timing' => (isset($item['timing']) && $item['timing'] != '') ? $item['timing'] : "", 
 			'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "", 
