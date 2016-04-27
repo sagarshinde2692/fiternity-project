@@ -881,6 +881,7 @@ class OzonetelsController extends \BaseController {
 					$data['schedule_date_time'] = $booktrial->schedule_date_time;
 					$data['service_name'] = $booktrial->service_name;
 					$data['google_pin'] = $google_pin;
+					$data['finder_vcc_mobile'] = $booktrial->finder_vcc_mobile;
 
 					Log::info('Missedcall N-3 - '.$type);
 
