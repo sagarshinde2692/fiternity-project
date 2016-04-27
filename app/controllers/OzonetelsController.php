@@ -11,6 +11,7 @@ use App\Services\OzonetelResponse as OzonetelResponse;
 use App\Services\OzonetelCollectDtmf as OzonetelCollectDtmf;
 use App\Services\OzontelOutboundCall as OzontelOutboundCall;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Sms\FinderSms as FinderSms;
 use App\Services\ShortenUrl as ShortenUrl;
 use App\Services\Sidekiq as Sidekiq;
 
@@ -23,12 +24,13 @@ class OzonetelsController extends \BaseController {
 	protected $ozontelOutboundCall;
 	protected $customersms;
 
-	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms) {
+	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms,FinderSms $findersms) {
 
 		$this->ozonetelResponse	=	$ozonetelResponse;
 		$this->ozonetelCollectDtmf	=	$ozonetelCollectDtmf;
 		$this->ozontelOutboundCall	=	$ozontelOutboundCall;
 		$this->customersms 				=	$customersms;
+		$this->findersms 				=	$findersms;
 
 	}
 
@@ -877,27 +879,30 @@ class OzonetelsController extends \BaseController {
 					$data['customer_name'] = ucwords($booktrial->customer_name);
 					$data['customer_phone'] = $ozonetel_missedcall->customer_number;
 					$data['schedule_date_time'] = $booktrial->schedule_date_time;
+					$data['service_name'] = $booktrial->service_name;
 					$data['google_pin'] = $google_pin;
 
 					Log::info('Missedcall N-3 - '.$type);
 
+					$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $booktrial->schedule_date_time)->addMinutes(60 * 2);
+
 					switch ($type) {
 						
-						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);break;
-						case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);break;
-						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);break;
+						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);$this->findersms->confirmTrial($data);break;
+						case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);$this->findersms->cancelTrial($data);break;
+						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);$this->findersms->rescheduleTrial($data);break;
 					}
 
-					$customer_emailqueuedids = array();
+					$customer_smsqueuedids = array();
 
 					$in_array = array('cancel','reschedule');
 
 					if(in_array($type,$in_array)){
 
-						if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
+						if((isset($booktrial->customer_smsqueuedids['after2hour']) && $booktrial->customer_smsqueuedids['after2hour'] != '')){
 
 							try {
-								$sidekiq->delete($booktrial->customer_emailqueuedids['after2hour']);
+								$sidekiq->delete($booktrial->customer_smsqueuedids['after2hour']);
 							}catch(\Exception $exception){
 								Log::error($exception);
 							}
@@ -905,14 +910,14 @@ class OzonetelsController extends \BaseController {
 
 						$booktrial_data = $booktrial->toArray();
 
-						$customer_emailqueuedids = (isset($booktrial_data['customer_emailqueuedids'])) ? $booktrial_data['customer_emailqueuedids'] : array();
-						$customer_emailqueuedids['after2hour'] = $this->customersms->bookTrialReminderAfter2HourRegular($booktrial_data);
+						$customer_smsqueuedids = (isset($booktrial_data['customer_smsqueuedids'])) ? $booktrial_data['customer_smsqueuedids'] : array();
+						$customer_smsqueuedids['after2hour'] = $this->customersms->bookTrialReminderAfter2HourRegular($booktrial_data,$delayReminderTimeAfter2Hour);
 					}
 
 					$booktrial->missedcall_date = date('Y-m-d h:i:s');
 					$booktrial->missedcall_status = $missedcall_status[$type];
 					$booktrial->source_flag = 'missedcall';
-					$booktrial->customer_emailqueuedids = $customer_emailqueuedids;
+					$booktrial->customer_smsqueuedids = $customer_smsqueuedids;
 					$booktrial->update();
 				}
 			}
