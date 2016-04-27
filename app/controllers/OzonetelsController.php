@@ -884,7 +884,7 @@ class OzonetelsController extends \BaseController {
 
 					Log::info('Missedcall N-3 - '.$type);
 
-					$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $booktrial->schedule_date_time)->addMinutes(60 * 2);
+					$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A',strtotime($booktrial->schedule_date_time)))->addMinutes(60 * 2);
 
 					switch ($type) {
 						
