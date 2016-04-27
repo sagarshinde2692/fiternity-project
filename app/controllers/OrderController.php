@@ -379,21 +379,6 @@ class OrderController extends \BaseController {
 			return Response::json($resp,404);			
 		}
 
-
-		if($data['type'] == 'crossfit-week'){
-
-			if( empty($data['batches']) ){
-				$resp 	= 	array('status' => 404,'message' => "Data Missing - batches");
-				return Response::json($resp,404);				
-			}
-
-			if( empty($data['preferred_starting_date']) ){
-				$resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
-				return Response::json($resp,404);				
-			}
-
-		}
-
 		//Validation base on order type
 		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
 

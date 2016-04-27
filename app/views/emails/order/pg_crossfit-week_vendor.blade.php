@@ -661,7 +661,7 @@
                                                         <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                                             <tr>
                                                                 <td valign="top" class="imageContent">
-                                                                    <img src="http://email.fitternity.com/226/vendor-what.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="Text" />
+                                                                    <img src="http://email.fitternity.com/226/expect.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="Text" />
                                                                 </td>
                                                             </tr>
                                                              <tr>
@@ -755,7 +755,7 @@
                                         <td style="font-family:Roboto, Arial, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #ffffff; ">
                                             <p>Contact us
                                                 <br /> Phone: <a style="color: #f9a91e;" href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}  </a>
-                                                <br />Email:<a style="text-decoration:none; color:#f9a91e" href="{{Config::get('app.contact_us_customer_email')}}">{{Config::get('app.contact_us_customer_email')}}</a>
+                                                <br />Email:<a style="text-decoration:none; color:#f9a91e" href="{{Config::get('app.contact_us_vendor_email')}}">{{Config::get('app.contact_us_vendor_email')}}</a>
                                             </p>
                                         </td>
                                     </tr>

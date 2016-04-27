@@ -658,10 +658,10 @@
                                                 <tr>
                                                     <td align="center" valign="top" width="560" class="flexibleContainerCell">
                                                         <!-- CONTENT TABLE // -->
-                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">`
                                                             <tr>
                                                                 <td valign="top" class="imageContent">
-                                                                    <img src="http://email.fitternity.com/226/vendor-what.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="Text" />
+                                                                    <img src="http://email.fitternity.com/226/expect.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="Text" />
                                                                 </td>
                                                             </tr>
                                                              <tr>

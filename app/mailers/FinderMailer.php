@@ -374,7 +374,7 @@ Class FinderMailer extends Mailer {
 		}
 
 		if($data['type'] == 'crossfit-week'){
-			$subject  = "3 day Crossfit Induction slot for customer  ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name']." has been confirmed | Fitternity";
+			$subject  = "3 day Crossfit Induction slot for customer ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name'])." has been confirmed | Fitternity";
 		}
 		
 		$message_data 	= array(

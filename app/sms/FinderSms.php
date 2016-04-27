@@ -120,12 +120,15 @@ Class FinderSms extends VersionNextSms{
 			$batch_text = "";
             $batch_array = array();
 
-            foreach ($data['batches'] as $key => $value) {
+            if(isset($data['batches']) && $data['batches'] != ""){
 
-                $batch_array[] = ucwords($value['weekday']);
-            }
+	            foreach ($data['batches'] as $key => $value) {
 
-            $batch_text = implode("-", $batch_array);
+	                $batch_array[] = ucwords($value['weekday']);
+	            }
+
+	            $batch_text = implode("-", $batch_array);
+	        }
 
 			$message 	=	"We have confirmed a slot for the 3 day Crossfit induction for ".ucwords($data['customer_name'])."   on ".date(' jS F\, Y \(l\) ', strtotime($data['preferred_starting_date']) ) ." for ".$batch_text." batch.  They are eligible for a fitness kit, hassle free access and personalised experience. Please refer to the email sent for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards, Team Fitternity";
 		}

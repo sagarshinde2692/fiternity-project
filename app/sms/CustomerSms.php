@@ -220,12 +220,15 @@ Class CustomerSms extends VersionNextSms{
 			$batch_text = "";
             $batch_array = array();
 
-            foreach ($data['batches'] as $key => $value) {
+            if(isset($data['batches']) && $data['batches'] != ""){
 
-                $batch_array[] = ucwords($value['weekday']);
-            }
+	            foreach ($data['batches'] as $key => $value) {
 
-            $batch_text = implode("-", $batch_array);
+	                $batch_array[] = ucwords($value['weekday']);
+	            }
+
+	            $batch_text = implode("-", $batch_array);
+	        }
 
 			$message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. Your 3 day Crossfit induction at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." is confirmed for the ".$batch_text." batch, starting ".date(' jS F\, Y \(l\) ', strtotime($data['preferred_starting_date']) ) .".  Please refer to the mail for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
 		}
@@ -261,12 +264,15 @@ Class CustomerSms extends VersionNextSms{
 			$batch_text = "";
             $batch_array = array();
 
-            foreach ($data['batches'] as $key => $value) {
+            if(isset($data['batches']) && $data['batches'] != ""){
 
-                $batch_array[] = ucwords($value['weekday']);
-            }
+	            foreach ($data['batches'] as $key => $value) {
 
-            $batch_text = implode("-", $batch_array);
+	                $batch_array[] = ucwords($value['weekday']);
+	            }
+
+	            $batch_text = implode("-", $batch_array);
+	        }
 
 			$message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. Your 3 day Crossfit induction at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." is confirmed for the ".$batch_text." batch, starting ".date(' jS F\, Y \(l\) ', strtotime($data['preferred_starting_date']) ) .".  Please refer to the mail for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
 		}
