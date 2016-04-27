@@ -361,7 +361,7 @@ class OrderController extends \BaseController {
 		}
 
 		//SEND COD EMAIL TO CUSTOMER
-		$sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
+		//$sndCodEmail	= 	$this->customermailer->sendCodOrderMail($order->toArray());
 		//$sndCodEmail	= 	$this->findermailer->sendCodOrderMail($order->toArray());
 
 		//SEND COD SMS TO CUSTOMER
