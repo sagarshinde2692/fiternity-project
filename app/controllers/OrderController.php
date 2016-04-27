@@ -382,8 +382,8 @@ class OrderController extends \BaseController {
 
 		if($data['type'] == 'crossfit-week'){
 
-			if( empty($data['service_batch']) ){
-				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_batch");
+			if( empty($data['batches']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - batches");
 				return Response::json($resp,404);				
 			}
 
@@ -494,12 +494,6 @@ class OrderController extends \BaseController {
 				array_set($data, 'preferred_starting_date', $preferred_starting_date);
 			}
 		}
-
-		if(isset($data['service_batch']) && $data['service_batch']  != ''){
-
-			$data['batches'] = $data['service_batch'];
-		}
-
 
 		if(trim(Input::json()->get('finder_id')) != '' ){
 

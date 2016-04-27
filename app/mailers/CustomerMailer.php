@@ -250,6 +250,10 @@ Class CustomerMailer extends Mailer {
 			$subject  = 'FitMania Sale - Acknowledgement of request to purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). " at ". ucwords($data['finder_name']);
 		}
 
+		if($data['type'] == 'crossfit-week'){
+			$subject  = "Your slot for 3 day Crossfit Induction has been confirmed at ".ucwords($data['finder_name'])." | Fitternity";
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name'],
@@ -288,6 +292,10 @@ Class CustomerMailer extends Mailer {
 		}
 		if($data['type'] == 'womens-day'){
 			$subject  = 'Regarding your purchase on Womens Day Sale by Fitternity';
+		}
+
+		if($data['type'] == 'crossfit-week'){
+			$subject  = "Your slot for 3 day Crossfit Induction has been confirmed at ".ucwords($data['finder_name'])." | Fitternity";
 		}
 
 		$message_data 	= array(

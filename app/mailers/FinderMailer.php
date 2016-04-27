@@ -368,8 +368,13 @@ Class FinderMailer extends Mailer {
 				$subject  = 'Confirmation of purchase '. ucwords($data['service_name'])." ". ucwords($data['service_duration']). ' for '.ucwords($data['finder_name']).' '.ucwords($data['finder_location']).' on Fitternity: '.ucwords($data['customer_name']);
 			}
 		}
+
 		if($data['type'] == 'womens-day'){
 			$subject  = "Women's Day Offer availed on Fitternity - ".ucwords($data['customer_name'])." purchased membership for ".ucwords($data['finder_name']);
+		}
+
+		if($data['type'] == 'crossfit-week'){
+			$subject  = "3 day Crossfit Induction slot for customer  ".ucwords($data['customer_name'])." at ".ucwords($data['finder_name']." has been confirmed | Fitternity";
 		}
 		
 		$message_data 	= array(
