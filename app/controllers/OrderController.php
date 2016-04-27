@@ -233,7 +233,10 @@ class OrderController extends \BaseController {
 			$finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
 			$finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;	
-			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;	
+			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+			$finder_lon							= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+			$finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+
 
 			array_set($data, 'finder_city', trim($finder_city));
 			array_set($data, 'finder_location', trim($finder_location));
@@ -244,6 +247,8 @@ class OrderController extends \BaseController {
 			array_set($data, 'finder_poc_for_customer_no', trim($finder_poc_for_customer_no));
 			array_set($data, 'show_location_flag', $show_location_flag);
 			array_set($data, 'share_customer_no', $share_customer_no);
+			array_set($data, 'finder_lon', $finder_lon);
+			array_set($data, 'finder_lat', $finder_lat);
 
 		}
 		
