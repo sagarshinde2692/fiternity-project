@@ -215,6 +215,21 @@ Class CustomerSms extends VersionNextSms{
 			}
 		}
 
+		if($data['type'] == 'crossfit-week'){
+
+			$batch_text = "";
+            $batch_array = array();
+
+            foreach ($data['batches'] as $key => $value) {
+
+                $batch_array[] = ucwords($value['weekday']);
+            }
+
+            $batch_text = implode("-", $batch_array);
+
+			$message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. Your 3 day Crossfit induction at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." is confirmed for the ".$batch_text." batch, starting ".date(' jS F\, Y \(l\) ', strtotime($data['preferred_starting_date']) ) .".  Please refer to the mail for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
+		}
+
 		$label = 'CodOrder-C';
 
 		return $this->sendToWorker($to, $message, $label);
@@ -239,6 +254,21 @@ Class CustomerSms extends VersionNextSms{
 				$message = "Hi ".ucwords($data['customer_name']).". Thank you for purchasing of membership at ". ucwords($data['finder_name']).". Your subscription ID is ".$data['_id'].". We will be sending you the purchase invoice and details on email. In the meantime you can reach us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
 			}
 
+		}
+
+		if($data['type'] == 'crossfit-week'){
+
+			$batch_text = "";
+            $batch_array = array();
+
+            foreach ($data['batches'] as $key => $value) {
+
+                $batch_array[] = ucwords($value['weekday']);
+            }
+
+            $batch_text = implode("-", $batch_array);
+
+			$message 	=	"Hi ".ucwords($data['customer_name']).", Thank you for using Fitternity. Your 3 day Crossfit induction at ".ucwords($data['finder_name']).", ".ucwords($data['finder_location'])." is confirmed for the ".$batch_text." batch, starting ".date(' jS F\, Y \(l\) ', strtotime($data['preferred_starting_date']) ) .".  Please refer to the mail for more details. Call us on ".Config::get('app.customer_care_number')." for any queries. Regards - Team Fitternity";
 		}
 
 		$label = 'PgOrder-C';

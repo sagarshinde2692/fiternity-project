@@ -28,7 +28,7 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week');
 	}
 
 
@@ -117,6 +117,7 @@ class OrderController extends \BaseController {
 
 	//create cod order for customer
 	public function generateCodOrder(){
+
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
 		
@@ -379,6 +380,20 @@ class OrderController extends \BaseController {
 		}
 
 
+		if($data['type'] == 'crossfit-week'){
+
+			if( empty($data['service_batch']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_batch");
+				return Response::json($resp,404);				
+			}
+
+			if( empty($data['preferred_starting_date']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
+				return Response::json($resp,404);				
+			}
+
+		}
+
 		//Validation base on order type
 		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
 
@@ -478,6 +493,11 @@ class OrderController extends \BaseController {
 				array_set($data, 'start_date', $preferred_starting_date);
 				array_set($data, 'preferred_starting_date', $preferred_starting_date);
 			}
+		}
+
+		if(isset($data['service_batch']) && $data['service_batch']  != ''){
+
+			$data['batches'] = $data['service_batch'];
 		}
 
 
