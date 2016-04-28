@@ -666,7 +666,7 @@
                                                             </tr>
                                                              <tr>
                                                                 <td align="center" valign="top" class="textContent">
-                                                                   <div style="text-align:center;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;color:#626262;line-height:135%; padding:20px 30px;">If there are any queries regarding the booking, you can reply to this mail or call us on {{Config::get('app.customer_care_number')}}</div>
+                                                                   <div style="text-align:center;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;color:#626262;line-height:135%; padding:20px 30px;">If there are any queries regarding the booking, you can reply to this mail or call us on {{Config::get('app.contact_us_vendor_number')}}</div>
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -754,7 +754,7 @@
                                     <tr bgcolor="#303030">
                                         <td style="font-family:Roboto, Arial, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #ffffff; ">
                                             <p>Contact us
-                                                <br /> Phone: <a style="color: #f9a91e;" href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}  </a>
+                                                <br /> Phone: <a style="color: #f9a91e;" href="tel:{{Config::get('app.contact_us_vendor_number')}}">{{Config::get('app.contact_us_vendor_number')}}  </a>
                                                 <br />Email:<a style="text-decoration:none; color:#f9a91e" href="{{Config::get('app.contact_us_vendor_email')}}">{{Config::get('app.contact_us_vendor_email')}}</a>
                                             </p>
                                         </td>

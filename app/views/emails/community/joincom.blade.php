@@ -42,7 +42,7 @@
 							You're now all set! 
 						</p>
 						<p style="font-size:15px;color:#464646">
-							if you have any other questions either email us at <a href="mailto:info@fitternity.com">info@fitternity.com</a> or call us on {{Config::get('app.customer_care_number')}} .
+							if you have any other questions either email us at a href="mailto:{{Config::get('app.contact_us_customer_email')}}">{{Config::get('app.contact_us_customer_email')}}</a> or call us on {{Config::get('app.contact_us_customer_number')}} .
 						</p>
 						<br>
 						<p style="font-size:15px;color:#464646;text-align:justify;">
@@ -86,8 +86,8 @@
 				</table><br>
 				<table bgcolor="#ecf0f1" width="100%" >
 					<tr align="center">
-						<td>Mail Us: <a href="mailto:info@fitternity.com">info@fitternity.com</a></td>
-						<td>Call Us: {{Config::get('app.customer_care_number')}}</td>
+						<td>Mail Us: <a href="mailto:{{Config::get('app.contact_us_customer_email')}}">{{Config::get('app.contact_us_customer_email')}}</a></td>
+						<td>Call Us: {{Config::get('app.contact_us_customer_number')}}</td>
 					</tr>
 				</table>
 			</div>

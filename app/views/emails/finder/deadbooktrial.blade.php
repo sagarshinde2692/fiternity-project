@@ -307,7 +307,7 @@
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
                                     <p >You could reach out to the customer directly and take it forward.</p>
                                     <p >If there is any update at our end regarding this customer we shall let you know.</p>
-                                    <p >If you have any questions or need any support please reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
+                                    <p >If you have any questions or need any support please reply to this mail or call us on {{Config::get('app.contact_us_vendor_number')}}.</p>
                                     <p style="padding-top:10px;">Regards<br/>
                                         TEAM FITTERNITY
                                     </p>
@@ -357,7 +357,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
+                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.contact_us_vendor_number')}}</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_vendor_email')}}"> {{Config::get('app.contact_us_vendor_email')}}</a>                       
                 </p>
             </td>

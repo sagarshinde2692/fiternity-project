@@ -248,7 +248,7 @@
                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> 
                                                              <span style="font-weight:bold; color: #666666;" >
                                                                  Please {{ link_to('http://www.fitternity.com/'.$finder_slug, 'Click here', array("style"=>"text-decoration:none; color:#f9a91e; cursor:pointer;") ) }} 
-                                                                 to book another {{$trial_type}} session or you could also call us on {{Config::get('app.customer_care_number')}} for any assistance.
+                                                                 to book another {{$trial_type}} session or you could also call us on {{Config::get('app.contact_us_customer_number')}} for any assistance.
                                                              </span><br/>
                                                          
                                                      </p>
@@ -343,7 +343,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
+                    <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.contact_us_customer_number')}}</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                       
                 </p>
             </td>

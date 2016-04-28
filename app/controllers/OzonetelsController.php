@@ -91,7 +91,7 @@ class OzonetelsController extends \BaseController {
 				    	if(in_array($commercial_type, $premium_vendor)){
 
 	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
-	                        $this->ozonetelResponse->addDial('7506122592',"true");
+	                        $this->ozonetelResponse->addDial('02261222225',"true");
 	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
 	                        
 	                    }else{
@@ -185,7 +185,7 @@ class OzonetelsController extends \BaseController {
 				    	if(in_array($commercial_type, $premium_vendor)){
 
 	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
-	                        $this->ozonetelResponse->addDial('7506122592',"true");
+	                        $this->ozonetelResponse->addDial('02261222225',"true");
 	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
 	                        
 	                    }else{

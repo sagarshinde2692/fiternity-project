@@ -351,7 +351,7 @@
                                                                         <tbody>
                                                                             <tr>
                                                                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:center;color: #464646;; padding-left:20px; " st-content="fulltext-paragraph">
-                                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on  <span style="color:#f9a91e"> {{Config::get('app.customer_care_number')}} </span></strong></p>
+                                                                                    <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph"> <strong>Incase you want more information, wish to change your starting date or face any problem in the availing the membership - give us a call on  <span style="color:#f9a91e"> {{Config::get('app.contact_us_customer_number')}} </span></strong></p>
                                                                                 </td>
                                                                             </tr>
                                                                         </tbody>
@@ -383,7 +383,7 @@
                             <tr>
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                                     <p>Contact us
-                                        <br /> Phone: <a style="color: #f9a91e;" href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}</a>
+                                        <br /> Phone: <a style="color: #f9a91e;" href="tel:{{Config::get('app.contact_us_customer_number')}}">{{Config::get('app.contact_us_customer_number')}}</a>
                                         <br />Email:<a style="text-decoration:none; color:#f9a91e" href="{{Config::get('app.contact_us_customer_email')}}">{{Config::get('app.contact_us_customer_email')}}</a>
                                     </p>
                                 </td>

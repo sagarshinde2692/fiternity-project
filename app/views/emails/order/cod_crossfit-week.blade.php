@@ -758,63 +758,46 @@
                                    
                                     
                         <!-- MODULE ROW // -->
-                        <tr>
-                            <td align="center" valign="top">
-                                <!-- CENTERING TABLE // -->
-                                <table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#FFFFFF">
+                        <tr style="background-color:#FFFFFF;">
+                            <td style="font-family:Roboto, Arial, sans-serif; font-size: 16px; text-align:center;line-height: 23px; color: #626262; padding:10px; " st-content="fulltext-paragraph">
+                                <h3 style="color:#5F5F5F;line-height:125%;font-family:Roboto,Arial,sans-serif;font-size:18px;text-align:center; ">KNOW ALL ABOUT CROSSFIT</h3>
+                                <table border="0" cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td align="center" valign="top">
-                                            <!-- FLEXIBLE CONTAINER // -->
-                                            <table border="0" cellpadding="30" cellspacing="0" width="560" class="flexibleContainer">
-                                                <tr>
-                                                    <td valign="top" width="560" class="flexibleContainerCell">
-                                                       <h3 style="color:#5F5F5F;line-height:125%;font-family:Roboto,Arial,sans-serif;font-size:18px;text-align:center; ">KNOW ALL ABOUT CROSSFIT</h3>
-                                                        <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-bottom:20px;">
-                                                            <tr>
-                                                                <td align="left" valign="top" class="flexibleContainerBox">
-                                                                    <table border="0" cellpadding="0" cellspacing="0" width="160" style="max-width:100%;">
-                                                                        <tr>
-                                                                            <td align="left" class="textContent">
-                                                                                <a href="https://www.fitternity.com/articles" target="_blank"> <img src="http://email.fitternity.com/226/whatiscrossfit.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
-                                                                                 <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>What is Crossfit? The beginner's guide, simple and easy.</strong></div>
-                                                                                </a>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </td>
-                                                                <td align="left" valign="top" class="flexibleContainerBox">
-                                                                    <table class="flexibleContainerBoxNext" border="0" cellpadding="0" cellspacing="0" width="170" style="max-width:100%;">
-                                                                        <tr>
-                                                                            <td align="center" class="textContent">
-                                                                               <a href="https://www.fitternity.com/articles" target="_blank">  <img src="http://email.fitternity.com/226/induction.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
-                                                                                 <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>An induction before your Crossfit induction</strong></div></a>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </td>
-                                                                <td align="right" valign="top" class="flexibleContainerBox">
-                                                                    <table class="flexibleContainerBoxNext" border="0" cellpadding="0" cellspacing="0" width="160" style="max-width:100%;">
-                                                                        <tr>
-                                                                            <td align="left" class="textContent">
-                                                                               <a href="https://www.fitternity.com/articles" target="_blank">  <img src="http://email.fitternity.com/226/diet.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
-                                                                                 <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>Get your Crossfit diet right</strong>
-                                                                                    </div></a>
-                                                                            </td>
-                                                                        </tr>
-                                                                    </table>
-                                                                </td>
-                                                            </tr>
-                                                        </table>
-                                                        <!-- CONTENT TABLE // -->
-                                                        <!-- // CONTENT TABLE -->
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                            <!-- // FLEXIBLE CONTAINER -->
+                                            
+                                                <table align="left" border="0" cellpadding="10" cellspacing="0" width="33%" class="templateColumnContainer">
+                                                    <tr>
+                                                                    <td align="left" class="textContent">
+                                                                        <a href="https://www.fitternity.com/articles" target="_blank"> <img src="http://email.fitternity.com/226/whatiscrossfit.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
+                                                                         <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>What is Crossfit? The beginner's guide, simple and easy.</strong></div>
+                                                                        </a>
+                                                                    </td>
+                                                                </tr>
+                                                </table>
+                                            
+                                                <table align="left" border="0" cellpadding="10" cellspacing="0" width="33%" class="templateColumnContainer">
+                                                    <tr>
+                                                                    <td align="left" class="textContent">
+                                                                       <a href="https://www.fitternity.com/articles" target="_blank">  <img src="http://email.fitternity.com/226/induction.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
+                                                                         <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>An induction before your Crossfit induction</strong></div></a>
+                                                                    </td>
+                                                                </tr>
+                                                </table>
+                                            
+                                            
+                                                <table align="left" border="0" cellpadding="10" cellspacing="0" width="33%" class="templateColumnContainer">
+                                                    <tr>
+                                                                    <td align="left" class="textContent">
+                                                                       <a href="https://www.fitternity.com/articles" target="_blank">  <img src="http://email.fitternity.com/226/diet.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
+                                                                         <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>Get your Crossfit diet right</strong>
+                                                                            </div></a>
+                                                                    </td>
+                                                                </tr>
+                                                </table>
+                                          
                                         </td>
                                     </tr>
                                 </table>
-                                <!-- // CENTERING TABLE -->
                             </td>
                         </tr>
                         <!-- // MODULE ROW -->
@@ -885,7 +868,7 @@
                                     <tr bgcolor="#303030">
                                         <td style="font-family:Roboto, Arial, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #ffffff; ">
                                             <p>Contact us
-                                                <br /> Phone: <a style="color: #f9a91e;" href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}  </a>
+                                                <br /> Phone: <a style="color: #f9a91e;" href="tel:{{Config::get('app.contact_us_customer_number')}}">{{Config::get('app.contact_us_customer_number')}}  </a>
                                                 <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>
                                             </p>
                                         </td>
