@@ -1202,6 +1202,8 @@ public function getUpcomingTrials(){
 
 	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('booktrial_type','auto')->orderBy('schedule_date_time', 'desc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address')->first();
 
+	$resp 	= 	array('status' => 400,'data' => $data);
+
 	if($trials){
 		$data = $trials->toArray();
 
@@ -1213,11 +1215,11 @@ public function getUpcomingTrials(){
 		if(isset($data['schedule_slot_start_time'])){
 			$data['schedule_slot_start_time'] = strtoupper($data['schedule_slot_start_time']);
 		}
+
+		$resp 	= 	array('status' => 200,'data' => $data);
 	}
 
-	$resp 	= 	array('status' => 200,'data' => $data);
-
-	return Response::json($resp,200);
+	return Response::json($resp,$resp['status']);
 
 }
 
