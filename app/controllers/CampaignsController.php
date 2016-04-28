@@ -227,7 +227,7 @@ class CampaignsController extends \BaseController {
 		$campaign = isset($campaign) && $campaign != "" ? $campaign : "crossfit-week";
 
 		$services = Service::where('campaign_type',$campaign)->with('location')->with('city')->with('finder')->take(10)->get(array('name','location_id','location','category_id','city_id','category','city','finder_id', 'finder'))->groupBy('city_id');
-		$blogs = Blog::orderBy('_id')->take(4)->with('author')->get();
+		$blogs = Blog::whereIn("_id",array(307,308,309,310))->with('author')->get();
 		return Response::json(array("services"=>$services,"blogs"=>$blogs));
 	}
 }
