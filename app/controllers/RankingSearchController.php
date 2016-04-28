@@ -902,8 +902,8 @@ $request = array(
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 $searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
-$searchresulteresponse->meta->number_of_records = $size;
-$searchresulteresponse->meta->from = $from;
+$searchresulteresponse->meta->number_of_records = intval($size);
+$searchresulteresponse->meta->from = intval($from);
 $searchresulteresponse->meta->sortfield = $orderfield;
 $searchresulteresponse->meta->sortorder = $order;
 
