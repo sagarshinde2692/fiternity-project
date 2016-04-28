@@ -446,9 +446,12 @@ class RankingController extends \BaseController {
         $postdata['price_range'] = $average_monthly_tag;
         $postfields_data = json_encode($postdata);             
        $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
+        $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
         // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
         $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+         $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
         $curl_response = es_curl_request($request);
+         $curl_response1 = es_curl_request($request1);
         echo json_encode($curl_response);
      //echo "<br>$posturl    ---  ".es_curl_request($request);
     }
