@@ -1112,7 +1112,10 @@ public function getAllOrders($offset = 0, $limit = 10){
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
 
+	$orders = array();
+
 	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->where(function($query){$query->orWhere('status',"1")->orWhere('order_action','bought');})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+
 	$response 		= 	['status' => 200, 'orders' => $orders,  'message' => 'List for orders'];
 
 	return Response::json($response, 200);
