@@ -801,7 +801,7 @@ $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$fac
             },"aggs": {
               "region": {
                 "terms": {
-                    "field": "locationtags",
+                    "field": "location",
                     "min_doc_count":1,
                     "size":"500",
                     "order": {
