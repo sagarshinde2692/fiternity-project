@@ -482,10 +482,18 @@ public static function translate_searchresultsv2($es_searchresult_response){
 		$offval->count = $off['doc_count'];
 		array_push($finderresult_response->results->aggregationlist->offerings, $offval);
 	}
+
+	$finderresult_response->results->aggregationlist->locationtags = array();
+
+	
+	foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
+	}
 	
 	if(isset($aggs['filtered_trials']['trialdays'])){
-
-
 	$finderresult_response->results->aggregationlist->trialdays = array();
 
 	foreach ($aggs['filtered_trials']['trialdays']['buckets'] as $off){

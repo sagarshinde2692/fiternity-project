@@ -813,6 +813,21 @@ $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$fac
       }}}
   },';
 
+
+  $locationtags_facets = ' "filtered_locationtags": {
+    '.$location_bool.',
+    "aggs": {
+        "offerings": {
+            "terms": {
+                "field": "locationtags",             
+                "min_doc_count": 1,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
   $facilities_facets = ' "filtered_facilities": {
     '.$facilities_bool.',
     "aggs": {
@@ -874,7 +889,7 @@ $trialdays_facets = ' "filtered_trials": {
 
 $category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
 
-$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
+$facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
  
   $body = '{
     "from": '.$from.',
@@ -897,7 +912,6 @@ $request = array(
 //     'method' => 'POST',
 //     'postfields' => $body
 //     );
-
 
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
