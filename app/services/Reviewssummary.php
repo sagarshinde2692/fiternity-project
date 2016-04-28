@@ -20,10 +20,15 @@ Class Reviewssummary {
             ::where('finder_id', '=', intval($finder_id))
             ->whereBetween('rating', [intval($min_rating), intval($max_rating)])
             ->with(array('customer'=>function($query){$query->select('name');}))
+            ->with(array('finder'=>function($query){
+                $query->select('category_id')
+                ->with(array('category'=>function($query){$query->select('detail_rating');}));
+
+            }))
             ->createdBetween($start_date, $end_date)
             ->take($limit)
             ->skip($offset)
-            ->get(array('rating','detail_rating','description','reply','customer_id','customer','created_at'));
+            ->get(array('rating','detail_rating','description','reply','customer_id','customer','created_at', 'finder_id'));
 
         $reviewData['count'] =  $count;
         $reviewData['data'] =  $data;

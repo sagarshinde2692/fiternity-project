@@ -12,7 +12,8 @@ Class Trialssummary {
             ::  where('finder_id', '=', intval($finder_id))
             ->where('schedule_slot', 'exists', true)
             ->where('schedule_slot', '!=', "")
-            ->createdBetween($start_date, $end_date);
+            ->where('schedule_date_time',  '>=', new \DateTime( date("d-m-Y", strtotime( $start_date )) ))
+            ->where('schedule_date_time',  '<=', new \DateTime( date("d-m-Y", strtotime( $end_date )) ));
     }
 
     public function getAttendedTrials($finder_id, $start_date, $end_date)
