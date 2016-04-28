@@ -37,6 +37,8 @@ class OrderController extends \BaseController {
 
 		$data			= Input::json()->all();
 
+		Log::info('Capture Order Status',$data);
+
 		if(empty($data['order_id'])){
 			$resp 	= 	array('status' => 400,'message' => "Data Missing - order_id");
 			return  Response::json($resp, 400);
@@ -212,6 +214,8 @@ class OrderController extends \BaseController {
 	public function generateCodOrder(){
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+
+		Log::info('Gnerate COD Order',$data);
 		
 
 		if(empty($data['customer_name'])){
@@ -387,6 +391,8 @@ class OrderController extends \BaseController {
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
 		$postdata		=	Input::json()->all();
+
+		Log::info('Gnerate Tmp Order',$postdata);
 
 		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
 		// $required_fiels = ['customer_name', ];
