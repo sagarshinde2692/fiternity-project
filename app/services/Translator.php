@@ -403,38 +403,53 @@ public static function translate_searchresultsv2($es_searchresult_response){
 	$aggs = $es_searchresult_response['aggregations'];
 
 	$finderresult_response->results->aggregationlist->budget = array();
+		$budval0 = new \stdClass();
+		$budval1 = new \stdClass();
+		$budval2 = new \stdClass();
+		$budval3 = new \stdClass();
+		$budval4 = new \stdClass();
+		$budval5 = new \stdClass();
 	foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
-		$budval = new \stdClass();
 		switch ($bud['key']) {
 			case 'one':
-			$budval->key = 'less than 1000';
-			$budval->count = $bud['doc_count'];
+			$budval0->key = 'less than 1000';
+			$budval0->count = $bud['doc_count'];			
+		
 			break;
 			case 'two':
-			$budval->key = '1000-2500';
-			$budval->count = $bud['doc_count'];
+			$budval1->key = '1000-2500';
+			$budval1->count = $bud['doc_count'];
+			
 			break;
 			case 'three':
-			$budval->key = '2500-5000';
-			$budval->count = $bud['doc_count'];
+			$budval2->key = '2500-5000';
+			$budval2->count = $bud['doc_count'];
+			
 			break;
 			case 'four':
-			$budval->key = '5000-7500';
-			$budval->count = $bud['doc_count'];
+			$budval3->key = '5000-7500';
+			$budval3->count = $bud['doc_count'];
+			
 			break;
 			case 'five':
-			$budval->key = '7500-15000';
-			$budval->count = $bud['doc_count'];
+			$budval4->key = '7500-15000';
+			$budval4->count = $bud['doc_count'];
+			
 			break;
 			case 'six':
-			$budval->key = '15000 & Above';
-			$budval->count = $bud['doc_count'];
+			$budval5->key = '15000 & Above';
+			$budval5->count = $bud['doc_count'];			
 			break;				
 			default:					
 			break;
 		}
-		array_push($finderresult_response->results->aggregationlist->budget, $budval);
 	}
+		array_push($finderresult_response->results->aggregationlist->budget, $budval0);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval1);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval2);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval3);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval4);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 
 	$finderresult_response->results->aggregationlist->filters = array();
 	foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
