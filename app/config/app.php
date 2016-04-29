@@ -257,8 +257,8 @@ return array(
 	'customer_care_number' => '02261222233',
 	'contact_us_vendor_email' => 'business@fitternity.com',
 	'contact_us_customer_email' => 'support@fitternity.com',
-	'contact_us_vendor_number' => '02261222222',
-	'contact_us_customer_number' => '02261222233',
+	'contact_us_vendor_number' => '02261222233',
+	'contact_us_customer_number' => '02261222222',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
