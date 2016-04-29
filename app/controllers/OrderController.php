@@ -341,10 +341,11 @@ class OrderController extends \BaseController {
 			array_set($data, 'finder_poc_for_customer_no', trim($finder_poc_for_customer_no));
 			array_set($data, 'show_location_flag', $show_location_flag);
 			array_set($data, 'share_customer_no', $share_customer_no);
-			array_set($data, 'service_name_purchase', $service_name);
-			array_set($data, 'service_duration_purchase', $service_duration);
 
 		}
+
+		array_set($data, 'service_name_purchase', $data['service_name']);
+		array_set($data, 'service_duration_purchase', $data['service_duration']);
 		
 		array_set($data, 'customer_id', intval($customer_id));
 		array_set($data, 'status', '0');
@@ -615,8 +616,6 @@ class OrderController extends \BaseController {
 			array_set($data, 'finder_branch', trim($finder_location));
 			array_set($data, 'finder_category_id', $finder_category_id);
 			array_set($data, 'finder_slug', $finder_slug);
-			array_set($data, 'service_name_purchase', $service_name);
-			array_set($data, 'service_duration_purchase', $service_duration);
 
 		}
 
