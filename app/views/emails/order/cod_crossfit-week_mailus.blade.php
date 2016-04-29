@@ -411,7 +411,7 @@
                        <tr>
                                         <td width="560px" align="center">
                                         <a href="https://www.fitternity.com" target="_blank">
-                                            <img src="http://email.fitternity.com/226/Top-banner.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="Text" />
+                                            <img src="http://email.fitternity.com/227/focusbanner.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="Text" />
                                             </a>
                                         </td>
                                     </tr>

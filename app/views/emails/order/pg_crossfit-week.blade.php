@@ -411,7 +411,7 @@
                        <tr>
                                         <td width="560px" align="center">
                                         <a href="https://www.fitternity.com" target="_blank">
-                                            <img src="http://email.fitternity.com/226/Top-banner.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="header" />
+                                            <img src="http://email.fitternity.com/227/focusbanner.jpg" width="560" class="flexibleImage" style="max-width:560px;width:100%;display:block;" alt="Text" title="header" />
                                             </a>
                                         </td>
                                     </tr>
@@ -768,7 +768,7 @@
                                                 <table align="left" border="0" cellpadding="10" cellspacing="0" width="33%" class="templateColumnContainer">
                                                     <tr>
                                                                     <td align="left" class="textContent">
-                                                                        <a href="https://www.fitternity.com/articles" target="_blank"> <img src="http://email.fitternity.com/226/whatiscrossfit.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
+                                                                        <a href="https://www.fitternity.com/articles/what-is-crossfit-the-beginner-s-guide-simple-and-easy" target="_blank"> <img src="http://email.fitternity.com/226/whatiscrossfit.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
                                                                          <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>What is Crossfit? The beginner's guide, simple and easy.</strong></div>
                                                                         </a>
                                                                     </td>
@@ -778,7 +778,7 @@
                                                 <table align="left" border="0" cellpadding="10" cellspacing="0" width="33%" class="templateColumnContainer">
                                                     <tr>
                                                                     <td align="left" class="textContent">
-                                                                       <a href="https://www.fitternity.com/articles" target="_blank">  <img src="http://email.fitternity.com/226/induction.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
+                                                                       <a href="https://www.fitternity.com/articles/induction-before-your-crossfit-induction" target="_blank">  <img src="http://email.fitternity.com/226/induction.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
                                                                          <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>An induction before your Crossfit induction</strong></div></a>
                                                                     </td>
                                                                 </tr>
@@ -788,7 +788,7 @@
                                                 <table align="left" border="0" cellpadding="10" cellspacing="0" width="33%" class="templateColumnContainer">
                                                     <tr>
                                                                     <td align="left" class="textContent">
-                                                                       <a href="https://www.fitternity.com/articles" target="_blank">  <img src="http://email.fitternity.com/226/diet.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
+                                                                       <a href="https://www.fitternity.com/articles/get-your-crossfit-diet-right" target="_blank">  <img src="http://email.fitternity.com/226/diet.jpg" width="160" class="flexibleImage" style="max-width:100%;" alt="Text" title="Text" />
                                                                          <div style="text-align:left;font-family:Roboto,Arial,sans-serif;font-size:15px;margin-bottom:0;margin-top:10px;color:#5F5F5F;line-height:135%;"><strong>Get your Crossfit diet right</strong>
                                                                             </div></a>
                                                                     </td>

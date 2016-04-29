@@ -653,11 +653,11 @@ public function getRankedFinderResultsAppv2()
         //input filters
 
     $category = Input::json()->get('category');
-
-    $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
-    $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
-
-
+   
+    $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
+    $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
+     
+    // return $category;
     $offering_regex = $this->_getOfferingRegex($category);
 
     //return Input::json()->get('offset')['from'];
@@ -689,6 +689,7 @@ public function getRankedFinderResultsAppv2()
     
     $trial_range_filter = '';
     if(($trial_time_from !== '')&&($trial_time_to !== '')){
+
         $trial_range_filter = '  {
             "nested": {
               "path": "trials",
@@ -912,7 +913,7 @@ $request = array(
 //     'method' => 'POST',
 //     'postfields' => $body
 //     );
-
+    // return $body;exit;
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 $searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
@@ -934,6 +935,12 @@ private function _getOfferingRegex($category){
    
     switch($category)
     {
+        case 'spinning and indoor cycling':
+        $regex = 'ac|gym|health bar|indoor|live dj|nutritional support|outdoor activities';
+        break;
+        case 'personal trainers' :
+        $regex = 'gender - female|mma & kickboxing|yoga|dietitian & nutritionist|pilates|zumba|aerobics|strength training|equipment-provided|certified trainer|gender - male|crossfit|free trial|functional training';
+        break;
         case 'gyms':
         $regex = 'steam and sauna|juice bar|cycling studio|swimming pool|nutritional support|free wifi|strength training equipment|spinning|strectching area|personal training|24 hour facility|get your own trainer|music and video entertainment|massages|physiotherapy|cardio equipment';
         break;
@@ -970,7 +977,7 @@ private function _getOfferingRegex($category){
         $regex = 'reformer or stott pilates|mat pilates';
         break;
 
-         case 'mma and kickboxing':
+         case 'mma and kick boxing':
         $regex = 'muay thai|kick boxing|capoeira|judo|kung fu|kalaripayattu|krav maga|tai chi|mixed martial arts|taekwondo|karate|jujitsu';
         break;
 
@@ -992,6 +999,9 @@ private function _getOfferingRegex($category){
 
         case 'sport nutrition supliment stores':
         $regex = 'Post Workout Supplements|pre workout Supplements|Accessories|Nutrition Bar|Protein Supplements|Energy & Endurance Supplements|Lean Muscle Gainer|Lean Mass Gainer|Weight Gainer|Fat Burners|Health & Wellness Supplements|Muscle Gainer|Soy Protein|Whey Protein|Fish Oil|Shakers|Mass Gainers|Food Supplements|';
+        break;
+        case '':
+        $regex  = ' ';
         break;
 
         default :
