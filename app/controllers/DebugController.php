@@ -9,7 +9,6 @@
 
 // use Response;
 use App\Mailers\FinderMailer as FinderMailer;
-use Queue;
 
 
 class DebugController extends \BaseController {
@@ -1894,6 +1893,37 @@ class DebugController extends \BaseController {
 
 		return 'done';
 
+	}
+
+
+	public function findersHaveRatecardWithNoServices (){
+
+        ini_set('memory_limit','2048M');
+        ini_set('max_execution_time', 300);
+
+        $headers = [
+            'Content-type'        => 'application/csv',
+            'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0',
+            'Content-type'        => 'text/csv',
+            'Content-Disposition' => 'attachment; filename=findersHaveRatecardWithNoServices.csv',
+            'Expires'             => '0',
+            'Pragma'              => 'public'
+        ];
+        $output = "Vendor ID, Vendor Name, Vendor City , Vendor Location , Category , Commercial Type \n";
+        $finders = Finder::with(array('location'=>function($query){$query->select('_id','name');}))
+                            ->with(array('city'=>function($query){$query->select('_id','name');}))
+                            ->with(array('category'=>function($query){$query->select('_id','name');}))
+                            ->with(array('services'=>function($query){$query->select('_id','name');}))
+                            ->active()
+                            ->get(['_id','title','city_id','city','category_id','category','location_id','location','services'])->toArray();
+        if($finders){
+            foreach ($finders as $value) {
+                if(count($value['services']) < 1) {
+                    $output .=  $value['_id'] .",". $value['title'] .",". $value['city']['name'] .",". $value['location']['name'] .",". $value['category']['name'] .",". $value['commercial_type_status'] ." \n";
+                }
+            }
+        }
+        return Response::make(rtrim($output, "\n"), 200, $headers);
 	}
 
 
