@@ -1371,6 +1371,7 @@ public function improvedkeywordSearch(){
 
         */
 
+        $regez = $this->_getCategoryRegex($city);
         
         $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';         
         $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},'  : '';
@@ -1506,7 +1507,7 @@ $budgets_facets = ' "filtered_budgets": {
     }
 },';
 
-$category_facets = '"category": {"terms": {"field": "categorytags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+$category_facets = '"category": {"terms": {"field": "categorytags","include":"'.$regez.'","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
 
 $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$location_facets.$category_facets,',');
 
@@ -1834,4 +1835,34 @@ private function _removeStopwords($string){
    $resp = str_replace($stopwords, " ", $string);
    return $resp;
 }
+
+private function _getCategoryRegex($city){
+   
+    $regex = '';
+    switch ($city) {
+        case 'mumbai':
+           $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional training|mma And kick boxing|dance|marathon training|spinning and indoor cycling|personal trainers|healthy snacks and beverages|dietitians and nutritionists|swimming|sport nutrition supliment stores';
+            break;
+         case 'delhi':
+            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+            break;
+         case 'bangalore':
+            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional Training|mma And kick boxing|dance|spinning and indoor cycling';
+            break;
+         case 'pune':
+            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+            break;
+         case 'gurgaon':
+            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+            break;
+        
+        default:
+            # code...
+            break;
+    }
+
+    return $regex;
+
+}
+            
 }
