@@ -1110,9 +1110,9 @@ class OzonetelsController extends \BaseController {
 				$data['google_pin'] = $google_pin;
 
 				switch ($type) {
-					case 'renew': $booktrial->missedcall_sms = $this->customersms->renewOrder($data);break;
-					case 'alreadyextended': $booktrial->missedcall_sms = $this->customersms->alreadyExtendedOrder($data);break;
-					case 'explore': $booktrial->missedcall_sms = $this->customersms->exploreOrder($data);break;
+					case 'renew': $order->missedcall_sms = $this->customersms->renewOrder($data);break;
+					case 'alreadyextended': $order->missedcall_sms = $this->customersms->alreadyExtendedOrder($data);break;
+					case 'explore': $order->missedcall_sms = $this->customersms->exploreOrder($data);break;
 				}
 
 				$order->missedcall_renew_date = date('Y-m-d h:i:s');
