@@ -420,7 +420,7 @@ class VendorpanelController extends BaseController
                             'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
                             'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
                             'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
-                            'service_id', 'service_name', 'share_customer_no','created_at')
+                            'service_id', 'service_name', 'share_customer_no','created_at','trial_attended_finder')
                     );
                 break;
             case 'attended':
