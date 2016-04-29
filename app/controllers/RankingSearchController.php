@@ -653,10 +653,10 @@ public function getRankedFinderResultsAppv2()
         //input filters
 
     $category = Input::json()->get('category');
-
-    $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
-    $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
-
+   
+    $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
+    $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
+     
 
     $offering_regex = $this->_getOfferingRegex($category);
 
@@ -689,6 +689,7 @@ public function getRankedFinderResultsAppv2()
     
     $trial_range_filter = '';
     if(($trial_time_from !== '')&&($trial_time_to !== '')){
+
         $trial_range_filter = '  {
             "nested": {
               "path": "trials",
@@ -912,7 +913,7 @@ $request = array(
 //     'method' => 'POST',
 //     'postfields' => $body
 //     );
-
+    // return $body;exit;
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 $searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
