@@ -178,9 +178,9 @@ class VendorpanelController extends BaseController
             $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
             return Response::json($data, 401);
         }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $today_date     = date("d-m-Y", time());
+        $start_date     = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
+        $end_date       = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
 
         $req = Input::all();
         $limit = isset($req['limit']) ? $req['limit'] : 10;
@@ -211,7 +211,7 @@ class VendorpanelController extends BaseController
                     ->skip($offset)
                     ->get(
                         array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
-                            'amount_finder', 'payment_mode', 'booktrial_id', 'finder_id','created_at', 'renewal')
+                            'amount_finder', 'payment_mode', 'booktrial_id', 'finder_id','created_at', 'renewal','payment_transfer')
                     );
                 break;
             case 'renewal':
@@ -358,7 +358,7 @@ class VendorpanelController extends BaseController
         }
         $today_date = date("d-m-Y", time());
         $start_date = ($start_date != NULL) ? date("d-m-Y", strtotime($start_date)) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
+        $end_date   = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
 
 
         $finder_id = intval($finder_id);
