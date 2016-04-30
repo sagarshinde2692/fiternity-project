@@ -458,8 +458,23 @@ class SchedulebooktrialsController extends \BaseController {
 		$customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
 		$customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
 
+		$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+		$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
 		$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
-		$transacted_after			= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+		$referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
+		$transacted_after					= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+
+		if($device_type != '' && $gcm_reg_id != ''){
+
+			$reg_data = array();
+
+			$reg_data['customer_id'] = $customer_id;
+			$reg_data['reg_id'] = $gcm_reg_id;
+			$reg_data['type'] = $device_type;
+
+			$this->addRegId($reg_data);
+		}
 
 
 
@@ -495,8 +510,12 @@ class SchedulebooktrialsController extends \BaseController {
 			'customer_address'		=> 		$customer_address,
 			'customer_note'		=>		$customer_note,
 
-			'social_referrer'			=>		$social_referrer,
-			'transacted_after'		=>		$transacted_after
+			'social_referrer'				=>		$social_referrer,
+			'transacted_after'				=>		$transacted_after,
+			'referrer_object'				=>		$referrer_object,
+
+			'device_type'				=>		$device_type,
+			'gcm_reg_id'				=>		$gcm_reg_id,
 		);
 
 
@@ -504,21 +523,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$booktrialdata['customer_address_array'] = $data['customer_address'];
 		}
 
-		$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
-		$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
-
-		if($device_type != '' && $gcm_reg_id != ''){
-
-			$reg_data = array();
-
-			$reg_data['customer_id'] = $customer_id;
-			$reg_data['reg_id'] = $gcm_reg_id;
-			$reg_data['type'] = $device_type;
-
-			$this->addRegId($reg_data);
-		}
-			
-
+		
 		// return $booktrialdata;
 		$booktrial = new Booktrial($booktrialdata);
 		$booktrial->_id = $booktrialid;
@@ -865,6 +870,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$city_id 							=	(int) $finder['city_id'];
 
 			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
+			$finder_category_id						= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
 			$final_lead_stage = '';
 			$final_lead_status = '';
@@ -882,17 +888,18 @@ class SchedulebooktrialsController extends \BaseController {
 				$final_lead_status = 'call_to_confirm';
 			}
 
-			$reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+			$gcm_reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
-			$social_referrer							= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
 			$transacted_after					= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+			$referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
 
-			if($device_type != '' && $reg_id != ''){
+			if($device_type != '' && $gcm_reg_id != ''){
 
 				$reg_data = array();
 
 				$reg_data['customer_id'] = $customer_id;
-				$reg_data['reg_id'] = $reg_id;
+				$reg_data['reg_id'] = $gcm_reg_id;
 				$reg_data['type'] = $device_type;
 
 				$this->addRegId($reg_data);
@@ -1047,11 +1054,13 @@ class SchedulebooktrialsController extends \BaseController {
 				'final_lead_stage'				=>		$final_lead_stage,
 				'final_lead_status'				=>		$final_lead_status,
 
-				'reg_id'						=>		$reg_id,
+				'reg_id'						=>		$gcm_reg_id,
 				'device_type'					=>		$device_type,
 
-				'social_referrer'						=>		$social_referrer,
+				'finder_category_id'			=>		$finder_category_id,
+				'social_referrer'				=>		$social_referrer,
 				'transacted_after'				=>		$transacted_after,
+				'referrer_object'				=>		$referrer_object,
 				'google_pin'					=>		$google_pin
 
 			);
@@ -1122,6 +1131,8 @@ class SchedulebooktrialsController extends \BaseController {
 			$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
 			$order = Order::findOrFail($orderid);
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+
+			$finder_category_id 				= (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
@@ -1306,6 +1317,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
 			$finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
+			$finder_category_id					= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
 			$google_pin							=	$this->googlePin($finder_lat,$finder_lon);
 
@@ -1325,18 +1337,19 @@ class SchedulebooktrialsController extends \BaseController {
 				$final_lead_status = 'call_to_confirm';
 			}
 
-			$reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
-			$social_referrer						= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
-			$transacted_after						= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+			$social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
+			$referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
+			$transacted_after					= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
 
-			if($device_type != '' && $reg_id != ''){
+			if($device_type != '' && $gcm_reg_id != ''){
 
 				$reg_data = array();
 
 				$reg_data['customer_id'] = $customer_id;
-				$reg_data['reg_id'] = $reg_id;
+				$reg_data['reg_id'] = $gcm_reg_id;
 				$reg_data['type'] = $device_type;
 
 				$this->addRegId($reg_data);
@@ -1486,11 +1499,15 @@ class SchedulebooktrialsController extends \BaseController {
 				'source_flag'					=> 		'customer',
 				'final_lead_stage'				=>		$final_lead_stage,
 				'final_lead_status'				=>		$final_lead_status,
-				'reg_id'						=>		$reg_id,
+
+				'reg_id'						=>		$gcm_reg_id,
 				'device_type'					=>		$device_type,
 
-				'social_referrer'						=>		$social_referrer,
+				'social_referrer'				=>		$social_referrer,
 				'transacted_after'				=>		$transacted_after,
+				'finder_category_id'			=>		$finder_category_id,
+				'referrer_object'				=>		$referrer_object
+
 				'google_pin'					=>		$google_pin
 
 			);
@@ -1562,6 +1579,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
 			$finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+
+			$finder_category_id 				= (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
 			$customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
@@ -1767,8 +1786,10 @@ class SchedulebooktrialsController extends \BaseController {
 
 			$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
 
-			$reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+			$gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 			$device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+
+			$finder_category_id					= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
 			$description =  $what_i_should_carry = $what_i_should_expect = '';
 			if($service_id != ''){
@@ -1937,7 +1958,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 				'final_lead_stage'				=>		$final_lead_stage,
 				'final_lead_status'				=>		$final_lead_status,
-				'reg_id'						=> 		$reg_id,
+				'reg_id'						=> 		$gcm_reg_id,
 				'device_type'					=> 		$device_type,
 				'google_pin'					=>		$google_pin
 			);
@@ -2011,6 +2032,8 @@ class SchedulebooktrialsController extends \BaseController {
 			$old_schedule_slot_end_time = $data['old_schedule_slot_end_time'];
 
 			$booktrial = Booktrial::find($booktrialid);
+
+			$finder_category_id 				= (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
 			//hit fitness force api start here
 			if(isset($finder['fitnessforce_key']) && $finder['fitnessforce_key'] != ''){
@@ -2361,16 +2384,16 @@ class SchedulebooktrialsController extends \BaseController {
 			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 
-			$reg_id								= 	(isset($booktrialdata->reg_id) && $booktrialdata->reg_id != '') ? $booktrialdata->reg_id : '';
+			$gcm_reg_id								= 	(isset($booktrialdata->reg_id) && $booktrialdata->reg_id != '') ? $booktrialdata->reg_id : '';
 			$device_type						= 	(isset($booktrialdata->device_type) && $booktrialdata->device_type != '') ? $booktrialdata->device_type : '';
 
-			if(isset($booktrialdata->customer_id) && $booktrialdata->customer_id != '' && $reg_id == '' && $device_type == ''){
+			if(isset($booktrialdata->customer_id) && $booktrialdata->customer_id != '' && $gcm_reg_id == '' && $device_type == ''){
 
 				$device = Device::where('customer_id',(int)$booktrialdata->customer_id)->orderBy('_id', 'desc')->first();
 
 				if($device){
 
-					$reg_id	= $device->reg_id;
+					$gcm_reg_id	= $device->reg_id;
 					$device_type = $device->reg_id;
 				}
 			}
@@ -2407,7 +2430,7 @@ class SchedulebooktrialsController extends \BaseController {
 				'booktrial_actions'				=>		"",
 				'followup_date'					=>		"",
 				'followup_date_time'			=>		"",
-				'reg_id'						=>		$reg_id,
+				'reg_id'						=>		$gcm_reg_id,
 				'device_type'					=>		$device_type,
 				'type'							=>		$booktrialdata->type,
 				'google_pin'					=>		$google_pin
