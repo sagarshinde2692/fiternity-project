@@ -1608,6 +1608,9 @@ class SchedulebooktrialsController extends \BaseController {
 			$finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
 			$finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 
+			//ozonetel outbound calls
+			$customer_auto_sms = $this->autoSms($booktrialdata,$schedule_date_starttime);
+
 			//Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 			if($twelveHourDiffInMin >= (12 * 60)){
 				if($finder_category_id != 41){
