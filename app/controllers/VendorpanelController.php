@@ -865,23 +865,65 @@ class VendorpanelController extends BaseController
     public function updateProfile($finder_id)
     {
 
-//        $finder_ids = $this->jwtauth->vendorIdsFromToken();
-//
-//        if (!(in_array($finder_id, $finder_ids))) {
-//            $data = ['status_code' => 401,'message' => ['error' => 'Unauthorized to update this vendor profile'] ];
-//            return  Response::json( $data, 401);
-//        }
-//
-//        $data = Input::json()->all();
-//        $validator = Validator::make($data, Finder::$update_rules);
-//
-//        if ($validator->fails()) {
-//            return Response::json(array('status' => 400,'message' =>error_message_array($validator->errors())),400);
-//        }
-//
-//        $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
-//        $finder->update($data);
-//        return Response::json($finder, 200);
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401,'message' => ['error' => 'Unauthorized to update this vendor profile'] ];
+            return  Response::json( $data, 401);
+        }
+
+        $data = Input::json()->all();
+        $validator = Validator::make($data, Finder::$update_rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 400,'message' =>error_message_array($validator->errors())),400);
+        }
+
+        $directly_editable_fields = array(
+            "contact",
+            "finder_vcc_email",
+            "finder_vcc_mobile",
+            "lat",
+            "lon",
+            "facilities"
+        );
+
+        $fitternity_intervention_editable_fields = array(
+            "info",
+            "offerings",
+            "category_id",
+            "categorytags",
+            "location_id",
+            "locationtags",
+        );
+
+        $req = Input::all();
+
+        // Get Directly editable fields by vendor.....
+        $direct = array_only($req, $directly_editable_fields);
+
+        // Remove relational fields.....
+        $facilities = array_pull($direct, 'facilities');
+
+        // Get Finder....
+        $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
+
+        // Update non-relational fields.....
+        $finder->update($direct);
+
+        // Update relational fields.....
+        $finder->facilities()->attach($facilities);
+
+        // Get fields which needs fitternity approval to get updated.....
+        $new = array_only($req, $fitternity_intervention_editable_fields);
+
+        // Get existing fields to compare.....
+        $existing = array_only($finder->toArray(), array_keys($new));
+
+        // Save in a collection......
+        Vendorupdaterequest::firstOrCreate(['existing' => $existing, 'new' => $new]);
+        
+        return Response::json($finder, 200);
     }
 
     public function reviewReplyByVendor($finder_id, $review_id)
@@ -910,6 +952,39 @@ class VendorpanelController extends BaseController
         }
         else{
             $resp 	= 	array('status' => 400,'message' => "Invalid Id");
+            return  Response::json($resp, 400);
+        }
+
+
+    }
+
+
+    public function updateTrialByVendor($finder_id, $trial_id)
+    {
+        $data = Input::json()->all();
+
+        if(empty($data['trial_attended_finder'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - Attended status");
+            return  Response::json($resp, 400);
+        }
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
+            return Response::json($data, 401);
+        }
+
+        $trialData = Booktrial::find((int) $trial_id);
+
+        if($trialData){
+            $trialData->update(array('trial_attended_finder' => $data['trial_attended_finder']));
+            $resp 	= 	'Success';
+            return  Response::json($resp, 200);
+
+        }
+        else{
+            $resp 	= 	array('status' => 400,'message' => "Invalid Trial Id");
             return  Response::json($resp, 400);
         }
 

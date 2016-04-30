@@ -59,7 +59,7 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::get('/vendorsummary/statistics/{date?}',
 		array('as' => 'vendor.summarystatistics','uses' => 'VendorpanelController@getSummaryStatistics'));
-
+	
 	Route::get('/vendorsummary/reviews/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summaryreviews','uses' => 'VendorpanelController@getSummaryReviews'));
 
@@ -75,9 +75,11 @@ Route::group(array('before' => 'validatevendor'), function() {
 	Route::post('/vendorsummary/{finder_id?}/reviews/{review_id?}/reply',
 		array('as' => 'vendor.reviewReplyByVendor','uses' => 'VendorpanelController@reviewReplyByVendor'));
 
+	Route::post('/vendorsummary/{finder_id?}/trial/{trial_id?}/edit',
+		array('as' => 'vendor.updateTrialByVendor','uses' => 'VendorpanelController@updateTrialByVendor'));
 
-//	Route::put('/vendorsummary/profile/{finder_id?}',
-//		array('as' => 'vendor.updateprofile','uses' => 'VendorpanelController@updateProfile'));
+	Route::put('/vendorsummary/profile/{finder_id?}/edit',
+		array('as' => 'vendor.updateprofile','uses' => 'VendorpanelController@updateProfile'));
 });
 
 
