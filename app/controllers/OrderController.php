@@ -36,7 +36,7 @@ class OrderController extends \BaseController {
 	public function captureOrderStatus(){
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
-		
+
 		Log::info('Capture Order Status',$data);
 
 		if(empty($data['order_id'])){
@@ -50,6 +50,13 @@ class OrderController extends \BaseController {
 		}
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
+
+		if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+
+			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Already Status Successfull");
+			return Response::json($resp);
+		}
+
 		if(Input::json()->get('status') == 'success'){
 
 			array_set($data, 'status', '1');

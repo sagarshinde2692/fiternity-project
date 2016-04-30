@@ -855,6 +855,16 @@ class SchedulebooktrialsController extends \BaseController {
 
 		try {
 
+			$order_id = $data['order_id'];
+
+			$order 		= 	Order::findOrFail((int)$order_id);
+
+			if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+
+				$resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
+				return Response::json($resp);
+			}
+
 			$service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
 			$campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
 			$otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
