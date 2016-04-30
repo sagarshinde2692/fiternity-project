@@ -239,13 +239,20 @@ abstract Class VersionNextSms {
 
     }*/
 
-    public function sendToWorker($to, $message, $label = 'label', $priority = 0, $delay = 0){
+    public function sendToWorker($to, $message, $label = 'label', $delay = 0){
+
+        if(is_array($delay))
+        {
+            \Log::info('sms - '.$label.' -- '. $delay['date']);
+        }else{
+            \Log::info('sms - '.$label.' -- '. $delay);
+        }
 
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
         }
 
-        $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+        $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'label' => $label);
         
         $route  = 'sms';
         $result  = $this->sidekiq->sendToQueue($payload,$route);

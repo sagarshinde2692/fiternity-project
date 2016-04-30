@@ -1194,6 +1194,38 @@ public function getAllTrials(){
 	// return Response::json($response,200);
 }
 
+public function getUpcomingTrials(){
+
+	$jwt_token = Request::header('Authorization');
+	$decoded = $this->customerTokenDecode($jwt_token);
+
+	$customeremail = $decoded->customer->email;
+
+	$data = array();
+
+	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('booktrial_type','auto')->orderBy('schedule_date_time', 'desc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address')->first();
+
+	$resp 	= 	array('status' => 400,'data' => $data);
+
+	if($trials){
+		$data = $trials->toArray();
+
+		foreach ($data as $key => $value) {
+
+			$data[$key] = ucwords(strip_tags($value));
+		}
+
+		if(isset($data['schedule_slot_start_time'])){
+			$data['schedule_slot_start_time'] = strtoupper($data['schedule_slot_start_time']);
+		}
+
+		$resp 	= 	array('status' => 200,'data' => $data);
+	}
+
+	return Response::json($resp,$resp['status']);
+
+}
+
 public function editBookmarks($finder_id, $remove = ''){
 
 	$jwt_token = Request::header('Authorization');
@@ -1339,6 +1371,7 @@ public function getCustomerDetail(){
 
 			if(isset($city->lat) && $city->lat != "" && isset($city->lon)  && $city->lon != ""){
 
+
 				$lat = (float)$city->lat;
 				$lon = (float)$city->lon;
 
@@ -1353,7 +1386,6 @@ public function getCustomerDetail(){
 		$lonlat = [(float)$lon,(float)$lat];
 
 		//echo "<pre>";print_r($lonlat);exit;
-
 
 		$location_id = Location::where('lonlat','near',$lonlat)->take($limit)->lists('_id');
 

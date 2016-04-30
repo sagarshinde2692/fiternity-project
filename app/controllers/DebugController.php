@@ -9,7 +9,8 @@
 
 // use Response;
 use App\Mailers\FinderMailer as FinderMailer;
-
+use Queue;
+use App\Mailers\CustomerMailer as CustomerMailer;
 
 class DebugController extends \BaseController {
 
@@ -1609,17 +1610,22 @@ class DebugController extends \BaseController {
 			);*/
 
 			$missedcall_no = array(
-					array('number'=>'+912233010074','type'=>'yes','batch'=>1),
-					array('number'=>'+912233010075','type'=>'no','batch'=>1),
-					array('number'=>'+912233010076','type'=>'reschedule','batch'=>1),
 
-					array('number'=>'+912233010078','type'=>'yes','batch'=>2),
-					array('number'=>'+912233010079','type'=>'no','batch'=>2),
-					array('number'=>'+912233010080','type'=>'reschedule','batch'=>2),
+					array('number'=>'+912233010091','type'=>'like','batch'=>1,'for'=>'N+2Trial'),
+					array('number'=>'+912233010092','type'=>'explore','batch'=>1,'for'=>'N+2Trial'),
+					array('number'=>'+912233010093','type'=>'notattended','batch'=>1,'for'=>'N+2Trial'),
 
-					array('number'=>'+912233010087','type'=>'yes','batch'=>3),
-					array('number'=>'+912233010089','type'=>'no','batch'=>3),
-					array('number'=>'+912233010090','type'=>'reschedule','batch'=>3)
+					array('number'=>'+912233010094','type'=>'like','batch'=>2,'for'=>'N+2Trial'),
+					array('number'=>'+912233010095','type'=>'explore','batch'=>2,'for'=>'N+2Trial'),
+					array('number'=>'+912233010096','type'=>'notattended','batch'=>2,'for'=>'N+2Trial'),
+
+					array('number'=>'+912067083508','type'=>'like','batch'=>3,'for'=>'N+2Trial'),
+					array('number'=>'+918030088462','type'=>'explore','batch'=>3,'for'=>'N+2Trial'),
+					array('number'=>'+918030088463','type'=>'notattended','batch'=>3,'for'=>'N+2Trial'),
+
+					array('number'=>'+912233010069','type'=>'renew','batch'=>1,'for'=>'OrderRenewal'),
+					array('number'=>'+912233010070','type'=>'alreadyextended','batch'=>1,'for'=>'OrderRenewal'),
+					array('number'=>'+912067083510','type'=>'explore','batch'=>1,'for'=>'OrderRenewal'),
 			);
 
 			foreach ($missedcall_no as $key => $value) {
@@ -1631,7 +1637,7 @@ class DebugController extends \BaseController {
 
 			}	
 
-		}
+		}	
 
 		public function top10Finder(){
 
@@ -1893,6 +1899,81 @@ class DebugController extends \BaseController {
 
 		return 'done';
 
+	}
+
+	public function testEmail(){
+
+		$customermailer = new CustomerMailer();
+
+
+
+		/*$template = Template::where('label','CustomerAutoTrail')->first();
+
+		$data = array(
+			'customer_name'=>'mahesh',
+			"customer_phone"=>'9920864894',
+			"customer_email" => "mjmjadhav@gmail.com",
+			"booktrialid"	=> 1,
+			"trial_type" => "test",
+			"finder_name" => "Eight packs",
+			"with_at"=>"at"
+		);
+
+
+		$email_template = 	$this->bladeCompile($template->email_text,$data);
+		$bcc_emailids 	= 	array(Config::get('mail.to_mailus')) ;
+
+		
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name'],
+			'bcc_emailids' => $bcc_emailids,
+			'email_subject' => $this->bladeCompile($template->subject,$data)
+		);
+
+		$label = 'BookTrial-C';
+		$priority = 1;*/
+
+		return $customermailer->testEmail();
+
+
+
+
+				//echo "<pre>";print_r($template);exit;
+
+		//return View::make($template->email_text, $data)->render();
+
+
+				//echo "<pre>";print_r($template->emai_text);exit;
+
+	}
+
+	public function bladeCompile($value, array $args = array())
+	{
+	    $generated = \Blade::compileString($value);
+
+	    ob_start() and extract($args, EXTR_SKIP);
+
+	    // We'll include the view contents for parsing within a catcher
+	    // so we can avoid any WSOD errors. If an exception occurs we
+	    // will throw it out to the exception handler.
+	    try
+	    {
+	        eval('?>'.$generated);
+	    }
+
+	    // If we caught an exception, we'll silently flush the output
+	    // buffer so that no partially rendered views get thrown out
+	    // to the client and confuse the user with junk.
+	    catch (\Exception $e)
+	    {
+	        ob_get_clean(); throw $e;
+	    }
+
+	    $content = ob_get_clean();
+
+	    return $content;
 	}
 
 
