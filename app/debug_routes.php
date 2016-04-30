@@ -625,20 +625,34 @@ Route::get('reverse_moveratecard', function() {
 
 
 
-Route::get('exportcustomer', function() { 
+Route::get('exportcustomer/{start_date?}/{end_date?}', function() { 
 
-	//BOOKTRIALS
+	ini_set('memory_limit','2048M');
+    ini_set('max_execution_time', 300);
+
+	$start_date = $end_date = "";
+	$file_name = "customer_".$start_date."_".$end_date;
+
+	//CUSTOMERS
 	$headers = [
 	'Content-type'        => 'application/csv'
 	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
 	,   'Content-type'        => 'text/csv'
-	,   'Content-Disposition' => 'attachment; filename=export_customer.csv'
+	,   'Content-Disposition' => 'attachment; filename='.$file_name.'.csv'
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
 
 	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, CUSTOMER GENDER, CUSTOMER LOCATION, CUSTOMER CITY  \n";
-	$customers 	= 	Customer::take(1000)->skip(0)->orderBy('_id', 'asc')->get()->toArray();
+	// $customers 	= 	Customer::take(1000)->skip(0)->orderBy('_id', 'asc')->get()->toArray();
+
+	if($start_date == "" || $end_date == ""){
+		$customers 	= 	Customer::orderBy('_id', 'asc')->get()->toArray();
+
+	}else{
+		$customers = Customer::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->get();
+	}
+
 	$customer_city 			=  "";
 	foreach ($customers as $key => $value) {
 		// var_dump($value;)exit();
