@@ -11,7 +11,7 @@ use App\Responsemodels\AutocompleteResponse;
 use App\Responsemodels\FinderresultResponse;
 use \RedisL4;
 use App\Services\Cacheapi as Cacheapi;
-use Cache;
+
 
 class GlobalSearchController extends \BaseController
 {
@@ -290,33 +290,33 @@ class GlobalSearchController extends \BaseController
                           "boost_factor": 11
                       },
                       {
-                       "filter": {
-                        "query": {
-                            "bool": {
-                                "should": [
+                         "filter": {
+                            "query": {
+                                "bool": {
+                                    "should": [
 
-                                {
-                                    "query_string": {
-                                        "fields": [
-                                        "input"                                                                                    
-                                        ],
-                                        "query": "'.$keys[0].'*",
-                                        "fuzziness": 0,
-                                        "fuzzy_prefix_length": 0
-                                    }
-                                }'.$key2_input_query.$key3_input_query.'
-                                ]
+                                    {
+                                        "query_string": {
+                                            "fields": [
+                                            "input"                                                                                    
+                                            ],
+                                            "query": "'.$keys[0].'*",
+                                            "fuzziness": 0,
+                                            "fuzzy_prefix_length": 0
+                                        }
+                                    }'.$key2_input_query.$key3_input_query.'
+                                    ]
+                                }
                             }
-                        }
-                    },
-                    "boost_factor": 6
+                        },
+                        "boost_factor": 6
+                    }
+                    ],
+                    "boost_mode": "sum"
                 }
-                ],
-                "boost_mode": "sum"
             }
         }
     }
-}
 }';
 
 $request = array(
@@ -530,7 +530,7 @@ if(!empty($sort)){
 $keywordfunction = '';
 
 foreach ($keylist as $keyval) {
- $newval = '{
+   $newval = '{
     "filter": {
         "query": {
             "bool": {"should": [
@@ -783,19 +783,19 @@ $response       =   json_decode($searchresulteresponse1,true);
 return Response::json($response);
 }
 catch(Exception $e){
- throw $e;
+   throw $e;
 }
 }
 
 public function newglobalsearch(){
 
- $from     =         Input::json()->get('offset')['from'];
- $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
- $string   =         strtolower(Input::json()->get('keyword'));
- $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
- $location =         Input::json()->get('location');
- $lat      =         isset($location['lat']) ? $location['lat'] : '';
- $lon      =         isset($location['long']) ? $location['long'] : '';
+   $from     =         Input::json()->get('offset')['from'];
+   $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+   $string   =         strtolower(Input::json()->get('keyword'));
+   $city     =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+   $location =         Input::json()->get('location');
+   $lat      =         isset($location['lat']) ? $location['lat'] : '';
+   $lon      =         isset($location['long']) ? $location['long'] : '';
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
@@ -808,13 +808,13 @@ public function newglobalsearch(){
             }                        
         }
         else{
-           $string1 = str_replace($stopwords, "", $string);
-       }
+         $string1 = str_replace($stopwords, "", $string);
+     }
 
 
-       $keylist   = array_filter(explode(" ", $string1));
+     $keylist   = array_filter(explode(" ", $string1));
 
-       if(sizeof($keylist) > 1){
+     if(sizeof($keylist) > 1){
         if(($keylist[1] === 'i')){
             array_splice($keylist, 1);
         }
@@ -1196,7 +1196,7 @@ if($goldflag){
 }
 $crossfunction = '';
 if($crossfitomflag){   
-   $crossfunction = '{
+ $crossfunction = '{
     "filter": {
         "query": {
             "match": {
@@ -1236,21 +1236,21 @@ $functionfilters =  ' "filter": {
 }'; 
 
 $query = '{
-   "fields": [
-   "autosuggestvalue",
-   "location",
-   "identifier",
-   "type",
-   "slug",
-   "inputcat1",
-   "inputcat"
-   ],
-   "from": '.$from.',
-   "size": '.$size.',
-   "query": {
+ "fields": [
+ "autosuggestvalue",
+ "location",
+ "identifier",
+ "type",
+ "slug",
+ "inputcat1",
+ "inputcat"
+ ],
+ "from": '.$from.',
+ "size": '.$size.',
+ "query": {
     "filtered": {
-       '.$functionquery.$functionfilters.'                                
-   }
+     '.$functionquery.$functionfilters.'                                
+ }
 }
 }';    
 
@@ -1278,19 +1278,19 @@ return Response::json($response);
 public function improvedkeywordSearch(){
 
     try {
+        $city_name_list = array('mumbai','pune', 'bangalore', 'delhi', 'gurgaon');
+        $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
+        $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
+        $key     =         strtolower(Input::json()->get('key'));
+        $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
+        $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
+        $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
+        $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
+        $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
+        $location =          Input::json()->get('regions') ? Input::json()->get('regions') : array();
+        $category =         Input::json()->get('category') ? Input::json()->get('category') : array();
 
-       $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
-       $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
-       $key     =         strtolower(Input::json()->get('key'));
-       $city    =         Input::json()->get('city') ? Input::json()->get('city') : 'mumbai';
-       $lat     =         Input::json()->get('lat') ? Input::json()->get('lat') : '';
-       $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
-       $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
-       $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
-       $location =          Input::json()->get('regions') ? Input::json()->get('regions') : array();
-       $category =         Input::json()->get('category') ? Input::json()->get('category') : array();
-
-       $sort_clause = '';
+        $sort_clause = '';
 
         /*
 
@@ -1302,34 +1302,36 @@ public function improvedkeywordSearch(){
         $city_filter = '{"term" : { "city" : "'.$city.'" } },';
         $regions_filter = '';
         $category_filter = '';
+        $keylist = array();
 
         /*
 
         All filters from request
 
         */    
+         $string = $this->_removeStopwords($key);
+          $keylist = explode(' ', $string);
+        $cityBool = false;
+        if((sizeof($location) === 1)&&(array_search($location[0], $city_name_list) !== false)){
+            $cityBool = true;
+        }
 
         $redis_query_flag = ((sizeof($location) > 0)||(sizeof($category)));    
 
-        if(sizeof($location) > 0){
+        if(!$cityBool){
+           if(sizeof($location) > 0){
             $category_filter = '{"terms" : {  "categorytags": ["'.strtolower(implode('","', $category)).'"],"_cache": true}},';
         }
 
         if(sizeof($category) > 0){
-           $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $location)).'"],"_cache": true}},';
-       }
+         $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $location)).'"],"_cache": true}},';
+     }
+    
+    
 
-        /*
-
-        Build full text query from redis
-
-        */
-        $string = $this->_removeStopwords($key);
-        $keylist = explode(' ', $string);
-
-        if(!$redis_query_flag){
-            $cat_list = array();
-            $loc_list = array();
+     if(!$redis_query_flag){
+        $cat_list = array();
+        $loc_list = array();
         /*
         
         Query Redis Database here 
@@ -1365,106 +1367,114 @@ public function improvedkeywordSearch(){
         }
     }
 
-        /*
-
-        Build full text filters
-
-        */
-
-        $regez = $this->_getCategoryRegex($city);
-        
-        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';         
-        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},'  : '';
-        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},'  : '';
+}
 
 
-        $must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter.$city_filter,',');
 
-        $locations_new_filter =' {"terms" : { "locationtags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-        $category_new_filter =' {"terms" : { "categorytags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-        $title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-        $offering_new_filter =' {"terms" : { "offerings_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-        $city_new_filter =' {"terms" : { "city" : ["'.strtolower(implode('","', $keylist)).'"] } },';
-        $loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
 
-        $loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
-        $mustfilter_post = '"must": ['.$must_filtervalue_post.']';
-        $filtervalue_post = trim($mustfilter_post,',');
-        $must_filtervalue = trim($city_filter.$loccatshould,',');
-        $mustfilter = '"must": ['.$must_filtervalue.']'; 
-        $filtervalue = trim($mustfilter,',');
+$regez = $this->_getCategoryRegex($city);
 
-        if($mustfilter != ''){
-            $filters = '"filter": {
-                "bool" : {'.$filtervalue.'}
-            },"_cache" : true';
-        }
+$budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';         
+$offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},'  : '';
+$facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},'  : '';
 
-        if($mustfilter_post != ''){
-            $filters_post = ',"post_filter": {
-                "bool" : {'.$filtervalue_post.'}
-            }';
-        }
-       
-        $location_facets_filter = trim($city_filter.$geo_location_filter.$category_filter,',');
-        $facilities_facets_filter = trim($city_filter.$regions_filter.$geo_location_filter.$category_filter, ',');
-        $offerings_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
-        $budgets_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
+$must_filtervalue_post ='';
+if($cityBool){
+    $regions_filter = '';
+}
 
-        $facilities_bool = '"filter": {
-            "bool" : { "must":['.$facilities_facets_filter.']}
-        }';
 
-        $offering_bool = '"filter": {
-            "bool" : {"must":['.$offerings_facets_filter.']}
-        }';
+$must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter.$city_filter,',');    
 
-        $budgets_bool = '"filter": {
-            "bool" : {"must":['.$budgets_facets_filter.']}
-        }';
 
-        $location_bool = '"filter": {
-            "bool" : {"must":['.$location_facets_filter.']}
-        }';
-       
-        $location_facets = ' "filtered_locationtags": {
-            '.$location_bool.',
-            "aggs": {
-                "locationstags": {
-                    "terms": {
-                        "field": "locationtags",                    
-                        "min_doc_count": 1,
-                        "size": 500,
-                        "order":{"_term": "asc"}
-                    }
-                }
-            }
-        },';
+$locations_new_filter =' {"terms" : { "locationtags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+$category_new_filter =' {"terms" : { "categorytags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+$title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+$offering_new_filter =' {"terms" : { "offerings_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+$city_new_filter =' {"terms" : { "city" : ["'.strtolower(implode('","', $keylist)).'"] } },';
+if($cityBool){
+    $locations_new_filter = '';
+}
+$loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
 
-        $regions_facets = '
-        "filtered_locations": { '.$location_bool.', 
-        "aggs":
-        { "loccluster": {
+$loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
+$mustfilter_post = '"must": ['.$must_filtervalue_post.']';
+$filtervalue_post = trim($mustfilter_post,',');
+$must_filtervalue = trim($city_filter.$loccatshould,',');
+$mustfilter = '"must": ['.$must_filtervalue.']'; 
+$filtervalue = trim($mustfilter,',');
+
+if($mustfilter != ''){
+    $filters = '"filter": {
+        "bool" : {'.$filtervalue.'}
+    },"_cache" : true';
+}
+
+if($mustfilter_post != ''){
+    $filters_post = ',"post_filter": {
+        "bool" : {'.$filtervalue_post.'}
+    }';
+}
+
+$location_facets_filter = trim($city_filter.$geo_location_filter.$category_filter,',');
+$facilities_facets_filter = trim($city_filter.$regions_filter.$geo_location_filter.$category_filter, ',');
+$offerings_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
+$budgets_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
+
+$facilities_bool = '"filter": {
+    "bool" : { "must":['.$facilities_facets_filter.']}
+}';
+
+$offering_bool = '"filter": {
+    "bool" : {"must":['.$offerings_facets_filter.']}
+}';
+
+$budgets_bool = '"filter": {
+    "bool" : {"must":['.$budgets_facets_filter.']}
+}';
+
+$location_bool = '"filter": {
+    "bool" : {"must":['.$location_facets_filter.']}
+}';
+
+$location_facets = ' "filtered_locationtags": {
+    '.$location_bool.',
+    "aggs": {
+        "locationstags": {
             "terms": {
-                "field": "locationcluster",
-                "min_doc_count":1
+                "field": "locationtags",                    
+                "min_doc_count": 1,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
 
-            },"aggs": {
-              "region": {
-                "terms": {
-                    "field": "location",
-                    "min_doc_count":1,
-                    "size":"500",
-                    "order": {
-                      "_term": "asc"
-                  }
+$regions_facets = '
+"filtered_locations": { '.$location_bool.', 
+"aggs":
+{ "loccluster": {
+    "terms": {
+        "field": "locationcluster",
+        "min_doc_count":1
 
-              }
+    },"aggs": {
+      "region": {
+        "terms": {
+            "field": "location",
+            "min_doc_count":1,
+            "size":"500",
+            "order": {
+              "_term": "asc"
           }
-      }}}
-  },';
 
-  $facilities_facets = ' "filtered_facilities": {
+      }
+  }
+}}}
+},';
+
+$facilities_facets = ' "filtered_facilities": {
     '.$facilities_bool.',
     "aggs": {
         "facilities": {
@@ -1528,7 +1538,7 @@ if(!empty($sort)){
 $keywordfunction = '';
 
 foreach ($keylist as $keyval) {
- $newval = '{
+   $newval = '{
     "filter": {
         "query": {
             "bool": {"should": [
@@ -1780,7 +1790,7 @@ $response       =   json_decode($searchresulteresponse1,true);
 return Response::json($response);
 }
 catch(Exception $e){
- throw $e;
+   throw $e;
 }
 }
 
@@ -1815,8 +1825,8 @@ Private function to query redis database
 */
 
 private function _queryRedis($key_list = array()){
- $return_value = array();
- foreach ($key_list as $k => $v) {
+   $return_value = array();
+   foreach ($key_list as $k => $v) {
     $res = $this->redis_db->command('keys', array('*'.$v.'*'));
     if(sizeof($res) > 0){
         foreach ($res as $key => $r) {
@@ -1831,38 +1841,38 @@ return $return_value;
 }
 
 private function _removeStopwords($string){
-   $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
-   $resp = str_replace($stopwords, " ", $string);
-   return $resp;
+ $stopwords = array(" in "," the "," and "," of "," off "," by "," for ");
+ $resp = str_replace($stopwords, " ", $string);
+ return $resp;
 }
 
 private function _getCategoryRegex($city){
-   
+
     $regex = '';
     switch ($city) {
         case 'mumbai':
-           $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional training|mma And kick boxing|dance|marathon training|spinning and indoor cycling|personal trainers|healthy snacks and beverages|dietitians and nutritionists|swimming|sport nutrition supliment stores';
-            break;
-         case 'delhi':
-            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
-            break;
-         case 'bangalore':
-            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional Training|mma And kick boxing|dance|spinning and indoor cycling';
-            break;
-         case 'pune':
-            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
-            break;
-         case 'gurgaon':
-            $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
-            break;
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional training|mma And kick boxing|dance|marathon training|spinning and indoor cycling|personal trainers|healthy snacks and beverages|dietitians and nutritionists|swimming|sport nutrition supliment stores';
+        break;
+        case 'delhi':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'bangalore':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional Training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'pune':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'gurgaon':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
         
         default:
             # code...
-            break;
+        break;
     }
 
     return $regex;
 
 }
-            
+
 }
