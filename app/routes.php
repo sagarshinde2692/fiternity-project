@@ -251,6 +251,7 @@ Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderR
 Route::post('search/getfinderresultsv2', 'RankingSearchController@getRankedFinderResultsAppv2');
 Route::get('buildkeywordcache', 'GlobalSearchController@preparekeywordsearchcache');
 Route::post('keywordsearchwebv1', 'GlobalSearchController@improvedkeywordSearch');
+Route::post('search/searchdirectpefinders', 'RankingSearchController@searchDirectPaymentEnabled');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
