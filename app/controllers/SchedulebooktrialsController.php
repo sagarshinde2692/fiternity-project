@@ -2253,6 +2253,13 @@ class SchedulebooktrialsController extends \BaseController {
 		$id 				= 	(int) $id;
 		$bookdata 			= 	array();
 		$booktrial 			= 	Booktrial::findOrFail($id);
+
+		if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
+
+			$resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
+			return Response::json($resp,200);
+		}
+		
 		array_set($bookdata, 'going_status', 2);
 		array_set($bookdata, 'going_status_txt', 'cancel');
 		array_set($bookdata, 'booktrial_actions', '');
