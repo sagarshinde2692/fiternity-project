@@ -166,7 +166,7 @@
 
                   
                  
-                 <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:info@fitternity.com">
+                 <p style="padding-top:30px; font-weight:bold; color:#5f5e5e; font-size:20px;"><span style="color:#5f5e5e; font-weight:400;" href="mailto:{{Config::get('app.contact_us_customer_email')}}">
                   Hi {{  ucwords($customer_name) }}!</span></p>      
                   
                   
@@ -182,7 +182,7 @@
 
                        <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Delivery: Kits will be delievered between 15th to 25th October 2015.</p> 
 
-                        <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">{{Config::get('app.customer_care_number')}}</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
+                        <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="#">{{Config::get('app.contact_us_customer_number')}}</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a></p>
 
                         
                         <p style="padding-top:25px; padding-bottom:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">Regards, <br />Team Fitternity</p>

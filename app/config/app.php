@@ -14,7 +14,7 @@ return array(
 	*/
 
 
-	'debug' => TRUE,
+	'debug' => FALSE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -187,7 +187,7 @@ return array(
 		'Password'          => 'Illuminate\Support\Facades\Password',
 		'Queue'             => 'Illuminate\Support\Facades\Queue',
 		'Redirect'          => 'Illuminate\Support\Facades\Redirect',
-		'Redis'             => 'Illuminate\Support\Facades\Redis',
+		'RedisL4'             => 'Illuminate\Support\Facades\Redis',
 		'Request'           => 'Illuminate\Support\Facades\Request',
 		'Response'          => 'Illuminate\Support\Facades\Response',
 		'Route'             => 'Illuminate\Support\Facades\Route',
@@ -257,7 +257,8 @@ return array(
 	'customer_care_number' => '02261222233',
 	'contact_us_vendor_email' => 'business@fitternity.com',
 	'contact_us_customer_email' => 'support@fitternity.com',
-
+	'contact_us_vendor_number' => '02261222233',
+	'contact_us_customer_number' => '02261222222',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',

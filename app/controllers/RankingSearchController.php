@@ -47,7 +47,8 @@ class RankingSearchController extends \BaseController
         //input filters
         $category = Input::json()->get('category');
 
-
+        $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
+        $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
 
         $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
         $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
@@ -56,9 +57,36 @@ class RankingSearchController extends \BaseController
         $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
         $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
         $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+        $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.str_ireplace(',', '","',Input::json()->get('trialdays')).'"],"_cache": true}},'  : '';
+        $trial_range_filter = '';
+        if(($trial_time_from !== '')&&($trial_time_to !== '')){
+            $trial_range_filter = '  {
+                "nested": {
+                  "path": "trials",
+                  "query": {
+                    "filtered": {
+                        "filter": {"bool": {"must": [
+                        {"range": {
+                            "start": {
+                              "gte": '.$trial_time_from.'
+                          }
+                      }},
+                      {
+                        "range": {
+                          "end": {
+                            "lte": '.$trial_time_to.'
+                        }
+                    }
+                }
+                ]}}
+            }}
+        }
+    },';
+}
 
-        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -142,7 +170,6 @@ $request = array(
     'method' => 'POST',
     'postfields' => $body
     );
-
 
 $search_results     =   es_curl_request($request);
 
@@ -294,6 +321,9 @@ public function getRankedFinderResultsMobile()
         //input filters
     $category = Input::json()->get('category');
 
+    $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
+    $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
+
 
 
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
@@ -303,9 +333,36 @@ public function getRankedFinderResultsMobile()
     $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
     $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
     $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+    $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.str_ireplace(',', '","',Input::json()->get('trialdays')).'"],"_cache": true}},'  : '';
 
-    $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-    $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+    $trial_range_filter = '';
+    if(($trial_time_from !== '')&&($trial_time_to !== '')){
+        $trial_range_filter = '  {
+            "nested": {
+              "path": "trials",
+              "query": {
+                "filtered": {
+                    "filter": {"bool": {"must": [
+                    {"range": {
+                        "start": {
+                          "gte": '.$trial_time_from.'
+                      }
+                  }},
+                  {
+                    "range": {
+                      "end": {
+                        "lte": '.$trial_time_to.'
+                    }
+                }
+            }
+            ]}}
+        }}
+    }
+},';
+}
+
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -433,6 +490,10 @@ public function getRankedFinderResultsApp()
 
     $category = Input::json()->get('category');
 
+    $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
+    $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
+
+
     //return Input::json()->get('offset')['from'];
 
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
@@ -442,10 +503,36 @@ public function getRankedFinderResultsApp()
     $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
     $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
     $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
+    $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
     
+    $trial_range_filter = '';
+    if(($trial_time_from !== '')&&($trial_time_to !== '')){
+        $trial_range_filter = '  {
+            "nested": {
+              "path": "trials",
+              "query": {
+                "filtered": {
+                    "filter": {"bool": {"must": [
+                    {"range": {
+                        "start": {
+                          "gte": '.$trial_time_from.'
+                      }
+                  }},
+                  {
+                    "range": {
+                      "end": {
+                        "lte": '.$trial_time_to.'
+                    }
+                }
+            }
+            ]}}
+        }}
+    }
+},';
+}
 
-    $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-    $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -520,6 +607,7 @@ public function getRankedFinderResultsApp()
     },
     '.$sort.'
 }';
+
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
     'port' => 8050,
@@ -543,4 +631,530 @@ $response       =   json_decode($searchresulteresponse1,true);
 return Response::json($response);
 
 }
+
+public function getRankedFinderResultsAppv2()
+{
+    // echo "yo";
+   // return Input::json()->all();
+    $searchParams = array();
+    $facetssize =  $this->facetssize;
+    $rankField = 'rankv2';
+    $type = "finder";
+    $filters = "";
+    $from    =         Input::json()->get('offset')['from'];
+    $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+    //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+    $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
+    $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
+    $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+    $locat = Input::json()->get('location');
+    $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
+    $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
+        //input filters
+
+    $category = Input::json()->get('category');
+
+    $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
+    $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
+
+    // return $category;
+    $offering_regex = $this->_getOfferingRegex($category);
+
+    //return Input::json()->get('offset')['from'];
+    $must_not_filter = '';
+    
+    if($category === ''){
+        $must_not_filter = ',
+        "must_not": [{
+            "terms": {
+                "categorytags": [
+                "healthy tiffins",
+                "healthy snacks and beverages",
+                "sport nutrition supliment stores",
+                "dietitians and nutritionists"
+                ]
+            }
+        }]
+        ';
+    }
+
+    $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+    $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
+    $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
+    $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
+    $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+    
+    $trial_range_filter = '';
+    if(($trial_time_from !== '')&&($trial_time_to !== '')){
+
+        $trial_range_filter = '  {
+            "nested": {
+              "path": "trials",
+              "query": {
+                "filtered": {
+                    "filter": {"bool": {"must": [
+                    {"range": {
+                        "start": {
+                          "gte": '.$trial_time_from.'
+                      }
+                  }},
+                  {
+                    "range": {
+                      "end": {
+                        "lte": '.$trial_time_to.'
+                    }
+                }
+            }
+            ]}}
+        }}
+    }
+},';
+}
+
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+        $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
+        $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+        $mustfilter_post = '"must": ['.$must_filtervalue.']';
+        $filtervalue_post = trim($mustfilter_post,',');
+        $filtervalue = trim($shouldfilter.$mustfilter,',');
+
+        if($orderfield == 'popularity')
+        {
+            if($category_filter != '') {
+                $factor = evalBaseCategoryScore($category);
+                $sort = '"sort":
+                {"_script" : {
+                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+                    "type" : "number",
+                    "params" : {
+
+                        "factor" : 11
+
+                    },
+                    "order" : "' . $order . '"
+                }}';
+            }
+            else{
+                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+            }
+
+        }
+        else
+        {
+            $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
+        }
+        if($shouldfilter != '' || $mustfilter != ''){
+            $filters = '"filter": {
+                "bool" : {'.$filtervalue.'}
+            },"_cache" : true';
+        }
+
+        if($mustfilter != ''){
+           $filters_post = '"post_filter": {
+            "bool" : {'.$filtervalue_post.$must_not_filter.'
+        }},';            
+    }
+
+        /*
+
+        Aggregations filters here for drilling down
+
+        */
+
+        $location_facets_filter = trim($location_filter.$category_filter,',');
+        $facilities_facets_filter = trim($location_filter.$regions_filter.$category_filter, ',');
+        $offerings_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
+        $budgets_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
+        $trialday_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter, ',');
+
+        $facilities_bool = '"filter": {
+            "bool" : { "must":['.$facilities_facets_filter.']}
+        }';
+
+        $offering_bool = '"filter": {
+            "bool" : {"must":['.$offerings_facets_filter.']}
+        }';
+
+        $budgets_bool = '"filter": {
+            "bool" : {"must":['.$budgets_facets_filter.']}
+        }';
+
+        $location_bool = '"filter": {
+            "bool" : {"must":['.$location_facets_filter.']}
+        }';
+
+        $trialdays_bool = '"filter": {
+            "bool" : {"must":['.$trialday_facets_filter.']}
+        }';
+
+        $regions_facets = '
+        "filtered_locations": { '.$location_bool.', 
+        "aggs":
+        { "loccluster": {
+            "terms": {
+                "field": "locationcluster",
+                "min_doc_count":1
+
+            },"aggs": {
+              "region": {
+                "terms": {
+                    "field": "location",
+                    "min_doc_count":1,
+                    "size":"500",
+                    "order": {
+                      "_term": "asc"
+                  }
+
+              }
+          }
+      }}}
+  },';
+
+
+  $locationtags_facets = ' "filtered_locationtags": {
+    '.$location_bool.',
+    "aggs": {
+        "offerings": {
+            "terms": {
+                "field": "locationtags",             
+                "min_doc_count": 1,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$facilities_facets = ' "filtered_facilities": {
+    '.$facilities_bool.',
+    "aggs": {
+        "facilities": {
+            "terms": {
+                "field": "facilities",
+                "include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$offerings_facets = ' "filtered_offerings": {
+    '.$offering_bool.',
+    "aggs": {
+        "offerings": {
+            "terms": {
+                "field": "offerings",
+                "include" : "'.$offering_regex.'",
+                "min_doc_count": 1,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$budgets_facets = ' "filtered_budgets": {
+    '.$budgets_bool.',
+    "aggs": {
+        "budgets": {
+            "terms": {
+                "field": "price_range",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+$trialdays_facets = ' "filtered_trials": {
+    '.$trialdays_bool.',
+    "aggs": {
+        "trialdays": {
+            "terms": {
+                "field": "service_weekdays",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+
+$category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+
+$facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
+
+$body = '{
+    "from": '.$from.',
+    "size": '.$size.',
+    "aggs": {'.$facetsvalue.'},
+    '.$filters_post.$sort.'
+}';
+
+
+$request = array(
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
+    'port' => 8050,
+    'method' => 'POST',
+    'postfields' => $body
+    );
+
+// $request = array(
+//     'url' => "http://localhost:9200/"."fitternity2016-04-16/finder/_search",
+//     'port' => 9200,
+//     'method' => 'POST',
+//     'postfields' => $body
+//     );
+    // return $body;exit;
+$search_results     =   es_curl_request($request);
+$search_results1    =   json_decode($search_results, true);
+$searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
+$searchresulteresponse->meta->number_of_records = intval($size);
+$searchresulteresponse->meta->from = intval($from);
+$searchresulteresponse->meta->sortfield = $orderfield;
+$searchresulteresponse->meta->sortorder = $order;
+
+$searchresulteresponse1 = json_encode($searchresulteresponse, true);
+
+$response       =   json_decode($searchresulteresponse1,true);
+
+return Response::json($response);
+
+}
+
+
+public function searchDirectPaymentEnabled(){
+
+    $from = (Input::json()->get('from')) ? Input::json()->get('from') : 0;
+    $size = (Input::json()->get('size')) ? Input::json()->get('size') :10;
+    $city = (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+    $category = (Input::json()->get('category')) ? Input::json()->get('category') : '';
+    $group_by_flag = (Input::json()->get('group_by_flag')) ? Input::json()->get('group_by_flag') : false;
+
+
+
+    $city_filter =  '{"term" : { "city" : "'.$city.'", "_cache": true }},';
+    $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+    $direct_payment_filter = '{"term" : {  "direct_payment_enable": true,"_cache": true}},';
+
+    $post_filter = trim($direct_payment_filter.$category_filter.$city_filter,',');
+    //return json_decode($group_by_flag);
+    if($group_by_flag){
+
+
+    $body = '{
+    "from": '.$from.',
+    "size": '.$size.',
+    "query": {
+        "filtered": {
+            "filter": {
+                "bool": {
+                    "must": [{
+                        "term": {
+                            "city": "'.$city.'"
+                        }
+                    }, {
+                        "term": {
+                            "direct_payment_enable": true
+                        }
+                    }]
+                }
+            }
+        }
+    },
+    "aggs": {
+        "grouped_by_category": {
+            "terms": {
+                "field": "categorytags",
+                "size": 10000
+            },
+            "aggs": {
+                "grouped_by_category_hits": {
+                    "top_hits": {
+                        "sort": [{
+                            "rankv2": {
+                                "order": "desc"
+                            }
+                        }],
+                        "size": 100000000
+                    }
+                }
+            }
+        }
+    }
+}';
+
+    }else{
+
+
+        $Post_filter_query = '
+        "bool": {"must": [
+        '.$post_filter.'
+        ]}
+        ';
+
+        $query = '"query": {"filtered": {
+            "filter": {"bool": {"must": [
+            '.trim($city_filter.$direct_payment_filter,',').'
+            ]}}
+        }},';
+
+        $category_aggregations = '"aggs": {
+            "category_grouping": {
+              "terms": {
+                "field": "categorytags",
+                "size": 1000
+            }
+        }
+    },';
+
+
+    $sort = '';
+    if($category != '') {
+
+        $factor = evalBaseCategoryScore($category);
+        $sort = '"sort":
+        {"_script" : {
+            "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+            "type" : "number",
+            "params" : {
+
+                "factor" : 11
+
+            },
+            "order" : "desc"
+        }}';
+    }
+
+    else{
+        $sort = '"sort":[{"rankv2":{"order":"desc"}}]';
+    }
+
+
+    $body = '{
+        "from": '.$from.',
+        "size": '.$size.',
+       '.$category_aggregations.'
+        '.$query.'
+        '.$sort.',
+        "post_filter" : {'.$Post_filter_query.'}
+    }';
+
+}
+
+$request = array(
+    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
+    'port' => 8050,
+    'method' => 'POST',
+    'postfields' => $body
+    );
+
+// $request = array(
+//     'url' => "http://localhost:9200/"."fitternity_finder/finder/_search",
+//     'port' => 9200,
+//     'method' => 'POST',
+//     'postfields' => $body
+//     );
+
+$search_results     =   es_curl_request($request);
+
+$response       =   [
+
+'search_results' => json_decode($search_results,true)];
+
+return Response::json($response);
+
+}
+
+private function _getOfferingRegex($category){
+    $regex = '';
+
+    switch($category)
+    {
+        case 'spinning and indoor cycling':
+        $regex = 'ac|gym|health bar|indoor|live dj|nutritional support|outdoor activities';
+        break;
+        case 'personal trainers' :
+        $regex = 'gender - female|mma & kickboxing|yoga|dietitian & nutritionist|pilates|zumba|aerobics|strength training|equipment-provided|certified trainer|gender - male|crossfit|free trial|functional training';
+        break;
+        case 'gyms':
+        $regex = 'steam and sauna|juice bar|cycling studio|swimming pool|nutritional support|free wifi|strength training equipment|spinning|strectching area|personal training|24 hour facility|get your own trainer|music and video entertainment|massages|physiotherapy|cardio equipment';
+        break;
+
+        case 'yoga':
+        $regex = 'ashtanga yoga|aerial yoga|hatha yoga|vinyassa yoga|power yoga|prenatal yoga|hot yoga|hot yoga|post natal yoga|iyengar yoga';
+        break;
+
+        case 'zumba':
+        $regex = 'aqua zumba|zumba classes';
+        break;
+
+        case 'cross functional training':
+        $regex = 'trampoline workout|les mills|calisthenics|cross training|group x training|TRX training|combine training';
+        break;
+
+        case 'dance':
+        $regex = 'belly dancing|krumping|locking and poppin|b boying|contemporary|hip hop|free style|rumba|zouk|kathak|bharatanatyam|odissi|ballroom|tango|ballet|jazz|salsa|bollywood|cha cha ch|waltz|bachata|masala bhangra|samba|paso doble|rock n roll|jive|';
+        break;
+
+        case 'fitness studios':
+        $regex = 'dance|aerobics|pilates|zumba|yoga|functional training|mma and kickboxing';
+        break;
+
+        case 'crossfit':
+        $regex = 'workshops|kettlebell training|olympic lifting|indoor|outdoor|open box|cardio equipment|personal training|tyres & ropes|gymnastic routines|group training';
+        break;
+
+        case 'kick boxing':
+        $regex = '';
+        break;
+
+        case 'pilates':
+        $regex = 'reformer or stott pilates|mat pilates';
+        break;
+
+        case 'mma and kick boxing':
+        $regex = 'muay thai|kick boxing|capoeira|judo|kung fu|kalaripayattu|krav maga|tai chi|mixed martial arts|taekwondo|karate|jujitsu';
+        break;
+
+        case 'healthy tiffins':
+        $regex = 'only non veg|salad|calorie counted|cuisine - international|cuisine - jain|meal type - dinner only|vegan meals|meal type - lunch only|veg and non veg|meal type - lunch and dinner|trial available|only veg|cuisine - indian';
+        break;
+
+        case 'marathon training':
+        $regex = 'beach training|individual training|group training|road training';
+        break;
+
+        case 'swimming':
+        $regex = 'steam and sauna|jaccuzi|olympic pool|indoor pool|outdoor pool';
+        break;
+
+        case 'dietitians and nutritionists':
+        $regex = 'meals provided|body fat analysis|child nutrition|pregnancy nutrition|medical or disorder related|telephonic  or  online consultation|weight management|sports nutrition';
+        break;
+
+        case 'sport nutrition supliment stores':
+        $regex = 'Post Workout Supplements|pre workout Supplements|Accessories|Nutrition Bar|Protein Supplements|Energy & Endurance Supplements|Lean Muscle Gainer|Lean Mass Gainer|Weight Gainer|Fat Burners|Health & Wellness Supplements|Muscle Gainer|Soy Protein|Whey Protein|Fish Oil|Shakers|Mass Gainers|Food Supplements|';
+        break;
+        case '':
+        $regex  = ' ';
+        break;
+
+        default :
+        $regex = "nothing";
+        break;
+    }
+
+    return strtolower($regex);
+}
+
+
 }

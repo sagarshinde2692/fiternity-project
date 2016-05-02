@@ -6,7 +6,7 @@
 		<p> This is regarding the workout session / trial booked on Fitternity for {{ ucwords($finder_name) }},  {{ ucwords($finder_location) }} on 
 			{{ date(' F jS\, Y \(l\) g\.i A', strtotime($schedule_date_time) )  }} <br></p>
 
-			<p>Incase if you have queries, would like to reschedule or cancel your session - please call us on {{Config::get('app.customer_care_number')}} or reply to this mail.<br></p>
+			<p>Incase if you have queries, would like to reschedule or cancel your session - please call us on {{Config::get('app.{{Config::get('app.contact_us_customer_number')}}')}} or reply to this mail.<br></p>
 
 			<p>Here are some quick tips for your session:<br></p>
 

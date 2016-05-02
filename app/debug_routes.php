@@ -14,15 +14,8 @@ Route::get('migrations/offerings', 'MigrationsController@offerings');
 Route::get('migrations/facilities', 'MigrationsController@facilities');
 Route::get('migrations/vendors', 'MigrationsController@vendors');
 Route::get('migrations/vendorservicecategory', 'MigrationsController@vendorservicecategory');
-
-
-
-
-############################################################################################
-/************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
-
-Route::get('reversemigrations/country', 'ReversemigrationsController@country');
-
+Route::get('migrations/vendorPriceAverage', 'MigrationsController@vendorPriceAverage');
+Route::get('emailtest', 'DebugController@testEmail');
 
 Route::get('createvendoruser',function(){
 
@@ -34,32 +27,268 @@ Route::get('createvendoruser',function(){
 });
 
 
-Route::get('testencodedecode',function(){
-
-		$encode_val = JWT::encode('abc', 'my_key');
-		$decode_val = JWT::decode($encode_val, 'my_key', array('HS256'));
-
-//		echo "<br><br>$encode_val";
-//		echo "<br><br>$decode_val";
-//		exit();
 
 
-    try{
-        $decoded = JWT::decode($encode_val,'my_key', array('HS256'));
-    }catch(DomainException $e){
-        return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
-    }catch(ExpiredException $e){
-        return Response::json(array('status' => 400,'message' => 'Token expired'),400);
-    }catch(SignatureInvalidException $e){
-        return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
-    }catch(Exception $e){
-        return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
-    }
+############################################################################################
+/************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
 
-//		$this->assertEquals(JWT::decode($msg, 'my_key', array('HS256')), 'abc');
+Route::get('reversemigrations/country', 'ReversemigrationsController@country');
+
+
+Route::get('import/defination', function(){
+
+$definationArr = [
+
+	'12' => [
+			"Zumba is an aerobic fitness form featuring movements inspired by various styles of Latin American dance. Zumba dance classes typically feature a cardio interval training with combination of fast and slow rhythms that tone as well as sculpt the body while adding to weight loss. Zumba fitness is ideal for those looking who are looking for maximizing calorie burn, build agility fat burning and body toning.",
+			"Zumba fitness is a form of aerobic dance workout that takes it inspiration for movement and music from Latin American dances. Zumba dance workout comprises of fast moving interval workouts and cardio that help in weight loss, build agility body conditioning and calorie burnout",
+			"Zumba fitness combines high energy cardio and motivating music with unique moves and combinations. The routines set by a Zumba instructor feature aerobic interval training, cardio along with resistance training with fast and slow rhythms that tone and sculpt the body, aid in weight loss, build agility and have long term health and wellbeing.",
+			"Zumba fitness is a mix of Latin American dance moves to high energy beats. A typical Zumba dance class has elements of fitness interval training, cardio, resistance training and body sculpting movements that help in weight loss, build agility, fat burning along with high levels of cardio.",
+			"Zumba combines high energy and motivating music with unique moves and combinations, which allow the Zumba participants to dance away their worries. The routines feature aerobic/fitness interval training with a combination of fast and slow rhythms that tone and sculpt the body, and have long term health and wellbeing benefits. Zumba utilizes the principles of fitness interval training and resistance training to maximize caloric output, fat burning and total body toning. It is a mixture of body sculpting movements, exercises for weight loss with easy to follow dance steps."
+		],
+	'5'	=> [
+			"Gymnasium, commonly known as gyms, is an ideal place for workout when you want to achieve balance between strength training, resistance training and cardio workouts. The personal fitness trainers at gym centres help achieve the right training program for fitness goals through physical exercises and activities performed using gym equipments. It helps in body building, weight loss and body toning.",
+			"Gym is the short word for gymnasium. It is a place where gym trainers create personalized fitness plans that include physical exercise that balances strength training, resistance training and cardio workouts with gym equipments to help in body building, weight loss and body toning.",
+			"A gym is a place of workout characterized by equipments for strength training, body building, resistance training and cardio. Floor gym trainers or personal fitness trainers assist you in creating a fitness plan basis your fitness goal. This may or may not include diet plans. This is ideal workout for those looking to build muscles, weight loss and body toning",
+			"A gym is a equipment centric workout place that emphasises on a balance between strength training, resistance training and cardio workouts. It helps in creating a fitness regime with the help of gym trainers or personal fitness trainers that is basis your capacity and fitness goals. Ideal place for those who are looking for body building, weight loss and body toning."
+		],
+	'6' 	=> [
+			"Yoga is an ancient Indian form of physical and mental wellbeing, tying together various yoga asanas or poses and postures with techniques of meditation and Pranayama to create a balance in the body. There are different types of yoga classes, basis the type like Astanga Yoga, Bikram Yoga and Iyengar Yoga, to name a few. It helps in improving stability, strengthening the core and aiding in flexibility.",
+			"An ancient Indian form of mental and physical wellbeing, Yoga is characterized by various poses or asanas and postures while incorporating techniques of meditation and Pranayama. There are different forms taught by a yoga teacher at the yoga classes like Astanga yoga, Iyengar Yoga, Bikram yoga, Prenatal yoga, to name a few. Yoga benefits include improvement in flexibility, stability and strengthening the core.",
+			"Yoga is a form of mental and physical wellbeing that has its roots in ancient India. A yoga class typically comprises of yoga asanas or postures, Meditation and pranayama. It helps in improving flexibility, stability and strengthening the core. The different types of yoga are Astanga yoga, Iyengar yoga, Bikram Yoga, Prenatal yoga and more.",
+			"Yoga has its origins in ancient India and is a form of fitness that helps in improving the mental and physical wellbeing. Popularly, a yoga class will either be Astanga yoga, Iyengar yoga, Bikram yoga or Prenatal yoga and has elements like yoga asanas, pranayama and meditation. Yoga benefits include improvement of stability and flexibility as well as strengthening of core.",
+			"Yoga is an ancient Indian form of physical and mental wellbeing, tying together various poses and postures with techniques of meditation and breathing to create a balance in the body. Traditionally there are different types of yoga: Anusura Yoga, Ashtanga Yoga, Hatha Yoga, Iyengar Yoga, and Vinyasa Yoga. Several new versions have been promoted as yoga for weight loss and toning up like Power Yoga and Bikram Yoga. Each of the traditional variations of yoga has its own health benefits, all the while focusing on building your core, aiding weight loss, and connecting the mind with the body."
+		],
+	'35' =>[
+			"Cross functional training workout train your muscles to work together and prepares them for daily tasks by simulating common movements. Functional training exercises work on your speed, power, strength, muscular endurance and aerobic fitness. Functional trainers aim at improving your flexibility, core strengthening and building stamina. Benefits of functional training are building body shape, increased muscular balance, joint stability and coordination.",
+			"Cross functional training aims at muscle training by simulating common movements that prepares you for daily tasks. Functional workouts primarily include training for speed, power, muscular endurance, strength and aerobic fitness with an improve flexibility, core strengthening and building stamina. Ideal for those looking to build body shape, increase muscular balance, joint stability and coordination",
+			"Cross function training helps in simulating common movements performed in daily tasks to enhance muscle training. A typical functional workout includes exercises that improve your flexibility, strengthen your core and build stamina. Functional trainers create workout routines that focus on speed, power, strength, muscular endurance and aerobic fitness. Some of the benefits of functional training include increase in muscular balance, building body shape, joint stability and coordination",
+			"Cross functional training workouts help train muscles through simulated common movements performed in daily tasks. Functional workouts are routines comprising of speed, power, strength muscle endurance and aerobic fitness training that are done within the supervision of a functional trainer, with an aim to improve flexibility, strengthen your core and build stamina. The benefits of functional training are increase in muscular balance, building body shape, joint stability and core strengthening.",
+			"A functional fitness workout trains your muscles to work together and prepares them for daily tasks by simulating common movements you might do at home, at work or in sports in a way that builds core strength and muscle flexibility. The benefits of functional training include: Increase and improvement in speed, power, agility, strength, muscular endurance, aerobic fitness, and flexibility Good for promoting good posture Help with injury prevention and rehabilitation Achieves a metabolic training effect helps with building body shape Increased muscular balance, joint stability and coordination"
+	],
+	'7' => [
+		"Dance is an art of moving rhythmically to music, typically following a set sequence of steps. One can learn different types of dance ranging from hip hop, salsa, ballet, ballroom, bollywood, contemporary and more. Dance workouts are generally cardio in nature and help improve stamina, burn calories and weight loss.",
+		"Dance fitness is cardio workout that involves moving rhythmically to music by following a set sequence of steps. The different types of dance classes are hip hop, salsa, ballet, ballroom, bollywood and contemporary, to name a few. The benefits of dance are improvement of stamina, calorie burn and weight loss.",
+		"Dance is a form of cardio workout that is characterized by rhythmic movement by following a set sequence of steps. One can learn different types of dance like hip hop, salsa, ballet, ballroom, bollywood and contemporary, to name a few. Dance is ideal for those looking to improve their stamina, burn calories and weight loss.",
+		"Dance involves following a set sequence of steps leading to rhythmic movement. It is a form of cardio fitness. Dance fitness can be of different types like hip hop, salsa, ballet, ballroom, bollywood and contemporary, among few. The benefits of it are improved stamina, higher calorie burn and weight loss."
+	],		
+	'43' => [
+		"Fitness studios are a workout place where multiple types of fitness activities are conducted under one roof. There are different fitness trainers training for workouts that involve Dance fitness, Functional training, Yoga classes, Zumba dance workout, Pilates workout and MMA workout. It primarily focuses on cardio workouts. Benefits those, who prefer variety and want to achieve fitness goals, like weight loss, calorie burn, endurance building and resistance training.",
+		"Fitness studios helps provide variety in fitness activities without the inconvenience of travelling. With a primary focus on cardio and resistance training, these places offer Dance fitness, Functional training, Yoga classes, Zumba dance workout, Pilates workout and MMA workouts. The benefits of it are weight loss, high calorie burn and endurance building.",
+		"Fitness studios are a place where under one roof multiple fitness options are provided by different fitness trainers, these options include Dance fitness, Functional training, Yoga classes, Zumba dance workout, Pilates workout and MMA workout. The primary focus is cardio and resistance training with benefits like weight loss, cardio burnout and endurance building.",
+		"Fitness studios are a place of workout where multiple cardio and resistance training oriented fitness options like Dance Fitness, Functional training, Yoga classes, Zumba dance workout, Pilates workout and MMA workout, are conducted under one roof. Besides the variety, the benefits of it are weight loss, cardio burnout and endurance building."
+	],
+	'32' => [
+		"CrossFit is a high intensity interval training workout form that involves functional movements reflecting the best aspects of explosive plyometrics, strength training, speed training, Olympic and power-style weight lifting, kettle bells, body weight exercises, gymnastics and endurance training. A typical Crossfit workout routine targets all the major components of physical fitness with benefits like cardio-respiratory fitness, stamina, muscular strength, endurance, flexibility, power, speed, agility, balance, coordination and accuracy.",
+		"CrossFit workout is a high intensity interval training workout involving functional movements. Crossfit training includes plyometrics, strength training, speed training, Olympic and power- style weight lifting, kettle bell workout, body weight exercises, gymnastics and endurance training. Targeting all major components of physical fitness, crossfit exercises help in cardio-respiratory fitness, stamina, muscular strength, endurance, flexibility, power, speed, agility, balance coordination and accuracy.",
+		"CrossFit workout involves functional movements with high intensity interval training. Crossfit workout program includes plyometrics, strength training, speed training, Olympic and power-style weight lifting, Kettle bell workouts, body weight exercises, gymnastic and endurance training. The benefit of crossfit exercises is cardio-respiratory fitness, stamina, muscular strength, endurance, flexibility, power, speed, agility, balance, coordination and accuracy leading to physical fitness",
+		"CrossFit combines strength training, explosive plyometrics, speed training, Olympic- and power-style weight lifting, kettle bells, body weight exercises, gymnastics, and endurance exercises â€“ basically the ultimate whole body workout.By doing this, CrossFit targets what it calls the major components of physical fitness: cardiorespiratory fitness, stamina, muscular strength and endurance, flexibility, power, speed, agility, balance, coordination, and accuracy.",
+		"CrossFit workout routine is typically a high intensity interval training that involves functional movements. Crossfit exercises include plyometrics, strength training, speed training, Olympic and power-style weight lifting, Kettle bell workouts, body weight exercises, gymnastic and endurance training that help in cardio-respiratory fitness, stamina, muscular strength, endurance, flexibility, power, speed, agility, balance, coordination and accuracy leading to physical fitness"
+	],
+	'11' => [
+		"Pilates workout is a form of mind-body exercise using a floor mat or a variety of pilates equipments. The two types of pilates are floor pilates and reformer pilates. Pilates exercises primarily focus on good posture and easy, graceful movements. Benefits of Pilates include improved flexibility, weight loss, agility and economy of motion along with core strengthening.",
+		"Pilates workout is a form of mind-body exercise and is basically of two types – floor pilates that uses a floor mat or reformer pilates that uses a variety of pilates equipments. Good posture and easy, graceful movements is the primary focus of pilates exercises and is good for those who want weight loss, flexibility, core strength, agility and economy of motion.",
+		"Pilates focuses on mind-body exercise with workouts that either done on the floor with a floor mat or using a variety of equipments known as reformer. It focuses on easy, graceful movements along with good posture. The benefits of pilates are weight loss, flexibility, core strength, agility and economy of motion.",
+		"Pilates is a mind-body exercise that is of two types- Floor pilates with mat or Reformer pilates using a variety of equipments. Pilates workout includes easy, graceful movements along with good posture. The benefits of pilates exercises are weight loss, flexibility, core strength, agility and economy of motion.",
+		"Pilates is an innovative and safe system of mind-body exercise using a floor mat or a variety of equipment. It evolved from the principles of Joseph Pilates and can dramatically transform the way your body looks, feels and performs. It teaches body awareness, good posture and easy, graceful movement. Pilates weight loss exercises also improves flexibility, agility and economy of motion."
+	],
+	'8' => [
+		"Martial arts refers to all of the various systems of training for combat that have been arranged or systematized. Generally, these different systems or styles are all designed for self defence, building and maintaining muscle as well as core conditioning. There are various types are Kickboxing, Krav Maga, Muay Thai, Kung Fu and MMA workout.",
+		"Martial arts is a form of training for combat that have been arranged or systemized. There are various systems or types of martial arts like Kickboxing, Krav Maga, Muay Thai, Kung Fu and MMA workout. An ideal workout for those who are looking for self defence, building and maintaining muscle as well as core conditioning.",
+		"Martial Arts is an arranged or systemized system of combat training that is of various types. Some of these styles of Martial Arts are Kickboxing, Krav Maga, Muay Thai, Kung Fu and MMA workout. The benefits of martial arts are self defence, building and maintaining muscle as well as core conditioning.",
+		"Martial Arts is system of training for combat that is created in a very arranged or systemized manner. There are various divisions of Martial Arts, these include Kickboxing, Krav Maga, Muay Thai, Kung Fu and MMA workout. The benefits of Martial arts are self defence, building and maintaining muscle as well as core conditioning."
+	],
+	'14' => [
+		"Spinning or Indoor Cycling is a form of cardio and aerobic workout set to music led by a certified instructor. Spinning classes generally follow the principles of interval training and last for a duration of 40 to 60 minutes. Ideal for those who want a motivating workout that they can control at their pace. It’s a low impact workout and can be done by people with joint problems.",
+		"Spinning or Indoor Cycling is a cardio or aerobic workout led by a certified trainer on a particular set of music, characterized by interval training, lasting for a duration of 40 to 60 minutes. Spinning classes are beneficial for those with joint problems or seeking a motivating low impact workout with an ability to control the pace.",
+		"Spinning or Indoor Cycling is an interval training cardio or aerobic workout led by a certified trainer on set music. A typical spinning class lasts for 40 to 60 minutes. Being a low impact workout, it is ideal for those with joint problems or seek a motivating workout with an ability to control the pace.",
+		"Spinning or Indoor Cycling is a low impact interval training cardio or aerobic workout that is conducted by a certified trainer on a set of music that typically lasts for 40 to 60 minutes. Spinning classes are ideal for those with joint problems or seeking a motivating low impact workout with an ability to control the pace."
+	],
+	'42' => [
+		"Healthy tiffins are monthly food subscriptions that deliver low calorie meals at your office or home. These healthy dabbas are generally calorie counted, home cooked or specifically designed for a particular diet or medical condition. Ideal for those who are looking for a healthier alternative to the outside food or are in need of particular diets.",
+		"Healthy tiffins are food subscription service prescribed for a fixed period of time, delivered at your doorstep. These healthy dabbas are either home cooked, calorie counted or specifically designed for a dietary requirements. Benefits those individuals looking for an alternate healthy meal option to outside food or are in a need of particular diets.",
+		"Healthy tiffin meals are food subscription service provided at your given address for a fixed period of time. These healthy meals are either home cooked, calorie counted or specifically designed for a dietary requirements and primarily benefit those who want to cater to their dietary requirements with ease or find an alternative to outside eating.",
+		"Healthy tiffins are meal plans delivered by the provider at the particular address given by you for a subscribed period of time. These are mostly calorie counted, home cooked meals or dabbas designed for a specific dietary requirement. Ideal for those looking for a healthier alternative to the outside food or are in need of particular diets."
+	],
+	'41' => [
+		"Personal trainers are certified fitness or gym trainers that customize the workout routine as per your needs and requirements. These fitness programs are generally conducted at home, studio or gym on one-on-one basis. These workouts can be functional training, yoga, pilates, martial arts or gym training. Perfect for those who prefer to workout at their time and space and have fitness goals like weight loss, endurance building, core strengthening and body building.",
+		"Personal trainers are certified fitness trainers who help you achieve your fitness goals with personal attention at your home, a studio or a gym. The fitness programs generally include functional training, yoga, pilates, martial arts or gym training. Ideal for those looking for weight loss, endurance building, core strengthening and body building.",
+		"Personal trainers provide personalized fitness solution as per your requirements at your home, gym or studio. These fitness trainers can either be specializing in functional training, yoga, pilates, martial arts or gym training. The benefits of personal training is weight loss, endurance building, core strengthening and body building.",
+		"Personal trainers or fitness trainers are professionals who provide one on one fitness solution at your home or studio, to help you achieve your goals, ranging from functional training, yoga, pilates, martial arts and gym training. The fitness programs are designed as per your capacity and needs. The benefits include weight loss, endurance building, core strengthening and body building."
+	],
+	'36' => [
+		"Marathon training aims at preparing your body for long-distance running that includes a wide range of full body workouts like functional training, yoga and running along with proper diet and nutrition plan. The two major types of marathon are half marathon, 21kms and full marathon, 42kms. The benefits of this are weight loss, improvement in energy and stamina build up.",
+		"Marathon training is an extensive form of workout that includes functional training, running and yoga along with diet and nutrition plan, that aims at preparing your body for long distance running. The most common distances are 21 kms, called half marathon or 42 kms, known as full marathon. Ideal for those who are looking at weight loss, improving energy and building stamina.",
+		"Marathon training includes functional training, running, yoga, diet and nutrition plan. It aims at training you for long distance running that is typically 21kms (half marathon) or 42 kms (full marathon). The benefits of this are weight loss, improvement in energy and stamina build up.",
+		"Marathon training is a form of running training that prepares your body with workouts like functional training, yoga and running along with diet and nutrition plans for long distance running. There are two common types of Marathon 21kms – half marathon or 42kms – full marathon. . Ideal for those who are looking at weight loss, improving energy and building stamina.",
+		"The marathon is a long-distance running event that takes place allover the world with an official distance of 42.195 kilometres (26 miles and 385 yards) ran as a road race. Running a marathon is one of the most challenging and rewarding events that any of us will experience. The marathon distance is exquisitely set to take us beyond our comfort zone, into a realm in which we confront the limitations of our bodies and our minds.There are plenty of reasons for training for and running a marathon. The training will help you to lose weight and increase your fitness. Running will bring you more self-confidence and energy. Achieving such a demanding goal will earn you self-respect, and the esteem of others around you."
+	],
+	'45' =>[
+		"Healthy snacks and beverages are the alternate to mid meal munching and calorie consumption. These range from dips, desserts, beverages and more. These are low on carbohydrates, fats and calories and thus help you stick to your diet.",
+		"Healthy snacks and beverages are mid-meal munching and snacks items that help in reducing the calorie consumption as well as match the dietary requirements. The different types of healthy snacks and beverages are dips, desserts, beverages, bars and more. Ideal for those looking on diets that are low on carbohydrates, fats and calories.",
+		"Healthy snacks and beverages are the calorie counted alternative to snacks and mid-meal munchies like dips, desserts, bars, beverages and more. They are low on carbohydrate, fats and calories as well as may or may not be high on protein.",
+		"Healthy snacks and beverages are mid meal munchies and snack items that are made keeping in mind health and different dietary requirements. These range from bars, desserts, beverages, dips, to name a few. They are low on carbohydrate, fats and calories as well as may or may not be high on protein."
+	],
+	'10' => [
+		"Swimming is a sport or activity that requires you to propel yourself through water primarily using your hands and legs. It is a full body workout that uses water resistance. It helps improve flexibility, balance, coordination, endurance, muscle strength, weight loss and cardio vascular fitness.",
+		"Swimming is a form of full body sports fitness that requires you to propel yourself in water against the resistance using the different muscles, hands and legs. The benefits of this are improved flexibility, balance, coordination, endurance, muscle strength, weight loss and cardio vascular fitness.",
+		"Swimming is a water based sport fitness that works on your entire body. A swimming workout requires you to propel yourself in water against the resistance using your muscles, hands and legs. Ideal for those who want improved flexibility, balance, coordination, endurance, muscle strength, weight loss and cardio vascular fitness.",
+		"Swimming is a water based sport or activity that requires you to propel yourself through water primarily using your muscles, hands and legs, against the resistance caused. The benefits of this are improved flexibility, balance, coordination, endurance, muscle strength, weight loss and cardio vascular fitness.",
+		"Swimming is a great fitness workout because you need to move your whole body against the resistance of the water. However, it is an often underrated form of exercise, but the health benefits of swimming are too good to be ignored: It keeps your heart rate up but takes some of the impact stress off your body. It builds endurance, muscle strength and cardiovascular fitness. It helps maintain a healthy weight, healthy heart and lungs. Provides an all-over body workout, as nearly all of your muscles are used during swimming. Improves flexibility, balance, coordination, and posture. It provides good low-impact therapy for some injuries and conditions"	
+	],
+
+	'25' => [
+		"Dietitian and nutritionist are experts on dietary requirements and regulate it. They alter the nutrition plan basis the fitness and medical requirement of the client. They provide diet plan that can be rich on particular nutrients. Benefits those who are looking for weight loss, sports nutrition, diet maintenance and particular medical requirements.",
+		"Dietitian and nutritionist provide advice and regulate the diets of their clients. These diets are rich in particular nutrients and are created basis the fitness and medical requirements. Ideal for those who are looking for weight loss, sports nutrition, diet maintenance and particular medical requirements.",
+		"Dietitians and nutritionist and nutrition consultants on the creation, regulation and maintenance of dietary requirements. They create diet plans basis the fitness and medical requirements of the clients and then balance the nutrient content in it. It helps in weight loss, sports nutrition, diet maintenance and particular medical requirements.",
+		"Dietitians and nutritionists help in regulation and maintenance of dietary requirements. These nutrition consultants help in creating diet plans with a balance in nutrition basis the fitness and medical requirements. Ideal for those who are looking for weight loss, sports nutrition, diet maintenance and particular medical requirements."
+	],
+	'46' => [
+		"Sports and nutrition store are shops where merchandize required for sports and fitness activities along with vitamins and supplements are kept on sale. You can find yoga mats, sports equipments, attires and accessories, protein shake, whey and other types of protein as well as other food supplements of different brands under one roof. These are required by people looking for weight loss supplements, body building supplements as well as sports and fitness accessories.",
+		"Sports and nutrition stores are physical shops that help customers buy fitness merchandize as well as vitamins and supplements like yoga mats, sports equipments, attires, accessories, protein shake, whey and other types of protein as well as other food supplements of different brands. Ideal place for those looking for weight loss supplements, body building supplements as well as sports and fitness accessories.",
+		"Sports and nutrition stores are a stop shop to buy sports and fitness merchandize along with vitamin and other supplements. These stores generally have yoga mats, sports equipments, attires, accessories, protein shake, whey and other types of protein as well as other food supplements of different brands, that are necessary for weight loss, body building as well as other sport and fitness activities.",
+		"Sports and nutrition stores are a destination for consumers to purchase sports and fitness merchandize along with vitamin and other supplements like yoga mats, sports equipments, attires, accessories, protein shake, whey and other types of protein as well as other food supplements of different brands for weight loss, body building as well as other sport and fitness activities."
+	]
+
+];
+
+
+foreach ($definationArr as $key => $value) {
+
+	echo "<pre>"; print_r($key); echo "<pre>"; print_r($value);
+
+	$Findercategory 	=	Findercategory::find(intval($key));
+	$response 			= 	$Findercategory->update(['defination' => $value]);
+
+	$Findercategorytag 	=	Findercategorytag::where('slug',$Findercategory->slug)->first();
+	$response 			= 	$Findercategorytag->update(['defination' => $value]);
+
+	
+}	
+
+// Findercategory
+
+
 });
 
-Route::get('/attachcustomernumber', function() { 
+
+
+
+Route::get('/updatemedia/findercoverimage', function() {
+
+//	return $finders 	= Finder::where('coverimage', 'exists', true)->orWhere('coverimage',"!=", "")->count();
+//    $finders 	= Finder::where('coverimage', 'exists', true)->orWhere('coverimage',"!=", "")->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
+    $finders 	= Finder::where('coverimage', 'exists', true)->orWhere('coverimage',"!=", "")->orderBy('_id')->lists('_id');
+
+	foreach ($finders as $key => $item) {
+		$finder 	=	Finder::find(intval($item));
+		if($finder){
+            $finderData = [];
+            //Cover Image
+			$old_coverimage_name 		=	$finder->coverimage;
+			$new_coverimage_name 		=	pathinfo($old_coverimage_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_coverimage_name, PATHINFO_EXTENSION));
+			echo $finder->coverimage." - ".$new_coverimage_name."<br>";
+            if($new_coverimage_name == "."){
+                $finderData['coverimage']  = '';
+            }else{
+                $finderData['coverimage']  = trim($new_coverimage_name);
+            }
+            $response = $finder->update($finderData);
+		}
+	}
+
+	echo 'done';
+
+});
+
+
+Route::get('/updatemedia/finderlogo', function() {
+
+    $finders 	= Finder::where('logo', 'exists', true)->orWhere('logo',"!=", "")->orderBy('_id')->lists('_id');
+    foreach ($finders as $key => $item) {
+        $finder 	=	Finder::find(intval($item));
+        if($finder){
+            $finderData = [];
+            //Logo
+            $old_logo_name 		=	$finder->logo;
+            $new_logo_name 		=	pathinfo($old_logo_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_logo_name, PATHINFO_EXTENSION));
+            echo $finder->logo." - ".$new_logo_name."<br>";
+            if($new_logo_name == "."){
+                $finderData['logo']  = '';
+            }else{
+                $finderData['logo']  = trim($new_logo_name);
+            }
+            $response = $finder->update($finderData);
+        }
+    }
+    echo 'done';
+});
+
+
+
+
+Route::get('/updatemedia/finderlogo', function() {
+
+    $finders 	= Finder::where('logo', 'exists', true)->orWhere('logo',"!=", "")->orderBy('_id')->lists('_id');
+    foreach ($finders as $key => $item) {
+        $finder 	=	Finder::find(intval($item));
+        if($finder){
+            $finderData = [];
+            //Logo
+            $old_logo_name 		=	$finder->logo;
+            $new_logo_name 		=	pathinfo($old_logo_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_logo_name, PATHINFO_EXTENSION));
+            echo $finder->logo." - ".$new_logo_name."<br>";
+            if($new_logo_name == "."){
+                $finderData['logo']  = '';
+            }else{
+                $finderData['logo']  = trim($new_logo_name);
+            }
+            $response = $finder->update($finderData);
+        }
+    }
+    echo 'done';
+});
+
+
+Route::get('/updatemedia/findergallery', function() {
+
+//    $finders 	= Finder::where('photos', 'exists', true)->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
+    $finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
+    foreach ($finders as $key => $item) {
+        $finder 	=	Finder::find(intval($item));
+        if($finder){
+            $finderData = [];
+            $photoArr   = [];
+
+            if(isset($finder->photos) && count($finder->photos) > 0){
+                foreach ($finder->photos as $k => $photo){
+                    $old_url_name 		=	 $photo['url'];
+                    $new_url_name 		=	pathinfo($old_url_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_url_name, PATHINFO_EXTENSION));
+                    echo $finder->_id." - ".$new_url_name."<br>";
+                    if($new_url_name == "."){
+                        $url  = '';
+                    }else{
+                        $url  = trim($new_url_name);
+                    }
+                    $finder_gallery     = array('order' => $photo['order'], 'alt' => $photo['alt'], 'caption' => $photo['caption'], 'url' => $url);
+                    array_push($photoArr, $finder_gallery);
+                }
+            }
+
+            if(count($photoArr) > 0){
+                return $finderData['photos']  = $photoArr;
+                $response = $finder->update($finderData);
+            }
+
+        }
+    }
+    echo 'done';
+});
+
+
+
+
+	Route::get('/attachcustomernumber', function() {
 
 	// $customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->count();
 	// $customers = Customer::where('contact_no', 'exists', false)->orWhere('contact_no', "")->take(10)->skip(0)->orderBy('_id')->lists('_id');
@@ -406,20 +635,34 @@ Route::get('reverse_moveratecard', function() {
 
 
 
-Route::get('exportcustomer', function() { 
+Route::get('exportcustomer/{start_date?}/{end_date?}', function() { 
 
-	//BOOKTRIALS
+	ini_set('memory_limit','2048M');
+    ini_set('max_execution_time', 300);
+
+	$start_date = $end_date = "";
+	$file_name = "customer_".$start_date."_".$end_date;
+
+	//CUSTOMERS
 	$headers = [
 	'Content-type'        => 'application/csv'
 	,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
 	,   'Content-type'        => 'text/csv'
-	,   'Content-Disposition' => 'attachment; filename=export_customer.csv'
+	,   'Content-Disposition' => 'attachment; filename='.$file_name.'.csv'
 	,   'Expires'             => '0'
 	,   'Pragma'              => 'public'
 	];
 
 	$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, CUSTOMER GENDER, CUSTOMER LOCATION, CUSTOMER CITY  \n";
-	$customers 	= 	Customer::take(1000)->skip(0)->orderBy('_id', 'asc')->get()->toArray();
+	// $customers 	= 	Customer::take(1000)->skip(0)->orderBy('_id', 'asc')->get()->toArray();
+
+	if($start_date == "" || $end_date == ""){
+		$customers 	= 	Customer::orderBy('_id', 'asc')->get()->toArray();
+
+	}else{
+		$customers = Customer::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->get();
+	}
+
 	$customer_city 			=  "";
 	foreach ($customers as $key => $value) {
 		// var_dump($value;)exit();
@@ -1513,4 +1756,6 @@ Route::get('dumpmissedcallno',  array('as' => 'debug.dumpmissedcallno','uses' =>
 Route::get('top10finder',  array('as' => 'debug.top10finder','uses' => 'DebugController@top10Finder'));
 Route::get('finderwithnoschedule',  array('as' => 'debug.finderwithnoschedule','uses' => 'DebugController@finderWithNoSchedule'));
 Route::get('finderstatus',  array('as' => 'debug.finderstatus','uses' => 'DebugController@finderStatus'));
+Route::get('findershaveratecardwithnoservices',  array('as' => 'debug.findershaveratecardwithnoservices','uses' => 'DebugController@findersHaveRatecardWithNoServices'));
+Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices');
 

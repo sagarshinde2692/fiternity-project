@@ -547,6 +547,10 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 case 'Healthy Tiffins':
                 $val =  1;
                 break;
+
+                default:
+
+                $val = 0;
             }
             return $val;
         }
@@ -555,6 +559,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
     if (!function_exists('get_elastic_finder_documentv2')) {
         function get_elastic_finder_documentv2($finderdata = array(), $locationcluster='', $rangeval =0) {
 
+            try{
             $data = $finderdata;
             $flag = false;
             $picslist = array();            
@@ -591,8 +596,31 @@ if (!function_exists(('evalBaseCategoryScore'))){
             $key3 = trim($key1," ");
             $info_service_list = explode("</li><li>", $key3);
         }
-   
-        try {
+
+        /*
+    
+        Build schedules array here for the finder for schedules/weekdays search
+        */
+
+        $weekdays = array();
+        $trial_slots = array();
+        
+         foreach ($data['services'] as $serv) {
+             if(isset($serv['trialschedules'])){
+                $trialschedules = $serv['trialschedules'];
+               
+                foreach ($trialschedules as $trial) {
+                   //echo json_encode($trial);
+                   array_push($weekdays, $trial['weekday']);
+                   foreach ($trial['slots'] as $slot) {
+                       array_push($trial_slots, array('day' => $trial['weekday'], 'start' => intval($slot['start_time_24_hour_format']), 'end' => intval($slot['end_time_24_hour_format'])));
+                   }
+                }
+            }   
+         }
+       
+
+      
             $postfields_data = array(
                 '_id'                           =>      $data['_id'],
                 'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
@@ -610,8 +638,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 // 'category_metadescription'      =>      (isset($data['category']['meta']['description']) && $data['category']['meta']['description'] != '') ? strtolower($data['category']['meta']['description']) : "", 
                 'categorytags'                  =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
                 'categorytags_snow'             =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
-                'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',
-                'coverimage'                    =>      (isset($data['coverimage'])) ? $data['coverimage'] : '',
+                'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',                
                 'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
                 'commercial_type'               =>      (isset($data['commercial_type'])) ? $data['commercial_type'] : '',
                 'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
@@ -646,14 +673,19 @@ if (!function_exists(('evalBaseCategoryScore'))){
                 'show_offers'                   =>      $offer_counter,
                 'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
                 'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : new stdClass(),
+                'service_weekdays'              =>      $weekdays,
+                'trials'                        =>      $trial_slots
                 //'trialschedules'                =>      $trialdata,
-                );                
+                );    
+
+$postfields_data['coverimage']  =   ($data['coverimage'] != '') ? $data['coverimage'] : 'default/'.$data['category_id'].'-'.rand(1, 4).'.jpg';            
 $postfields_data['servicephotos'] = $picslist;
 
 return $postfields_data;
-}catch(Swift_RfcComplianceException $exception){
+}
+catch(Exception $exception){
     Log::error($exception);
-    return [];
+    return array();
         }//catch
 
     }
@@ -728,55 +760,55 @@ if (!function_exists('get_elastic_service_documentv2')) {
 
         $durationheader ='';$budgetheader = ''; $headerarray = array(); $flag1 = false;
         $servicemarketflag = 'n';
-        if(!empty($servicedata['ratecards'])){
+        // if(!empty($servicedata['ratecards'])){
 
-            foreach ($servicedata['ratecards'] as $key => $value) {
-                if(isset($value['type']) && $value['type'] == 'membership' && isset($value['duration']) && isset($value['price']) ){
-                    $servicemarketflag = 'y';
-                    $days = Duration::where('slug',$value['duration'])->get();
-                    $day = $days->toArray();                
-                    if(intval($day[0]['days'])=== 30){
-                        $durationheader = $value['duration'];
-                        $budgetheader = $value['price'];
-                        $flag1 = true;
-                    }
-                    $price_slab = '';
-                    switch($t = $value['price'])
-                    {
-                        case ($t < 501) :
-                        $price_slab = '0 to 500';
-                        break;
-                        case ($t > 500 && $t < 2001) :
-                        $price_slab = '500 to 2000';
-                        break;
-                        case ($t > 2000 && $t < 10001):
-                        $price_slab = '2000 to 10000';
-                        break;
-                        case ($t > 10000):
-                        $price_slab = '10000 to 200000';
-                        break;
-                    }
-                    $day_slab = '';
-                    switch($d = intval($day[0]['days']))
-                    {                        
-                        case ($d < 16) :
-                        $day_slab = 'less than 2 weeks';
-                        break;
-                        case ($d > 15 && $d < 91) :
-                        $day_slab = '1 to 3 months';
-                        break;
-                        case ($d > 90 && $d < 181):
-                        $day_slab = '4 to 6 months';
-                        break;
-                        case ($d > 180):
-                        $day_slab = 'more than 6 months';
-                        break;                    
-                    }         
-                    array_push($ratecards, array('type' => $value['type'], 'special_price' => intval($value['special_price']), 'price' => intval($value['price']), 'duration' => $value['duration'], 'days' => intval($day[0]['days']), 'price_slab' => $price_slab, 'day_slab' => $day_slab, 'direct_payment_enable' => isset($value['direct_payment_enable']) ? $value['direct_payment_enable'] : 0));
-                    array_push($headerarray, array('duration' => $value['duration'], 'days' => intval($day[0]['days']), 'budget' => intval($value['price'])));
-                }
-            }
-        }
+        //     foreach ($servicedata['ratecards'] as $key => $value) {
+        //         if(isset($value['type']) && $value['type'] == 'membership' && isset($value['duration']) && isset($value['price']) ){
+        //             $servicemarketflag = 'y';
+        //             $days = Duration::where('slug',$value['duration'])->get();
+        //             $day = $days->toArray();                
+        //             // if(intval($day[0]['days'])=== 30){
+        //             //     $durationheader = $value['duration'];
+        //             //     $budgetheader = $value['price'];
+        //             //     $flag1 = true;
+        //             // }
+        //             $price_slab = '';
+        //             switch($t = $value['price'])
+        //             {
+        //                 case ($t < 501) :
+        //                 $price_slab = '0 to 500';
+        //                 break;
+        //                 case ($t > 500 && $t < 2001) :
+        //                 $price_slab = '500 to 2000';
+        //                 break;
+        //                 case ($t > 2000 && $t < 10001):
+        //                 $price_slab = '2000 to 10000';
+        //                 break;
+        //                 case ($t > 10000):
+        //                 $price_slab = '10000 to 200000';
+        //                 break;
+        //             }
+        //             $day_slab = '';
+        //             switch($d = intval($day[0]['days']))
+        //             {                        
+        //                 case ($d < 16) :
+        //                 $day_slab = 'less than 2 weeks';
+        //                 break;
+        //                 case ($d > 15 && $d < 91) :
+        //                 $day_slab = '1 to 3 months';
+        //                 break;
+        //                 case ($d > 90 && $d < 181):
+        //                 $day_slab = '4 to 6 months';
+        //                 break;
+        //                 case ($d > 180):
+        //                 $day_slab = 'more than 6 months';
+        //                 break;                    
+        //             }         
+        //             array_push($ratecards, array('type' => $value['type'], 'special_price' => intval($value['special_price']), 'price' => intval($value['price']), 'duration' => $value['duration'], 'days' => intval($day[0]['days']), 'price_slab' => $price_slab, 'day_slab' => $day_slab, 'direct_payment_enable' => isset($value['direct_payment_enable']) ? $value['direct_payment_enable'] : 0));
+        //             array_push($headerarray, array('duration' => $value['duration'], 'days' => intval($day[0]['days']), 'budget' => intval($value['price'])));
+        //         }
+        //     }
+        // }
 
         if(isset($data['lat']) && $data['lat'] != '' && isset($data['lon']) && $data['lon'] != ''){
             $geolocation = array('lat' => $data['lat'],'lon' => $data['lon']);
@@ -824,12 +856,22 @@ if (!function_exists('get_elastic_service_documentv2')) {
             'ratecards'                     =>      $ratecards,
             'short_description'             =>      (isset($data['short_description']) && $data['short_description'] != '') ? strtolower($data['short_description']) : "", 
             'rating'                        =>      0,
-            'coverimage'                    =>      (isset($finderdata['coverimage']) && $finderdata['coverimage'] != '') ? strtolower($finderdata['coverimage']) : strtolower($finderdata['finder_coverimage']), 
+            'finder_coverimage'             =>      (isset($finderdata['coverimage']) && $finderdata['coverimage'] != '') ? strtolower($finderdata['coverimage']) : strtolower($finderdata['finder_coverimage']), 
             'cluster'                       =>      $cluster,
             'durationheader'                =>      $durationheader,
             'budgetheader'                  =>      intval($budgetheader),
             'sm_flagv1'                     =>      $servicemarketflag,
-            'budgetfinder'                  =>      isset($finderdata['budget']) ? intval($finderdata['budget']) : 0
+            'budgetfinder'                  =>      isset($finderdata['budget']) ? intval($finderdata['budget']) : 0,
+            'finder_facilities'             =>      (isset($finderdata['facilities']) && !empty($finderdata['facilities'])) ? array_map('strtolower',array_pluck($finderdata['facilities'],'name')) : "",
+            'finder_offerings'              =>      (isset($finderdata['offerings']) && !empty($finderdata['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($finderdata['offerings'],'name')))) : "",
+            'finder_price_slab'             =>      $finderdata['price_range'],           
+            'finder_slug'                   =>      $finderdata['slug'],
+            'finder_gallary'                =>      (isset($finderdata['photos'])) ? $finderdata['photos'] : array(),                          
+            'finder_location'               =>      (isset($finderdata['location']['name']) && $finderdata['location']['name'] != '') ? strtolower($finderdata['location']['name']) : "",
+            'finder_locationtags'           =>      (isset($finderdata['locationtags']) && !empty($finderdata['locationtags'])) ? array_map('strtolower',array_pluck($finderdata['locationtags'],'name')) : "",
+            'finder_category'               =>      (isset($finderdata['category']['name']) && $finderdata['category']['name'] != '') ? strtolower($finderdata['category']['name']) : "", 
+            'finder_categorytags'           =>      (isset($finderdata['categorytags']) && !empty($finderdata['categorytags'])) ? array_map('strtolower',array_pluck($finderdata['categorytags'],'name')) : "",
+            
             );
 
 return $postfields_data;

@@ -17,7 +17,7 @@
             <tr><td>Contact person name (provided to the customer): </td><td>{{ ucwords($finder_poc_for_customer_name) }}</td></tr>
         </table> 
 
-        <p>If this session cannot be managed / fulfilled at your end - please let us know at the earliest. You can reply to this mail or call us on {{Config::get('app.customer_care_number')}}. <br></p>
+        <p>If this session cannot be managed / fulfilled at your end - please let us know at the earliest. You can reply to this mail or call us on {{Config::get('app.contact_us_vendor_number')}}. <br></p>
         <p>We will be sending you an update if there is a change in this booking. You shall also receive a daily report on customers who have booked sessions for tomorrow.<br></p>
         <p>Regards<br>TEAM FITTERNITY</p>
     </div>

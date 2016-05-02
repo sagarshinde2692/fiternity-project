@@ -237,7 +237,17 @@
                                                     <td style="font-family:Arial, Helvetica, sans-serif; font-size: 20px; text-align:left;line-height: 23px; color: #626262; padding:20px;" st-content="fulltext-paragraph">
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph">Hi,</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> Greetings from Fitternity</p>
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a {{$trial_type}} session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
+
+                                                        <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+
+                                                             <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a trial session booked earlier for personal training with {{ ucwords($finder_name) }}.</p>
+
+                                                        <?php } else { ?>
+
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:10px; " st-content="fulltext-paragraph"> There has been a reschedule request received for a {{$trial_type}} session booked earlier for {{ ucwords($finder_name) }} @if ($show_location_flag) ,  {{ ucwords($finder_location) }} @endif.</p>
+
+                                                        <?php } ?>
+                                                        
                                                 </td>
                                             </tr>
                                          
@@ -263,6 +273,13 @@
                                                                         <?php if(isset($finder_poc_for_customer_name) && $finder_poc_for_customer_name != ""){ ?> 
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph"> Contact person (name provided to the customer):</p>
                                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 18px; " st-content="fulltext-paragraph">{{ ucwords($finder_poc_for_customer_name) }}</p>
+                                                                        <?php }?>
+
+                                                                        <?php if(isset($customer_address) && $customer_address != ""){ ?> 
+                                                                            <?php if(isset($finder_category_id) && $finder_category_id == 41) { ?>
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-weight:bold;font-size: 15px; text-align:left;line-height: 23px; padding-top:10px;" st-content="fulltext-paragraph">Customer Address:</p> 
+                                                                                <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 15px; " st-content="fulltext-paragraph">{{ ucwords($customer_address) }}</p>
+                                                                            <?php }?>
                                                                         <?php }?>
 
                                                                     </td>
@@ -310,7 +327,7 @@
                         
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p style="padding-top:10px">If this {{$trial_type}} session cannot be managed / fulfilled at your end - please let us know at the earliest. You can reply to this mail or call us on {{Config::get('app.customer_care_number')}}. </p>
+                                    <p style="padding-top:10px">If this {{$trial_type}} session cannot be managed / fulfilled at your end - please let us know at the earliest. You can reply to this mail or call us on {{Config::get('app.contact_us_vendor_number')}}. </p>
                                     <p style="padding-top:10px">Regards</p>
                                     <p>TEAM FITTERNITY</p>
                                 </td>
@@ -358,7 +375,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
+                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.contact_us_vendor_number')}}</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_vendor_email')}}"> {{Config::get('app.contact_us_vendor_email')}}</a>                       
                 </p>
             </td>

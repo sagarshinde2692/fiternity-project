@@ -236,7 +236,7 @@
                                                         <p>Hi, {{  ucwords($customer_name) }}</p>
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:25px; " st-content="fulltext-paragraph"> Greetings from Fitternity.</p>
                                                         <?php if(isset($email_body1) && $email_body1 != ""){ ?> 
-                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:25px; " st-content="fulltext-paragraph">{{email_body1}}</p>
+                                                            <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding-top:25px; " st-content="fulltext-paragraph">{{$email_body1}}</p>
                                                         <?php }?>
                                                 </td>
                                             </tr>
@@ -278,17 +278,17 @@
                                                     </td>
                                             </tr>
 
-                            <?php if(isset($email_body1) && $email_body1 != ""){ ?> 
+                            <?php if(isset($email_body2) && $email_body2 != ""){ ?> 
                              <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p style="padding-top:25px">{{email_body2}}</p>
+                                    <p style="padding-top:25px">{{$email_body2}}</p>
                                 </td>
                             </tr>
                             <?php }?>
                         
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="mailto:info@fitternity.com">{{Config::get('app.customer_care_number')}}</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:info@fitternity.com"> info@fitternity.com</a></p>
+                                    <p style="padding-top:25px; line-height:20px; font-weight:lighter; color:#5f5e5e">If you have any queries please call us at <span style="color:#ec8601; font-weight:400;" href="#">{{Config::get('app.contact_us_customer_number')}}</span>  or email us on<a style="text-decoration:none; color:#ec8601" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a></p>
                                     <p style="padding-top:10px">Regards</p>
                                     <p>TEAM FITTERNITY</p>
                                 </td>
@@ -353,8 +353,8 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
-                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:info@fitternity.com"> info@fitternity.com</a>                       
+                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.contact_us_customer_number')}}</a>
+                    <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                       
                 </p>
             </td>
         </tr>

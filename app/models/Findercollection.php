@@ -10,6 +10,12 @@ class Findercollection extends \Basemodel {
 		'finder_ids' => 'required'
 	];
 
+	
+	public function finders(){
+
+		return $this->belongsToMany('Finder', null, 'categorytags', 'finders');
+	}
+
 	public function city(){
 		return $this->belongsTo('City');
 	}

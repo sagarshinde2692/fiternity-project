@@ -278,7 +278,7 @@
 
                                                         <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 25px; padding-bottom:5px" st-content="fulltext-paragraph"> <strong>Mode of Payment:</strong> Cash on delivery</p>
 
-                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">Our team will reach out to you to get the cash pick up details. Once the cash has been collected, you will receive a purchase confirmation.<br /><br /> If you have any queries please mail us on <a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a> or give us a call on <a style="color: #f9a91e;" href="tel:{{Config::get('app.customer_care_number')}}">{{Config::get('app.customer_care_number')}}</a>
+                                                        <p style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; padding:5px 0px; " st-content="fulltext-paragraph">Our team will reach out to you to get the cash pick up details. Once the cash has been collected, you will receive a purchase confirmation.<br /><br /> If you have any queries please mail us on <a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a> or give us a call on <a style="color: #f9a91e;" href="tel:{{Config::get('app.contact_us_customer_number')}}">{{Config::get('app.contact_us_customer_number')}}</a>
                                                             <br />
                                                             <br />Regards,
                                                             <br />Team Fitternity </p>
@@ -337,7 +337,7 @@
             <tr>
                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                     <p>Contact us
-                        <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
+                        <br /> Phone: <a style="text-decoration:none; color:#f9a91e">{{Config::get('app.contact_us_customer_number')}}</a>
                         <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>
                     </p>
                 </td>

@@ -6,7 +6,7 @@ class Order extends \Basemodel {
 
 	protected $appends = array('customer_took_trial_before');
 
-	protected $dates = array('preferred_starting_date','start_date');
+	protected $dates = array('preferred_starting_date','start_date','start_date_starttime');
 
 	
 	public function setIdAttribute($value){
@@ -70,6 +70,5 @@ class Order extends \Basemodel {
 	public function serviceoffer(){
 		return $this->belongsTo('Serviceoffer');
 	}
-
-
+	
 }

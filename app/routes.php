@@ -126,6 +126,9 @@ Route::get('offertabsoffers/{city}/{captionslug}/{slug}', 'HomeController@getOff
 Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferings');
 
 
+Route::get('getcapturedetail/{captureid}', 'CaptureController@getCaptureDetail');
+Route::get('booktrialdetail/{captureid}', 'SchedulebooktrialsController@booktrialdetail');
+
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
 Route::get('/fitcardautobooktrials/{customeremail}',  array('as' => 'customer.fitcardautobooktrials','uses' => 'CustomerController@getFitcardAutoBookTrials'));
@@ -151,7 +154,7 @@ Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'custo
 Route::get('bookmarks/{customerid}',  array('as' => 'customer.bookmarks','uses' => 'CustomerController@getBookmarks'));
 Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarks','uses' => 'CustomerController@updateBookmarks'));
 Route::get('customerdetail/{customerid}',  array('as' => 'customer.customerdetail','uses' => 'CustomerController@customerDetail'));
-Route::get('foryou/{customeremail}/{lat?}/{lon?}',  array('as' => 'customer.foryou','uses' => 'CustomerController@foryou'));
+Route::get('foryou/{customeremail}/{city_id}/{lat?}/{lon?}',  array('as' => 'customer.foryou','uses' => 'CustomerController@foryou'));
 
 Route::get('reviews/email/{customeremail}/{from?}/{size?}',  array('as' => 'customer.reviewsbyemail','uses' => 'CustomerController@reviewListingByEmail'));
 Route::get('bookmarks/email/{customeremail}',  array('as' => 'customer.bookmarksbyemail','uses' => 'CustomerController@getBookmarksByEmail'));
@@ -174,6 +177,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customer/getallbookmarks',  array('as' => 'customer.getallbookmarks','uses' => 'CustomerController@getAllBookmarks'));
 	Route::get('customer/editbookmarks/{finder_id}/{remove?}',  array('as' => 'customer.editbookmarks','uses' => 'CustomerController@editBookmarks'));
 	Route::get('getcustomerdetail',  array('as' => 'customer.getcustomerdetail','uses' => 'CustomerController@getCustomerDetail'));
+	Route::get('upcomingtrials',  array('as' => 'customer.upcomingtrials','uses' => 'CustomerController@getUpcomingTrials'));
 
 });
 
@@ -273,6 +277,8 @@ Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageauto
 Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
 Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexservicerankmongo2elastic','uses' => 'ServiceRankingController@IndexServiceRankMongo2Elastic'));
 Route::get('rollingbuildfindersearch', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
+Route::get('rollingbuildserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
+Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -317,8 +323,10 @@ Route::post('getmaxminservice', 'ServiceRankingSearchController@getmaxminservice
 Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResultsMobile');
 Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
 Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderResultsApp');
-
-
+Route::post('search/getfinderresultsv2', 'RankingSearchController@getRankedFinderResultsAppv2');
+Route::get('buildkeywordcache', 'GlobalSearchController@preparekeywordsearchcache');
+Route::post('keywordsearchwebv1', 'GlobalSearchController@improvedkeywordSearch');
+Route::post('search/searchdirectpefinders', 'RankingSearchController@searchDirectPaymentEnabled');
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
@@ -352,8 +360,9 @@ Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 
 Route::post('rescheduledbooktrial', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
+Route::get('gettrialschedulev1/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialScheduleIfDontSoltsAlso'));
 Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
-Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
+Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}/{schedulesof?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 
@@ -518,6 +527,10 @@ Route::get('ozonetel/missedcall/smsb',  array('as' => 'ozonetel.smsb','uses' => 
 Route::get('ozonetel/confirmtrial',  array('as' => 'ozonetel.confirmtrial','uses' => 'OzonetelsController@confirmTrial'));
 Route::get('ozonetel/canceltrial',  array('as' => 'ozonetel.canceltrial','uses' => 'OzonetelsController@cancelTrial'));
 Route::get('ozonetel/rescheduletrial',  array('as' => 'ozonetel.rescheduletrial','uses' => 'OzonetelsController@rescheduleTrial'));
+Route::post('callcenter/callback',  array('as' => 'ozonetel.callback','uses' => 'OzonetelsController@callback'));
+
+Route::get('ozonetel/misscallreview/{type}',  array('as' => 'ozonetel.misscallreview','uses' => 'OzonetelsController@misscallReview'));
+Route::get('ozonetel/misscallorder/{type}',  array('as' => 'ozonetel.misscallorder','uses' => 'OzonetelsController@misscallOrder'));
 
 /******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################
@@ -592,6 +605,7 @@ Route::get('/getcampaigntrials/{campaignid}/{email}', 'CampaignsController@getca
 Route::post('campaignsearch', 'CampaignsController@campaignsearch');
 Route::post('campaign/registercustomer', 'CampaignsController@registercustomer');
 Route::post('campaign/campaignregistercustomer', 'CampaignsController@campaignregistercustomer');
+Route::get('campaign/{city_id}/{campaign_name}', 'CampaignsController@campaignServices');
 
 /******************** Campaign SECTION END HERE ********************/
 ##############################################################################
@@ -621,6 +635,7 @@ Route::get('updatepaymentbooking', 'KYUController@updatepaymentbooking');
 Route::post('getglobalsearchkeywordmatrix', 'KYUController@getglobalsearchkeywordmatrix');
 Route::post('getglobalsearchclickedmatrix', 'KYUController@getglobalsearchclickedmatrix');
 Route::post('getdailyvisitors', 'KYUController@getdailyvisitors');
+Route::get('rollingbuildautosearch', 'GlobalPushController@rollingbuildautosuggest');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################

@@ -449,7 +449,6 @@ class EmailSmsApiController extends \BaseController {
 
 
 	public function landingpagecallback(){
-		
 		$emaildata = array(
 			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
 			'email_template_data' => $data = array(
@@ -483,7 +482,7 @@ class EmailSmsApiController extends \BaseController {
 		}
 
 
-		$resp 			= array('status' => 200,'message' => "Recieved the Request");
+		$resp 			= array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
 		return Response::json($resp);
 	}
 
@@ -508,7 +507,11 @@ class EmailSmsApiController extends \BaseController {
 			'phone' => Input::json()->get('phone'),
 			'preferred_time' => Input::json()->get('preferred_time'),
 			'date' => date("h:i:sa"),
-			'referrer' =>  (Input::json()->get('referrer')) ? Input::json()->get('referrer') : 'fitternity'  
+			'referrer' =>  (Input::json()->get('referrer')) ? Input::json()->get('referrer') : 'fitternity',
+			'social_referrer' =>  (Input::json()->get('social_referrer')) ? Input::json()->get('social_referrer') : '',
+
+			'transacted_after' =>  (Input::json()->get('transacted_after')) ? Input::json()->get('transacted_after') : '',
+			'referrer_object' =>  (Input::json()->get('referrer_object')) ? Input::json()->get('referrer_object') : ''
 		);
 
 		array_set($data, 'capture_status', 'yet to connect');
@@ -516,7 +519,7 @@ class EmailSmsApiController extends \BaseController {
 		$emaildata = array(
 			'email_template' => 'emails.callback', 
 			'email_template_data' => $data, 
-			'to'				=> 	Config::get('mail.to_neha'), 
+			'to'				=> 	Config::get('mail.to_mailus'), 
 			'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'), 
 			'email_subject' 	=> $subject,
 			'send_bcc_status' 	=> 1
@@ -556,7 +559,7 @@ class EmailSmsApiController extends \BaseController {
 		$emaildata = array(
 			'email_template' 		=> 	'emails.finder.customerlookingfor', 
 			'email_template_data' 	=> 	$data, 
-			'to'					=> 	Config::get('mail.to_neha'), 
+			'to'					=> 	Config::get('mail.to_mailus'), 
 			'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_not_able_to_find'), 
 			'email_subject' 		=> "Customer request not able to find what they're looking for",
 			'send_bcc_status' 		=> 	1

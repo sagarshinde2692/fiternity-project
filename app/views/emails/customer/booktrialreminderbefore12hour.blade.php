@@ -359,53 +359,61 @@
                              </td>
                          </tr>
 
-                          <tr>
-                                    <td>
-                                        <table style="background-color:#4cc8de;" border="0" cellpadding="0" cellspacing="0" id="templateColumns">
-                                            <tr>
-                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
-                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                                        <tr>
-                                                            <td valign="top" class="leftColumnContent">
-                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
-                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
-                                                                        <img width="40px" src="http://email.fitternity.com/207/manage.png" />
-                                                                        <br />Manage your bookings</p>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
-                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                                        <tr>
-                                                            <td valign="top" class="leftColumnContent">
-                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
-                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
-                                                                        <img width="40px" src="http://email.fitternity.com/207/profile.png" />
-                                                                        <br />Access your user profile </p>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                                <td align="center" valign="top" width="200" class="templateColumnContainer">
-                                                    <table border="0" cellpadding="10" cellspacing="0" width="100%">
-                                                        <tr>
-                                                            <td valign="top" class="leftColumnContent">
-                                                                <a style="text-decoration:none; color:#ffffff;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$_id}}" target="_blank">
-                                                                    <p style="color:#ffffff;display:inline-block;font-family:sans-serif;font-size:16px;line-height:22px;text-align:center; font-weight:medium; text-decoration:none;-webkit-text-size-adjust:none;mso-hide:all; padding:5px;">
-                                                                        <img width="40px" src="http://email.fitternity.com/207/track.png" />
-                                                                        <br />Track your fitness journey </p>
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr> 
+                        <tr style=" padding:10px;" bgcolor="#F6F6F6">
+                            <td valign="top" width="560" class="flexibleContainerCell">
+                                <!-- CONTENT TABLE // -->
+                                <table align="center" border="0" cellpadding="0" cellspacing="0">
+                                    <tr>
+                                        <td align="center" valign="middle" class="flexibleContainerBox">
+                                            <table class="flexibleContainerBoxNext" border="0" cellpadding="0" cellspacing="0" width="460">
+                                                <tr>
+                                                    <td align="left" class="textContent">
+                                                        <h2 style="text-align:center;font-weight:normal;font-family:Roboto,Arial,sans-serif;font-size:22px;color:#205478;line-height:135%; padding:20px">Would you like to manage your fitness?</h2>
+                                                        <div style="text-align:center;font-family:Roboto,Arial,sans-serif;font-size:16px;margin-bottom:0;color:#5F5F5F;line-height:135%;">Reschedule/cancel with your own user profile
+                                                            <br />
+                                                            <br />
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <!-- // CONTENT TABLE -->
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- // FLEXIBLE CONTAINER -->
+                            </td>
+                        </tr>
+                        <!-- // MODULE ROW -->
+                        <!-- MODULE ROW // -->
+                        <tr bgcolor="#F6F6F6">
+                            <td align="center" valign="top">
+                                <!-- CENTERING TABLE // -->
+                                <table border="0" cellpadding="0" cellspacing="0">
+                                    <tr style="padding-top:0;">
+                                        <td align="center" valign="top">
+                                            <!-- FLEXIBLE CONTAINER // -->
+                                            <table border="0" cellpadding="30" cellspacing="0" width="560">
+                                                <tr>
+                                                    <td style="padding-top:0;" align="center" valign="top">
+                                                        <!-- CONTENT TABLE // -->
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="50%" style="background-color: #F9A91E;">
+                                                            <tr>
+                                                                <td align="center" valign="middle" style="padding:8px; ">
+                                                                    <a style="color:#FFFFFF;text-decoration:none;font-family:Roboto,Arial,sans-serif;font-size:20px; padding:5px;" href="http://fitternity.com/profile/{{$customer_email}}/t{{$booktrialid}}" target="_blank">Take Me There!</a>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <!-- // CONTENT TABLE -->
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <!-- // FLEXIBLE CONTAINER -->
+                                        </td>
+                                    </tr>
+                                </table>
+                                <!-- // CENTERING TABLE -->
+                            </td>
+                        </tr>
 
                          <tr style="background-color:#f6f6f6;">
                             <td>
@@ -445,7 +453,7 @@
                            
                             <tr style="background-color:#f6f6f6;">
                                 <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:left;line-height: 23px; color: #464646; padding:20px; font-weight:light" st-content="fulltext-paragraph">
-                                    <p>Should you feel the need to change either the time or day of the {{$trial_type}} session, kindly reply to this mail or call us on {{Config::get('app.customer_care_number')}}.</p>
+                                    <p>Should you feel the need to change either the time or day of the {{$trial_type}} session, kindly reply to this mail or call us on {{Config::get('app.contact_us_customer_number')}}.</p>
                                     <p style="padding-top:10px;">Regards<br/>
                                         TEAM FITTERNITY
                                     </p>
@@ -495,7 +503,7 @@
         <tr>
             <td style="font-family:Arial, Helvetica, sans-serif; font-size: 15px; text-align:center;line-height: 23px; color: #E9E9E9; padding:20px;" st-content="fulltext-paragraph">
                 <p>Contact us
-                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.customer_care_number')}}</a>
+                    <br /> Phone: <a style="text-decoration:none;color:#f9a91e">{{Config::get('app.contact_us_customer_number')}}</a>
                     <br />Email:<a style="text-decoration:none; color:#f9a91e" href="mailto:{{Config::get('app.contact_us_customer_email')}}"> {{Config::get('app.contact_us_customer_email')}}</a>                        
                 </p>
             </td>

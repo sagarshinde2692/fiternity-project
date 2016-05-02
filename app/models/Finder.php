@@ -74,6 +74,15 @@ class Finder extends  \Basemodel {
 		return $this->belongsTo('User');
 	}
 
+	public function blogs(){
+		return $this->belongsToMany('Blog', null, 'finders', 'blogs');
+	}
+
+	public function findercollections(){
+		return $this->belongsToMany('Findercollection', null, 'finders', 'findercollections');
+	}
+
+
 	public function category(){
 		return $this->belongsTo('Findercategory');
 	}	
