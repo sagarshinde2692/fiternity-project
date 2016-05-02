@@ -882,7 +882,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_id 						=	$this->autoRegisterCustomer($data);
 			$customer_name 						=	Input::json()->get('customer_name');
 			$customer_email 					=	Input::json()->get('customer_email');
-			$customer_phone 					=	Input::json()->get('customer_phone');
+			$customer_phone 					=	preg_replace("/[^0-9]/", "", Input::json()->get('customer_phone')) ;Input::json()->get('customer_phone');
 			$fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
 			$type								= 	(Input::json()->get('type')) ? Input::json()->get('type') : '';
 
@@ -1329,7 +1329,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_id 						=	$this->autoRegisterCustomer($data);
 			$customer_name 						=	Input::json()->get('customer_name');
 			$customer_email 					=	Input::json()->get('customer_email');
-			$customer_phone 					=	Input::json()->get('customer_phone');
+			$customer_phone 					=	preg_replace("/[^0-9]/", "", Input::json()->get('customer_phone')) ;
 			$fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
 			$type								= 	(Input::json()->get('type')) ? Input::json()->get('type') : '';
 
@@ -1799,7 +1799,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$customer_id 						=	$data['customer_id'];
 			$customer_name 						=	$data['customer_name'];
 			$customer_email 					=	$data['customer_email'];
-			$customer_phone 					=	$data['customer_phone'];
+			$customer_phone 					=	preg_replace("/[^0-9]/", "",$data['customer_phone']);
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
