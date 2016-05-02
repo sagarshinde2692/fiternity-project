@@ -331,7 +331,7 @@ class RankingController extends \BaseController {
                             //->whereIn('_id', array(579))
        ->where('city_id', $city_id)
        ->where('status', '=', '1')
-       ->take(50000)->skip(0)
+       ->take(5000)->skip(0)
        ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
@@ -343,8 +343,10 @@ class RankingController extends \BaseController {
             $ratecard_days = 0; $ratecard_money = 0;
             $services = Ratecard::where('finder_id', intval($finderdocument['id']))->get();
             $ratecard_count = 0;  $average_monthly = 0;
+            $direct_payment_enabled_bool = false;
             foreach ($services as $service) {
 
+               $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
                 switch($service['validity']){
                     case 30:
                     $ratecard_count = $ratecard_count + 1;
@@ -444,16 +446,17 @@ class RankingController extends \BaseController {
         $postdata['rankv2'] = $score + $catval;
         $postdata['average_price'] = $average_monthly;
         $postdata['price_range'] = $average_monthly_tag;
+        $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
         $postfields_data = json_encode($postdata);             
-       $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
+      $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
         $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
         // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
         $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
          $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
         $curl_response = es_curl_request($request);
-         $curl_response1 = es_curl_request($request1);
+        $curl_response1 = es_curl_request($request1);
         echo json_encode($curl_response);
-     //echo "<br>$posturl    ---  ".es_curl_request($request);
+   
     }
     catch(Exception $e){
         Log::error($e);

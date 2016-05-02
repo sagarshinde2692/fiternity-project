@@ -19,6 +19,7 @@ Route::get('emailtest', 'DebugController@testEmail');
 
 
 
+
 ############################################################################################
 /************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
 
@@ -1747,5 +1748,5 @@ Route::get('top10finder',  array('as' => 'debug.top10finder','uses' => 'DebugCon
 Route::get('finderwithnoschedule',  array('as' => 'debug.finderwithnoschedule','uses' => 'DebugController@finderWithNoSchedule'));
 Route::get('finderstatus',  array('as' => 'debug.finderstatus','uses' => 'DebugController@finderStatus'));
 Route::get('findershaveratecardwithnoservices',  array('as' => 'debug.findershaveratecardwithnoservices','uses' => 'DebugController@findersHaveRatecardWithNoServices'));
-
+Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices');
 
