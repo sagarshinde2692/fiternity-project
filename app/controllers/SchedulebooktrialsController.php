@@ -783,9 +783,18 @@ class SchedulebooktrialsController extends \BaseController {
 					$customerData['contact_no_verify_status'] = "yes";
 				}
 
-				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
-					$customerData['address'] = implode(",", array_values($data['customer_address']));
-					$customerData['address_array'] = $data['customer_address'];
+				if(isset($data['customer_address'])){
+
+					if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+						$customerData['address'] = implode(",", array_values($data['customer_address']));
+						$customerData['address_array'] = $data['customer_address'];
+
+					}elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+						$customerData['address'] = $data['customer_address'];
+					}
+
 				}
 
 				if(count($customerData) > 0){
@@ -2259,7 +2268,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
 			return Response::json($resp,200);
 		}
-		
+
 		array_set($bookdata, 'going_status', 2);
 		array_set($bookdata, 'going_status_txt', 'cancel');
 		array_set($bookdata, 'booktrial_actions', '');
