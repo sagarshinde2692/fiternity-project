@@ -677,7 +677,11 @@ class OrderController extends \BaseController {
 			}
 
 			foreach ($data['batches'] as $key => $value) {
-				$data['batch_time'] = strtoupper($value['slots']['start_time']);
+
+				if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+    				$data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+    				break;
+    			}
 			}
 		}
 
