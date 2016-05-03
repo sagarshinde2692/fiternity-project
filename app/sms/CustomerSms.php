@@ -79,6 +79,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function requestCodOrderSms ($data){
+
+		$label = 'Order-COD-Request-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 
 	public function sendPgOrderSms ($data){
 

@@ -423,7 +423,8 @@ class OrderController extends \BaseController {
 		//$sndCodEmail	= 	$this->findermailer->sendCodOrderMail($order->toArray());
 
 		//SEND COD SMS TO CUSTOMER
-		$sndCodSms	= 	$this->customersms->sendCodOrderSms($order->toArray());
+		$sndCodSms	= 	$this->customersms->requestCodOrderSms($order->toArray());
+		
 		// print_pretty($sndCodSms); exit;
 
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Order Successful :)");
