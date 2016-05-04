@@ -907,6 +907,7 @@ class OzonetelsController extends \BaseController {
 
 			$finder_lat = $finder->lat;
 			$finder_lon = $finder->lon;
+			$finder_slug = $finder->slug;
 
 			$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
 
