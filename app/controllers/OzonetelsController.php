@@ -842,7 +842,7 @@ class OzonetelsController extends \BaseController {
 						if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
 
 							try {
-								$this->sidekiq->delete($booktrial->customer_emailqueuedids['after2hour']);
+								$sidekiq->delete($booktrial->customer_emailqueuedids['after2hour']);
 							}catch(\Exception $exception){
 								Log::error($exception);
 							}
@@ -852,7 +852,7 @@ class OzonetelsController extends \BaseController {
 						if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
 
 							try {
-								$this->sidekiq->delete($booktrial->customer_smsqueuedids['before1hour']);
+								$sidekiq->delete($booktrial->customer_smsqueuedids['before1hour']);
 							}catch(\Exception $exception){
 								Log::error($exception);
 							}
@@ -861,7 +861,7 @@ class OzonetelsController extends \BaseController {
 						if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
 
 							try {
-								$this->sidekiq->delete($booktrial->finder_smsqueuedids['before1hour']);
+								$sidekiq->delete($booktrial->finder_smsqueuedids['before1hour']);
 							}catch(\Exception $exception){
 								Log::error($exception);
 							}
@@ -870,7 +870,7 @@ class OzonetelsController extends \BaseController {
 						if((isset($booktrial->customer_notification_messageids['before1hour']) && $booktrial->customer_notification_messageids['before1hour'] != '')){
 
 							try{
-								$this->sidekiq->delete($booktrial->customer_notification_messageids['before1hour']);
+								$sidekiq->delete($booktrial->customer_notification_messageids['before1hour']);
 							}catch(\Exception $exception){
 								Log::error($exception);
 							}
@@ -880,7 +880,7 @@ class OzonetelsController extends \BaseController {
 						if((isset($booktrial->customer_notification_messageids['after2hour']) && $booktrial->customer_notification_messageids['after2hour'] != '')){
 
 							try{
-								$this->sidekiq->delete($booktrial->customer_notification_messageids['after2hour']);
+								$sidekiq->delete($booktrial->customer_notification_messageids['after2hour']);
 							}catch(\Exception $exception){
 								Log::error($exception);
 							}
