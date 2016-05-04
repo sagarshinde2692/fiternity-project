@@ -847,6 +847,24 @@ class OzonetelsController extends \BaseController {
 						$customer_smsqueuedids['after2hour'] = $this->customersms->bookTrialReminderAfter2HourRegular($booktrial_data,$delayReminderTimeAfter2Hour);
 					}
 
+					if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
+
+						try {
+							$sidekiq->delete($booktrial->customer_smsqueuedids['before1hour']);
+						}catch(\Exception $exception){
+							Log::error($exception);
+						}
+					}
+
+					if((isset($booktrial->customer_notification_messageids['before1hour']) && $booktrial->customer_notification_messageids['before1hour'] != '')){
+
+						try {
+							$sidekiq->delete($booktrial->customer_notification_messageids['before1hour']);
+						}catch(\Exception $exception){
+							Log::error($exception);
+						}
+					}
+
 					$booktrial->missedcall_date = date('Y-m-d h:i:s');
 					$booktrial->missedcall_status = $missedcall_status[$type];
 					$booktrial->source_flag = 'missedcall';
