@@ -43,6 +43,15 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function cancelBookTrialByVendor ($data){
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		$label = 'Vendor-trial-cancellation-email-to-vendor';
+
+		return $this->common($label,$to,$data);
+	}
+
 	public function sendPgOrderSms ($data){
 
 		$to = explode(',', $data['finder_vcc_mobile']);

@@ -15,6 +15,8 @@ use App\Services\Trialssummary as Trialssummary;
 use App\Services\Ozonetelcallssummary as Ozonetelcallsssummary;
 use App\Services\Reviewssummary as Reviewssummary;
 use App\Services\Statisticssummary as Statisticssummary;
+use App\Mailers\CustomerMailer as CustomerMailer;
+
 
 // use \Order;
 // use \Capture;
@@ -32,6 +34,8 @@ class VendorpanelController extends BaseController
     protected $ozonetelcallssummary;
     protected $reviewssummary;
     protected $statisticssummary;
+    protected $customermailer;
+
 
 
     public function __construct(
@@ -41,7 +45,9 @@ class VendorpanelController extends BaseController
         Trialssummary $trialssummary,
         Ozonetelcallsssummary $ozonetelcallsssummary,
         Reviewssummary $reviewssummary,
-        Statisticssummary $statisticssummary)
+        Statisticssummary $statisticssummary,
+        CustomerMailer $customermailer
+    )
     {
 
         $this->jwtauth = $jwtauth;
@@ -50,6 +56,7 @@ class VendorpanelController extends BaseController
         $this->ozonetelcallssummary = $ozonetelcallsssummary;
         $this->reviewssummary = $reviewssummary;
         $this->statisticssummary = $statisticssummary;
+        $this->customermailer = $customermailer;
     }
 
 
@@ -921,7 +928,12 @@ class VendorpanelController extends BaseController
         $existing = array_only($finder->toArray(), array_keys($new));
 
         // Save in a collection......
-        Vendorupdaterequest::firstOrCreate(['existing' => $existing, 'new' => $new]);
+        Vendorupdaterequest::firstOrCreate([
+            'existing' => $existing,
+            'new' => $new,
+            'finder_id' => intval($finder_id),
+            'approval_status' => 'pending'
+        ]);
         
         return Response::json($finder, 200);
     }
@@ -942,10 +954,28 @@ class VendorpanelController extends BaseController
             return Response::json($data, 401);
         }
 
-        $reviewData = Review::find((int) $review_id);
+//        $reviewData = Review::find((int) $review_id);
+        $reviewData = Review::with(array('finder'=>function($query){$query->select('_id','title','slug');}))
+                ->with(array('customer'=>function($query){$query->select('_id','name','email');}))
+                ->where('_id','=',(int) $review_id)
+                ->first();
 
         if($reviewData){
+
+            // UPdate in DB....
             $reviewData->update(array('reply' => $data['reply']));
+
+            $template_data = array(
+                'customer_name' => $reviewData['customer']['name'],
+                'customer_email' => $reviewData['customer']['email'],
+                'finder_name' => $reviewData['finder']['title'],
+                'reply' => $reviewData['reply'],
+                'created_at' => $reviewData['created_at']
+            );
+
+            // Notify Customer....
+            $this->customermailer->reviewReplyByVendor($template_data);
+
             $resp 	= 	'Success';
             return  Response::json($resp, 200);
 

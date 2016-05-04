@@ -252,7 +252,7 @@ abstract Class VersionNextSms {
             $delay = $this->getSeconds($delay);
         }
 
-        $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'label' => $label);
+        $payload = array('to'=>array('08828467284'),'message'=>$message,'delay'=>$delay,'label' => $label);
         
         $route  = 'sms';
         $result  = $this->sidekiq->sendToQueue($payload,$route);

@@ -2298,7 +2298,7 @@ class SchedulebooktrialsController extends \BaseController {
 		array_set($bookdata, 'reason', $reason);
 		array_set($bookdata, 'final_lead_stage', 'cancel_stage');
 		$trialbooked 		= 	$booktrial->update($bookdata);
-
+//		return $trialbooked;
 		if($trialbooked == true ){
 
 			$redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
@@ -2416,15 +2416,40 @@ class SchedulebooktrialsController extends \BaseController {
 			$booktrialdata      =	$booktrial;
 
 			$finderid 							= 	(int) $booktrialdata->finder_id;
-			$finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+			$finder 							= 	Finder::
+
+			with(
+				array(
+					'location'=>function($query){
+						$query->select('_id','name','slug');
+					}
+				)
+			)->with(
+				array(
+					'category'=>function($query){
+						$query->select('_id','name','slug');
+					}
+				)
+			)->with(
+				array(
+					'city'=>function($query){
+						$query->select('_id','name','slug');
+					}
+				)
+			)->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
 			$finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
 			$finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
 			$finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+			$finder_location_slug				=	(isset($finder['location']['slug']) && $finder['location']['slug'] != '') ? $finder['location']['slug'] : "";
+			$finder_category					=	(isset($finder['category']['name']) && $finder['category']['name'] != '') ? $finder['category']['name'] : "";
+			$finder_category_slug				=	(isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
 			$finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
 			$finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
 			$finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 			$city_id 							=	(int) $finder['city_id'];
+			$city	 							=	$finder['city']['name'];
+			$city_slug 							=	$finder['city']['slug'];
 			$google_pin							=	$this->googlePin($finder_lat,$finder_lon);
 
 			$finder_vcc_email = "";
@@ -2447,7 +2472,7 @@ class SchedulebooktrialsController extends \BaseController {
 			$share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
 			$show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
 
-			$gcm_reg_id								= 	(isset($booktrialdata->reg_id) && $booktrialdata->reg_id != '') ? $booktrialdata->reg_id : '';
+			$gcm_reg_id							= 	(isset($booktrialdata->reg_id) && $booktrialdata->reg_id != '') ? $booktrialdata->reg_id : '';
 			$device_type						= 	(isset($booktrialdata->device_type) && $booktrialdata->device_type != '') ? $booktrialdata->device_type : '';
 
 			if(isset($booktrialdata->customer_id) && $booktrialdata->customer_id != '' && $gcm_reg_id == '' && $device_type == ''){
@@ -2471,10 +2496,15 @@ class SchedulebooktrialsController extends \BaseController {
 				'finder_name' 					=>		$finder_name,
 				'finder_slug' 					=>		$finder_slug,
 				'finder_location' 				=>		$finder_location,
+				'finder_location_slug' 			=>		$finder_location_slug,
+				'finder_category' 				=>		$finder_category,
+				'finder_category_slug' 			=>		$finder_category_slug,
 				'finder_address' 				=>		$finder_address,
 				'finder_lat'		 			=>		$finder_lat,
 				'finder_lon'		 			=>		$finder_lon,
 				'city_id'						=>		$city_id,
+				'city'							=>		$city,
+				'city_slug'						=>		$city_slug,
 				'finder_vcc_email' 				=>		$finder_vcc_email,
 				'finder_vcc_mobile' 			=>		$finder_vcc_mobile,
 				'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
@@ -2499,16 +2529,29 @@ class SchedulebooktrialsController extends \BaseController {
 				'google_pin'					=>		$google_pin
 			);
 
-			$this->customermailer->cancelBookTrial($emaildata);
-			$this->findermailer->cancelBookTrial($emaildata);
-			$this->customersms->cancelBookTrial($emaildata);
-			$this->findersms->cancelBookTrial($emaildata);
-
-			if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
-				$this->customernotification->cancelBookTrial($emaildata);
-			}else{
+//			print_r($emaildata);
+//			echo $booktrialdata;
+			if($booktrialdata->source_flag == 'customer'){
+				$this->customermailer->cancelBookTrial($emaildata);
+				$this->findermailer->cancelBookTrial($emaildata);
 				$this->customersms->cancelBookTrial($emaildata);
+				$this->findersms->cancelBookTrial($emaildata);
+				if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
+					$this->customernotification->cancelBookTrial($emaildata);
+				}else{
+					$this->customersms->cancelBookTrial($emaildata);
+				}
 			}
+			else if($booktrialdata->source_flag == 'vendor'){
+
+				$this->customermailer->cancelBookTrialByVendor($emaildata);
+				$this->findermailer->cancelBookTrialByVendor($emaildata);
+				$this->customersms->cancelBookTrialByVendor($emaildata);
+				$this->findersms->cancelBookTrialByVendor($emaildata);
+			}
+
+
+
 
 
 		}catch(\Exception $exception){
