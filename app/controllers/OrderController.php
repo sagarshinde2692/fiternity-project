@@ -61,6 +61,24 @@ class OrderController extends \BaseController {
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
+			array_set($data, 'batch_time', '');
+
+			if(isset($data['batches']) && $data['batches'] != ""){
+				if(is_array($data['batches'])){
+					$data['batches'] = $data['batches'];
+				}else{
+					$data['batches'] = json_decode($data['batches'],true);
+				}
+
+				foreach ($data['batches'] as $key => $value) {
+
+					if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+	    				$data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+	    				break;
+	    			}
+				}
+			}
+
 			$orderdata 	=	$order->update($data);
 
 			//send welcome email to payment gateway customer
@@ -405,7 +423,8 @@ class OrderController extends \BaseController {
 		//$sndCodEmail	= 	$this->findermailer->sendCodOrderMail($order->toArray());
 
 		//SEND COD SMS TO CUSTOMER
-		$sndCodSms	= 	$this->customersms->sendCodOrderSms($order->toArray());
+		$sndCodSms	= 	$this->customersms->requestCodOrderSms($order->toArray());
+		
 		// print_pretty($sndCodSms); exit;
 
 		$resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Order Successful :)");
@@ -649,6 +668,24 @@ class OrderController extends \BaseController {
 
 		}
 
+		array_set($data, 'batch_time', '');
+
+		if(isset($data['batches']) && $data['batches'] != ""){
+			if(is_array($data['batches'])){
+				$data['batches'] = $data['batches'];
+			}else{
+				$data['batches'] = json_decode($data['batches'],true);
+			}
+
+			foreach ($data['batches'] as $key => $value) {
+
+				if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+    				$data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+    				break;
+    			}
+			}
+		}
+
 		array_set($data, 'service_name_purchase', $data['service_name']);
 		array_set($data, 'service_duration_purchase', $data['service_duration']);
 
@@ -738,10 +775,19 @@ class OrderController extends \BaseController {
 					$customerData['contact_no_verify_status'] = "yes";
 				}
 
-				if(isset($data['customer_address']) && !empty($data['customer_address']) ){
-					$customerData['address'] = implode(",", array_values($data['customer_address']));
-					$customerData['address_array'] = $data['customer_address'];
-				}
+				/*if(isset($data['customer_address'])){
+
+					if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+						$customerData['address'] = implode(",", array_values($data['customer_address']));
+						$customerData['address_array'] = $data['customer_address'];
+
+					}elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+						$customerData['address'] = $data['customer_address'];
+					}
+
+				}*/
 
 				if(count($customerData) > 0){
 					$customer->update($customerData);	
