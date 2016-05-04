@@ -841,30 +841,64 @@ class OzonetelsController extends \BaseController {
 							}
 						}
 
-						$booktrial_data = $booktrial->toArray();
+						if((isset($booktrial->customer_emailqueuedids['after2hour']) && $booktrial->customer_emailqueuedids['after2hour'] != '')){
 
-						$customer_smsqueuedids = (isset($booktrial_data['customer_smsqueuedids'])) ? $booktrial_data['customer_smsqueuedids'] : array();
-						$customer_smsqueuedids['after2hour'] = $this->customersms->bookTrialReminderAfter2HourRegular($booktrial_data,$delayReminderTimeAfter2Hour);
-					}
+							try {
+								$this->sidekiq->delete($booktrial->customer_emailqueuedids['after2hour']);
+							}catch(\Exception $exception){
+								Log::error($exception);
+							}
 
-					if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
+						}
 
-						try {
-							$sidekiq->delete($booktrial->customer_smsqueuedids['before1hour']);
-						}catch(\Exception $exception){
-							Log::error($exception);
+						if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
+
+							try {
+								$this->sidekiq->delete($booktrial->customer_smsqueuedids['before1hour']);
+							}catch(\Exception $exception){
+								Log::error($exception);
+							}
+						}
+
+						if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
+
+							try {
+								$this->sidekiq->delete($booktrial->finder_smsqueuedids['before1hour']);
+							}catch(\Exception $exception){
+								Log::error($exception);
+							}
+						}
+
+						if(isset($booktrial->customer_auto_sms) && $booktrial->customer_auto_sms != '' && $booktrial->customer_auto_sms != 'no_auto_sms'){
+
+							try {
+								$this->sidekiq->delete($booktrial->customer_auto_sms);
+							}catch(\Exception $exception){
+								Log::error($exception);
+							}
+						}
+
+						if((isset($booktrial->customer_notification_messageids['before1hour']) && $booktrial->customer_notification_messageids['before1hour'] != '')){
+
+							try{
+								$this->sidekiq->delete($booktrial->customer_notification_messageids['before1hour']);
+							}catch(\Exception $exception){
+								Log::error($exception);
+							}
+
+						}
+
+						if((isset($booktrial->customer_notification_messageids['after2hour']) && $booktrial->customer_notification_messageids['after2hour'] != '')){
+
+							try{
+								$this->sidekiq->delete($booktrial->customer_notification_messageids['after2hour']);
+							}catch(\Exception $exception){
+								Log::error($exception);
+							}
+
 						}
 					}
-
-					if((isset($booktrial->customer_notification_messageids['before1hour']) && $booktrial->customer_notification_messageids['before1hour'] != '')){
-
-						try {
-							$sidekiq->delete($booktrial->customer_notification_messageids['before1hour']);
-						}catch(\Exception $exception){
-							Log::error($exception);
-						}
-					}
-
+					
 					$booktrial->missedcall_date = date('Y-m-d h:i:s');
 					$booktrial->missedcall_status = $missedcall_status[$type];
 					$booktrial->source_flag = 'missedcall';
