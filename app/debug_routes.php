@@ -1553,6 +1553,7 @@ Route::get('/debug/gurgaonmigration',  array('as' => 'debug.gurgaonmigration','u
 Route::get('/debug/movekickboxing',  array('as' => 'debug.movekickboxing','uses' => 'DebugController@movekickboxing'));
 Route::get('/debug/updateorderamount',  array('as' => 'debug.updateOrderamount','uses' => 'DebugController@updateOrderAmount'));
 Route::get('/debug/vendorstatsmeta',  array('as' => 'debug.vendorStatsMeta','uses' => 'DebugController@vendorStatsMeta'));
+Route::get('/debug/budgetalgofinders',  array('as' => 'debug.BudgetAlgoFinders','uses' => 'DebugController@BudgetAlgoFinders'));
 
 
 

@@ -946,6 +946,7 @@ public function searchDirectPaymentEnabled(){
     $direct_payment_filter = '{"term" : {  "direct_payment_enable": true,"_cache": true}},';
 
     $post_filter = trim($direct_payment_filter.$category_filter.$city_filter,',');
+    $category_regex = $this->_getCategoryRegex($city);
     //return json_decode($group_by_flag);
     if($group_by_flag){
 
@@ -1011,7 +1012,8 @@ public function searchDirectPaymentEnabled(){
             "category_grouping": {
               "terms": {
                 "field": "categorytags",
-                "size": 1000
+                "size": 1000,
+                "include" : "'.$category_regex.'"
             }
         }
     },';
@@ -1156,5 +1158,32 @@ private function _getOfferingRegex($category){
     return strtolower($regex);
 }
 
+private function _getCategoryRegex($city){
 
+    $regex = '';
+    switch ($city) {
+        case 'mumbai':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional training|mma And kick boxing|dance|marathon training|spinning and indoor cycling|personal trainers|healthy snacks and beverages|dietitians and nutritionists|swimming|sport nutrition supliment stores';
+        break;
+        case 'delhi':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'bangalore':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional Training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'pune':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'gurgaon':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        
+        default:
+            # code...
+        break;
+    }
+
+    return $regex;
+
+}
 }
