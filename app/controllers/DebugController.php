@@ -2104,4 +2104,150 @@ public function testEmail(){
 
 
 	}
+
+	public function BudgetAlgoFinders(){
+
+		$fp = fopen('budgetrangeandvalue.csv', 'w');
+		$header = array('FinderId','FinderName','Average_Budget', 'Budget_slab', 'CommercialType','Infrastructure_type','City');
+
+		fputcsv($fp, $header);
+		$city_list = array(1,2,3,4,8);
+		foreach ($city_list as $key => $city) {
+
+			$finder_documents = Finder::with(array('country'=>function($query){$query->select('name');}))
+			->with(array('city'=>function($query){$query->select('name');}))               
+			->active()
+			->orderBy('_id')
+			->where('city_id', intval($city))
+			->where('status', '=', '1')
+			->take(5000)->skip(0)
+			->timeout(400000000)
+			->get(); 
+
+
+			foreach ($finder_documents as $finder) {
+				
+				$ratecards = Ratecard::where('finder_id', intval($finder['id']))->get();
+				$ratecard_money = 0;
+				$ratecard_count = 0;  $average_monthly = 0;
+
+				foreach ($ratecards as $ratecard) {
+					
+					switch($ratecard['validity']){
+						case 30:
+						$ratecard_count = $ratecard_count + 1;
+						$ratecard_money = $ratecard_money + intval($ratecard['price']);
+						break;
+						case 90:
+						$ratecard_count = $ratecard_count + 1;
+						$average_one_month = intval($ratecard['price'])/3;
+						$ratecard_money = $ratecard_money + $average_one_month;
+						break;
+						case 120:
+						$ratecard_count = $ratecard_count + 1;
+						$average_one_month = intval($ratecard['price'])/4;
+						$ratecard_money = $ratecard_money + $average_one_month;
+						break;
+						case 180:
+						$ratecard_count = $ratecard_count + 1;
+						$average_one_month = intval($ratecard['price'])/6;
+						$ratecard_money = $ratecard_money + $average_one_month;
+						break;
+						case 360:
+						$ratecard_count = $ratecard_count + 1;
+						$average_one_month = intval($ratecard['price'])/12;
+						$ratecard_money = $ratecard_money + $average_one_month;
+						break;
+					}  
+
+				}
+
+				if(($ratecard_count !==0)){
+
+					$average_monthly = ($ratecard_money) / ($ratecard_count);
+				}
+
+				$average_monthly_tag = '';
+
+				switch($average_monthly){
+					case ($average_monthly < 1001):
+					$average_monthly_tag = 'one';
+					$rangeval = 1;
+					break;
+
+					case ($average_monthly > 1000 && $average_monthly < 2501):
+					$average_monthly_tag = 'two';
+					$rangeval = 2;
+					break;
+
+					case ($average_monthly > 2500 && $average_monthly < 5001):
+					$average_monthly_tag = 'three';
+					$rangeval = 3;
+					break;
+
+					case ($average_monthly > 5000 && $average_monthly < 7501):
+					$average_monthly_tag = 'four';
+					$rangeval = 4;
+					break;
+
+					case ($average_monthly > 7500 && $average_monthly < 15001):
+					$average_monthly_tag = 'five';
+					$rangeval = 5;
+					break;
+
+					case ($average_monthly > 15000):
+					$average_monthly_tag = 'six';
+					$rangeval = 6;
+					break;
+				}
+				$finder_commercial_type = '';
+
+				switch ($finder['commercial_type']) {
+					case 1:
+					$finder_commercial_type = 'paid';
+					break;
+					case 2:
+					$finder_commercial_type = 'free special';
+					break;
+					case 3:
+					$finder_commercial_type = 'COS';
+					break;
+					case 0:
+					$finder_commercial_type = 'free';
+					break;
+
+				}
+				$cityname = '';
+						switch ($city) {
+							case 1:
+							$cityname = 'mumbai';
+							break;
+							case 2:
+							$cityname = 'pune';
+							break;
+							case 3:
+							$cityname = 'banglore';
+							break;
+							case 4:
+							$cityname = 'delhi';
+							break;
+							case 8:
+							$cityname = 'gurgaon';
+							break;
+							
+						}
+				$finder_infrastructuretype = $finder['business_type'];
+				$fields = array($finder['_id'],$finder['title'],$average_monthly,$average_monthly_tag, $finder_commercial_type,$finder_infrastructuretype,$cityname);
+				fputcsv($fp, $fields);
+				
+
+			}
+
+		}
+		
+		
+
+		return 'done';
+
+	}
 }
