@@ -867,15 +867,6 @@ class OzonetelsController extends \BaseController {
 							}
 						}
 
-						if(isset($booktrial->customer_auto_sms) && $booktrial->customer_auto_sms != '' && $booktrial->customer_auto_sms != 'no_auto_sms'){
-
-							try {
-								$this->sidekiq->delete($booktrial->customer_auto_sms);
-							}catch(\Exception $exception){
-								Log::error($exception);
-							}
-						}
-
 						if((isset($booktrial->customer_notification_messageids['before1hour']) && $booktrial->customer_notification_messageids['before1hour'] != '')){
 
 							try{
