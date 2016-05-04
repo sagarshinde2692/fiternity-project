@@ -49,20 +49,20 @@ class FindersController extends \BaseController {
         if(!$finder_detail){
 
             $finderarr = Finder::active()->where('slug','=',$tslug)
-                ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-                ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                ->with('findercollections')
-                ->with('blogs')
-                ->with('categorytags')
-                ->with('locationtags')
-                ->with('offerings')
-                ->with('facilities')
-                ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+            ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            ->with('findercollections')
+            ->with('blogs')
+            ->with('categorytags')
+            ->with('locationtags')
+            ->with('offerings')
+            ->with('facilities')
+            ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
                 //->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-                ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-                ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
-                ->first();
+            ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+            ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
+            ->first();
 
 
             if($finderarr){
@@ -125,17 +125,17 @@ class FindersController extends \BaseController {
                                         //   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
                                         //   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
                                         if($today_weekday == $weekday){
-                                               $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
-                                               $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                        }
-                                        $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
-                                        $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                        array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
-                                    }
-                                }
-                            }
+                                         $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
+                                         $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                     }
+                                     $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
+                                     $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                     array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
+                                 }
+                             }
+                         }
 
-                            $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : [];
+                         $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : [];
 
                         }// trialschedules
 
@@ -198,7 +198,7 @@ class FindersController extends \BaseController {
 
                 // return $categoryTagDefinationArr;
 
-                 
+
 
                 $finderdata 		=	$finder;
                 $finderid 			= (int) $finderdata['_id'];
@@ -212,88 +212,88 @@ class FindersController extends \BaseController {
                 if($findercategoryid == 25 || $findercategoryid == 42){
 
                     $nearby_same_category 		= 	Finder::where('_id','!=',$finderid)
-                        ->where('category_id','=',$findercategoryid)
-                        ->where('city_id','=', $finder_cityid)
-                        ->where('status', '=', '1')
-                        ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                        ->orderBy('popularity', 'DESC')
-                        ->remember(Config::get('app.cachetime'))
-                        ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                        ->take(5)->toArray();
+                    ->where('category_id','=',$findercategoryid)
+                    ->where('city_id','=', $finder_cityid)
+                    ->where('status', '=', '1')
+                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->orderBy('popularity', 'DESC')
+                    ->remember(Config::get('app.cachetime'))
+                    ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->take(5)->toArray();
 
                     if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; }
 
                     $nearby_other_category 		= 	Finder::where('_id','!=',$finderid)
 //                        ->where('category_id','=',$other_categoryid)
-                        ->whereNotIn('category_id', $skip_categoryid_finders)
-                        ->where('city_id','=', $finder_cityid)
-                        ->where('status', '=', '1')
-                        ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                        ->orderBy('popularity', 'DESC')
-                        ->remember(Config::get('app.cachetime'))
-                        ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                        ->take(5)->toArray();
+                    ->whereNotIn('category_id', $skip_categoryid_finders)
+                    ->where('city_id','=', $finder_cityid)
+                    ->where('status', '=', '1')
+                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->orderBy('popularity', 'DESC')
+                    ->remember(Config::get('app.cachetime'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->take(5)->toArray();
 
                 }elseif ($findercategoryid == 45 ) {
                     //if category is healthy foods and bevrages
                     $nearby_same_category 		= 	Finder::where('_id','!=',$finderid)
-                        ->where('category_id','=', 45)
-                        ->where('city_id','=', $finder_cityid)
-                        ->where('status', '=', '1')
-                        ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                        ->orderBy('popularity', 'DESC')
-                        ->remember(Config::get('app.cachetime'))
-                        ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                        ->take(5)->toArray();
+                    ->where('category_id','=', 45)
+                    ->where('city_id','=', $finder_cityid)
+                    ->where('status', '=', '1')
+                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->orderBy('popularity', 'DESC')
+                    ->remember(Config::get('app.cachetime'))
+                    ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->take(5)->toArray();
 
 
                     $nearby_other_category 		= 	Finder::where('_id','!=',$finderid)
 //                        ->where('category_id','=', 42)
-                        ->whereNotIn('category_id', $skip_categoryid_finders)
-                        ->where('city_id','=', $finder_cityid)
-                        ->where('status', '=', '1')
-                        ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                        ->orderBy('popularity', 'DESC')
-                        ->remember(Config::get('app.cachetime'))
-                        ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                        ->take(5)->toArray();
+                    ->whereNotIn('category_id', $skip_categoryid_finders)
+                    ->where('city_id','=', $finder_cityid)
+                    ->where('status', '=', '1')
+                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->orderBy('popularity', 'DESC')
+                    ->remember(Config::get('app.cachetime'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->take(5)->toArray();
 
 
                 }else{
 
                     $nearby_same_category 		= 	Finder::where('category_id','=',$findercategoryid)
-                        ->where('location_id','=',$finderlocationid)
-                        ->where('_id','!=',$finderid)
-                        ->where('status', '=', '1')
-                        ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                        ->orderBy('finder_type', 'DESC')
-                        ->remember(Config::get('app.cachetime'))
-                        ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                        ->take(5)->toArray();
+                    ->where('location_id','=',$finderlocationid)
+                    ->where('_id','!=',$finderid)
+                    ->where('status', '=', '1')
+                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->orderBy('finder_type', 'DESC')
+                    ->remember(Config::get('app.cachetime'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->take(5)->toArray();
 
 
                     $nearby_other_category 		= 	Finder::where('category_id','!=',$findercategoryid)
-                        ->whereNotIn('category_id', $skip_categoryid_finders)
-                        ->where('location_id','=',$finderlocationid)
-                        ->where('_id','!=',$finderid)
-                        ->where('status', '=', '1')
-                        ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                        ->orderBy('finder_type', 'DESC')
-                        ->remember(Config::get('app.cachetime'))
-                        ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                        ->take(5)->toArray();
+                    ->whereNotIn('category_id', $skip_categoryid_finders)
+                    ->where('location_id','=',$finderlocationid)
+                    ->where('_id','!=',$finderid)
+                    ->where('status', '=', '1')
+                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->orderBy('finder_type', 'DESC')
+                    ->remember(Config::get('app.cachetime'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->take(5)->toArray();
                 }
 
                 $data['statusfinder'] 					= 		200;
@@ -372,9 +372,9 @@ class FindersController extends \BaseController {
                 array("slug"=>"four","name" => "5000-7500"),
                 array("slug"=>"five" ,"name"=> "7500-15000"),
                 array("slug"=>"six","name"=> "15000 & above")
-            ),
+                ),
             'facilities' => Facility::active()->orderBy('name')->get(array('name','_id','slug'))
-        );
+            );
         return Response::json($data,200);
     }
 
@@ -384,16 +384,16 @@ class FindersController extends \BaseController {
 
         $tslug 		= 	(string) $slug;
         $finderarr 	= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-            ->with('categorytags')
-            ->with('locationtags')
-            ->with('offerings')
-            ->with('facilities')
-            ->with('servicerates')
-            ->with('services')
-            ->where('slug','=',$tslug)
-            ->first();
+        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+        ->with('categorytags')
+        ->with('locationtags')
+        ->with('offerings')
+        ->with('facilities')
+        ->with('servicerates')
+        ->with('services')
+        ->where('slug','=',$tslug)
+        ->first();
         $data 		= 	$finderarr->toArray();
         // print_pretty($data);exit;
         $postdata 	= 	get_elastic_finder_document($data);
@@ -403,7 +403,7 @@ class FindersController extends \BaseController {
             'port' => Config::get('app.elasticsearch_port'),
             'method' => 'PUT',
             'postfields' => json_encode($postdata)
-        );
+            );
         //echo es_curl_request($request);exit;
         es_curl_request($request);
     }
@@ -442,7 +442,7 @@ class FindersController extends \BaseController {
                 'reciver_name' => 'Fitternity',
                 'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
                 'email_subject' => 'Review given for - ' .ucwords($finderslug)
-            );
+                );
             $email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
                 $message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
                 // $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
@@ -537,7 +537,7 @@ class FindersController extends \BaseController {
                             'code' => $value->code,
                             'service_name' => $value->service_name,
                             'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
-                        );
+                            );
                         array_push($trialdata, $trial);
                     }
 
@@ -557,7 +557,7 @@ class FindersController extends \BaseController {
                                 'code' => $value->code,
                                 'service_name' => $value->service_name,
                                 'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
-                            );
+                                );
                             array_push($todaytrialdata, $trial);
                         }
                     }
@@ -571,7 +571,7 @@ class FindersController extends \BaseController {
                         'finder_vcc_email'				=> $finder_vcc_email,
                         'scheduletrials' 				=> $trialdata,
                         'todaytrials' 					=> $todaytrialdata
-                    );
+                        );
                     // echo "<pre>";print_r($scheduledata);
 
                     $this->findermailer->sendBookTrialDaliySummary($scheduledata);
@@ -591,7 +591,7 @@ class FindersController extends \BaseController {
                 'message' => $e->getMessage(),
                 'file'    => $e->getFile(),
                 'line'    => $e->getLine(),
-            );
+                );
 
             $resp 	= 	array('status' => 400,'message' => $message);
             Log::info('Trial Daily Summary Cron : fial',$message);
@@ -658,7 +658,7 @@ class FindersController extends \BaseController {
                         'code' => $value->code,
                         'service_name' => $value->service_name,
                         'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
-                    );
+                        );
                     array_push($trialdata, $trial);
                 }
 
@@ -674,7 +674,7 @@ class FindersController extends \BaseController {
                             'code' => $value->code,
                             'service_name' => $value->service_name,
                             'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
-                        );
+                            );
                         array_push($todaytrialdata, $trial);
                     }
                 }
@@ -688,7 +688,7 @@ class FindersController extends \BaseController {
                     'finder_vcc_email'				=> $finder_vcc_email,
                     'scheduletrials' 				=> $trialdata,
                     'todaytrials' 					=> $todaytrialdata
-                );
+                    );
                 echo "<pre>";print_r($scheduledata);
 
                 // $this->findermailer->sendBookTrialDaliySummary($scheduledata);
@@ -795,15 +795,15 @@ class FindersController extends \BaseController {
         }
 
         $reviewdata = [
-            'finder_id' => intval($data['finder_id']),
-            'customer_id' => intval($data['customer_id']),
-            'rating' => intval($data['rating']),
-            'detail_rating' => array_map('intval',$data['detail_rating']),
-            'description' => $data['description'],
-            'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
-            'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
-            'source' => (isset($data['source'])) ? $data['source'] : 'customer',
-            'status' => '1'
+        'finder_id' => intval($data['finder_id']),
+        'customer_id' => intval($data['customer_id']),
+        'rating' => intval($data['rating']),
+        'detail_rating' => array_map('intval',$data['detail_rating']),
+        'description' => $data['description'],
+        'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
+        'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
+        'source' => (isset($data['source'])) ? $data['source'] : 'customer',
+        'status' => '1'
         ];
 
         $reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
@@ -926,7 +926,7 @@ class FindersController extends \BaseController {
                 'reciver_name' => 'Fitternity',
                 'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
                 'email_subject' => 'Review given for - ' .ucwords($finderslug)
-            );
+                );
             $email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
                 // $message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
                 $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
@@ -953,9 +953,9 @@ class FindersController extends \BaseController {
 
                 $finder_id 	= (int) $finder_by_slug['_id'];
                 $reviews = Review::where('status', '!=', '1')
-                    ->where('finder_id','=',$finder_id)
-                    ->orderBy('_id', 'desc')
-                    ->get(array('_id','finder_id','customer_id','customer','rating','detail_rating','description','updated_at','created_at'));
+                ->where('finder_id','=',$finder_id)
+                ->orderBy('_id', 'desc')
+                ->get(array('_id','finder_id','customer_id','customer','rating','detail_rating','description','updated_at','created_at'));
 
                 $data = array('status' => 200,'data'=>$reviews);
 
@@ -1001,15 +1001,15 @@ class FindersController extends \BaseController {
 
         $item  =  (!is_array($review)) ? $review->toArray() : $review;
         $data = [
-            'finder_id' => $item['finder_id'],
-            'customer_id' => $item['customer_id'],
-            'rating' => $item['rating'],
-            'detail_rating' => $item['detail_rating'],
-            'description' => $item['description'],
-            'created_at' => $item['created_at'],
-            'updated_at' => $item['updated_at'],
-            'customer' => $item['customer'],
-            'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
+        'finder_id' => $item['finder_id'],
+        'customer_id' => $item['customer_id'],
+        'rating' => $item['rating'],
+        'detail_rating' => $item['detail_rating'],
+        'description' => $item['description'],
+        'created_at' => $item['created_at'],
+        'updated_at' => $item['updated_at'],
+        'customer' => $item['customer'],
+        'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
         ];
 
         return $data;
@@ -1026,9 +1026,9 @@ class FindersController extends \BaseController {
 
             try {
                 $finder = Finder::where('slug','=',(string)$slug)
-                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                    ->first(array('title','photos','city_id','location_id','info','contact','total_rating_count','detail_rating_summary_average','detail_rating_summary_count'));
+                ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                ->first(array('title','photos','city_id','location_id','info','contact','total_rating_count','detail_rating_summary_average','detail_rating_summary_count'));
             } catch (Exception $error) {
                 return $errorMessage = $this->errorMessage($error);
             }
@@ -1086,5 +1086,107 @@ class FindersController extends \BaseController {
         return Response::json($responseData, 200);
     }
 
+    public function updateBudgetFromRatecardsToFinder(){
 
+        $city_list = array(1,2,3,4,8);
+
+        foreach ($city_list as $city) {
+
+
+            $finder_documents = Finder::with(array('country'=>function($query){$query->select('name');}))
+            ->with(array('city'=>function($query){$query->select('name');}))               
+            ->active()
+            ->orderBy('_id')
+            ->where('city_id', intval($city))
+            //->where('status', '=', '1')
+            ->take(50000)->skip(0)
+            ->timeout(400000000)
+            ->get(); 
+
+
+            foreach ($finder_documents as $finder) {
+
+                $ratecards = Ratecard::where('finder_id', intval($finder['id']))->get();
+                $ratecard_money = 0;
+                $ratecard_count = 0;  $average_monthly = 0;
+
+                foreach ($ratecards as $ratecard) {
+
+                    switch($ratecard['validity']){
+                        case 30:
+                        $ratecard_count = $ratecard_count + 1;
+                        $ratecard_money = $ratecard_money + intval($ratecard['price']);
+                        break;
+                        case 90:
+                        $ratecard_count = $ratecard_count + 1;
+                        $average_one_month = intval($ratecard['price'])/3;
+                        $ratecard_money = $ratecard_money + $average_one_month;
+                        break;
+                        case 120:
+                        $ratecard_count = $ratecard_count + 1;
+                        $average_one_month = intval($ratecard['price'])/4;
+                        $ratecard_money = $ratecard_money + $average_one_month;
+                        break;
+                        case 180:
+                        $ratecard_count = $ratecard_count + 1;
+                        $average_one_month = intval($ratecard['price'])/6;
+                        $ratecard_money = $ratecard_money + $average_one_month;
+                        break;
+                        case 360:
+                        $ratecard_count = $ratecard_count + 1;
+                        $average_one_month = intval($ratecard['price'])/12;
+                        $ratecard_money = $ratecard_money + $average_one_month;
+                        break;
+                    }  
+
+                }
+
+                if(($ratecard_count !==0)){
+
+                    $average_monthly = ($ratecard_money) / ($ratecard_count);
+                }
+
+                $average_monthly_tag = '';
+
+                switch($average_monthly){
+                    case ($average_monthly < 1001):
+                    $average_monthly_tag = 'one';
+                    $rangeval = 1;
+                    break;
+
+                    case ($average_monthly > 1000 && $average_monthly < 2501):
+                    $average_monthly_tag = 'two';
+                    $rangeval = 2;
+                    break;
+
+                    case ($average_monthly > 2500 && $average_monthly < 5001):
+                    $average_monthly_tag = 'three';
+                    $rangeval = 3;
+                    break;
+
+                    case ($average_monthly > 5000 && $average_monthly < 7501):
+                    $average_monthly_tag = 'four';
+                    $rangeval = 4;
+                    break;
+
+                    case ($average_monthly > 7500 && $average_monthly < 15001):
+                    $average_monthly_tag = 'five';
+                    $rangeval = 5;
+                    break;
+
+                    case ($average_monthly > 15000):
+                    $average_monthly_tag = 'six';
+                    $rangeval = 6;
+                    break;
+                }
+                
+                $finderData = [];
+            //Logo                
+                $finderData['price_range']  = $average_monthly_tag;
+                 $finderData['budget']  = round($average_monthly);
+
+                $response = $finder->update($finderData);
+            }
+        }
+    }
 }
