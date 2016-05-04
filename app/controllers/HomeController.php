@@ -533,6 +533,28 @@ class HomeController extends BaseController {
 		$responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finder_ids)];
 		return Response::json($responseArr);
 	}
+
+	public function landingAnytimeFitnessFinders(){
+        
+		$finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909);
+		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
+		$finders 			= 		Finder::whereIn('_id', $finder_ids)
+			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+			->get(array('_id','slug','title','category_id','category','location_id','location','city_id','city','contact','services'))->toArray();;
+
+		$finderArr = [];
+		foreach ($finders as $key => $value) {
+			$finderobj 	= 	array_except($value, array('services'));
+			array_set($finderobj, 'services', pluck( $value['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory']  ));
+			array_push($finderArr, $finderobj);
+		}
+
+		$responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finder_ids)];
+		return Response::json($responseArr);
+	}
 	
 
 
