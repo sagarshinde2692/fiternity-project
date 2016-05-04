@@ -862,6 +862,11 @@ class SchedulebooktrialsController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
+		if(!isset($data['status']) || $data['status'] != 'success'){
+			$resp 	= 	array('status' => 400,'message' => "data missing or not success - status");
+			return  Response::json($resp, 400);
+		}
+
 		try {
 
 			$order_id = $data['order_id'];
