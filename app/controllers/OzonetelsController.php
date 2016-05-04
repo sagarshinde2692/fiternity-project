@@ -826,8 +826,6 @@ class OzonetelsController extends \BaseController {
 						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);$this->findersms->rescheduleTrial($data);break;
 					}
 
-					$customer_smsqueuedids = array();
-
 					$in_array = array('cancel','reschedule');
 
 					if(in_array($type,$in_array)){
@@ -898,11 +896,10 @@ class OzonetelsController extends \BaseController {
 
 						}
 					}
-					
+
 					$booktrial->missedcall_date = date('Y-m-d h:i:s');
 					$booktrial->missedcall_status = $missedcall_status[$type];
 					$booktrial->source_flag = 'missedcall';
-					$booktrial->customer_smsqueuedids = $customer_smsqueuedids;
 					$booktrial->update();
 				}
 			}
