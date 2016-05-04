@@ -940,7 +940,9 @@ class OzonetelsController extends \BaseController {
 
 					if(!empty($direct_payment_enable)){
 
-						$link = "www.fitternity.com/membershipbuy/".$finder_slug."/".$booktrial->service_id;
+						//$link = "www.fitternity.com/membershipbuy/".$finder_slug."/".$booktrial->service_id;
+						$link = "www.fitternity.com/".$finder_slug;
+						$short_url = "";
 						$short_url = "";
 
 		                $shorten_url = new ShortenUrl();
