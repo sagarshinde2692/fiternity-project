@@ -869,6 +869,45 @@ class VendorpanelController extends BaseController
     }
 
 
+    public function getRecentProfileUpdateRequest($finder_id)
+    {
+
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
+            return Response::json($data, 401);
+        }
+        $finderdata = Vendorupdaterequest::where('finder_id', '=', intval($finder_id))
+            ->where('approval_status', '=', 'pending')
+            ->first();
+
+        return Response::json($finderdata, 200);
+
+    }
+
+
+    public function modifyVisualization($finderdata){
+        $keys = array_keys($finderdata);
+        foreach ($keys as $key){
+            if($finderdata[$key] != null){
+                if( starts_With($key, 'existing') && $key != "existing"){
+                    $finderdata['existing'][str_replace("existing","",$key)] = $finderdata[$key];
+                    unset($finderdata[$key]);
+                }
+                if( starts_With($key, 'new') && $key != "new"){
+                    $finderdata['new'][str_replace("new","",$key)] = $finderdata[$key];
+                    unset($finderdata[$key]);
+                }
+            }
+            else{
+                unset($finderdata[$key]);
+            }
+        }
+        return $finderdata;
+    }
+
+
     public function updateProfile($finder_id)
     {
 

@@ -9,6 +9,4 @@ class Vendorupdaterequest extends \Basemodel {
 		
 		$this->attributes['_id'] = $value;
 	}
-
-
 }
