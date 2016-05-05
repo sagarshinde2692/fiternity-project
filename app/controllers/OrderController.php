@@ -28,7 +28,7 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session');
 	}
 
 
@@ -344,7 +344,7 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
-		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'|| $data['type'] == 'zumbathon'){
+		if($data['type'] == 'workout-session' || $data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'|| $data['type'] == 'zumbathon'){
 			if( empty($data['service_duration']) ){
 				$resp 	= 	array('status' => 400,'message' => "Data Missing - service_duration");
 				return  Response::json($resp, 400);
@@ -562,7 +562,7 @@ class OrderController extends \BaseController {
 
 		}
 
-		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'womens-day'){
+		if($data['type'] == 'workout-session' || $data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'womens-day'){
 			if( empty($data['service_duration']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 				return Response::json($resp,404);				
