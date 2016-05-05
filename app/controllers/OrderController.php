@@ -328,11 +328,6 @@ class OrderController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 		
-		if(empty($data['service_duration'])){
-			$resp 	= 	array('status' => 400,'message' => "Data Missing - service_duration");
-			return  Response::json($resp, 400);
-		}
-
 		if(empty($data['type'])){
 			$resp 	= 	array('status' => 400,'message' => "Data Missing Order Type - type");
 			return  Response::json($resp, 400);
@@ -344,11 +339,15 @@ class OrderController extends \BaseController {
 		}
 
 		//Validation base on order type
-		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniaservice'|| $data['type'] == 'zumbathon'){
+		if($data['type'] == 'memberships'){
+
 			if( empty($data['service_duration']) ){
 				$resp 	= 	array('status' => 400,'message' => "Data Missing - service_duration");
 				return  Response::json($resp, 400);
 			}
+		}else{
+
+			$data['service_duration'] = (isset($data['service_duration']) && $data['service_duration'] != "") ? $data['service_duration'] : "";
 		}
 
 		$orderid 			=	Order::max('_id') + 1;
@@ -449,7 +448,7 @@ class OrderController extends \BaseController {
 
 		Log::info('Gnerate Tmp Order',$postdata);
 
-		$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];
+		/*$data['service_duration'] = (empty($data['service_duration'])) ? '1 Meal' : $data['service_duration'];*/
 		// $required_fiels = ['customer_name', ];
 
 		if(empty($data['customer_name'])){
@@ -562,12 +561,15 @@ class OrderController extends \BaseController {
 
 		}
 
-		if($data['type'] == 'memberships' || $data['type'] == 'booktrials' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'womens-day'){
+		if($data['type'] == 'memberships'){
 			if( empty($data['service_duration']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 				return Response::json($resp,404);				
 			}
+		}else{
+			$data['service_duration'] = (isset($data['service_duration']) && $data['service_duration'] != "") ? $data['service_duration'] : "";
 		}
+
 
 		//Validation base on order type for sms body and email body  zumbathon','booiaka
 		if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon' || $data['type'] == 'eefashrof' ){
