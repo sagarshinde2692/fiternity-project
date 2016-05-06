@@ -560,42 +560,42 @@ if (!function_exists(('evalBaseCategoryScore'))){
         function get_elastic_finder_documentv2($finderdata = array(), $locationcluster='', $rangeval =0) {
 
             try{
-            $data = $finderdata;
-            $flag = false;
-            $picslist = array();            
-            if(($data['category_id'] == 42) || ($data['category_id'] == 45))
-            { 
-                $flag = true;                   
-                $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
-                foreach ($service as $doc1) { 
-                 $doc = $doc1->toArray();
-                 if( isset($doc['photos']) && !empty($doc['photos'])){                                            
-                    $photos = $doc['photos'];                       
-                    foreach ($photos as $key => $value) {                           
-                        if(!empty($photos[$key])){                               
-                            array_push($picslist, strtolower($value['url']));
+                $data = $finderdata;
+                $flag = false;
+                $picslist = array();            
+                if(($data['category_id'] == 42) || ($data['category_id'] == 45))
+                { 
+                    $flag = true;                   
+                    $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
+                    foreach ($service as $doc1) { 
+                       $doc = $doc1->toArray();
+                       if( isset($doc['photos']) && !empty($doc['photos'])){                                            
+                        $photos = $doc['photos'];                       
+                        foreach ($photos as $key => $value) {                           
+                            if(!empty($photos[$key])){                               
+                                array_push($picslist, strtolower($value['url']));
+                            }
                         }
                     }
                 }
             }
-        }
-        $offer_counter = 0;
-        $servicenamelist = array();
-        if(isset($data['services']) && !empty($data['services'])){
-            foreach ($data['services'] as $serv) {
-                array_push($servicenamelist, strtolower($serv['name']));
-                if(isset($serv['show_in_offers'])){
-                    ++$offer_counter;
+            $offer_counter = 0;
+            $servicenamelist = array();
+            if(isset($data['services']) && !empty($data['services'])){
+                foreach ($data['services'] as $serv) {
+                    array_push($servicenamelist, strtolower($serv['name']));
+                    if(isset($serv['show_in_offers'])){
+                        ++$offer_counter;
+                    }
                 }
             }
-        }
 
-        $info_service_list = array();
-        if(isset($data['info']['service'])&& !empty($data['info']['service'])){
-            $key1 = str_replace(array("<ul><li>","</li></ul>"), " ", $data['info']['service']);
-            $key3 = trim($key1," ");
-            $info_service_list = explode("</li><li>", $key3);
-        }
+            $info_service_list = array();
+            if(isset($data['info']['service'])&& !empty($data['info']['service'])){
+                $key1 = str_replace(array("<ul><li>","</li></ul>"), " ", $data['info']['service']);
+                $key3 = trim($key1," ");
+                $info_service_list = explode("</li><li>", $key3);
+            }
 
         /*
     
@@ -604,79 +604,100 @@ if (!function_exists(('evalBaseCategoryScore'))){
 
         $weekdays = array();
         $trial_slots = array();
-        
-         foreach ($data['services'] as $serv) {
-             if(isset($serv['trialschedules'])){
+        $service_level_data_all = array();
+        foreach ($data['services'] as $serv) {
+            $service_level_data = array();
+            $service_level_data['service_category_exact'] = array();
+            $service_level_data['service_category_synonyms'] = array();
+            $service_level_data['day'] = array();
+            $service_level_data['start'] = array();
+            $service_level_data['end'] = array();
+
+            array_push($service_level_data['service_category_exact'], $serv['category']['name']);
+            array_push($service_level_data['service_category_exact'], $serv['subcategory']['name']);
+            //get synonyms
+            array_push($service_level_data['service_category_synonyms'], $serv['category']['name']);
+            if(isset($serv['trialschedules'])){
                 $trialschedules = $serv['trialschedules'];
-               
+
                 foreach ($trialschedules as $trial) {
                    //echo json_encode($trial);
-                   array_push($weekdays, $trial['weekday']);
-                   foreach ($trial['slots'] as $slot) {
-                       array_push($trial_slots, array('day' => $trial['weekday'], 'start' => intval($slot['start_time_24_hour_format']), 'end' => intval($slot['end_time_24_hour_format'])));
-                   }
-                }
-            }   
-         }
-       
+                 array_push($weekdays, $trial['weekday']);
+                 array_push($service_level_data['day'], $trial['weekday']);
 
-      
-            $postfields_data = array(
-                '_id'                           =>      $data['_id'],
-                'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
-                'average_rating'                =>      (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
-                'membership_discount'           =>      "",
-                'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
-                'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
-                'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1, 
-                'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
-                'info_service_snow'             =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
-                'info_service_list'             =>      $info_service_list,
-                'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
-                'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
+                 foreach ($trial['slots'] as $slot) {
+                     array_push($trial_slots, array('day' => $trial['weekday'], 'start' => intval($slot['start_time_24_hour_format']), 'end' => intval($slot['end_time_24_hour_format'])));
+                    // array_push($service_level_data['day'], $trial['weekday']);
+                     array_push($service_level_data['start'],intval($slot['start_time_24_hour_format']));
+                     array_push($service_level_data['end'], intval($slot['end_time_24_hour_format']));
+                 }
+             }             
+         }
+         if(sizeof($trial_slots) > 0)               
+         {
+            $service_level_data['slots_nested'] = $trial_slots;
+            array_push($service_level_data_all, $service_level_data);}
+        };
+
+
+
+        $postfields_data = array(
+            '_id'                           =>      $data['_id'],
+            'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
+            'average_rating'                =>      (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
+            'membership_discount'           =>      "",
+            'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
+            'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
+            'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1, 
+            'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
+            'info_service_snow'             =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
+            'info_service_list'             =>      $info_service_list,
+            'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
+            'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 // 'category_metatitle'            =>      (isset($data['category']['meta']['title']) && $data['category']['meta']['title'] != '') ? strtolower($data['category']['meta']['title']) : "", 
                 // 'category_metadescription'      =>      (isset($data['category']['meta']['description']) && $data['category']['meta']['description'] != '') ? strtolower($data['category']['meta']['description']) : "", 
-                'categorytags'                  =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
-                'categorytags_snow'             =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
-                'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',                
-                'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
-                'commercial_type'               =>      (isset($data['commercial_type'])) ? $data['commercial_type'] : '',
-                'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
-                'fitternityno'                  =>      (isset($data['fitternityno'])) ? $data['fitternityno'] : '',
-                'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
-                'facilities_snow'               =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
-                'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
-                'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
-                'location_snow'                 =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
-                'locationtags'                  =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
-                'locationtags_snow'             =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
-                'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
-                'offerings'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
-                'offerings_snow'                =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
-                'price_range'                   =>      (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
-                'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
-                'special_offer_title'           =>      (isset($data['special_offer_title']) && $data['special_offer_title'] != '') ? $data['special_offer_title'] : "",
-                'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",
-                'status'                        =>      (isset($data['status']) && $data['status'] != '') ? $data['status'] : "",
-                'title'                         =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
-                'title_snow'                    =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
-                'total_rating_count'            =>      (isset($data['total_rating_count']) && $data['total_rating_count'] != '') ? $data['total_rating_count'] : 0,
-                'views'                         =>      (isset($data['views']) && $data['views'] != '') ? $data['views'] : 0,
-                'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
-                'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
-                'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
-                'photos'                        =>      (isset($data['photos']) && $data['photos'] != '') ? array_map('strtolower', array_pluck($data['photos'],'url')) : "",
-                'locationcluster'               =>      $locationcluster,
-                'locationcluster_snow'          =>      $locationcluster,
-                'price_rangeval'                =>      $rangeval,
-                'servicelist'                   =>      $servicenamelist,
-                'show_offers'                   =>      $offer_counter,
-                'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
-                'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : new stdClass(),
-                'service_weekdays'              =>      $weekdays,
-                'trials'                        =>      $trial_slots
+            'categorytags'                  =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+            'categorytags_snow'             =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+            'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',                
+            'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
+            'commercial_type'               =>      (isset($data['commercial_type'])) ? $data['commercial_type'] : '',
+            'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
+            'fitternityno'                  =>      (isset($data['fitternityno'])) ? $data['fitternityno'] : '',
+            'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+            'facilities_snow'               =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+            'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
+            'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
+            'location_snow'                 =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
+            'locationtags'                  =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
+            'locationtags_snow'             =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
+            'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
+            'offerings'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+            'offerings_snow'                =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+            'price_range'                   =>      (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
+            'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
+            'special_offer_title'           =>      (isset($data['special_offer_title']) && $data['special_offer_title'] != '') ? $data['special_offer_title'] : "",
+            'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",
+            'status'                        =>      (isset($data['status']) && $data['status'] != '') ? $data['status'] : "",
+            'title'                         =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
+            'title_snow'                    =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
+            'total_rating_count'            =>      (isset($data['total_rating_count']) && $data['total_rating_count'] != '') ? $data['total_rating_count'] : 0,
+            'views'                         =>      (isset($data['views']) && $data['views'] != '') ? $data['views'] : 0,
+            'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
+            'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
+            'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
+            'photos'                        =>      (isset($data['photos']) && $data['photos'] != '') ? array_map('strtolower', array_pluck($data['photos'],'url')) : "",
+            'locationcluster'               =>      $locationcluster,
+            'locationcluster_snow'          =>      $locationcluster,
+            'price_rangeval'                =>      $rangeval,
+            'servicelist'                   =>      $servicenamelist,
+            'show_offers'                   =>      $offer_counter,
+            'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
+            'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : new stdClass(),
+            'service_weekdays'              =>      $weekdays,
+            'trials'                        =>      $trial_slots,
+            'service_level_data'            =>      $service_level_data_all
                 //'trialschedules'                =>      $trialdata,
-                );    
+            );    
 
 $postfields_data['coverimage']  =   ($data['coverimage'] != '') ? $data['coverimage'] : 'default/'.$data['category_id'].'-'.rand(1, 4).'.jpg';            
 $postfields_data['servicephotos'] = $picslist;
@@ -883,18 +904,18 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster){
 
-     $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
-     $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
+       $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+       $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
 
-        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
-        {
-            $catname = $cat['name'].' classes sessions';
-        }
-        else{
-            $catname = $cat['name'];
-        }
+       if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+       {
+        $catname = $cat['name'].' classes sessions';
+    }
+    else{
+        $catname = $cat['name'];
+    }
 
-     $postfields_data = array(
+    $postfields_data = array(
         'input'                         =>      $catname,
         'autosuggestvalue'              =>      $string,
         'inputv2'                       =>      "",                                                                 
@@ -910,7 +931,7 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
         'slug'                          =>      "",
         'geolocation'                   =>      array('lat' => $lat,'lon' => $lon)
         );
-return $postfields_data;
+    return $postfields_data;
 }
 }
 
@@ -1141,8 +1162,8 @@ if (!function_exists(('add_reg_id'))){
         try{
 
             $rules = [
-                'reg_id' => 'required',
-                'type' => 'required',
+            'reg_id' => 'required',
+            'type' => 'required',
             ];
 
             $validator = Validator::make($data,$rules);
@@ -1177,10 +1198,10 @@ if (!function_exists(('add_reg_id'))){
         }catch (Exception $e) {
 
             $message = array(
-                    'type'    => get_class($e),
-                    'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
                 );
 
             $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
