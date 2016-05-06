@@ -2726,7 +2726,7 @@ class SchedulebooktrialsController extends \BaseController {
 	}
 	public function booktrialdetail($captureid){
 
-		$booktrial 		=	Booktrial::find(intval($captureid))->with("finder");
+		$booktrial 		=	Booktrial::with("finder")->find(intval($captureid));
 
 		if(!$booktrial){
 			return $this->responseNotFound('Request not found');
