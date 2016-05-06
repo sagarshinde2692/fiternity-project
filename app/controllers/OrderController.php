@@ -28,7 +28,7 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		=	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise');
 	}
 
 
@@ -135,7 +135,7 @@ class OrderController extends \BaseController {
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
-				if(!in_array($finder->category_id, $abundant_category)){
+				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
 					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 				}
 			} 
@@ -144,11 +144,11 @@ class OrderController extends \BaseController {
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
-			if(!in_array($finder->category_id, $abundant_category)){
+			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
-			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category)){
+			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
 
 				$preferred_starting_date = $order->preferred_starting_date;
 				$after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);

@@ -96,6 +96,11 @@ Class CustomerMailer extends Mailer {
 			$label = 'Order-PG-Crossfit-Week-Customer';
 		}
 
+		if($data['type'] == 'wonderise'){
+
+			$label = 'Order-PG-Wonderise-Customer';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
