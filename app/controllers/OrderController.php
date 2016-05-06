@@ -61,7 +61,7 @@ class OrderController extends \BaseController {
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
-			array_set($data, 'batch_time', '');
+			/*array_set($data, 'batch_time', '');
 
 			if(isset($data['batches']) && $data['batches'] != ""){
 				if(is_array($data['batches'])){
@@ -93,7 +93,7 @@ class OrderController extends \BaseController {
 
 				}
 
-			}
+			}*/
 
 			$orderdata 	=	$order->update($data);
 
