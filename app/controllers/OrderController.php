@@ -51,11 +51,11 @@ class OrderController extends \BaseController {
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
 
-		/*if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+		if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Already Status Successfull");
 			return Response::json($resp);
-		}*/
+		}
 
 		if(Input::json()->get('status') == 'success'){
 
