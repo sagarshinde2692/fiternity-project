@@ -9,7 +9,7 @@
 
 // use Response;
 use App\Mailers\FinderMailer as FinderMailer;
-use Queue;
+//use Queue;
 use App\Mailers\CustomerMailer as CustomerMailer;
 
 class DebugController extends \BaseController {
@@ -1996,11 +1996,17 @@ public function testEmail(){
 		->with(array('category'=>function($query){$query->select('_id','name');}))
 		->with(array('services'=>function($query){$query->select('_id','name');}))
 		->active()
-		->get(['_id','title','city_id','city','category_id','category','location_id','location','services'])->toArray();
+		->get(['_id','title','city_id','city','category_id','category','location_id','location','services','commercial_type','business_type','finder_type'])->toArray();
 		if($finders){
 			foreach ($finders as $value) {
 				if(count($value['services']) < 1) {
-					$output .=  $value['_id'] .",". $value['title'] .",". $value['city']['name'] .",". $value['location']['name'] .",". $value['category']['name'] .",". $value['commercial_type_status'] ." \n";
+                    $commercial_type_arr    = array( 0 => 'free', 1 => 'paid', 2 => 'freespecial', 3 => 'cos');
+                    $business_type_arr      = array( 0 => 'noninfrastructure', 1 => 'infrastructure');
+                    $finder_type_arr        = array( 0 => 'free', 1 => 'paid');
+					$commercial_type 	    = $commercial_type_arr[intval($value['commercial_type'])];
+					$business_type 		    = $business_type_arr[intval($value['business_type'])];
+					$vendor_type 		    = $finder_type_arr[intval($value['finder_type'])];
+					$output .=  $value['_id'] .",". $value['title'] .",". $value['city']['name'] .",". $value['location']['name'] .",". $value['category']['name'] .",". $commercial_type ." \n";
 				}
 			}
 		}

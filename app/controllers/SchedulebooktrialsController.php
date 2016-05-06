@@ -862,6 +862,11 @@ class SchedulebooktrialsController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
+		if(!isset($data['status']) || $data['status'] != 'success'){
+			$resp 	= 	array('status' => 400,'message' => "data missing or not success - status");
+			return  Response::json($resp, 400);
+		}
+
 		try {
 
 			$order_id = $data['order_id'];
@@ -1126,7 +1131,7 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 		Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
-		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+		$resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial", 'code' => $code);
 		return Response::json($resp,200);
 	}
 
