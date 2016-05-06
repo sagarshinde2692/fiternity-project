@@ -77,6 +77,22 @@ class OrderController extends \BaseController {
 	    				break;
 	    			}
 				}
+			}else{
+
+				$order_array = $order->toArray();
+
+				if(isset($order_array['batches']) && $order_array['batches'] != ""){
+
+					foreach ($data['batches'] as $key => $value) {
+
+						if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+		    				$data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+		    				break;
+		    			}
+					}
+
+				}
+
 			}
 
 			$orderdata 	=	$order->update($data);
