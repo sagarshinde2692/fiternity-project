@@ -84,15 +84,13 @@ class OzonetelsController extends \BaseController {
 					$this->ozonetelResponse->addHangup();
 				}else{
 
-					$finder = Finder::findOrFail($capture->finder_id);
-
+					$finder = Finder::findOrFail((int) $capture->finder_id);
+					
 					if($finder){
 
-						$commercial_type = (int)$finder->commercial_type;
+						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
-				    	$premium_vendor = array(1,3);
-
-				    	if(in_array($commercial_type, $premium_vendor)){
+				    	if($direct_payment_enable_count > 0){
 
 	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
 	                        $this->ozonetelResponse->addDial('02261222225',"true");
@@ -178,15 +176,13 @@ class OzonetelsController extends \BaseController {
 					$this->ozonetelResponse->addHangup();
 				}else{
 
-					$finder = Finder::findOrFail($capture->finder_id);
+					$finder = Finder::findOrFail((int) $capture->finder_id);
 					
 					if($finder){
 
-						$commercial_type = (int)$finder->commercial_type;
+						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
-				    	$premium_vendor = array(1,3);
-
-				    	if(in_array($commercial_type, $premium_vendor)){
+				    	if($direct_payment_enable_count > 0){
 
 	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
 	                        $this->ozonetelResponse->addDial('02261222225',"true");
