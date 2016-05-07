@@ -21,7 +21,7 @@ Route::get('createvendoruser',function(){
 
 	// return "you password - ". md5('sanjay');
 
-	$user = ['hidden' => 'false','name' => 'Sanjay Sahu', 'email' => 'sanjay.id7@gmail.com', 'password' => md5('sanjay'), 'vendor_id' => 1, 'vendors' => [1,2,3,4]];
+	$user = ['hidden' => false,'name' => 'Sanjay Sahu', 'email' => 'sanjay.id7@gmail.com', 'password' => md5('sanjay'), 'vendor_id' => 1, 'vendors' => [1,2,3,4]];
 	Vendoruser::create($user);
 
 });
