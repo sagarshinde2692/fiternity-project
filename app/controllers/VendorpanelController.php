@@ -100,77 +100,77 @@ class VendorpanelController extends BaseController
             ->getRenewalNonRenewal($finder_id, $start_date, $end_date)
             ->sum('amount_finder');
 
-//        $result['renewal']['count'] = $this
-//            ->salessummary
-//            ->getRenewal($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['renewal']['amount'] = $this
-//            ->salessummary
-//            ->getRenewal($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
-//
-//        $result['nonrenewal']['count'] = $this
-//            ->salessummary
-//            ->getNonRenewal($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['nonrenewal']['amount'] = $this
-//            ->salessummary
-//            ->getNonRenewal($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
-//
-//        $result['paymentgateway_cod_atthestudio']['count'] = $this
-//            ->salessummary
-//            ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['paymentgateway_cod_atthestudio']['amount'] = $this
-//            ->salessummary
-//            ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
-//
-//        $result['paymentgateway']['count'] = $this
-//            ->salessummary
-//            ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['paymentgateway']['amount'] = $this
-//            ->salessummary
-//            ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
-//
-//        $result['cod']['count'] = $this
-//            ->salessummary
-//            ->getCODSales($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['cod']['amount'] = $this
-//            ->salessummary
-//            ->getCODSales($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
-//
-//        $result['atthestudio']['count'] = $this
-//            ->salessummary
-//            ->getAtthestudioSales($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['atthestudio']['amount'] = $this
-//            ->salessummary
-//            ->getAtthestudioSales($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
-//
-//        $result['linksent_purchase']['count'] = $this
-//            ->salessummary
-//            ->getLinkSentPurchase($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['linksent_purchase']['amount'] = $this
-//            ->salessummary
-//            ->getLinkSentPurchase($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
-//
-//        $result['linksent_notpurchase']['count'] = $this
-//            ->salessummary
-//            ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
-//            ->count();
-//        $result['linksent_notpurchase']['amount'] = $this
-//            ->salessummary
-//            ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
-//            ->sum('amount_finder');
+        $result['renewal']['count'] = $this
+            ->salessummary
+            ->getRenewal($finder_id, $start_date, $end_date)
+            ->count();
+        $result['renewal']['amount'] = $this
+            ->salessummary
+            ->getRenewal($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['nonrenewal']['count'] = $this
+            ->salessummary
+            ->getNonRenewal($finder_id, $start_date, $end_date)
+            ->count();
+        $result['nonrenewal']['amount'] = $this
+            ->salessummary
+            ->getNonRenewal($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['paymentgateway_cod_atthestudio']['count'] = $this
+            ->salessummary
+            ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['paymentgateway_cod_atthestudio']['amount'] = $this
+            ->salessummary
+            ->getPaymentGatewayCodAtthestudioSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['paymentgateway']['count'] = $this
+            ->salessummary
+            ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['paymentgateway']['amount'] = $this
+            ->salessummary
+            ->getPaymentGatewaySales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['cod']['count'] = $this
+            ->salessummary
+            ->getCODSales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['cod']['amount'] = $this
+            ->salessummary
+            ->getCODSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['atthestudio']['count'] = $this
+            ->salessummary
+            ->getAtthestudioSales($finder_id, $start_date, $end_date)
+            ->count();
+        $result['atthestudio']['amount'] = $this
+            ->salessummary
+            ->getAtthestudioSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['linksent_purchase']['count'] = $this
+            ->salessummary
+            ->getLinkSentPurchase($finder_id, $start_date, $end_date)
+            ->count();
+        $result['linksent_purchase']['amount'] = $this
+            ->salessummary
+            ->getLinkSentPurchase($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['linksent_notpurchase']['count'] = $this
+            ->salessummary
+            ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
+            ->count();
+        $result['linksent_notpurchase']['amount'] = $this
+            ->salessummary
+            ->getLinkSentNotPurchase($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
 
         return Response::json($result, 200);
     }
@@ -373,10 +373,10 @@ class VendorpanelController extends BaseController
             'BookedTrials' => $this->trialssummary->getBookedTrials($finder_id, $start_date, $end_date)->count(),
             'AttendedTrials' => $this->trialssummary->getAttendedTrials($finder_id, $start_date, $end_date)->count(),
             'UpcomingTrials' => $this->trialssummary->getUpcomingTrials($finder_id)->count(),
-//            'NotAttendedTrials' => $this->trialssummary->getNotAttendedTrials($finder_id, $start_date, $end_date)->count(),
-//            'UnknownAttendedStatusTrials' => $this->trialssummary->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)->count(),
-//            'TrialsConverted' => $this->trialssummary->getTrialsConverted($finder_id, $start_date, $end_date)->count(),
-//            'NotInterestedCustomers' => $this->trialssummary->getNotInterestedCustomers($finder_id, $start_date, $end_date)->count(),
+            'NotAttendedTrials' => $this->trialssummary->getNotAttendedTrials($finder_id, $start_date, $end_date)->count(),
+            'UnknownAttendedStatusTrials' => $this->trialssummary->getUnknownAttendedStatusTrials($finder_id, $start_date, $end_date)->count(),
+            'TrialsConverted' => $this->trialssummary->getTrialsConverted($finder_id, $start_date, $end_date)->count(),
+            'NotInterestedCustomers' => $this->trialssummary->getNotInterestedCustomers($finder_id, $start_date, $end_date)->count(),
         ];
         return Response::json($trials_summary, 200);
     }
@@ -1076,7 +1076,11 @@ class VendorpanelController extends BaseController
         $trialData = Booktrial::find((int) $trial_id);
 
         if($trialData){
-            $trialData->update(array('trial_attended_finder' => $data['trial_attended_finder']));
+            $trialData->update(
+                array(
+                    'trial_attended_finder' => $data['trial_attended_finder'],
+                    'updated_by_vendor' => date('Y-m-d h:i:s'),
+                ));
             $resp 	= 	'Success';
             return  Response::json($resp, 200);
 

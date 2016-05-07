@@ -31,7 +31,7 @@ Route::group(array('before' => 'validatevendor'), function() {
 		array('as' => 'vendor.refreshWebToken', 'uses' => 'VendorpanelController@refreshWebToken'));
 
 	Route::get('/vendorsummary/listVendors',
-		array('as' => 'vendor.summaryvendor', 'uses' => 'VendorpanelController@getVendorsList'));
+		array('as' => 'vendor.listvendor', 'uses' => 'VendorpanelController@getVendorsList'));
 
 	Route::get('/vendorsummary/{finder_id?}',
 		array('as' => 'vendor.summaryvendor', 'uses' => 'VendorpanelController@getVendorDetails'));
