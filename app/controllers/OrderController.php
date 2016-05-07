@@ -26,9 +26,10 @@ class OrderController extends \BaseController {
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
 		$this->sidekiq 				= 	$sidekiq;
-		$this->findermailer		=	$findermailer;
+		$this->findermailer		    =	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise');
+
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','healthytiffintrail','healthytiffinmembership');
 	}
 
 
@@ -577,13 +578,26 @@ class OrderController extends \BaseController {
 
 		}
 
-		if($data['type'] == 'memberships'){
+		if($data['type'] == 'memberships' ||  $data['type'] == 'healthytiffintrail' ||  $data['type'] == 'healthytiffinmembership'){
 			if( empty($data['service_duration']) ){
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
 				return Response::json($resp,404);				
 			}
 		}else{
 			$data['service_duration'] = (isset($data['service_duration']) && $data['service_duration'] != "") ? $data['service_duration'] : "";
+		}
+
+		if($data['type'] == 'healthytiffintrail' ||  $data['type'] == 'healthytiffinmembership'){
+
+            if( empty($postdata['preferred_starting_date']) ){
+                $resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
+                return Response::json($resp,404);
+            }
+
+			if( empty($data['meal_contents']) ){
+				$resp 	= 	array('status' => 404,'message' => "Data Missing - meal_contents");
+				return Response::json($resp,404);
+			}
 		}
 
 
@@ -686,7 +700,10 @@ class OrderController extends \BaseController {
 
 		}
 
-		array_set($data, 'batch_time', '');
+        $code		=	random_numbers(5);
+
+        array_set($data, 'code', $code);
+        array_set($data, 'batch_time', '');
 
 		if(isset($data['batches']) && $data['batches'] != ""){
 			if(is_array($data['batches'])){

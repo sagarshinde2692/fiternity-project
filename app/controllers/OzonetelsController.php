@@ -710,9 +710,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = 'NotBoughtSms';
+					$label = 'Wonderise';
 
-					$message = 'Thank you for the notification. A member from our team will get in touch with you shortly with the details for the same.';
+					$message = "Hey! Bring out the unicorn in you with Wonderise & Fitternity! Here's the link to buy your tickets www.fitternity.com/wonderise. Can't wait to see you there!";
 				
 					$data = array();
 
