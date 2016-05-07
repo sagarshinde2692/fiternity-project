@@ -918,8 +918,13 @@ class VendorpanelController extends BaseController
             return  Response::json( $data, 401);
         }
 
-        $data = Input::json()->all();
-        $validator = Validator::make($data, Finder::$update_rules);
+        $req = Input::json()->all();
+
+        $req_data = $req['data'];
+        $req_visibility = $req['visibility'];
+
+
+        $validator = Validator::make($req_data, Finder::$update_rules);
 
         if ($validator->fails()) {
             return Response::json(array('status' => 400,'message' =>error_message_array($validator->errors())),400);
@@ -943,10 +948,14 @@ class VendorpanelController extends BaseController
             "locationtags",
         );
 
-        $req = Input::all();
+        $data_existing = $req_data['existing'];
+        $visibility_existing = $req_visibility['existing'];
 
         // Get Directly editable fields by vendor.....
-        $direct = array_only($req, $directly_editable_fields);
+        $data_direct = array_only($req_data['new'], $directly_editable_fields);
+
+        // Get Visibilty of Directly editable fields by vendor.....
+        $visibility_direct = array_only($req_visibility['new'], $directly_editable_fields);
 
         // Remove relational fields.....
         $facilities = array_pull($direct, 'facilities');
@@ -955,26 +964,46 @@ class VendorpanelController extends BaseController
         $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
 
         // Update non-relational fields.....
-        $finder->update($direct);
+        $finder->update($data_direct);
 
         // Update relational fields.....
         $finder->facilities()->attach($facilities);
 
         // Get fields which needs fitternity approval to get updated.....
-        $new = array_only($req, $fitternity_intervention_editable_fields);
+        $data_requested = array_only($req_data['new'], $fitternity_intervention_editable_fields);
 
-        // Get existing fields to compare.....
-        $existing = array_only($finder->toArray(), array_keys($new));
+        // Get visibilty of fields which needs fitternity approval to get updated.....
+        $visibilty_requested = array_only($req_visibility['new'], $fitternity_intervention_editable_fields);
+
+        //Make data object for request....
+        $data = array(
+            "existing"  =>$data_existing,
+            "direct"    =>$data_direct,
+            "requested" =>$data_requested
+        );
+
+        // Make visibility object for request...
+        $visibility = array(
+            "existing"  =>$visibility_existing,
+            "direct"    =>$visibility_direct,
+            "requested" =>$visibilty_requested
+        );
+
+        // Cancel already pending request.......
+        Vendorupdaterequest:: where('finder_id',intval($finder_id))
+            ->where('approval_status','pending')
+            ->update(['approval_status' => 'cancelled']);
+
 
         // Save in a collection......
-        Vendorupdaterequest::firstOrCreate([
-            'existing' => $existing,
-            'new' => $new,
+        $result = Vendorupdaterequest::firstOrCreate([
+            'data' => $data,
+            'visibility' => $visibility,
             'finder_id' => intval($finder_id),
             'approval_status' => 'pending'
         ]);
         
-        return Response::json($finder, 200);
+        return Response::json($result, 200);
     }
 
     public function reviewReplyByVendor($finder_id, $review_id)
