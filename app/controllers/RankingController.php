@@ -84,7 +84,7 @@ class RankingController extends \BaseController {
         );
 
        echo es_curl_request($request); 
-       sleep(5);
+       sleep(3);
 
         /*
       closing newly created index      
@@ -97,7 +97,7 @@ class RankingController extends \BaseController {
         );
 
       echo es_curl_request($request);   
-      sleep(5);
+      sleep(3);
 
       $settings = '{
         "analysis" : {
@@ -208,7 +208,7 @@ class RankingController extends \BaseController {
             );
 
         echo es_curl_request($request); 
-        sleep(5);
+        sleep(3);
 
         /*
         open newly created index  
@@ -221,7 +221,7 @@ class RankingController extends \BaseController {
             );
 
         echo es_curl_request($request);   
-        sleep(5);
+        sleep(3);
 
         $mapping = '{
             "finder" :{
@@ -249,6 +249,25 @@ class RankingController extends \BaseController {
                             "end" : {"type" : "integer", "index" : "not_analyzed"}
                         },
                         "type": "nested"
+                    },
+                    "service_level_data": {
+                         "type":"nested",
+                        "properties": {
+                            "day" : {"type" : "string", "index" : "not_analyzed"},
+                            "start" : {"type" : "integer", "index" : "not_analyzed"},
+                            "end" : {"type" : "integer", "index" : "not_analyzed"},
+                            "service_category_synonyms" : {"type": "string", "index":"not_analyzed"},
+                            "service_category_exact" : {"type": "string", "index":"not_analyzed"},
+                            "slots_nested" : {
+                                 "type": "nested",
+                                "properties" : {
+                                    "day":{"type":"string",
+                                    "index":"not_analyzed"},
+                                    "start" : {"type" : "integer", "index" : "not_analyzed"},
+                                    "end" : {"type" : "integer", "index" : "not_analyzed"}                                
+                                }                               
+                            }
+                        }                       
                     }
 
                 }
@@ -268,7 +287,7 @@ class RankingController extends \BaseController {
             'postfields' => $postfields_data
             );      
         echo es_curl_request($request);
-        sleep(5);
+        sleep(3);
 
         /*
 
@@ -311,8 +330,9 @@ class RankingController extends \BaseController {
 
 
     public function IndexRankMongo2Elastic($index_name, $city_id){
+    // public function IndexRankMongo2Elastic(){
 
-        //$finderids1  =   array(1020,1041,1042,1259,1413,1484,1671,1873,45,624,1695,1720,1738,1696);
+
        ini_set('max_execution_time', 30000);
        $citykist      =    array(1,2,3,4,8);
        $items = Finder::with(array('country'=>function($query){$query->select('name');}))
@@ -324,6 +344,11 @@ class RankingController extends \BaseController {
        ->with('offerings')
        ->with('facilities')
        ->with('services')
+       ->with(array('services' => function($query){$query->with(array('category' => function($query1){
+        $query1->select('name');
+    }))->with(array('subcategory'=> function($query2){
+        $query2->select('name');
+    }));}))
        ->with(array('ozonetelno'=>function($query){$query->select('phone_number','extension')->where('status','=','1');}))
        ->active()
        ->orderBy('_id')
@@ -336,10 +361,10 @@ class RankingController extends \BaseController {
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
        ->get(); 
-
+       
        foreach ($items as $finderdocument) {  
         try{         
-
+           // return json_decode($finderdocument);exit;
             $ratecard_days = 0; $ratecard_money = 0;
             $services = Ratecard::where('finder_id', intval($finderdocument['id']))->get();
             $ratecard_count = 0;  $average_monthly = 0;
@@ -347,39 +372,39 @@ class RankingController extends \BaseController {
             foreach ($services as $service) {
 
                $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
-                switch($service['validity']){
-                    case 30:
-                    $ratecard_count = $ratecard_count + 1;
-                    $ratecard_money = $ratecard_money + intval($service['price']);
-                    break;
-                    case 90:
-                    $ratecard_count = $ratecard_count + 1;
-                    $average_one_month = intval($service['price'])/3;
-                    $ratecard_money = $ratecard_money + $average_one_month;
-                    break;
-                    case 120:
-                    $ratecard_count = $ratecard_count + 1;
-                    $average_one_month = intval($service['price'])/4;
-                    $ratecard_money = $ratecard_money + $average_one_month;
-                    break;
-                    case 180:
-                    $ratecard_count = $ratecard_count + 1;
-                    $average_one_month = intval($service['price'])/6;
-                    $ratecard_money = $ratecard_money + $average_one_month;
-                    break;
-                    case 360:
-                    $ratecard_count = $ratecard_count + 1;
-                    $average_one_month = intval($service['price'])/12;
-                    $ratecard_money = $ratecard_money + $average_one_month;
-                    break;
-                }              
-            }
+               switch($service['validity']){
+                case 30:
+                $ratecard_count = $ratecard_count + 1;
+                $ratecard_money = $ratecard_money + intval($service['price']);
+                break;
+                case 90:
+                $ratecard_count = $ratecard_count + 1;
+                $average_one_month = intval($service['price'])/3;
+                $ratecard_money = $ratecard_money + $average_one_month;
+                break;
+                case 120:
+                $ratecard_count = $ratecard_count + 1;
+                $average_one_month = intval($service['price'])/4;
+                $ratecard_money = $ratecard_money + $average_one_month;
+                break;
+                case 180:
+                $ratecard_count = $ratecard_count + 1;
+                $average_one_month = intval($service['price'])/6;
+                $ratecard_money = $ratecard_money + $average_one_month;
+                break;
+                case 360:
+                $ratecard_count = $ratecard_count + 1;
+                $average_one_month = intval($service['price'])/12;
+                $ratecard_money = $ratecard_money + $average_one_month;
+                break;
+            }              
+        }
 
 
-            if(($ratecard_count !==0)){
+        if(($ratecard_count !==0)){
 
-                $average_monthly = ($ratecard_money) / ($ratecard_count);
-            }
+            $average_monthly = ($ratecard_money) / ($ratecard_count);
+        }
 
             /*
             Define price range slabs here based on monthly average computed
@@ -439,7 +464,8 @@ class RankingController extends \BaseController {
 
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();                                          
-        $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);      
+        $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);  
+        
         $postdata['rank'] = $score;
         $catval = evalBaseCategoryScore($finderdocument['category_id']);
         $postdata['rankv1'] = $catval;
@@ -448,15 +474,15 @@ class RankingController extends \BaseController {
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
         $postfields_data = json_encode($postdata);             
-      $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
+        $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
         $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
         // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
         $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
-         $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+        $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
         $curl_response = es_curl_request($request);
-        $curl_response1 = es_curl_request($request1);
-        echo json_encode($curl_response);
-   
+        //$curl_response1 = es_curl_request($request1);
+        //echo json_encode($curl_response);
+
     }
     catch(Exception $e){
         Log::error($e);

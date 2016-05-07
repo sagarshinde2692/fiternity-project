@@ -28,9 +28,8 @@ class OrderController extends \BaseController {
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		    =	$findermailer;
 		$this->findersms 			=	$findersms;
-		$this->ordertypes 		    = 	['memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub',
-                                        'fitmania-dod', 'fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session',
-                                        'healthytiffintrail','healthytiffinmembership'];
+
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','healthytiffintrail','healthytiffinmembership');
 	}
 
 
@@ -63,7 +62,7 @@ class OrderController extends \BaseController {
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
-			array_set($data, 'batch_time', '');
+			/*array_set($data, 'batch_time', '');
 
 			if(isset($data['batches']) && $data['batches'] != ""){
 				if(is_array($data['batches'])){
@@ -79,7 +78,23 @@ class OrderController extends \BaseController {
 	    				break;
 	    			}
 				}
-			}
+			}else{
+
+				$order_array = $order->toArray();
+
+				if(isset($order_array['batches']) && $order_array['batches'] != ""){
+
+					foreach ($data['batches'] as $key => $value) {
+
+						if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+		    				$data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+		    				break;
+		    			}
+					}
+
+				}
+
+			}*/
 
 			$orderdata 	=	$order->update($data);
 
@@ -121,7 +136,7 @@ class OrderController extends \BaseController {
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
-				if(!in_array($finder->category_id, $abundant_category)){
+				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
 					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 				}
 			} 
@@ -130,11 +145,11 @@ class OrderController extends \BaseController {
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
-			if(!in_array($finder->category_id, $abundant_category)){
+			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
-			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category)){
+			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
 
 				$preferred_starting_date = $order->preferred_starting_date;
 				$after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);

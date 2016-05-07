@@ -84,15 +84,13 @@ class OzonetelsController extends \BaseController {
 					$this->ozonetelResponse->addHangup();
 				}else{
 
-					$finder = Finder::findOrFail($capture->finder_id);
-
+					$finder = Finder::findOrFail((int) $capture->finder_id);
+					
 					if($finder){
 
-						$commercial_type = (int)$finder->commercial_type;
+						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
-				    	$premium_vendor = array(1,3);
-
-				    	if(in_array($commercial_type, $premium_vendor)){
+				    	if($direct_payment_enable_count > 0){
 
 	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
 	                        $this->ozonetelResponse->addDial('02261222225',"true");
@@ -178,15 +176,13 @@ class OzonetelsController extends \BaseController {
 					$this->ozonetelResponse->addHangup();
 				}else{
 
-					$finder = Finder::findOrFail($capture->finder_id);
+					$finder = Finder::findOrFail((int) $capture->finder_id);
 					
 					if($finder){
 
-						$commercial_type = (int)$finder->commercial_type;
+						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
-				    	$premium_vendor = array(1,3);
-
-				    	if(in_array($commercial_type, $premium_vendor)){
+				    	if($direct_payment_enable_count > 0){
 
 	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
 	                        $this->ozonetelResponse->addDial('02261222225',"true");
@@ -714,9 +710,9 @@ class OzonetelsController extends \BaseController {
 
 				if($ozonetel_missedcall->customer_number != ''){
 
-					$label = 'NotBoughtSms';
+					$label = 'Wonderise';
 
-					$message = 'Thank you for the notification. A member from our team will get in touch with you shortly with the details for the same.';
+					$message = "Hey! Bring out the unicorn in you with Wonderise & Fitternity! Here's the link to buy your tickets www.fitternity.com/wonderise. Can't wait to see you there!";
 				
 					$data = array();
 
@@ -786,22 +782,27 @@ class OzonetelsController extends \BaseController {
 
 				$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
 
-				$finder = Finder::find((int) $booktrial->finder_id);
-
-				$finder_lat = $finder->lat;
-				$finder_lon = $finder->lon;
-
-				$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
-
-				$shorten_url = new ShortenUrl();
-
-	            $url = $shorten_url->getShortenUrl($google_pin);
-
-	            if(isset($url['status']) &&  $url['status'] == 200){
-	                $google_pin = $url['url'];
-	            }
-				
 				if($booktrial){
+
+					$finder = Finder::find((int) $booktrial->finder_id);
+
+					$google_pin = "";
+					
+					if($finder){
+
+						$finder_lat = $finder->lat;
+						$finder_lon = $finder->lon;
+
+						$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+						$shorten_url = new ShortenUrl();
+
+			            $url = $shorten_url->getShortenUrl($google_pin);
+
+			            if(isset($url['status']) &&  $url['status'] == 200){
+			                $google_pin = $url['url'];
+			            }
+			        }
 
 					$sidekiq = new Sidekiq();
 
@@ -942,24 +943,30 @@ class OzonetelsController extends \BaseController {
 			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','N+2Trial')->first();
 
 			$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_review_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
-
-			$finder = Finder::find((int) $booktrial->finder_id);
-
-			$finder_lat = $finder->lat;
-			$finder_lon = $finder->lon;
-			$finder_slug = $finder->slug;
-
-			$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
-
-			$shorten_url = new ShortenUrl();
-
-            $url = $shorten_url->getShortenUrl($google_pin);
-
-            if(isset($url['status']) &&  $url['status'] == 200){
-                $google_pin = $url['url'];
-            }
-			
+	
 			if($booktrial){
+
+				$google_pin = "";
+				$finder_slug = "";
+
+				$finder = Finder::find((int) $booktrial->finder_id);
+
+				if($finder){
+
+					$finder_lat = $finder->lat;
+					$finder_lon = $finder->lon;
+					$finder_slug = $finder->slug;
+
+					$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
+
+					$shorten_url = new ShortenUrl();
+
+		            $url = $shorten_url->getShortenUrl($google_pin);
+
+		            if(isset($url['status']) &&  $url['status'] == 200){
+		                $google_pin = $url['url'];
+		            }
+		        }
 
 				$data = array();
 

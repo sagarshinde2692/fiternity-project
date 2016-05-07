@@ -98,6 +98,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'Order-PG-Crossfit-Week-Customer';
 		}
 		
+		if($data['type'] == 'wonderise'){
+
+			$label = 'Order-PG-Wonderise-Customer';
+		}
+		
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);

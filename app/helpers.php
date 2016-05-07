@@ -560,42 +560,42 @@ if (!function_exists(('evalBaseCategoryScore'))){
         function get_elastic_finder_documentv2($finderdata = array(), $locationcluster='', $rangeval =0) {
 
             try{
-            $data = $finderdata;
-            $flag = false;
-            $picslist = array();            
-            if(($data['category_id'] == 42) || ($data['category_id'] == 45))
-            { 
-                $flag = true;                   
-                $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
-                foreach ($service as $doc1) { 
-                 $doc = $doc1->toArray();
-                 if( isset($doc['photos']) && !empty($doc['photos'])){                                            
-                    $photos = $doc['photos'];                       
-                    foreach ($photos as $key => $value) {                           
-                        if(!empty($photos[$key])){                               
-                            array_push($picslist, strtolower($value['url']));
+                $data = $finderdata;
+                $flag = false;
+                $picslist = array();            
+                if(($data['category_id'] == 42) || ($data['category_id'] == 45))
+                { 
+                    $flag = true;                   
+                    $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
+                    foreach ($service as $doc1) { 
+                     $doc = $doc1->toArray();
+                     if( isset($doc['photos']) && !empty($doc['photos'])){                                            
+                        $photos = $doc['photos'];                       
+                        foreach ($photos as $key => $value) {                           
+                            if(!empty($photos[$key])){                               
+                                array_push($picslist, strtolower($value['url']));
+                            }
                         }
                     }
                 }
             }
-        }
-        $offer_counter = 0;
-        $servicenamelist = array();
-        if(isset($data['services']) && !empty($data['services'])){
-            foreach ($data['services'] as $serv) {
-                array_push($servicenamelist, strtolower($serv['name']));
-                if(isset($serv['show_in_offers'])){
-                    ++$offer_counter;
+            $offer_counter = 0;
+            $servicenamelist = array();
+            if(isset($data['services']) && !empty($data['services'])){
+                foreach ($data['services'] as $serv) {
+                    array_push($servicenamelist, strtolower($serv['name']));
+                    if(isset($serv['show_in_offers'])){
+                        ++$offer_counter;
+                    }
                 }
             }
-        }
 
-        $info_service_list = array();
-        if(isset($data['info']['service'])&& !empty($data['info']['service'])){
-            $key1 = str_replace(array("<ul><li>","</li></ul>"), " ", $data['info']['service']);
-            $key3 = trim($key1," ");
-            $info_service_list = explode("</li><li>", $key3);
-        }
+            $info_service_list = array();
+            if(isset($data['info']['service'])&& !empty($data['info']['service'])){
+                $key1 = str_replace(array("<ul><li>","</li></ul>"), " ", $data['info']['service']);
+                $key3 = trim($key1," ");
+                $info_service_list = explode("</li><li>", $key3);
+            }
 
         /*
     
@@ -604,79 +604,102 @@ if (!function_exists(('evalBaseCategoryScore'))){
 
         $weekdays = array();
         $trial_slots = array();
-        
-         foreach ($data['services'] as $serv) {
-             if(isset($serv['trialschedules'])){
+        $service_level_data_all = array();
+        foreach ($data['services'] as $serv) {
+            $service_level_data = array();
+            $service_level_data['service_category_exact'] = array();
+            $service_level_data['service_category_synonyms'] = array();
+            $service_level_data['day'] = array();
+            $service_level_data['start'] = array();
+            $service_level_data['end'] = array();
+            $service_cat = get_service_category_synonyms(strtolower($serv['category']['name']));
+            $service_cat_sub = get_service_category_synonyms(strtolower($serv['subcategory']['name']));
+            array_push($service_level_data['service_category_exact'], $serv['category']['name']);
+            array_push($service_level_data['service_category_exact'], $serv['subcategory']['name']);
+            array_push($service_level_data['service_category_synonyms'], $service_cat);
+            array_push($service_level_data['service_category_synonyms'], $service_cat_sub);
+            //get synonyms
+            if(isset($serv['trialschedules'])){
                 $trialschedules = $serv['trialschedules'];
-               
+
                 foreach ($trialschedules as $trial) {
                    //echo json_encode($trial);
                    array_push($weekdays, $trial['weekday']);
+                   array_push($service_level_data['day'], $trial['weekday']);
+
                    foreach ($trial['slots'] as $slot) {
                        array_push($trial_slots, array('day' => $trial['weekday'], 'start' => intval($slot['start_time_24_hour_format']), 'end' => intval($slot['end_time_24_hour_format'])));
+                    // array_push($service_level_data['day'], $trial['weekday']);
+                       array_push($service_level_data['start'],intval($slot['start_time_24_hour_format']));
+                       array_push($service_level_data['end'], intval($slot['end_time_24_hour_format']));
                    }
-                }
-            }   
-         }
-       
+               }             
+           }
+           if(sizeof($trial_slots) > 0)               
+           {
+            $service_level_data['slots_nested'] = $trial_slots;
+            array_push($service_level_data_all, $service_level_data);}
+        };
 
-      
-            $postfields_data = array(
-                '_id'                           =>      $data['_id'],
-                'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
-                'average_rating'                =>      (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
-                'membership_discount'           =>      "",
-                'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
-                'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
-                'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1, 
-                'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
-                'info_service_snow'             =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
-                'info_service_list'             =>      $info_service_list,
-                'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
-                'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
+
+
+        $postfields_data = array(
+            '_id'                           =>      $data['_id'],
+            'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
+            'average_rating'                =>      (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
+            'membership_discount'           =>      "",
+            'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
+            'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "", 
+            'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1, 
+            'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
+            'info_service_snow'             =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "", 
+            'info_service_list'             =>      $info_service_list,
+            'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
+            'category_snow'                 =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "", 
                 // 'category_metatitle'            =>      (isset($data['category']['meta']['title']) && $data['category']['meta']['title'] != '') ? strtolower($data['category']['meta']['title']) : "", 
                 // 'category_metadescription'      =>      (isset($data['category']['meta']['description']) && $data['category']['meta']['description'] != '') ? strtolower($data['category']['meta']['description']) : "", 
-                'categorytags'                  =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
-                'categorytags_snow'             =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
-                'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',                
-                'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
-                'commercial_type'               =>      (isset($data['commercial_type'])) ? $data['commercial_type'] : '',
-                'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
-                'fitternityno'                  =>      (isset($data['fitternityno'])) ? $data['fitternityno'] : '',
-                'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
-                'facilities_snow'               =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
-                'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
-                'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
-                'location_snow'                 =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
-                'locationtags'                  =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
-                'locationtags_snow'             =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
-                'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
-                'offerings'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
-                'offerings_snow'                =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
-                'price_range'                   =>      (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
-                'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
-                'special_offer_title'           =>      (isset($data['special_offer_title']) && $data['special_offer_title'] != '') ? $data['special_offer_title'] : "",
-                'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",
-                'status'                        =>      (isset($data['status']) && $data['status'] != '') ? $data['status'] : "",
-                'title'                         =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
-                'title_snow'                    =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
-                'total_rating_count'            =>      (isset($data['total_rating_count']) && $data['total_rating_count'] != '') ? $data['total_rating_count'] : 0,
-                'views'                         =>      (isset($data['views']) && $data['views'] != '') ? $data['views'] : 0,
-                'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
-                'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
-                'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
-                'photos'                        =>      (isset($data['photos']) && $data['photos'] != '') ? array_map('strtolower', array_pluck($data['photos'],'url')) : "",
-                'locationcluster'               =>      $locationcluster,
-                'locationcluster_snow'          =>      $locationcluster,
-                'price_rangeval'                =>      $rangeval,
-                'servicelist'                   =>      $servicenamelist,
-                'show_offers'                   =>      $offer_counter,
-                'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
-                'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : new stdClass(),
-                'service_weekdays'              =>      $weekdays,
-                'trials'                        =>      $trial_slots
+            'categorytags'                  =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+            'categorytags_snow'             =>      (isset($data['categorytags']) && !empty($data['categorytags'])) ? array_map('strtolower',array_pluck($data['categorytags'],'name')) : "",
+            'contact'                       =>      (isset($data['contact'])) ? $data['contact'] : '',                
+            'finder_type'                   =>      (isset($data['finder_type'])) ? $data['finder_type'] : '',
+            'commercial_type'               =>      (isset($data['commercial_type'])) ? $data['commercial_type'] : '',
+            'business_type'                 =>      (isset($data['business_type'])) ? $data['business_type'] : '',
+            'fitternityno'                  =>      (isset($data['fitternityno'])) ? $data['fitternityno'] : '',
+            'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+            'facilities_snow'               =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",
+            'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
+            'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
+            'location_snow'                 =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",
+            'locationtags'                  =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
+            'locationtags_snow'             =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : "",
+            'geolocation'                   =>      array('lat' => $data['lat'],'lon' => $data['lon']),
+            'offerings'                     =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+            'offerings_snow'                =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
+            'price_range'                   =>      (isset($data['price_range']) && $data['price_range'] != '') ? $data['price_range'] : "",
+            'popularity'                    =>      (isset($data['popularity']) && $data['popularity'] != '' ) ? $data['popularity'] : 0,
+            'special_offer_title'           =>      (isset($data['special_offer_title']) && $data['special_offer_title'] != '') ? $data['special_offer_title'] : "",
+            'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",
+            'status'                        =>      (isset($data['status']) && $data['status'] != '') ? $data['status'] : "",
+            'title'                         =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
+            'title_snow'                    =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
+            'total_rating_count'            =>      (isset($data['total_rating_count']) && $data['total_rating_count'] != '') ? $data['total_rating_count'] : 0,
+            'views'                         =>      (isset($data['views']) && $data['views'] != '') ? $data['views'] : 0,
+            'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
+            'updated_at'                    =>      (isset($data['updated_at']) && $data['updated_at'] != '') ? $data['updated_at'] : "",
+            'instantbooktrial_status'       =>      (isset($data['instantbooktrial_status']) && $data['instantbooktrial_status'] != '') ? intval($data['instantbooktrial_status']) : 0,
+            'photos'                        =>      (isset($data['photos']) && $data['photos'] != '') ? array_map('strtolower', array_pluck($data['photos'],'url')) : "",
+            'locationcluster'               =>      $locationcluster,
+            'locationcluster_snow'          =>      $locationcluster,
+            'price_rangeval'                =>      $rangeval,
+            'servicelist'                   =>      $servicenamelist,
+            'show_offers'                   =>      $offer_counter,
+            'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
+            'ozonetelno'                    =>      (isset($data['ozonetelno']) && $data['ozonetelno'] != '') ? $data['ozonetelno'] : new stdClass(),
+            'service_weekdays'              =>      $weekdays,
+            'trials'                        =>      $trial_slots,
+            'service_level_data'            =>      $service_level_data_all
                 //'trialschedules'                =>      $trialdata,
-                );    
+            );    
 
 $postfields_data['coverimage']  =   ($data['coverimage'] != '') ? $data['coverimage'] : 'default/'.$data['category_id'].'-'.rand(1, 4).'.jpg';            
 $postfields_data['servicephotos'] = $picslist;
@@ -690,6 +713,194 @@ catch(Exception $exception){
 
     }
 }
+
+
+if (!function_exists('get_service_category_synonyms')) {
+    function get_service_category_synonyms($service_category) {
+
+     $synonyms_list = array('yoga' => 'yoga',
+        'dance' => 'dance',
+        'martial arts' => 'mma and kick boxing',
+        'pilates' => 'pilates',
+        'zumba' => 'zumba',
+        'yoga' => 'yoga',
+        'dance' => 'dance',
+        'aqua fitness' => 'zumba',
+        'cross functional training' => 'cross functional training',
+        'group x training' => 'cross functional training',
+        'combine training' => 'cross functional training',
+        'trx training' => 'cross functional training',
+        'less mills' => 'cross functional training',
+        'cross training' => 'cross functional training',
+        'calisthenics' => 'cross functional training',
+        'reformer or stott pilates' => 'pilates',
+        'kalaripayattu' => 'mma and kick boxing',
+        'taekwondo' => 'mma and kick boxing',
+        'karate' => 'mma and kick boxing',
+        'mixed martial arts' => 'mma and kick boxing',
+        'judo' => 'mma and kick boxing',
+        'zumba classes' => 'zumba',
+        'gym' => 'gym',
+        'kids' => 'kids fitness',
+        'aqua zumba' => 'zumba',
+        'kung fu' => 'mma and kick boxing',
+        'muay thai' => 'mma and kick boxing',
+        'tai chi' => 'mma and kick boxing',
+        'krav maga' => 'mma and kick boxing',
+        'jujitsu' => 'mma and kick boxing',
+        'kick boxing' => 'mma and kick boxing',
+        'capoeira' => 'mma and kick boxing',
+        'masala bhangra' => 'dance',
+        'bollywood'=>'dance',
+        'tango' => 'dance',
+        'jazz' => 'dance',
+        'waltz' => 'dance',
+        'samba' => 'dance',
+        'ballroom' => 'dance',
+        'tango'=>'dance',
+        'jazz'=>'dance',
+        'waltz'=>'dance',
+        'samba'=>'dance',
+        'ballroom'=>'dance',
+        'cha cha cha'=>'dance',
+        'locking & popping'=>'dance',
+        'salsa'=>'dance',
+        'bharatanatyam'=>'dance',
+        'hip hop'=>'dance',
+        'ballet'=>'dance',
+        'b boying'=>'dance',
+        'rock n roll'=>'dance',
+        'krumping'=>'dance',
+        'paso doble'=>'dance',
+        'zouk '=>'dance',
+        'odissi'=>'dance',
+        'bachata'=>'dance',
+        'jive'=>'dance',
+        'rumba'=>'dance',
+        'belly dancing'=>'dance',
+        'bollydancing'=>'dance',
+        'freestyle'=>'dance',
+        'contemporary'=>'dance',
+        'kathak'=>'dance',
+        'bokwa'=>'dance',
+        'folka'=>'dance',
+        'EDM'=>'dance',
+        'dancersize'=>'dance',
+        'robusfit'=>'cross functional training',
+        'dancethon'=>'dance',
+        'power moves'=> 'cross functional training',
+        'doonya'=>'dance',
+        'functional training'=>'cross functional training',
+        'Bodycombat,cross functional training',
+        'Boddyattack,cross functional training',
+        'Bodypump,cross functional training',
+        'Bodyjam,cross functional training',
+        'Bodybalance,cross functional training',
+        'Cardio Circuit,cross functional training',
+        'mambo'=>'dance',
+        'iyengar yoga'=>'yoga',
+        'restorative yoga'=>'yoga',
+        'hatha yoga'=>'yoga',
+        'classical hatha yoga','yoga',
+        'hatha flow yoga'=>'yoga',
+        'gym'=>'gym',
+        'circuit interval / boot camp'=>'cross functional training',
+        'aerobics'=>'aerobics',
+        'spinning'=>'spinning and indoor cycling',
+        'power yoga'=>'yoga',
+        'house'=>'dance',
+        'kizomba'=>'dance',
+        'kids fitness'=>'kids fitness',
+        'healthy tiffins'=>'healthy tiffins',
+        'pachanga'=>'yoga',
+        'ashtanga yoga'=>'yoga',
+        'vinyasa yoga'=>'yoga',
+        'hatha vinyasa'=>'yoga',
+        'meditation'=>'yoga',
+        'prenatal'=>'yoga',
+        'sivananda'=>'yoga',
+        'dance fitness'=>'dance',
+        'latin'=>'dance',
+        'choreography level'=>'dance',
+        'technical level'=>'dance',
+        'kids classes (3yrs to 6yrs)'=>'kids fitness',
+        'kids classes (7yrs to 11yrs)'=>'kids fitness',
+        'salsa & bachata'=>'dance',
+        'Folk dances'=>'dance',
+        'pre ballet'=>'dance',
+        'pranayama'=>'yoga',
+        'hot yoga'=>'yoga',
+        'crossfit'=>'crossfit',
+        'kids yoga'=>'kids fitness',
+        'marathon training'=>'marathon training',
+        'traditional yoga'=>'yoga',
+        'kettlebell workout,cross functional training',
+        'aerial silk,cross functional training',
+        'strength & flexibility,cross functional training',
+        'danzo-fit'=>'dance',
+        'swimming'=>'swimming',
+        'tabata classes'=>'cross functional training',
+        'spartacus training'=>'cross functional training',
+        'military training'=>'cross functional training',
+        'dynamic yoga'=>'yoga',
+        'yoga stretching'=>'yoga',
+        'glute camp'=>'cross functional training',
+        'functional fitness and core conditioning'=>'cross functional training',
+        'zumba step'=>'zumba',
+        'zumba toning'=>'zumba',
+        'piloxing'=>'cross functional training',
+        'pilates swiss ball'=>'cross functional training',
+        'xxx - training'=>'cross functional training',
+        'tranceletics'=>'cross functional training',
+        'hard core and booty program'=>'cross functional training',
+        'boxing'=>'mma and kick boxing',
+        'wrestling / grappling'=>'mma and kick boxing',
+        'conditioning'=>'cross functional training',
+        'sparring session'=>'mma and kick boxing',
+        'flamenco'=>'dance',
+        'aero attack'=>'cross functional training',
+        'anti gravity yoga'=>'yoga',
+        'kids dance classes'=>'kids fitness',
+        'altitude training'=>'cross functional training',
+        'kids fitness'=>'kids fitness',
+        'kuchipudi'=>'dance',
+        'wrudo'=>'mma and kick boxing',
+        'fight yoga'=>'yoga',
+        'brazilian jiu-jitsu'=>'mma and kick boxing',
+        'sparring'=>'mma and kick boxing',
+        'altitude training'=>'cross functional training',
+        'altitude training'=>'cross functional training',
+        'fitness studio'=>'fitness studios',
+        'combine training'=>'cross functional training',
+        'hiit (high intensity training)'=>'cross functional training',
+        'parkour'=>'cross functional training',
+        'yogalates'=>'yoga',
+        'healthy snacks & beverages'=>'healthy snacks and beverages',
+        'baked treats'=>'healthy snacks and beverages',
+        'dietitians and nutritionists'=>'dietitians and nutritionists',
+        'nutrition counselling'=>'dietitians and nutritionists',
+        'breakfast cereals'=>'healthy snacks and beverages',
+        'cold pressed juices'=>'healthy snacks and beverages',
+        'energy or granola bars'=>'healthy snacks and beverages',
+        'snack box'=>'healthy snacks and beverages',
+        'dry fruits & seed mixes'=>'healthy snacks and beverages',
+        'savouries'=>'healthy snacks and beverages',
+        'dips & sauces'=>'healthy snacks and beverages',
+        'salad'=>'healthy snacks and beverages',
+        'vegetarian'=>'healthy tiffins',
+        'non-vegetarian'=>'healthy tiffins',
+        'milk'=>'healthy snacks and beverages',
+        'personal trainers'=>'personal trainers',
+        'combined training'=>'cross functional training',
+        'fitness trainer'=>'personal trainers',
+        'yoga trainer'=>'personal trainers',
+        'anu chariya'=>'personal trainers'
+        );
+
+        return $synonyms_list[$service_category];
+}
+}
+
 
 if (!function_exists('get_elastic_finder_trialschedules')) {
     function get_elastic_finder_trialschedules($finderdata = array()) {
@@ -886,15 +1097,15 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
      $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
      $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
 
-        if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
-        {
-            $catname = $cat['name'].' classes sessions';
-        }
-        else{
-            $catname = $cat['name'];
-        }
+     if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+     {
+        $catname = $cat['name'].' classes sessions';
+    }
+    else{
+        $catname = $cat['name'];
+    }
 
-     $postfields_data = array(
+    $postfields_data = array(
         'input'                         =>      $catname,
         'autosuggestvalue'              =>      $string,
         'inputv2'                       =>      "",                                                                 
@@ -910,7 +1121,7 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
         'slug'                          =>      "",
         'geolocation'                   =>      array('lat' => $lat,'lon' => $lon)
         );
-return $postfields_data;
+    return $postfields_data;
 }
 }
 
@@ -1141,8 +1352,8 @@ if (!function_exists(('add_reg_id'))){
         try{
 
             $rules = [
-                'reg_id' => 'required',
-                'type' => 'required',
+            'reg_id' => 'required',
+            'type' => 'required',
             ];
 
             $validator = Validator::make($data,$rules);
@@ -1177,10 +1388,10 @@ if (!function_exists(('add_reg_id'))){
         }catch (Exception $e) {
 
             $message = array(
-                    'type'    => get_class($e),
-                    'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
                 );
 
             $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);

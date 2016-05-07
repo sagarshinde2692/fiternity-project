@@ -2810,9 +2810,10 @@ class SchedulebooktrialsController extends \BaseController {
 
         return Response::json($response,$response['status']);
     }
+    
     public function booktrialdetail($captureid){
 
-        $booktrial 		=	Booktrial::find(intval($captureid));
+		$booktrial 		=	Booktrial::with("finder")->find(intval($captureid));
 
         if(!$booktrial){
             return $this->responseNotFound('Request not found');

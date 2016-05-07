@@ -939,13 +939,15 @@ public function searchDirectPaymentEnabled(){
     $category = (Input::json()->get('category')) ? Input::json()->get('category') : '';
     $group_by_flag = (Input::json()->get('group_by_flag')) ? Input::json()->get('group_by_flag') : false;
 
-
-
     $city_filter =  '{"term" : { "city" : "'.$city.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+     $region_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
     $direct_payment_filter = '{"term" : {  "direct_payment_enable": true,"_cache": true}},';
 
-    $post_filter = trim($direct_payment_filter.$category_filter.$city_filter,',');
+    $post_filter = trim($direct_payment_filter.$category_filter.$city_filter.$region_filter,',');
+
+
+
     $category_regex = $this->_getCategoryRegex($city);
     //return json_decode($group_by_flag);
     if($group_by_flag){
@@ -1008,6 +1010,60 @@ public function searchDirectPaymentEnabled(){
             ]}}
         }},';
 
+
+        $location_tags_facets = '"filtered_cluster_locations_tags": {
+            "filter": {
+                "bool": {
+                    "must": [
+                       '.trim($city_filter.$category_filter.$direct_payment_filter,',').'
+                    ]
+                }
+            },
+            "aggs": {
+                "loccluster": {
+                    "terms": {
+                        "field": "locationcluster",
+                        "min_doc_count": 1
+                    },
+                    "aggs": {
+                        "region": {
+                            "terms": {
+                                "field": "location",
+                                "min_doc_count": 1,
+                                "size": "500",
+                                "order": {
+                                    "_term": "asc"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }';
+
+        $location_facets = '"filtered_location_tags": {
+            "filter": {
+                "bool": {
+                    "must": [
+                        '.trim($city_filter.$category_filter.$direct_payment_filter,',').'
+                    ]
+                }
+            },
+            "aggs": {
+                "locationtags": {
+                    "terms": {
+                        "field": "locationtags",
+                        "min_doc_count": 1,
+                        "size": 500,
+                        "order": {
+                            "_term": "asc"
+                        }
+                    }
+                }
+            }
+        },
+';
+
         $category_aggregations = '"aggs": {
             "category_grouping": {
               "terms": {
@@ -1015,11 +1071,15 @@ public function searchDirectPaymentEnabled(){
                 "size": 1000,
                 "include" : "'.$category_regex.'"
             }
-        }
+        },'.$location_facets.$location_tags_facets.'
     },';
 
 
+ 
+
+
     $sort = '';
+
     if($category != '') {
 
         $factor = evalBaseCategoryScore($category);
@@ -1058,6 +1118,8 @@ $request = array(
     'method' => 'POST',
     'postfields' => $body
     );
+
+
 
 // $request = array(
 //     'url' => "http://localhost:9200/"."fitternity_finder/finder/_search",
@@ -1186,4 +1248,6 @@ private function _getCategoryRegex($city){
     return $regex;
 
 }
+
+// public function 
 }
