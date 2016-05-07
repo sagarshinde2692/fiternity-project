@@ -732,7 +732,7 @@ if(($trials_day_filter !== '')||($trial_time_from !== '')||($trial_time_to !== '
 
 $service_category_synonyms_filters = '';
 
-if($category !== '')
+if(($category !== '')&&($category !== 'fitness studios'))
 {
     $service_category_synonyms_filters = '{
       "term": {
@@ -760,7 +760,12 @@ if($all_nested_filters !== '')
 }
 
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-$must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+
+$must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+if($trials_day_filter !== ''){
+    $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+}
+
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
         $mustfilter_post = '"must": ['.$must_filtervalue.']';
