@@ -96,6 +96,26 @@ Class FinderSms extends VersionNextSms{
 
 	}
 
+	public function healthyTiffinTrial($data){
+
+		$label = 'HealthyTiffinTrial-Instant-Vendor';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+
+	}
+
+    public function healthyTiffinMembership($data){
+
+        $label = 'HealthyTiffinMembership-Instant-Vendor';
+
+        $to = explode(',', $data['finder_vcc_mobile']);
+
+        return $this->common($label,$to,$data);
+
+    }
+
 	public function common($label,$to,$data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();
