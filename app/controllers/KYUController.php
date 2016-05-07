@@ -105,8 +105,8 @@ class KYUController extends \BaseController
   public function getvendorviewcount($vendor_id){
 
     $slug_data =Finder::active()                      
-       ->where('_id', intval($vendor_id))                                 
-       ->get(); 
+    ->where('_id', intval($vendor_id))                                 
+    ->get(); 
 
     
     $vendor_slug = $slug_data[0]['slug'];
@@ -150,64 +150,64 @@ class KYUController extends \BaseController
   }
   ';
 
-   $body1 = '{
-  "size": 0,
-  "query": {
-    "filtered": {
-      "filter": {
-        "bool": {
-          "must": [{
-            "term": {
-              "event_id": "vendorclick"
-            }
-          }, {
-            "bool": {
-              "should": [{
-                "term": {
-                  "vendor": "'.$vendor_slug.'"
-                }
-              }, {
-                "term": {
-                  "vendor": '.$vendor_id.'
-                }
-              }]
-            }
-          }]
+  $body1 = '{
+    "size": 0,
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [{
+              "term": {
+                "event_id": "vendorclick"
+              }
+            }, {
+              "bool": {
+                "should": [{
+                  "term": {
+                    "vendor": "'.$vendor_slug.'"
+                  }
+                }, {
+                  "term": {
+                    "vendor": '.$vendor_id.'
+                  }
+                }]
+              }
+            }]
+          }
         }
       }
     }
-  }
-}';
+  }';
 
-$body2 = '{
-  "size": 0,
-  "query": {
-    "filtered": {
-      "filter": {
-        "bool": {
-          "must": [{
-            "term": {
-              "event_id": "homepagefeatured"
-            }
-          }, {
-            "term": {
-              "vendor_id": "'.$vendor_id.'"
-            }
-          }]
+  $body2 = '{
+    "size": 0,
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [{
+              "term": {
+                "event_id": "homepagefeatured"
+              }
+            }, {
+              "term": {
+                "vendor_id": "'.$vendor_id.'"
+              }
+            }]
+          }
         }
       }
     }
-  }
-}';
+  }';
 
- $request1 = array( 
+  $request1 = array( 
     'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
     'port' => 8060,
     'method' => 'POST',
     'postfields' => $body1
     );
 
- $request2 = array( 
+  $request2 = array( 
     'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
     'port' => 8060,
     'method' => 'POST',
@@ -317,23 +317,38 @@ public function getfacebookUTM(){
   // $todate = Input::json()->get('todate');
   // $city = Input::json()->get('city');
   $city = 'delhi';
-  $fromdate = '2015-11-01';
-  $todate = '2015-11-30';
+  $fromdate = '2016-04-01';
+  $todate = '2016-04-30';
 
-  $query = '{ 
-    "from":0,
-    "size":2000,  
-    "query": {
-      "filtered": {
-        "filter": {
-          "bool": {
-            "must": [
-            {
-              "term": {
-                "event_id": "bookingconfirm"
-              }
-            },
-            {
+  /*
+   all conversion events tracked
+  */
+
+   $from_size = 0;
+
+  //  this:
+  //  if($from_size < 3000)
+  // {
+    
+    $query = '{ 
+      "from":'.$from_size.',
+      "size":3000,  
+      "query": {
+        "filtered": {
+          "filter": {
+            "bool": {
+              "must": [
+              {
+               "terms": {
+                 "event_id": [
+                 "bookingconfirm",
+                 "requestcallback",
+                 "membershipbuy",
+                 "callback"
+                 ]
+               }
+             },
+             {
               "term": {
                 "city": "'.$city.'"
               }
@@ -352,29 +367,32 @@ public function getfacebookUTM(){
       }
     }
   }';
-
+  
   $request = array( 
     'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
     'port' => 8060,
     'method' => 'POST',
     'postfields' => $query
     );
-
+  
   $search_results1     =   es_curl_request($request);
   $search_results = json_decode($search_results1, true);
   $bookingconfirm = $search_results['hits']['hits'];
-  $fp = fopen('delhitrialsbook.csv', 'w');
-  $header =    ["TrialType","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
-  "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign"];
+  
+  $fp = fopen('bangaloreUTMAprilUTMAPRIL.csv', 'w');
+  $header =    ["Conversion_point","TrialType","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
+  "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign", "SessionURL", "SessionReferer"];
   fputcsv($fp, $header);
-
+  
   foreach ($bookingconfirm as $bc) {
-    echo $bc['_id'].'</br>';
+
+    // try{
+    
     $bookinginfo = $bc['_source'];
     $userid = $bookinginfo['useridentifier'];
     $sessionid = isset($bookinginfo['sessionid']) ? $bookinginfo['sessionid'] : '';
     $utmquery = '';
-    if($utmquery !== ''){
+    if($utmquery === ''){
       $utmquery = '{
         "query": {
           "filtered": {
@@ -434,33 +452,33 @@ public function getfacebookUTM(){
         }
       }';
     }
-
+  
     $request1 = array( 
       'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
       'port' => 8060,
       'method' => 'POST',
       'postfields' => $utmquery
       );
-        //return $utmquery;exit;
+  
     $utm_result1     =   es_curl_request($request1);
     $utm_result = json_decode($utm_result1, true);
-
+  
     if(sizeof($utm_result['hits']['hits']) > 0){
       $referer = isset($utm_result['hits']['hits'][0]['_source']['referer']) ? $utm_result['hits']['hits'][0]['_source']['referer'] : '';
       $page = isset($utm_result['hits']['hits'][0]['_source']['page']) ? $utm_result['hits']['hits'][0]['_source']['page'] : '';
       $trafficsource = ''; $tarffictype = '';
       $utm_medium='';$utm_term='';$utm_content='';$utm_campaign='';
-
+  
       if((strpos(strtolower($referer), 'facebook') > -1) || (strpos(strtolower($page), 'facebook') > -1)){
-        //echo $page.'       ---      '.$referer;
+          //echo $page.'       ---      '.$referer;
         $trafficsource = 'facebook';
         $utmurl = '';
         if((strpos(strtolower($referer), 'utm') > -1) || (strpos(strtolower($page), 'utm') > -1)) {
           $tarffictype = 'inorganic';  
-
+  
           $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;         
           if(strpos(strtolower($utmurl), 'facebook.com') === false){
-           //echo 'here'.$utmurl.'----------------------'.$userid.'</br>';
+             //echo 'here'.$utmurl.'----------------------'.$userid.'</br>';
            $utmarray = explode('?', $utmurl)[1];
            $utmlist = explode('&', $utmarray);
            foreach ($utmlist as $ul) {
@@ -488,40 +506,44 @@ public function getfacebookUTM(){
         $tarffictype = 'organic';
       }
     }   
-
+  
     else if((strpos($referer, 'google') > -1 ) || (strpos($page, 'google') > -1)){
       $trafficsource = 'google';
       $tarffictype = 'organic';
-      
+  
     }
     else{
       $trafficsource = 'direct';
       $tarffictype = 'organic';
     }
-
+  
     $bc1 = $bc['_source'];
     $service = isset($bc1['service']) ? $bc1['service'] : 'n/a';
     $slot = isset($bc1['slot']) ? $bc1['slot'] : 'n/a';
     $TrailDate = isset($bc1['date']) ? $bc1['date'] : 'n/a';
     $vendor = isset($bc1['vendor']) ? $bc1['vendor'] : 'n/a';
     $finder = Finder::where('slug', $vendor)->with('category')->with('location')->timeout(40000000000)->first();
-
+  
     $category = isset($finder['category']['name']) ? $finder['category']['name'] : '';
     $location = isset($finder['location']['name']) ? $finder['location']['name'] : '';
     $timearray = explode('T', $bc1['timestamp']);
-
-    $fields = [$bc1['type'], $bc1['email'], $bc1['vendor'], $category, $location, $service, $slot, $bc1['city'], $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign];
     
+    $fields = [$bookinginfo['event_id'],$bc1['type'], $bc1['email'], $bc1['vendor'], $category, $location, $service, $slot, $bc1['city'], $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign, $page, $referer];
+  
     fputcsv($fp, $fields);
-    
-  }
-  else{
-   echo 'exit here</br>';
- }
+ 
+
 }
+else{
+ echo 'exit here</br>';
+}
+   
+}
+
+
 fclose($fp);
   //return 'done';
-return Response::make(rtrim('delhitrialsbook.csv', "\n"), 200, $header);
+return Response::make(rtrim('puneUTMAPRIL.csv', "\n"), 200, $header);
 }
 
 public function sessionutm(){
@@ -1156,32 +1178,32 @@ public function updatepaymentbooking(){
     $visitlist = json_decode($visits, true);
     $utm = '';
     $source = 'organic';
-   
+
     if($visitlist['hits']['total'] > 0){      
       $utm = isset($visitlist['hits']['hits'][0]['_source']['utm']) ? $visitlist['hits']['hits'][0]['_source']['utm'] : '';
       $source = isset($visitlist['hits']['hits'][0]['_source']['utm']) ? 'inorganic' : 'organic';
     }
 
     if(!empty($utm)){
-       $tran['_source']['utm'] = $utm;
-     }   
-    $tran['_source']['visitsource'] = $source;
-    $transource = $tran['_source'];
-    $id = $tran['_id'];
-    $postfields_data = json_encode($transource);  
+     $tran['_source']['utm'] = $utm;
+   }   
+   $tran['_source']['visitsource'] = $source;
+   $transource = $tran['_source'];
+   $id = $tran['_id'];
+   $postfields_data = json_encode($transource);  
 
-     $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$id;
-     $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
-     es_curl_request($updaterequest);
-     echo $id.'</br>';
-  }
+   $posturl = "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/logs/".$id;
+   $updaterequest = array('url' => $posturl, 'port' => 8060, 'method' => 'PUT', 'postfields' => $postfields_data );
+   es_curl_request($updaterequest);
+   echo $id.'</br>';
+ }
 
 }
 public function getglobalsearchkeywordmatrix(){
 
  $datefrom = Input::get('datefrom');
-  $dateto = Input::get('dateto');
-$query = '{
+ $dateto = Input::get('dateto');
+ $query = '{
   "from": 0,
   "size": 0,
   "query": {
@@ -1189,25 +1211,25 @@ $query = '{
       "filter": {
         "bool": {
           "must": [
-            {
-              "term": {
-                "event_id": "globalsearch"
-              }
-            },
-            {
-              "range": {
-                "timestamp": {
-                  "gte": "'.$datefrom.'",
-                  "lte": "'.$dateto.'"
-                }
+          {
+            "term": {
+              "event_id": "globalsearch"
+            }
+          },
+          {
+            "range": {
+              "timestamp": {
+                "gte": "'.$datefrom.'",
+                "lte": "'.$dateto.'"
               }
             }
+          }
           ]
         }
       }
     }
   },
-   "aggs": {
+  "aggs": {
     "city": {
       "terms": {
         "field": "city",
@@ -1225,31 +1247,31 @@ $query = '{
   }
 }';
 
- $request3 = array( 
-      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
-      'port' => 8060,
-      'method' => 'POST',
-      'postfields' => $query
-      );
+$request3 = array( 
+  'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+  'port' => 8060,
+  'method' => 'POST',
+  'postfields' => $query
+  );
 
-    $keywords = es_curl_request($request3);
-    $keywordlist = json_decode($keywords, true);
+$keywords = es_curl_request($request3);
+$keywordlist = json_decode($keywords, true);
 
-    $result = $keywordlist['aggregations']['city']['buckets'];
+$result = $keywordlist['aggregations']['city']['buckets'];
 
-    $response = array();
-    foreach ($result as $city) {
-    array_push($response, array($city['key'] => $city['keyword']['buckets']));
-    }
+$response = array();
+foreach ($result as $city) {
+  array_push($response, array($city['key'] => $city['keyword']['buckets']));
+}
 
-     return Response::json($response);
+return Response::json($response);
 }
 
 public function getglobalsearchclickedmatrix(){
 
-   $datefrom = Input::get('datefrom');
-  $dateto = Input::get('dateto');
-$query = '{
+ $datefrom = Input::get('datefrom');
+ $dateto = Input::get('dateto');
+ $query = '{
   "from": 0,
   "size": 0,
   "query": {
@@ -1257,25 +1279,25 @@ $query = '{
       "filter": {
         "bool": {
           "must": [
-            {
-              "term": {
-                "event_id": "globalsearchclick"
-              }
-            },
-            {
-              "range": {
-                "timestamp": {
-                  "gte": "'.$datefrom.'",
-                  "lte": "'.$dateto.'"
-                }
+          {
+            "term": {
+              "event_id": "globalsearchclick"
+            }
+          },
+          {
+            "range": {
+              "timestamp": {
+                "gte": "'.$datefrom.'",
+                "lte": "'.$dateto.'"
               }
             }
+          }
           ]
         }
       }
     }
   },
-   "aggs": {
+  "aggs": {
     "city": {
       "terms": {
         "field": "city",
@@ -1293,93 +1315,93 @@ $query = '{
   }
 }';
 
- $request3 = array( 
-      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
-      'port' => 8060,
-      'method' => 'POST',
-      'postfields' => $query
-      );
+$request3 = array( 
+  'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+  'port' => 8060,
+  'method' => 'POST',
+  'postfields' => $query
+  );
 
-    $keywords = es_curl_request($request3);
-    $keywordlist = json_decode($keywords, true);
+$keywords = es_curl_request($request3);
+$keywordlist = json_decode($keywords, true);
 
-    $result = $keywordlist['aggregations']['city']['buckets'];
+$result = $keywordlist['aggregations']['city']['buckets'];
 
-    $response = array();
-    foreach ($result as $city) {
-    array_push($response, array($city['key'] => $city['keyword']['buckets']));
-    }
+$response = array();
+foreach ($result as $city) {
+  array_push($response, array($city['key'] => $city['keyword']['buckets']));
+}
 
-     return Response::json($response);
+return Response::json($response);
 }
 
 public function getdailyvisitors(){
-   $date = Input::get('date');
-  $query = '{
-          "from": 0,
-          "size": 0,
-          "query": {
-            "bool": {
-              "must": [
-                {
-                  "term": {
-                    "event_id": "sessionstart"
-                  }
-                },
-                {
-                  "bool": {
-                    "must_not": [
-                      {
-                        "query_string": {
-                          "default_field": "page",
-                          "query": "*dir=*"
-                        }
-                      },
-                      {
-                        "query_string": {
-                          "default_field": "page",
-                          "query": "*limit=*"
-                        }
-                      },
-                      {
-                        "query_string": {
-                          "default_field": "page",
-                          "query": "*mode=*"
-                        }
-                      }
-                    ]
-                  }
-                },
-                {
-                  "range": {
-                    "timestamp": {
-                      "gte": "'.$date.'"
-                    }
-                  }
-                }
-              ]
+ $date = Input::get('date');
+ $query = '{
+  "from": 0,
+  "size": 0,
+  "query": {
+    "bool": {
+      "must": [
+      {
+        "term": {
+          "event_id": "sessionstart"
+        }
+      },
+      {
+        "bool": {
+          "must_not": [
+          {
+            "query_string": {
+              "default_field": "page",
+              "query": "*dir=*"
             }
           },
-          "aggs": {
-            "users": {
-              "cardinality": {
-                "field": "userid"
-              }
+          {
+            "query_string": {
+              "default_field": "page",
+              "query": "*limit=*"
+            }
+          },
+          {
+            "query_string": {
+              "default_field": "page",
+              "query": "*mode=*"
             }
           }
-        }';
+          ]
+        }
+      },
+      {
+        "range": {
+          "timestamp": {
+            "gte": "'.$date.'"
+          }
+        }
+      }
+      ]
+    }
+  },
+  "aggs": {
+    "users": {
+      "cardinality": {
+        "field": "userid"
+      }
+    }
+  }
+}';
 
-    $request3 = array( 
-      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
-      'port' => 8060,
-      'method' => 'POST',
-      'postfields' => $query
-      );
+$request3 = array( 
+  'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+  'port' => 8060,
+  'method' => 'POST',
+  'postfields' => $query
+  );
 
-    $visit = es_curl_request($request3);
-    $users = json_decode($visit, true);
+$visit = es_curl_request($request3);
+$users = json_decode($visit, true);
 
-    $value = $users['aggregations']['users']['value'];
+$value = $users['aggregations']['users']['value'];
 
 return $value;
 
