@@ -686,7 +686,7 @@ public function getRankedFinderResultsAppv2()
     $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
     $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
-    
+    $trials_day_filterv2 = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "day": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
     $trial_range_filter = '';
     if(($trial_time_from !== '')&&($trial_time_to !== '')){
 
@@ -714,8 +714,53 @@ public function getRankedFinderResultsAppv2()
 },';
 }
 
+$service_slots_filters = '';
+
+if(($trials_day_filter !== '')||($trial_time_from !== '')||($trial_time_to !== ''))
+{
+    $service_slots_filters = ' {"nested": {
+      "path": "service_level_data.slots_nested",
+      "query": {"filtered": {
+        "filter": {"bool": {"must": [
+        '.trim($trials_day_filterv2.$trial_time_from.$trial_time_to, ',').'
+    
+    ]}
+}
+}}
+}},';
+}
+
+$service_category_synonyms_filters = '';
+
+if($category !== '')
+{
+    $service_category_synonyms_filters = '{
+      "term": {
+        "service_category_synonyms": "'.$category.'"
+    }
+},';
+}
+
+$all_nested_filters = trim($service_slots_filters.$service_category_synonyms_filters,',');
+
+$service_level_nested_filter = '';
+
+if($all_nested_filters !== '')
+{
+    $service_level_nested_filter = '{
+  "nested": {
+    "path": "service_level_data",
+    "query": {"filtered": {
+      "filter": {"bool": {"must": [
+      '.$all_nested_filters.'
+      ]}}
+  }}
+}
+},';
+}
+
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-$must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+$must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
         $mustfilter_post = '"must": ['.$must_filtervalue.']';
@@ -754,7 +799,7 @@ $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$fac
         }
 
         if($mustfilter != ''){
-           $filters_post = '"post_filter": {
+         $filters_post = '"post_filter": {
             "bool" : {'.$filtervalue_post.$must_not_filter.'
         }},';            
     }
@@ -765,11 +810,24 @@ $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$fac
 
         */
 
+        $nested_level1_filter = ($category_filter === '') ? '': '  {"nested": {
+          "path": "service_level_data",
+          "query": {"filtered": {
+            "filter": {"bool": {"must": [
+              {"term": {
+                "service_category_synonyms": "'.$category.'"
+              }}
+            ]}}
+          }}
+        }}';
+
+        $nested_level2_filter = '';
+
         $location_facets_filter = trim($location_filter.$category_filter,',');
         $facilities_facets_filter = trim($location_filter.$regions_filter.$category_filter, ',');
         $offerings_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
         $budgets_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
-        $trialday_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter, ',');
+        $trialday_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
 
         $facilities_bool = '"filter": {
             "bool" : { "must":['.$facilities_facets_filter.']}
@@ -876,15 +934,41 @@ $budgets_facets = ' "filtered_budgets": {
 $trialdays_facets = ' "filtered_trials": {
     '.$trialdays_bool.',
     "aggs": {
-        "trialdays": {
-            "terms": {
-                "field": "service_weekdays",
-                "min_doc_count": 0,
-                "size": 500,
-                "order":{"_term": "asc"}
-            }
-        }
-    }
+   "level1": {
+     "nested": {
+       "path": "service_level_data"
+     },
+     "aggs": {
+       "level2": {
+         "nested": {
+           "path": "service_level_data.slots_nested"
+         },
+         "aggs": {
+           "daysaggregator": {
+             "terms": {
+               "field": "day",
+               "size": 10000,
+               "min_doc_count" : 0
+             },
+             "aggs": {
+               "backtolevel1": {
+                 "reverse_nested": {
+                   "path": "service_level_data"
+                 },
+                 "aggs": {
+                   "backtorootdoc": {
+                     "reverse_nested": {
+                     }
+                   }
+                 }
+               }
+             }
+           }
+         }
+       }
+     }
+   }
+ }
 },';
 
 
@@ -908,15 +992,16 @@ $request = array(
     );
 
 // $request = array(
-//     'url' => "http://localhost:9200/"."fitternity2016-04-16/finder/_search",
+//     'url' => "http://localhost:9200/"."fitternity_finder/finder/_search",
 //     'port' => 9200,
 //     'method' => 'POST',
 //     'postfields' => $body
 //     );
-    // return $body;exit;
+     
 $search_results     =   es_curl_request($request);
+
 $search_results1    =   json_decode($search_results, true);
-$searchresulteresponse = Translator::translate_searchresultsv2($search_results1);
+$searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
 $searchresulteresponse->meta->number_of_records = intval($size);
 $searchresulteresponse->meta->from = intval($from);
 $searchresulteresponse->meta->sortfield = $orderfield;
@@ -941,7 +1026,7 @@ public function searchDirectPaymentEnabled(){
 
     $city_filter =  '{"term" : { "city" : "'.$city.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
-     $region_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $region_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
     $direct_payment_filter = '{"term" : {  "direct_payment_enable": true,"_cache": true}},';
 
     $post_filter = trim($direct_payment_filter.$category_filter.$city_filter.$region_filter,',');
@@ -953,47 +1038,47 @@ public function searchDirectPaymentEnabled(){
     if($group_by_flag){
 
 
-    $body = '{
-    "from": '.$from.',
-    "size": '.$size.',
-    "query": {
-        "filtered": {
-            "filter": {
-                "bool": {
-                    "must": [{
-                        "term": {
-                            "city": "'.$city.'"
+        $body = '{
+            "from": '.$from.',
+            "size": '.$size.',
+            "query": {
+                "filtered": {
+                    "filter": {
+                        "bool": {
+                            "must": [{
+                                "term": {
+                                    "city": "'.$city.'"
+                                }
+                            }, {
+                                "term": {
+                                    "direct_payment_enable": true
+                                }
+                            }]
                         }
-                    }, {
-                        "term": {
-                            "direct_payment_enable": true
-                        }
-                    }]
+                    }
                 }
-            }
-        }
-    },
-    "aggs": {
-        "grouped_by_category": {
-            "terms": {
-                "field": "categorytags",
-                "size": 10000
             },
             "aggs": {
-                "grouped_by_category_hits": {
-                    "top_hits": {
-                        "sort": [{
-                            "rankv2": {
-                                "order": "desc"
+                "grouped_by_category": {
+                    "terms": {
+                        "field": "categorytags",
+                        "size": 10000
+                    },
+                    "aggs": {
+                        "grouped_by_category_hits": {
+                            "top_hits": {
+                                "sort": [{
+                                    "rankv2": {
+                                        "order": "desc"
+                                    }
+                                }],
+                                "size": 100000000
                             }
-                        }],
-                        "size": 100000000
+                        }
                     }
                 }
             }
-        }
-    }
-}';
+        }';
 
     }else{
 
@@ -1015,7 +1100,7 @@ public function searchDirectPaymentEnabled(){
             "filter": {
                 "bool": {
                     "must": [
-                       '.trim($city_filter.$category_filter.$direct_payment_filter,',').'
+                    '.trim($city_filter.$category_filter.$direct_payment_filter,',').'
                     ]
                 }
             },
@@ -1045,7 +1130,7 @@ public function searchDirectPaymentEnabled(){
             "filter": {
                 "bool": {
                     "must": [
-                        '.trim($city_filter.$category_filter.$direct_payment_filter,',').'
+                    '.trim($city_filter.$category_filter.$direct_payment_filter,',').'
                     ]
                 }
             },
@@ -1062,7 +1147,7 @@ public function searchDirectPaymentEnabled(){
                 }
             }
         },
-';
+        ';
 
         $category_aggregations = '"aggs": {
             "category_grouping": {
@@ -1075,7 +1160,7 @@ public function searchDirectPaymentEnabled(){
     },';
 
 
- 
+
 
 
     $sort = '';
@@ -1104,7 +1189,7 @@ public function searchDirectPaymentEnabled(){
     $body = '{
         "from": '.$from.',
         "size": '.$size.',
-       '.$category_aggregations.'
+        '.$category_aggregations.'
         '.$query.'
         '.$sort.',
         "post_filter" : {'.$Post_filter_query.'}

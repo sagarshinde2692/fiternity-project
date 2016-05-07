@@ -505,6 +505,176 @@ public static function translate_searchresultsv2($es_searchresult_response){
 	}
 	return $finderresult_response;
 }
+
+
+public static function translate_searchresultsv3($es_searchresult_response){
+		$finderresult_response = new FinderresultResponse();
+		
+		$finderresult_response->results->aggregationlist = new \stdClass();
+		if(empty($es_searchresult_response['hits']['hits']))
+		{
+			$finderresult_response->results->resultlist = array();
+			$finderresult_response->meta->total_records = 0;
+		}
+		else{
+			$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
+			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+				$result = $resultv1['_source'];			
+				$finder = new FinderResult();
+				$finder->object_type = 'vendor';
+				$resultobject = new FinderObject();			
+				$resultobject->id = $result['_id'];				
+				$resultobject->category = $result['category'];
+				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
+				$resultobject->location = $result['location'];	
+				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
+				$resultobject->average_rating = $result['average_rating'];
+				$resultobject->membership_discount = $result['membership_discount'];
+				$resultobject->country = $result['country'];
+				$resultobject->city = $result['city'];
+			//$resultobject->city_id = $result['city_id'];
+				$resultobject->info_service = $result['info_service'];
+			$resultobject->info_service_list = array();//$result['info_service_list'];
+			$resultobject->contact->address = $result['contact']['address'];
+			$resultobject->contact->email = isset($result['contact']['email']) ? $result['contact']['email'] : "";
+			$resultobject->contact->phone = ''; //$result['contact']['phone'];
+			$resultobject->contact->website = $result['contact']['website'];
+			$resultobject->coverimage = $result['coverimage'];
+			$resultobject->commercial_type = $result['commercial_type'];
+			$resultobject->finder_type = $result['finder_type'];
+			$resultobject->business_type = $result['business_type'];
+			$resultobject->fitternityno = '+917506122637';
+			$resultobject->facilities = empty($result['facilities']) ? array() : $result['facilities'];
+			$resultobject->logo = $result['logo'];
+			$resultobject->geolocation->lat = $result['geolocation']['lat'];
+			$resultobject->geolocation->long = $result['geolocation']['lon'];
+			$resultobject->offerings = empty($result['offerings']) ? array() : $result['offerings'];
+			$resultobject->price_range = $result['price_range'];
+			$resultobject->popularity = $result['popularity'];
+			$resultobject->special_offer_title = $result['special_offer_title'];
+			$resultobject->slug = $result['slug'];
+			$resultobject->status = $result['status'];
+			$resultobject->title = $result['title'];
+			$resultobject->total_rating_count = $result['total_rating_count'];
+			$resultobject->views = $result['views'];
+			$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
+			$resultobject->photos = $result['photos'];
+			$resultobject->locationcluster = $result['locationcluster'];
+			$resultobject->price_rangeval = $result['price_rangeval'];
+			$resultobject->servicelist = isset($result['servicelist']) ? $result['servicelist'] : array();
+			$resultobject->servicephotos = isset($result['servicephotos']) ? $result['servicephotos'] : array();
+			$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
+			$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
+			$finder->object = $resultobject;
+			array_push($finderresult_response->results->resultlist, $finder);			
+		}
+	}
+	
+	$aggs = $es_searchresult_response['aggregations'];
+
+	$finderresult_response->results->aggregationlist->budget = array();
+		$budval0 = new \stdClass();
+		$budval1 = new \stdClass();
+		$budval2 = new \stdClass();
+		$budval3 = new \stdClass();
+		$budval4 = new \stdClass();
+		$budval5 = new \stdClass();
+	foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
+		switch ($bud['key']) {
+			case 'one':
+			$budval0->key = 'less than 1000';
+			$budval0->count = $bud['doc_count'];			
+		
+			break;
+			case 'two':
+			$budval1->key = '1000-2500';
+			$budval1->count = $bud['doc_count'];
+			
+			break;
+			case 'three':
+			$budval2->key = '2500-5000';
+			$budval2->count = $bud['doc_count'];
+			
+			break;
+			case 'four':
+			$budval3->key = '5000-7500';
+			$budval3->count = $bud['doc_count'];
+			
+			break;
+			case 'five':
+			$budval4->key = '7500-15000';
+			$budval4->count = $bud['doc_count'];
+			
+			break;
+			case 'six':
+			$budval5->key = '15000 & Above';
+			$budval5->count = $bud['doc_count'];			
+			break;				
+			default:					
+			break;
+		}
+	}
+		array_push($finderresult_response->results->aggregationlist->budget, $budval0);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval1);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval2);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval3);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval4);
+		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
+
+	$finderresult_response->results->aggregationlist->filters = array();
+	foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
+		$facval = new \stdClass();
+		$facval->key = $fac['key'];
+		$facval->count = $fac['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->filters, $facval);			
+	}
+
+	$finderresult_response->results->aggregationlist->locationcluster = array();
+	foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
+		$clusterval = new \stdClass();
+		$clusterval->key = $cluster['key'];
+		$clusterval->count = $cluster['doc_count'];
+		$clusterval->regions = array();
+		foreach ($cluster['region']['buckets'] as $reg) {
+			$regval = new \stdClass();
+			$regval->key = $reg['key'];
+			$regval->count = $reg['doc_count'];
+			array_push($clusterval->regions, $regval);
+		}
+		array_push($finderresult_response->results->aggregationlist->locationcluster, $clusterval);
+	}
+
+	$finderresult_response->results->aggregationlist->offerings = array();
+
+	foreach ($aggs['filtered_offerings']['offerings']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->offerings, $offval);
+	}
+
+	$finderresult_response->results->aggregationlist->locationtags = array();
+
+	
+	foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
+	}
+	
+	if(isset($aggs['filtered_trials']['level1'])){
+	$finderresult_response->results->aggregationlist->trialdays = array();
+
+	foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+	}
+	}
+	return $finderresult_response;
+}
 }
 
 ?>

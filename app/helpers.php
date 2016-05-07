@@ -740,7 +740,7 @@ if (!function_exists('get_service_category_synonyms')) {
         'mixed martial arts' => 'mma and kick boxing',
         'judo' => 'mma and kick boxing',
         'zumba classes' => 'zumba',
-        'gym' => 'gym',
+        'gym' => 'gyms',
         'kids' => 'kids fitness',
         'aqua zumba' => 'zumba',
         'kung fu' => 'mma and kick boxing',
