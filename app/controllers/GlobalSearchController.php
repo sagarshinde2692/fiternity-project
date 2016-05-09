@@ -1315,6 +1315,9 @@ public function improvedkeywordSearch(){
          
           $keylist = explode(' ', $string);
         $cityBool = false;
+        if(sizeof($category) > 1){
+           $keylist = array_unique(array_merge($keylist, $category));
+        }
         if((sizeof($location) === 1)&&(array_search($location[0], $city_name_list) !== false)){
             $cityBool = true;
         }
@@ -1768,12 +1771,13 @@ $query = '{
     }'.$filters_post.$sort_clause.'
 }';
 
+// return $query;
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv2/finder/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query
-    );    
+    );
 
 $search_results     =   es_curl_request($request);       
 $search_results     =   es_curl_request($request);
