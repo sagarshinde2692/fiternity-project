@@ -480,7 +480,7 @@ class RankingController extends \BaseController {
         $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
         $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
         $curl_response = es_curl_request($request);
-        //$curl_response1 = es_curl_request($request1);
+        $curl_response1 = es_curl_request($request1);
         //echo json_encode($curl_response);
 
     }
