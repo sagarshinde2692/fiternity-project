@@ -31,6 +31,7 @@ class KYUController extends \BaseController
     $request = array('url' => $posturl, 'port' => 8060, 'method' => 'POST', 'postfields' => $postfields_data );
     es_curl_request($request);        
     echo "";
+
   }
 
   public function createkyucluster(){
@@ -316,7 +317,7 @@ public function getfacebookUTM(){
   // $fromdate = Input::json()->get('fromdate');
   // $todate = Input::json()->get('todate');
   // $city = Input::json()->get('city');
-  $city = 'delhi';
+  $city = 'gurgaon';
   $fromdate = '2016-04-01';
   $todate = '2016-04-30';
 
@@ -332,7 +333,7 @@ public function getfacebookUTM(){
     
     $query = '{ 
       "from":'.$from_size.',
-      "size":3000,  
+      "size":5000,  
       "query": {
         "filtered": {
           "filter": {
@@ -347,12 +348,7 @@ public function getfacebookUTM(){
                  "callback"
                  ]
                }
-             },
-             {
-              "term": {
-                "city": "'.$city.'"
-              }
-            },
+             },             
             {
               "range": {
                 "timestamp": {
@@ -374,14 +370,14 @@ public function getfacebookUTM(){
     'method' => 'POST',
     'postfields' => $query
     );
-  
+  // return $query;
   $search_results1     =   es_curl_request($request);
   $search_results = json_decode($search_results1, true);
   $bookingconfirm = $search_results['hits']['hits'];
   
-  $fp = fopen('bangaloreUTMAprilUTMAPRIL.csv', 'w');
+  $fp = fopen('utm_april.csv', 'w');
   $header =    ["Conversion_point","TrialType","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
-  "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign", "SessionURL", "SessionReferer"];
+  "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign","utm_source","gclid", "SessionURL", "SessionReferer"];
   fputcsv($fp, $header);
   
   foreach ($bookingconfirm as $bc) {
@@ -389,6 +385,9 @@ public function getfacebookUTM(){
     // try{
     
     $bookinginfo = $bc['_source'];
+    if(!isset($bookinginfo['useridentifier'])){
+      continue;
+    }
     $userid = $bookinginfo['useridentifier'];
     $sessionid = isset($bookinginfo['sessionid']) ? $bookinginfo['sessionid'] : '';
     $utmquery = '';
@@ -467,9 +466,9 @@ public function getfacebookUTM(){
       $referer = isset($utm_result['hits']['hits'][0]['_source']['referer']) ? $utm_result['hits']['hits'][0]['_source']['referer'] : '';
       $page = isset($utm_result['hits']['hits'][0]['_source']['page']) ? $utm_result['hits']['hits'][0]['_source']['page'] : '';
       $trafficsource = ''; $tarffictype = '';
-      $utm_medium='';$utm_term='';$utm_content='';$utm_campaign='';
+      $utm_medium='';$utm_term='';$utm_content='';$utm_campaign='';$utm_source='';$gclid = '';
   
-      if((strpos(strtolower($referer), 'facebook') > -1) || (strpos(strtolower($page), 'facebook') > -1)){
+      if((strpos(strtolower($referer), 'facebook') > -1) || (strpos(strtolower($page), 'facebook') > -1)||(strpos(strtolower($page), 'fb') > -1)){
           //echo $page.'       ---      '.$referer;
         $trafficsource = 'facebook';
         $utmurl = '';
@@ -507,11 +506,50 @@ public function getfacebookUTM(){
       }
     }   
   
-    else if((strpos($referer, 'google') > -1 ) || (strpos($page, 'google') > -1)){
+    else if(((strpos(strtolower($referer), 'google') > -1 ) || (strpos(strtolower($page), 'google') > -1))||((strpos(strtolower($referer), 'gclid') > -1 ) ||(strpos(strtolower($page), 'gclid') > -1 ))){
       $trafficsource = 'google';
-      $tarffictype = 'organic';
+     
+       if((strpos(strtolower($referer), 'utm') > -1) || (strpos(strtolower($page), 'utm') > -1)||(strpos(strtolower($page), 'gclid') > -1 )||(strpos(strtolower($referer), 'gclid') > -1 )) {
+
+         $tarffictype = 'inorganic';
+        $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;     
+         $utmarray = explode('?', $utmurl)[1];
+           $utmlist = explode('&', $utmarray);
+           foreach ($utmlist as $ul) {
+
+             $final = explode('=', $ul);
+             switch ($final[0]) {
+                case 'utm_source':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_medium':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_term':
+               $utm_term = $final[1];
+               break;
+               case 'utm_content':
+               $utm_content = $final[1];
+               break;
+               case 'utm_campaign':
+               $utm_campaign = $final[1];
+               break; 
+               case 'gclid':
+               $gclid = $final[1];
+               break;               
+               default:                
+               break;
+             }
+           }
+       }
+       else{
+         $tarffictype = 'organic';
+
+
+       }
   
     }
+
     else{
       $trafficsource = 'direct';
       $tarffictype = 'organic';
@@ -527,8 +565,11 @@ public function getfacebookUTM(){
     $category = isset($finder['category']['name']) ? $finder['category']['name'] : '';
     $location = isset($finder['location']['name']) ? $finder['location']['name'] : '';
     $timearray = explode('T', $bc1['timestamp']);
-    
-    $fields = [$bookinginfo['event_id'],$bc1['type'], $bc1['email'], $bc1['vendor'], $category, $location, $service, $slot, $bc1['city'], $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign, $page, $referer];
+    $type = isset($bc1['type']) ? $bc1['type'] : 'n/a';
+    $city = isset($bc1['city']) ? $bc1['city'] : 'n/a';
+    $email = isset($bc1['email']) ? $bc1['email'] : 'n/a';
+    $vendor = isset($bc1['vendor']) ? $bc1['vendor'] : 'n/a';
+    $fields = [$bookinginfo['event_id'],$type, $email, $vendor, $category, $location, $service, $slot, $city, $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign,$utm_source,$gclid, $page, $referer];
   
     fputcsv($fp, $fields);
  
@@ -543,7 +584,7 @@ else{
 
 fclose($fp);
   //return 'done';
-return Response::make(rtrim('puneUTMAPRIL.csv', "\n"), 200, $header);
+return Response::make(rtrim('utm_april.csv', "\n"), 200, $header);
 }
 
 public function sessionutm(){
