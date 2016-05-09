@@ -708,6 +708,7 @@ return $postfields_data;
 }
 catch(Exception $exception){
     Log::error($exception);
+    
     return array();
         }//catch
 
@@ -723,6 +724,7 @@ if (!function_exists('get_service_category_synonyms')) {
         'martial arts' => 'mma and kick boxing',
         'pilates' => 'pilates',
         'zumba' => 'zumba',
+        'mat pilates' => 'pilates',
         'yoga' => 'yoga',
         'dance' => 'dance',
         'aqua fitness' => 'zumba',
