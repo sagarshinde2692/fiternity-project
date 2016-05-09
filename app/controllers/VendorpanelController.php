@@ -958,7 +958,7 @@ class VendorpanelController extends BaseController
         $visibility_direct = array_only($req_visibility['new'], $directly_editable_fields);
 
         // Remove relational fields.....
-        $facilities = array_pull($direct, 'facilities');
+        $facilities = array_pull($data_direct, 'facilities');
 
         // Get Finder....
         $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
@@ -1022,7 +1022,6 @@ class VendorpanelController extends BaseController
             return Response::json($data, 401);
         }
 
-//        $reviewData = Review::find((int) $review_id);
         $reviewData = Review::with(array('finder'=>function($query){$query->select('_id','title','slug');}))
                 ->with(array('customer'=>function($query){$query->select('_id','name','email');}))
                 ->where('_id','=',(int) $review_id)
@@ -1031,8 +1030,15 @@ class VendorpanelController extends BaseController
         if($reviewData){
 
             // UPdate in DB....
-            $reviewData->update(array('reply' => $data['reply']));
+            //ToDO correct replied_at timestamp..........
+            $reviewData->update(
+                array(
+                    'reply' => $data['reply'],
+                    'replied_at'=> date('Y-m-d h:i:s')
+                )
+            );
 
+            // Notify Customer....
             $template_data = array(
                 'customer_name' => $reviewData['customer']['name'],
                 'customer_email' => $reviewData['customer']['email'],
@@ -1040,10 +1046,9 @@ class VendorpanelController extends BaseController
                 'reply' => $reviewData['reply'],
                 'created_at' => $reviewData['created_at']
             );
-
-            // Notify Customer....
             $this->customermailer->reviewReplyByVendor($template_data);
 
+            // Send response....
             $resp 	= 	'Success';
             return  Response::json($resp, 200);
 
@@ -1076,6 +1081,7 @@ class VendorpanelController extends BaseController
         $trialData = Booktrial::find((int) $trial_id);
 
         if($trialData){
+            //ToDO correct updated_by_vendor timestamp..........
             $trialData->update(
                 array(
                     'trial_attended_finder' => $data['trial_attended_finder'],
