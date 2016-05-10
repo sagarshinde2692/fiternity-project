@@ -904,8 +904,14 @@ if (!function_exists('get_service_category_synonyms')) {
         'yoga trainer'=>'personal trainers',
         'anu chariya'=>'personal trainers'
         );
-
-        return $synonyms_list[$service_category];
+        
+        if(array_key_exists($service_category, $synonyms_list)){
+             return $synonyms_list[$service_category];
+        }
+        else{
+            return '';
+        }
+       
 }
 }
 
