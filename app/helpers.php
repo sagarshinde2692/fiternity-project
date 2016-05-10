@@ -612,8 +612,14 @@ if (!function_exists(('evalBaseCategoryScore'))){
             $service_level_data['day'] = array();
             $service_level_data['start'] = array();
             $service_level_data['end'] = array();
+            $service_cat = '';
+            $service_cat_sub ='';
+            if($data['category']['name'] !== 'healthy tiffins' )
+            {
             $service_cat = get_service_category_synonyms(strtolower($serv['category']['name']));
             $service_cat_sub = get_service_category_synonyms(strtolower($serv['subcategory']['name']));
+            }
+           
             array_push($service_level_data['service_category_exact'], $serv['category']['name']);
             array_push($service_level_data['service_category_exact'], $serv['subcategory']['name']);
             array_push($service_level_data['service_category_synonyms'], $service_cat);
