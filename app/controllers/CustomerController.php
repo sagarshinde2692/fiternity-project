@@ -1203,7 +1203,7 @@ public function getUpcomingTrials(){
 
 	$data = array();
 
-	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('going_status','<>',2)->where('booktrial_type','auto')->orderBy('schedule_date_time', 'desc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address')->first();
+	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('going_status','!=',2)->where('booktrial_type','auto')->orderBy('schedule_date_time', 'desc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address')->first();
 
 	$resp 	= 	array('status' => 400,'data' => $data);
 
