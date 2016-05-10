@@ -16,6 +16,7 @@ use App\Services\Ozonetelcallssummary as Ozonetelcallsssummary;
 use App\Services\Reviewssummary as Reviewssummary;
 use App\Services\Statisticssummary as Statisticssummary;
 use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Mailers\FinderMailer as FinderMailer;
 
 
 // use \Order;
@@ -35,6 +36,7 @@ class VendorpanelController extends BaseController
     protected $reviewssummary;
     protected $statisticssummary;
     protected $customermailer;
+    protected $findermailer;
 
 
 
@@ -46,7 +48,8 @@ class VendorpanelController extends BaseController
         Ozonetelcallsssummary $ozonetelcallsssummary,
         Reviewssummary $reviewssummary,
         Statisticssummary $statisticssummary,
-        CustomerMailer $customermailer
+        CustomerMailer $customermailer,
+        FinderMailer $findermailer
     )
     {
 
@@ -57,6 +60,7 @@ class VendorpanelController extends BaseController
         $this->reviewssummary = $reviewssummary;
         $this->statisticssummary = $statisticssummary;
         $this->customermailer = $customermailer;
+        $this->findermailer = $findermailer;
     }
 
 
@@ -934,8 +938,7 @@ class VendorpanelController extends BaseController
             "contact",
             "finder_vcc_email",
             "finder_vcc_mobile",
-            "lat",
-            "lon",
+            "landmark",
             "facilities"
         );
 
@@ -946,6 +949,7 @@ class VendorpanelController extends BaseController
             "categorytags",
             "location_id",
             "locationtags",
+            "trial_details"
         );
 
         $data_existing = $req_data['existing'];
@@ -957,23 +961,23 @@ class VendorpanelController extends BaseController
         // Get Visibilty of Directly editable fields by vendor.....
         $visibility_direct = array_only($req_visibility['new'], $directly_editable_fields);
 
-        // Remove relational fields.....
-        $facilities = array_pull($data_direct, 'facilities');
-
         // Get Finder....
-        $finder = Finder::where('_id', '=', intval($finder_id))->get()->first();
+        $finder = Finder::where('_id', '=', intval($finder_id))->with('location')->get()->first();
 
         // Update non-relational fields.....
-        $finder->update($data_direct);
+        $relationalKeys = ['facilities'];
+        $finder->update(array_except($data_direct, $relationalKeys));
 
         // Update relational fields.....
-        $finder->facilities()->attach($facilities);
+        if(isset($data_direct['facilities']) && is_array($data_direct['facilities'])){
+            $finder->facilities()->sync($data_direct['facilities']);
+        }
 
         // Get fields which needs fitternity approval to get updated.....
         $data_requested = array_only($req_data['new'], $fitternity_intervention_editable_fields);
 
         // Get visibilty of fields which needs fitternity approval to get updated.....
-        $visibilty_requested = array_only($req_visibility['new'], $fitternity_intervention_editable_fields);
+        $visibility_requested = array_only($req_visibility['new'], $fitternity_intervention_editable_fields);
 
         //Make data object for request....
         $data = array(
@@ -986,7 +990,7 @@ class VendorpanelController extends BaseController
         $visibility = array(
             "existing"  =>$visibility_existing,
             "direct"    =>$visibility_direct,
-            "requested" =>$visibilty_requested
+            "requested" =>$visibility_requested
         );
 
         // Cancel already pending request.......
@@ -1002,7 +1006,74 @@ class VendorpanelController extends BaseController
             'finder_id' => intval($finder_id),
             'approval_status' => 'pending'
         ]);
-        
+
+        // Email to vendor............
+
+        $temp_direct =  array_diff(array_dot($visibility_direct),array_dot($visibility_existing));
+        $temp_requested =  array_diff(array_dot($visibility_requested),array_dot($visibility_existing));
+
+        $direct_data_email = array();
+        $requested_data_email = array();
+
+        foreach($temp_direct as $key => $value){
+
+            $value = ucwords($value);
+            $key_parts = explode('.', $key);
+
+            switch($key_parts[0]){
+
+                case 'facilities':
+                    $direct_data_email['Facilities'] = isset($direct_data_email['Facilities']) ? $direct_data_email['Facilities']. ', '.$value : $value;
+                    break;
+                case 'finder_vcc_email':
+                    $direct_data_email['Email'] = isset($direct_data_email['Email']) ? $direct_data_email['Email']. ', '.$value : $value;
+                    break;
+                case 'finder_vcc_mobile':
+                    $direct_data_email['Mobile'] = isset($direct_data_email['Mobile']) ? $direct_data_email['Mobile']. ', '.$value : $value;
+                    break;
+                default:
+                    isset($key_parts[1]) ? $direct_data_email[ucwords($key_parts[1])] = $value : $direct_data_email[ucwords($key_parts[0])] = $value;
+                    break;
+
+            }
+        }
+
+        foreach($temp_requested as $key => $value){
+
+            $value = ucwords($value);
+            $key_parts = explode('.', $key);
+
+            switch($key_parts[0]){
+
+                case 'offerings':
+                    $requested_data_email['Offerings'] = isset($requested_data_email['Offerings']) ? $requested_data_email['Offerings']. ', '.$value : $value;
+                    break;
+                case 'categorytags':
+                    $requested_data_email['Categorytags'] = isset($requested_data_email['Categorytags']) ? $requested_data_email['Categorytags']. ', '.$value : $value;
+                    break;
+                case 'locationtags':
+                    $requested_data_email['Locationtags'] = isset($requested_data_email['Locationtags']) ? $requested_data_email['Locationtags']. ', '.$value : $value;
+                    break;
+                default:
+                    isset($key_parts[1]) ? $requested_data_email[ucwords($key_parts[1])] = $value : $requested_data_email[ucwords($key_parts[0])] = $value;
+                    break;
+
+            }
+        }
+
+        $template_data = array(
+            'finder_vcc_email' => $finder['finder_vcc_email'],
+            'finder_slug' => $finder['slug'],
+            'finder_name' => $finder['title'],
+            'location_name' => $finder['location']['name'],
+            'direct_data_email' => $direct_data_email,
+            'requested_data_email' => $requested_data_email
+        );
+
+//        return $template_data;
+        $this->findermailer->VendorEmailOnProfileEditRequest($template_data);
+        return $this->findermailer->RMEmailOnProfileEditRequest($template_data);
+
         return Response::json($result, 200);
     }
 
