@@ -29,7 +29,7 @@ class OrderController extends \BaseController {
 		$this->findermailer		    =	$findermailer;
 		$this->findersms 			=	$findersms;
 
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','healthytiffintrail','healthytiffinmembership');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership');
 	}
 
 
@@ -136,7 +136,7 @@ class OrderController extends \BaseController {
 				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
-				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
+				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
 					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 				}
 			} 
@@ -145,11 +145,11 @@ class OrderController extends \BaseController {
 			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
-			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
+			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
-			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type != "wonderise"){
+			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
 
 				$preferred_starting_date = $order->preferred_starting_date;
 				$after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);

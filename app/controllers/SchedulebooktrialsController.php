@@ -2839,4 +2839,39 @@ class SchedulebooktrialsController extends \BaseController {
         return $google_pin;
     }
 
+    public function feedbackFromCustomer(){
+
+        $data = Input::json()->all();
+        if(empty($data['customer_id'])){
+            $resp   =   array('status' => 400,'message' => "Data Missing - customer_id");
+            return  Response::json($resp, 400);
+        }
+        if(empty($data['finder_id'])){
+            $resp   =   array('status' => 400,'message' => "Data Missing - finder_id");
+            return  Response::json($resp, 400);
+        }
+        if(empty($data['booktrial_id'])){
+            $resp   =   array('status' => 400,'message' => "Data Missing - booktrial_id");
+            return  Response::json($resp, 400);
+        }
+        if(empty($data['service_id'])){
+            $resp   =   array('status' => 400,'message' => "Data Missing - service_id");
+            return  Response::json($resp, 400);
+        }
+        if(empty($data['feedback'])){
+            $resp   =   array('status' => 400,'message' => "Data Missing - feedback");
+            return  Response::json($resp, 400);
+        }
+        $feedback = array(
+            'customer_id'                  =>      Input::json()->get('customer_id'), 
+            'finder_id'                 =>      Input::json()->get('finder_id'), 
+            'booktrial_id'                 =>      Input::json()->get('booktrial_id'),
+            'service_id'                =>      Input::json()->get('service_id'),
+            'feedback'              =>      Input::json()->get('feedback'),
+            );
+        $feed = Feedback::create($feedback);
+        $resp   =   array('status' => 200,'message' => "Feedback recieved", 'feedback' => $feed);
+        return Response::json($resp);
+    }
+
 }

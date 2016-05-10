@@ -1009,7 +1009,7 @@ class CustomerController extends \BaseController {
 		$size 				=	($size != '') ? intval($size) : 10;
 
 		$orders 			=  	[];
-		$ordersrs 			= 	Order::where('customer_email','=',$customer_email)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$ordersrs 			= 	Order::where('customer_email','=',$customer_email)->where('type','memberships')->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
 		foreach ($ordersrs as $key => $value) {
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
@@ -1114,7 +1114,7 @@ public function getAllOrders($offset = 0, $limit = 10){
 
 	$orders = array();
 
-	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->where(function($query){$query->orWhere('status',"1")->orWhere('order_action','bought');})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+	$orders 			= 	Order::where('customer_email',$decoded->customer->email)->where(function($query){$query->orWhere('status',"1")->orWhere('order_action','bought');})->where('type','memberships')->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 	$response 		= 	['status' => 200, 'orders' => $orders,  'message' => 'List for orders'];
 
@@ -1203,7 +1203,7 @@ public function getUpcomingTrials(){
 
 	$data = array();
 
-	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('booktrial_type','auto')->orderBy('schedule_date_time', 'desc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address')->first();
+	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('going_status','<>',2)->where('booktrial_type','auto')->orderBy('schedule_date_time', 'desc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address')->first();
 
 	$resp 	= 	array('status' => 400,'data' => $data);
 
