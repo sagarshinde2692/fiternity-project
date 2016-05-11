@@ -697,13 +697,13 @@ public function getRankedFinderResultsAppv2()
                 "filtered": {
                     "filter": {"bool": {"must": [
                     {"range": {
-                        "start": {
+                        "trials.start": {
                           "gte": '.$trial_time_from.'
                       }
                   }},
                   {
                     "range": {
-                      "end": {
+                      "trials.end": {
                         "lte": '.$trial_time_to.'
                     }
                 }
