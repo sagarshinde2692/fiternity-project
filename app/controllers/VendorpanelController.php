@@ -939,7 +939,8 @@ class VendorpanelController extends BaseController
             "finder_vcc_email",
             "finder_vcc_mobile",
             "landmark",
-            "facilities"
+            "facilities",
+            "photos"
         );
 
         $fitternity_intervention_editable_fields = array(
@@ -1031,12 +1032,36 @@ class VendorpanelController extends BaseController
                 case 'finder_vcc_mobile':
                     $direct_data_email['Mobile'] = isset($direct_data_email['Mobile']) ? $direct_data_email['Mobile']. ', '.$value : $value;
                     break;
+                case 'photos':
+                        $photos = ucwords($key_parts[0]);
+                        $position = $key_parts[1];
+                        $nested_key = $key_parts[2];
+                        if(!isset($direct_data_email[$photos][$position])){
+                            $direct_data_email[$photos][$position] = array();
+                        }
+                        $direct_data_email[$photos][$position] = array_add($direct_data_email[$photos][$position], $nested_key, $value);
+                        break;
                 default:
                     isset($key_parts[1]) ? $direct_data_email[ucwords($key_parts[1])] = $value : $direct_data_email[ucwords($key_parts[0])] = $value;
                     break;
 
             }
         }
+
+//        foreach ($direct_data_email as $key => $value){
+//            if($key === 'Photos'){
+//                foreach ($value as $k => $v){
+//                    echo $v['alt'];
+////                    echo $v['url'];
+////                    echo $v['caption'];
+////                    echo $direct_data_email[$key]['order'];
+////                    echo $value['url'];
+//                }
+//            }
+//
+//        }
+//        exit();
+
 
         foreach($temp_requested as $key => $value){
 
