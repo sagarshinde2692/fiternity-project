@@ -209,6 +209,7 @@ Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexse
 Route::get('rollingbuildfindersearch', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
 Route::get('rollingbuildserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
+Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
