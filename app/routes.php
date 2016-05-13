@@ -589,6 +589,7 @@ Route::post('search/getautosuggestresults1', 'GlobalSearchController@newglobalse
 /*******************  CleanUP API ************************************************/
 
 Route::get('movepostnatal', 'DebugController@movepostnatal');
+Route::get('manualtrialdisable', 'DebugController@manualtrialdisable');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
