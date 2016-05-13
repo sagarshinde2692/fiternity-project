@@ -1008,10 +1008,11 @@ class VendorpanelController extends BaseController
             'approval_status' => 'pending'
         ]);
 
-        // Email to vendor............
 
+        // Modify data to display only modified fields in emails............
         $temp_direct =  array_diff(array_dot($visibility_direct),array_dot($visibility_existing));
         $temp_requested =  array_diff(array_dot($visibility_requested),array_dot($visibility_existing));
+
 
         $direct_data_email = array();
         $requested_data_email = array();
@@ -1033,35 +1034,21 @@ class VendorpanelController extends BaseController
                     $direct_data_email['Mobile'] = isset($direct_data_email['Mobile']) ? $direct_data_email['Mobile']. ', '.$value : $value;
                     break;
                 case 'photos':
-                        $photos = ucwords($key_parts[0]);
                         $position = $key_parts[1];
                         $nested_key = $key_parts[2];
-                        if(!isset($direct_data_email[$photos][$position])){
-                            $direct_data_email[$photos][$position] = array();
+
+                        if(!isset($arr_photos)){
+                            $arr_photos = array();
                         }
-                        $direct_data_email[$photos][$position] = array_add($direct_data_email[$photos][$position], $nested_key, $value);
-                        break;
+                        $arr_photos[$position][$nested_key] = $value;
+                    break;
                 default:
                     isset($key_parts[1]) ? $direct_data_email[ucwords($key_parts[1])] = $value : $direct_data_email[ucwords($key_parts[0])] = $value;
                     break;
 
             }
         }
-
-//        foreach ($direct_data_email as $key => $value){
-//            if($key === 'Photos'){
-//                foreach ($value as $k => $v){
-//                    echo $v['alt'];
-////                    echo $v['url'];
-////                    echo $v['caption'];
-////                    echo $direct_data_email[$key]['order'];
-////                    echo $value['url'];
-//                }
-//            }
-//
-//        }
-//        exit();
-
+        isset($arr_photos) ? $direct_data_email['Photos'] = $arr_photos : null;
 
         foreach($temp_requested as $key => $value){
 
@@ -1096,10 +1083,10 @@ class VendorpanelController extends BaseController
         );
 
 //        return $template_data;
+
+        // Email to vendor............
         $this->findermailer->VendorEmailOnProfileEditRequest($template_data);
         return $this->findermailer->RMEmailOnProfileEditRequest($template_data);
-
-        return Response::json($result, 200);
     }
 
     public function reviewReplyByVendor($finder_id, $review_id)
