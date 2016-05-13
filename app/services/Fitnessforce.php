@@ -116,4 +116,68 @@ Class Fitnessforce {
 
     }
 
+    public function updateAppointment ($booktrial){
+
+        $json = [];
+        $json['authenticationkey'] = $booktrial->finder['fitnessforce_key'];
+        $json['memberid'] = $booktrial->fitness_force_appointment['memberid'];
+        $json['appointmentid'] = $booktrial->fitness_force_appointment['appointmentid'];
+        $json['appointmentdate'] = date('d-M-Y',strtotime($booktrial->schedule_date_time));
+        $json['starttime'] = $booktrial->schedule_slot_start_time;
+        $json['endtime'] = $booktrial->schedule_slot_end_time;
+        $json['reason'] = 'updated by customer';
+
+        try {
+            $response = json_decode($this->client->put('Appointment',['json'=>$json])->getBody()->getContents());
+            $return  = ['status'=>200,
+                        'data'=>(array) $response->success[0]
+            ];
+            return $return;
+        }catch (RequestException $e) {
+            $responce = $e->getResponse();
+            $error = [  'status'=>$responce->getStatusCode(),
+                        'reason'=>$responce->getReasonPhrase()
+            ];
+
+            return $error;
+        }catch (Exception $e) {
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function cancelAppointment($booktrial){
+
+        $json = [];
+        $json['authenticationkey'] = $booktrial->finder['fitnessforce_key'];
+        $json['memberid'] = $booktrial->fitness_force_appointment['memberid'];
+        $json['appointmentid'] = $booktrial->fitness_force_appointment['appointmentid'];
+        $json['reason'] = 'cancelled by customer';
+
+        try {
+            $response = json_decode($this->client->delete('Appointment',['json'=>$json])->getBody()->getContents());
+            $return  = ['status'=>200,
+                        'data'=>(array) $response->success[0]
+            ];
+            return $return;
+        }catch (RequestException $e) {
+            $responce = $e->getResponse();
+            $error = [  'status'=>$responce->getStatusCode(),
+                        'reason'=>$responce->getReasonPhrase()
+            ];
+
+            return $error;
+        }catch (Exception $e) {
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+    }
+
 }

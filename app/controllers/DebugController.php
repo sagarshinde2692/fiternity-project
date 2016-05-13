@@ -2257,6 +2257,7 @@ public function testEmail(){
 
 	}
 
+
 	public function manualtrialdisable(){
 
 		$yes_vendors = array(
@@ -2358,4 +2359,53 @@ public function testEmail(){
 		}
 
 	}
+
+	public function renewalSmsStatus(){
+
+		$total_sms = Order::where('customer_sms_renewal','exists',true)->count();
+
+		$match = array();
+
+        $orderStatus = Order::raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            $match['$match']['missedcall_renew_status']['$exists'] = true;
+
+            $aggregate[] = $match;
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'status' => '$missedcall_renew_status'
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        $request = array();
+
+        $request['total_sms'] = $total_sms;
+
+        if(isset($orderStatus['result'])){
+
+	        foreach ($orderStatus['result'] as $key => $value) {
+
+	            $request[$value['_id']['missedcall_renew_status']] = $value['count'];
+
+	        }
+	    }
+
+       	echo "<pre>";print_r($request);exit;
+
+    }
+
 }

@@ -118,7 +118,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 				= 	strtotime($date);
         $weekday 				= 	strtolower(date( "l", $timestamp));
 
-        $items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
@@ -2166,7 +2166,13 @@ class SchedulebooktrialsController extends \BaseController {
                 if($old_going_status == 6){
                     $this->bookTrialFintnessForce ($booktrial,$finder);
                 }elseif($old_schedule_date != $booktrial->schedule_date || $old_schedule_slot_start_time != $booktrial->schedule_slot_start_time || $old_schedule_slot_start_time != $booktrial->schedule_slot_end_time && isset($booktrial->fitness_force_appointment['appointmentbooktrialid']) && $booktrial->fitness_force_appointment['appointmentid'] != ''){
-                    $this->updateBookTrialFintnessForce($id);
+
+                	try {
+                        $this->updateBookTrialFintnessForce($id);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+  
                 }
             }
 
@@ -2395,7 +2401,12 @@ class SchedulebooktrialsController extends \BaseController {
 
             //hit fitness force api to cancel trial
             if(isset($booktrial->fitness_force_appointment['appointmentid']) && $booktrial->fitness_force_appointment['appointmentid'] != ''){
-                $trialbooked = $this->cancelBookTrialFintnessForce($id);
+
+            	try {
+                   	$this->cancelBookTrialFintnessForce($id);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }      
             }
 
             if((isset($booktrial->customer_emailqueuedids['before12hour']) && $booktrial->customer_emailqueuedids['before12hour'] != '')){
