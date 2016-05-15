@@ -29,8 +29,8 @@ class KYUController extends \BaseController
     $postfields_data = json_encode($event);             
     $posturl = "http://fitternityelk:admin@52.74.67.151:8060/"."kyulogs/logs/" ;      
     $request = array('url' => $posturl, 'port' => 8060, 'method' => 'POST', 'postfields' => $postfields_data );
-    es_curl_request($request);        
-    echo "";
+    $res = es_curl_request($request);        
+    echo json_encode($res);
 
   }
 
@@ -331,7 +331,40 @@ public function getfacebookUTM(){
   //  if($from_size < 3000)
   // {
     
-    $query = '{ 
+  //   $query = '{ 
+  //     "from":'.$from_size.',
+  //     "size":5000,  
+  //     "query": {
+  //       "filtered": {
+  //         "filter": {
+  //           "bool": {
+  //             "must": [
+  //             {
+  //              "terms": {
+  //                "event_id": [
+  //                "bookingconfirm",
+  //                "requestcallback",
+  //                "membershipbuy",
+  //                "callback"
+  //                ]
+  //              }
+  //            },             
+  //           {
+  //             "range": {
+  //               "timestamp": {
+  //                 "gte": "'.$fromdate.'",
+  //                 "lte": "'.$todate.'"
+  //               }
+  //             }
+  //           }
+  //           ]
+  //         }
+  //       }
+  //     }
+  //   }
+  // }';
+
+   $query = '{ 
       "from":'.$from_size.',
       "size":5000,  
       "query": {
