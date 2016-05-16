@@ -1755,4 +1755,5 @@ Route::get('finderstatus',  array('as' => 'debug.finderstatus','uses' => 'DebugC
 Route::get('findershaveratecardwithnoservices',  array('as' => 'debug.findershaveratecardwithnoservices','uses' => 'DebugController@findersHaveRatecardWithNoServices'));
 Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices');
 Route::get('renewalsmsstatus', 'DebugController@renewalSmsStatus');
+Route::get('deleteid', 'DebugController@deleteId');
 

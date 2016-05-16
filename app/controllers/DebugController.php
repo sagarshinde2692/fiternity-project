@@ -11,6 +11,7 @@
 use App\Mailers\FinderMailer as FinderMailer;
 //use Queue;
 use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Services\Sidekiq as Sidekiq;
 
 class DebugController extends \BaseController {
 
@@ -2408,4 +2409,41 @@ public function testEmail(){
 
     }
 
+
+    public function deleteId(){
+
+    	$orders = Order::where('type','!=','memberships')->where(function($query){$query->orwhere('customer_sms_after3days','exists',true)->orwhere('customer_email_after10days','exists',true)->orWhere('customer_email_renewal','exists',true)->orWhere('customer_sms_renewal','exists',true);})->get(array('_id','customer_sms_after3days','customer_email_after10days','customer_email_renewal','customer_sms_renewal'));
+
+    	if(!empty($orders)){
+
+    		$orders = $orders->toArray();
+    		$id = array();
+    		$array = array('customer_sms_after3days','customer_email_after10days','customer_email_renewal','customer_sms_renewal');
+
+    		foreach ($orders as $value) {
+
+    			foreach ($array as $key) {
+
+    				if(isset($value[$key]) && $value[$key] != "")
+    				{
+    					$id[] = $value[$key];
+    				}
+    			}
+    		}
+    	}
+
+    	$sidekiq = new Sidekiq();
+
+    	if(!empty($id)){
+
+    		$sidekiq->delete($id);
+    		echo "<pre>";print_r($id);
+
+    	}else{
+
+    		echo "no record found";
+    	}
+
+    }
+    
 }
