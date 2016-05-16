@@ -544,7 +544,7 @@ class HomeController extends BaseController {
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-			->get(array('_id','slug','title','categorytags','category_id','category','location_id','location','city_id','city','contact','services','lat','lon','price_range','average_rating'))->toArray();;
+			->get(array('_id','slug','title','categorytags','category_id','category','location_id','location','city_id','city','contact','services','lat','lon','price_range','average_rating','custom_city'))->toArray();;
 
 		$finderArr = [];
 		foreach ($finders as $key => $value) {
