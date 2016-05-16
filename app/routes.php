@@ -209,6 +209,7 @@ Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexse
 Route::get('rollingbuildfindersearch', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
 Route::get('rollingbuildserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
+Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -588,6 +589,7 @@ Route::post('search/getautosuggestresults1', 'GlobalSearchController@newglobalse
 /*******************  CleanUP API ************************************************/
 
 Route::get('movepostnatal', 'DebugController@movepostnatal');
+Route::get('manualtrialdisable', 'DebugController@manualtrialdisable');
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################

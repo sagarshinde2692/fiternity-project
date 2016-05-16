@@ -2000,9 +2000,9 @@ public function testEmail(){
 		if($finders){
 			foreach ($finders as $value) {
 				if(count($value['services']) < 1) {
-                    $commercial_type_arr    = array( 0 => 'free', 1 => 'paid', 2 => 'freespecial', 3 => 'cos');
-                    $business_type_arr      = array( 0 => 'noninfrastructure', 1 => 'infrastructure');
-                    $finder_type_arr        = array( 0 => 'free', 1 => 'paid');
+					$commercial_type_arr    = array( 0 => 'free', 1 => 'paid', 2 => 'freespecial', 3 => 'cos');
+					$business_type_arr      = array( 0 => 'noninfrastructure', 1 => 'infrastructure');
+					$finder_type_arr        = array( 0 => 'free', 1 => 'paid');
 					$commercial_type 	    = $commercial_type_arr[intval($value['commercial_type'])];
 					$business_type 		    = $business_type_arr[intval($value['business_type'])];
 					$vendor_type 		    = $finder_type_arr[intval($value['finder_type'])];
@@ -2224,24 +2224,24 @@ public function testEmail(){
 
 				}
 				$cityname = '';
-						switch ($city) {
-							case 1:
-							$cityname = 'mumbai';
-							break;
-							case 2:
-							$cityname = 'pune';
-							break;
-							case 3:
-							$cityname = 'banglore';
-							break;
-							case 4:
-							$cityname = 'delhi';
-							break;
-							case 8:
-							$cityname = 'gurgaon';
-							break;
-							
-						}
+				switch ($city) {
+					case 1:
+					$cityname = 'mumbai';
+					break;
+					case 2:
+					$cityname = 'pune';
+					break;
+					case 3:
+					$cityname = 'banglore';
+					break;
+					case 4:
+					$cityname = 'delhi';
+					break;
+					case 8:
+					$cityname = 'gurgaon';
+					break;
+
+				}
 				$finder_infrastructuretype = $finder['business_type'];
 				$fields = array($finder['_id'],$finder['title'],$average_monthly,$average_monthly_tag, $finder_commercial_type,$finder_infrastructuretype,$cityname);
 				fputcsv($fp, $fields);
@@ -2256,4 +2256,156 @@ public function testEmail(){
 		return 'done';
 
 	}
+
+
+	public function manualtrialdisable(){
+
+		$yes_vendors = array(
+			328,569,731,752,825,987,988,1293,1295,1505,1770,1938,6299,7449,7494,7544,
+			7585,
+			7603,
+			7616,
+			7643,
+			7651,
+			7663,
+			7716,
+			7722,
+			7746,
+			7771,
+			7792,
+			7812,
+			7818,
+			7833,
+			7840,
+			7847,
+			7868,
+			7880,
+			7897,
+			7918,
+			7920,
+			7922,
+			7938,
+			7943,
+			8097,
+			8098,
+			8102
+			);
+
+		$no_vendors = array(
+			6656,
+			7458,
+			7459,
+			7513,
+			7521,
+			7523,
+			7524,
+			7553,
+			7571,
+			7586,
+			7612,
+			7641,
+			7649,
+			7657,
+			7668,
+			7757,
+			7786,
+			7805,
+			7855,
+			7867,
+			7870,
+			7871,
+			7872,
+			7874,
+			7879,
+			7883,
+			7890,
+			7895,
+			7898,
+			7909,
+			7913,
+			7915,
+			7933,
+			7937,
+			7940,
+			7941,
+			7944,
+			7947,
+			7954,
+			7992,
+			8052,
+			8058,
+			8077,
+			8083,
+			8087,
+			8093,
+			8107
+			);
+
+
+		$yes_finders = Finder::whereIn('_id', $yes_vendors)->where('status', '1')->get();
+
+		$no_finders = Finder::whereIn('_id', $no_vendors)->where('status','1')->get();
+
+		foreach ($yes_finders as $key => $finder) {
+				$finderdata = array();
+				array_set($finderdata, 'manual_trial_enable', '1');
+				$finder->update($finderdata);
+		}
+
+		foreach ($no_finders as $key => $finder) {
+				$finderdata = array();
+				array_set($finderdata, 'manual_trial_enable', '0');
+				$finder->update($finderdata);
+		}
+
+	}
+
+	public function renewalSmsStatus(){
+
+		$total_sms = Order::where('customer_sms_renewal','exists',true)->count();
+
+		$match = array();
+
+        $orderStatus = Order::raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            $match['$match']['missedcall_renew_status']['$exists'] = true;
+
+            $aggregate[] = $match;
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => array(
+                                'status' => '$missedcall_renew_status'
+                            ),
+                            'count' => array(
+                                '$sum' => 1
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+        $request = array();
+
+        $request['total_sms'] = $total_sms;
+
+        if(isset($orderStatus['result'])){
+
+	        foreach ($orderStatus['result'] as $key => $value) {
+
+	            $request[$value['_id']['missedcall_renew_status']] = $value['count'];
+
+	        }
+	    }
+
+       	echo "<pre>";print_r($request);exit;
+
+    }
+
 }
