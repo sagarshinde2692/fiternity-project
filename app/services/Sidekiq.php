@@ -68,7 +68,10 @@ Class Sidekiq {
 
         if($id){
 
-            $id = array($id);
+            if(!is_array($id)){
+                $id = array($id);
+            }
+            
             $type = 'delete';
             $route = $this->route_type[$type];
             $payload = array('jid'=>$id);

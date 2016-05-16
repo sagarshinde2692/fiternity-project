@@ -62,39 +62,6 @@ class OrderController extends \BaseController {
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
-			/*array_set($data, 'batch_time', '');
-
-			if(isset($data['batches']) && $data['batches'] != ""){
-				if(is_array($data['batches'])){
-					$data['batches'] = $data['batches'];
-				}else{
-					$data['batches'] = json_decode($data['batches'],true);
-				}
-
-				foreach ($data['batches'] as $key => $value) {
-
-					if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
-	    				$data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
-	    				break;
-	    			}
-				}
-			}else{
-
-				$order_array = $order->toArray();
-
-				if(isset($order_array['batches']) && $order_array['batches'] != ""){
-
-					foreach ($data['batches'] as $key => $value) {
-
-						if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
-		    				$data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
-		    				break;
-		    			}
-					}
-
-				}
-
-			}*/
 
 			$orderdata 	=	$order->update($data);
 
@@ -133,7 +100,10 @@ class OrderController extends \BaseController {
 			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
-				$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+
+				if(!in_array($finder->category_id, $abundant_category)){
+					$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+				}
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
 				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
@@ -142,14 +112,16 @@ class OrderController extends \BaseController {
 			} 
 			
 			//SEND payment gateway SMS TO CUSTOMER and vendor
-			$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
+			if(!in_array($finder->category_id, $abundant_category)){
+				$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
+			}
 
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
 			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
-			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
+			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships"){
 
 				$preferred_starting_date = $order->preferred_starting_date;
 				$after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
@@ -166,87 +138,6 @@ class OrderController extends \BaseController {
 					if($category){
 						$category_slug = $category->slug;
 					}
-				}
-
-				if(isset($order->ratecard_id) || isset($order->duration_day)){
-
-					$validity = 0;
-
-					if(isset($order->ratecard_id) && $order->ratecard_id != ""){
-
-						$ratecard = Ratecard::find($order->ratecard_id);
-
-						if(isset($ratecard->validity) && $ratecard->validity != ""){
-							$validity = (int)$ratecard->validity;
-						}	
-					}
-
-					if(isset($order->duration_day) && $order->duration_day != ""){
-						
-						$validity = (int)$order->duration_day;
-					}
-					
-					if($validity >= 30){
-
-						if($validity >= 30 && $validity < 90){
-
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 7);
-						}
-
-						if($validity >= 90 && $validity < 180){
-
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 15);
-						}
-
-						if($validity >= 180 && $validity < 360){
-
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
-						}
-
-						if($validity >= 360){
-
-							$renewal_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * $validity)->subMinutes(60 * 24 * 30);
-						}
-
-						$order_data = $order->toArray();
-
-						$newOrder  = Order::where('_id','!=',(int) $order_data['_id'])->where('customer_phone','LIKE','%'.substr($order_data['customer_phone'], -8).'%')->where('missedcall_renew_batch','exists',true)->orderBy('_id','desc')->first();
-						if(!empty($newOrder)){
-							$batch = $newOrder->missedcall_renew_batch + 1;
-						}else{
-							$batch = 1;
-						}
-
-						$order->missedcall_renew_batch = $batch;
-
-						$missedcall_no = Ozonetelmissedcallno::where('batch',$batch)->where('for','OrderRenewal')->get()->toArray();
-
-						if(empty($missedcall_no)){
-
-							$missedcall_no = Ozonetelmissedcallno::where('batch',1)->where('for','OrderRenewal')->get()->toArray();
-						}
-
-						foreach ($missedcall_no as $key => $value) {
-
-							switch ($value['type']) {
-								case 'renew': $renew = $value['number'];break;
-								case 'alreadyextended': $alreadyextended = $value['number'];break;
-								case 'explore': $explore = $value['number'];break;
-							}
-
-						}
-
-						$order_data['missedcall1'] = $renew;
-						$order_data['missedcall2'] = $alreadyextended;
-						$order_data['missedcall3'] = $explore;
-
-						$order_data['category_array'] = $this->getCategoryImage($category_slug);
-
-						$order->customer_email_renewal = $this->customermailer->orderRenewalMissedcall($order_data,$renewal_date);
-						$order->customer_sms_renewal = $this->customersms->orderRenewalMissedcall($order_data,$renewal_date);
-
-					}
-
 				}
 
 				$order_data = $order->toArray();
