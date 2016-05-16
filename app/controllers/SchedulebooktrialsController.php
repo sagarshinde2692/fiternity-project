@@ -118,7 +118,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 				= 	strtotime($date);
         $weekday 				= 	strtolower(date( "l", $timestamp));
 
-        $items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $items = Service::where('status', "1")->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
