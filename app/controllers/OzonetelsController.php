@@ -1276,5 +1276,71 @@ class OzonetelsController extends \BaseController {
 
 	}
 
+	public function missedcallSms(){
+
+		try{
+
+			$response = $this->misscall('sms');
+
+			if($response['status'] == 200){
+		
+				$ozonetel_missedcall = $response['ozonetel_missedcall'];
+
+				if($ozonetel_missedcall->customer_number != ''){
+
+					$missed_call_no = Ozonetelmissedcallno::active()->where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->first();
+
+					if($missed_call_no){
+
+						$label = $missed_call_no->label;
+
+						$message = "";
+
+						if(isset($missed_call_no->message) && $missed_call_no->message != ""){
+
+							$message = $missed_call_no->message;
+
+							$data = array();
+
+							$data['label'] = $label;
+							$data['message'] = $message;
+							$data['to'] = $ozonetel_missedcall->cid;
+
+							$update['sms_general'] = $this->customersms->generalSms($data);
+							$update['sms_message'] = $message;
+							$update['label'] = $label;
+						}
+					}
+				
+				}else{
+
+					$update['error_message'] = 'contact number is null';
+				}
+
+				$ozonetel_missedcall->update($update);
+
+				$response = array('status'=>200,'message'=>'success');
+
+			}
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return Response::json($response,$response['status']);
+
+	}
+
 
  }
