@@ -261,7 +261,11 @@ Route::get('/updatemedia/findergallery', function() {
 					}else{
 						$url  = trim($new_url_name);
 					}
-					$finder_gallery     = array('order' => $photo['order'], 'alt' => $photo['alt'], 'caption' => $photo['caption'], 'url' => $url);
+					$order = (isset($photo['order'])) ? $photo['order'] : "";
+					$alt = (isset($photo['alt'])) ? $photo['alt'] : "";
+					$caption = (isset($photo['caption'])) ? $photo['caption'] : "";
+
+					$finder_gallery     = array('order' => $order, 'alt' => $alt, 'caption' => $caption, 'url' => $url);
 					array_push($photoArr, $finder_gallery);
 				}
 			}
