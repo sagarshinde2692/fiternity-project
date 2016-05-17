@@ -254,7 +254,7 @@ Route::get('/updatemedia/findergallery', function() {
 			if(isset($finder->photos) && count($finder->photos) > 0){
 				foreach ($finder->photos as $k => $photo){
 					$old_url_name 		=	 $photo['url'];
-					$new_url_name 		=	pathinfo($old_url_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_url_name, PATHINFO_EXTENSION));
+					$new_url_name 		=	$finder->_id."/".pathinfo($old_url_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_url_name, PATHINFO_EXTENSION));
 					echo $finder->_id." - ".$new_url_name."<br>";
 					if($new_url_name == "."){
 						$url  = '';
@@ -272,7 +272,8 @@ Route::get('/updatemedia/findergallery', function() {
 
 			if(count($photoArr) > 0){
 				$finderData['photos']  = $photoArr;
-				$response = $finder->update($finderData);
+//                print_r($photoArr);exit;
+//				$response = $finder->update($finderData);
 			}
 
 		}
