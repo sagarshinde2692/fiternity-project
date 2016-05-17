@@ -267,7 +267,7 @@ Route::get('/updatemedia/findergallery', function() {
 			}
 
 			if(count($photoArr) > 0){
-				return $finderData['photos']  = $photoArr;
+				$finderData['photos']  = $photoArr;
 				$response = $finder->update($finderData);
 			}
 
