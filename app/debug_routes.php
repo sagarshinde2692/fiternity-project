@@ -244,7 +244,8 @@ Route::get('/updatemedia/finderlogo', function() {
 Route::get('/updatemedia/findergallery', function() {
 
 //    $finders 	= Finder::where('photos', 'exists', true)->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
-	$finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
+//    $finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
+    $finders 	= Finder::orderBy('_id')->lists('_id');
 	foreach ($finders as $key => $item) {
 		$finder 	=	Finder::find(intval($item));
 		if($finder){
@@ -273,7 +274,7 @@ Route::get('/updatemedia/findergallery', function() {
 			if(count($photoArr) > 0){
 				$finderData['photos']  = $photoArr;
 //                print_r($photoArr);exit;
-//				$response = $finder->update($finderData);
+				$response = $finder->update($finderData);
 			}
 
 		}
