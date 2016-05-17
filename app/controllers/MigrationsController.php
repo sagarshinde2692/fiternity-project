@@ -704,7 +704,208 @@ return Response::make(rtrim('averagePriceMumbai.csv', "\n"), 200, $header);
 	}
 
 
+	public function migratedatatomoenagage(){
 
+
+		try{
+
+			$dt1 =new DateTime("2015-05-01 11:14:15.638276");
+
+
+
+			$all_users = Customer::where('created_at', '>', $dt1)->get(array('email'));
+
+			$user_emails_list = array();
+
+			foreach ($all_users as $user) {
+
+			//fetch payment/conversion for each users and push to moengage
+				echo json_encode($user);
+				$bool_exist = array_search($user['email'], $user_emails_list);
+			
+				if($bool_exist !== false){				
+					continue;
+				}
+				array_push($user_emails_list, $user['email']);
+
+			
+
+				$user_trials_booked = Booktrial::where('customer_email', $user['email'])->get();
+
+
+				$capture = Capture::where('customer_email', $user['email'])->get();
+
+
+				$user_reviews_written = Review::where('cust_id', intval($user['_id']))->get();
+
+				$attr_phone = isset($user['contact_no']) ? $user['contact_no'] : 0;
+				$attr_email = isset($user['email']) ? $user['email'] : '';
+				$attr_gender = isset($user['gender']) ? $user['gender'] : '';
+				$attr_name = isset($user['name']) ? $user['name'] : '';
+
+				$create_user_payload = '{
+					"type":"customer",
+					"customer_id" : "'.$user['email'].'",
+					"attributes" : {
+						"name" :"'.$attr_name.'",
+						"phone":'.$attr_phone.',
+						"email": "'.$attr_email.'",
+						"gender" : "'.$attr_gender.'"
+					}
+
+				}';
+
+				//hit moengage to add attributed data for user in moenagage data base
+				$curlrequestor = curl_init();
+				curl_setopt($curlrequestor, CURLOPT_TIMEOUT, 2000);
+				curl_setopt($curlrequestor, CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($curlrequestor, CURLOPT_FORBID_REUSE, 0);
+		
+				curl_setopt($curlrequestor, CURLOPT_CUSTOMREQUEST, 'POST');	
+				curl_setopt($curlrequestor, CURLOPT_URL, 'https:// W7WD7K4O8B2NE3LAI1DTG0LD: W7WD7K4O8B2NE3LAI1DTG0LD@api.moengage.com/v1/customer?app_id=W7WD7K4O8B2NE3LAI1DTG0LD');
+
+				
+				$headers[] = 'Authorization: Basic VzdXRDdLNE84QjJORTNMQUkxRFRHMExEOk01cmtGdDFzM3VGQTgyMWxkYXlWZW9OMQ==';
+				
+				
+				curl_setopt($curlrequestor, CURLOPT_HTTPHEADER, $headers);
+				curl_setopt($curlrequestor, CURLOPT_POSTFIELDS, $create_user_payload);	
+				
+				//$res = curl_exec($curlrequestor);
+				$response = json_decode($res, true);		
+				
+			
+				$user_orders = Order::where('customer_email', $user['email'])->get();
+				$order_actions = '';
+			
+				foreach ($user_orders as $order) {
+					
+					$user_time = strtotime($order['created_at']);
+
+					$current_time = time();
+
+
+					
+
+					$city_id = isset($order['city_id']) ? $order['city_id'] : 0;
+					$phone = isset($order['customer_phone']) ? $order['customer_phone'] : '';
+					$finder_id = isset($order['finder_id']) ? $order['finder_id'] : 0;
+					$finder_name = isset($order['finder_name']) ? $order['findr_name'] : '';
+					$service_id = isset($order['service_id']) ? $order['service_id'] : '';
+					$service_name = isset($order['service_name']) ? $order['service_name'] : '';
+					$type = isset($order['type']) ? $order['type'] : '';
+
+					$customer_orders_payload = '{
+						"action": "paymentsuccess",
+						"attributes": {
+							"email"  : "'.$user['email'].'",
+							"phone"  : "'.$phone.'",
+							"finder_id"  : '.$finder_id.',
+							"finder_name" : "'.$finder_name.'",
+							"service_id" : '.$service_id.',
+							"service_name" : "'.$service_name.'",
+							"type" : "'.$type.'",
+							"city_id" : '.$city_id.'
+						},
+						"platform" : "web",						
+						"user_time" : '.$user_time.',
+						"current_time" : '.$current_time.'
+					},';
+
+					$order_actions = $order_actions.$customer_orders_payload;
+					
+				}
+
+				
+
+				// $trial_book_actions = '';
+
+
+				// foreach ($user_trials_booked as $trial) {
+
+				// 	$user_time = strtotime($trial['created_at']);
+
+				// 	$current_time = time();
+				// 	$city_id = isset($trial['city_id']) ? $trial['city_id'] ? 0;
+				// 	$phone = isset($trial['customer_phone']) ? $trial['customer_phone'] : '';
+				// 	$finder_id = isset($trial['finder_id']) ? $trial['finder_id'] : 0;
+				// 	$finder_name = isset($trial['finder_name']) ? $trial['finder_name'] : '';
+				// 	$service_id = isset($trial['service_id']) ? $trial['service_id'] : '';
+				// 	$service_name = isset($trial['service_name']) ? $trial['service_name'] : '';
+				// 	$type = isset($trial['type']) ? $trial['type'] : '';
+				// 	$type1 = isset($trial['booktrial_type']) ? $trial['booktrial_type'] : '';
+				// 	$schedule_date = isset($trial['schedule_date']) ? $trial['schedule_date'] : '';
+				// 	$schedule_slot = isset($trial['schedule_slot']) ? $trial['schedule_slot'] : '';
+
+
+				// 	$customer_orders_payload = '{
+				// 		"action": "trialsuccess",
+				// 		"attributes": {
+				// 			"email"  : "'.$user['email'].'",
+				// 			"phone"  : "'.$phone.'",
+				// 			"finder_id"  : '.$finder_id.',
+				// 			"finder_name" : "'.$finder_name.'",
+				// 			"service_id" : '.$service_id.',
+				// 			"service_name" : "'.$service_name.'",
+				// 			"type" : "'.$type.'",
+				// 			"city_id" : '.$city_id.',
+				// 			"schedule_slot" : "'.$schedule_slot.'",
+				// 			"schedule_date" : "'.$schedule_date.'",
+				// 			"type1" : "'.$type1.'"
+				// 		},
+				// 		"platform" : "web",						
+				// 		"user_time" : '.$user_time.',
+				// 		"current_time" : '.$current_time.'
+				// 	},';
+
+				// 	$trial_book_actions = $trial_book_actions.$customer_trials_payload;
+
+				// }
+
+
+
+				// //send moengage request to push the transactional data to there database
+
+				// $total_payload = trim($order_actions.$trial_book_actions,',');
+
+				// $request_payload = '{
+				// 	"type": "event",
+				// 	"customer_id": "525689553535239acbfe",
+				// 	"device_id" : "12345",
+				// 	"actions" : [
+				// 	'.$total_payload.'
+				// 	]
+				// }';
+
+
+				// $request = array(
+				// 	'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
+				// 	'port' => 8050,
+				// 	'method' => 'POST',
+				// 	'postfields' => $request_payload
+				// 	);
+
+
+				// $search_results     =   es_curl_request($request);
+
+
+
+
+
+
+
+
+
+
+
+
+		}
+		catch(Exception $e){
+
+			Log::error($e);
+		}
+
+	}
 
 
 
