@@ -564,6 +564,21 @@ Route::post('getglobalsearchclickedmatrix', 'KYUController@getglobalsearchclicke
 Route::post('getdailyvisitors', 'KYUController@getdailyvisitors');
 Route::get('rollingbuildautosearch', 'GlobalPushController@rollingbuildautosuggest');
 
+
+####################################################################################################
+/**********************************Moengage Migration COntroller***********************************/
+
+Route::get('migratedatatomoenagage', 'MigrationsController@migratedatatomoenagage');
+
+
+/********************************Moengage Migration Controller*************************************/
+####################################################################################################
+
+
+
+
+
+
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/
 #####################################################################################################
 
