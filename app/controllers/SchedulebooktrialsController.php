@@ -173,7 +173,8 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 				= 	strtotime($date);
         $weekday 				= 	strtolower(date( "l", $timestamp));
 
-        $items 					= 	Service::where('finder_id', '=', $finderid)->where('status','1')->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','3days_trial'))->toArray();
+        $items 					= 	Service::where('finder_id', '=', $finderid)->where('status','1')->get(array('_id','3days_trial','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
@@ -188,7 +189,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             // echo "<br> count -- ".count($weekdayslots['slots']);
-            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday);
+            $item['3days_trial'] = isset($item['3days_trial']) ? $item['3days_trial'] : "";
+            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, '3days_trial' => $item['3days_trial']);
 
             $slots = array();
             //slots exists
