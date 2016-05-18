@@ -459,8 +459,10 @@ Route::get('ozonetel/paidvendor',  array('as' => 'ozonetel.paidvendor','uses' =>
 Route::get('ozonetel/outboundcallsend/{phone_number}',  array('as' => 'ozonetel.outboundCallSend','uses' => 'OzonetelsController@outboundCallSend'));
 Route::get('ozonetel/outboundcallrecive/{id}',  array('as' => 'ozonetel.outboundCallRecive','uses' => 'OzonetelsController@outboundCallRecive'));
 Route::get('ozonetel/outbound/{id}',  array('as' => 'ozonetel.outbound','uses' => 'OzonetelsController@outbound'));
-Route::get('ozonetel/missedcall/sms',  array('as' => 'ozonetel.sms','uses' => 'OzonetelsController@sms'));
-Route::get('ozonetel/missedcall/smsb',  array('as' => 'ozonetel.smsb','uses' => 'OzonetelsController@smsb'));
+Route::get('ozonetel/missedcall/sms',  array('as' => 'ozonetel.missedcallsms','uses' => 'OzonetelsController@missedcallSms'));
+Route::get('ozonetel/missedcall/smsb',  array('as' => 'ozonetel.missedcallsms','uses' => 'OzonetelsController@missedcallSms'));
+Route::get('ozonetel/missedcallsms',  array('as' => 'ozonetel.missedcallsms','uses' => 'OzonetelsController@missedcallSms'));
+
 Route::get('ozonetel/confirmtrial',  array('as' => 'ozonetel.confirmtrial','uses' => 'OzonetelsController@confirmTrial'));
 Route::get('ozonetel/canceltrial',  array('as' => 'ozonetel.canceltrial','uses' => 'OzonetelsController@cancelTrial'));
 Route::get('ozonetel/rescheduletrial',  array('as' => 'ozonetel.rescheduletrial','uses' => 'OzonetelsController@rescheduleTrial'));

@@ -244,7 +244,8 @@ Route::get('/updatemedia/finderlogo', function() {
 Route::get('/updatemedia/findergallery', function() {
 
 //    $finders 	= Finder::where('photos', 'exists', true)->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
-	$finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
+//    $finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
+    $finders 	= Finder::orderBy('_id')->lists('_id');
 	foreach ($finders as $key => $item) {
 		$finder 	=	Finder::find(intval($item));
 		if($finder){
@@ -254,20 +255,25 @@ Route::get('/updatemedia/findergallery', function() {
 			if(isset($finder->photos) && count($finder->photos) > 0){
 				foreach ($finder->photos as $k => $photo){
 					$old_url_name 		=	 $photo['url'];
-					$new_url_name 		=	pathinfo($old_url_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_url_name, PATHINFO_EXTENSION));
+					$new_url_name 		=	$finder->_id."/".pathinfo($old_url_name, PATHINFO_FILENAME) . '.' . strtolower(pathinfo($old_url_name, PATHINFO_EXTENSION));
 					echo $finder->_id." - ".$new_url_name."<br>";
 					if($new_url_name == "."){
 						$url  = '';
 					}else{
 						$url  = trim($new_url_name);
 					}
-					$finder_gallery     = array('order' => $photo['order'], 'alt' => $photo['alt'], 'caption' => $photo['caption'], 'url' => $url);
+					$order = (isset($photo['order'])) ? $photo['order'] : "";
+					$alt = (isset($photo['alt'])) ? $photo['alt'] : "";
+					$caption = (isset($photo['caption'])) ? $photo['caption'] : "";
+
+					$finder_gallery     = array('order' => $order, 'alt' => $alt, 'caption' => $caption, 'url' => $url);
 					array_push($photoArr, $finder_gallery);
 				}
 			}
 
 			if(count($photoArr) > 0){
-				return $finderData['photos']  = $photoArr;
+				$finderData['photos']  = $photoArr;
+//                print_r($photoArr);exit;
 				$response = $finder->update($finderData);
 			}
 
@@ -1755,4 +1761,5 @@ Route::get('finderstatus',  array('as' => 'debug.finderstatus','uses' => 'DebugC
 Route::get('findershaveratecardwithnoservices',  array('as' => 'debug.findershaveratecardwithnoservices','uses' => 'DebugController@findersHaveRatecardWithNoServices'));
 Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices');
 Route::get('renewalsmsstatus', 'DebugController@renewalSmsStatus');
+Route::get('deleteid', 'DebugController@deleteId');
 

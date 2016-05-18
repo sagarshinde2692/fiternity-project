@@ -784,12 +784,12 @@ class FindersController extends \BaseController {
 
             $message = 'Email Send';
             $resp 	= 	array('status' => 200,'message' => "Email Send");
-            Log::info('Trial Daily Summary Cron For Healthy Tiffin : success',$message);
+            Log::info('Trial Daily Summary Cron For Healthy Tiffin : success');
 
         }catch(Exception $e){
             $message = 'Email Send Fail';
             $resp 	= 	array('status' => 400,'message' => $message);
-            Log::info('Trial Daily Summary Cron  For Healthy Tiffin : fail',$message);
+            Log::info('Trial Daily Summary Cron  For Healthy Tiffin : fail');
         }
 
     }
