@@ -814,6 +814,164 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
+
+
+    public function bookTrialHealthyTiffinFree(){
+
+        $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+        $postdata		=	Input::json()->all();
+
+        if(empty($data['customer_name'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['customer_email'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_email");
+            return Response::json($resp,404);
+        }
+
+        if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+            $resp 	= 	array('status' => 404,'message' => "Invalid Email Id");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['customer_identity'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['customer_phone'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['customer_source'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_source");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['customer_location'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['city_id'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['finder_id'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['finder_name'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_name");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['finder_address'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_address");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['service_id'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['service_name'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
+            return Response::json($resp,404);
+        }
+
+        if(empty($data['type'])){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing Order Type - type");
+            return Response::json($resp,404);
+        }
+
+        if (!in_array($data['type'], ['healthytiffintrail'])) {
+            $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
+            return Response::json($resp,404);
+        }
+
+        if( empty($data['service_duration']) ){
+            $resp 	= 	array('status' => 404,'message' => "Data Missing - service_duration");
+            return Response::json($resp,404);
+        }
+
+        $orderid 			=	Order::max('_id') + 1;
+        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        array_set($data, 'customer_id', intval($customer_id));
+        
+        if(trim(Input::json()->get('finder_id')) != '' ){
+
+            $finder 	                        = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval(Input::json()->get('finder_id')))->first()->toArray();
+
+            $finder_city						=	(isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+            $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+            $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+            $finder_vcc_email					= 	(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+            $finder_vcc_mobile					= 	(isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
+            $finder_poc_for_customer_name		= 	(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
+            $finder_poc_for_customer_no			= 	(isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
+            $show_location_flag 				=   (count($finder['locationtags']) > 1) ? false : true;
+            $share_customer_no					= 	(isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+            $finder_lon							= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+            $finder_lat							= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+            $finder_category_id					= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
+            $finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+
+            array_set($data, 'finder_city', trim($finder_city));
+            array_set($data, 'finder_location', trim($finder_location));
+            array_set($data, 'finder_address', trim($finder_address));
+            array_set($data, 'finder_vcc_email', trim($finder_vcc_email));
+            array_set($data, 'finder_vcc_mobile', trim($finder_vcc_mobile));
+            array_set($data, 'finder_poc_for_customer_name', trim($finder_poc_for_customer_name));
+            array_set($data, 'finder_poc_for_customer_no', trim($finder_poc_for_customer_no));
+            array_set($data, 'show_location_flag', $show_location_flag);
+            array_set($data, 'share_customer_no', $share_customer_no);
+            array_set($data, 'finder_lon', $finder_lon);
+            array_set($data, 'finder_lat', $finder_lat);
+            array_set($data, 'finder_branch', trim($finder_location));
+            array_set($data, 'finder_category_id', $finder_category_id);
+            array_set($data, 'finder_slug', $finder_slug);
+        }
+
+        $code		=	random_numbers(5);
+        array_set($data, 'code', $code);
+        if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+
+            if(trim(Input::json()->get('preferred_starting_date')) != '-'){
+                $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+                $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                array_set($data, 'start_date', $preferred_starting_date);
+                array_set($data, 'preferred_starting_date', $preferred_starting_date);
+            }
+        }
+
+//        return $data;
+
+        $order 				= 	new Order($data);
+        $order->_id 		= 	$orderid;
+        $orderstatus   		= 	$order->save();
+        
+        if($orderstatus){
+            //Send Instant (Email) To Customer & Finder
+            $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinTrial($order->toArray());
+            $sndInstantSmsCustomer			=	$this->customersms->healthyTiffinTrial($order->toArray());
+            $sndInstantEmailFinder			= 	$this->findermailer->healthyTiffinTrial($order->toArray());
+            $sndInstantSmsFinder			=	$this->findersms->healthyTiffinTrial($order->toArray());
+
+        }
+
+        $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+        return Response::json($resp);
+        
+    }
+    
+
     public function bookTrialHealthyTiffinPaid(){
 
         $data = Input::json()->all();

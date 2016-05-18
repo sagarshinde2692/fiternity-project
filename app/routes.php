@@ -289,6 +289,7 @@ Route::post('manualbooktrial', array('as' => 'finders.storemanualbooktrial','use
 Route::post('manual2ndbooktrial', array('as' => 'finders.storemanual2ndbooktrial','uses' => 'SchedulebooktrialsController@manual2ndBookTrial'));
 Route::post('storebooktrial', array('as' => 'customer.storebooktrial','uses' => 'SchedulebooktrialsController@bookTrialPaid'));
 Route::post('rescheduledbooktrial', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
+Route::post('storebooktrialhealthytiffinfree', array('as' => 'customer.storebooktrialhealthytiffinfree','uses' => 'SchedulebooktrialsController@bookTrialHealthyTiffinFree'));
 Route::post('storebooktrialhealthytiffin', array('as' => 'customer.storebooktrialhealthytiffin','uses' => 'SchedulebooktrialsController@bookTrialHealthyTiffinPaid'));
 Route::post('storebookmembershiphealthytiffin', array('as' => 'customer.storebookmembershiphealthytiffin','uses' => 'SchedulebooktrialsController@bookMembershipHealthyTiffinPaid'));
 
