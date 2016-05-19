@@ -1489,15 +1489,29 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             //Send Post Trial Notificaiton After 2 Hours Need to Write
-            if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
-                $sndAfter2HourEmailCustomer = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-                $customer_email_messageids['after2hour'] = $sndAfter2HourEmailCustomer;
+            if($booktrialdata['type'] == '3daystrial'){
 
-                if ($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
+                $customer_sms_messageids['after2hour'] = $this->customersms->reminderAfter2Hour3DaysTrial($booktrialdata, $delayReminderTimeAfter2Hour);
+
+                $customer_email_messageids['after50hour'] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
+                    $customer_notification_messageids['after50hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                }else{
+                    $customer_sms_messageids['after50hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter50Hour);
+                }
+
+            }else{
+
+                $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
+                
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
                     $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-                } else {
+                }else{
                     $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
                 }
+
             }
 
 
@@ -1934,13 +1948,29 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             //Send Post Trial Notificaiton After 2 Hours Need to Write
-            $sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-            $customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
+            if($booktrialdata['type'] == '3daystrial'){
 
-            if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                $customer_sms_messageids['after2hour'] = $this->customersms->reminderAfter2Hour3DaysTrial($booktrialdata, $delayReminderTimeAfter2Hour);
+
+                $customer_email_messageids['after50hour'] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
+                    $customer_notification_messageids['after50hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                }else{
+                    $customer_sms_messageids['after50hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter50Hour);
+                }
+
             }else{
-                $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
+
+                $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
+                
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
+                    $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                }else{
+                    $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
+                }
+
             }
 
 
@@ -2371,6 +2401,16 @@ class SchedulebooktrialsController extends \BaseController {
 
                 }
 
+                if((isset($booktrial->customer_emailqueuedids['after50hour']) && $booktrial->customer_emailqueuedids['after50hour'] != '')){
+
+                    try {
+                        $this->sidekiq->delete($booktrial->customer_emailqueuedids['after50hour']);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+
+                }
+
                 if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
 
                     try {
@@ -2384,6 +2424,15 @@ class SchedulebooktrialsController extends \BaseController {
 
                     try {
                         $this->sidekiq->delete($booktrial->customer_smsqueuedids['after2hour']);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->customer_smsqueuedids['after50hour']) && $booktrial->customer_smsqueuedids['after50hour'] != '')){
+
+                    try {
+                        $this->sidekiq->delete($booktrial->customer_smsqueuedids['after50hour']);
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -2431,6 +2480,16 @@ class SchedulebooktrialsController extends \BaseController {
 
                     try{
                         $this->sidekiq->delete($booktrial->customer_notification_messageids['after2hour']);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+
+                }
+
+                if((isset($booktrial->customer_notification_messageids['after50hour']) && $booktrial->customer_notification_messageids['after50hour'] != '')){
+
+                    try{
+                        $this->sidekiq->delete($booktrial->customer_notification_messageids['after50hour']);
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -2498,13 +2557,29 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 //Send Post Trial Notificaiton After 2 Hours Need to Write
-                $sndAfter2HourEmailCustomer							= 	$this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-                $customer_email_messageids['after2hour'] 			= 	$sndAfter2HourEmailCustomer;
+                if($booktrialdata['type'] == '3daystrial'){
 
-                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                    $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                    $customer_sms_messageids['after2hour'] = $this->customersms->reminderAfter2Hour3DaysTrial($booktrialdata, $delayReminderTimeAfter2Hour);
+
+                    $customer_email_messageids['after50hour'] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                    
+                    if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
+                        $customer_notification_messageids['after50hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                    }else{
+                        $customer_sms_messageids['after50hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter50Hour);
+                    }
+
                 }else{
-                    $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
+
+                    $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                    $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
+                    
+                    if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
+                        $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                    }else{
+                        $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
+                    }
+
                 }
 
 
@@ -2603,6 +2678,16 @@ class SchedulebooktrialsController extends \BaseController {
 
             }
 
+            if((isset($booktrial->customer_emailqueuedids['after50hour']) && $booktrial->customer_emailqueuedids['after50hour'] != '')){
+
+                try {
+                    $this->sidekiq->delete($booktrial->customer_emailqueuedids['after50hour']);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+
+            }
+
             if((isset($booktrial->customer_smsqueuedids['before1hour']) && $booktrial->customer_smsqueuedids['before1hour'] != '')){
 
                 try {
@@ -2616,6 +2701,15 @@ class SchedulebooktrialsController extends \BaseController {
 
                 try {
                     $this->sidekiq->delete($booktrial->customer_smsqueuedids['after2hour']);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($booktrial->customer_smsqueuedids['after50hour']) && $booktrial->customer_smsqueuedids['after50hour'] != '')){
+
+                try {
+                    $this->sidekiq->delete($booktrial->customer_smsqueuedids['after50hour']);
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -2663,6 +2757,16 @@ class SchedulebooktrialsController extends \BaseController {
 
                 try{
                     $this->sidekiq->delete($booktrial->customer_notification_messageids['after2hour']);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+
+            }
+
+            if((isset($booktrial->customer_notification_messageids['after50hour']) && $booktrial->customer_notification_messageids['after50hour'] != '')){
+
+                try{
+                    $this->sidekiq->delete($booktrial->customer_notification_messageids['after50hour']);
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
