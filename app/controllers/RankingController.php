@@ -479,7 +479,7 @@ class RankingController extends \BaseController {
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
 
-        if(array_key_exists(intval($finder_id), $healthy_cap_offers) === true){
+        if(in_array(intval($finder_id), $healthy_cap_offers)){
              $postdata['capoffer'] = 1;
         }
         else{
