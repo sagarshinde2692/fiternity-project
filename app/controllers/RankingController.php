@@ -462,6 +462,11 @@ class RankingController extends \BaseController {
             $data['ozonetelno']['phone_number'] = '+'.$data['ozonetelno']['phone_number'];
         }
 
+        $finder_id = $finderDocument['_id'];
+
+
+        $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8052,7943,8118,8100,8083);
+
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();                                          
         $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);  
@@ -473,6 +478,14 @@ class RankingController extends \BaseController {
         $postdata['average_price'] = $average_monthly;
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
+        
+        if(array_key_exists(intval($finder_id), $healthy_cap_offers)){
+             $postdata['capoffer'] = true;
+        }
+        else{
+              $postdata['capoffer'] = false;
+        }
+
         $postfields_data = json_encode($postdata);             
         $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
         $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
