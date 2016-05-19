@@ -70,6 +70,7 @@ class FinderObject {
 	public $servicelist;
 	public $servicephotos;
 	public $ozonetelno;
+	public $capoffer;
 }
 
 ?>
