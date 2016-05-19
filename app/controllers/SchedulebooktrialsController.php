@@ -1403,6 +1403,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
             $delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
             $delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+            $delayReminderTimeAfter50Hour        =   \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
             $reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
             $oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);
             $twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false);
@@ -1881,6 +1882,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
             $delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
             $delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+            $delayReminderTimeAfter50Hour       =   \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
             $reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
             $oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);
             $twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false);
@@ -2091,6 +2093,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
             $delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
             $delayReminderTimeAfter2Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+            $delayReminderTimeAfter50Hour       =   Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
             $reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
             $oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);
             $twelveHourDiff 					= 	$currentDateTime->diffInHours($scheduleDateTime, false);
@@ -2320,6 +2323,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'oneHourDiffInMin'=>$oneHourDiffInMin,
                 'delayReminderTimeBefore1Hour'=>$delayReminderTimeBefore1Hour,
                 'delayReminderTimeAfter2Hour'=>$delayReminderTimeAfter2Hour,
+                'delayReminderTimeAfter50Hour'=>$delayReminderTimeAfter50Hour,
                 'reminderTimeAfter1Hour'=> $reminderTimeAfter1Hour,
                 'finder'=>$finder,
                 'old_going_status'=>$old_going_status,
@@ -2355,6 +2359,7 @@ class SchedulebooktrialsController extends \BaseController {
             $oneHourDiffInMin = $data['oneHourDiffInMin'];
             $delayReminderTimeBefore1Hour = $data['delayReminderTimeBefore1Hour'];
             $delayReminderTimeAfter2Hour = $data['delayReminderTimeAfter2Hour'];
+            $delayReminderTimeAfter50Hour = $data['delayReminderTimeAfter50Hour'];
             $reminderTimeAfter1Hour = $data['reminderTimeAfter1Hour'];
             $finder = $data['finder'];
             $old_going_status = $data['old_going_status'];
