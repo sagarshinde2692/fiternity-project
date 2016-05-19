@@ -33,6 +33,22 @@ class OrderController extends \BaseController {
 	}
 
 
+	public function couponCodeUsedForHealthyTiffinByPhoneno($customer_phone){
+		
+		$usedCnt = Order::where('couponcode', 'exists', true)
+						->where('couponcode','yummyfit')
+						->where('type','healthytiffintrail')
+						->where('customer_phone',trim($customer_phone))
+						->active()
+						->count();
+
+		$usedCouponStatus 	= ($usedCnt > 0) ? true : false;		
+		$resp 				= [	'used' => $usedCouponStatus];
+		return Response::json($resp,200);
+
+	}
+
+
 	//capture order status for customer used membership by
 	public function captureOrderStatus(){
 

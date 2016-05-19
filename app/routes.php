@@ -118,6 +118,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
+Route::get('couponcodeusedforhealthytiffinbyphoneno/{phoneno}',  array('as' => 'customer.couponcodeusedforhealthytiffinbyphoneno','uses' => 'OrderController@couponCodeUsedForHealthyTiffinByPhoneno'));
 
 Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
 
