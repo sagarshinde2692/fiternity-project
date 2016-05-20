@@ -572,7 +572,7 @@ class FindersController extends \BaseController {
                         'scheduletrials' 				=> $trialdata,
                         'todaytrials' 					=> $todaytrialdata
                         );
-                    // echo "<pre>";print_r($scheduledata);
+//                     echo "<pre>";print_r($scheduledata);exit();
 
                     $this->findermailer->sendBookTrialDaliySummary($scheduledata);
                 }
@@ -689,9 +689,9 @@ class FindersController extends \BaseController {
                     'scheduletrials' 				=> $trialdata,
                     'todaytrials' 					=> $todaytrialdata
                     );
-                echo "<pre>";print_r($scheduledata);
+//                echo "<pre>";print_r($scheduledata);
 
-                // $this->findermailer->sendBookTrialDaliySummary($scheduledata);
+                 $this->findermailer->sendBookTrialDaliySummary($scheduledata);
             }
         }
 
@@ -701,6 +701,98 @@ class FindersController extends \BaseController {
     }
 
 
+    public function sendDaliySummaryHealthyTiffin()
+    {
+
+//        $todayDate 	=	date('d-m-Y', strtotime('06-05-2015'));
+        $todayDate 	        =	date('d-m-Y', time());
+        $tommorowDateTime 	=	date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
+        $startDateTime 	    =	$todayDate." 00:00:00";
+        $endDateTime        =	$tommorowDateTime." 00:00:00";
+
+//        return "$startDateTime   $endDateTime";
+
+        try{
+        $finders   =   Order::whereIn('type',['healthytiffinmembership','healthytiffintrail'])->where('status', '=', '1')
+                                    ->where('created_at', '>=', new DateTime($startDateTime))
+                                    ->where('created_at', '<=', new DateTime($endDateTime))
+                                    ->get()
+                                    ->groupBy('finder_id')->toArray();
+
+
+        foreach ($finders as $finderid => $trials) {
+            $finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
+            $finderarr 	= 	$finder->toArray();
+
+            if($finder->finder_vcc_email != ""){
+                $finder_vcc_email = "";
+                $explode = explode(',', $finder->finder_vcc_email);
+                $valid_finder_email = [];
+                foreach ($explode as $email) {
+                    if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
+                        $valid_finder_email[] = $email;
+                    }
+                }
+                if(!empty($valid_finder_email)){
+                    $finder_vcc_email = implode(",", $valid_finder_email);
+                }
+
+                // echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
+                // echo "<pre>";print_r($trials);
+
+                $finder_name_new					= 	(isset($finderarr['title']) && $finderarr['title'] != '') ? $finderarr['title'] : "";
+                $finder_location_new				=	(isset($finderarr['location']['name']) && $finderarr['location']['name'] != '') ? $finderarr['location']['name'] : "";
+                $finder_name_base_locationtags 		= 	(count($finderarr['locationtags']) > 1) ? $finder_name_new : $finder_name_new." ".$finder_location_new;
+
+                $trialsData = $purchasesData = array();
+                foreach ($trials as $key => $value) {
+                    $trial = ['customer_name' => $value->customer_name,
+                        'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
+                        'customer_email' => $value->customer_email,
+                        'preferred_starting_date' => date('d-m-Y', strtotime($value->preferred_starting_date) ),
+                        'code' => $value->code,
+                        'code' => $value->code,
+                        'service_name' => $value->service_name,
+                        'service_duration' => $value->service_duration,
+                        'meal_contents' => $value->meal_contents,
+                        'amount' => $value->amount
+                    ];
+
+                    if($value->type == "healthytiffintrail"){
+                        array_push($trialsData, $trial);
+                    }
+
+                    if($value->type == "healthytiffinmembership"){
+                        array_push($purchasesData, $trial);
+                    }
+                }
+
+                $scheduledata = array('user_name'	=> 'sanjay sahu',
+                    'user_email'					=> 'sanjay.id7@gmail',
+                    'finder_name'					=> $finder->title,
+                    'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
+                    'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
+                    'finder_vcc_email'				=> $finder_vcc_email,
+                    'trials' 				        => $trialsData,
+                    'purchases' 		            => $purchasesData
+                );
+//                echo "<pre>";print_r($scheduledata);
+
+                 $this->findermailer->sendDaliySummaryHealthyTiffin($scheduledata);
+            }
+        }
+
+            $message = 'Email Send';
+            $resp 	= 	array('status' => 200,'message' => "Email Send");
+            Log::info('Trial Daily Summary Cron For Healthy Tiffin : success');
+
+        }catch(Exception $e){
+            $message = 'Email Send Fail';
+            $resp 	= 	array('status' => 400,'message' => $message);
+            Log::info('Trial Daily Summary Cron  For Healthy Tiffin : fail');
+        }
+
+    }
 
     public function migrateratecards(){
 

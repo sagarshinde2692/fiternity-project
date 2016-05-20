@@ -1308,22 +1308,28 @@ public function improvedkeywordSearch(){
 
         All filters from request
 
-        */    
+        */  
+
+
          $string = $this->_removeStopwords($key);
+         
           $keylist = explode(' ', $string);
         $cityBool = false;
+        if(sizeof($category) > 1){
+           $keylist = array_unique(array_merge($keylist, $category));
+        }
         if((sizeof($location) === 1)&&(array_search($location[0], $city_name_list) !== false)){
             $cityBool = true;
         }
 
-        $redis_query_flag = ((sizeof($location) > 0)||(sizeof($category)));    
+        $redis_query_flag = ((sizeof($location) > 0)||(sizeof($category) > 0));    
 
         if(!$cityBool){
-           if(sizeof($location) > 0){
+           if(sizeof($category) > 0){
             $category_filter = '{"terms" : {  "categorytags": ["'.strtolower(implode('","', $category)).'"],"_cache": true}},';
         }
 
-        if(sizeof($category) > 0){
+        if(sizeof($location) > 0){
          $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $location)).'"],"_cache": true}},';
      }
     
@@ -1339,7 +1345,7 @@ public function improvedkeywordSearch(){
         */
 
         $redis_response = ($this->_queryRedis($keylist));
-        // return  ($redis_response);exit;
+         // return  ($keylist);exit;
 
         /*
         Build constant filters if response from the redis return results
@@ -1764,13 +1770,14 @@ $query = '{
         }
     }'.$filters_post.$sort_clause.'
 }';
-//return $query;exit;
+
+// return $query;
 $request = array(
     'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv2/finder/_search",
     'port' => 8050,
     'method' => 'POST',
     'postfields' => $query
-    );    
+    );
 
 $search_results     =   es_curl_request($request);       
 $search_results     =   es_curl_request($request);
@@ -1825,9 +1832,9 @@ Private function to query redis database
 */
 
 private function _queryRedis($key_list = array()){
-   $return_value = array();
+   $return_value = array();   
    foreach ($key_list as $k => $v) {
-    $res = $this->redis_db->command('keys', array('*'.$v.'*'));
+    $res = $this->redis_db->command('keys', array($v.'*'));
     if(sizeof($res) > 0){
         foreach ($res as $key => $r) {
             $value = $this->redis_db->get($r);

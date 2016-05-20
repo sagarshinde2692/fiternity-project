@@ -265,6 +265,36 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
+	public function healthyTiffinTrial($data){
+
+		$label = 'HealthyTiffinTrial-Instant-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function healthyTiffinMembership($data){
+
+		$label = 'HealthyTiffinMembership-Instant-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function reminderAfter2Hour3DaysTrial($data){
+
+		$label = 'Missedcall-GymTrial-N+2-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();

@@ -612,8 +612,14 @@ if (!function_exists(('evalBaseCategoryScore'))){
             $service_level_data['day'] = array();
             $service_level_data['start'] = array();
             $service_level_data['end'] = array();
+            $service_cat = '';
+            $service_cat_sub ='';
+            if($data['category']['name'] !== 'healthy tiffins' )
+            {
             $service_cat = get_service_category_synonyms(strtolower($serv['category']['name']));
             $service_cat_sub = get_service_category_synonyms(strtolower($serv['subcategory']['name']));
+            }
+           
             array_push($service_level_data['service_category_exact'], $serv['category']['name']);
             array_push($service_level_data['service_category_exact'], $serv['subcategory']['name']);
             array_push($service_level_data['service_category_synonyms'], $service_cat);
@@ -708,6 +714,7 @@ return $postfields_data;
 }
 catch(Exception $exception){
     Log::error($exception);
+    
     return array();
         }//catch
 
@@ -723,6 +730,7 @@ if (!function_exists('get_service_category_synonyms')) {
         'martial arts' => 'mma and kick boxing',
         'pilates' => 'pilates',
         'zumba' => 'zumba',
+        'mat pilates' => 'pilates',
         'yoga' => 'yoga',
         'dance' => 'dance',
         'aqua fitness' => 'zumba',
@@ -896,8 +904,14 @@ if (!function_exists('get_service_category_synonyms')) {
         'yoga trainer'=>'personal trainers',
         'anu chariya'=>'personal trainers'
         );
-
-        return $synonyms_list[$service_category];
+        
+        if(array_key_exists($service_category, $synonyms_list)){
+             return $synonyms_list[$service_category];
+        }
+        else{
+            return '';
+        }
+       
 }
 }
 

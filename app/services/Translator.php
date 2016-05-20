@@ -363,6 +363,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->country = $result['country'];
 				$resultobject->city = $result['city'];
 			//$resultobject->city_id = $result['city_id'];
+				$resultobject->capoffer = isset($result['capoffer']) ? $result['capoffer'] : false;
 				$resultobject->info_service = $result['info_service'];
 			$resultobject->info_service_list = array();//$result['info_service_list'];
 			$resultobject->contact->address = $result['contact']['address'];
