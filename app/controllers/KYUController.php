@@ -318,8 +318,8 @@ public function getfacebookUTM(){
   // $todate = Input::json()->get('todate');
   // $city = Input::json()->get('city');
   $city = 'gurgaon';
-  $fromdate = '2016-04-01';
-  $todate = '2016-04-30';
+  $fromdate = '2016-05-15';
+  $todate = '2016-05-30';
 
   /*
    all conversion events tracked
@@ -375,10 +375,10 @@ public function getfacebookUTM(){
               {
                "terms": {
                  "event_id": [
-                 "bookingconfirm",
-                 "requestcallback",
-                 "membershipbuy",
-                 "callback"
+                 "paymentsuccesstrial",
+                 "callback",
+                 "paymentsuccess",
+                 "trialsuccess"        
                  ]
                }
              },             
@@ -409,7 +409,7 @@ public function getfacebookUTM(){
   $bookingconfirm = $search_results['hits']['hits'];
   
   $fp = fopen('utm_april.csv', 'w');
-  $header =    ["Conversion_point","TrialType","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
+  $header =    ["Conversion_point","Type","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
   "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign","utm_source","gclid", "SessionURL", "SessionReferer"];
   fputcsv($fp, $header);
   
@@ -538,6 +538,40 @@ public function getfacebookUTM(){
         $tarffictype = 'organic';
       }
     }   
+    else if((strpos(strtolower($referer), 'fitmail') > -1)||(strpos(strtolower($page), 'fitmail') > -1)){
+      $trafficsource = 'fitmail';
+       $tarffictype = 'campaign';
+       $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;  
+       echo $utmurl;
+        $utmarray = explode('?', $utmurl)[1];
+        $utmlist = explode('&', $utmarray);
+         foreach ($utmlist as $ul) {
+
+             $final = explode('=', $ul);
+             switch ($final[0]) {
+                case 'utm_source':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_medium':
+               $utm_medium = $final[1];
+               break;
+               case 'utm_term':
+               $utm_term = $final[1];
+               break;
+               case 'utm_content':
+               $utm_content = $final[1];
+               break;
+               case 'utm_campaign':
+               $utm_campaign = $final[1];
+               break; 
+               case 'gclid':
+               $gclid = $final[1];
+               break;               
+               default:                
+               break;
+             }
+           }
+    }
   
     else if(((strpos(strtolower($referer), 'google') > -1 ) || (strpos(strtolower($page), 'google') > -1))||((strpos(strtolower($referer), 'gclid') > -1 ) ||(strpos(strtolower($page), 'gclid') > -1 ))){
       $trafficsource = 'google';
@@ -587,21 +621,22 @@ public function getfacebookUTM(){
       $trafficsource = 'direct';
       $tarffictype = 'organic';
     }
-  
+    
+    $vendor_id = isset($bc1['finder_id']) ? intval($bc1['finder_id']) : 0;
     $bc1 = $bc['_source'];
-    $service = isset($bc1['service']) ? $bc1['service'] : 'n/a';
-    $slot = isset($bc1['slot']) ? $bc1['slot'] : 'n/a';
-    $TrailDate = isset($bc1['date']) ? $bc1['date'] : 'n/a';
-    $vendor = isset($bc1['vendor']) ? $bc1['vendor'] : 'n/a';
-    $finder = Finder::where('slug', $vendor)->with('category')->with('location')->timeout(40000000000)->first();
-  
+    $service = isset($bc1['service_name']) ? $bc1['service_name'] : 'n/a';
+    $slot = isset($bc1['schedule_slot']) ? $bc1['schedule_slot'] : 'n/a';
+    $TrailDate = isset($bc1['schedule_date']) ? $bc1['schedule_date'] : 'n/a';
+    
+    $finder = Finder::where('_id', $vendor_id)->with('category')->with('location')->timeout(40000000000)->first();
+    
     $category = isset($finder['category']['name']) ? $finder['category']['name'] : '';
     $location = isset($finder['location']['name']) ? $finder['location']['name'] : '';
     $timearray = explode('T', $bc1['timestamp']);
     $type = isset($bc1['type']) ? $bc1['type'] : 'n/a';
-    $city = isset($bc1['city']) ? $bc1['city'] : 'n/a';
+    $city = isset($bc1['city_id']) ? $bc1['city_id'] : 'n/a';
     $email = isset($bc1['email']) ? $bc1['email'] : 'n/a';
-    $vendor = isset($bc1['vendor']) ? $bc1['vendor'] : 'n/a';
+    $vendor = isset($bc1['finder_name']) ? $bc1['finder_name'] : 'n/a';
     $fields = [$bookinginfo['event_id'],$type, $email, $vendor, $category, $location, $service, $slot, $city, $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign,$utm_source,$gclid, $page, $referer];
   
     fputcsv($fp, $fields);
