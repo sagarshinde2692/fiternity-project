@@ -285,13 +285,13 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function reminderAfter2Hour3DaysTrial($data){
+	public function reminderAfter2Hour3DaysTrial($data,$delay){
 
 		$label = 'Missedcall-GymTrial-N+2-Customer';
 		
 		$to = $data['customer_phone'];
 
-		return $this->common($label,$to,$data);
+		return $this->common($label,$to,$data,$delay);
 
 	}
 
