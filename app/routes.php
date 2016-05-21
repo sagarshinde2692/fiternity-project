@@ -56,9 +56,8 @@ Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferi
 Route::get('getcapturedetail/{captureid}', 'CaptureController@getCaptureDetail');
 Route::get('booktrialdetail/{captureid}', 'SchedulebooktrialsController@booktrialdetail');
 
-// Feedback from the customer
-	Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCustomer');
-	
+Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCustomer');
+
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
 Route::get('/fitcardautobooktrials/{customeremail}',  array('as' => 'customer.fitcardautobooktrials','uses' => 'CustomerController@getFitcardAutoBookTrials'));
@@ -304,11 +303,16 @@ Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'service
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}/{schedulesof?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
+Route::get('canceltrial/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
 
 Route::group(array('before' => 'validatetoken'), function() {
 
+	Route::post('posttrialaction/{source}', array('as' => 'trial.posttrialaction', 'uses' => 'SchedulebooktrialsController@postTrialAction'));
 	Route::get('booktrials/cancel/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
+	Route::get('booktrials/confirm/{trialid}', array('as' => 'trial.confirm', 'uses' => 'SchedulebooktrialsController@confirm'));
+
 	Route::post('booktrials/reschedule', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
+	Route::get('booktrials/{action}/{trialid}', array('as' => 'trial.booktrialaction', 'uses' => 'SchedulebooktrialsController@booktrialAction'));
 
 });
 
@@ -578,7 +582,6 @@ Route::post('getglobalsearchclickedmatrix', 'KYUController@getglobalsearchclicke
 Route::post('getdailyvisitors', 'KYUController@getdailyvisitors');
 Route::get('rollingbuildautosearch', 'GlobalPushController@rollingbuildautosuggest');
 
-
 ####################################################################################################
 /**********************************Moengage Migration COntroller***********************************/
 
@@ -587,10 +590,6 @@ Route::get('migratedatatomoenagage', 'MigrationsController@migratedatatomoenagag
 
 /********************************Moengage Migration Controller*************************************/
 ####################################################################################################
-
-
-
-
 
 
 /******************  GLOBALSEARCH BULK PUSH END HERE************************************************/

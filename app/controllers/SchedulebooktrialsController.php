@@ -3108,13 +3108,31 @@ class SchedulebooktrialsController extends \BaseController {
     
     public function booktrialdetail($captureid){
 
-		$booktrial 		=	Booktrial::with("finder")->find(intval($captureid));
+        $booktrial      =   Booktrial::with(array('finder'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
 
         if(!$booktrial){
+
             return $this->responseNotFound('Request not found');
         }
 
-        $responsedata 	= ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
+        $booktrial = $booktrial->toArray();
+
+        $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms');
+
+        if(strtotime(Carbon::now()) >= strtotime(Carbon::parse($booktrial['schedule_date_time']))){
+
+            $unset[] = 'what_i_should_carry';
+            $unset[] = 'what_i_should_expect';
+        }
+
+        foreach($unset as $value){
+
+            if(isset($booktrial[$value])){
+                unset($booktrial[$value]);
+            }
+        }
+
+        $responsedata   = ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
         return Response::json($responsedata, 200);
 
     }
@@ -3132,6 +3150,80 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         return $google_pin;
+    }
+
+    public function booktrialAction($action,$trial_id){
+
+        $booktrial = Booktrial::find(intval($trial_id));
+
+        if($booktrial){
+
+            $booktrial->customer_action = $action;
+            $booktrial->update();
+
+            $resp   =   array('status' => 200,'message' => ucwords($action)." Successfull");
+            return  Response::json($resp, 200);
+
+        }else{
+
+            $resp   =   array('status' => 400,'message' => "No Trials Found");
+            return  Response::json($resp, 400);
+        }
+
+    }
+
+    public function postTrialAction($source = 'customer'){
+
+        $rules = [
+            'booktrial_id' => 'required',
+            'status' => 'required'
+        ];
+
+        $validator = Validator::make($data = Input::json()->all(),$rules);
+
+        if($validator->fails()) {
+            $resp = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+            return  Response::json($resp, 400);
+        }
+
+        $booktrial = Booktrial::find(intval($data['booktrial_id']));
+
+        if($booktrial){
+
+            if($source == 'customer'){
+                $booktrial->post_trial_status = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
+                $booktrial->post_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+            }
+
+            if($source == 'vendor'){
+                $booktrial->trial_attended_finder = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
+                $booktrial->trial_attended_finder_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+            }
+
+            $booktrial->update();
+
+            $resp   =   array('status' => 200,'message' => "Successfull");
+            return  Response::json($resp, 200);
+
+        }else{
+
+            $resp   =   array('status' => 400,'message' => "No Trials Found");
+            return  Response::json($resp, 400);
+        }
+
+    }
+
+    public function errorMessage($errors){
+
+        $errors = json_decode(json_encode($errors));
+        $message = array();
+        foreach ($errors as $key => $value) {
+            $message[$key] = $value[0];
+        }
+
+        $message = implode(',', array_values($message));
+
+        return $message;
     }
 
     public function feedbackFromCustomer(){
@@ -3167,6 +3259,43 @@ class SchedulebooktrialsController extends \BaseController {
         $feed = Feedback::create($feedback);
         $resp   =   array('status' => 200,'message' => "Feedback recieved", 'feedback' => $feed);
         return Response::json($resp);
+    }
+
+    // Confirm a trial from the app
+    public function confirm($id){
+
+        $id                 =   (int) $id;
+        $bookdata           =   array();
+        $booktrial          =   Booktrial::findOrFail($id);
+
+        /*if(isset($booktrial->pre_trial_status) && $booktrial->pre_trial_status == 'confirm'){
+
+            $resp   =   array('status' => 200, 'message' => "Trial Already confirmed");
+            return Response::json($resp,200);
+        }*/
+
+        array_set($bookdata, 'going_status', 1);
+        array_set($bookdata, 'going_status_txt', 'confirmed');
+        array_set($bookdata, 'booktrial_actions', '');
+        array_set($bookdata, 'followup_date', '');
+        array_set($bookdata, 'followup_date_time', '');
+        array_set($bookdata, 'source_flag', 'customer');
+        array_set($bookdata, 'pre_trial_status', 'confirm');
+        array_set($bookdata, 'final_lead_stage', 'trial_stage');
+        array_set($bookdata, 'final_lead_status', 'confirmed');
+        $trialbooked        =   $booktrial->update($bookdata);
+
+        if($trialbooked == true ){
+            $resp   =   array('status' => 200, 'message' => "Trial confirmed");
+            return Response::json($resp,200);
+
+        }else{
+
+            $resp   =   array('status' => 400, 'message' => "Error");
+            return Response::json($resp,400);
+
+        }
+
     }
 
 }

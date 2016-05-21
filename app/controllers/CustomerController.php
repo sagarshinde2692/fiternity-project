@@ -1203,12 +1203,27 @@ public function getUpcomingTrials(){
 
 	$data = array();
 
-	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('going_status','!=',2)->where('booktrial_type','auto')->orderBy('schedule_date_time', 'desc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address')->first();
+	$trials 		=	Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code')->first();
 
 	$resp 	= 	array('status' => 400,'data' => $data);
 
 	if($trials){
+
 		$data = $trials->toArray();
+
+		$data['finder_average_rating'] = 0;
+
+		$finder = Finder::find((int) $data['finder_id']);
+
+		if($finder){
+
+			$finder = $finder->toArray();
+
+			if(isset($finder['average_rating'])){
+
+				$data['finder_average_rating'] = $finder['average_rating'];
+			}
+		}
 
 		foreach ($data as $key => $value) {
 
