@@ -1732,6 +1732,8 @@ public function migratedatatoclevertap(){
     $res = curl_exec($curlrequestor);
     $response = json_decode($res, true);
 
+    return $res;
+
     // return $total_book_trial_data;
 
     /*******************booktrial data *************/
