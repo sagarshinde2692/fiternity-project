@@ -217,6 +217,7 @@ Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
 ########################################################################################
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
+Route::get('migratedatatoclevertap', 'KYUController@migratedatatoclevertap');
 Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
 Route::post('getcitywiseviews','KYUController@getcitywiseviews');
 //Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');

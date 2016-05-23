@@ -330,7 +330,7 @@ public function getfacebookUTM(){
   //  this:
   //  if($from_size < 3000)
   // {
-    
+
   //   $query = '{ 
   //     "from":'.$from_size.',
   //     "size":5000,  
@@ -365,288 +365,288 @@ public function getfacebookUTM(){
   // }';
 
    $query = '{ 
-      "from":'.$from_size.',
-      "size":5000,  
+    "from":'.$from_size.',
+    "size":5000,  
+    "query": {
+      "filtered": {
+        "filter": {
+          "bool": {
+            "must": [
+            {
+             "terms": {
+               "event_id": [
+               "paymentsuccesstrial",
+               "callback",
+               "paymentsuccess",
+               "trialsuccess"        
+               ]
+             }
+           },             
+           {
+            "range": {
+              "timestamp": {
+                "gte": "'.$fromdate.'",
+                "lte": "'.$todate.'"
+              }
+            }
+          }
+          ]
+        }
+      }
+    }
+  }
+}';
+
+$request = array( 
+  'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+  'port' => 8060,
+  'method' => 'POST',
+  'postfields' => $query
+  );
+  // return $query;
+$search_results1     =   es_curl_request($request);
+$search_results = json_decode($search_results1, true);
+$bookingconfirm = $search_results['hits']['hits'];
+
+$fp = fopen('utm_april.csv', 'w');
+$header =    ["Conversion_point","Type","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
+"trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign","utm_source","gclid", "SessionURL", "SessionReferer"];
+fputcsv($fp, $header);
+
+foreach ($bookingconfirm as $bc) {
+
+    // try{
+
+  $bookinginfo = $bc['_source'];
+  if(!isset($bookinginfo['useridentifier'])){
+    continue;
+  }
+  $userid = $bookinginfo['useridentifier'];
+  $sessionid = isset($bookinginfo['sessionid']) ? $bookinginfo['sessionid'] : '';
+  $utmquery = '';
+  if($utmquery === ''){
+    $utmquery = '{
       "query": {
         "filtered": {
           "filter": {
             "bool": {
-              "must": [
-              {
-               "terms": {
-                 "event_id": [
-                 "paymentsuccesstrial",
-                 "callback",
-                 "paymentsuccess",
-                 "trialsuccess"        
-                 ]
-               }
-             },             
-            {
-              "range": {
-                "timestamp": {
-                  "gte": "'.$fromdate.'",
-                  "lte": "'.$todate.'"
+              "must": [{
+                "term": {
+                  "userid": "'.$userid.'"
                 }
-              }
+              }, {
+                "term": {
+                  "visitsession": "'.$sessionid.'"
+                }
+              },{
+                "term": {
+                  "event_id": "sessionstart"
+                }
+              }, {
+                "range": {
+                  "timestamp": {
+                    "gte": "'.$fromdate.'",
+                    "lte": "'.$todate.'"
+                  }
+                }
+              }]
             }
-            ]
           }
         }
       }
-    }
-  }';
+    }';
+  }
+  else{
+    $utmquery = '{
+      "query": {
+        "filtered": {
+          "filter": {
+            "bool": {
+              "must": [{
+                "term": {
+                  "userid": "'.$userid.'"
+                }
+              },{
+                "term": {
+                  "event_id": "sessionstart"
+                }
+              }, {
+                "range": {
+                  "timestamp": {
+                    "gte": "2015-11-01",
+                    "lte": "2015-11-30"
+                  }
+                }
+              }]
+            }
+          }
+        }
+      }
+    }';
+  }
   
-  $request = array( 
+  $request1 = array( 
     'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
     'port' => 8060,
     'method' => 'POST',
-    'postfields' => $query
+    'postfields' => $utmquery
     );
-  // return $query;
-  $search_results1     =   es_curl_request($request);
-  $search_results = json_decode($search_results1, true);
-  $bookingconfirm = $search_results['hits']['hits'];
   
-  $fp = fopen('utm_april.csv', 'w');
-  $header =    ["Conversion_point","Type","UserEmail", "Vendor", "Category", "Location", "Service", "Slot","City","BookingDate", "BookingTime" ,"TrailDate", "Device",
-  "trafficSource","TrafficType","UTM_Medium","UTM_Term","UTM_Content","UTM_Campaign","utm_source","gclid", "SessionURL", "SessionReferer"];
-  fputcsv($fp, $header);
+  $utm_result1     =   es_curl_request($request1);
+  $utm_result = json_decode($utm_result1, true);
   
-  foreach ($bookingconfirm as $bc) {
+  if(sizeof($utm_result['hits']['hits']) > 0){
+    $referer = isset($utm_result['hits']['hits'][0]['_source']['referer']) ? $utm_result['hits']['hits'][0]['_source']['referer'] : '';
+    $page = isset($utm_result['hits']['hits'][0]['_source']['page']) ? $utm_result['hits']['hits'][0]['_source']['page'] : '';
+    $trafficsource = ''; $tarffictype = '';
+    $utm_medium='';$utm_term='';$utm_content='';$utm_campaign='';$utm_source='';$gclid = '';
 
-    // try{
-    
-    $bookinginfo = $bc['_source'];
-    if(!isset($bookinginfo['useridentifier'])){
-      continue;
-    }
-    $userid = $bookinginfo['useridentifier'];
-    $sessionid = isset($bookinginfo['sessionid']) ? $bookinginfo['sessionid'] : '';
-    $utmquery = '';
-    if($utmquery === ''){
-      $utmquery = '{
-        "query": {
-          "filtered": {
-            "filter": {
-              "bool": {
-                "must": [{
-                  "term": {
-                    "userid": "'.$userid.'"
-                  }
-                }, {
-                  "term": {
-                    "visitsession": "'.$sessionid.'"
-                  }
-                },{
-                  "term": {
-                    "event_id": "sessionstart"
-                  }
-                }, {
-                  "range": {
-                    "timestamp": {
-                      "gte": "'.$fromdate.'",
-                      "lte": "'.$todate.'"
-                    }
-                  }
-                }]
-              }
-            }
-          }
-        }
-      }';
-    }
-    else{
-      $utmquery = '{
-        "query": {
-          "filtered": {
-            "filter": {
-              "bool": {
-                "must": [{
-                  "term": {
-                    "userid": "'.$userid.'"
-                  }
-                },{
-                  "term": {
-                    "event_id": "sessionstart"
-                  }
-                }, {
-                  "range": {
-                    "timestamp": {
-                      "gte": "2015-11-01",
-                      "lte": "2015-11-30"
-                    }
-                  }
-                }]
-              }
-            }
-          }
-        }
-      }';
-    }
-  
-    $request1 = array( 
-      'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
-      'port' => 8060,
-      'method' => 'POST',
-      'postfields' => $utmquery
-      );
-  
-    $utm_result1     =   es_curl_request($request1);
-    $utm_result = json_decode($utm_result1, true);
-  
-    if(sizeof($utm_result['hits']['hits']) > 0){
-      $referer = isset($utm_result['hits']['hits'][0]['_source']['referer']) ? $utm_result['hits']['hits'][0]['_source']['referer'] : '';
-      $page = isset($utm_result['hits']['hits'][0]['_source']['page']) ? $utm_result['hits']['hits'][0]['_source']['page'] : '';
-      $trafficsource = ''; $tarffictype = '';
-      $utm_medium='';$utm_term='';$utm_content='';$utm_campaign='';$utm_source='';$gclid = '';
-  
-      if((strpos(strtolower($referer), 'facebook') > -1) || (strpos(strtolower($page), 'facebook') > -1)||(strpos(strtolower($page), 'fb') > -1)){
+    if((strpos(strtolower($referer), 'facebook') > -1) || (strpos(strtolower($page), 'facebook') > -1)||(strpos(strtolower($page), 'fb') > -1)){
           //echo $page.'       ---      '.$referer;
-        $trafficsource = 'facebook';
-        $utmurl = '';
-        if((strpos(strtolower($referer), 'utm') > -1) || (strpos(strtolower($page), 'utm') > -1)) {
-          $tarffictype = 'inorganic';  
-  
-          $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;         
-          if(strpos(strtolower($utmurl), 'facebook.com') === false){
+      $trafficsource = 'facebook';
+      $utmurl = '';
+      if((strpos(strtolower($referer), 'utm') > -1) || (strpos(strtolower($page), 'utm') > -1)) {
+        $tarffictype = 'inorganic';  
+
+        $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;         
+        if(strpos(strtolower($utmurl), 'facebook.com') === false){
              //echo 'here'.$utmurl.'----------------------'.$userid.'</br>';
-           $utmarray = explode('?', $utmurl)[1];
-           $utmlist = explode('&', $utmarray);
-           foreach ($utmlist as $ul) {
-             $final = explode('=', $ul);
-             switch ($final[0]) {
-               case 'utm_medium':
-               $utm_medium = $final[1];
-               break;
-               case 'utm_term':
-               $utm_term = $final[1];
-               break;
-               case 'utm_content':
-               $utm_content = $final[1];
-               break;
-               case 'utm_campaign':
-               $utm_campaign = $final[1];
-               break;               
-               default:                
-               break;
-             }
+         $utmarray = explode('?', $utmurl)[1];
+         $utmlist = explode('&', $utmarray);
+         foreach ($utmlist as $ul) {
+           $final = explode('=', $ul);
+           switch ($final[0]) {
+             case 'utm_medium':
+             $utm_medium = $final[1];
+             break;
+             case 'utm_term':
+             $utm_term = $final[1];
+             break;
+             case 'utm_content':
+             $utm_content = $final[1];
+             break;
+             case 'utm_campaign':
+             $utm_campaign = $final[1];
+             break;               
+             default:                
+             break;
            }
          }
        }
-       else{
-        $tarffictype = 'organic';
-      }
-    }   
-    else if((strpos(strtolower($referer), 'fitmail') > -1)||(strpos(strtolower($page), 'fitmail') > -1)){
-      $trafficsource = 'fitmail';
-       $tarffictype = 'campaign';
-       $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;  
-       echo $utmurl;
-        $utmarray = explode('?', $utmurl)[1];
-        $utmlist = explode('&', $utmarray);
-         foreach ($utmlist as $ul) {
-
-             $final = explode('=', $ul);
-             switch ($final[0]) {
-                case 'utm_source':
-               $utm_medium = $final[1];
-               break;
-               case 'utm_medium':
-               $utm_medium = $final[1];
-               break;
-               case 'utm_term':
-               $utm_term = $final[1];
-               break;
-               case 'utm_content':
-               $utm_content = $final[1];
-               break;
-               case 'utm_campaign':
-               $utm_campaign = $final[1];
-               break; 
-               case 'gclid':
-               $gclid = $final[1];
-               break;               
-               default:                
-               break;
-             }
-           }
-    }
-  
-    else if(((strpos(strtolower($referer), 'google') > -1 ) || (strpos(strtolower($page), 'google') > -1))||((strpos(strtolower($referer), 'gclid') > -1 ) ||(strpos(strtolower($page), 'gclid') > -1 ))){
-      $trafficsource = 'google';
-     
-       if((strpos(strtolower($referer), 'utm') > -1) || (strpos(strtolower($page), 'utm') > -1)||(strpos(strtolower($page), 'gclid') > -1 )||(strpos(strtolower($referer), 'gclid') > -1 )) {
-
-         $tarffictype = 'inorganic';
-        $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;     
-         $utmarray = explode('?', $utmurl)[1];
-           $utmlist = explode('&', $utmarray);
-           foreach ($utmlist as $ul) {
-
-             $final = explode('=', $ul);
-             switch ($final[0]) {
-                case 'utm_source':
-               $utm_medium = $final[1];
-               break;
-               case 'utm_medium':
-               $utm_medium = $final[1];
-               break;
-               case 'utm_term':
-               $utm_term = $final[1];
-               break;
-               case 'utm_content':
-               $utm_content = $final[1];
-               break;
-               case 'utm_campaign':
-               $utm_campaign = $final[1];
-               break; 
-               case 'gclid':
-               $gclid = $final[1];
-               break;               
-               default:                
-               break;
-             }
-           }
-       }
-       else{
-         $tarffictype = 'organic';
-
-
-       }
-  
-    }
-
-    else{
-      $trafficsource = 'direct';
+     }
+     else{
       $tarffictype = 'organic';
     }
-    
-    $vendor_id = isset($bc1['finder_id']) ? intval($bc1['finder_id']) : 0;
-    $bc1 = $bc['_source'];
-    $service = isset($bc1['service_name']) ? $bc1['service_name'] : 'n/a';
-    $slot = isset($bc1['schedule_slot']) ? $bc1['schedule_slot'] : 'n/a';
-    $TrailDate = isset($bc1['schedule_date']) ? $bc1['schedule_date'] : 'n/a';
-    
-    $finder = Finder::where('_id', $vendor_id)->with('category')->with('location')->timeout(40000000000)->first();
-    
-    $category = isset($finder['category']['name']) ? $finder['category']['name'] : '';
-    $location = isset($finder['location']['name']) ? $finder['location']['name'] : '';
-    $timearray = explode('T', $bc1['timestamp']);
-    $type = isset($bc1['type']) ? $bc1['type'] : 'n/a';
-    $city = isset($bc1['city_id']) ? $bc1['city_id'] : 'n/a';
-    $email = isset($bc1['email']) ? $bc1['email'] : 'n/a';
-    $vendor = isset($bc1['finder_name']) ? $bc1['finder_name'] : 'n/a';
-    $fields = [$bookinginfo['event_id'],$type, $email, $vendor, $category, $location, $service, $slot, $city, $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign,$utm_source,$gclid, $page, $referer];
-  
-    fputcsv($fp, $fields);
- 
+  }   
+  else if((strpos(strtolower($referer), 'fitmail') > -1)||(strpos(strtolower($page), 'fitmail') > -1)){
+    $trafficsource = 'fitmail';
+    $tarffictype = 'campaign';
+    $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;  
+    echo $utmurl;
+    $utmarray = explode('?', $utmurl)[1];
+    $utmlist = explode('&', $utmarray);
+    foreach ($utmlist as $ul) {
+
+     $final = explode('=', $ul);
+     switch ($final[0]) {
+      case 'utm_source':
+      $utm_medium = $final[1];
+      break;
+      case 'utm_medium':
+      $utm_medium = $final[1];
+      break;
+      case 'utm_term':
+      $utm_term = $final[1];
+      break;
+      case 'utm_content':
+      $utm_content = $final[1];
+      break;
+      case 'utm_campaign':
+      $utm_campaign = $final[1];
+      break; 
+      case 'gclid':
+      $gclid = $final[1];
+      break;               
+      default:                
+      break;
+    }
+  }
+}
+
+else if(((strpos(strtolower($referer), 'google') > -1 ) || (strpos(strtolower($page), 'google') > -1))||((strpos(strtolower($referer), 'gclid') > -1 ) ||(strpos(strtolower($page), 'gclid') > -1 ))){
+  $trafficsource = 'google';
+
+  if((strpos(strtolower($referer), 'utm') > -1) || (strpos(strtolower($page), 'utm') > -1)||(strpos(strtolower($page), 'gclid') > -1 )||(strpos(strtolower($referer), 'gclid') > -1 )) {
+
+   $tarffictype = 'inorganic';
+   $utmurl = (strpos(strtolower($referer), 'utm') > -1 ) ? $referer : $page;     
+   $utmarray = explode('?', $utmurl)[1];
+   $utmlist = explode('&', $utmarray);
+   foreach ($utmlist as $ul) {
+
+     $final = explode('=', $ul);
+     switch ($final[0]) {
+      case 'utm_source':
+      $utm_medium = $final[1];
+      break;
+      case 'utm_medium':
+      $utm_medium = $final[1];
+      break;
+      case 'utm_term':
+      $utm_term = $final[1];
+      break;
+      case 'utm_content':
+      $utm_content = $final[1];
+      break;
+      case 'utm_campaign':
+      $utm_campaign = $final[1];
+      break; 
+      case 'gclid':
+      $gclid = $final[1];
+      break;               
+      default:                
+      break;
+    }
+  }
+}
+else{
+ $tarffictype = 'organic';
+
+
+}
+
+}
+
+else{
+  $trafficsource = 'direct';
+  $tarffictype = 'organic';
+}
+
+$vendor_id = isset($bc1['finder_id']) ? intval($bc1['finder_id']) : 0;
+$bc1 = $bc['_source'];
+$service = isset($bc1['service_name']) ? $bc1['service_name'] : 'n/a';
+$slot = isset($bc1['schedule_slot']) ? $bc1['schedule_slot'] : 'n/a';
+$TrailDate = isset($bc1['schedule_date']) ? $bc1['schedule_date'] : 'n/a';
+
+$finder = Finder::where('_id', $vendor_id)->with('category')->with('location')->timeout(40000000000)->first();
+
+$category = isset($finder['category']['name']) ? $finder['category']['name'] : '';
+$location = isset($finder['location']['name']) ? $finder['location']['name'] : '';
+$timearray = explode('T', $bc1['timestamp']);
+$type = isset($bc1['type']) ? $bc1['type'] : 'n/a';
+$city = isset($bc1['city_id']) ? $bc1['city_id'] : 'n/a';
+$email = isset($bc1['email']) ? $bc1['email'] : 'n/a';
+$vendor = isset($bc1['finder_name']) ? $bc1['finder_name'] : 'n/a';
+$fields = [$bookinginfo['event_id'],$type, $email, $vendor, $category, $location, $service, $slot, $city, $timearray[0], $timearray[1], $TrailDate, $bc1['device'],$trafficsource, $tarffictype,$utm_medium,$utm_term,$utm_content, $utm_campaign,$utm_source,$gclid, $page, $referer];
+
+fputcsv($fp, $fields);
+
 
 }
 else{
  echo 'exit here</br>';
 }
-   
+
 }
 
 
@@ -1513,6 +1513,236 @@ $users = json_decode($visit, true);
 $value = $users['aggregations']['users']['value'];
 
 return $value;
+
+}
+
+public function migratedatatoclevertap(){
+
+
+  try{
+
+    $dt1 =new DateTime("2015-05-01 11:14:15.638276");
+    ini_set('max_execution_time', 30000);
+    $all_users = Customer::where('created_at', '>', $dt1)->take(50000)->get(array('email','facebook_id','created_at','gender','name','contact_no'));
+
+    
+    // return json_encode($all_users);
+    $user_emails_list = array();
+
+    $user_data = '';
+    $booktrial_data = '';
+    $order_data = '';
+    $request_callback_data = '';
+    $review_data = '';
+
+
+    foreach ($all_users as $user) {
+
+
+      $bool_exist = array_search($user['email'], $user_emails_list);
+      
+      if($bool_exist !== false){        
+        continue;
+      }
+
+      if(strpos($user['email'], 'fitternity') !== false){
+        continue;
+      }
+
+      array_push($user_emails_list, $user['email']);
+
+      $user_trials_booked = Booktrial::where('customer_email', $user['email'])->get();
+
+
+      $capture = Capture::where('customer_email', $user['email'])->get();
+
+
+      $user_reviews_written = Review::where('cust_id', intval($user['_id']))->get();
+
+      $user_orders = Order::where('customer_email', $user['email'])->get();
+
+      $attr_phone = isset($user['contact_no']) ? $user['contact_no'] : 0;
+      if($attr_phone !== ''){
+        if(strpos($attr_phone, '+91') !== false){
+
+        }
+        else{
+          $attr_phone = '+91'.$attr_phone;
+        }
+      }
+      $attr_email = isset($user['email']) ? $user['email'] : '';
+      $attr_gender = isset($user['gender']) ? $user['gender'] : '';
+      $attr_name = isset($user['name']) ? $user['name'] : '';
+      $customer_type = ((sizeof($user_trials_booked) > 0) || (sizeof($user_orders) > 0)) ? 'converted' : 'lead';
+      $gender = ($user['gender'] === 'Female') ? 'F' : 'M';
+      $facebook_id = isset($user['facebook_id']) ? $user['facebook_id'] : '';
+      $date = new DateTime($user['created_at']);// format: MM/DD/YYYY
+      $ts =  $date->format('U'); 
+
+      $create_user_payload_v2 = '       
+      {
+        "identity":"'.$attr_email.'",
+        "ts":'.$ts.',
+        "type":"profile",
+        "profileData":{
+          "Name": "'.$attr_name.'",
+          "Email":"'.$attr_email.'",
+          "Phone":"'.$attr_phone.'",           
+          "Customer Type":"'.$customer_type.'",           
+          "Gender":"'.$gender.'"
+        },
+        "FBID" : "'.$facebook_id.'"
+      },';
+
+      $user_data = $user_data.$create_user_payload_v2;
+      
+      
+      // foreach ($user_orders as $order) {
+
+      //   $user_time = strtotime($order['created_at']);
+
+      //   $current_time = time();
+      //   $city_id = isset($order['city_id']) ? $order['city_id'] : 0;
+      //   $phone = isset($order['customer_phone']) ? $order['customer_phone'] : '';
+      //   $finder_id = isset($order['finder_id']) ? $order['finder_id'] : 0;
+      //   $finder_name = isset($order['finder_name']) ? $order['findr_name'] : '';
+      //   $service_id = isset($order['service_id']) ? $order['service_id'] : '';
+      //   $service_name = isset($order['service_name']) ? $order['service_name'] : '';
+      //   $type = isset($order['type']) ? $order['type'] : '';
+
+      //   $user_order = '{         
+      //       "email"  : "'.$user['email'].'",
+      //       "phone"  : "'.$phone.'",
+      //       "finder_id"  : '.$finder_id.',
+      //       "finder_name" : "'.$finder_name.'",
+      //       "service_id" : '.$service_id.',
+      //       "service_name" : "'.$service_name.'",
+      //       "type" : "'.$type.'",
+      //       "city_id" : '.$city_id.'       
+      //   },';
+
+      //   $order_actions = $order_actions.$user_order;
+
+      // }
+
+
+
+
+        // $trial_book_actions = '';
+
+
+      foreach ($user_trials_booked as $trial) {
+
+        
+        $date = new DateTime($trial['created_at']);// format: MM/DD/YYYY
+        $booktrial_ts =  $date->format('U'); 
+
+        $current_time = time();
+        $city_id = isset($trial['city_id']) ? $trial['city_id'] : 0;
+        $phone = isset($trial['customer_phone']) ? $trial['customer_phone'] : '';
+        $finder_id = isset($trial['finder_id']) ? $trial['finder_id'] : 0;
+        $finder_name = isset($trial['finder_name']) ? $trial['finder_name'] : '';
+        $service_id = isset($trial['service_id']) ? $trial['service_id'] : '';
+        $service_name = isset($trial['service_name']) ? $trial['service_name'] : '';
+        $type = isset($trial['type']) ? $trial['type'] : '';
+        $type1 = isset($trial['booktrial_type']) ? $trial['booktrial_type'] : '';
+        $schedule_date = isset($trial['schedule_date']) ? $trial['schedule_date'] : '';
+        $schedule_slot = isset($trial['schedule_slot']) ? $trial['schedule_slot'] : '';
+        $amount = isset($trial['amount']) ? $trial['amount'] : 0;
+        $event_name = $amount === 0 ? 'trial_success' : 'paymentsuccesstrial';
+
+        $event_data = '{
+          "finder_id" : '.$finder_id.',
+          "finder_name" :"'.$finder_name.'",
+          "service_id": "'.$service_id.'",
+          "service_name" : "'.$service_name.'",
+          "type" : "'.$type.'",
+          "type_other" : "'.$type1.'",
+          "schedule_slot" : "'.$schedule_slot.'",
+          "schedule_date" : "'.$schedule_date.'",
+          "amount" : '.$amount.'
+        }';
+
+        $customer_booktrial_payload = '{
+          "identity" : "'.$user['email'].'",
+          "ts" : '.$booktrial_ts.',
+          "type" : "event",
+          "eventName" : "'.$event_name.'",
+          "evtData" : '.$event_data.'
+        },';
+
+        $booktrial_data = $booktrial_data.$customer_booktrial_payload;
+
+      }
+    }
+
+
+    /*******************user data *************/
+
+    $total_user_data = '{
+      "d":[
+      '.trim($user_data,',').'
+      ]
+    }';
+
+
+    $curlrequestor = curl_init();
+    curl_setopt($curlrequestor, CURLOPT_TIMEOUT, 2000);
+    curl_setopt($curlrequestor, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curlrequestor, CURLOPT_FORBID_REUSE, 0);
+    curl_setopt($curlrequestor, CURLOPT_CUSTOMREQUEST, 'POST'); 
+    curl_setopt($curlrequestor, CURLOPT_URL, 'https://api.clevertap.com/1/upload');
+
+    $headers[] = 'X-CleverTap-Account-Id: RZZ-RRZ-R44Z';
+    $headers[] = 'Content-Type: application/json';
+    $headers[] = 'X-CleverTap-Passcode:EVK-ISD-MAAL';
+
+    curl_setopt($curlrequestor, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($curlrequestor, CURLOPT_POSTFIELDS, $total_user_data);  
+  $res = curl_exec($curlrequestor);
+   $response = json_decode($res, true);    
+
+    /*******************user data ******************/
+
+
+
+    /*******************booktrial data *************/
+
+
+    $total_book_trial_data = '{
+      "d":[
+      '.trim($booktrial_data,',').'
+      ]
+    }';
+
+    $curlrequestor = curl_init();
+    curl_setopt($curlrequestor, CURLOPT_TIMEOUT, 2000);
+    curl_setopt($curlrequestor, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curlrequestor, CURLOPT_FORBID_REUSE, 0);
+    curl_setopt($curlrequestor, CURLOPT_CUSTOMREQUEST, 'POST'); 
+    curl_setopt($curlrequestor, CURLOPT_URL, 'https://api.clevertap.com/1/upload');
+
+    $headers[] = 'X-CleverTap-Account-Id: RZZ-RRZ-R44Z';
+    $headers[] = 'Content-Type: application/json';
+    $headers[] = 'X-CleverTap-Passcode:EVK-ISD-MAAL';
+
+    curl_setopt($curlrequestor, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($curlrequestor, CURLOPT_POSTFIELDS, $total_book_trial_data);  
+
+    $res = curl_exec($curlrequestor);
+    $response = json_decode($res, true);
+
+    // return $total_book_trial_data;
+
+    /*******************booktrial data *************/
+
+
+
+  }
+  catch(Exception $e){
+    Log::error($e);
+    throw $e;    
+  }
 
 }
 
