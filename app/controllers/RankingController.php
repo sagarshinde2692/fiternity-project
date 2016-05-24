@@ -465,7 +465,8 @@ class RankingController extends \BaseController {
         $finder_id = $finderdocument['_id'];
 
 
-        $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8052,7943,8118,8100,8083);
+        $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8118,8100);
+
 
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();                                          

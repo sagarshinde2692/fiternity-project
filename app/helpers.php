@@ -568,8 +568,8 @@ if (!function_exists(('evalBaseCategoryScore'))){
                     $flag = true;                   
                     $service = Service::with('category')->with('subcategory')->with('finder')->where('finder_id', (int)$data['_id'])->get();
                     foreach ($service as $doc1) { 
-                     $doc = $doc1->toArray();
-                     if( isset($doc['photos']) && !empty($doc['photos'])){                                            
+                       $doc = $doc1->toArray();
+                       if( isset($doc['photos']) && !empty($doc['photos'])){                                            
                         $photos = $doc['photos'];                       
                         foreach ($photos as $key => $value) {                           
                             if(!empty($photos[$key])){                               
@@ -616,10 +616,10 @@ if (!function_exists(('evalBaseCategoryScore'))){
             $service_cat_sub ='';
             if($data['category']['name'] !== 'healthy tiffins' )
             {
-            $service_cat = get_service_category_synonyms(strtolower($serv['category']['name']));
-            $service_cat_sub = get_service_category_synonyms(strtolower($serv['subcategory']['name']));
+                $service_cat = get_service_category_synonyms(strtolower($serv['category']['name']));
+                $service_cat_sub = get_service_category_synonyms(strtolower($serv['subcategory']['name']));
             }
-           
+
             array_push($service_level_data['service_category_exact'], $serv['category']['name']);
             array_push($service_level_data['service_category_exact'], $serv['subcategory']['name']);
             array_push($service_level_data['service_category_synonyms'], $service_cat);
@@ -630,19 +630,19 @@ if (!function_exists(('evalBaseCategoryScore'))){
 
                 foreach ($trialschedules as $trial) {
                    //echo json_encode($trial);
-                   array_push($weekdays, $trial['weekday']);
-                   array_push($service_level_data['day'], $trial['weekday']);
+                 array_push($weekdays, $trial['weekday']);
+                 array_push($service_level_data['day'], $trial['weekday']);
 
-                   foreach ($trial['slots'] as $slot) {
-                       array_push($trial_slots, array('day' => $trial['weekday'], 'start' => intval($slot['start_time_24_hour_format']), 'end' => intval($slot['end_time_24_hour_format'])));
+                 foreach ($trial['slots'] as $slot) {
+                     array_push($trial_slots, array('day' => $trial['weekday'], 'start' => intval($slot['start_time_24_hour_format']), 'end' => intval($slot['end_time_24_hour_format'])));
                     // array_push($service_level_data['day'], $trial['weekday']);
-                       array_push($service_level_data['start'],intval($slot['start_time_24_hour_format']));
-                       array_push($service_level_data['end'], intval($slot['end_time_24_hour_format']));
-                   }
-               }             
-           }
-           if(sizeof($trial_slots) > 0)               
-           {
+                     array_push($service_level_data['start'],intval($slot['start_time_24_hour_format']));
+                     array_push($service_level_data['end'], intval($slot['end_time_24_hour_format']));
+                 }
+             }             
+         }
+         if(sizeof($trial_slots) > 0)               
+         {
             $service_level_data['slots_nested'] = $trial_slots;
             array_push($service_level_data_all, $service_level_data);}
         };
@@ -725,7 +725,7 @@ catch(Exception $exception){
 if (!function_exists('get_service_category_synonyms')) {
     function get_service_category_synonyms($service_category) {
 
-     $synonyms_list = array('yoga' => 'yoga',
+       $synonyms_list = array('yoga' => 'yoga',
         'dance' => 'dance',
         'martial arts' => 'mma and kick boxing',
         'pilates' => 'pilates',
@@ -904,14 +904,14 @@ if (!function_exists('get_service_category_synonyms')) {
         'yoga trainer'=>'personal trainers',
         'anu chariya'=>'personal trainers'
         );
-        
-        if(array_key_exists($service_category, $synonyms_list)){
-             return $synonyms_list[$service_category];
-        }
-        else{
-            return '';
-        }
-       
+
+if(array_key_exists($service_category, $synonyms_list)){
+   return $synonyms_list[$service_category];
+}
+else{
+    return '';
+}
+
 }
 }
 
@@ -967,7 +967,6 @@ if (!function_exists('get_elastic_service_documentv2')) {
                     foreach ($items[$key]['slots'] as $k => $val) {
 
                         if($value['weekday'] != '' && $val['start_time'] != '' && $val['start_time_24_hour_format'] != '' && $val['price'] != ''){
-
                             $newslot = ['start_time' => $val['start_time'], 
                             'start_time_24_hour_format' => floatval(number_format($val['start_time_24_hour_format'],2)), 
                             'end_time' => $val['end_time'], 
@@ -985,56 +984,7 @@ if (!function_exists('get_elastic_service_documentv2')) {
 
         $durationheader ='';$budgetheader = ''; $headerarray = array(); $flag1 = false;
         $servicemarketflag = 'n';
-        // if(!empty($servicedata['ratecards'])){
-
-        //     foreach ($servicedata['ratecards'] as $key => $value) {
-        //         if(isset($value['type']) && $value['type'] == 'membership' && isset($value['duration']) && isset($value['price']) ){
-        //             $servicemarketflag = 'y';
-        //             $days = Duration::where('slug',$value['duration'])->get();
-        //             $day = $days->toArray();                
-        //             // if(intval($day[0]['days'])=== 30){
-        //             //     $durationheader = $value['duration'];
-        //             //     $budgetheader = $value['price'];
-        //             //     $flag1 = true;
-        //             // }
-        //             $price_slab = '';
-        //             switch($t = $value['price'])
-        //             {
-        //                 case ($t < 501) :
-        //                 $price_slab = '0 to 500';
-        //                 break;
-        //                 case ($t > 500 && $t < 2001) :
-        //                 $price_slab = '500 to 2000';
-        //                 break;
-        //                 case ($t > 2000 && $t < 10001):
-        //                 $price_slab = '2000 to 10000';
-        //                 break;
-        //                 case ($t > 10000):
-        //                 $price_slab = '10000 to 200000';
-        //                 break;
-        //             }
-        //             $day_slab = '';
-        //             switch($d = intval($day[0]['days']))
-        //             {                        
-        //                 case ($d < 16) :
-        //                 $day_slab = 'less than 2 weeks';
-        //                 break;
-        //                 case ($d > 15 && $d < 91) :
-        //                 $day_slab = '1 to 3 months';
-        //                 break;
-        //                 case ($d > 90 && $d < 181):
-        //                 $day_slab = '4 to 6 months';
-        //                 break;
-        //                 case ($d > 180):
-        //                 $day_slab = 'more than 6 months';
-        //                 break;                    
-        //             }         
-        //             array_push($ratecards, array('type' => $value['type'], 'special_price' => intval($value['special_price']), 'price' => intval($value['price']), 'duration' => $value['duration'], 'days' => intval($day[0]['days']), 'price_slab' => $price_slab, 'day_slab' => $day_slab, 'direct_payment_enable' => isset($value['direct_payment_enable']) ? $value['direct_payment_enable'] : 0));
-        //             array_push($headerarray, array('duration' => $value['duration'], 'days' => intval($day[0]['days']), 'budget' => intval($value['price'])));
-        //         }
-        //     }
-        // }
-
+        
         if(isset($data['lat']) && $data['lat'] != '' && isset($data['lon']) && $data['lon'] != ''){
             $geolocation = array('lat' => $data['lat'],'lon' => $data['lon']);
 
@@ -1104,15 +1054,123 @@ return $postfields_data;
 }
 }
 
+if (!function_exists('get_elastic_service_workoutsession_schedules')) {
+
+    function get_elastic_service_workoutsession_schedules($data = array(), $finderdata = array(), $locationcluster ='') {
+
+        $data_array = array();
+
+        $servicedata= $data;
+
+        $ratecards = $slots =  array();      
+        
+        $durationheader ='';$budgetheader = ''; $headerarray = array(); $flag1 = false;
+        $servicemarketflag = 'n';
+        
+        if(isset($data['lat']) && $data['lat'] != '' && isset($data['lon']) && $data['lon'] != ''){
+            $geolocation = array('lat' => $data['lat'],'lon' => $data['lon']);
+
+        }elseif(isset($finderdata['lat']) && $finderdata['lat'] != '' && isset($finderdata['lon']) && $finderdata['lon'] != ''){
+            $geolocation = array('lat' => $finderdata['lat'], 'lon' => $finderdata['lon']);
+
+        }else{
+
+            $geolocation = '';
+        }
+        $comparer = 10000000;
+        if(!$flag1){
+            foreach ($headerarray as $key => $val) {
+                if(intval($val['budget']) < $comparer){
+                    $comparer = intval($val['budget']);
+                }
+            }
+            foreach ($headerarray as $key => $value) {
+                if(intval($value['budget']) === $comparer){
+                    $durationheader = $value['duration'];
+                    $budgetheader = $value['budget'];
+                }
+            }
+        }
+
+        if(!empty($servicedata['workoutsessionschedules'])){
+
+            $workout_session_schedules = $servicedata['workoutsessionschedules'];
+
+            foreach ($workout_session_schedules as $key => $value) {
+
+                $day = isset($value['weekday']) ? $value['weekday'] : '';
+
+                if(!empty($workout_session_schedules[$key]['slots'])){
+
+                    foreach ($workout_session_schedules[$key]['slots'] as $k => $val) {
+
+                        $cluster = array('suburb' => $locationcluster, 'locationtag' => array('loc' => (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : ""));        
+                        
+                        $postfields_data = array(
+                            'service_id'                           =>      $data['_id'],            
+                            'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "",             
+                            'subcategory'                   =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "",             
+                            'geolocation'                   =>      $geolocation,
+                            'finder_id'                     =>      $data['finder_id'],
+                            'findername'                    =>      (isset($finderdata['title']) && $finderdata['title'] != '') ? strtolower($finderdata['title']) : "", 
+                            'commercial_type'               =>      (isset($finderdata['commercial_type']) && $finderdata['commercial_type'] != '') ? strtolower($finderdata['commercial_type']) : "",             
+                            'finderslug'                    =>      (isset($finderdata['slug']) && $finderdata['slug'] != '') ? strtolower($finderdata['slug']) : "",             
+                            'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : "",             
+                            'city'                          =>      (isset($finderdata['city']['name']) && $finderdata['city']['name'] != '') ? strtolower($finderdata['city']['name']) : "", 
+                            'country'                       =>      (isset($finderdata['country']['name']) && $finderdata['country']['name'] != '') ? strtolower($finderdata['country']['name']) : "",             
+                            'name'                          =>      (isset($data['name']) && $data['name'] != '') ? strtolower($data['name']) : "",            
+                            'slug'                          =>      (isset($data['slug']) && $data['slug'] != '') ? $data['slug'] : "",            
+                            'workout_intensity'             =>      (isset($data['workout_intensity']) && $data['workout_intensity'] != '') ? strtolower($data['workout_intensity']) : "",
+                            'workout_tags'                  =>      (isset($data['workout_tags']) && !empty($data['workout_tags'])) ? array_map('strtolower',$data['workout_tags']) : "",            
+                            'locationcluster'               =>      $locationcluster,
+                            'workoutsessionschedules'       =>      $slots,
+                            'ratecards'                     =>      $ratecards,
+                            'short_description'             =>      (isset($data['short_description']) && $data['short_description'] != '') ? strtolower($data['short_description']) : "", 
+                            'rating'                        =>      0,
+                            'finder_coverimage'             =>      (isset($finderdata['coverimage']) && $finderdata['coverimage'] != '') ? strtolower($finderdata['coverimage']) : strtolower($finderdata['finder_coverimage']), 
+                            'cluster'                       =>      $cluster,
+                            'durationheader'                =>      $durationheader,
+                            'budgetheader'                  =>      intval($budgetheader),
+                            'sm_flagv1'                     =>      $servicemarketflag,
+                            'budgetfinder'                  =>      isset($finderdata['budget']) ? intval($finderdata['budget']) : 0,
+                            'finder_facilities'             =>      (isset($finderdata['facilities']) && !empty($finderdata['facilities'])) ? array_map('strtolower',array_pluck($finderdata['facilities'],'name')) : "",
+                            'finder_offerings'              =>      (isset($finderdata['offerings']) && !empty($finderdata['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($finderdata['offerings'],'name')))) : "",
+                            'finder_price_slab'             =>      $finderdata['price_range'],           
+                            'finder_slug'                   =>      $finderdata['slug'],
+                            'finder_gallary'                =>      (isset($finderdata['photos'])) ? $finderdata['photos'] : array(),                          
+                            'finder_location'               =>      (isset($finderdata['location']['name']) && $finderdata['location']['name'] != '') ? strtolower($finderdata['location']['name']) : "",
+                            'finder_locationtags'           =>      (isset($finderdata['locationtags']) && !empty($finderdata['locationtags'])) ? array_map('strtolower',array_pluck($finderdata['locationtags'],'name')) : "",
+                            'finder_category'               =>      (isset($finderdata['category']['name']) && $finderdata['category']['name'] != '') ? strtolower($finderdata['category']['name']) : "", 
+                            'finder_categorytags'           =>      (isset($finderdata['categorytags']) && !empty($finderdata['categorytags'])) ? array_map('strtolower',array_pluck($finderdata['categorytags'],'name')) : "",
+                            'workout_session_schedules_price'     =>  (isset($val['price'])) ? intval($val['price']) : 0,
+                            'workout_session_schedules_weekday'     =>  $day,
+                            'workout_session_schedules_end_time_24_hrs'     =>  (isset($val['end_time_24_hour_format'])) ? intval($val['end_time_24_hour_format']) : 0,
+                            'workout_session_schedules_start_time_24_hrs'     =>  (isset($val['start_time_24_hour_format'])) ? intval($val['start_time_24_hour_format']) : 0,
+                            'workout_session_schedules_end_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
+                            'workout_session_schedules_start_time' => (isset($val['end_time'])) ? $val['end_time'] : ''
+                            );
+
+array_push($data_array, $postfields_data);
+}
+
+
+return $data_array; 
+}
+}
+}
+}
+}
+
+
 if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster){
 
-     $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
-     $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
+       $lat = isset($loc['lat']) ? floatval($loc['lat']) : 0.0;
+       $lon = isset($loc['lon']) ? floatval($loc['lon']) : 0.0;
 
-     if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
-     {
+       if(($cat['name']==='yoga')||($cat['name']==='dance')||($cat['name']==='zumba'))
+       {
         $catname = $cat['name'].' classes sessions';
     }
     else{
@@ -1137,6 +1195,7 @@ if (!function_exists(('get_elastic_autosuggest_catloc_doc'))){
         );
     return $postfields_data;
 }
+
 }
 
 if (!function_exists(('get_elastic_autosuggest_catfac_doc'))){

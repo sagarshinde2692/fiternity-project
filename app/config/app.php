@@ -14,7 +14,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => False,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -212,8 +212,8 @@ return array(
 	'cachetime' 					=> 	10,
 	'perpage' 						=> 	50,
 
-	's3_finder_url'							=> 'https://d3oorwrq3wx4ad.cloudfront.net/f/',
-	's3_service_url'						=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
+	's3_finder_url'					=> 'https://d3oorwrq3wx4ad.cloudfront.net/f/',
+	's3_service_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
 
 	'elasticsearch_port' 			=> 	9200,
 	'elasticsearch_host_new' 			=> 	'ESAdmin:fitternity2020@54.169.120.141',
@@ -222,11 +222,25 @@ return array(
 	//old
 	'elasticsearch_host' 			=> 	'54.179.134.14',
 	'elasticsearch_port' 			=> 	9200,
-	//'elasticsearch_host' 			=> 	'localhost',
-	//'elasticsearch_default_index' 	=> 	'fitternity'
-	//'elasticsearch_host' 			=> 	'ec2-54-169-60-45.ap-southeast-1.compute.amazonaws.com',
 	'elasticsearch_default_index' 	=> 	'fitternity',
 	'elasticsearch_default_type' 	=> 	'finder',
+
+
+	/******************************ElasticSearch Config****************/
+	//currently used only for vip trials rolling builds and search api.
+	//will be implemented everywhere in future when other api will be changed
+	/*************************************************************************/
+
+	'es_host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	'es_port'		=>			8050,
+
+	// 'es_host'		=> 			'localhost',
+	// 'es_port'		=>			9200,
+
+	/***************************ElasticSearch Config*******************/
+
+
+
 
 	'jwt' => array(
 		'key' => 'fitternity', //secret key to encode token
