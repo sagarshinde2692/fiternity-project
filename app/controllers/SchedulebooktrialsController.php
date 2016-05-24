@@ -473,6 +473,7 @@ class SchedulebooktrialsController extends \BaseController {
         $otp	 					=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
         $customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
         $customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
+        $note_to_trainer              =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
         $device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
@@ -532,6 +533,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             'device_type'				=>		$device_type,
             'gcm_reg_id'				=>		$gcm_reg_id,
+            'note_to_trainer'                =>      $note_to_trainer,
         );
 
 
@@ -745,6 +747,7 @@ class SchedulebooktrialsController extends \BaseController {
             $customer->email = $data['customer_email'];
             $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
             $customer->password = md5(time());
+            $customer->gender = $data['gender'];
 
             if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
                 $customer->contact_no = $data['customer_phone'];
@@ -784,6 +787,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($data['otp']) &&  $data['otp'] != ""){
                     $customerData['contact_no_verify_status'] = "yes";
+                }
+
+                if(isset($data['gender']) && $data['gender'] != ""){
+                    $customerData['gender'] = $data['gender'];
                 }
 
                 if(isset($data['customer_address'])){
@@ -1157,6 +1164,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
             $finder_category_id						= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
+            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             $final_lead_stage = '';
             $final_lead_status = '';
@@ -1347,7 +1355,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'social_referrer'				=>		$social_referrer,
                 'transacted_after'				=>		$transacted_after,
                 'referrer_object'				=>		$referrer_object,
-                'google_pin'					=>		$google_pin
+                'google_pin'					=>		$google_pin,
+                'note_to_trainer'               =>      $note_to_trainer,
 
             );
 
@@ -1659,6 +1668,7 @@ class SchedulebooktrialsController extends \BaseController {
             $social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
             $referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
             $transacted_after					= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             if($device_type != '' && $gcm_reg_id != ''){
 
@@ -1824,7 +1834,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_category_id'			=>		$finder_category_id,
                 'referrer_object'				=>		$referrer_object,
 
-                'google_pin'					=>		$google_pin
+                'google_pin'					=>		$google_pin,
+                'note_to_trainer'               =>      $note_to_trainer,
 
             );
 
@@ -2081,6 +2092,7 @@ class SchedulebooktrialsController extends \BaseController {
             $send_post_reminder_communication	=	(isset($data['send_post_reminder_communication']) && $data['send_post_reminder_communication'] != '') ? $data['send_post_reminder_communication'] : "";
             $send_purchase_communication		=	(isset($data['send_purchase_communication']) && $data['send_purchase_communication'] != '') ? $data['send_purchase_communication'] : "";
             $deadbooktrial						=	(isset($data['deadbooktrial']) && $data['deadbooktrial'] != '') ? $data['deadbooktrial'] : "";
+            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             //its helpful to send any kind for dateformat date time as srting or iso formate timezond
             $slot_times 						=	explode('-',$data['schedule_slot']);
@@ -2297,7 +2309,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'final_lead_status'				=>		$final_lead_status,
                 'reg_id'						=> 		$gcm_reg_id,
                 'device_type'					=> 		$device_type,
-                'google_pin'					=>		$google_pin
+                'google_pin'					=>		$google_pin,
+                'note_to_trainer'               =>      $note_to_trainer
             );
 
 
