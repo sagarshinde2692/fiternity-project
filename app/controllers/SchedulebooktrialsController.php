@@ -1125,7 +1125,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
                 return Response::json($resp);
             }
-
+            
+            $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
+            
             $service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
             $campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
@@ -1328,7 +1330,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'device_id'						=>		$device_id,
                 'booktrial_type'				=>		'auto',
                 'booktrial_actions'				=>		'call to confirm trial',
-                'source'						=>		'website',
+                'source'						=>		$source,
                 'origin'						=>		'auto',
                 'additional_info'				=>		$additional_info,
                 'amount'						=>		$order->amount,
@@ -1428,7 +1430,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             //Send Instant (Email) To Customer & Finder
 
-            if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip'){
+            if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){
                 $sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
                 $sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
                 $customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
@@ -1448,7 +1450,7 @@ class SchedulebooktrialsController extends \BaseController {
             if($twelveHourDiffInMin >= (12 * 60)){
 
                 if($finder_category_id != 41){
-                    if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                    if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $sndBefore12HourEmailCustomer = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                         $customer_email_messageids['before12hour'] = $sndBefore12HourEmailCustomer;
                     }
@@ -1460,14 +1462,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             }else{
                 if($finder_category_id != 41){
-                    if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                    if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $sndBefore12HourEmailCustomer = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
                         $customer_email_messageids['before12hour'] = $sndBefore12HourEmailCustomer;
                     }
                 }
 
                 if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
-                    if (isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                    if (isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
                     }
                 }
@@ -1480,7 +1482,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                 $finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
 
-                if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                     if ($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     } else {
