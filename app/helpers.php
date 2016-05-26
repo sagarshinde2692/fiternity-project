@@ -697,6 +697,7 @@ if (!function_exists(('evalBaseCategoryScore'))){
             'locationcluster'               =>      $locationcluster,
             'locationcluster_snow'          =>      $locationcluster,
             'price_rangeval'                =>      $rangeval,
+            'manual_trial_bool'             =>      (isset($data['manual_trial_enable'])&&($data['manual_trial_enable'] !== '')) ? $data['manual_trial_enable'] : '0',
             'servicelist'                   =>      $servicenamelist,
             'show_offers'                   =>      $offer_counter,
             'budget'                        =>      (isset($data['budget']) ? $data['budget'] : 0),
@@ -1107,7 +1108,7 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
                         $cluster = array('suburb' => $locationcluster, 'locationtag' => array('loc' => (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : ""));        
                         
                         $postfields_data = array(
-                            'service_id'                           =>      $data['_id'],            
+                            'service_id'                    =>      $data['_id'],            
                             'category'                      =>      (isset($data['category']['name']) && $data['category']['name'] != '') ? strtolower($data['category']['name']) : "",             
                             'subcategory'                   =>      (isset($data['subcategory']['name']) && $data['subcategory']['name'] != '') ? strtolower($data['subcategory']['name']) : "",             
                             'geolocation'                   =>      $geolocation,
@@ -1131,6 +1132,7 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
                             'cluster'                       =>      $cluster,
                             'durationheader'                =>      $durationheader,
                             'budgetheader'                  =>      intval($budgetheader),
+                            'vip_trial_flag'                =>      isset($data['vip_trial']) ? intval($data['vip_trial']) : 0,
                             'sm_flagv1'                     =>      $servicemarketflag,
                             'budgetfinder'                  =>      isset($finderdata['budget']) ? intval($finderdata['budget']) : 0,
                             'finder_facilities'             =>      (isset($finderdata['facilities']) && !empty($finderdata['facilities'])) ? array_map('strtolower',array_pluck($finderdata['facilities'],'name')) : "",
