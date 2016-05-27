@@ -473,6 +473,7 @@ class SchedulebooktrialsController extends \BaseController {
         $otp	 					=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
         $customer_address	 		=	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
         $customer_note	 			=	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
+        $note_to_trainer              =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
         $device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
@@ -532,6 +533,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             'device_type'				=>		$device_type,
             'gcm_reg_id'				=>		$gcm_reg_id,
+            'note_to_trainer'                =>      $note_to_trainer,
         );
 
 
@@ -745,6 +747,7 @@ class SchedulebooktrialsController extends \BaseController {
             $customer->email = $data['customer_email'];
             $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
             $customer->password = md5(time());
+            $customer->gender = $data['gender'];
 
             if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
                 $customer->contact_no = $data['customer_phone'];
@@ -784,6 +787,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($data['otp']) &&  $data['otp'] != ""){
                     $customerData['contact_no_verify_status'] = "yes";
+                }
+
+                if(isset($data['gender']) && $data['gender'] != ""){
+                    $customerData['gender'] = $data['gender'];
                 }
 
                 if(isset($data['customer_address'])){
@@ -1125,7 +1132,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
                 return Response::json($resp);
             }
-
+            
+            $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
+            
             $service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
             $campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
@@ -1155,6 +1164,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $finder_commercial_type				= 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
             $finder_category_id						= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
+            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             $final_lead_stage = '';
             $final_lead_status = '';
@@ -1328,7 +1338,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'device_id'						=>		$device_id,
                 'booktrial_type'				=>		'auto',
                 'booktrial_actions'				=>		'call to confirm trial',
-                'source'						=>		'website',
+                'source'						=>		$source,
                 'origin'						=>		'auto',
                 'additional_info'				=>		$additional_info,
                 'amount'						=>		$order->amount,
@@ -1345,7 +1355,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'social_referrer'				=>		$social_referrer,
                 'transacted_after'				=>		$transacted_after,
                 'referrer_object'				=>		$referrer_object,
-                'google_pin'					=>		$google_pin
+                'google_pin'					=>		$google_pin,
+                'note_to_trainer'               =>      $note_to_trainer,
 
             );
 
@@ -1403,7 +1414,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
             $delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
             $delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
-            $delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+            $delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(120);
             $delayReminderTimeAfter50Hour        =   \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
             $reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
             $oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);
@@ -1428,7 +1439,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             //Send Instant (Email) To Customer & Finder
 
-            if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip'){
+            if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){
                 $sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
                 $sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
                 $customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
@@ -1448,7 +1459,7 @@ class SchedulebooktrialsController extends \BaseController {
             if($twelveHourDiffInMin >= (12 * 60)){
 
                 if($finder_category_id != 41){
-                    if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                    if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $sndBefore12HourEmailCustomer = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                         $customer_email_messageids['before12hour'] = $sndBefore12HourEmailCustomer;
                     }
@@ -1460,14 +1471,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             }else{
                 if($finder_category_id != 41){
-                    if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                    if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $sndBefore12HourEmailCustomer = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
                         $customer_email_messageids['before12hour'] = $sndBefore12HourEmailCustomer;
                     }
                 }
 
                 if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
-                    if (isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                    if (isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
                     }
                 }
@@ -1480,7 +1491,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndBefore1HourSmsFinder					=	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                 $finer_sms_messageids['before1hour'] 		= 	$sndBefore1HourSmsFinder;
 
-                if(isset($booktrialdata['customer_source']) && $booktrialdata['customer_source'] != 'cleartrip') {
+                if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                     if ($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     } else {
@@ -1657,6 +1668,7 @@ class SchedulebooktrialsController extends \BaseController {
             $social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
             $referrer_object					= 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
             $transacted_after					= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             if($device_type != '' && $gcm_reg_id != ''){
 
@@ -1822,7 +1834,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_category_id'			=>		$finder_category_id,
                 'referrer_object'				=>		$referrer_object,
 
-                'google_pin'					=>		$google_pin
+                'google_pin'					=>		$google_pin,
+                'note_to_trainer'               =>      $note_to_trainer,
 
             );
 
@@ -1882,7 +1895,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delayReminderTimeBefore1Hour 		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
             $delayReminderTimeBefore5Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
             $delayReminderTimeBefore12Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
-            $delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+            $delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(120);
             $delayReminderTimeAfter50Hour       =   \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
             $reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
             $oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);
@@ -2079,6 +2092,7 @@ class SchedulebooktrialsController extends \BaseController {
             $send_post_reminder_communication	=	(isset($data['send_post_reminder_communication']) && $data['send_post_reminder_communication'] != '') ? $data['send_post_reminder_communication'] : "";
             $send_purchase_communication		=	(isset($data['send_purchase_communication']) && $data['send_purchase_communication'] != '') ? $data['send_purchase_communication'] : "";
             $deadbooktrial						=	(isset($data['deadbooktrial']) && $data['deadbooktrial'] != '') ? $data['deadbooktrial'] : "";
+            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             //its helpful to send any kind for dateformat date time as srting or iso formate timezond
             $slot_times 						=	explode('-',$data['schedule_slot']);
@@ -2093,7 +2107,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delayReminderTimeBefore1Min 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
             $delayReminderTimeBefore1Hour 		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
             $delayReminderTimeBefore12Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
-            $delayReminderTimeAfter2Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 2);
+            $delayReminderTimeAfter2Hour		=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(120);
             $delayReminderTimeAfter50Hour       =   Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(60 * 50);
             $reminderTimeAfter1Hour 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(60);
             $oneHourDiff 						= 	$currentDateTime->diffInHours($scheduleDateTime, false);
@@ -2295,7 +2309,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'final_lead_status'				=>		$final_lead_status,
                 'reg_id'						=> 		$gcm_reg_id,
                 'device_type'					=> 		$device_type,
-                'google_pin'					=>		$google_pin
+                'google_pin'					=>		$google_pin,
+                'note_to_trainer'               =>      $note_to_trainer
             );
 
 
