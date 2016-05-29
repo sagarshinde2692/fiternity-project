@@ -5,6 +5,10 @@ Use \App\Responsemodels\AutocompleteResult;
 Use \App\Responsemodels\FinderresultResponse;
 Use \App\Responsemodels\FinderResult;
 Use \App\Responsemodels\FinderObject;
+Use \App\Responsemodels\ViptrialResponse;
+Use \App\Responsemodels\VipResult;
+Use \App\Responsemodels\WorkoutSessionObject;
+
 // Translator methods to model API responses for client
 
 class Translator {
@@ -175,45 +179,45 @@ class Translator {
 	if(isset($aggs['trialdays'])){
 
 
-	$finderresult_response->results->aggregationlist->trialdays = array();
+		$finderresult_response->results->aggregationlist->trialdays = array();
 
-	foreach ($aggs['trialdays']['buckets'] as $off){
-		$offval = new \stdClass();
-		$offval->key = $off['key'];
-		$offval->count = $off['doc_count'];
-		array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
-	}
+		foreach ($aggs['trialdays']['buckets'] as $off){
+			$offval = new \stdClass();
+			$offval->key = $off['key'];
+			$offval->count = $off['doc_count'];
+			array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+		}
 	}
 	return $finderresult_response;
 }
 
 public static function translate_searchresultskeywordsearch($es_searchresult_response){
-		$finderresult_response = new FinderresultResponse();
-		
-		$finderresult_response->results->aggregationlist = new \stdClass();
-		if(empty($es_searchresult_response['hits']['hits']))
-		{
-			$finderresult_response->results->resultlist = array();
-			$finderresult_response->meta->total_records = 0;
-		}
-		else{
-			$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
-			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
-				$result = $resultv1['_source'];			
-				$finder = new FinderResult();
-				$finder->object_type = 'vendor';
-				$resultobject = new FinderObject();			
-				$resultobject->id = $result['_id'];				
-				$resultobject->category = $result['category'];
-				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
-				$resultobject->location = $result['location'];	
-				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
-				$resultobject->average_rating = $result['average_rating'];
-				$resultobject->membership_discount = $result['membership_discount'];
-				$resultobject->country = $result['country'];
-				$resultobject->city = $result['city'];
+	$finderresult_response = new FinderresultResponse();
+
+	$finderresult_response->results->aggregationlist = new \stdClass();
+	if(empty($es_searchresult_response['hits']['hits']))
+	{
+		$finderresult_response->results->resultlist = array();
+		$finderresult_response->meta->total_records = 0;
+	}
+	else{
+		$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
+		foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+			$result = $resultv1['_source'];			
+			$finder = new FinderResult();
+			$finder->object_type = 'vendor';
+			$resultobject = new FinderObject();			
+			$resultobject->id = $result['_id'];				
+			$resultobject->category = $result['category'];
+			$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
+			$resultobject->location = $result['location'];	
+			$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
+			$resultobject->average_rating = $result['average_rating'];
+			$resultobject->membership_discount = $result['membership_discount'];
+			$resultobject->country = $result['country'];
+			$resultobject->city = $result['city'];
 			//$resultobject->city_id = $result['city_id'];
-				$resultobject->info_service = $result['info_service'];
+			$resultobject->info_service = $result['info_service'];
 			$resultobject->info_service_list = array();//$result['info_service_list'];
 			$resultobject->contact->address = $result['contact']['address'];
 			$resultobject->contact->email = isset($result['contact']['email']) ? $result['contact']['email'] : '';
@@ -338,33 +342,33 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 }
 
 public static function translate_searchresultsv2($es_searchresult_response){
-		$finderresult_response = new FinderresultResponse();
-		
-		$finderresult_response->results->aggregationlist = new \stdClass();
-		if(empty($es_searchresult_response['hits']['hits']))
-		{
-			$finderresult_response->results->resultlist = array();
-			$finderresult_response->meta->total_records = 0;
-		}
-		else{
-			$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
-			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
-				$result = $resultv1['_source'];			
-				$finder = new FinderResult();
-				$finder->object_type = 'vendor';
-				$resultobject = new FinderObject();			
-				$resultobject->id = $result['_id'];				
-				$resultobject->category = $result['category'];
-				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
-				$resultobject->location = $result['location'];	
-				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
-				$resultobject->average_rating = $result['average_rating'];
-				$resultobject->membership_discount = $result['membership_discount'];
-				$resultobject->country = $result['country'];
-				$resultobject->city = $result['city'];
+	$finderresult_response = new FinderresultResponse();
+
+	$finderresult_response->results->aggregationlist = new \stdClass();
+	if(empty($es_searchresult_response['hits']['hits']))
+	{
+		$finderresult_response->results->resultlist = array();
+		$finderresult_response->meta->total_records = 0;
+	}
+	else{
+		$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
+		foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+			$result = $resultv1['_source'];			
+			$finder = new FinderResult();
+			$finder->object_type = 'vendor';
+			$resultobject = new FinderObject();			
+			$resultobject->id = $result['_id'];				
+			$resultobject->category = $result['category'];
+			$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
+			$resultobject->location = $result['location'];	
+			$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
+			$resultobject->average_rating = $result['average_rating'];
+			$resultobject->membership_discount = $result['membership_discount'];
+			$resultobject->country = $result['country'];
+			$resultobject->city = $result['city'];
 			//$resultobject->city_id = $result['city_id'];
-				$resultobject->capoffer = isset($result['capoffer']) ? $result['capoffer'] : false;
-				$resultobject->info_service = $result['info_service'];
+			$resultobject->capoffer = isset($result['capoffer']) ? $result['capoffer'] : false;
+			$resultobject->info_service = $result['info_service'];
 			$resultobject->info_service_list = array();//$result['info_service_list'];
 			$resultobject->contact->address = $result['contact']['address'];
 			$resultobject->contact->email = isset($result['contact']['email']) ? $result['contact']['email'] : "";
@@ -404,18 +408,18 @@ public static function translate_searchresultsv2($es_searchresult_response){
 	$aggs = $es_searchresult_response['aggregations'];
 
 	$finderresult_response->results->aggregationlist->budget = array();
-		$budval0 = new \stdClass();
-		$budval1 = new \stdClass();
-		$budval2 = new \stdClass();
-		$budval3 = new \stdClass();
-		$budval4 = new \stdClass();
-		$budval5 = new \stdClass();
+	$budval0 = new \stdClass();
+	$budval1 = new \stdClass();
+	$budval2 = new \stdClass();
+	$budval3 = new \stdClass();
+	$budval4 = new \stdClass();
+	$budval5 = new \stdClass();
 	foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
 		switch ($bud['key']) {
 			case 'one':
 			$budval0->key = 'less than 1000';
 			$budval0->count = $bud['doc_count'];			
-		
+
 			break;
 			case 'two':
 			$budval1->key = '1000-2500';
@@ -445,12 +449,12 @@ public static function translate_searchresultsv2($es_searchresult_response){
 			break;
 		}
 	}
-		array_push($finderresult_response->results->aggregationlist->budget, $budval0);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval1);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval2);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval3);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval4);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval0);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval1);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval2);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval3);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval4);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 
 	$finderresult_response->results->aggregationlist->filters = array();
 	foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
@@ -495,46 +499,46 @@ public static function translate_searchresultsv2($es_searchresult_response){
 	}
 	
 	if(isset($aggs['filtered_trials']['trialdays'])){
-	$finderresult_response->results->aggregationlist->trialdays = array();
+		$finderresult_response->results->aggregationlist->trialdays = array();
 
-	foreach ($aggs['filtered_trials']['trialdays']['buckets'] as $off){
-		$offval = new \stdClass();
-		$offval->key = $off['key'];
-		$offval->count = $off['doc_count'];
-		array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
-	}
+		foreach ($aggs['filtered_trials']['trialdays']['buckets'] as $off){
+			$offval = new \stdClass();
+			$offval->key = $off['key'];
+			$offval->count = $off['doc_count'];
+			array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+		}
 	}
 	return $finderresult_response;
 }
 
 
 public static function translate_searchresultsv3($es_searchresult_response){
-		$finderresult_response = new FinderresultResponse();
-		
-		$finderresult_response->results->aggregationlist = new \stdClass();
-		if(empty($es_searchresult_response['hits']['hits']))
-		{
-			$finderresult_response->results->resultlist = array();
-			$finderresult_response->meta->total_records = 0;
-		}
-		else{
-			$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
-			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
-				$result = $resultv1['_source'];			
-				$finder = new FinderResult();
-				$finder->object_type = 'vendor';
-				$resultobject = new FinderObject();			
-				$resultobject->id = $result['_id'];				
-				$resultobject->category = $result['category'];
-				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
-				$resultobject->location = $result['location'];	
-				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
-				$resultobject->average_rating = $result['average_rating'];
-				$resultobject->membership_discount = $result['membership_discount'];
-				$resultobject->country = $result['country'];
-				$resultobject->city = $result['city'];
+	$finderresult_response = new FinderresultResponse();
+
+	$finderresult_response->results->aggregationlist = new \stdClass();
+	if(empty($es_searchresult_response['hits']['hits']))
+	{
+		$finderresult_response->results->resultlist = array();
+		$finderresult_response->meta->total_records = 0;
+	}
+	else{
+		$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
+		foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+			$result = $resultv1['_source'];			
+			$finder = new FinderResult();
+			$finder->object_type = 'vendor';
+			$resultobject = new FinderObject();			
+			$resultobject->id = $result['_id'];				
+			$resultobject->category = $result['category'];
+			$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
+			$resultobject->location = $result['location'];	
+			$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
+			$resultobject->average_rating = $result['average_rating'];
+			$resultobject->membership_discount = $result['membership_discount'];
+			$resultobject->country = $result['country'];
+			$resultobject->city = $result['city'];
 			//$resultobject->city_id = $result['city_id'];
-				$resultobject->info_service = $result['info_service'];
+			$resultobject->info_service = $result['info_service'];
 			$resultobject->info_service_list = array();//$result['info_service_list'];
 			$resultobject->contact->address = $result['contact']['address'];
 			$resultobject->contact->email = isset($result['contact']['email']) ? $result['contact']['email'] : "";
@@ -574,18 +578,18 @@ public static function translate_searchresultsv3($es_searchresult_response){
 	$aggs = $es_searchresult_response['aggregations'];
 
 	$finderresult_response->results->aggregationlist->budget = array();
-		$budval0 = new \stdClass();
-		$budval1 = new \stdClass();
-		$budval2 = new \stdClass();
-		$budval3 = new \stdClass();
-		$budval4 = new \stdClass();
-		$budval5 = new \stdClass();
+	$budval0 = new \stdClass();
+	$budval1 = new \stdClass();
+	$budval2 = new \stdClass();
+	$budval3 = new \stdClass();
+	$budval4 = new \stdClass();
+	$budval5 = new \stdClass();
 	foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
 		switch ($bud['key']) {
 			case 'one':
 			$budval0->key = 'less than 1000';
 			$budval0->count = $bud['doc_count'];			
-		
+
 			break;
 			case 'two':
 			$budval1->key = '1000-2500';
@@ -615,12 +619,12 @@ public static function translate_searchresultsv3($es_searchresult_response){
 			break;
 		}
 	}
-		array_push($finderresult_response->results->aggregationlist->budget, $budval0);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval1);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval2);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval3);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval4);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval0);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval1);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval2);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval3);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval4);
+	array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 
 	$finderresult_response->results->aggregationlist->filters = array();
 	foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
@@ -665,16 +669,129 @@ public static function translate_searchresultsv3($es_searchresult_response){
 	}
 	
 	if(isset($aggs['filtered_trials']['level1'])){
-	$finderresult_response->results->aggregationlist->trialdays = array();
+		$finderresult_response->results->aggregationlist->trialdays = array();
 
-	foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
-		$offval = new \stdClass();
-		$offval->key = $off['key'];
-		$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
-		array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
-	}
+		foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
+			$offval = new \stdClass();
+			$offval->key = $off['key'];
+			$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
+			array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+		}
 	}
 	return $finderresult_response;
+}
+
+public static function translate_vip_trials($es_searchresult_response){
+
+	$vip_trial_response = new ViptrialResponse();
+
+	$vip_trial_response->results->aggregationlist = new \stdClass();
+
+	if(empty($es_searchresult_response['hits']['hits']))
+	{
+		$vip_trial_response->results->resultlist = array();
+		$vip_trial_response->meta->total_records = 0;
+	}
+	else{
+		$vip_trial_response->meta->total_records = $es_searchresult_response['hits']['total'];
+
+		foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+			$result = $resultv1['_source'];			
+			$finder = new VipResult();
+			$finder->object_type = 'vendor';
+			$resultobject = new WorkoutSessionObject();		
+
+			$resultobject->id = $result['service_id'];				
+			$resultobject->category = $result['category'];
+			$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
+			$resultobject->location = $result['location'];	
+			$resultobject->findername = $result['findername'];
+			$resultobject->finderslug = $result['finderslug'];
+			$resultobject->city = $result['city'];
+			$resultobject->name = $result['name'];
+			$resultobject->slug = $result['slug'];
+			$resultobject->workoutintensity = $result['workout_intensity'];
+			$resultobject->locationcluster = $result['locationcluster'];
+			$resultobject->rating = $result['rating'];
+			$resultobject->findercoverimage = $result['finder_coverimage'];
+
+			$resultobject->finder_gallery = $result['finder_gallary'];
+
+			$finder->object = $resultobject;
+			array_push($vip_trial_response->results->resultlist, $finder);			
+		}
+	}
+	
+	$aggs = $es_searchresult_response['aggregations'];
+
+	
+	$vip_trial_response->results->aggregationlist->time_range = array();
+
+	foreach ($aggs['filtered_time']['time_range']['buckets'] as $fac) {
+		$facval = new \stdClass();
+		$facval->key = $fac['key'];
+		$facval->count = $fac['doc_count'];
+		array_push($vip_trial_response->results->aggregationlist->time_range, $facval);			
+	}
+
+	$vip_trial_response->results->aggregationlist->category = array();
+
+	foreach ($aggs['filtered_category']['category']['buckets'] as $fac) {
+		$facval = new \stdClass();
+		$facval->key = $fac['key'];
+		$facval->count = $fac['doc_count'];
+		array_push($vip_trial_response->results->aggregationlist->category, $facval);			
+	}
+
+	$vip_trial_response->results->aggregationlist->locationcluster = array();
+	foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
+		$clusterval = new \stdClass();
+		$clusterval->key = $cluster['key'];
+		$clusterval->count = $cluster['doc_count'];
+		$clusterval->regions = array();
+		foreach ($cluster['region']['buckets'] as $reg) {
+			$regval = new \stdClass();
+			$regval->key = $reg['key'];
+			$regval->count = $reg['doc_count'];
+			array_push($clusterval->regions, $regval);
+		}
+		array_push($vip_trial_response->results->aggregationlist->locationcluster, $clusterval);
+	}
+
+	$vip_trial_response->results->aggregationlist->subcategory = array();
+
+	foreach ($aggs['filtered_subcategory']['subcategory']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($vip_trial_response->results->aggregationlist->subcategory, $offval);
+	}
+
+	$vip_trial_response->results->aggregationlist->workout = array();
+
+	
+	foreach ($aggs['filtered_workout']['workout']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($vip_trial_response->results->aggregationlist->workout, $offval);
+	}
+	
+	
+	$vip_trial_response->results->aggregationlist->vendor = array();
+
+	foreach ($aggs['filtered_vendor']['vendors']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($vip_trial_response->results->aggregationlist->vendor, $offval);
+	}
+	$vip_trial_response->results->aggregationlist->price = new \stdClass();
+
+	$vip_trial_response->results->aggregationlist->price->min = $aggs['filtered_price_min']['price_min']['value'];
+	$vip_trial_response->results->aggregationlist->price->max = $aggs['filtered_price_max']['price_max']['value'];
+	return $vip_trial_response;
+
 }
 }
 

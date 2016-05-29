@@ -38,6 +38,7 @@ class ServiceRankingController extends \BaseController {
     protected $es_port = '';
 
     public function __construct() {
+
         parent::__construct();
         $this->elasticsearch_default_url        =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/'.Config::get('app.elasticsearch_default_index').'/';
         $this->elasticsearch_url                =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/';
@@ -57,6 +58,7 @@ class ServiceRankingController extends \BaseController {
         $this->popularity_min                   =   0;
         $this->es_host = Config::get('app.es_host');
         $this->es_port = Config::get('app.es_port');
+
     }
 
     public function IndexServiceRankMongo2Elastic($city, $index, $timestamp){
@@ -68,7 +70,7 @@ class ServiceRankingController extends \BaseController {
         $es_port = Config::get('app.es_port');
 
         $vip_trials_index = 'fitternity_vip_trials'.$timestamp;
-       
+
 
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
@@ -89,88 +91,86 @@ class ServiceRankingController extends \BaseController {
         foreach ($items as $finderdocument) {    
 
             try{
-            $finderdata = $finderdocument->toArray();
-            $score = $this->generateRank($finderdocument);                
-            $serviceitems = Service::with('category')
-            ->with('subcategory')
-            ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
-            ->where('finder_id',$finderdata['_id'])                                    ->active()
-            ->latest()
-            ->get();
 
-            if(isset($serviceitems) && (!empty($serviceitems))){                                   
-                foreach ($serviceitems as $servicedocument) {                                 
-                    $servicedata = $servicedocument->toArray();
-                    $clusterid = '';             
-                    if(!isset($servicedata['location']['locationcluster_id']))
-                    {
-                     continue;
-                 }
-                 else
-                 {
-                    $clusterid  = $servicedata['location']['locationcluster_id'];
-                }
+                $finderdata = $finderdocument->toArray();
+                $score = $this->generateRank($finderdocument);                
+                $serviceitems = Service::with('category')
+                ->with('subcategory')
+                ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+                ->where('finder_id',$finderdata['_id'])                                    ->active()
+                ->latest()
+                ->get();
 
-                $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();                
-                $locationcluster->toArray(); 
+                if(isset($serviceitems) && (!empty($serviceitems))){ 
 
-                $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);
-                $postdata_workoutsession_schedules = get_elastic_service_workoutsession_schedules($servicedata, $finderdata, $locationcluster[0]['name']);             
+                    foreach ($serviceitems as $servicedocument) {                                 
+                        $servicedata = $servicedocument->toArray();
+                        $clusterid = '';             
+                        if(!isset($servicedata['location']['locationcluster_id']))
+                        {
+                         continue;
+                        }
+                     else
+                        {
+                        $clusterid  = $servicedata['location']['locationcluster_id'];
+                        }
+
+                    $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();                
+                    $locationcluster->toArray(); 
+
+                    $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);
+                    $postdata_workoutsession_schedules = get_elastic_service_workoutsession_schedules($servicedata, $finderdata, $locationcluster[0]['name']);             
 
 
 
 
-                /******************Index each vip trial session**************/
+                    /******************Index each vip trial session**************/
 
 
                 // return json_encode($postdata_workoutsession_schedules);
 
-                if(isset($postdata_workoutsession_schedules)){
+                    if(isset($postdata_workoutsession_schedules)){
 
-                    foreach ($postdata_workoutsession_schedules as $workout_session) {
+                        foreach ($postdata_workoutsession_schedules as $workout_session) {
 
-                        $workout_session['rank'] = $score;
-                        $catval = evalBaseCategoryScore($finderdata['category_id']);
-                        $workout_session['rankv1'] = $catval;
-                        $workout_session['rankv2'] = $score + $catval;
+                            $workout_session['rank'] = $score;
+                            $catval = evalBaseCategoryScore($finderdata['category_id']);
+                            $workout_session['rankv1'] = $catval;
+                            $workout_session['rankv2'] = $score + $catval;
 
-                        $postfields_data_vip_trial = json_encode($workout_session);
+                            $postfields_data_vip_trial = json_encode($workout_session);
 
-                        $posturl_vip_trial = 'http://'.$es_host.':'.$es_port.'/'.$vip_trials_index.'/service';
+                            $posturl_vip_trial = 'http://'.$es_host.':'.$es_port.'/'.$vip_trials_index.'/service';
 
-                        $request_vip_trial = array('url' => $posturl_vip_trial, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_vip_trial);
+                            $request_vip_trial = array('url' => $posturl_vip_trial, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_vip_trial);
 
-                        echo "<br>    ---  ".es_curl_request($request_vip_trial);
+                            echo "<br>    ---  ".es_curl_request($request_vip_trial);
 
+                        }
                     }
+
+                    /*****************Index each vip trial session***************/
+
+                    $postdata['rank'] = $score;
+                    $catval = evalBaseCategoryScore($finderdata['category_id']);
+                    $postdata['rankv1'] = $catval;
+                    $postdata['rankv2'] = $score + $catval;                      
+                    $postfields_data = json_encode($postdata);                                     
+                    $posturl = 'http://'.$es_host.':'.$es_port.'/'.$index.'/service/'.$servicedata['_id'];
+                    $request = array('url' => $posturl, 'port' => $es_port, 'method' => 'PUT', 'postfields' => $postfields_data );
+                    es_curl_request($request);
                 }
-
-
-
-                /*****************Index each vip trial session***************/
-
-
-                $postdata['rank'] = $score;
-                $catval = evalBaseCategoryScore($finderdata['category_id']);
-                $postdata['rankv1'] = $catval;
-                $postdata['rankv2'] = $score + $catval;                      
-                $postfields_data = json_encode($postdata);                                     
-
-                $posturl = 'http://'.$es_host.':'.$es_port.'/'.$index.'/service/'.$servicedata['_id'];
-                $request = array('url' => $posturl, 'port' => 9200, 'method' => 'PUT', 'postfields' => $postfields_data );
-                es_curl_request($request);
             }
-        }
         }
 
         catch(Exception $e){
            Log::error($e);
        }
-    }
+   }
 }
 
 public function generateRank($finderDocument = ''){
-      
+
     $score = (8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/13;
     return $score;
 
@@ -284,7 +284,7 @@ public function RollingBuildServiceIndex(){
     $host = Config::get('app.es_host');
 
     $url = 'http://'.$host.':'.$port.'/';
-
+    return $url;
     $timestamp =  date('Y-m-d');
 
     $index = 'fitternity_service'.$timestamp;
