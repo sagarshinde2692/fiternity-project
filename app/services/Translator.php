@@ -714,7 +714,12 @@ public static function translate_vip_trials($es_searchresult_response){
 			$resultobject->locationcluster = $result['locationcluster'];
 			$resultobject->rating = $result['rating'];
 			$resultobject->findercoverimage = $result['finder_coverimage'];
-
+			$resultobject->workout_session_schedules_price = $result['workout_session_schedules_price'];
+			$resultobject->workout_session_schedules_weekday = $result['workout_session_schedules_weekday'];
+			$resultobject->workout_session_schedules_end_time_24_hrs = $result['workout_session_schedules_end_time_24_hrs'];
+			$resultobject->workout_session_schedules_start_time_24_hrs = $result['workout_session_schedules_start_time_24_hrs'];
+			$resultobject->workout_session_schedules_end_time = $result['workout_session_schedules_end_time'];
+			$resultobject->workout_session_schedules_start_time = $result['workout_session_schedules_start_time'];
 			$resultobject->finder_gallery = $result['finder_gallary'];
 
 			$finder->object = $resultobject;

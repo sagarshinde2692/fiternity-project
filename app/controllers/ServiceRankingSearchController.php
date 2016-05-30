@@ -509,7 +509,7 @@ class ServiceRankingSearchController extends \BaseController {
               "field": "category",
               "min_doc_count": 0,
               "size": 500,
-              "order":{"_term": "asc"}
+              "order":{"_count": "desc"}
             }
           }
         }
@@ -530,7 +530,7 @@ class ServiceRankingSearchController extends \BaseController {
               "min_doc_count":1,
               "size":"500",
               "order": {
-                "_term": "asc"
+                "_count": "desc"
               }
 
             }
@@ -546,7 +546,7 @@ class ServiceRankingSearchController extends \BaseController {
               "field": "subcategory",
               "min_doc_count": 0,
               "size": 500,
-              "order":{"_term": "asc"}
+              "order":{"_count": "desc"}
             }
           }
         }
@@ -560,7 +560,7 @@ class ServiceRankingSearchController extends \BaseController {
               "field": "workout_intensity",
               "min_doc_count": 0,
               "size": 500,
-              "order":{"_term": "asc"}
+              "order":{"_count": "desc"}
             }
           }
         }
@@ -596,7 +596,7 @@ class ServiceRankingSearchController extends \BaseController {
               "field": "findername",
               "min_doc_count": 0,
               "size": 500,
-              "order":{"_term": "asc"}
+              "order":{"_count": "desc"}
             }
           }
         }
