@@ -514,7 +514,7 @@ class HomeController extends BaseController {
 
 	public function landingcrushFinders(){
 
-		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
+		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441,7870,7872,8646,8647,8648,8666,8729,8731,8741);
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 		$finders 			= 		Finder::whereIn('_id', $finder_ids)
 		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
@@ -536,7 +536,7 @@ class HomeController extends BaseController {
 
 	public function landingAnytimeFitnessFinders(){
         
-		$finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909);
+		$finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909,8821,8823,8871);
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 		$finders 			= 		Finder::whereIn('_id', $finder_ids)
 			->with('categorytags')
