@@ -289,7 +289,7 @@ Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildSe
 ########################################################################################
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
-Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
+Route::get('getvendorview/{vendor_slug}/{start_date?}/{end_date?}','KYUController@getvendorviewcount');
 Route::post('getcitywiseviews','KYUController@getcitywiseviews');
 //Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
 

@@ -102,12 +102,14 @@ class KYUController extends \BaseController
     echo es_curl_request($request); 
   }
 
-  public function getvendorviewcount($vendor_id){
+  public function getvendorviewcount($vendor_id,$start_date = NULL, $end_date = NULL){
 
     $slug_data =Finder::active()                      
        ->where('_id', intval($vendor_id))                                 
        ->get(); 
 
+    $start_date = isset($start_date) ? strtotime($start_date) : 1413904497799;
+    $end_date = isset($end_date) ? strtotime($end_date) : undefined;
     
     $vendor_slug = $slug_data[0]['slug'];
 
@@ -126,7 +128,7 @@ class KYUController extends \BaseController
             {
               "range": {
                 "timestamp": {
-                  "gte": 1413904497799                                 
+                  "gte": '.$start_date.'
                 }
               }
             }
