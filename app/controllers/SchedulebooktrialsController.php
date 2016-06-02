@@ -1169,7 +1169,7 @@ class SchedulebooktrialsController extends \BaseController {
             $final_lead_stage = '';
             $final_lead_status = '';
 
-            $confirmed = array(1,3);
+            $confirmed = array(1,2,3);
 
             if(in_array($finder_commercial_type, $confirmed)){
 
@@ -1649,7 +1649,7 @@ class SchedulebooktrialsController extends \BaseController {
             $final_lead_stage = '';
             $final_lead_status = '';
 
-            $confirmed = array(1,3);
+            $confirmed = array(1,2,3);
 
             if(in_array($finder_commercial_type, $confirmed)){
 
@@ -1853,16 +1853,16 @@ class SchedulebooktrialsController extends \BaseController {
         if($trialbooked == true){
 
             //if vendor type is free special dont send communication
-            Log::info('finder commercial_type  -- '. $finder['commercial_type']);
-            if($finder['commercial_type'] != '2'){
+           /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
+            if($finder['commercial_type'] != '2'){*/
                 $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
                 $booktrial->update(array('redis_id'=>$redisid));
-            }else{
+            /*}else{
 
                 $customer_sms_free_special = $this->customersms->bookTrialFreeSpecial($booktrialdata);
                 $booktrial->customer_sms_free_special = $customer_sms_free_special;
                 $booktrial->update();
-            }
+            }*/
         }
 
         if($trialbooked == true && $campaign != ''){
