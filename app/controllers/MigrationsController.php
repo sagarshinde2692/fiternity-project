@@ -833,7 +833,7 @@ class MigrationsController extends \BaseController {
 	
 
 
-	public function acquisation(){
+	public function order(){
 
 
 		$finder_id = Finder::whereIn('category_id',array(42,45))->lists('_id');

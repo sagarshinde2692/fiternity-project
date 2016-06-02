@@ -998,6 +998,12 @@ class SchedulebooktrialsController extends \BaseController {
         $orderid 	=	(int) Input::json()->get('order_id');
         $order 		= 	Order::findOrFail($orderid);
 
+        $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+
+        if($count > 0){
+            array_set($data, 'acquisation_type', 'renewal_direct');
+        }
+
         if(Input::json()->get('status') == 'success') {
 
 //            echo "ih";exit();
@@ -1039,6 +1045,12 @@ class SchedulebooktrialsController extends \BaseController {
 
         $orderid 	=	(int) Input::json()->get('order_id');
         $order 		= 	Order::findOrFail($orderid);
+
+        $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+
+        if($count > 0){
+            array_set($data, 'acquisation_type', 'renewal_direct');
+        }
 
         if(Input::json()->get('status') == 'success') {
 
@@ -1131,6 +1143,12 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
                 return Response::json($resp);
+            }
+
+            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+
+            if($count > 0){
+                $order->update(array('acquisation_type'=>'renewal_direct'));
             }
             
             $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
@@ -1357,6 +1375,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'referrer_object'				=>		$referrer_object,
                 'google_pin'					=>		$google_pin,
                 'note_to_trainer'               =>      $note_to_trainer,
+                'membership_duration_type'      =>      'workout_session'
 
             );
 
