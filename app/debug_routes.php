@@ -164,6 +164,102 @@ Route::get('import/defination', function(){
 
 
 
+Route::get('checkgeolocation/', function(){
+
+	$limit 		=  20;
+
+	$finders 	= Finder::where('lat', 'exists', true)
+	->where('lon', 'exists', true)
+	->orderBy('_id')
+	->take($limit)
+	->get(['lon','lat','_id','title', 'contact.address']);
+
+
+	$get_latlon_cnt = $no_latlon_cnt = $no_add = $error_add_cnt = 0;
+
+	$error_finder_ids = [];
+
+	foreach ($finders as $key => $finder) {
+
+		$is_error = 0;
+		
+		if(isset($finder['contact']['address']) && $finder['contact']['address'] != ''){
+
+
+			$clean_html 	= strip_tags($finder['contact']['address']);
+			$address 		= str_replace(" ", "+", $clean_html); // replace all the white space with "+" sign to match with google search pattern
+			$json 			= [];	
+
+			try {
+				$url 			= "http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address";
+				$response 		= file_get_contents($url);
+				$json 			= json_decode($response,TRUE); //generate array object from the response from the web
+
+			} catch (\Exception $e){
+				$error_add_cnt += 1; 
+				$is_error = 1;
+        	}
+
+
+
+        	if($is_error == 1){
+				array_push($error_finder_ids, $finder['_id']);
+        	}
+
+
+			// return ($json['results'][0]['geometry']['location']['lat'].",".$json['results'][0]['geometry']['location']['lng']);
+
+			if(isset($json['results'][0]['geometry']['location']['lat']) && isset($json['results'][0]['geometry']['location']['lng'])){
+
+				$response_lat 	= 	$json['results'][0]['geometry']['location']['lat'];
+				$response_log 	=	$json['results'][0]['geometry']['location']['lng'];
+
+
+				// echo "<br><br> =============================================================================================";
+				// echo "<br>".$finder['_id'] . " -- ".  $finder['title'];
+				// echo "<br> Db lat : " .$finder['lat']." Db lon : ".$finder['lon'];
+				// echo "<br> Response lat : " .$response_lat. " Response lon : " .$response_log;
+
+				$get_latlon_cnt += 1; 
+
+			}else{
+
+				// echo "<br><br> =============================================================================================";
+				// echo "<br>".$finder['_id'] . " -- ".  $finder['title']. " -- ".  $address;
+				// echo "<br><strong style='color:red'>No Response using address </strong>";
+
+				$no_latlon_cnt += 1; 
+
+			}
+
+
+		}else{
+			// echo "<br><br> =============================================================================================";
+			// echo "<br>".$finder['_id'] . " -- ".  $finder['title']. " Address not exist";
+
+			$no_add += 1; 
+
+		}
+
+
+
+	}  //foreach                   
+
+	
+
+	echo "<br><br> =============================================================================================";
+	echo "<br><br> =============================================================================================";
+
+	echo "<br><br> $get_latlon_cnt  --  $no_latlon_cnt   ---  $no_add  ===  $error_add_cnt";
+
+	echo "<br><br> =============================================================================================";
+	echo "<br><br> =============================================================================================";
+
+
+
+});
+
+
 
 Route::get('/updatemedia/findercoverimage', function() {
 
@@ -245,7 +341,7 @@ Route::get('/updatemedia/findergallery', function() {
 
 //    $finders 	= Finder::where('photos', 'exists', true)->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
 //    $finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
-    $finders 	= Finder::orderBy('_id')->lists('_id');
+	$finders 	= Finder::orderBy('_id')->lists('_id');
 	foreach ($finders as $key => $item) {
 		$finder 	=	Finder::find(intval($item));
 		if($finder){
