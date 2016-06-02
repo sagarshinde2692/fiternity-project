@@ -166,7 +166,7 @@ Route::get('import/defination', function(){
 
 Route::get('checkgeolocation/', function(){
 
-	$limit 		=  20;
+	$limit 		=  25;
 
 	$finders 	= Finder::where('lat', 'exists', true)
 	->where('lon', 'exists', true)
