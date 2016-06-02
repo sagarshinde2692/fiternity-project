@@ -80,10 +80,12 @@ class OrderController extends \BaseController {
 			array_set($data, 'order_action', 'bought');
 			array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-			$count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+			$count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
 
 			if($count > 0){
-				array_set($data, 'acquisation_type', 'renewal_direct');
+				array_set($data, 'acquisition_type', 'renewal_direct');
+			}else{
+				array_set($data,'acquisition_type','direct_payment');
 			}
 
 			$orderdata 	=	$order->update($data);
@@ -326,10 +328,12 @@ class OrderController extends \BaseController {
 		}
 
 	
-		$count  = Order::where("status","1")->where('customer_email',$data['customer_email'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$orderid)->count();
+		$count  = Order::where("status","1")->where('customer_email',$data['customer_email'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->orderBy('_id','asc')->where('_id','<',$orderid)->count();
 
 		if($count > 0){
-			array_set($data, 'acquisation_type', 'renewal_direct');
+			array_set($data, 'acquisition_type', 'renewal_direct');
+		}else{
+			array_set($data,'acquisition_type','direct_payment');
 		}
 
 		array_set($data, 'service_name_purchase', $data['service_name']);

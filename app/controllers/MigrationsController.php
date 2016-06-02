@@ -835,19 +835,20 @@ class MigrationsController extends \BaseController {
 
 	public function order(){
 
-
+		//membership_duration_type
 		$finder_id = Finder::whereIn('category_id',array(42,45))->lists('_id');
 
 		Order::whereIn('finder_id',$finder_id)->update(array('membership_duration_type'=>'healthy_tiffin_snacks'));
 
 		Order::where('schedule_date','exists',true)->update(array('membership_duration_type'=>'workout_session'));
 
+		//membership_bought_at
+		Order::where('membership_bought_at','At the studio')->update(array('membership_bought_at'=>'At The Studio Post'));
 
-		//Order::where('membership_bought_at','At the studio')->update(array('membership_bought_at'=>'At The Studio Post'));
+		//acquisition_type
+		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->update(array('acquisition_type'=>'direct_payment'));
 
-		/*Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->update(array('acquisation_type'=>'direct_payment'));
-
-		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->update(array('acquisation_type'=>'post_action_sales'));
+		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->update(array('acquisition_type'=>'post_action_sales'));
 
 		$order_id_direct  = Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->orderBy('_id','asc')->lists('_id');
 
@@ -860,7 +861,7 @@ class MigrationsController extends \BaseController {
 			$count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$id)->count();
 
 			if($count > 0){
-				$order->update(array('acquisation_type'=>'renewal_direct'));
+				$order->update(array('acquisition_type'=>'renewal_direct'));
 			}
 		}
 
@@ -875,9 +876,37 @@ class MigrationsController extends \BaseController {
 			$count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$id)->count();
 
 			if($count > 0){
-				$order->update(array('acquisation_type'=>'renewal_post_action'));
+				$order->update(array('acquisition_type'=>'renewal_post_action'));
 			}
-		}*/
+		}
+
+
+		//for end date
+		$orders = Order::where('ratecard_id','exists',true)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->orderBy('_id','asc')->get(array('_id','ratecard_id','preferred_starting_date','start_date');
+
+		foreach ($orders as $value) {
+
+			$ratecard = Ratecard::find((int)$value->ratecard_id);
+
+			if(isset($ratecard->validity) && $ratecard->validity != ""){
+				$duration_day = (int)$ratecard->validity;
+				$value->duration_day = $duration_day;
+			
+				if(isset($value->preferred_starting_date) && $value->preferred_starting_date != ""){
+							
+					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days";
+					$value->end_date = $end_date;
+				}
+
+				if(isset($value->start_date) && $value->start_date != ""){
+					
+					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days";
+					$value->end_date = $end_date;
+				}
+
+				$value->update();
+			}
+		}
 
 	}
 

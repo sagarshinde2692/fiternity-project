@@ -1001,7 +1001,9 @@ class SchedulebooktrialsController extends \BaseController {
         $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
 
         if($count > 0){
-            array_set($data, 'acquisation_type', 'renewal_direct');
+            array_set($data, 'acquisition_type', 'renewal_direct');
+        }else{
+            array_set($data,'acquisition_type','direct_payment');
         }
 
         if(Input::json()->get('status') == 'success') {
@@ -1049,7 +1051,9 @@ class SchedulebooktrialsController extends \BaseController {
         $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
 
         if($count > 0){
-            array_set($data, 'acquisation_type', 'renewal_direct');
+            array_set($data, 'acquisition_type', 'renewal_direct');
+        }else{
+            array_set($data,'acquisition_type','direct_payment');
         }
 
         if(Input::json()->get('status') == 'success') {
@@ -1148,7 +1152,9 @@ class SchedulebooktrialsController extends \BaseController {
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
 
             if($count > 0){
-                $order->update(array('acquisation_type'=>'renewal_direct'));
+                $order->update(array('acquisition_type'=>'renewal_direct'));
+            }else{
+                array_set($data,'acquisition_type','direct_payment');
             }
             
             $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
