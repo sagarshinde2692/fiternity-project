@@ -356,7 +356,7 @@ class OrderController extends \BaseController {
 				$duration_day = (int)$ratecard->validity;
 				$data['duration_day'] = $duration_day;
 				if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days");
+					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
 				}
 
 				if($duration_day <= 90){
@@ -689,7 +689,7 @@ class OrderController extends \BaseController {
 				$duration_day = (int)$ratecard->validity;
 				$data['duration_day'] = $duration_day;
 				if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days");
+					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
 				}
 
 				if($duration_day <= 90){
