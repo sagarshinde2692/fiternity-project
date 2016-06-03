@@ -341,15 +341,15 @@ class ServiceRankingSearchController extends \BaseController {
 
         $vip_trial_filter = '{"term" : {  "vip_trial_flag": 1,"_cache": true}},';
         
-        $region_filter = (isset($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
+        $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
 
-        $category_filter = ( null !== Input::json()->get('category')) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
+        $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
 
-        $subcategory_filter = (null !== Input::json()->get('subcategory')) ?  '{"terms" : {  "subcategory": ["'.strtolower(implode('","', Input::json()->get('subcategory'))).'"],"_cache": true}},' : '';
+        $subcategory_filter =( (null !== Input::json()->get('subcategory')) &&(!empty(Input::json()->get('subcategory')))) ?  '{"terms" : {  "subcategory": ["'.strtolower(implode('","', Input::json()->get('subcategory'))).'"],"_cache": true}},' : '';
 
-        $workout_intensity_filter = (null !== Input::json()->get('workout_type')) ? '{"terms" : {  "session_type": ["'.strtolower(implode('","', Input::json()->get('workout_type'))).'"],"_cache": true}},' : '';
+        $workout_intensity_filter = ( (null !== Input::json()->get('workout_type')) &&(!empty(Input::json()->get('workout_type')))) ? '{"terms" : {  "session_type": ["'.strtolower(implode('","', Input::json()->get('workout_type'))).'"],"_cache": true}},' : '';
 
-        $day_filter = (null !== Input::json()->get('day')) ? '{"terms" : {  "workout_session_schedules_weekday": ["'.Input::json()->get('day').'"],"_cache": true}},' : '';
+        $day_filter = ( (null !== Input::json()->get('day')) &&(!empty(Input::json()->get('day')))) ? '{"terms" : {  "workout_session_schedules_weekday": ["'.Input::json()->get('day').'"],"_cache": true}},' : '';
 
         $city_filter = '{"terms" : {  "city": ["'.$city.'"],"_cache": true}},';
 
@@ -377,9 +377,9 @@ class ServiceRankingSearchController extends \BaseController {
 
       /***********************************Range filters ***********************************/
 
-      $price = (null !== Input::json()->get('price')) ? Input::json()->get('price') : '';
+      $price = ( (null !== Input::json()->get('price')) &&(!empty(Input::json()->get('price')))) ? Input::json()->get('price') : '';
 
-      $time = (null !== Input::json()->get('time')) ? Input::json()->get('time') : '';
+      $time = ( (null !== Input::json()->get('time')) &&(!empty(Input::json()->get('time')))) ? Input::json()->get('time') : '';
 
       $price_range_filter = '';
       $time_range_filter = '';        
