@@ -16,7 +16,7 @@ Route::get('migrations/vendors', 'MigrationsController@vendors');
 Route::get('migrations/vendorservicecategory', 'MigrationsController@vendorservicecategory');
 Route::get('migrations/vendorPriceAverage', 'MigrationsController@vendorPriceAverage');
 Route::get('emailtest', 'DebugController@testEmail');
-
+Route::get('migrations/order', 'MigrationsController@order');
 
 
 
