@@ -838,7 +838,21 @@ class MigrationsController extends \BaseController {
 		ini_set('memory_limit','2048M');
 		ini_set('max_execution_time', 300);
 
-		//membership_duration_type
+		$findercommercial = Findercommercial::get();
+
+		foreach ($findercommercial as $value) {
+
+			if(isset($value->commision) && $value->commision != ""){
+
+				$commision = preg_replace("/[^0-9] ./","",$value->commision);
+
+				$value->commision = (int) $commision;
+				$value->update();
+
+			}
+		}
+
+		/*//membership_duration_type
 		$finder_id = Finder::whereIn('category_id',array(42,45))->lists('_id');
 
 		Order::whereIn('finder_id',$finder_id)->update(array('membership_duration_type'=>'healthy_tiffin_snacks'));
@@ -855,7 +869,6 @@ class MigrationsController extends \BaseController {
 		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->update(array('acquisition_type'=>'direct_payment'));
 
 		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->update(array('acquisition_type'=>'post_action_sales'));
-
 
 		$order_id_direct  = Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->orderBy('_id','asc')->lists('_id');
 
@@ -913,7 +926,7 @@ class MigrationsController extends \BaseController {
 
 				$value->update();
 			}
-		}
+		}*/
 
 	}
 
