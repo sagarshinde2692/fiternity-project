@@ -85,7 +85,7 @@ class ServiceRankingController extends \BaseController {
         ->orderBy('_id')                            
         ->where('city_id', intval($city))
         ->where('status', '=', '1')
-        ->take(500)->skip(0)
+        ->take(5000)->skip(0)
         ->timeout(400000000)                        
         ->get(); 
 
