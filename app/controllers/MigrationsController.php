@@ -835,6 +835,9 @@ class MigrationsController extends \BaseController {
 
 	public function order(){
 
+		ini_set('memory_limit','2048M');
+		ini_set('max_execution_time', 300);
+
 		//membership_duration_type
 		$finder_id = Finder::whereIn('category_id',array(42,45))->lists('_id');
 
