@@ -343,11 +343,11 @@ class ServiceRankingSearchController extends \BaseController {
         
         $region_filter = (isset($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
 
-        $category_filter = ( null !== Input::json()->get('category')) ? '{"terms" : {  "category": ["'.strtolower(implode('","', $category_list)).'"],"_cache": true}},' : '';
+        $category_filter = ( null !== Input::json()->get('category')) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
 
-        $subcategory_filter = (null !== Input::json()->get('subcategory')) ?  '{"terms" : {  "subcategory": ["'.strtolower(implode('","', $subcategory_list)).'"],"_cache": true}},' : '';
+        $subcategory_filter = (null !== Input::json()->get('subcategory')) ?  '{"terms" : {  "subcategory": ["'.strtolower(implode('","', Input::json()->get('subcategory'))).'"],"_cache": true}},' : '';
 
-        $workout_intensity_filter = (null !== Input::json()->get('workout_intensity')) ? '{"terms" : {  "workout_intensity": ["'.strtolower(implode('","', $workout_intensity)).'"],"_cache": true}},' : '';
+        $workout_intensity_filter = (null !== Input::json()->get('workout_type')) ? '{"terms" : {  "session_type": ["'.strtolower(implode('","', Input::json()->get('workout_type'))).'"],"_cache": true}},' : '';
 
         $day_filter = (null !== Input::json()->get('day')) ? '{"terms" : {  "workout_session_schedules_weekday": ["'.Input::json()->get('day').'"],"_cache": true}},' : '';
 
@@ -363,7 +363,7 @@ class ServiceRankingSearchController extends \BaseController {
         if(($lat !== '')&&($lon !== '')){
 
          $geo_distance_filter = ' {"geo_distance": {
-          "distance": 25,
+          "distance": 5,
           "distance_unit": "km",
           "FIELD": {
             "lat": '.$lat.',
@@ -486,10 +486,10 @@ class ServiceRankingSearchController extends \BaseController {
               "field": "workout_session_schedules_start_time_24_hrs",
               "ranges": [{
                 "from": 0,
-                "to": 11
+                "to": 12
               },
               {
-                "from": 11,
+                "from": 12,
                 "to": 18
               },
               {
@@ -557,7 +557,7 @@ class ServiceRankingSearchController extends \BaseController {
         "aggs": {
           "workout": {
             "terms": {
-              "field": "workout_intensity",
+              "field": "session_type",
               "min_doc_count": 0,
               "size": 500,
               "order":{"_count": "desc"}
@@ -594,7 +594,7 @@ class ServiceRankingSearchController extends \BaseController {
           "vendors": {
             "terms": {
               "field": "findername",
-              "min_doc_count": 0,
+              "min_doc_count": 1,
               "size": 500,
               "order":{"_count": "desc"}
             }
@@ -622,7 +622,7 @@ class ServiceRankingSearchController extends \BaseController {
         'method' => 'POST',
         'postfields' => $query
         );
-
+    
 
         // .strtolower(implode('","', $keylist)).
 

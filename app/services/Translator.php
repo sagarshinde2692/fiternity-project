@@ -721,6 +721,9 @@ public static function translate_vip_trials($es_searchresult_response){
 			$resultobject->workout_session_schedules_end_time = $result['workout_session_schedules_end_time'];
 			$resultobject->workout_session_schedules_start_time = $result['workout_session_schedules_start_time'];
 			$resultobject->finder_gallery = $result['finder_gallary'];
+			$resultobject->finder_address = $result['finder_address'];
+			$resultobject->service_address = $result['service_address'];
+			$resultobject->finder_slug = $result['finderslug'];
 
 			$finder->object = $resultobject;
 			array_push($vip_trial_response->results->resultlist, $finder);			

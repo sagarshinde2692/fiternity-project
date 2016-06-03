@@ -62,8 +62,9 @@ class ServiceRankingController extends \BaseController {
     }
 
     public function IndexServiceRankMongo2Elastic($city, $index, $timestamp){
+    // public function IndexServiceRankMongo2Elastic(){
 
-        // $city =1 ; $index= 'fitternity_vip_trials2016-05-24'; $timestamp = '2016-05-24';
+        // $city =1 ; $index= 'fitternity_vip_trials2016-06-02'; $timestamp = '2016-06-02';
         ini_set('max_execution_time', 30000);
 
         $es_host = Config::get('app.es_host');
@@ -130,9 +131,11 @@ class ServiceRankingController extends \BaseController {
                 // return json_encode($postdata_workoutsession_schedules);
 
                     if(isset($postdata_workoutsession_schedules)){
-
+                       
                         foreach ($postdata_workoutsession_schedules as $workout_session) {
-
+                            if($workout_session['workout_session_schedules_price'] === 0){
+                                continue;
+                            }
                             $workout_session['rank'] = $score;
                             $catval = evalBaseCategoryScore($finderdata['category_id']);
                             $workout_session['rankv1'] = $catval;
@@ -284,7 +287,7 @@ public function RollingBuildServiceIndex(){
     $host = Config::get('app.es_host');
 
     $url = 'http://'.$host.':'.$port.'/';
-    return $url;
+   
     $timestamp =  date('Y-m-d');
 
     $index = 'fitternity_service'.$timestamp;
@@ -520,6 +523,7 @@ public function RollingBuildServiceIndex(){
                 "workout_intensity" : {"type" : "string","index" : "not_analyzed"},
                 "workout_tags" : {"type" : "string", "index" : "not_analyzed"},
                 "city" : {"type" : "string","index" : "not_analyzed"},
+                "locationcluster" : {"type" : "string", "index": "not_analyzed"},
                 "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10}                
             }
         }
@@ -552,7 +556,8 @@ public function RollingBuildServiceIndex(){
     $city_list = array(1,2,3,4,8);
 
     foreach ($city_list as $city) {
-
+       
+           
         $this->IndexServiceRankMongo2Elastic($city, $index, $timestamp);
     }
 
