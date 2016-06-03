@@ -845,10 +845,14 @@ class MigrationsController extends \BaseController {
 		//membership_bought_at
 		Order::where('membership_bought_at','At the studio')->update(array('membership_bought_at'=>'At The Studio Post'));
 
+		//link sent
+		Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
+
 		//acquisition_type
 		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->update(array('acquisition_type'=>'direct_payment'));
 
 		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->update(array('acquisition_type'=>'post_action_sales'));
+
 
 		$order_id_direct  = Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->orderBy('_id','asc')->lists('_id');
 
@@ -882,7 +886,7 @@ class MigrationsController extends \BaseController {
 
 
 		//for end date
-		$orders = Order::where('ratecard_id','exists',true)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->orderBy('_id','asc')->get(array('_id','ratecard_id','preferred_starting_date','start_date');
+		$orders = Order::where('start_date','exists',false)->where('ratecard_id','exists',true)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->orderBy('_id','asc')->get(array('_id','ratecard_id','preferred_starting_date','start_date'));
 
 		foreach ($orders as $value) {
 
@@ -894,13 +898,13 @@ class MigrationsController extends \BaseController {
 			
 				if(isset($value->preferred_starting_date) && $value->preferred_starting_date != ""){
 							
-					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days";
+					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days"));
 					$value->end_date = $end_date;
 				}
 
 				if(isset($value->start_date) && $value->start_date != ""){
 					
-					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days";
+					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days"));
 					$value->end_date = $end_date;
 				}
 
