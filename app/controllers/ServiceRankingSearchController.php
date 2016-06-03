@@ -353,7 +353,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         $city_filter = '{"terms" : {  "city": ["'.$city.'"],"_cache": true}},';
 
-
+        $vendor_filter = ( (null !== Input::json()->get('vendor')) &&(!empty(Input::json()->get('vendor')))) ? '{"terms" : {  "findername": ["'.strtolower(implode('","', Input::json()->get('vendor'))).'"],"_cache": true}},' : '';
 
 
         /***********************************Geo Range Filter*********************************/
@@ -362,14 +362,16 @@ class ServiceRankingSearchController extends \BaseController {
 
         if(($lat !== '')&&($lon !== '')){
 
-         $geo_distance_filter = ' {"geo_distance": {
-          "distance": 5,
-          "distance_unit": "km",
-          "FIELD": {
-            "lat": '.$lat.',
-            "lon": '.$lon.'
-          }
-        }},';
+         $geo_distance_filter = ' {
+            "geo_distance_range": {
+                "from": "0km",
+                "to": "5km",
+                "geolocation": {
+                    "lat": '.$lat.',
+                    "lon": '.$lon.'
+                }
+            }
+        },';
 
       }
 
@@ -507,7 +509,7 @@ class ServiceRankingSearchController extends \BaseController {
           "category": {
             "terms": {
               "field": "category",
-              "min_doc_count": 0,
+              "min_doc_count": 1,
               "size": 500,
               "order":{"_count": "desc"}
             }
@@ -544,7 +546,7 @@ class ServiceRankingSearchController extends \BaseController {
           "subcategory": {
             "terms": {
               "field": "subcategory",
-              "min_doc_count": 0,
+              "min_doc_count": 1,
               "size": 500,
               "order":{"_count": "desc"}
             }
@@ -623,7 +625,7 @@ class ServiceRankingSearchController extends \BaseController {
         'postfields' => $query
         );
     
-
+    
         // .strtolower(implode('","', $keylist)).
 
       $search_results     =   es_curl_request($request);
