@@ -78,6 +78,15 @@ class OrderController extends \BaseController {
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
+			array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
+
+			$count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+
+			if($count > 0){
+				array_set($data, 'acquisition_type', 'renewal_direct');
+			}else{
+				array_set($data,'acquisition_type','direct_payment');
+			}
 
 			$orderdata 	=	$order->update($data);
 
@@ -183,6 +192,7 @@ class OrderController extends \BaseController {
 
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		$postdata		=	Input::json()->all();
 
 		Log::info('Gnerate COD Order',$data);
 		
@@ -317,12 +327,44 @@ class OrderController extends \BaseController {
 
 		}
 
+	
+		$count  = Order::where("status","1")->where('customer_email',$data['customer_email'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->orderBy('_id','asc')->where('_id','<',$orderid)->count();
+
+		if($count > 0){
+			array_set($data, 'acquisition_type', 'renewal_direct');
+		}else{
+			array_set($data,'acquisition_type','direct_payment');
+		}
+
 		array_set($data, 'service_name_purchase', $data['service_name']);
 		array_set($data, 'service_duration_purchase', $data['service_duration']);
 		
 		array_set($data, 'customer_id', intval($customer_id));
 		array_set($data, 'status', '0');
 		array_set($data, 'payment_mode', 'cod');
+		array_set($data, 'membership_bought_at', 'Fitternity COD Mode');
+
+		if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+			$data['membership_duration_type'] = 'workout_session';
+		}
+
+		if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+
+			$ratecard = Ratecard::find($data['ratecard_id']);
+
+			if(isset($ratecard->validity) && $ratecard->validity != ""){
+				$duration_day = (int)$ratecard->validity;
+				$data['duration_day'] = $duration_day;
+				if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days");
+				}
+
+				if($duration_day <= 90){
+					$data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
+				}
+			}	
+		}
+
 		$order 				= 	new Order($data);
 		$order->_id 		= 	$orderid;
 		$orderstatus   		= 	$order->save();
@@ -505,6 +547,8 @@ class OrderController extends \BaseController {
 				$resp 	= 	array('status' => 404,'message' => "Data Missing - meal_contents");
 				return Response::json($resp,404);
 			}
+
+			$data['membership_duration_type'] = 'healthy_tiffin_snacks';
 		}
 
 
@@ -633,6 +677,27 @@ class OrderController extends \BaseController {
 			}
 		}
 
+		if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+			$data['membership_duration_type'] = 'workout_session';
+		}
+
+		if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+
+			$ratecard = Ratecard::find($data['ratecard_id']);
+
+			if(isset($ratecard->validity) && $ratecard->validity != ""){
+				$duration_day = (int)$ratecard->validity;
+				$data['duration_day'] = $duration_day;
+				if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days");
+				}
+
+				if($duration_day <= 90){
+					$data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
+				}
+			}	
+		}
+	
 		array_set($data, 'service_name_purchase', $data['service_name']);
 		array_set($data, 'service_duration_purchase', $data['service_duration']);
 
