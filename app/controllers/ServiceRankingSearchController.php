@@ -341,7 +341,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         $vip_trial_filter = '{"term" : {  "vip_trial_flag": 1,"_cache": true}},';
         
-        $region_filter = (isset($locat['regions{']) && !empty($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
+        $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
 
         $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
 
@@ -424,7 +424,7 @@ class ServiceRankingSearchController extends \BaseController {
       }
 
       /**********************************************************************************************/
-
+      
       $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter, ',');
 
       $post_filter_query = 
@@ -636,7 +636,7 @@ class ServiceRankingSearchController extends \BaseController {
         "post_filter" : '.$post_filter_query.' 
       }';
 
-
+     
 
       $request = array(
         'url' => $this->elasticsearch_host."/fitternity_vip_trials/service/_search",
