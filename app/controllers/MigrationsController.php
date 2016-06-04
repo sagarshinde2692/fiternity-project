@@ -838,6 +838,10 @@ class MigrationsController extends \BaseController {
 		ini_set('memory_limit','2048M');
 		ini_set('max_execution_time', 300);
 
+		//link sent
+		Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
+
+		//for commercial
 		$findercommercial = Findercommercial::get();
 
 		foreach ($findercommercial as $value) {
