@@ -1,6 +1,7 @@
 <?PHP namespace App\Services;
 
-use \Vendoruser;
+use \Crypt;
+use \User;
 use \JWT;
 use Config, Response, Validator, Request;
 
@@ -19,6 +20,7 @@ Class Jwtauth {
 
     public function vendorLogin( $credentials ){
 
+
         $rules      =   ['email' => 'required|email', 'password' => 'required' ];
         $validator  =   Validator::make($credentials, $rules);
         if($validator->fails()) {
@@ -26,18 +28,20 @@ Class Jwtauth {
             return  Response::json($data, 400);
         }
 
-        $vendoruser = Vendoruser::where('email','=',$credentials['email'])->where('hidden',false)->first();
+        $vendoruser = User::where('email','=',$credentials['email'])
+            ->active()
+            ->first();
+
         if(empty($vendoruser)){
             $data = ['status_code' => 400,'message' => ['error' => 'Vendor does not exists'] ];
             return  Response::json( $data, 400);
         }
 
-        if($vendoruser['password'] != md5($credentials['password'])){
+        if(Crypt::decrypt($vendoruser['password']) != $credentials['password']){
             $data = ['status_code' => 400,'message' => ['error' => 'Incorrect email or password'] ];
             return  Response::json( $data, 400);
         }
 
-//        return $vendoruser;
         $vendorToken    =   $this->createTokenVendorPanel($vendoruser);
         $data           =   ['status_code' => 200, 'message' => 'Successfull Login :)', 'token' => $vendorToken];
         return  Response::json( $data, 200);
@@ -50,8 +54,8 @@ Class Jwtauth {
         $vendorData['name']             =   (isset($vendoruserArr['name'])) ? $vendoruserArr['name'] : "";
         $vendorData['email']            =   (isset($vendoruserArr['email'])) ? $vendoruserArr['email'] : "";
         $vendorData['_id']              =   (isset($vendoruserArr['_id'])) ? $vendoruserArr['_id'] : "";
-        $vendorData['vendor_id']        =   (isset($vendoruserArr['vendor_id'])) ? $vendoruserArr['vendor_id'] : "";
-        $vendorData['vendors']          =   (isset($vendoruserArr['vendors'])) ? $vendoruserArr['vendors'] : [];
+//        $vendorData['vendor_id']        =   (isset($vendoruserArr['vendor_id'])) ? $vendoruserArr['vendor_id'] : "";
+        $vendorData['finders']          =   (isset($vendoruserArr['finders'])) ? $vendoruserArr['finders'] : [];
 
         // return $vendorData;
         $jwt_payload = array(
@@ -78,22 +82,22 @@ Class Jwtauth {
     }
 
 
-    public function vendorIdFromToken(){
-
-        $jwt_token                  =   Request::header('Authorization');
-        $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
-        $vendorArr                  =   $decoded_token['vendor'];
-        $vendor_id                  =   $vendorArr['vendor_id'];
-        
-        return $vendor_id;
-    }
+//    public function vendorIdFromToken(){
+//
+//        $jwt_token                  =   Request::header('Authorization');
+//        $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
+//        $vendorArr                  =   $decoded_token['vendor'];
+//        $vendor_id                  =   $vendorArr['vendor_id'];
+//
+//        return $vendor_id;
+//    }
 
     public function vendorIdsFromToken(){
 
         $jwt_token                  =   Request::header('Authorization');
         $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
         $vendorArr                  =   $decoded_token['vendor'];
-        $vendor_ids                 =   array_unique(array_merge([$vendorArr['vendor_id']], $vendorArr['vendors']));
+        $vendor_ids                 =   $vendorArr['finders'];
 
         return $vendor_ids;
     }
@@ -103,7 +107,7 @@ Class Jwtauth {
         $jwt_token                  =   Request::header('Authorization');
         $decoded_token              =   $this->decodeTokenVendorPanel($jwt_token);
         $vendorArr                  =   $decoded_token['vendor'];
-        $vendoruser                 =   Vendoruser::where('email','=',$vendorArr['email'])->where('status','=','1')->first();
+        $vendoruser                 =   User::where('email','=',$vendorArr['email'])->where('status','=','1')->first();
         $data                       =   ['token' => $this->createTokenVendorPanel($vendoruser)];
         return  Response::json( $data, 200);
     }
