@@ -341,7 +341,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         $vip_trial_filter = '{"term" : {  "vip_trial_flag": 1,"_cache": true}},';
         
-        $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
+        $region_filter = (isset($locat['regions{']) && !empty($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
 
         $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
 
@@ -442,6 +442,8 @@ class ServiceRankingSearchController extends \BaseController {
 
       $location_facets_filter = trim($city_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter,',');
 
+      $location_tag_facets_filter = trim($city_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter,',');
+
       $subcategory_facets_filter = trim($city_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter, ',');
 
       $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter, ',');
@@ -481,7 +483,7 @@ class ServiceRankingSearchController extends \BaseController {
       }';
 
       $region_tag_bool = '"filter": {
-        "bool" : {"must":['.$location_facets_filter.']}
+        "bool" : {"must":['.$location_tag_facets_filter.']}
       }';
 
       $time_facets = '"filtered_time": {
@@ -624,12 +626,12 @@ class ServiceRankingSearchController extends \BaseController {
 
       $facetsvalue = trim($time_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
 
-
+      
       /*******************************************Drilled Aggregations here ******************************************/
 
       $query = '{
         "from" : '.$from.',
-        "size" : '.$size.',          
+        "size" : '.$size.',
         "aggs" : {'.$facetsvalue.'},
         "post_filter" : '.$post_filter_query.' 
       }';
@@ -643,7 +645,7 @@ class ServiceRankingSearchController extends \BaseController {
         'postfields' => $query
         );
     
-    
+        
         // .strtolower(implode('","', $keylist)).
 
       $search_results     =   es_curl_request($request);
