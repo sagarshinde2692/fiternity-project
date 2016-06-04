@@ -1483,24 +1483,24 @@ class SchedulebooktrialsController extends \BaseController {
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
             if($twelveHourDiffInMin >= (12 * 60)){
 
-                if($finder_category_id != 41){
+                // if($finder_category_id != 41){
                     if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $sndBefore12HourEmailCustomer = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                         $customer_email_messageids['before12hour'] = $sndBefore12HourEmailCustomer;
                     }
-                }
+                // }
 
                 if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                 }
 
             }else{
-                if($finder_category_id != 41){
+                // if($finder_category_id != 41){
                     if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                         $sndBefore12HourEmailCustomer = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
                         $customer_email_messageids['before12hour'] = $sndBefore12HourEmailCustomer;
                     }
-                }
+                // }
 
                 if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
                     if (isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
@@ -1953,20 +1953,20 @@ class SchedulebooktrialsController extends \BaseController {
 
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
             if($twelveHourDiffInMin >= (12 * 60)){
-                if($finder_category_id != 41){
+                // if($finder_category_id != 41){
                     $sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                     $customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-                }
+                // }
 
                 if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                 }
 
             }else{
-                if($finder_category_id != 41){
+                // if($finder_category_id != 41){
                     $sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
                     $customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-                }
+                // }
 
                 if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
@@ -2567,20 +2567,20 @@ class SchedulebooktrialsController extends \BaseController {
 
                 //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
                 if($twelveHourDiffInMin >= (12 * 60)){
-                    if($finder_category_id != 41){
+                    // if($finder_category_id != 41){
                         $sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                         $customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-                    }
+                    // }
 
                     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                         $customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
                     }
 
                 }else{
-                    if($finder_category_id != 41){
+                    // if($finder_category_id != 41){
                         $sndBefore12HourEmailCustomer				= 	$this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
                         $customer_email_messageids['before12hour'] 	= 	$sndBefore12HourEmailCustomer;
-                    }
+                    // }
 
                     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                         $customer_notification_messageids['before12hour'] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $reminderTimeAfter1Hour);
