@@ -522,7 +522,7 @@ class ServiceRankingSearchController extends \BaseController {
       },';
 
       $region_tag_facets = ' "filtered_region_tag": {
-        '.$category_bool.',
+        '.$location_bool.',
         "aggs": {
           "locationtags": {
             "terms": {
