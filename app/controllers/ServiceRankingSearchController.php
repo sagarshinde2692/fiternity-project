@@ -341,7 +341,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         $vip_trial_filter = '{"term" : {  "vip_trial_flag": 1,"_cache": true}},';
         
-        $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
+        $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "location": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
 
         $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
 
@@ -647,7 +647,7 @@ class ServiceRankingSearchController extends \BaseController {
     
         
         // .strtolower(implode('","', $keylist)).
-
+      
       $search_results     =   es_curl_request($request);
 
       $search_results1    =   json_decode($search_results, true);
