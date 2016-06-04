@@ -752,6 +752,7 @@ public static function translate_vip_trials($es_searchresult_response){
 	}
 
 	$vip_trial_response->results->aggregationlist->locationcluster = array();
+
 	foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
 		$clusterval = new \stdClass();
 		$clusterval->key = $cluster['key'];
@@ -765,6 +766,16 @@ public static function translate_vip_trials($es_searchresult_response){
 		}
 		array_push($vip_trial_response->results->aggregationlist->locationcluster, $clusterval);
 	}
+
+	$vip_trial_response->results->aggregationlist->locationtags = array();
+
+	foreach ($aggs['filtered_region_tag']['locationtags']['buckets'] as $fac) {
+		$facval = new \stdClass();
+		$facval->key = $fac['key'];
+		$facval->count = $fac['doc_count'];
+		array_push($vip_trial_response->results->aggregationlist->locationtags, $facval);			
+	}
+
 
 	$vip_trial_response->results->aggregationlist->subcategory = array();
 

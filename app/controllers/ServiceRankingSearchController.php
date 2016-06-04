@@ -480,6 +480,10 @@ class ServiceRankingSearchController extends \BaseController {
         "bool" : {"must":['.$vendor_facets_filter.']}
       }';
 
+      $region_tag_bool = '"filter": {
+        "bool" : {"must":['.$location_facets_filter.']}
+      }';
+
       $time_facets = '"filtered_time": {
         '.$time_bool.',
         "aggs": {
@@ -509,6 +513,20 @@ class ServiceRankingSearchController extends \BaseController {
           "category": {
             "terms": {
               "field": "category",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+      $region_tag_facets = ' "filtered_region_tag": {
+        '.$category_bool.',
+        "aggs": {
+          "locationtags": {
+            "terms": {
+              "field": "location",
               "min_doc_count": 1,
               "size": 500,
               "order":{"_count": "desc"}
@@ -604,7 +622,7 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-      $facetsvalue = trim($time_facets.$category_facets.$regions_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
+      $facetsvalue = trim($time_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
 
 
       /*******************************************Drilled Aggregations here ******************************************/
