@@ -365,7 +365,7 @@ class ServiceRankingSearchController extends \BaseController {
          $geo_distance_filter = ' {
             "geo_distance_range": {
                 "from": "0km",
-                "to": "5km",
+                "to": "3km",
                 "geolocation": {
                     "lat": '.$lat.',
                     "lon": '.$lon.'
@@ -416,7 +416,7 @@ class ServiceRankingSearchController extends \BaseController {
         },{
           "range": {
             "workout_session_schedules_end_time_24_hrs": {
-              "gte": '.$time_to.'              
+              "lte": '.$time_to.'              
             }
           }
         },';
