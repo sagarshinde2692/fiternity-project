@@ -446,11 +446,11 @@ class ServiceRankingSearchController extends \BaseController {
 
       $subcategory_facets_filter = trim($city_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter, ',');
 
-      $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter, ',');
+      $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter, ',');
 
-      $price_facets_filter = trim($city_filter.$category_filter.$region_filter.$subcategory_filter.$day_filter.$time_range_filter.$workout_intensity_filter.$vip_trial_filter,',');
+      $price_facets_filter = trim($city_filter.$category_filter.$region_filter.$subcategory_filter.$day_filter.$time_range_filter.$workout_intensity_filter.$vip_trial_filter.$geo_distance_filter,',');
 
-      $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter, ',');
+      $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter, ',');
 
 
 
