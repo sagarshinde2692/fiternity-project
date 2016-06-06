@@ -629,14 +629,17 @@ class ServiceRankingSearchController extends \BaseController {
       
       /*******************************************Drilled Aggregations here ******************************************/
 
+      $sort = '"sort":[{"rankv2":{"order":"desc"}}]';
+
       $query = '{
         "from" : '.$from.',
         "size" : '.$size.',
         "aggs" : {'.$facetsvalue.'},
-        "post_filter" : '.$post_filter_query.' 
+        "post_filter" : '.$post_filter_query.' ,
+        '.$sort.'
       }';
 
-     
+    
 
       $request = array(
         'url' => $this->elasticsearch_host."/fitternity_vip_trials/service/_search",
