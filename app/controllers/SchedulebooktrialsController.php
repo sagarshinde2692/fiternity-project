@@ -1527,35 +1527,31 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             //Send Post Trial Notificaiton After 2 Hours Need to Write
-            if($booktrialdata['type'] == '3daystrial'){
+            if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
+                if($booktrialdata['type'] == '3daystrial'){
 
-                if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
+                        $customer_sms_messageids['after2hour'] = $this->customersms->reminderAfter2Hour3DaysTrial($booktrialdata, $delayReminderTimeAfter2Hour);
 
-                    $customer_sms_messageids['after2hour'] = $this->customersms->reminderAfter2Hour3DaysTrial($booktrialdata, $delayReminderTimeAfter2Hour);
+                        $customer_email_messageids['after50hour'] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                        
+                        if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
+                            $customer_notification_messageids['after50hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
+                        }else{
+                            $customer_sms_messageids['after50hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter50Hour);
+                        }
 
-                    $customer_email_messageids['after50hour'] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
-                    
-                    if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
-                        $customer_notification_messageids['after50hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
-                    }else{
-                        $customer_sms_messageids['after50hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter50Hour);
-                    }
+                }else{
+
+                        $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                        $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
+                        
+                        if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
+                            $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                        }else{
+                            $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
+                        }
+
                 }
-
-            }else{
-
-                 if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
-
-                    $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-                    $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
-                    
-                    if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){  
-                        $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
-                    }else{
-                        $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
-                    }
-                }
-
             }
 
 
@@ -1676,6 +1672,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder_category_id					= 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
             $google_pin							=	$this->googlePin($finder_lat,$finder_lon);
+            $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
 
             $final_lead_stage = '';
             $final_lead_status = '';
@@ -1849,7 +1846,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'device_id'						=>		$device_id,
                 'booktrial_type'				=>		'auto',
                 'booktrial_actions'				=>		'call to confirm trial',
-                'source'						=>		'website',
+                'source'						=>		$source,
                 'origin'						=>		'auto',
                 'additional_info'				=>		$additional_info,
                 'otp'							=>		$otp,
@@ -2029,7 +2026,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                 }
-                
+
             }//cleartrip
 
 
