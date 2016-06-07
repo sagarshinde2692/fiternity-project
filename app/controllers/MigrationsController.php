@@ -838,11 +838,16 @@ class MigrationsController extends \BaseController {
 		ini_set('memory_limit','2048M');
 		ini_set('max_execution_time', 300);
 
+		//order status change
+		Order::where('status','bought')->update(array('status'=>'1'));
+		Order::where('status','tentative sale')->update(array('status'=>'2'));
+		Order::whereIn('status',array("failure", "follow up","dead","unavailable","trial setup"))->update(array('status'=>'0'));
+
 		//link sent
-		Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
+		//Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
 
 		//for commercial
-		$findercommercial = Findercommercial::get();
+		/*$findercommercial = Findercommercial::get();
 
 		foreach ($findercommercial as $value) {
 
@@ -854,25 +859,25 @@ class MigrationsController extends \BaseController {
 				$value->update();
 
 			}
-		}
+		}*/
 
 		//membership_duration_type
-		$finder_id = Finder::whereIn('category_id',array(42,45))->lists('_id');
+		/*$finder_id = Finder::whereIn('category_id',array(42,45))->lists('_id');
 
 		Order::whereIn('finder_id',$finder_id)->update(array('membership_duration_type'=>'healthy_tiffin_snacks'));
 
-		Order::where('schedule_date','exists',true)->update(array('membership_duration_type'=>'workout_session'));
+		Order::where('schedule_date','exists',true)->update(array('membership_duration_type'=>'workout_session'));*/
 
 		//membership_bought_at
-		Order::where('membership_bought_at','At the studio')->update(array('membership_bought_at'=>'At The Studio Post'));
+		//Order::where('membership_bought_at','At the studio')->update(array('membership_bought_at'=>'At The Studio Post'));
 
 		//link sent
-		Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
+		//Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
 
 		//acquisition_type
-		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->update(array('acquisition_type'=>'direct_payment'));
+		//Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->update(array('acquisition_type'=>'direct_payment'));
 
-		Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->update(array('acquisition_type'=>'post_action_sales'));
+		//Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->update(array('acquisition_type'=>'post_action_sales'));
 
 		/*$order_id_direct  = Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->orderBy('_id','asc')->lists('_id');
 
