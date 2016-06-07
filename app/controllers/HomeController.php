@@ -560,7 +560,7 @@ class HomeController extends BaseController {
 
 	public function landingPowerhouseFinders(){
         
-		$finder_ids			=		array(1392,1393,1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,2235,2236,2244,6890,6891,6893);
+		$finder_ids			=		array(1392,1393,1579,1580,1581,1582,1583,1584,1602,1604,1605,1607,2235,2236,2244,6890,6891,6893);
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 		$finders 			= 		Finder::whereIn('_id', $finder_ids)
 			->with('categorytags')
