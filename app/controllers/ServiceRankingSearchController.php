@@ -339,7 +339,7 @@ class ServiceRankingSearchController extends \BaseController {
         $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
         $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
 
-        $vip_trial_filter = '{"term" : {  "vip_trial_flag": 1,"_cache": true}},';
+        $vip_trial_filter = '';
         
         $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "location": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
 
