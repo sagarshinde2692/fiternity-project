@@ -195,6 +195,8 @@ abstract Class Mailer {
 		if($delay !== 0){
 			$delay = $this->getSeconds($delay);
 		}
+
+		$message_data['user_name'] = preg_replace('/[^A-Za-z0-9 \-\']/', '', $message_data['user_name']);
 		
 		$payload = array('to'=>$to,'email_html'=>$email_template,'user_data'=>$message_data,'delay'=>$delay,'label' => $label);
 
