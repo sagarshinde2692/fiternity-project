@@ -317,7 +317,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         $from          =         (null !== Input::json()->get('offset')['from']) ? Input::json()->get('offset')['from'] : 0;
 
-        $size          =         (null !== Input::json()->get('offset')['number_of_records']) ? Input::json()->get('offset')['number_of_records'] : 10;
+        $size          =         (null !== Input::json()->get('offset')['number_of_records']) ? Input::json()->get('offset')['number_of_records'] : 50;
 
 
         /*****************************offset********************************************************************************************/
@@ -354,6 +354,7 @@ class ServiceRankingSearchController extends \BaseController {
         $city_filter = '{"terms" : {  "city": ["'.$city.'"],"_cache": true}},';
 
         $vendor_filter = ( (null !== Input::json()->get('vendor')) &&(!empty(Input::json()->get('vendor')))) ? '{"terms" : {  "findername": ["'.strtolower(implode('","', Input::json()->get('vendor'))).'"],"_cache": true}},' : '';
+
 
 
         /***********************************Geo Range Filter*********************************/
@@ -422,6 +423,23 @@ class ServiceRankingSearchController extends \BaseController {
         },';
 
       }
+      else{
+
+        /*****************************************handle time logic here to get workout session schedules after 2 hours from now ***************************/
+
+        $min_time         =   intval(date("H")) > 20 ? 4 : intval(date("H")) + 2;
+
+         $time_range_filter = '{
+          "range": {
+            "workout_session_schedules_start_time_24_hrs": {
+              "gte": '.$min_time.'              
+            }
+          }
+        },';
+
+      }
+
+      
 
       /**********************************************************************************************/
       
@@ -648,7 +666,7 @@ class ServiceRankingSearchController extends \BaseController {
         'postfields' => $query
         );
     
-       
+      
         // .strtolower(implode('","', $keylist)).
       
       $search_results     =   es_curl_request($request);
