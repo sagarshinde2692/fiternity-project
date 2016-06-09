@@ -939,4 +939,45 @@ class MigrationsController extends \BaseController {
 
 	}
 
+	/**
+	 * Migration for ratecard
+	 */
+	public function ratecard(){
+
+
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		// $ids	=	Country::active()->take(1)->lists('_id');
+
+		$ratecards	=	Ratecard::get(array(
+			'_id','service_id','finder_id','type', 'price','special_price','duration_type',
+			'duration','validity_type','validity','direct_payment_enable','remarks','order',
+			'discount_amount','updated_at','created_at'
+		));
+
+		foreach ($ratecards as $ratecard) {
+
+			$ratecardData = $ratecard->toArray();
+			if($ratecard['validity_type'] === 'meal'){
+
+				$ratecardData['duration'] = (int) $ratecardData['validity'];
+				$ratecardData['duration_type'] = $ratecardData['validity_type'];
+				$ratecardData['validity'] = 0;
+				$ratecardData['validity_type'] = 'days';
+				$ratecard->update($ratecardData);
+			}
+			if($ratecardData['duration_type'] === 'meal' && $ratecardData['type'] === 'workout session'){
+				$ratecardData['type'] = 'packages';
+				$ratecard->update($ratecardData);
+			}
+
+		}
+
+		$resp 	= 	array('status' => 200,'message' => "Done");
+		return  Response::json($resp, 200);
+
+	}
+
 }
