@@ -88,7 +88,7 @@ class OzonetelsController extends \BaseController {
 					
 					if($finder){
 
-						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
+						/*$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
 				    	if($direct_payment_enable_count > 0){
 
@@ -96,7 +96,7 @@ class OzonetelsController extends \BaseController {
 	                        $this->ozonetelResponse->addDial('02261222225',"true");
 	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
 	                        
-	                    }else{
+	                    }else{*/
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -110,7 +110,7 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                    }
+	                   	/* }*/
 
 	                }else{
 	                    
@@ -180,7 +180,7 @@ class OzonetelsController extends \BaseController {
 					
 					if($finder){
 
-						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
+						/*$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
 				    	if($direct_payment_enable_count > 0){
 
@@ -188,7 +188,7 @@ class OzonetelsController extends \BaseController {
 	                        $this->ozonetelResponse->addDial('02261222225',"true");
 	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
 	                        
-	                    }else{
+	                    }else{*/
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -202,7 +202,7 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                    }
+	                    /*}*/
 
 	                }else{
 	                    
