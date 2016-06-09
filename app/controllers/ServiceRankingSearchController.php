@@ -339,6 +339,10 @@ class ServiceRankingSearchController extends \BaseController {
         $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
         $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
 
+        $day = (null !== Input::json()->get('day')) ? Input::json()->get('day') : '';
+
+        $today = strtolower(date("D")); 
+
         $vip_trial_filter = '';
         
         $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "location": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
@@ -403,7 +407,7 @@ class ServiceRankingSearchController extends \BaseController {
 
       }
 
-      if($time !== ''){
+      if(($time !== '')||($day !== $today)){
 
         $time_from = isset($time['from']) ? $time['from'] : 0;
         $time_to = isset($time['to']) ? $time['to'] : 1000000;
