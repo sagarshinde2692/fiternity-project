@@ -866,6 +866,8 @@ class MigrationsController extends \BaseController {
 			Order::where($value,'exists',true)->where($value,"")->unset($value);
 		}
 
+		echo "<pre>";print_r('done');exit;
+
 		$fileName = "order_duration.csv";
         $filePath = public_path().'/'.$fileName;
 
