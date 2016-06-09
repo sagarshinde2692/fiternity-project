@@ -832,16 +832,123 @@ class MigrationsController extends \BaseController {
 
 	
 
+	public function csv_to_array($filename='', $delimiter=',')
+    {
+        if(!file_exists($filename) || !is_readable($filename))
+            return FALSE;
+     
+        $header = NULL;
+        $data = array();
+        if (($handle = fopen($filename, 'r')) !== FALSE)
+        {
+            while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
+            {
+                if(!$header)
+                    $header = $row;
+                else
+                    $data[] = array_combine($header, $row);
+            }
+            fclose($handle);
+        }
+        return $data;
+    }
 
 	public function order(){
 
-		ini_set('memory_limit','2048M');
+		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
+		$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date');
+
+		foreach ($dates as $key => $value) {
+
+			Order::where($value,'exists',true)->where($value,"-")->unset($value);
+			Order::where($value,'exists',true)->where($value,"")->unset($value);
+		}
+
+		echo "<pre>";print_r('done');exit;
+
+		$fileName = "order_duration.csv";
+        $filePath = public_path().'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+        if($csv_to_array){
+
+        	$hesh = array();
+
+            foreach ($csv_to_array as $key => $value) {
+
+                if($value['Duration Day'] != ""){
+
+                	$duration = (int)$value['Duration Day'];
+                	$id = (int)$value['Order ID'];
+
+                	$order = Order::find($id);
+                	$order->duration_day = $duration;
+
+                	$mod = $duration/30;
+
+                	if($mod < 1){
+                		$order->duration = $duration;
+                		$order->duration_type = 'day';
+                	}else{
+                		if($mod < 12){
+                			$order->duration = $mod;
+                			$order->duration_type = 'month';
+                		}else{
+                			$order->duration = 1;
+                			$order->duration_type = 'year';
+                		}
+                	}
+
+                	try {
+
+                		if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
+                			$preferred_starting_date = date('d-m-Y g:i A',strtotime($order->preferred_starting_date));
+                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addDays($duration);
+                		}else{
+                			if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
+                				$order->start_date = $start_date;
+                			}
+                		}
+                		
+                	} catch (Exception $exception) {
+                		Log::error($exception);
+                		Log::info('order_id  -- '. $order->_id);
+                	}
+
+                	try {
+                		
+                		if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
+                			$start_date = date('d-m-Y g:i A',strtotime($order->start_date));
+                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
+                		}else{
+                			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
+                				$order->start_date = $preferred_starting_date;
+                			}
+                		}
+                		
+                	} catch (Exception $exception) {
+                		Log::error($exception);
+                		Log::info('order_id  -- '. $order->_id);
+                	}
+
+                	$order->update();
+
+                	$hesh[] = $order->_id;
+
+                }
+
+            }
+
+            echo "<pre>";print_r($hesh);exit;
+        }
+
 		//order status change
-		Order::where('status','bought')->update(array('status'=>'1'));
+		/*Order::where('status','bought')->update(array('status'=>'1'));
 		Order::where('status','tentative sale')->update(array('status'=>'2'));
-		Order::whereIn('status',array("failure", "follow up","dead","unavailable","trial setup"))->update(array('status'=>'0'));
+		Order::whereIn('status',array("failure", "follow up","dead","unavailable","trial setup"))->update(array('status'=>'0'));*/
 
 		//link sent
 		//Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
