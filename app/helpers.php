@@ -1158,9 +1158,9 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
 array_push($data_array, $postfields_data);
 }
 
+}
 
 return $data_array; 
-}
 }
 }
 }

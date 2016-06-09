@@ -84,7 +84,7 @@ class ServiceRankingController extends \BaseController {
         ->active()
         ->orderBy('_id')                            
         ->where('city_id', intval($city))
-        ->where('status', '=', '1')
+        ->where('status', '=', '1')        
         ->take(5000)->skip(0)
         ->timeout(400000000)                        
         ->get(); 
@@ -123,12 +123,10 @@ class ServiceRankingController extends \BaseController {
                     $postdata_workoutsession_schedules = get_elastic_service_workoutsession_schedules($servicedata, $finderdata, $locationcluster[0]['name']);             
 
 
-
-
                     /******************Index each vip trial session**************/
 
 
-                // return json_encode($postdata_workoutsession_schedules);
+                return json_encode($postdata_workoutsession_schedules);
 
                     if(isset($postdata_workoutsession_schedules)){
                        
