@@ -879,7 +879,7 @@ class MigrationsController extends \BaseController {
 
             foreach ($csv_to_array as $key => $value) {
 
-                if(array_key_exists('Duration Day', $value)){
+                if($value['Duration Day'] != ""){
 
                 	$duration = (int)$value['Duration Day'];
                 	$id = (int)$value['Order ID'];
@@ -907,6 +907,10 @@ class MigrationsController extends \BaseController {
                 		if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
                 			$preferred_starting_date = date('d-m-Y g:i A',strtotime($order->preferred_starting_date));
                 			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addDays($duration);
+                		}else{
+                			if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
+                				$order->start_date = $start_date;
+                			}
                 		}
                 		
                 	} catch (Exception $exception) {
@@ -919,6 +923,10 @@ class MigrationsController extends \BaseController {
                 		if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
                 			$start_date = date('d-m-Y g:i A',strtotime($order->start_date));
                 			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
+                		}else{
+                			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
+                				$order->start_date = $preferred_starting_date;
+                			}
                 		}
                 		
                 	} catch (Exception $exception) {
