@@ -2811,4 +2811,64 @@ class SchedulebooktrialsController extends \BaseController {
         return $google_pin;
 	}
 
+    public function cancelByslot(){  
+
+        $data = Input::json()->all();
+
+        $rules = [
+            'finder_id' => 'required',
+            'service_id' => 'required',
+            'slot' => 'required',
+            'date' => 'required',
+            'reason' => 'required',
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+
+            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+
+        }else{
+
+            $finder_id = $data['finder_id'];
+            $service_id = $data['service_id'];
+            $schedule_slot = $data['slot'];
+            $schedule_date = $data['date'];
+            $reason = $data['reason'];
+
+            $schedule_start_date_time = new DateTime(date("d-m-Y 00:00:00", strtotime($schedule_date)));
+            $schedule_end_date_time = new DateTime(date("d-m-Y 00:00:00", strtotime($schedule_date."+ 1 days")));
+
+            $booktrial = Booktrial::where("finder_id",(int)$finder_id)->where("service_id",(int)$service_id)->where("schedule_slot",$schedule_slot)->where('schedule_date_time', '>=',$schedule_start_date_time)->where('schedule_date_time', '<=',$schedule_end_date_time)->get();
+
+            if(count($booktrial) > 0){
+
+                foreach ($booktrial as $key => $value) {
+
+                    $this->cancel($value->_id,'vendor', $reason);
+                }
+
+            }
+
+            $response = array('status' => 200,'message' =>'success');
+        }
+
+        return Response::json($response, $response['status']);
+
+    }
+
+    public function errorMessage($errors){
+
+        $errors = json_decode(json_encode($errors));
+        $message = array();
+        foreach ($errors as $key => $value) {
+            $message[$key] = $value[0];
+        }
+
+        $message = implode(',', array_values($message));
+
+        return $message;
+    }
+
 }
