@@ -855,7 +855,7 @@ class MigrationsController extends \BaseController {
 
 	public function order(){
 
-		ini_set('memory_limit','2048M');
+		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
 		$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date');
