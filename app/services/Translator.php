@@ -20,10 +20,11 @@ class Translator {
 	public static function translate_autocomplete($es_autocomplete_response = array(), $city){
 		$autcomplete_response = new AutocompleteResponse();
 		if(isset($es_autocomplete_response['error'])){
-			$autcomplete_response->status = 400;
+			$autcomplete_response->status = 500;
 			return $autcomplete_response;
 		}
-		else{		
+		else{	
+
 			$autcomplete_response->meta = new \stdClass();			
 			$autcomplete_response->meta->total_records = $es_autocomplete_response['hits']['total'];			
 			foreach ($es_autocomplete_response['hits']['hits'] as $value) {
@@ -40,7 +41,7 @@ class Translator {
 				$automodel->object->tag = $value['fields']['inputcat'][0];
 				$automodel->object_type = $value['fields']['type'][0];				
 				array_push($autcomplete_response->results, $automodel);				
-			}			
+			}
 			return $autcomplete_response;
 		}		
 	}
