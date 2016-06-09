@@ -629,7 +629,7 @@ class ServiceRankingSearchController extends \BaseController {
       
       /*******************************************Drilled Aggregations here ******************************************/
 
-      $sort = '"sort":[{"rankv2":{"order":"desc"}}]';
+      $sort = '"sort":[{"workout_session_schedules_start_time_24_hrs" : {"order" : "asc"}},{"rankv2":{"order":"desc"}}]';
 
       $query = '{
         "from" : '.$from.',
@@ -648,7 +648,7 @@ class ServiceRankingSearchController extends \BaseController {
         'postfields' => $query
         );
     
-        
+       
         // .strtolower(implode('","', $keylist)).
       
       $search_results     =   es_curl_request($request);
