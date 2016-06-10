@@ -1079,6 +1079,7 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
             $geolocation = '';
         }
         $comparer = 10000000;
+        
         if(!$flag1){
             foreach ($headerarray as $key => $val) {
                 if(intval($val['budget']) < $comparer){
@@ -1160,9 +1161,9 @@ array_push($data_array, $postfields_data);
 
 }
 
+}
+}
 return $data_array; 
-}
-}
 }
 }
 

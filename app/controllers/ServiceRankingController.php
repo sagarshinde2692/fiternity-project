@@ -126,7 +126,7 @@ class ServiceRankingController extends \BaseController {
                     /******************Index each vip trial session**************/
 
 
-                return json_encode($postdata_workoutsession_schedules);
+               
 
                     if(isset($postdata_workoutsession_schedules)){
                        
