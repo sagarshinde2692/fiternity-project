@@ -27,49 +27,49 @@ Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'Vendorpanel
 
 Route::group(array('before' => 'validatevendor'), function() {
 
-	Route::get('/refreshWebToken',
+	Route::post('/refreshWebToken',
 		array('as' => 'vendor.refreshWebToken', 'uses' => 'VendorpanelController@refreshWebToken'));
 
-	Route::get('/vendorsummary/listVendors',
+	Route::post('/vendorsummary/listVendors',
 		array('as' => 'vendor.listvendor', 'uses' => 'VendorpanelController@getVendorsList'));
 
-	Route::get('/vendorsummary/{finder_id?}',
+	Route::post('/vendorsummary/{finder_id?}',
 		array('as' => 'vendor.summaryvendor', 'uses' => 'VendorpanelController@getVendorDetails'));
 
-	Route::get('/vendorsummary/{finder_id?}/contract',
+	Route::post('/vendorsummary/{finder_id?}/contract',
 		array('as' => 'vendor.summarycontract', 'uses' => 'VendorpanelController@getContractualInfo'));
 
-	Route::get('/vendorsummary/sales/{finder_id?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/sales/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summarysales', 'uses' => 'VendorpanelController@getSummarySales'));
 
-	Route::get('/vendorsummary/sales/{finder_id?}/{type?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/sales/{finder_id?}/{type?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.saleslist', 'uses' => 'VendorpanelController@getSalesList'));
 
-	Route::get('/vendorsummary/trials/{finder_id?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/trials/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summarytrials','uses' => 'VendorpanelController@getSummaryTrials'));
 
-	Route::get('/vendorsummary/trials/{finder_id?}/{type?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/trials/{finder_id?}/{type?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.trialslist', 'uses' => 'VendorpanelController@getTrialsList'));
 
-	Route::get('/vendorsummary/ozonetel/{finder_id?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/ozonetel/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summaryozonetelcalls','uses' => 'VendorpanelController@getSummaryOzonetelcalls'));
 
-	Route::get('/vendorsummary/ozonetel/{finder_id?}/{type?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/ozonetel/{finder_id?}/{type?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.ozonetellist', 'uses' => 'VendorpanelController@getOzonetelList'));
 
-	Route::get('/vendorsummary/statistics/{date?}',
+	Route::post('/vendorsummary/statistics/{date?}',
 		array('as' => 'vendor.summarystatistics','uses' => 'VendorpanelController@getSummaryStatistics'));
 	
-	Route::get('/vendorsummary/reviews/{finder_id?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/reviews/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.summaryreviews','uses' => 'VendorpanelController@getSummaryReviews'));
 
-	Route::get('/vendorsummary/inquiries/{finder_id?}/{start_date?}/{end_date?}',
+	Route::post('/vendorsummary/inquiries/{finder_id?}/{start_date?}/{end_date?}',
 		array('as' => 'vendor.totalinquiries','uses' => 'VendorpanelController@getTotalInquires'));
 
-	Route::get('/vendorsummary/profile/{finder_id?}',
+	Route::post('/vendorsummary/profile/{finder_id?}',
 		array('as' => 'vendor.profile','uses' => 'VendorpanelController@profile'));
 
-	Route::get('/vendorsummary/recentprofileupdaterequest/{finder_id?}',
+	Route::post('/vendorsummary/recentprofileupdaterequest/{finder_id?}',
 		array('as' => 'vendor.getrecentprofileupdaterequest','uses' => 'VendorpanelController@getRecentProfileUpdateRequest'));
 
 	Route::post('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',
