@@ -83,6 +83,9 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::put('/vendorsummary/profile/{finder_id?}/edit',
 		array('as' => 'vendor.updateprofile','uses' => 'VendorpanelController@updateProfile'));
+
+	Route::post('/cancelbyslot',array('as' => 'vendor.cancelbyslot','uses' => 'SchedulebooktrialsController@cancelByslot'));
+	
 });
 
 
