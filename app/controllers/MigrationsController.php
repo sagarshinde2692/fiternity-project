@@ -866,8 +866,6 @@ class MigrationsController extends \BaseController {
 			Order::where($value,'exists',true)->where($value,"")->unset($value);
 		}
 
-		echo "<pre>";print_r('done');exit;
-
 		$fileName = "order_duration.csv";
         $filePath = public_path().'/'.$fileName;
 
@@ -909,13 +907,13 @@ class MigrationsController extends \BaseController {
                 			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addDays($duration);
                 		}else{
                 			if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
-                				$order->start_date = $start_date;
+                				$order->preferred_starting_date = $order->start_date;
                 			}
                 		}
                 		
                 	} catch (Exception $exception) {
                 		Log::error($exception);
-                		Log::info('order_id  -- '. $order->_id);
+                		Log::info('order_id 1 -- '. $order->_id);
                 	}
 
                 	try {
@@ -925,13 +923,57 @@ class MigrationsController extends \BaseController {
                 			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
                 		}else{
                 			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
-                				$order->start_date = $preferred_starting_date;
+                				$order->start_date = $order->preferred_starting_date;
                 			}
                 		}
                 		
                 	} catch (Exception $exception) {
                 		Log::error($exception);
-                		Log::info('order_id  -- '. $order->_id);
+                		Log::info('order_id 2 -- '. $order->_id);
+                		//exit;
+                	}
+
+                	try {
+
+	                	if(isset($order->schedule_date) && $order->schedule_date != "" && isset($order->schedule_slot) && $order->schedule_slot != ""){
+
+	                		if(!is_array($order->schedule_slot)){
+	                			$ispresent = strpos($order->schedule_slot, "-");
+	                		}else{
+	                			$ispresent = false;
+	                		}
+
+	                		if($order->schedule_slot != "-" && $ispresent){
+		                		$slot_times 						=	explode('-',$order->schedule_slot);
+					            $schedule_slot_start_time 			=	$slot_times[0];
+					            $schedule_slot_end_time 			=	$slot_times[1];
+					            $schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+					            $slot_date 							=	date('d-m-Y', strtotime($order->schedule_date));
+					            $schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+
+					        }else{
+
+					        	$slot_date 							=	date('d-m-Y', strtotime($order->schedule_date));
+					        	$schedule_date_starttime			=   $slot_date;
+					        }
+
+	                		$start_date = date('d-m-Y g:i A',strtotime($schedule_date_starttime));
+	                		$order->start_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date);
+	                		$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
+	                	}
+
+	                	
+
+	                }catch (Exception $exception) {
+                		Log::error($exception);
+                		Log::info('order_id  3 -- '. $order->_id);
+                		//exit;
+                	}
+
+
+                	if(!isset($order->start_date) && isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
+                		$order->start_date = $order->preferred_starting_date;
                 	}
 
                 	$order->update();
