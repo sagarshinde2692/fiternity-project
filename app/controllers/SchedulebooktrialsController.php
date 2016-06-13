@@ -2897,8 +2897,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            $image[1] = "http://email.fitternity.com/231/a".$finder_category_slug."_1.jpg";
-            $image[2] = "http://email.fitternity.com/231/a".$finder_category_slug."_2.jpg";
+            $image[1] = "http://email.fitternity.com/231/".$finder_category_slug."_1.jpg";
+            $image[2] = "http://email.fitternity.com/231/".$finder_category_slug."_2.jpg";
 
             foreach ($image as $key => $url) {
 
