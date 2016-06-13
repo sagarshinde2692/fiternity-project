@@ -131,9 +131,9 @@ class ServiceRankingController extends \BaseController {
                     if(isset($postdata_workoutsession_schedules)){
                        
                         foreach ($postdata_workoutsession_schedules as $workout_session) {
-                            if($workout_session['workout_session_schedules_price'] === 0){
-                                continue;
-                            }
+
+                            if(intval($workout_session['workout_session_schedules_price']) !== 0){
+
                             $workout_session['rank'] = $score;
                             $catval = evalBaseCategoryScore($finderdata['category_id']);
                             $workout_session['rankv1'] = $catval;
@@ -146,7 +146,8 @@ class ServiceRankingController extends \BaseController {
                             $request_vip_trial = array('url' => $posturl_vip_trial, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_vip_trial);
 
                             echo "<br>    ---  ".es_curl_request($request_vip_trial);
-
+                                
+                            }
                         }
                     }
 
