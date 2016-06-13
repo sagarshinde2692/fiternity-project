@@ -341,7 +341,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         $day = (null !== Input::json()->get('day')) ? Input::json()->get('day') : '';
 
-        $today = strtolower(date("D")); 
+        $today = strtolower(date("l")); 
 
         $vip_trial_filter = '';
         
@@ -440,6 +440,8 @@ class ServiceRankingSearchController extends \BaseController {
             }
           }
         },';
+
+    
 
       }
 
@@ -661,7 +663,7 @@ class ServiceRankingSearchController extends \BaseController {
         '.$sort.'
       }';
 
-    
+   
 
       $request = array(
         'url' => $this->elasticsearch_host."/fitternity_vip_trials/service/_search",
