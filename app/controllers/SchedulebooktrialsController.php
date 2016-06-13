@@ -1542,7 +1542,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 }else{
 
-                        if($type != "workout-session"){
+                        if($booktrialdata['type'] != "workout-session"){
                             $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
                             $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
                             
@@ -2018,7 +2018,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 }else{
 
-                    if($type != "workout-session"){
+                    if($booktrialdata['type'] != "workout-session"){
                         $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
                         $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
                         
@@ -2636,7 +2636,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 }else{
 
-                    if($type != "workout-session"){
+                    if($booktrialdata['type'] != "workout-session"){
                         $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
                         $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
                         
