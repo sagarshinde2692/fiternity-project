@@ -2137,6 +2137,7 @@ class SchedulebooktrialsController extends \BaseController {
             $send_purchase_communication		=	(isset($data['send_purchase_communication']) && $data['send_purchase_communication'] != '') ? $data['send_purchase_communication'] : "";
             $deadbooktrial						=	(isset($data['deadbooktrial']) && $data['deadbooktrial'] != '') ? $data['deadbooktrial'] : "";
             $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
+            $reason                             =   (isset($data['reason']) && $data['reason'] != '') ? $data['reason'] : "";
 
             //its helpful to send any kind for dateformat date time as srting or iso formate timezond
             $slot_times 						=	explode('-',$data['schedule_slot']);
@@ -2677,11 +2678,11 @@ class SchedulebooktrialsController extends \BaseController {
         $bookdata 			= 	array();
         $booktrial 			= 	Booktrial::findOrFail($id);
 
-        if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
+       /* if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
             return Response::json($resp,200);
-        }
+        }*/
 
         array_set($bookdata, 'going_status', 2);
         array_set($bookdata, 'going_status_txt', 'cancel');
@@ -2690,6 +2691,7 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'followup_date_time', '');
         array_set($bookdata, 'source_flag', 'customer');
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
+        array_set($bookdata, 'cancel_by', 'customer');
         $trialbooked 		= 	$booktrial->update($bookdata);
 
         if($trialbooked == true ){
@@ -2843,16 +2845,23 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialdata      =	$booktrial;
 
             $finderid 							= 	(int) $booktrialdata->finder_id;
-            $finder 							= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
-            $finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
-            $finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
-            $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-            $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
-            $finder_lat 						= 	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
-            $finder_lon 						= 	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
-            $city_id 							=	(int) $finder['city_id'];
-            $google_pin							=	$this->googlePin($finder_lat,$finder_lon);
+            $finder                             =   Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+
+
+            $finder_name                        =   (isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
+            $finder_slug                        =   (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+            $finder_location                    =   (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+            $finder_location_slug               =   (isset($finder['location']['slug']) && $finder['location']['slug'] != '') ? $finder['location']['slug'] : "";
+            $finder_category                    =   (isset($finder['category']['name']) && $finder['category']['name'] != '') ? $finder['category']['name'] : "";
+            $finder_category_slug               =   (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
+            $finder_address                     =   (isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+            $finder_lat                         =   (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+            $finder_lon                         =   (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+            $city_id                            =   (int) $finder['city_id'];
+            $city                               =   $finder['city']['name'];
+            $city_slug                          =   $finder['city']['slug'];
+            $google_pin                         =   $this->googlePin($finder_lat,$finder_lon);
 
             $finder_vcc_email = "";
             if(isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != ''){
@@ -2888,47 +2897,64 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
+            $image[1] = "http://email.fitternity.com/231/a".$finder_category_slug."_1.jpg";
+            $image[2] = "http://email.fitternity.com/231/a".$finder_category_slug."_2.jpg";
+
+            foreach ($image as $key => $url) {
+
+                $file_headers = @get_headers($image[$key]);
+
+                if ($file_headers[0] != "HTTP/1.1 200 OK") {
+                    $image[$key] = "http://email.fitternity.com/231/default_".$key."jpg";
+                }
+            }
 
             $emaildata = array(
-                'customer_name' 				=>		$booktrialdata->customer_name,
-                'customer_email' 				=>		$booktrialdata->customer_email,
-                'customer_phone' 				=>		$booktrialdata->customer_phone,
+                'customer_name'                 =>      $booktrialdata->customer_name,
+                'customer_email'                =>      $booktrialdata->customer_email,
+                'customer_phone'                =>      $booktrialdata->customer_phone,
 
-                'finder_id' 					=>		$finderid,
-                'finder_name' 					=>		$finder_name,
-                'finder_slug' 					=>		$finder_slug,
-                'finder_location' 				=>		$finder_location,
-                'finder_address' 				=>		$finder_address,
-                'finder_lat'		 			=>		$finder_lat,
-                'finder_lon'		 			=>		$finder_lon,
-                'city_id'						=>		$city_id,
-                'finder_vcc_email' 				=>		$finder_vcc_email,
-                'finder_vcc_mobile' 			=>		$finder_vcc_mobile,
-                'finder_poc_for_customer_name'	=>		$finder_poc_for_customer_name,
-                'finder_poc_for_customer_no'	=>		$finder_poc_for_customer_no,
-                'show_location_flag'			=> 		$show_location_flag,
-                'share_customer_no'				=> 		$share_customer_no,
+                'finder_id'                     =>      $finderid,
+                'finder_name'                   =>      $finder_name,
+                'finder_slug'                   =>      $finder_slug,
+                'finder_location'               =>      $finder_location,
+                'finder_location_slug'          =>      $finder_location_slug,
+                'finder_category'               =>      $finder_category,
+                'finder_category_slug'          =>      $finder_category_slug,
+                'finder_address'                =>      $finder_address,
+                'finder_lat'                    =>      $finder_lat,
+                'finder_lon'                    =>      $finder_lon,
+                'city_id'                       =>      $city_id,
+                'city'                          =>      $city,
+                'city_slug'                     =>      $city_slug,
+                'finder_vcc_email'              =>      $finder_vcc_email,
+                'finder_vcc_mobile'             =>      $finder_vcc_mobile,
+                'finder_poc_for_customer_name'  =>      $finder_poc_for_customer_name,
+                'finder_poc_for_customer_no'    =>      $finder_poc_for_customer_no,
+                'show_location_flag'            =>      $show_location_flag,
+                'share_customer_no'             =>      $share_customer_no,
 
-                'service_name'					=>		$booktrialdata->service_name,
-                'schedule_slot_start_time'		=>		$booktrialdata->schedule_slot_start_time,
-                'schedule_slot_end_time'		=>		$booktrialdata->schedule_slot_end_time,
-                'schedule_date'					=>		$booktrialdata->schedule_date,
-                'schedule_date_time'			=>		$booktrialdata->schedule_date_time,
-                'schedule_slot'					=>		$booktrialdata->schedule_slot,
+                'service_name'                  =>      $booktrialdata->service_name,
+                'schedule_slot_start_time'      =>      $booktrialdata->schedule_slot_start_time,
+                'schedule_slot_end_time'        =>      $booktrialdata->schedule_slot_end_time,
+                'schedule_date'                 =>      $booktrialdata->schedule_date,
+                'schedule_date_time'            =>      $booktrialdata->schedule_date_time,
+                'schedule_slot'                 =>      $booktrialdata->schedule_slot,
 
-                'code'							=>		$booktrialdata->code,
-                'booktrial_actions'				=>		"",
-                'followup_date'					=>		"",
-                'followup_date_time'			=>		"",
-                'reg_id'						=>		$gcm_reg_id,
-                'device_type'					=>		$device_type,
-                'type'							=>		$booktrialdata->type,
-                'google_pin'					=>		$google_pin
+                'code'                          =>      $booktrialdata->code,
+                'booktrial_actions'             =>      "",
+                'followup_date'                 =>      "",
+                'followup_date_time'            =>      "",
+                'reg_id'                        =>      $gcm_reg_id,
+                'device_type'                   =>      $device_type,
+                'type'                          =>      $booktrialdata->type,
+                'google_pin'                    =>      $google_pin,
+                'cancel_by'                     =>      (isset($booktrialdata->cancel_by) && $booktrialdata->cancel_by != '') ? $booktrialdata->cancel_by : '',
+                'image'                         =>      $image,
             );
 
             $this->customermailer->cancelBookTrial($emaildata);
             $this->findermailer->cancelBookTrial($emaildata);
-            $this->customersms->cancelBookTrial($emaildata);
             $this->findersms->cancelBookTrial($emaildata);
 
             if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
