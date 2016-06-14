@@ -27,6 +27,97 @@ Route::get('migrations/ratecard', 'MigrationsController@ratecard');
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 
+
+
+Route::get('noidacity', function() {
+
+//    $data               =    array( 'country_id' => 1, "lat" => "28.535517", "lon" => "28.535517", "name" => "noida", "name" => "noida", "status"=> "1");
+//    $existcity          =    City::where('slug','noida')->first();
+//    if(!$existcity){
+//        $insertedid = City::max('_id') + 1;
+//        $city       =   new City($data);
+//        $city->_id  =   $insertedid;
+//        $city->save();
+//        $city_id = $insertedid;
+//
+//        $city       = City::findOrFail(intval($insertedid));
+//        $city->update($data);
+//
+//        $city_id = $city->_id;
+//    }else{
+//        $existcity->update($citydata);
+//        $city_id = $existcity->_id;
+//    }
+
+   $locations = ["Ashok Nagar","Golf Course","Greater Noida","Indirapuram","Vaishali","Sector 5","Sector 11","Sector 12","Sector 15","Sector 16","Sector 18","Sector 19","Sector 20","Sector 22","Sector 25","Sector 26","Sector 27","Sector 30","Sector 31","Sector 37","Sector 38A","Sector 44","Sector 45","Setor 48","Sector 50","Sector 51","Sector 52","Sector 56","Sector 60","Sector 61","Sector 62","Sector 62","Sector 66","Sector 76","Sector 127",
+       "Sector 144"];
+
+    // $locations = ["Ashok Nagar"];
+    $city_id = 9;
+
+    foreach ($locations as $location) {
+
+        // for location
+        $insertData = [
+            'name' => trim($location),
+            'slug' => url_slug([$location]),
+            'cities' => [intval($city_id)],
+            'location_group' => "general",
+            'status' => "1"
+        ];
+         $existlocation          =    Location::where('slug',url_slug([$location]))->first();
+        if($existlocation){
+
+        	$cities		= (isset($existlocation['cities'])) ?  array_merge($existlocation['cities'], [intval($city_id)]) : [intval($city_id)];
+        	$citiesArr 	= array_unique($cities);
+        	array_set($insertData, 'cities', $citiesArr);
+            $city       = Location::find(intval($existlocation['_id']));
+            $city->update($insertData);
+        }else{
+//            return $insertData;
+        	$insertedid = Location::max('_id') + 1;
+            $city       =   new Location($insertData);
+            $city->_id  =   $insertedid;
+            $city->save();
+
+        }
+
+
+        // for locationtags
+        $data = [
+            'name' => trim($location),
+            'slug' => url_slug([$location]),
+            'cities' => [intval($city_id)],
+            'status' => "1"
+        ];
+        $existlocationtag          =    Locationtag::where('slug',url_slug([$location]))->first();
+        if($existlocationtag) {
+
+        	$cities		= (isset($existlocationtag['cities'])) ?  array_merge($existlocationtag['cities'], [intval($city_id)]) : [intval($city_id)];
+        	$citiesArr 	= array_unique($cities);
+        	array_set($data, 'cities', $citiesArr);
+
+            $city       = Locationtag::find(intval($existlocationtag['_id']));
+            $city->update($data);
+           
+        }else{
+
+        	$locationtag = new Locationtag($data);
+            $insertedid = Locationtag::max('_id') + 1;
+            $locationtag->_id = $insertedid;
+            $locationtag->save();
+
+        }
+
+
+    }
+
+
+    echo "done";
+
+
+});
+
 Route::get('import/defination', function(){
 
 	$definationArr = [
