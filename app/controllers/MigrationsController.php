@@ -860,6 +860,7 @@ class MigrationsController extends \BaseController {
 
 		Order::where('order_action','exists',true)->where('order_action','bought')->update(array('status'=>'1'));
 		Order::where('status','exists',true)->where('status','1')->update(array('order_action'=>'bought'));
+		Order::where('order_action','exists',true)->where('order_action','tentative sale')->update(array('status'=>'2'));
 
 		exit;
 
