@@ -858,6 +858,11 @@ class MigrationsController extends \BaseController {
 		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
+		Order::where('customer_action','exists',true)->where('customer_action','bought')->update(array('status'=>'1'));
+		Order::where('status','exists',true)->where('status','1')->update(array('customer_action'=>'bought'));
+
+		exit;
+
 		$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date');
 
 		foreach ($dates as $key => $value) {
