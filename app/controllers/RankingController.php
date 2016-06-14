@@ -330,9 +330,7 @@ class RankingController extends \BaseController {
 
 
     public function IndexRankMongo2Elastic($index_name, $city_id){
-    // public function IndexRankMongo2Elastic(){
-
-
+   
        ini_set('max_execution_time', 30000);
        $citykist      =    array(1,2,3,4,8);
        $items = Finder::with(array('country'=>function($query){$query->select('name');}))
@@ -464,22 +462,22 @@ class RankingController extends \BaseController {
 
         $finder_id = $finderdocument['_id'];
 
-
         $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8118,8100);
-
 
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();                                          
         $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);  
         
         $postdata['free_trial_enable'] = 0;
-
+        
         if(intval($postdata['commercial_type']) !== 0){
 
             $finder_category = strtolower($postdata['category']);
             if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')){
+                if($postdata['facilities'] !== ''){
                 if(array_search('free trial', $postdata['facilities']) !== false){
                     $postdata['free_trial_enable'] = 1;
+                }                    
                 }
             }           
         }
