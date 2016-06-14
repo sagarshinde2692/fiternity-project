@@ -858,8 +858,8 @@ class MigrationsController extends \BaseController {
 		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
-		Order::where('customer_action','exists',true)->where('customer_action','bought')->update(array('status'=>'1'));
-		Order::where('status','exists',true)->where('status','1')->update(array('customer_action'=>'bought'));
+		Order::where('order_action','exists',true)->where('order_action','bought')->update(array('status'=>'1'));
+		Order::where('status','exists',true)->where('status','1')->update(array('order_action'=>'bought'));
 
 		exit;
 
