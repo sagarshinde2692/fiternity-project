@@ -339,7 +339,7 @@ class ServiceRankingSearchController extends \BaseController {
         $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
         $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
 
-        $day = (null !== Input::json()->get('day')) ? Input::json()->get('day') : '';
+        $day = (null !== Input::json()->get('day')) ? strtolower(Input::json()->get('day')) : '';
 
         $today = strtolower(date("l")); 
 
@@ -409,6 +409,7 @@ class ServiceRankingSearchController extends \BaseController {
 
       if(($time !== '')||($day !== $today)){
 
+
         $time_from = isset($time['from']) ? $time['from'] : 0;
         $time_to = isset($time['to']) ? $time['to'] : 1000000;
 
@@ -460,21 +461,21 @@ class ServiceRankingSearchController extends \BaseController {
 
       /*******************************************Drilled Aggregations here********************************************/
 
-      $time_facets_filter = trim($city_filter.$day_filter.$vip_trial_filter.$geo_distance_filter,',');
+      $time_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
 
-      $category_facets_filter = trim($city_filter.$time_range_filter.$day_filter.$vip_trial_filter.$geo_distance_filter,',');
+      $category_facets_filter = trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
 
-      $location_facets_filter = trim($city_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter,',');
+      $location_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
 
-      $location_tag_facets_filter = trim($city_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter,',');
+      $location_tag_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
 
-      $subcategory_facets_filter = trim($city_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter, ',');
+      $subcategory_facets_filter = trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter, ',');
 
-      $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter, ',');
+      $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter, ',');
 
-      $price_facets_filter = trim($city_filter.$category_filter.$region_filter.$subcategory_filter.$day_filter.$time_range_filter.$workout_intensity_filter.$vip_trial_filter.$geo_distance_filter,',');
+      $price_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter,',');
 
-      $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter, ',');
+      $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter, ',');
 
 
 
@@ -655,6 +656,16 @@ class ServiceRankingSearchController extends \BaseController {
 
       $sort = '"sort":[{"workout_session_schedules_start_time_24_hrs" : {"order" : "asc"}},{"rankv2":{"order":"desc"}}]';
 
+      $current_hour = intval(date("G")); 
+
+     
+
+        if((isset($time_from)) && ($current_hour - intval($time_from) > 3) && ($day === $today)){
+          $size = 0;
+        }
+
+       
+       
       $query = '{
         "from" : '.$from.',
         "size" : '.$size.',
