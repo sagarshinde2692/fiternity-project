@@ -773,7 +773,7 @@ class SchedulebooktrialsController extends \BaseController {
             $customer->ishulluser = 1;
             $customer->save();
 
-            return $inserted_id;
+            return (int)$inserted_id;
 
         }else{
 
@@ -817,7 +817,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             }
 
-            return $customer->_id;
+            return (int)$customer->_id;
         }
 
     }
