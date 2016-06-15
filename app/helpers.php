@@ -1495,4 +1495,96 @@ if (!function_exists(('error_message'))){
     }
 }
 
+
+if (!function_exists(('autoRegisterCustomer'))){
+
+    function autoRegisterCustomer($data){
+
+        $customer       =   Customer::active()->where('email', $data['customer_email'])->first();
+
+        if(!$customer) {
+
+            $inserted_id = Customer::max('_id') + 1;
+            $customer = new Customer();
+            $customer->_id = $inserted_id;
+            $customer->name = ucwords($data['customer_name']) ;
+            $customer->email = $data['customer_email'];
+            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+            $customer->password = md5(time());
+            $customer->gender = $data['gender'];
+
+            if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
+                $customer->contact_no = $data['customer_phone'];
+            }
+
+            if(isset($data['customer_address'])){
+
+                if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+                    $customer->address = implode(",", array_values($data['customer_address']));
+                    $customer->address_array = $data['customer_address'];
+
+                }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+                    $customer->address = $data['customer_address'];
+                }
+
+            }
+
+            $customer->identity = 'email';
+            $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
+            $customer->status = "1";
+            $customer->ishulluser = 1;
+            $customer->save();
+
+            return $inserted_id;
+
+        }else{
+
+            $customerData = [];
+
+            try{
+
+                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+                    $customerData['contact_no'] = trim($data['customer_phone']);
+                }
+
+                if(isset($data['otp']) &&  $data['otp'] != ""){
+                    $customerData['contact_no_verify_status'] = "yes";
+                }
+
+                if(isset($data['gender']) && $data['gender'] != ""){
+                    $customerData['gender'] = $data['gender'];
+                }
+
+                if(isset($data['customer_address'])){
+
+                    if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+                        $customerData['address'] = implode(",", array_values($data['customer_address']));
+                        $customerData['address_array'] = $data['customer_address'];
+
+                    }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+                        $customerData['address'] = $data['customer_address'];
+                    }
+
+                }
+
+                if(count($customerData) > 0){
+                    $customer->update($customerData);
+                }
+
+            } catch(ValidationException $e){
+
+                Log::error($e);
+
+            }
+
+            return $customer->_id;
+        }
+
+    }
+}
+
 ?>
