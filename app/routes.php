@@ -633,3 +633,13 @@ Route::get('temp/delete/{customer_phone}', array('as' => 'temps.delete','uses' =
 Route::get('budgetalgocron', 'FindersController@updateBudgetFromRatecardsToFinder');
 /******************  Temp API END HERE************************************************/
 #####################################################################################################
+
+
+
+##################################################################################################
+/*******************  Yoga Day Campaign APIs ************************************************/
+
+Route::post('bookingfromcustomofferorder/{customofferorder_id?}', 'CustomOfferOrderController@BookingFromCustomOfferOrder');
+/******************  Temp API END HERE************************************************/
+#####################################################################################################
+
