@@ -640,7 +640,7 @@ Route::get('budgetalgocron', 'FindersController@updateBudgetFromRatecardsToFinde
 ##################################################################################################
 /*******************  Yoga Day Campaign APIs ************************************************/
 
-Route::post('bookingfromcustomofferorder/{customofferorder_id?}', 'CustomOfferOrderController@BookingFromCustomOfferOrder');
+Route::post('bookingfromcustomofferorder', 'CustomOfferOrderController@BookingFromCustomOfferOrder');
 
 
 Route::post('customoffer/tmporder', array('as' => 'finders.tmporder','uses' => 'CustomofferorderController@tmpOrder'));
@@ -649,8 +649,6 @@ Route::get('customoffer/captureorder', array('as' => 'finders.captureorder','use
 Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customoffer/getorders', array('as' => 'finders.getorders','uses' => 'CustomofferorderController@getOrders'));
 });
-
-
-/******************  Temp API END HERE************************************************/
+/******************  Yoga Day API END HERE************************************************/
 #####################################################################################################
 
