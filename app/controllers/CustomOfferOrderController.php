@@ -38,25 +38,25 @@ class CustomofferorderController extends \BaseController
 
         // Check valid orderID, payment status, expiry date validity....
         if(empty($customofferorder)){
-            $resp 	= 	array("message" => "Invalid order ID");
+            $resp 	= 	array("status"=>400,"message" => "Invalid order ID");
             return Response::json($resp,400);
         }
         if($customofferorder['status'] !== '1'){
-            $resp 	= 	array("message" => "Booking is allowed only after successful payment");
+            $resp 	= 	array("status"=>422,"message" => "Booking is allowed only after successful payment");
             return Response::json($resp,422);
         }
         if($customofferorder['used_qty'] >= $customofferorder['allowed_qty']){
-            $resp 	= 	array("message" => "You have reached the maximum bookings allowed on this pass");
+            $resp 	= 	array("status"=>422,"message" => "You have reached the maximum bookings allowed on this pass");
             return Response::json($resp,422);
         }
         if(Carbon::now() > $customofferorder['expiry_date']){
-            $resp 	= 	array("message" => "Your pass validity has been expired");
+            $resp 	= 	array("status"=>422,"message" => "Your pass validity has been expired");
             return Response::json($resp,422);
         }
 
         // if type matches with quantity_type then proceed...else throw error of type is not allowed for order...
         if($data['type'] !== $customofferorder['quantity_type']){
-            $resp 	= 	array("message" => "This type of session is not allowed in this pass");
+            $resp 	= 	array("status"=>422,"message" => "This type of session is not allowed in this pass");
             return Response::json($resp,422);
         }
 
@@ -122,7 +122,7 @@ class CustomofferorderController extends \BaseController
 
 				$order = new Customofferorder($data);
 				$order->_id = Customofferorder::max('_id') + 1;
-				$order->save()
+				$order->save();
 
 				return Response::json(array('status' => 200,'message' => 'Tmp order generated sucessfull','order_id'=>$order->_id),200);
 
@@ -164,15 +164,15 @@ class CustomofferorderController extends \BaseController
 
 	public function getOrders(){
 
-		$decoded = $this->customerTokenDecode($jwt_token);
-		$customer_id = (int)$decoded->customer->_id;
-		$order array();
-
-		$customoffer_id = array();
-
-		$order = Customofferorder::where('customer_id',$customer_id)->whereIn('customoffer_id',$customoffer_id)->orderBy('_id', 'desc')->get();
-
-		return Response::json(array('status' => 200,'order'=>$order),200);
+//		$decoded = $this->customerTokenDecode($jwt_token);
+//		$customer_id = (int)$decoded->customer->_id;
+//		$order array();
+//
+//		$customoffer_id = array();
+//
+//		$order = Customofferorder::where('customer_id',$customer_id)->whereIn('customoffer_id',$customoffer_id)->orderBy('_id', 'desc')->get();
+//
+//		return Response::json(array('status' => 200,'order'=>$order),200);
 
 	}
 

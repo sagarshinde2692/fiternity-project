@@ -648,6 +648,6 @@ Route::get('customoffer/captureorder', array('as' => 'finders.captureorder','use
 Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customoffer/getorders', array('as' => 'finders.getorders','uses' => 'CustomofferorderController@getOrders'));
 });
-/******************  Temp API END HERE************************************************/
+/******************  Yoga Day API END HERE************************************************/
 #####################################################################################################
 
