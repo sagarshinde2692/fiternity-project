@@ -12,7 +12,7 @@ use \GuzzleHttp\Client;
 class CustomofferorderController extends \BaseController
 {
 
-    protected $base_uri = 'http://fitapi.com';
+    protected $base_uri = false;
     protected $debug = false;
     protected $client;
 
@@ -24,7 +24,7 @@ class CustomofferorderController extends \BaseController
     public function initClient($debug = false,$base_uri = false) {
 
         $debug = ($debug) ? $debug : $this->debug;
-        $base_uri = ($base_uri) ? $base_uri : $this->base_uri;
+        $base_uri = ($base_uri) ? $base_uri : Config::get('app.url');
         $this->client = new Client( ['debug' => $debug, 'base_uri' => $base_uri] );
 
     }
