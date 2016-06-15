@@ -639,7 +639,7 @@ Route::get('budgetalgocron', 'FindersController@updateBudgetFromRatecardsToFinde
 ##################################################################################################
 /*******************  Yoga Day Campaign APIs ************************************************/
 
-Route::post('bookingfromcustomofferorder/{customofferorder_id?}', 'CustomOfferOrderController@BookingFromCustomOfferOrder');
+Route::post('bookingfromcustomofferorder', 'CustomOfferOrderController@BookingFromCustomOfferOrder');
 /******************  Temp API END HERE************************************************/
 #####################################################################################################
 
