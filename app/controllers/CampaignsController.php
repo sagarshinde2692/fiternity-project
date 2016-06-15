@@ -230,4 +230,73 @@ class CampaignsController extends \BaseController {
 		$blogs = Blog::whereIn("_id",array(307,308,309,310))->with('author')->get();
 		return Response::json(array("services"=>$services,"blogs"=>$blogs));
 	}
+
+	public function listByCluster($campaign_slug,$city_id,$cluster_slug,$campaignby = 'service'){
+
+		$response = array("status"=>400,"message"=>"no campaign found");
+
+		$campaign = Campaign::where('slug',$campaign_slug)->where('city_id',(int)$city_id)->select('_id','featured_finders_locationcluster','featured_services_locationcluster')->first();
+
+		if($campaign){
+
+			$response = array("status"=>400,"message"=>"campaign by wrong");
+
+			if($campaignby == 'vendor'){
+
+				$campaign = $campaign->toArray();
+
+				$response = array("status"=>400,"message"=>"featured_finders_locationcluster not found");
+
+				if(isset($campaign['featured_finders_locationcluster'][$cluster_slug])){
+					$finder_id = $campaign['featured_finders_locationcluster'][$cluster_slug];
+
+					$finder_id = array_map('intval', $finder_id);
+
+					$finder = array();
+
+					$finder = Finder::where('status','=','1')->whereIn('_id',$finder_id)->get(array('title','average_rating','slug','city_id','city','coverimage'));
+
+					$response = array("status"=>200,"data"=>$finder);
+				}
+
+			}else if($campaignby == 'service'){
+
+				$campaign = $campaign->toArray();
+
+				$response = array("status"=>400,"message"=>"featured_finders_locationcluster not found");
+
+				if(isset($campaign['featured_services_locationcluster'][$cluster_slug])){
+					$service_id = $campaign['featured_services_locationcluster'][$cluster_slug];
+
+					$service_id = array_map('intval', $service_id);
+
+					$service = array();
+
+					$service = Service::whereIn('_id',$service_id)->with(array('finder'=>function($query){$query->select('title','average_rating','slug','city_id','city','coverimage');}))->get(array('finder_id','name','slug'));
+
+					if(count($service) > 0){
+
+						$service = $service->toArray();
+
+						foreach ($service as $key => $value) {
+
+							unset($service[$key]['active_weekdays']);
+							unset($service[$key]['workoutsession_active_weekdays']);
+							unset($service[$key]['service_ratecards']);
+							unset($service[$key]['service_trainer']);
+							unset($service[$key]['serviceratecard']);
+							unset($service[$key]['servicebatches']);
+						}
+
+					}
+
+					$response = array("status"=>200,"data"=>$service);
+				}
+
+			}
+		}
+
+		return Response::json($response,$response['status']);
+
+    }
 }

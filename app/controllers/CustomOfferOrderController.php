@@ -69,7 +69,7 @@ class CustomofferorderController extends \BaseController
 
 				$order = new Customofferorder($data);
 				$order->_id = Customofferorder::max('_id') + 1;
-				$order->save()
+				$order->save();
 
 				return Response::json(array('status' => 200,'message' => 'Tmp order generated sucessfull','order_id'=>$order->_id),200);
 
@@ -99,18 +99,9 @@ class CustomofferorderController extends \BaseController
 		
 	}
 
-	public function customerTokenDecode($token){
-
-		$jwt_token = $token;
-		$jwt_key = Config::get('app.jwt.key');
-		$jwt_alg = Config::get('app.jwt.alg');
-		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-
-		return $decodedToken;
-	}
-
 	public function getOrders(){
 
+		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = (int)$decoded->customer->_id;
 		$order array();

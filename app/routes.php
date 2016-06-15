@@ -555,6 +555,7 @@ Route::post('campaignsearch', 'CampaignsController@campaignsearch');
 Route::post('campaign/registercustomer', 'CampaignsController@registercustomer');
 Route::post('campaign/campaignregistercustomer', 'CampaignsController@campaignregistercustomer');
 Route::get('campaign/{city_id}/{campaign_name}', 'CampaignsController@campaignServices');
+Route::get('campaign/listbycluster/{campaign_slug}/{city_id}/{cluster_slug}/{campaignby?}',  array('as' => 'campaigns.listbycluster','uses' => 'CampaignsController@listByCluster'));
 
 /******************** Campaign SECTION END HERE ********************/
 ##############################################################################
