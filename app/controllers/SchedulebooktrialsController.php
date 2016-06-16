@@ -1901,7 +1901,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
-        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Book a Trial");
         return Response::json($resp,200);
     }
 
