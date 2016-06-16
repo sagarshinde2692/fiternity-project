@@ -359,6 +359,15 @@ class ServiceRankingSearchController extends \BaseController {
 
         $vendor_filter = ( (null !== Input::json()->get('vendor')) &&(!empty(Input::json()->get('vendor')))) ? '{"terms" : {  "findername": ["'.strtolower(implode('","', Input::json()->get('vendor'))).'"],"_cache": true}},' : '';
 
+        $service_filter = '';
+        if((null !== Input::json()->get('campaign_id')) &&(!empty(Input::json()->get('campaign_id')))){
+          $campaign_id = Input::json()->get('campaign_id');
+          $campaignServices = Campaign::where('_id',(int) $campaign_id)->pluck('campaign_services');
+         // return json_encode($campaignServices);
+          $service_filter = isset($campaignServices) ? '{"terms" : {  "service_id": '.json_encode($campaignServices).',"_cache": true}},' : '';
+        }
+
+
 
 
         /***********************************Geo Range Filter*********************************/
@@ -450,7 +459,7 @@ class ServiceRankingSearchController extends \BaseController {
 
       /**********************************************************************************************/
       
-      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter, ',');
+      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter, ',');
 
       $post_filter_query = 
       '{
@@ -682,8 +691,7 @@ class ServiceRankingSearchController extends \BaseController {
         'method' => 'POST',
         'postfields' => $query
         );
-    
-      
+
         // .strtolower(implode('","', $keylist)).
       
       $search_results     =   es_curl_request($request);
