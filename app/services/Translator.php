@@ -570,6 +570,7 @@ public static function translate_searchresultsv3($es_searchresult_response){
 			$resultobject->servicelist = isset($result['servicelist']) ? $result['servicelist'] : array();
 			$resultobject->servicephotos = isset($result['servicephotos']) ? $result['servicephotos'] : array();
 			$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
+			$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 			$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
 			$finder->object = $resultobject;
 			array_push($finderresult_response->results->resultlist, $finder);			

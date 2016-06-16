@@ -703,7 +703,7 @@ class MigrationsController extends \BaseController {
 		
 	}
 
-	public function migratedatatomoenagage(){
+	/*public function migratedatatomoenagage(){	
 
 
 		try{
@@ -816,77 +816,6 @@ class MigrationsController extends \BaseController {
 				}
 
 				
-
-				// $trial_book_actions = '';
-
-
-				// foreach ($user_trials_booked as $trial) {
-
-				// 	$user_time = strtotime($trial['created_at']);
-
-				// 	$current_time = time();
-				// 	$city_id = isset($trial['city_id']) ? $trial['city_id'] ? 0;
-				// 	$phone = isset($trial['customer_phone']) ? $trial['customer_phone'] : '';
-				// 	$finder_id = isset($trial['finder_id']) ? $trial['finder_id'] : 0;
-				// 	$finder_name = isset($trial['finder_name']) ? $trial['finder_name'] : '';
-				// 	$service_id = isset($trial['service_id']) ? $trial['service_id'] : '';
-				// 	$service_name = isset($trial['service_name']) ? $trial['service_name'] : '';
-				// 	$type = isset($trial['type']) ? $trial['type'] : '';
-				// 	$type1 = isset($trial['booktrial_type']) ? $trial['booktrial_type'] : '';
-				// 	$schedule_date = isset($trial['schedule_date']) ? $trial['schedule_date'] : '';
-				// 	$schedule_slot = isset($trial['schedule_slot']) ? $trial['schedule_slot'] : '';
-
-
-				// 	$customer_orders_payload = '{
-				// 		"action": "trialsuccess",
-				// 		"attributes": {
-				// 			"email"  : "'.$user['email'].'",
-				// 			"phone"  : "'.$phone.'",
-				// 			"finder_id"  : '.$finder_id.',
-				// 			"finder_name" : "'.$finder_name.'",
-				// 			"service_id" : '.$service_id.',
-				// 			"service_name" : "'.$service_name.'",
-				// 			"type" : "'.$type.'",
-				// 			"city_id" : '.$city_id.',
-				// 			"schedule_slot" : "'.$schedule_slot.'",
-				// 			"schedule_date" : "'.$schedule_date.'",
-				// 			"type1" : "'.$type1.'"
-				// 		},
-				// 		"platform" : "web",						
-				// 		"user_time" : '.$user_time.',
-				// 		"current_time" : '.$current_time.'
-				// 	},';
-
-				// 	$trial_book_actions = $trial_book_actions.$customer_trials_payload;
-
-				// }
-
-
-
-				// //send moengage request to push the transactional data to there database
-
-				// $total_payload = trim($order_actions.$trial_book_actions,',');
-
-				// $request_payload = '{
-				// 	"type": "event",
-				// 	"customer_id": "525689553535239acbfe",
-				// 	"device_id" : "12345",
-				// 	"actions" : [
-				// 	'.$total_payload.'
-				// 	]
-				// }';
-
-
-				// $request = array(
-				// 	'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-				// 	'port' => 8050,
-				// 	'method' => 'POST',
-				// 	'postfields' => $request_payload
-				// 	);
-
-
-				// $search_results     =   es_curl_request($request);
-
 
 
 
@@ -898,283 +827,312 @@ class MigrationsController extends \BaseController {
 
 
 
-			
-		//migrate all transactional data:
 
-
-
-
-
-
-
-
-
-		//migrate all attribute data
-
-
-
-
-
-
-
-
-
-
-
-		//migrate all the 
-
-
-
-
-
-
-
-
-		//migrate all user searched, favourite categories
-
-
-
-	public function migratedatatomoenagage(){
-
-
-		try{
-
-			$dt1 =new DateTime("2015-05-01 11:14:15.638276");
-
-
-
-			$all_users = Customer::where('created_at', '>', $dt1)->get(array('email'));
-
-			$user_emails_list = array();
-
-			foreach ($all_users as $user) {
-
-			//fetch payment/conversion for each users and push to moengage
-				echo json_encode($user);
-				$bool_exist = array_search($user['email'], $user_emails_list);
-			
-				if($bool_exist !== false){				
-					continue;
-				}
-				array_push($user_emails_list, $user['email']);
-
-			
-
-				$user_trials_booked = Booktrial::where('customer_email', $user['email'])->get();
-
-
-				$capture = Capture::where('customer_email', $user['email'])->get();
-
-
-				$user_reviews_written = Review::where('cust_id', intval($user['_id']))->get();
-
-				$attr_phone = isset($user['contact_no']) ? $user['contact_no'] : 0;
-				$attr_email = isset($user['email']) ? $user['email'] : '';
-				$attr_gender = isset($user['gender']) ? $user['gender'] : '';
-				$attr_name = isset($user['name']) ? $user['name'] : '';
-
-				$create_user_payload = '{
-					"type":"customer",
-					"customer_id" : "'.$user['email'].'",
-					"attributes" : {
-						"name" :"'.$attr_name.'",
-						"phone":'.$attr_phone.',
-						"email": "'.$attr_email.'",
-						"gender" : "'.$attr_gender.'"
-					}
-
-				}';
-
-				//hit moengage to add attributed data for user in moenagage data base
-				$curlrequestor = curl_init();
-				curl_setopt($curlrequestor, CURLOPT_TIMEOUT, 2000);
-				curl_setopt($curlrequestor, CURLOPT_RETURNTRANSFER, 1);
-				curl_setopt($curlrequestor, CURLOPT_FORBID_REUSE, 0);
-		
-				curl_setopt($curlrequestor, CURLOPT_CUSTOMREQUEST, 'POST');	
-				curl_setopt($curlrequestor, CURLOPT_URL, 'https:// W7WD7K4O8B2NE3LAI1DTG0LD: W7WD7K4O8B2NE3LAI1DTG0LD@api.moengage.com/v1/customer?app_id=W7WD7K4O8B2NE3LAI1DTG0LD');
-
-				
-				$headers[] = 'Authorization: Basic VzdXRDdLNE84QjJORTNMQUkxRFRHMExEOk01cmtGdDFzM3VGQTgyMWxkYXlWZW9OMQ==';
-				
-				
-				curl_setopt($curlrequestor, CURLOPT_HTTPHEADER, $headers);
-				curl_setopt($curlrequestor, CURLOPT_POSTFIELDS, $create_user_payload);	
-				
-				//$res = curl_exec($curlrequestor);
-				$response = json_decode($res, true);		
-				
-			
-				$user_orders = Order::where('customer_email', $user['email'])->get();
-				$order_actions = '';
-			
-				foreach ($user_orders as $order) {
-					
-					$user_time = strtotime($order['created_at']);
-
-					$current_time = time();
-
-
-					
-
-					$city_id = isset($order['city_id']) ? $order['city_id'] : 0;
-					$phone = isset($order['customer_phone']) ? $order['customer_phone'] : '';
-					$finder_id = isset($order['finder_id']) ? $order['finder_id'] : 0;
-					$finder_name = isset($order['finder_name']) ? $order['findr_name'] : '';
-					$service_id = isset($order['service_id']) ? $order['service_id'] : '';
-					$service_name = isset($order['service_name']) ? $order['service_name'] : '';
-					$type = isset($order['type']) ? $order['type'] : '';
-
-					$customer_orders_payload = '{
-						"action": "paymentsuccess",
-						"attributes": {
-							"email"  : "'.$user['email'].'",
-							"phone"  : "'.$phone.'",
-							"finder_id"  : '.$finder_id.',
-							"finder_name" : "'.$finder_name.'",
-							"service_id" : '.$service_id.',
-							"service_name" : "'.$service_name.'",
-							"type" : "'.$type.'",
-							"city_id" : '.$city_id.'
-						},
-						"platform" : "web",						
-						"user_time" : '.$user_time.',
-						"current_time" : '.$current_time.'
-					},';
-
-					$order_actions = $order_actions.$customer_orders_payload;
-					
-				}
-
-				
-
-				// $trial_book_actions = '';
-
-
-				// foreach ($user_trials_booked as $trial) {
-
-				// 	$user_time = strtotime($trial['created_at']);
-
-				// 	$current_time = time();
-				// 	$city_id = isset($trial['city_id']) ? $trial['city_id'] ? 0;
-				// 	$phone = isset($trial['customer_phone']) ? $trial['customer_phone'] : '';
-				// 	$finder_id = isset($trial['finder_id']) ? $trial['finder_id'] : 0;
-				// 	$finder_name = isset($trial['finder_name']) ? $trial['finder_name'] : '';
-				// 	$service_id = isset($trial['service_id']) ? $trial['service_id'] : '';
-				// 	$service_name = isset($trial['service_name']) ? $trial['service_name'] : '';
-				// 	$type = isset($trial['type']) ? $trial['type'] : '';
-				// 	$type1 = isset($trial['booktrial_type']) ? $trial['booktrial_type'] : '';
-				// 	$schedule_date = isset($trial['schedule_date']) ? $trial['schedule_date'] : '';
-				// 	$schedule_slot = isset($trial['schedule_slot']) ? $trial['schedule_slot'] : '';
-
-
-				// 	$customer_orders_payload = '{
-				// 		"action": "trialsuccess",
-				// 		"attributes": {
-				// 			"email"  : "'.$user['email'].'",
-				// 			"phone"  : "'.$phone.'",
-				// 			"finder_id"  : '.$finder_id.',
-				// 			"finder_name" : "'.$finder_name.'",
-				// 			"service_id" : '.$service_id.',
-				// 			"service_name" : "'.$service_name.'",
-				// 			"type" : "'.$type.'",
-				// 			"city_id" : '.$city_id.',
-				// 			"schedule_slot" : "'.$schedule_slot.'",
-				// 			"schedule_date" : "'.$schedule_date.'",
-				// 			"type1" : "'.$type1.'"
-				// 		},
-				// 		"platform" : "web",						
-				// 		"user_time" : '.$user_time.',
-				// 		"current_time" : '.$current_time.'
-				// 	},';
-
-				// 	$trial_book_actions = $trial_book_actions.$customer_trials_payload;
-
-				// }
-
-
-
-				// //send moengage request to push the transactional data to there database
-
-				// $total_payload = trim($order_actions.$trial_book_actions,',');
-
-				// $request_payload = '{
-				// 	"type": "event",
-				// 	"customer_id": "525689553535239acbfe",
-				// 	"device_id" : "12345",
-				// 	"actions" : [
-				// 	'.$total_payload.'
-				// 	]
-				// }';
-
-
-				// $request = array(
-				// 	'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-				// 	'port' => 8050,
-				// 	'method' => 'POST',
-				// 	'postfields' => $request_payload
-				// 	);
-
-
-				// $search_results     =   es_curl_request($request);
-
-
-
-
-
-
-
-
-
-
-
-
+*/
+
+	
+
+	public function csv_to_array($filename='', $delimiter=',')
+    {
+        if(!file_exists($filename) || !is_readable($filename))
+            return FALSE;
+     
+        $header = NULL;
+        $data = array();
+        if (($handle = fopen($filename, 'r')) !== FALSE)
+        {
+            while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
+            {
+                if(!$header)
+                    $header = $row;
+                else
+                    $data[] = array_combine($header, $row);
+            }
+            fclose($handle);
+        }
+        return $data;
+    }
+
+	public function order(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		Order::where('order_action','exists',true)->where('order_action','bought')->update(array('status'=>'1'));
+		Order::where('status','exists',true)->where('status','1')->update(array('order_action'=>'bought'));
+		Order::where('order_action','exists',true)->where('order_action','tentative sale')->update(array('status'=>'2'));
+
+		exit;
+
+		$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date');
+
+		foreach ($dates as $key => $value) {
+
+			Order::where($value,'exists',true)->where($value,"-")->unset($value);
+			Order::where($value,'exists',true)->where($value,"")->unset($value);
 		}
-		catch(Exception $e){
 
-			Log::error($e);
+		$fileName = "order_duration.csv";
+        $filePath = public_path().'/'.$fileName;
+
+		$csv_to_array = $this->csv_to_array($filePath);
+
+        if($csv_to_array){
+
+        	$hesh = array();
+
+            foreach ($csv_to_array as $key => $value) {
+
+                if($value['Duration Day'] != ""){
+
+                	$duration = (int)$value['Duration Day'];
+                	$id = (int)$value['Order ID'];
+
+                	$order = Order::find($id);
+                	$order->duration_day = $duration;
+
+                	$mod = $duration/30;
+
+                	if($mod < 1){
+                		$order->duration = $duration;
+                		$order->duration_type = 'day';
+                	}else{
+                		if($mod < 12){
+                			$order->duration = $mod;
+                			$order->duration_type = 'month';
+                		}else{
+                			$order->duration = 1;
+                			$order->duration_type = 'year';
+                		}
+                	}
+
+                	try {
+
+                		if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
+                			$preferred_starting_date = date('d-m-Y g:i A',strtotime($order->preferred_starting_date));
+                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addDays($duration);
+                		}else{
+                			if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
+                				$order->preferred_starting_date = $order->start_date;
+                			}
+                		}
+                		
+                	} catch (Exception $exception) {
+                		Log::error($exception);
+                		Log::info('order_id 1 -- '. $order->_id);
+                	}
+
+                	try {
+                		
+                		if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
+                			$start_date = date('d-m-Y g:i A',strtotime($order->start_date));
+                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
+                		}else{
+                			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
+                				$order->start_date = $order->preferred_starting_date;
+                			}
+                		}
+                		
+                	} catch (Exception $exception) {
+                		Log::error($exception);
+                		Log::info('order_id 2 -- '. $order->_id);
+                		//exit;
+                	}
+
+                	try {
+
+	                	if(isset($order->schedule_date) && $order->schedule_date != "" && isset($order->schedule_slot) && $order->schedule_slot != ""){
+
+	                		if(!is_array($order->schedule_slot)){
+	                			$ispresent = strpos($order->schedule_slot, "-");
+	                		}else{
+	                			$ispresent = false;
+	                		}
+
+	                		if($order->schedule_slot != "-" && $ispresent){
+		                		$slot_times 						=	explode('-',$order->schedule_slot);
+					            $schedule_slot_start_time 			=	$slot_times[0];
+					            $schedule_slot_end_time 			=	$slot_times[1];
+					            $schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+					            $slot_date 							=	date('d-m-Y', strtotime($order->schedule_date));
+					            $schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+
+					        }else{
+
+					        	$slot_date 							=	date('d-m-Y', strtotime($order->schedule_date));
+					        	$schedule_date_starttime			=   $slot_date;
+					        }
+
+	                		$start_date = date('d-m-Y g:i A',strtotime($schedule_date_starttime));
+	                		$order->start_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date);
+	                		$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
+	                	}
+
+	                	
+
+	                }catch (Exception $exception) {
+                		Log::error($exception);
+                		Log::info('order_id  3 -- '. $order->_id);
+                		//exit;
+                	}
+
+
+                	if(!isset($order->start_date) && isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
+                		$order->start_date = $order->preferred_starting_date;
+                	}
+
+                	$order->update();
+
+                	$hesh[] = $order->_id;
+
+                }
+
+            }
+
+            echo "<pre>";print_r($hesh);exit;
+        }
+
+		//order status change
+		/*Order::where('status','bought')->update(array('status'=>'1'));
+		Order::where('status','tentative sale')->update(array('status'=>'2'));
+		Order::whereIn('status',array("failure", "follow up","dead","unavailable","trial setup"))->update(array('status'=>'0'));*/
+
+		//link sent
+		//Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
+
+		//for commercial
+		/*$findercommercial = Findercommercial::get();
+
+		foreach ($findercommercial as $value) {
+
+			if(isset($value->commision) && $value->commision != ""){
+
+				$commision = preg_replace("/[^0-9] ./","",$value->commision);
+
+				$value->commision = (int) $commision;
+				$value->update();
+
+			}
+		}*/
+
+		//membership_duration_type
+		/*$finder_id = Finder::whereIn('category_id',array(42,45))->lists('_id');
+
+		Order::whereIn('finder_id',$finder_id)->update(array('membership_duration_type'=>'healthy_tiffin_snacks'));
+
+		Order::where('schedule_date','exists',true)->update(array('membership_duration_type'=>'workout_session'));*/
+
+		//membership_bought_at
+		//Order::where('membership_bought_at','At the studio')->update(array('membership_bought_at'=>'At The Studio Post'));
+
+		//link sent
+		//Order::where('customer_action','exists',true)->where('customer_action','tentative sale')->update(array('status'=>'2'));
+
+		//acquisition_type
+		//Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->update(array('acquisition_type'=>'direct_payment'));
+
+		//Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->update(array('acquisition_type'=>'post_action_sales'));
+
+		/*$order_id_direct  = Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','!=','admin')->orderBy('_id','asc')->lists('_id');
+
+		foreach ($order_id_direct as $id) {
+
+			$id = (int) $id;
+
+			$order = Order::find($id);
+
+			$count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$id)->count();
+
+			if($count > 0){
+				$order->update(array('acquisition_type'=>'renewal_direct'));
+			}
 		}
+
+		$order_id_admin  = Order::where("status","1")->where('customer_source','exists',true)->where('customer_source','admin')->orderBy('_id','asc')->lists('_id');
+
+		foreach ($order_id_admin as $id) {
+
+			$id = (int) $id;
+
+			$order = Order::find($id);
+
+			$count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$id)->count();
+
+			if($count > 0){
+				$order->update(array('acquisition_type'=>'renewal_post_action'));
+			}
+		}
+
+
+		//for end date
+		$orders = Order::where('start_date','exists',false)->where('ratecard_id','exists',true)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->orderBy('_id','asc')->get(array('_id','ratecard_id','preferred_starting_date','start_date'));
+
+		foreach ($orders as $value) {
+
+			$ratecard = Ratecard::find((int)$value->ratecard_id);
+
+			if(isset($ratecard->validity) && $ratecard->validity != ""){
+				$duration_day = (int)$ratecard->validity;
+				$value->duration_day = $duration_day;
+			
+				if(isset($value->preferred_starting_date) && $value->preferred_starting_date != ""){
+							
+					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days"));
+					$value->end_date = $end_date;
+				}
+
+				if(isset($value->start_date) && $value->start_date != ""){
+					
+					$end_date = date('Y-m-d 00:00:00',strtotime($value->preferred_starting_date."+ ".$duration_day." days"));
+					$value->end_date = $end_date;
+				}
+
+				$value->update();
+			}
+		}*/
 
 	}
 
+	/**
+	 * Migration for ratecard
+	 */
+	public function ratecard(){
 
 
 
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
 
-		//migrate all the user vendor clicked data attributes
+		// $ids	=	Country::active()->take(1)->lists('_id');
 
+		$ratecards	=	Ratecard::get(array(
+			'_id','service_id','finder_id','type', 'price','special_price','duration_type',
+			'duration','validity_type','validity','direct_payment_enable','remarks','order',
+			'discount_amount','updated_at','created_at'
+		));
 
+		foreach ($ratecards as $ratecard) {
 
+			$ratecardData = $ratecard->toArray();
+			if($ratecard['validity_type'] === 'meal'){
 
-
-
-
-
-
-
-
-
-		//migrate all the data attributes regarding services for user
-
-
-
-
-
-
-
-
-
-		//migrate all the data attributes for 
-
-
-
-
+				$ratecardData['duration'] = (int) $ratecardData['validity'];
+				$ratecardData['duration_type'] = $ratecardData['validity_type'];
+				$ratecardData['validity'] = 0;
+				$ratecardData['validity_type'] = 'days';
+				$ratecard->update($ratecardData);
+			}
+			if($ratecardData['duration_type'] === 'meal' && $ratecardData['type'] === 'workout session'){
+				$ratecardData['type'] = 'packages';
+				$ratecard->update($ratecardData);
+			}
 
 		}
-		catch(Exception $e){
 
-			Log::error($e);
-		}
+		$resp 	= 	array('status' => 200,'message' => "Done");
+		return  Response::json($resp, 200);
 
 	}
+
 }

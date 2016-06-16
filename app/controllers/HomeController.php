@@ -514,7 +514,7 @@ class HomeController extends BaseController {
 
 	public function landingcrushFinders(){
 
-		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441);
+		$finder_ids			=		array(6988,6991,6992,6995,6999,7006,7017,7360,7418,7439,7440,7441,7870,7872,8646,8647,8648,8666,8729,8731,8741);
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 		$finders 			= 		Finder::whereIn('_id', $finder_ids)
 		->with(array('category'=>function($query){$query->select('_id','name','slug');}))
@@ -536,7 +536,7 @@ class HomeController extends BaseController {
 
 	public function landingAnytimeFitnessFinders(){
         
-		$finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909);
+		$finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909,8821,8823,8871);
 		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
 		$finders 			= 		Finder::whereIn('_id', $finder_ids)
 			->with('categorytags')
@@ -544,7 +544,7 @@ class HomeController extends BaseController {
 			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 			->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-			->get(array('_id','slug','title','categorytags','category_id','category','location_id','location','city_id','city','contact','services','lat','lon','price_range','average_rating','custom_city'))->toArray();;
+			->get(array('_id','slug','title','categorytags','category_id','category','location_id','location','city_id','city','contact','services','lat','lon','price_range','average_rating','custom_city','coverimage'))->toArray();;
 
 		$finderArr = [];
 		foreach ($finders as $key => $value) {
@@ -554,6 +554,30 @@ class HomeController extends BaseController {
 		}
 
 		$responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finder_ids)];
+		return Response::json($responseArr);
+	}
+
+
+	public function landingPowerhouseFinders(){
+        
+		$finder_ids			=		array(1392,1393,1579,1580,1581,1582,1583,1584,1602,1604,1605,1607,2235,2236,2244,6890,6891,6893);
+		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
+		$finders 			= 		Finder::whereIn('_id', $finder_ids)
+			->with('categorytags')
+			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+			->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+			->get(array('_id','slug','title','categorytags','category_id','category','location_id','location','city_id','city','contact','services','lat','lon','price_range','average_rating','custom_city','coverimage'))->toArray();;
+
+		$finderArr = [];
+		foreach ($finders as $key => $value) {
+			$finderobj 	= 	array_except($value, array('services'));
+			array_set($finderobj, 'services', pluck( $value['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory']  ));
+			array_push($finderArr, $finderobj);
+		}
+
+		$responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finders)];
 		return Response::json($responseArr);
 	}
 

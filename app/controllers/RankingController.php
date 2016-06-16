@@ -251,16 +251,16 @@ class RankingController extends \BaseController {
                         "type": "nested"
                     },
                     "service_level_data": {
-                       "type":"nested",
-                       "properties": {
+                     "type":"nested",
+                     "properties": {
                         "day" : {"type" : "string", "index" : "not_analyzed"},
                         "start" : {"type" : "integer", "index" : "not_analyzed"},
                         "end" : {"type" : "integer", "index" : "not_analyzed"},
                         "service_category_synonyms" : {"type": "string", "index":"not_analyzed"},
                         "service_category_exact" : {"type": "string", "index":"not_analyzed"},
                         "slots_nested" : {
-                           "type": "nested",
-                           "properties" : {
+                         "type": "nested",
+                         "properties" : {
                             "day":{"type":"string",
                             "index":"not_analyzed"},
                             "start" : {"type" : "integer", "index" : "not_analyzed"},
@@ -330,39 +330,37 @@ class RankingController extends \BaseController {
 
 
     public function IndexRankMongo2Elastic($index_name, $city_id){
-    // public function IndexRankMongo2Elastic(){
-
-
-     ini_set('max_execution_time', 30000);
-     $citykist      =    array(1,2,3,4,8);
-     $items = Finder::with(array('country'=>function($query){$query->select('name');}))
-     ->with(array('city'=>function($query){$query->select('name');}))
-     ->with(array('category'=>function($query){$query->select('name','meta');}))
-     ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
-     ->with('categorytags')
-     ->with('locationtags')
-     ->with('offerings')
-     ->with('facilities')
-     ->with('services')
-     ->with(array('services' => function($query){$query->with(array('category' => function($query1){
+   
+       ini_set('max_execution_time', 30000);
+       $citykist      =    array(1,2,3,4,8);
+       $items = Finder::with(array('country'=>function($query){$query->select('name');}))
+       ->with(array('city'=>function($query){$query->select('name');}))
+       ->with(array('category'=>function($query){$query->select('name','meta');}))
+       ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+       ->with('categorytags')
+       ->with('locationtags')
+       ->with('offerings')
+       ->with('facilities')
+       ->with('services')
+       ->with(array('services' => function($query){$query->with(array('category' => function($query1){
         $query1->select('name');
     }))->with(array('subcategory'=> function($query2){
         $query2->select('name');
     }));}))
-     ->with(array('ozonetelno'=>function($query){$query->select('phone_number','extension')->where('status','=','1');}))
-     ->active()
-     ->orderBy('_id')
+       ->with(array('ozonetelno'=>function($query){$query->select('phone_number','extension')->where('status','=','1');}))
+       ->active()
+       ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
                             //->whereIn('_id', array(579))
-     ->where('city_id', $city_id)
-     ->where('status', '=', '1')
-     ->take(50000)->skip(0)
-     ->timeout(400000000)
+       ->where('city_id', $city_id)
+       ->where('status', '=', '1')
+       ->take(50000)->skip(0)
+       ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
-     ->get(); 
+       ->get(); 
 
-     foreach ($items as $finderdocument) {  
+       foreach ($items as $finderdocument) {  
         try{         
            // return json_decode($finderdocument);exit;
             $ratecard_days = 0; $ratecard_money = 0;
@@ -371,8 +369,8 @@ class RankingController extends \BaseController {
             $direct_payment_enabled_bool = false;
             foreach ($services as $service) {
 
-             $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
-             switch($service['validity']){
+               $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
+               switch($service['validity']){
                 case 30:
                 $ratecard_count = $ratecard_count + 1;
                 $ratecard_money = $ratecard_money + intval($service['price']);
@@ -451,10 +449,10 @@ class RankingController extends \BaseController {
             $clusterid = '';
             if(!isset($data['location']['locationcluster_id']))
             {
-               continue;
-           }
-           else
-           {
+             continue;
+         }
+         else
+         {
             $clusterid  = $data['location']['locationcluster_id'];
         }
 
@@ -464,13 +462,25 @@ class RankingController extends \BaseController {
 
         $finder_id = $finderdocument['_id'];
 
-
         $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8118,8100);
-
 
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();                                          
         $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);  
+        
+        $postdata['free_trial_enable'] = 0;
+        
+        if(intval($postdata['commercial_type']) !== 0){
+
+            $finder_category = strtolower($postdata['category']);
+            if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')){
+                if($postdata['facilities'] !== ''){
+                if(array_search('free trial', $postdata['facilities']) !== false){
+                    $postdata['free_trial_enable'] = 1;
+                }                    
+                }
+            }           
+        }
         
         $postdata['rank'] = $score;
         $catval = evalBaseCategoryScore($finderdocument['category_id']);
@@ -481,27 +491,27 @@ class RankingController extends \BaseController {
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
 
         if(in_array(intval($finder_id), $healthy_cap_offers)){
-             $postdata['capoffer'] = 1;
-        }
-        else{
-              $postdata['capoffer'] = 0;
-        }
-       
+           $postdata['capoffer'] = 1;
+       }
+       else{
+          $postdata['capoffer'] = 0;
+      }
+      
 
-        $postfields_data = json_encode($postdata);             
-        $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-        $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
+      $postfields_data = json_encode($postdata);             
+      $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
+      $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
        // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
-        $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
-        $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
-        $curl_response = es_curl_request($request);
-       $curl_response1 = es_curl_request($request1);
+      $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+      $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+      $curl_response = es_curl_request($request);
+      $curl_response1 = es_curl_request($request1);
         //echo json_encode($curl_response);
 
-    }
-    catch(Exception $e){
-        Log::error($e);
-    }
+  }
+  catch(Exception $e){
+    Log::error($e);
+}
 }
 
 
@@ -622,75 +632,75 @@ Method to index/update single document to cluster
 
 */
 
- public function IndexFinderDocument($id){
+public function IndexFinderDocument($id){
+ 
+ 
+   $items = Finder::with(array('country'=>function($query){$query->select('name');}))
+   ->with(array('city'=>function($query){$query->select('name');}))
+   ->with(array('category'=>function($query){$query->select('name','meta');}))
+   ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+   ->with('categorytags')
+   ->with('locationtags')
+   ->with('offerings')
+   ->with('facilities')
+   ->with('services')
+   ->with(array('services' => function($query){$query->with(array('category' => function($query1){
+    $query1->select('name');
+}))->with(array('subcategory'=> function($query2){
+    $query2->select('name');
+}));}))
+   ->with(array('ozonetelno'=>function($query){$query->select('phone_number','extension')->where('status','=','1');}))
+   ->active()
+   ->orderBy('_id')
+   ->whereIn('_id',array(intval($id)))     
+   ->where('status', '=', '1')
+   ->take(5000)->skip(0)
+   ->timeout(400000000)                           
+   ->get(); 
    
-       
-     $items = Finder::with(array('country'=>function($query){$query->select('name');}))
-     ->with(array('city'=>function($query){$query->select('name');}))
-     ->with(array('category'=>function($query){$query->select('name','meta');}))
-     ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
-     ->with('categorytags')
-     ->with('locationtags')
-     ->with('offerings')
-     ->with('facilities')
-     ->with('services')
-     ->with(array('services' => function($query){$query->with(array('category' => function($query1){
-        $query1->select('name');
-    }))->with(array('subcategory'=> function($query2){
-        $query2->select('name');
-    }));}))
-     ->with(array('ozonetelno'=>function($query){$query->select('phone_number','extension')->where('status','=','1');}))
-     ->active()
-     ->orderBy('_id')
-    ->whereIn('_id',array(intval($id)))     
-     ->where('status', '=', '1')
-     ->take(5000)->skip(0)
-     ->timeout(400000000)                           
-     ->get(); 
-    
-     foreach ($items as $finderdocument) {  
-        try{         
-           
-            $ratecard_days = 0; $ratecard_money = 0;
-            $services = Ratecard::where('finder_id', intval($finderdocument['id']))->get();
-            $ratecard_count = 0;  $average_monthly = 0;
-            $direct_payment_enabled_bool = false;
-            foreach ($services as $service) {
+   foreach ($items as $finderdocument) {  
+    try{         
+     
+        $ratecard_days = 0; $ratecard_money = 0;
+        $services = Ratecard::where('finder_id', intval($finderdocument['id']))->get();
+        $ratecard_count = 0;  $average_monthly = 0;
+        $direct_payment_enabled_bool = false;
+        foreach ($services as $service) {
 
-             $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
-             switch($service['validity']){
-                case 30:
-                $ratecard_count = $ratecard_count + 1;
-                $ratecard_money = $ratecard_money + intval($service['price']);
-                break;
-                case 90:
-                $ratecard_count = $ratecard_count + 1;
-                $average_one_month = intval($service['price'])/3;
-                $ratecard_money = $ratecard_money + $average_one_month;
-                break;
-                case 120:
-                $ratecard_count = $ratecard_count + 1;
-                $average_one_month = intval($service['price'])/4;
-                $ratecard_money = $ratecard_money + $average_one_month;
-                break;
-                case 180:
-                $ratecard_count = $ratecard_count + 1;
-                $average_one_month = intval($service['price'])/6;
-                $ratecard_money = $ratecard_money + $average_one_month;
-                break;
-                case 360:
-                $ratecard_count = $ratecard_count + 1;
-                $average_one_month = intval($service['price'])/12;
-                $ratecard_money = $ratecard_money + $average_one_month;
-                break;
-            }              
-        }
+           $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
+           switch($service['validity']){
+            case 30:
+            $ratecard_count = $ratecard_count + 1;
+            $ratecard_money = $ratecard_money + intval($service['price']);
+            break;
+            case 90:
+            $ratecard_count = $ratecard_count + 1;
+            $average_one_month = intval($service['price'])/3;
+            $ratecard_money = $ratecard_money + $average_one_month;
+            break;
+            case 120:
+            $ratecard_count = $ratecard_count + 1;
+            $average_one_month = intval($service['price'])/4;
+            $ratecard_money = $ratecard_money + $average_one_month;
+            break;
+            case 180:
+            $ratecard_count = $ratecard_count + 1;
+            $average_one_month = intval($service['price'])/6;
+            $ratecard_money = $ratecard_money + $average_one_month;
+            break;
+            case 360:
+            $ratecard_count = $ratecard_count + 1;
+            $average_one_month = intval($service['price'])/12;
+            $ratecard_money = $ratecard_money + $average_one_month;
+            break;
+        }              
+    }
 
 
-        if(($ratecard_count !==0)){
+    if(($ratecard_count !==0)){
 
-            $average_monthly = ($ratecard_money) / ($ratecard_count);
-        }
+        $average_monthly = ($ratecard_money) / ($ratecard_count);
+    }
 
             /*
             Define price range slabs here based on monthly average computed
@@ -737,10 +747,10 @@ Method to index/update single document to cluster
             $clusterid = '';
             if(!isset($data['location']['locationcluster_id']))
             {
-               continue;
-           }
-           else
-           {
+             continue;
+         }
+         else
+         {
             $clusterid  = $data['location']['locationcluster_id'];
         }
 

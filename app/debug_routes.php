@@ -16,7 +16,8 @@ Route::get('migrations/vendors', 'MigrationsController@vendors');
 Route::get('migrations/vendorservicecategory', 'MigrationsController@vendorservicecategory');
 Route::get('migrations/vendorPriceAverage', 'MigrationsController@vendorPriceAverage');
 Route::get('emailtest', 'DebugController@testEmail');
-
+Route::get('migrations/order', 'MigrationsController@order');
+Route::get('migrations/ratecard', 'MigrationsController@ratecard');
 
 
 
@@ -25,6 +26,97 @@ Route::get('emailtest', 'DebugController@testEmail');
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
+
+
+
+Route::get('noidacity', function() {
+
+//    $data               =    array( 'country_id' => 1, "lat" => "28.535517", "lon" => "28.535517", "name" => "noida", "name" => "noida", "status"=> "1");
+//    $existcity          =    City::where('slug','noida')->first();
+//    if(!$existcity){
+//        $insertedid = City::max('_id') + 1;
+//        $city       =   new City($data);
+//        $city->_id  =   $insertedid;
+//        $city->save();
+//        $city_id = $insertedid;
+//
+//        $city       = City::findOrFail(intval($insertedid));
+//        $city->update($data);
+//
+//        $city_id = $city->_id;
+//    }else{
+//        $existcity->update($citydata);
+//        $city_id = $existcity->_id;
+//    }
+
+   $locations = ["Ashok Nagar","Golf Course","Greater Noida","Indirapuram","Vaishali","Sector 5","Sector 11","Sector 12","Sector 15","Sector 16","Sector 18","Sector 19","Sector 20","Sector 22","Sector 25","Sector 26","Sector 27","Sector 30","Sector 31","Sector 37","Sector 38A","Sector 44","Sector 45","Setor 48","Sector 50","Sector 51","Sector 52","Sector 56","Sector 60","Sector 61","Sector 62","Sector 62","Sector 66","Sector 76","Sector 127",
+       "Sector 144"];
+
+    // $locations = ["Ashok Nagar"];
+    $city_id = 9;
+
+    foreach ($locations as $location) {
+
+        // for location
+        $insertData = [
+            'name' => trim($location),
+            'slug' => url_slug([$location]),
+            'cities' => [intval($city_id)],
+            'location_group' => "general",
+            'status' => "1"
+        ];
+         $existlocation          =    Location::where('slug',url_slug([$location]))->first();
+        if($existlocation){
+
+        	$cities		= (isset($existlocation['cities'])) ?  array_merge($existlocation['cities'], [intval($city_id)]) : [intval($city_id)];
+        	$citiesArr 	= array_unique($cities);
+        	array_set($insertData, 'cities', $citiesArr);
+            $city       = Location::find(intval($existlocation['_id']));
+            $city->update($insertData);
+        }else{
+//            return $insertData;
+        	$insertedid = Location::max('_id') + 1;
+            $city       =   new Location($insertData);
+            $city->_id  =   $insertedid;
+            $city->save();
+
+        }
+
+
+        // for locationtags
+        $data = [
+            'name' => trim($location),
+            'slug' => url_slug([$location]),
+            'cities' => [intval($city_id)],
+            'status' => "1"
+        ];
+        $existlocationtag          =    Locationtag::where('slug',url_slug([$location]))->first();
+        if($existlocationtag) {
+
+        	$cities		= (isset($existlocationtag['cities'])) ?  array_merge($existlocationtag['cities'], [intval($city_id)]) : [intval($city_id)];
+        	$citiesArr 	= array_unique($cities);
+        	array_set($data, 'cities', $citiesArr);
+
+            $city       = Locationtag::find(intval($existlocationtag['_id']));
+            $city->update($data);
+           
+        }else{
+
+        	$locationtag = new Locationtag($data);
+            $insertedid = Locationtag::max('_id') + 1;
+            $locationtag->_id = $insertedid;
+            $locationtag->save();
+
+        }
+
+
+    }
+
+
+    echo "done";
+
+
+});
 
 Route::get('import/defination', function(){
 
@@ -164,6 +256,102 @@ Route::get('import/defination', function(){
 
 
 
+Route::get('checkgeolocation/', function(){
+
+	$limit 		=  25;
+
+	$finders 	= Finder::where('lat', 'exists', true)
+	->where('lon', 'exists', true)
+	->orderBy('_id')
+	->take($limit)
+	->get(['lon','lat','_id','title', 'contact.address']);
+
+
+	$get_latlon_cnt = $no_latlon_cnt = $no_add = $error_add_cnt = 0;
+
+	$error_finder_ids = [];
+
+	foreach ($finders as $key => $finder) {
+
+		$is_error = 0;
+		
+		if(isset($finder['contact']['address']) && $finder['contact']['address'] != ''){
+
+
+			$clean_html 	= strip_tags($finder['contact']['address']);
+			$address 		= str_replace(" ", "+", $clean_html); // replace all the white space with "+" sign to match with google search pattern
+			$json 			= [];	
+
+			try {
+				$url 			= "http://maps.google.com/maps/api/geocode/json?sensor=false&address=$address";
+				$response 		= file_get_contents($url);
+				$json 			= json_decode($response,TRUE); //generate array object from the response from the web
+
+			} catch (\Exception $e){
+				$error_add_cnt += 1; 
+				$is_error = 1;
+        	}
+
+
+
+        	if($is_error == 1){
+				array_push($error_finder_ids, $finder['_id']);
+        	}
+
+
+			// return ($json['results'][0]['geometry']['location']['lat'].",".$json['results'][0]['geometry']['location']['lng']);
+
+			if(isset($json['results'][0]['geometry']['location']['lat']) && isset($json['results'][0]['geometry']['location']['lng'])){
+
+				$response_lat 	= 	$json['results'][0]['geometry']['location']['lat'];
+				$response_log 	=	$json['results'][0]['geometry']['location']['lng'];
+
+
+				// echo "<br><br> =============================================================================================";
+				// echo "<br>".$finder['_id'] . " -- ".  $finder['title'];
+				// echo "<br> Db lat : " .$finder['lat']." Db lon : ".$finder['lon'];
+				// echo "<br> Response lat : " .$response_lat. " Response lon : " .$response_log;
+
+				$get_latlon_cnt += 1; 
+
+			}else{
+
+				// echo "<br><br> =============================================================================================";
+				// echo "<br>".$finder['_id'] . " -- ".  $finder['title']. " -- ".  $address;
+				// echo "<br><strong style='color:red'>No Response using address </strong>";
+
+				$no_latlon_cnt += 1; 
+
+			}
+
+
+		}else{
+			// echo "<br><br> =============================================================================================";
+			// echo "<br>".$finder['_id'] . " -- ".  $finder['title']. " Address not exist";
+
+			$no_add += 1; 
+
+		}
+
+
+
+	}  //foreach                   
+
+	
+
+	echo "<br><br> =============================================================================================";
+	echo "<br><br> =============================================================================================";
+
+	echo "<br><br> $get_latlon_cnt  --  $no_latlon_cnt   ---  $no_add  ===  $error_add_cnt";
+
+	echo "<br><br> =============================================================================================";
+	echo "<br><br> =============================================================================================";
+
+
+
+});
+
+
 
 Route::get('/updatemedia/findercoverimage', function() {
 
@@ -245,7 +433,7 @@ Route::get('/updatemedia/findergallery', function() {
 
 //    $finders 	= Finder::where('photos', 'exists', true)->whereIn('_id',[1,2])->orderBy('_id')->lists('_id');
 //    $finders 	= Finder::where('photos', 'exists', true)->orderBy('_id')->lists('_id');
-    $finders 	= Finder::orderBy('_id')->lists('_id');
+	$finders 	= Finder::orderBy('_id')->lists('_id');
 	foreach ($finders as $key => $item) {
 		$finder 	=	Finder::find(intval($item));
 		if($finder){

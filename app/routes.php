@@ -36,6 +36,9 @@ Route::get('landingcrushlocationclusterwise/{location_cluster}', 'HomeController
 Route::get('landinganytimefitnessfinders/', 'HomeController@landingAnytimeFitnessFinders');
 Route::get('landinganytimefitnessfinders/{cityid}', 'HomeController@landingAnytimeFitnessFindersCityWise');
 
+// Power house gym
+Route::get('landingpowerhousefinders/', 'HomeController@landingPowerhouseFinders');
+
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
 Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 
