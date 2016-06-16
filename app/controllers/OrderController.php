@@ -29,7 +29,7 @@ class OrderController extends \BaseController {
 		$this->findermailer		    =	$findermailer;
 		$this->findersms 			=	$findersms;
 
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','mickeymehtaevent','healthytiffintrail','healthytiffinmembership','3daystrial');
 	}
 
 
@@ -65,14 +65,22 @@ class OrderController extends \BaseController {
 			$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
 			return  Response::json($resp, 400);
 		}
+
+
 		$orderid 	=	(int) Input::json()->get('order_id');
 		$order 		= 	Order::findOrFail($orderid);
 
+
+
+		//If Already Status Successfull Just Send Response
 		if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
 			$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Already Status Successfull");
 			return Response::json($resp);
 		}
+
+
+
 
 		if(Input::json()->get('status') == 'success'){
 
@@ -131,7 +139,7 @@ class OrderController extends \BaseController {
 				}
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
-				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
+				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent"){
 					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 				}
 			} 
@@ -141,10 +149,12 @@ class OrderController extends \BaseController {
 				$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
 			}
 
+
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
-			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe"){
+			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent"){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
+
 
 			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships"){
 
