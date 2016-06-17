@@ -2957,10 +2957,12 @@ class SchedulebooktrialsController extends \BaseController {
             $this->findermailer->cancelBookTrial($emaildata);
             $this->findersms->cancelBookTrial($emaildata);
 
-            if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
-                $this->customernotification->cancelBookTrial($emaildata);
-            }else{
-                $this->customersms->cancelBookTrial($emaildata);
+            if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
+                if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
+                    $this->customernotification->cancelBookTrial($emaildata);
+                }else{
+                    $this->customersms->cancelBookTrial($emaildata);
+                }
             }
 
 
