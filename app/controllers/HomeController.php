@@ -410,6 +410,61 @@ class HomeController extends BaseController {
 		return Response::json(Cache::tags('footer_by_city')->get($city));
 	}
 
+    
+
+	public function getFooterByCityV1($city = 'mumbai',$cache = true){
+
+		$footer_by_city = $cache ? Cache::tags('footer_by_city')->has($city) : false;
+
+		if(!$footer_by_city){
+			$footer_finders 			=		array();
+			$citydata 					=		City::where('slug', '=', $city)->first(array('name','slug'));
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
+			$city_name 					= 		$citydata['name'];
+			$city_id					= 		(int) $citydata['_id'];
+			$homepage 					= 		Homepage::where('city_id', '=', $city_id)->get()->first();
+			if(!$homepage){
+				return $this->responseNotFound('footer blocks does not exist');
+			}
+
+			$footer_block1_ids 			= 		array_map('intval', explode(",", $homepage['footer_block1_ids'] ));
+			$footer_block2_ids 			= 		array_map('intval', explode(",", $homepage['footer_block2_ids'] ));
+			$footer_block3_ids 			= 		array_map('intval', explode(",", $homepage['footer_block3_ids'] ));
+			$footer_block4_ids 			= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
+			$footer_block5_ids 			= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
+			$footer_block6_ids 			= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
+
+			$footer_block1_finders 		=		Finder::active()->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block2_finders 		=		Finder::active()->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block4_finders 		=		Finder::active()->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block5_finders 		=		Finder::active()->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block6_finders 		=		Finder::active()->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+
+			array_set($footer_finders,  'footer_block1_finders', $footer_block1_finders);
+			array_set($footer_finders,  'footer_block2_finders', $footer_block2_finders);
+			array_set($footer_finders,  'footer_block3_finders', $footer_block3_finders);
+			array_set($footer_finders,  'footer_block4_finders', $footer_block4_finders);
+			array_set($footer_finders,  'footer_block5_finders', $footer_block5_finders);
+			array_set($footer_finders,  'footer_block6_finders', $footer_block6_finders);
+
+			array_set($footer_finders,  'footer_block1_title', (isset($homepage['footer_block1_title']) && $homepage['footer_block1_title'] != '') ? $homepage['footer_block1_title'] : '');
+			array_set($footer_finders,  'footer_block2_title', (isset($homepage['footer_block2_title']) && $homepage['footer_block2_title'] != '') ? $homepage['footer_block2_title'] : '');
+			array_set($footer_finders,  'footer_block3_title', (isset($homepage['footer_block3_title']) && $homepage['footer_block3_title'] != '') ? $homepage['footer_block3_title'] : '');
+			array_set($footer_finders,  'footer_block4_title', (isset($homepage['footer_block4_title']) && $homepage['footer_block4_title'] != '') ? $homepage['footer_block4_title'] : '');
+			array_set($footer_finders,  'footer_block5_title', (isset($homepage['footer_block5_title']) && $homepage['footer_block5_title'] != '') ? $homepage['footer_block5_title'] : '');
+			array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
+
+			$footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id);
+			Cache::tags('footer_by_city')->put($city, $footerdata, Config::get('cache.cache_time'));
+		}
+
+		return Response::json(Cache::tags('footer_by_city')->get($city));
+	}
+
 
 	public function getCities(){   
 
