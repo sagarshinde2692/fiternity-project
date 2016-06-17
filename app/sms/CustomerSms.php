@@ -102,6 +102,11 @@ Class CustomerSms extends VersionNextSms{
 
 			$label = 'Order-PG-Wonderise-Customer';
 		}
+
+		if($data['type'] == 'mickeymehtaevent'){
+
+			$label = 'Order-PG-Mickeymehtaevent-Customer';
+		}
 		
 		$to = $data['customer_phone'];
 
