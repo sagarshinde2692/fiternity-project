@@ -153,29 +153,14 @@ class CustomofferorderController extends \BaseController
 	}
 
 	public function getOrders(){
-
-<<<<<<< HEAD
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = (int)$decoded->customer->_id;
-		$order array();
-
 		$customoffer_id = array();
 
 		$order = Customofferorder::where('customer_id',$customer_id)->whereIn('customoffer_id',$customoffer_id)->orderBy('_id', 'desc')->get();
 
 		return Response::json(array('status' => 200,'order'=>$order),200);
-=======
-//		$decoded = $this->customerTokenDecode($jwt_token);
-//		$customer_id = (int)$decoded->customer->_id;
-//		$order array();
-//
-//		$customoffer_id = array();
-//
-//		$order = Customofferorder::where('customer_id',$customer_id)->whereIn('customoffer_id',$customoffer_id)->orderBy('_id', 'desc')->get();
-//
-//		return Response::json(array('status' => 200,'order'=>$order),200);
->>>>>>> 5c170a114d6e25f4030a0e9e97c4172af92a5163
 
 	}
 
