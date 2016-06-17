@@ -302,7 +302,7 @@ Class CustomerSms extends VersionNextSms{
 
 	public function common($label,$to,$data,$delay = 0){
 
-		if(isset($data['type']) && $data['type'] == 'cleartrip'){
+		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";
 		}
 

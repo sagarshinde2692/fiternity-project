@@ -262,7 +262,7 @@ Class CustomerMailer extends Mailer {
 
 	public function common($label,$data,$message_data,$delay = 0){
 
-		if(isset($data['type']) && $data['type'] == 'cleartrip'){
+		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";
 		}
 		
