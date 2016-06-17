@@ -858,9 +858,20 @@ class MigrationsController extends \BaseController {
 		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
+		$orders = Order::where('amount_finder','exists',true)->where('amount_finder','!=','')->get();
+
+		foreach ($orders as $key => $value) {
+
+			$value->amount_finder = (int) $value->amount_finder;
+			$value->update();
+		}
+
+		echo"done";exit;
+
 		Order::where('order_action','exists',true)->where('order_action','bought')->update(array('status'=>'1'));
 		Order::where('status','exists',true)->where('status','1')->update(array('order_action'=>'bought'));
 		Order::where('order_action','exists',true)->where('order_action','tentative sale')->update(array('status'=>'2'));
+
 
 		exit;
 

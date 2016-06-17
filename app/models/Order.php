@@ -41,6 +41,10 @@ class Order extends \Basemodel {
 		$this->attributes['amount'] = intval($value);
 	}
 
+	public function setAmountFinderAttribute($value){
+		$this->attributes['amount_finder'] = intval($value);
+	}
+
 	public function finder(){
 		return $this->belongsTo('Finder');
 	}
