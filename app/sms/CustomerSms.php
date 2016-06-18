@@ -302,6 +302,10 @@ Class CustomerSms extends VersionNextSms{
 
 	public function common($label,$to,$data,$delay = 0){
 
+		if(isset($data['source']) && $data['source'] == 'cleartrip'){
+			return "";
+		}
+
 		$template = \Template::where('label',$label)->first();
 
 		$to = array($to);
