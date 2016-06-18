@@ -8,6 +8,10 @@ class Customofferorder extends \Basemodel {
     public static $rules = [
     ];
 
+    public function customoffer(){
+        return $this->belongsTo('Customoffer');
+    }
+
     // Don't forget to fill this array
 //	protected $fillable = [];
 

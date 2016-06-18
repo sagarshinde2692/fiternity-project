@@ -1086,6 +1086,7 @@ class SchedulebooktrialsController extends \BaseController {
     public function bookTrialPaid(){
 
         $data = Input::json()->all();
+//        return $data;
 
         if(!isset($data['customer_name']) || $data['customer_name'] == ''){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
@@ -1161,6 +1162,7 @@ class SchedulebooktrialsController extends \BaseController {
             
             $service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
             $campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
+            $campaign_name	 					=	(isset($data['campaign_name']) && $data['campaign_name'] != '') ? $data['campaign_name'] : "";
             $otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
             $slot_times 						=	explode('-',$data['schedule_slot']);
             $schedule_slot_start_time 			=	$slot_times[0];
@@ -1319,6 +1321,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialdata = array(
                 'booktrialid'					=>		intval($booktrialid),
                 'campaign'						=>		$campaign,
+                'campaign_name'					=>		$campaign_name,
                 'premium_session' 				=>		$premium_session,
                 'reminder_need_status' 			=>		$reminder_need_status,
 
@@ -1386,9 +1389,9 @@ class SchedulebooktrialsController extends \BaseController {
             );
 
             // return $this->customersms->bookTrial($booktrialdata);
-            // return $booktrialdata;
+//             return $booktrialdata;
             $booktrial = new Booktrial($booktrialdata);
-            $booktrial->_id = $booktrialid;
+            $booktrial->_id = (int) $booktrialid;
             $trialbooked = $booktrial->save();
 
         } catch(ValidationException $e){
@@ -1452,6 +1455,11 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
             $order = Order::findOrFail($orderid);
             $finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
+            if(isset($booktrialdata['customofferorder_id'])){
+                $booktrialdata['customofferorder'] = Customofferorder::where('_id',$booktrialdata['customofferorder_id'])
+                    ->with('customoffer')
+                    ->first();
+            }
 
             $finder_category_id 				= (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
@@ -1463,20 +1471,44 @@ class SchedulebooktrialsController extends \BaseController {
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
             //Send Instant (Email) To Customer & Finder
-
             if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){
-                $sndInstantEmailCustomer				= 	$this->customermailer->bookTrial($booktrialdata);
-                $sndInstantSmsCustomer					=	$this->customersms->bookTrial($booktrialdata);
+
+                if(isset($booktrialdata['campaign_name'])){
+
+                    switch($booktrialdata['campaign_name']){
+                        case 'yogaday':
+                            // Yogaday campaign_name EMAIL/SMS.........
+                            $sndInstantEmailCustomer				= 	$this->customermailer->bookYogaDayTrial($booktrialdata);
+                            $sndInstantSmsCustomer					=	$this->customersms->bookYogaDayTrial($booktrialdata);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // Normal flow.........
+                !isset($sndInstantEmailCustomer) ?  $sndInstantEmailCustomer = $this->customermailer->bookTrial($booktrialdata) : null;
+                !isset($sndInstantSmsCustomer) ? $sndInstantSmsCustomer	=	$this->customersms->bookTrial($booktrialdata) : null;
+                // Send Email to Customer........
                 $customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
                 $customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
             }
 
+            if(isset($booktrialdata['campaign_name'])) {
+                switch ($booktrialdata['campaign_name']) {
+                    case 'yogaday':
+                        // Yogaday campaign EMAIL/SMS.........
+                        $sndInstantEmailFinder = $this->findermailer->bookYogaDayTrial($booktrialdata);
+                        $sndInstantSmsFinder = $this->findersms->bookYogaDayTrial($booktrialdata);
+                        break;
+                }
+            }
 
-            $sndInstantEmailFinder					= 	$this->findermailer->bookTrial($booktrialdata);
-            $sndInstantSmsFinder					=	$this->findersms->bookTrial($booktrialdata);
+            // Normal flow.........
+            !isset($sndInstantEmailFinder) ?  $sndInstantEmailFinder = $this->findermailer->bookTrial($booktrialdata) : null;
+            !isset($sndInstantSmsFinder) ? $sndInstantSmsFinder	=	$this->findersms->bookTrial($booktrialdata) : null;
             $finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
             $finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
-
 
             $customer_auto_sms = $this->autoSms($booktrialdata,$schedule_date_starttime);
 
@@ -1885,7 +1917,7 @@ class SchedulebooktrialsController extends \BaseController {
             //if vendor type is free special dont send communication
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+                $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 

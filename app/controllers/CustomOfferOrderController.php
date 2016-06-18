@@ -32,21 +32,28 @@ class CustomofferorderController extends \BaseController
     public function BookingFromCustomOfferOrder(){
 
         $data = Input::all();
-        $customofferorder_id = $data['customofferorder_id'] = (int) $data['customofferorder_id'];
-        $customofferorder = Customofferorder::find($customofferorder_id);
-
 
         // Check valid orderID, payment status, expiry date validity....
+        if(empty($data['customofferorder_id'])){
+            $resp 	= 	array("status"=>400,"message" => "Order ID is required");
+            return Response::json($resp,400);
+        }
+        $customofferorder_id = $data['customofferorder_id'] = (int) $data['customofferorder_id'];
+        $customofferorder = Customofferorder::find($customofferorder_id);
         if(empty($customofferorder)){
             $resp 	= 	array("status"=>400,"message" => "Invalid order ID");
+            return Response::json($resp,400);
+        }
+        if(!isset($data['campaign_name']) || $data['campaign_name'] == ''){
+            $resp 	= 	array("status"=>400,"message" => "Campaign Name is required");
             return Response::json($resp,400);
         }
         if($customofferorder['status'] !== '1'){
             $resp 	= 	array("status"=>422,"message" => "Booking is allowed only after successful payment");
             return Response::json($resp,422);
         }
-        if($customofferorder['used_qty'] >= $customofferorder['allowed_qty']){
-            $resp 	= 	array("status"=>422,"message" => "You have reached the maximum bookings allowed on this pass");
+        if($customofferorder['status'] !== '1'){
+            $resp 	= 	array("status"=>422,"message" => "Booking is allowed only after successful payment");
             return Response::json($resp,422);
         }
         if(Carbon::now() > $customofferorder['expiry_date']){
@@ -59,6 +66,7 @@ class CustomofferorderController extends \BaseController
             $resp 	= 	array("status"=>422,"message" => "This type of session is not allowed in this pass");
             return Response::json($resp,422);
         }
+//        $data['campaign'] = 'yogaday';
 
         // Generate temp order....
         try {
