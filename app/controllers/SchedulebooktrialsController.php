@@ -1147,6 +1147,10 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
+        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] == ""){
+            unset($data['preferred_starting_date']);
+        }
+
         try {
 
             $order_id = $data['order_id'];
@@ -1394,6 +1398,10 @@ class SchedulebooktrialsController extends \BaseController {
                 'membership_duration_type'      =>      'workout_session'
 
             );
+
+            if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+                $booktrialdata['customofferorder_id'] = (int)$data['customofferorder_id'];
+            }
 
             // return $this->customersms->bookTrial($booktrialdata);
 //             return $booktrialdata;
