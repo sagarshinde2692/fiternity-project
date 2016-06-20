@@ -14,6 +14,9 @@ class Campaign extends \Basemodel {
 	public function categories(){
 		return $this->hasMany('Findercategory');
 	}
+	public function customoffers(){
+		return $this->belongsToMany('Customoffer', null, 'campaigns', 'customoffers');
+	}
 
 //	protected $appends = array('feature_finders');
 //
