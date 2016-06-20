@@ -7,6 +7,9 @@
  * Time: 11:22 AM
  */
 
+use App\Services\Translator;
+use App\Responsemodels\VipTrialResponse;
+
 class ServiceRankingSearchController extends \BaseController {
 
   public function __construct() {
@@ -305,4 +308,414 @@ class ServiceRankingSearchController extends \BaseController {
         throw $e;    
       }
     }
+
+    public function searchviptrials(){
+
+      try{
+
+        /*****************************offset********************************************************************************************/
+
+        $from          =         (null !== Input::json()->get('offset')['from']) ? Input::json()->get('offset')['from'] : 0;
+
+        $size          =         (null !== Input::json()->get('offset')['number_of_records']) ? Input::json()->get('offset')['number_of_records'] : 50;
+
+
+        /*****************************offset********************************************************************************************/
+
+        /*****************************sort********************************************************************************************/
+
+        $orderfield    =           (Input::json()->get('sort')) ? strtolower(Input::json()->get('sort')['sortfield']) : '';
+
+        $order         =           (Input::json()->get('sort')) ? strtolower(Input::json()->get('sort')['order']) : '';
+
+
+        /*****************************sort********************************************************************************************/
+
+        /*****************************filters*****************************************************************************************/
+
+        $locat        =         (Input::json()->get('location'));
+
+        $city         =         $locat['city'] ? strtolower($locat['city']): 'mumbai';
+        $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
+        $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
+
+        $day = (null !== Input::json()->get('day')) ? strtolower(Input::json()->get('day')) : '';
+
+        $today = strtolower(date("l")); 
+
+        $vip_trial_filter = '';
+        
+        $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "location": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
+
+        $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
+
+        $subcategory_filter =( (null !== Input::json()->get('subcategory')) &&(!empty(Input::json()->get('subcategory')))) ?  '{"terms" : {  "subcategory": ["'.strtolower(implode('","', Input::json()->get('subcategory'))).'"],"_cache": true}},' : '';
+
+        $workout_intensity_filter = ( (null !== Input::json()->get('workout_type')) &&(!empty(Input::json()->get('workout_type')))) ? '{"terms" : {  "session_type": ["'.strtolower(implode('","', Input::json()->get('workout_type'))).'"],"_cache": true}},' : '';
+
+        $day_filter = ( (null !== Input::json()->get('day')) &&(!empty(Input::json()->get('day')))) ? '{"terms" : {  "workout_session_schedules_weekday": ["'.Input::json()->get('day').'"],"_cache": true}},' : '';
+
+        $city_filter = '{"terms" : {  "city": ["'.$city.'"],"_cache": true}},';
+
+        $vendor_filter = ( (null !== Input::json()->get('vendor')) &&(!empty(Input::json()->get('vendor')))) ? '{"terms" : {  "findername": ["'.strtolower(implode('","', Input::json()->get('vendor'))).'"],"_cache": true}},' : '';
+
+        $service_filter = '';
+        if((null !== Input::json()->get('campaign_id')) &&(!empty(Input::json()->get('campaign_id')))){
+          $campaign_id = Input::json()->get('campaign_id');
+          $campaignServices = Campaign::where('_id',(int) $campaign_id)->pluck('campaign_services');
+         // return json_encode($campaignServices);
+          $service_filter = isset($campaignServices) ? '{"terms" : {  "service_id": '.json_encode($campaignServices).',"_cache": true}},' : '';
+        }
+
+
+
+
+        /***********************************Geo Range Filter*********************************/
+
+        $geo_distance_filter = '';
+
+        if(($lat !== '')&&($lon !== '')){
+
+         $geo_distance_filter = ' {
+            "geo_distance_range": {
+                "from": "0km",
+                "to": "3km",
+                "geolocation": {
+                    "lat": '.$lat.',
+                    "lon": '.$lon.'
+                }
+            }
+        },';
+
+      }
+
+      /*********************************Geo Range Filter***********************************/
+
+      /***********************************Range filters ***********************************/
+
+      $price = ( (null !== Input::json()->get('price')) &&(!empty(Input::json()->get('price')))) ? Input::json()->get('price') : '';
+
+      $time = ( (null !== Input::json()->get('time')) &&(!empty(Input::json()->get('time')))) ? Input::json()->get('time') : '';
+
+      $price_range_filter = '';
+      $time_range_filter = '';        
+
+      if($price !== ''){
+
+        $price_from = isset($price['from']) ? $price['from'] : 0;
+        $price_to = isset($price['to']) ? $price['to'] : 1000000;
+
+        $price_range_filter = '{
+          "range": {
+            "workout_session_schedules_price": {
+              "gte": '.$price_from.',
+              "lte": '.$price_to.'
+            }
+          }
+        },';
+
+      }
+
+      if(($time !== '')||($day !== $today)){
+
+
+        $time_from = isset($time['from']) ? $time['from'] : 0;
+        $time_to = isset($time['to']) ? $time['to'] : 1000000;
+
+        $time_range_filter = '{
+          "range": {
+            "workout_session_schedules_start_time_24_hrs": {
+              "gte": '.$time_from.'              
+            }
+          }
+        },{
+          "range": {
+            "workout_session_schedules_end_time_24_hrs": {
+              "lte": '.$time_to.'              
+            }
+          }
+        },';
+
+      }
+      else{
+
+        /*****************************************handle time logic here to get workout session schedules after 2 hours from now ***************************/
+
+        $min_time         =   intval(date("H")) > 20 ? 4 : intval(date("H")) + 2;
+
+         $time_range_filter = '{
+          "range": {
+            "workout_session_schedules_start_time_24_hrs": {
+              "gte": '.$min_time.'              
+            }
+          }
+        },';
+
+    
+
+      }
+
+      
+
+      /**********************************************************************************************/
+      
+      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter, ',');
+
+      $post_filter_query = 
+      '{
+        "bool": {
+          "must": ['.$bool_filter.']
+        }
+      }';
+
+      /*******************************************Drilled Aggregations here********************************************/
+
+      $time_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
+
+      $category_facets_filter = trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
+
+      $location_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
+
+      $location_tag_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter,',');
+
+      $subcategory_facets_filter = trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter, ',');
+
+      $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter, ',');
+
+      $price_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter,',');
+
+      $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter, ',');
+
+
+
+      $time_bool = '"filter": {
+        "bool" : { "must":['.$time_facets_filter.']}
+      }';
+
+      $category_bool = '"filter": {
+        "bool" : {"must":['.$category_facets_filter.']}
+      }';
+
+      $location_bool = '"filter": {
+        "bool" : {"must":['.$location_facets_filter.']}
+      }';
+
+      $subcategory_bool = '"filter": {
+        "bool" : {"must":['.$subcategory_facets_filter.']}
+      }';
+
+      $workout_bool = '"filter": {
+        "bool" : {"must":['.$workout_facets_filter.']}
+      }';
+
+      $price_bool = '"filter": {
+        "bool" : {"must":['.$price_facets_filter.']}
+      }';
+
+      $vendor_bool = '"filter": {
+        "bool" : {"must":['.$vendor_facets_filter.']}
+      }';
+
+      $region_tag_bool = '"filter": {
+        "bool" : {"must":['.$location_tag_facets_filter.']}
+      }';
+
+      $time_facets = '"filtered_time": {
+        '.$time_bool.',
+        "aggs": {
+          "time_range": {
+            "range": {
+              "field": "workout_session_schedules_start_time_24_hrs",
+              "ranges": [{
+                "from": 0,
+                "to": 12
+              },
+              {
+                "from": 12,
+                "to": 18
+              },
+              {
+                "from": 18,
+                "to": 24
+              }]
+            }
+          }
+        }
+      },';
+
+      $category_facets = ' "filtered_category": {
+        '.$category_bool.',
+        "aggs": {
+          "category": {
+            "terms": {
+              "field": "category",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+      $region_tag_facets = ' "filtered_region_tag": {
+        '.$location_bool.',
+        "aggs": {
+          "locationtags": {
+            "terms": {
+              "field": "location",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+      $regions_facets = '
+      "filtered_locations": { '.$location_bool.', 
+      "aggs":
+      { "loccluster": {
+        "terms": {
+          "field": "locationcluster",
+          "min_doc_count":1
+
+        },"aggs": {
+          "region": {
+            "terms": {
+              "field": "location",
+              "min_doc_count":1,
+              "size":"500",
+              "order": {
+                "_count": "desc"
+              }
+
+            }
+          }
+        }}}
+      },';
+
+      $subcategory_facets = ' "filtered_subcategory": {
+        '.$subcategory_bool.',
+        "aggs": {
+          "subcategory": {
+            "terms": {
+              "field": "subcategory",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+      $workout_facets = ' "filtered_workout": {
+        '.$workout_bool.',
+        "aggs": {
+          "workout": {
+            "terms": {
+              "field": "session_type",
+              "min_doc_count": 0,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+      $price_min_facets = ' "filtered_price_min": {
+        '.$price_bool.',
+        "aggs": {
+          "price_min": {
+            "min": {
+              "field": "workout_session_schedules_price"
+            }
+          }
+        }
+      },';
+
+      $price_max_facets = ' "filtered_price_max": {
+        '.$price_bool.',
+        "aggs": {
+          "price_max": {
+            "max": {
+              "field": "workout_session_schedules_price"
+            }
+          }
+        }
+      },';
+
+      $vendor_facets = ' "filtered_vendor": {
+        '.$vendor_bool.',
+        "aggs": {
+          "vendors": {
+            "terms": {
+              "field": "findername",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+      $facetsvalue = trim($time_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
+
+      
+      /*******************************************Drilled Aggregations here ******************************************/
+
+      $sort = '"sort":[{"workout_session_schedules_start_time_24_hrs" : {"order" : "asc"}},{"rankv2":{"order":"desc"}}]';
+
+      $current_hour = intval(date("G")); 
+
+     
+
+        if((isset($time_from)) && ($current_hour - intval($time_from) > 3) && ($day === $today)){
+          $size = 0;
+        }
+
+       
+       
+      $query = '{
+        "from" : '.$from.',
+        "size" : '.$size.',
+        "aggs" : {'.$facetsvalue.'},
+        "post_filter" : '.$post_filter_query.' ,
+        '.$sort.'
+      }';
+
+   
+
+      $request = array(
+        'url' => $this->elasticsearch_host."/fitternity_vip_trials/service/_search",
+        'port' => $this->elasticsearch_port,
+        'method' => 'POST',
+        'postfields' => $query
+        );
+
+        // .strtolower(implode('","', $keylist)).
+      
+      $search_results     =   es_curl_request($request);
+
+      $search_results1    =   json_decode($search_results, true);
+      $searchresulteresponse = Translator::translate_vip_trials($search_results1);
+      $searchresulteresponse->meta->number_of_records = intval($size);
+      $searchresulteresponse->meta->from = intval($from);
+      $searchresulteresponse->meta->sortfield = $orderfield;
+      $searchresulteresponse->meta->sortorder = $order;
+
+      $searchresulteresponse1 = json_encode($searchresulteresponse, true);
+
+      $response       =   json_decode($searchresulteresponse1,true);
+
+      return Response::json($response);
+
+
+    }
+
+    catch(Exception $e){
+
+      throw $e;
+
+    }
   }
+}

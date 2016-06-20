@@ -1079,6 +1079,7 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
             $geolocation = '';
         }
         $comparer = 10000000;
+        
         if(!$flag1){
             foreach ($headerarray as $key => $val) {
                 if(intval($val['budget']) < $comparer){
@@ -1146,20 +1147,23 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
                             'finder_categorytags'           =>      (isset($finderdata['categorytags']) && !empty($finderdata['categorytags'])) ? array_map('strtolower',array_pluck($finderdata['categorytags'],'name')) : "",
                             'workout_session_schedules_price'     =>  (isset($val['price'])) ? intval($val['price']) : 0,
                             'workout_session_schedules_weekday'     =>  $day,
-                            'workout_session_schedules_end_time_24_hrs'     =>  (isset($val['end_time_24_hour_format'])) ? intval($val['end_time_24_hour_format']) : 0,
-                            'workout_session_schedules_start_time_24_hrs'     =>  (isset($val['start_time_24_hour_format'])) ? intval($val['start_time_24_hour_format']) : 0,
-                            'workout_session_schedules_end_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
-                            'workout_session_schedules_start_time' => (isset($val['end_time'])) ? $val['end_time'] : ''
+                            'workout_session_schedules_end_time_24_hrs'     =>  (isset($val['end_time_24_hour_format'])) ? floatval($val['end_time_24_hour_format']) : 0,
+                            'workout_session_schedules_start_time_24_hrs'     =>  (isset($val['start_time_24_hour_format'])) ? floatval($val['start_time_24_hour_format']) : 0,
+                            'workout_session_schedules_end_time' => (isset($val['end_time'])) ? $val['end_time'] : '',
+                            'workout_session_schedules_start_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
+                            'session_type' => (isset($data['session_type'])) ? $data['session_type'] : '',
+                            'finder_address' => (isset($finderdata['contact'])&& isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
+                            'service_address' => (isset($data['address'])) ? $data['address'] : ''
                             );
 
 array_push($data_array, $postfields_data);
 }
 
+}
 
+}
+}
 return $data_array; 
-}
-}
-}
 }
 }
 

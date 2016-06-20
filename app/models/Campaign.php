@@ -15,22 +15,22 @@ class Campaign extends \Basemodel {
 		return $this->hasMany('Findercategory');
 	}
 
-	protected $appends = array('feature_finders');
-
-	public function getFeatureFindersAttribute(){
-
-		$finders 	= 	[];
-		// dd($this->campaign_finders);exit();
-		if(!empty($this->featured_finders) && isset($this->featured_finders)){
-
-			$findersObj 	=	Finder::active()->with('location')->whereIn('_id', array_map('intval', explode(",",$this->featured_finders)))->get();
-			foreach ($findersObj as $key => $value) {
-				// dd($value);exit();
-				array_push($finders, $value);
-			}		
-		}
-
-		return $finders;
-	}
+//	protected $appends = array('feature_finders');
+//
+//	public function getFeatureFindersAttribute(){
+//
+//		$finders 	= 	[];
+//		// dd($this->campaign_finders);exit();
+//		if(!empty($this->featured_finders) && isset($this->featured_finders)){
+//
+//			$findersObj 	=	Finder::active()->with('location')->whereIn('_id', array_map('intval', explode(",",$this->featured_finders)))->get();
+//			foreach ($findersObj as $key => $value) {
+//				// dd($value);exit();
+//				array_push($finders, $value);
+//			}
+//		}
+//
+//		return $finders;
+//	}
 
 }
