@@ -8,6 +8,8 @@
  */
 
 use \GuzzleHttp\Client;
+use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Sms\CustomerSms as CustomerSms;
 
 class CustomofferorderController extends \BaseController
 {
@@ -15,9 +17,15 @@ class CustomofferorderController extends \BaseController
     protected $base_uri = false;
     protected $debug = false;
     protected $client;
+    protected $customermailer;
+	protected $customersms;
 
-    public function __construct() {
-
+    public function __construct(
+    	CustomerMailer $customermailer,
+		CustomerSms $customersms
+    ){
+    	$this->customermailer		=	$customermailer;
+		$this->customersms 			=	$customersms;
         $this->initClient();
     }
 
@@ -31,7 +39,7 @@ class CustomofferorderController extends \BaseController
 
     public function BookingFromCustomOfferOrder(){
 
-        $data = Input::all();
+        $data		=	Input::json()->all();
 
         // Check valid orderID, payment status, expiry date validity....
         if(empty($data['customofferorder_id'])){
@@ -44,13 +52,9 @@ class CustomofferorderController extends \BaseController
             $resp 	= 	array("status"=>400,"message" => "Invalid order ID");
             return Response::json($resp,400);
         }
-        if(!isset($data['campaign_name']) || $data['campaign_name'] == ''){
+        if(!isset($data['campaign']) || $data['campaign'] == ''){
             $resp 	= 	array("status"=>400,"message" => "Campaign Name is required");
             return Response::json($resp,400);
-        }
-        if($customofferorder['status'] !== '1'){
-            $resp 	= 	array("status"=>422,"message" => "Booking is allowed only after successful payment");
-            return Response::json($resp,422);
         }
         if($customofferorder['status'] !== '1'){
             $resp 	= 	array("status"=>422,"message" => "Booking is allowed only after successful payment");
@@ -61,9 +65,19 @@ class CustomofferorderController extends \BaseController
             return Response::json($resp,422);
         }
 
-        // if type matches with quantity_type then proceed...else throw error of type is not allowed for order...
         if($data['type'] !== $customofferorder['quantity_type']){
             $resp 	= 	array("status"=>422,"message" => "This type of session is not allowed in this pass");
+            return Response::json($resp,422);
+        }
+
+        if($data['customer_email'] !== $customofferorder['customer_email']){
+            $resp 	= 	array("status"=>422,"message" => "email not matching");
+            return Response::json($resp,422);
+        }
+
+        // if type matches with quantity_type then proceed...else throw error of type is not allowed for order...
+        if($customofferorder['used_qty'] >= $customofferorder['allowed_qty']){
+            $resp 	= 	array("status"=>422,"message" => "reached max of allowed qty");
             return Response::json($resp,422);
         }
 //        $data['campaign'] = 'yogaday';
@@ -123,10 +137,16 @@ class CustomofferorderController extends \BaseController
 				$data['quantity_type'] = $offer->quantity_type;
 				$data['allowed_qty'] = $offer->quantity;
 				$data['validity'] = $offer->validity;
-				$data['price_of_one'] = $offer->price/$offer->quantity;
+				$data['price_of_one'] = 300;
+				if($offer->quantity != 1000){
+					$data['price_of_one'] = round(($offer->price/$offer->quantity), 2);
+				}
 				$data['used_qty'] = 0;
 				$data['status'] = "0";
-				$data['expiry_date'] = Carbon::createFromFormat('Y-m-d', date("Y-m-d"))->addDays((int) $data['validity']);
+				$data['expiry_date'] = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addDays((int) $data['validity']);
+				$data['price'] = $offer->price;
+				$data['pass_type'] = $offer->title;
+				$data['code'] = $this->generateRandomString();
 
 				$order = new Customofferorder($data);
 				$order->_id = Customofferorder::max('_id') + 1;
@@ -141,40 +161,73 @@ class CustomofferorderController extends \BaseController
     	}
 	}
 
+	function generateRandomString($length = 10) {
+
+	    $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+	    $charactersLength = strlen($characters);
+	    $randomString = '';
+	    for ($i = 0; $i < $length; $i++) {
+	        $randomString .= $characters[rand(0, $charactersLength - 1)];
+	    }
+	    return $randomString;
+	}
+
 
 	public function captureOrder($order_id){
 
-		$order = Customofferorder::find($order_id);
+		$order = Customofferorder::find((int)$order_id);
 
 		if($order){
 
+			if($order->status == "1"){
+				return Response::json(array('status' => 200,'message' => 'Already Purchased','order'=>$order),200);
+			}
+
 			$order->status = "1";
+
+			$order->email_yogaday = $this->customermailer->yogaDayPass($order->toArray());
+			$order->sms_yogaday = $this->customersms->yogaDayPass($order->toArray());
+
 			$order->update();
 
-			return Response::json(array('status' => 200,'message' => 'successfull created order'),200);
+			return Response::json(array('status' => 200,'message' => 'Successfull Created Order','order'=>$order),200);
 
 		}else{
 
-			return Response::json(array('status' => 400,'message' => 'No offer found'),400);
+			return Response::json(array('status' => 400,'message' => 'No Order Offer found'),400);
 		}
 		
 	}
 
+	public function customerTokenDecode($token){
+
+		$jwt_token = $token;
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
+		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		return $decodedToken;
+	}
+
 	public function getOrders(){
+
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = (int)$decoded->customer->_id;
-		$customoffer_id = array();
+		$order  = array();
 
-		$order = Customofferorder::where('customer_id',$customer_id)->whereIn('customoffer_id',$customoffer_id)->orderBy('_id', 'desc')->get();
+		$order = Customofferorder::where('customer_id',$customer_id)->orderBy('_id', 'desc')->get();
 
 		return Response::json(array('status' => 200,'order'=>$order),200);
 
 	}
 
+    public function getdetails($id){
+        $id = intval($id);
+        $order = Customoffer::where('_id',$id)->first();
 
+        return Response::json(array('status' => 200,'customoffer'=>$order),200);
 
-
-
+    }
 
 }

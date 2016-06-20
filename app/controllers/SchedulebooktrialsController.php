@@ -1162,7 +1162,6 @@ class SchedulebooktrialsController extends \BaseController {
             
             $service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
             $campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
-            $campaign_name	 					=	(isset($data['campaign_name']) && $data['campaign_name'] != '') ? $data['campaign_name'] : "";
             $otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
             $slot_times 						=	explode('-',$data['schedule_slot']);
             $schedule_slot_start_time 			=	$slot_times[0];
@@ -1208,7 +1207,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $final_lead_status = 'call_to_confirm';
             }
 
-            $gcm_reg_id								= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+            $gcm_reg_id							= 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
             $device_type						= 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
             $social_referrer					= 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
             $transacted_after					= 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
@@ -1321,7 +1320,6 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialdata = array(
                 'booktrialid'					=>		intval($booktrialid),
                 'campaign'						=>		$campaign,
-                'campaign_name'					=>		$campaign_name,
                 'premium_session' 				=>		$premium_session,
                 'reminder_need_status' 			=>		$reminder_need_status,
 
@@ -1473,11 +1471,11 @@ class SchedulebooktrialsController extends \BaseController {
             //Send Instant (Email) To Customer & Finder
             if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){
 
-                if(isset($booktrialdata['campaign_name'])){
+                if(isset($booktrialdata['campaign'])){
 
-                    switch($booktrialdata['campaign_name']){
+                    switch($booktrialdata['campaign']){
                         case 'yogaday':
-                            // Yogaday campaign_name EMAIL/SMS.........
+                            // Yogaday campaign EMAIL/SMS.........
                             $sndInstantEmailCustomer				= 	$this->customermailer->bookYogaDayTrial($booktrialdata);
                             $sndInstantSmsCustomer					=	$this->customersms->bookYogaDayTrial($booktrialdata);
                             break;
@@ -1487,15 +1485,15 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 // Normal flow.........
-                !isset($sndInstantEmailCustomer) ?  $sndInstantEmailCustomer = $this->customermailer->bookTrial($booktrialdata) : null;
-                !isset($sndInstantSmsCustomer) ? $sndInstantSmsCustomer	=	$this->customersms->bookTrial($booktrialdata) : null;
+                !isset($sndInstantEmailCustomer) ?  $sndInstantEmailCustomer = $this->customermailer->bookTrial($booktrialdata) : array();
+                !isset($sndInstantSmsCustomer) ? $sndInstantSmsCustomer	=	$this->customersms->bookTrial($booktrialdata) : array();
                 // Send Email to Customer........
                 $customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
                 $customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
             }
 
-            if(isset($booktrialdata['campaign_name'])) {
-                switch ($booktrialdata['campaign_name']) {
+            if(isset($booktrialdata['campaign'])) {
+                switch ($booktrialdata['campaign']) {
                     case 'yogaday':
                         // Yogaday campaign EMAIL/SMS.........
                         $sndInstantEmailFinder = $this->findermailer->bookYogaDayTrial($booktrialdata);
@@ -1505,8 +1503,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             // Normal flow.........
-            !isset($sndInstantEmailFinder) ?  $sndInstantEmailFinder = $this->findermailer->bookTrial($booktrialdata) : null;
-            !isset($sndInstantSmsFinder) ? $sndInstantSmsFinder	=	$this->findersms->bookTrial($booktrialdata) : null;
+            !isset($sndInstantEmailFinder) ?  $sndInstantEmailFinder = $this->findermailer->bookTrial($booktrialdata) : array();
+            !isset($sndInstantSmsFinder) ? $sndInstantSmsFinder	=	$this->findersms->bookTrial($booktrialdata) : array();
             $finder_email_messageids['instant'] 	= 	$sndInstantEmailFinder;
             $finer_sms_messageids['instant'] 		= 	$sndInstantSmsFinder;
 

@@ -4,6 +4,8 @@ class Customofferorder extends \Basemodel {
 
     protected $collection = "customofferorders";
 
+    protected $dates = array('expiry_date');
+
     // Add your validation rules here
     public static $rules = [
     ];

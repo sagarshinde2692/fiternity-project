@@ -253,11 +253,21 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-
-
 	public function healthyTiffinMembership($data){
 
 		$label = 'HealthyTiffinMembership-Instant-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function yogaDayPass($data){
+
+		$label = 'YogaDayPass-Instant-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),

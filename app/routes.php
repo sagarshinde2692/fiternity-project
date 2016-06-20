@@ -642,12 +642,16 @@ Route::get('budgetalgocron', 'FindersController@updateBudgetFromRatecardsToFinde
 
 Route::post('bookingfromcustomofferorder', 'CustomOfferOrderController@BookingFromCustomOfferOrder');
 
+Route::get('yogaform', 'DebugController@yogaForm');
 
-Route::post('customoffer/tmporder', array('as' => 'finders.tmporder','uses' => 'CustomofferorderController@tmpOrder'));
-Route::get('customoffer/captureorder', array('as' => 'finders.captureorder','uses' => 'CustomofferorderController@captureOrder'));
+Route::get('customoffer/getdetails/{id}', array('as' => 'finders.getdetails','uses' => 'CustomOfferOrderController@getdetails'));
+
+Route::post('customoffer/tmporder', array('as' => 'finders.tmporder','uses' => 'CustomOfferOrderController@tmpOrder'));
+Route::get('customoffer/captureorder/{order_id}', array('as' => 'finders.captureorder','uses' => 'CustomOfferOrderController@captureOrder'));
+Route::get('yogaday/{city_id}',  array('as' => 'campaigns.yogaday','uses' => 'CampaignsController@yogaDay'));
 
 Route::group(array('before' => 'validatetoken'), function() {
-	Route::get('customoffer/getorders', array('as' => 'finders.getorders','uses' => 'CustomofferorderController@getOrders'));
+	Route::get('customoffer/getorders', array('as' => 'finders.getorders','uses' => 'CustomOfferOrderController@getOrders'));
 });
 /******************  Yoga Day API END HERE************************************************/
 #####################################################################################################
