@@ -253,7 +253,7 @@ class CampaignsController extends \BaseController {
 
 		$response = array("status"=>400,"message"=>"no campaign found");
 
-		$campaign = Campaign::where('slug','yoga-day')->where('city_id',(int)$city_id)->select('_id','featured_finders_locationcluster','featured_services_locationcluster')->first();
+		$campaign = Campaign::where('slug','yoga-focus')->where('city_id',(int)$city_id)->select('_id','featured_finders_locationcluster','featured_services_locationcluster')->first();
 
 		if($campaign){
 

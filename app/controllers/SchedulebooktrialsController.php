@@ -1410,9 +1410,10 @@ class SchedulebooktrialsController extends \BaseController {
 
         }
 
-        if($trialbooked == true && $campaign != ''){
+        /*if($trialbooked == true && $campaign != ''){
             $this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
-        }
+        }*/
+        
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial", 'code' => $code);
@@ -1925,9 +1926,9 @@ class SchedulebooktrialsController extends \BaseController {
             }*/
         }
 
-        if($trialbooked == true && $campaign != ''){
+        /*if($trialbooked == true && $campaign != ''){
             $this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
-        }
+        }*/
 
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
