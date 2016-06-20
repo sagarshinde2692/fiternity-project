@@ -1513,9 +1513,11 @@ if (!function_exists(('autoRegisterCustomer'))){
             $customer->_id = $inserted_id;
             $customer->name = ucwords($data['customer_name']) ;
             $customer->email = $data['customer_email'];
+            $customer->dob =  isset($data['dob']) ? $data['dob'] : "";
+            $customer->gender =  isset($data['gender']) ? $data['gender'] : "";
+            $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
             $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
             $customer->password = md5(time());
-            $customer->gender = $data['gender'];
 
             if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
                 $customer->contact_no = $data['customer_phone'];
