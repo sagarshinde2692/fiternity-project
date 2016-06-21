@@ -3001,11 +3001,11 @@ class SchedulebooktrialsController extends \BaseController {
                 'image'                         =>      $image,
             );
 
-            $this->customermailer->cancelBookTrial($emaildata);
             $this->findermailer->cancelBookTrial($emaildata);
             $this->findersms->cancelBookTrial($emaildata);
 
             if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
+                $this->customermailer->cancelBookTrial($emaildata);
                 if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
                     $this->customernotification->cancelBookTrial($emaildata);
                 }else{
