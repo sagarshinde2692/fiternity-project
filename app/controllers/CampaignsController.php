@@ -277,18 +277,27 @@ class CampaignsController extends \BaseController {
 					$cluster['slug'] = $cluster_slug;
 
 					$service_id = array_map('intval', $service_id);
+					$service = array();
 
-					$service = Service::whereIn('_id',$service_id)
-					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-					->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-					->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-					->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-					->with(array('finder'=>function($query){$query->select('title','average_rating','slug','city_id','city','coverimage');}))
-					->get(array('finder_id','name','slug','city_id','servicecategory_id','servicesubcategory_id','location_id'));
+					foreach ($service_id as $_id) {
+
+						$hesh = Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))
+						->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+						->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+						->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+						->with(array('finder'=>function($query){$query->select('title','average_rating','slug','city_id','city','coverimage');}))
+						->find($_id,array('finder_id','name','slug','city_id','servicecategory_id','servicesubcategory_id','location_id'));
+
+						if($hesh){
+
+							$hesh = $hesh->toArray();
+
+							$service[] = $hesh;
+						}
+					}
 
 					if(count($service) > 0){
 
-						$service = $service->toArray();
 						$service_count += count($service);
 
 						foreach ($service as $key => $value) {
