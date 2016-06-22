@@ -2999,6 +2999,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'google_pin'                    =>      $google_pin,
                 'cancel_by'                     =>      (isset($booktrialdata->cancel_by) && $booktrialdata->cancel_by != '') ? $booktrialdata->cancel_by : '',
                 'image'                         =>      $image,
+                'source'                        =>      $booktrialdata->source
             );
 
             $this->findermailer->cancelBookTrial($emaildata);
