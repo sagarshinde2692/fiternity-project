@@ -539,6 +539,7 @@ class EmailSmsApiController extends \BaseController {
 
 		$storecapture = Capture::create($data);
 
+        $responseData = [];
         try {
 
             $responseData = $this->cloudagent->requestToCallBack($data);
@@ -558,7 +559,12 @@ class EmailSmsApiController extends \BaseController {
 
 //        var_dump($responseData);exit;
 
-		$resp = array('status' => 200,'message' => "Recieved the Request");
+		$resp = array('status' => 200,'message' => "Recieved the Request" );
+
+        if(isset($responseData) && isset($responseData['data'])){
+            $resp['data'] = $responseData['data'];
+        }
+        
 		return Response::json($resp);
 	}
 
