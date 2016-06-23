@@ -1172,7 +1172,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
             
             $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
-            
+            $customofferorder_id	 			=	(isset($data['customofferorder_id']) && $data['customofferorder_id'] != '') ? $data['customofferorder_id'] : "";
+
             $service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
             $campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
@@ -1342,6 +1343,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_phone' 				=>		$customer_phone,
                 'fitcard_user'					=>		$fitcard_user,
                 'type'							=>		$type,
+
+                'customofferorder_id'          =>      $customofferorder_id,
 
                 'finder_id' 					=>		$finderid,
                 'finder_name' 					=>		$finder_name,
@@ -1712,6 +1715,8 @@ class SchedulebooktrialsController extends \BaseController {
             $fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
             $type								= 	(Input::json()->get('type')) ? Input::json()->get('type') : '';
 
+            $customofferorder_id	 			=	(isset($data['customofferorder_id']) && $data['customofferorder_id'] != '') ? $data['customofferorder_id'] : "";
+
 
             $finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
             $finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
@@ -1862,6 +1867,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_phone' 				=>		$customer_phone,
                 'fitcard_user'					=>		$fitcard_user,
                 'type'							=>		$type,
+
+                'customofferorder_id'           =>      $customofferorder_id,
 
                 'finder_id' 					=>		$finderid,
                 'finder_name' 					=>		$finder_name,
