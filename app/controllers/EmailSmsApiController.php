@@ -2,12 +2,21 @@
 
 use Hugofirth\Mailchimp\Facades\MailchimpWrapper;
 
+use App\Services\Cloudagent as Cloudagent;
+
+
 class EmailSmsApiController extends \BaseController {
 
-	protected $reciver_email = "mailus@fitternity.com";
-	protected $reciver_name = "Leads From Website";
+	protected $reciver_email    =   "mailus@fitternity.com";
+	protected $reciver_name     =   "Leads From Website";
+    protected $cloudagent;
 
-	public function sendSMS($smsdata){
+    public function __construct(Cloudagent $cloudagent)
+    {
+        $this->cloudagent = $cloudagent;
+    }
+
+    public function sendSMS($smsdata){
 
 		$to = $smsdata['send_to'];
 		$message = $smsdata['message_body'];
@@ -42,6 +51,7 @@ class EmailSmsApiController extends \BaseController {
 		curl_close($ch);*/
 	}
 
+
 	public function sendEmail($emaildata){
 
 		$email_template 		= 	$emaildata['email_template'];
@@ -56,12 +66,14 @@ class EmailSmsApiController extends \BaseController {
 		if($send_bcc_status == 1){
 			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
 				$message->to($to, $reciver_name)->bcc($bcc_emailids)->subject($email_subject);
-			});			
+			});
 		}else{
 			Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
 				$message->to($to, $reciver_name)->subject($email_subject);
-			});			
+			});
 		}
+
+
 	}
 
 
@@ -82,7 +94,6 @@ class EmailSmsApiController extends \BaseController {
 
 		/* Queue:push(function($job) use ($data){ $data['string']; $job->delete();  }); */
 	}
-
 
 	public function BookTrial() {
 
@@ -264,7 +275,6 @@ class EmailSmsApiController extends \BaseController {
 		return Response::json($resp);
 	}
 
-
 	public function landingpageregister(){
 		
 		if (filter_var(trim(Input::json()->get('email')), FILTER_VALIDATE_EMAIL) === false){
@@ -442,12 +452,6 @@ class EmailSmsApiController extends \BaseController {
 	}
 
 
-
-
-
-
-
-
 	public function landingpagecallback(){
 		$emaildata = array(
 			'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks', 
@@ -534,6 +538,25 @@ class EmailSmsApiController extends \BaseController {
 		$this->sendSMS($smsdata);
 
 		$storecapture = Capture::create($data);
+
+        try {
+
+            $responseData = $this->cloudagent->requestToCallBack($data);
+
+        }catch (Exception $e) {
+
+            $message = array(
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+            $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            Log::info('Cloudagent Error : '.json_encode($response));
+        }
+
+//        var_dump($responseData);exit;
 
 		$resp = array('status' => 200,'message' => "Recieved the Request");
 		return Response::json($resp);
