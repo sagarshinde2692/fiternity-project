@@ -25,6 +25,7 @@ Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
 Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
 Route::get('/homev4/{city?}', 'HomeController@getHomePageDatav4');
 Route::get('footer/{city?}', 'HomeController@getFooterByCity');
+Route::get('footerv1/{city?}/{category}', 'HomeController@getFooterByCityV1');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 

@@ -1172,7 +1172,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
             
             $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
-            
+
             $service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
             $campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 							=	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
@@ -1343,6 +1343,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'fitcard_user'					=>		$fitcard_user,
                 'type'							=>		$type,
 
+
                 'finder_id' 					=>		$finderid,
                 'finder_name' 					=>		$finder_name,
                 'finder_slug' 					=>		$finder_slug,
@@ -1399,9 +1400,17 @@ class SchedulebooktrialsController extends \BaseController {
 
             );
 
+
+
+            
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
-                $booktrialdata['customofferorder_id'] = (int)$data['customofferorder_id'];
+                if($data['source'] != 'cleartrip'){
+                    $booktrialdata['cleartrip_customofferorder_id'] = $data['customofferorder_id'];
+                }else{
+                    $booktrialdata['customofferorder_id'] = intval($data['customofferorder_id']);
+                }
             }
+            
 
             // return $this->customersms->bookTrial($booktrialdata);
 //             return $booktrialdata;
@@ -1916,6 +1925,19 @@ class SchedulebooktrialsController extends \BaseController {
                 'note_to_trainer'               =>      $note_to_trainer,
 
             );
+
+
+
+
+            if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+                if($data['source'] != 'cleartrip'){
+                    $booktrialdata['cleartrip_customofferorder_id'] = $data['customofferorder_id'];
+                }else{
+                    $booktrialdata['customofferorder_id'] = intval($data['customofferorder_id']);
+                }
+            }
+
+
 
             // return $this->customersms->bookTrial($booktrialdata);
             // return $booktrialdata;
