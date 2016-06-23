@@ -726,6 +726,8 @@ public static function translate_vip_trials($es_searchresult_response){
 			$resultobject->finder_address = $result['finder_address'];
 			$resultobject->service_address = $result['service_address'];
 			$resultobject->finder_slug = $result['finderslug'];
+			$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
+			$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
 
 			$finder->object = $resultobject;
 			array_push($vip_trial_response->results->resultlist, $finder);			
