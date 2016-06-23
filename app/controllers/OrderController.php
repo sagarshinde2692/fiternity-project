@@ -751,12 +751,15 @@ class OrderController extends \BaseController {
 		if(!$customer) {
 			
 			$inserted_id = Customer::max('_id') + 1;
-			$customer = new Customer();
-			$customer->_id = $inserted_id;
-			$customer->name = ucwords($data['customer_name']) ;
-			$customer->email = $data['customer_email'];
-			$customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-			$customer->password = md5(time());
+            $customer = new Customer();
+            $customer->_id = $inserted_id;
+            $customer->name = ucwords($data['customer_name']) ;
+            $customer->email = $data['customer_email'];
+            $customer->dob =  isset($data['dob']) ? $data['dob'] : "";
+            $customer->gender =  isset($data['gender']) ? $data['gender'] : "";
+            $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
+            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+            $customer->password = md5(time());
 
 			if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
 				$customer->contact_no = $data['customer_phone'];
@@ -790,13 +793,25 @@ class OrderController extends \BaseController {
 
 			try{
 
-				if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
-					$customerData['contact_no'] = trim($data['customer_phone']);
-				}
+				if(isset($data['dob']) && $data['dob'] != ""){
+                    $customerData['dob'] = trim($data['dob']);
+                }
 
-				if(isset($data['otp']) &&  $data['otp'] != ""){
-					$customerData['contact_no_verify_status'] = "yes";
-				}
+                if(isset($data['fitness_goal']) && $data['fitness_goal'] != ""){
+                    $customerData['fitness_goal'] = trim($data['fitness_goal']);
+                }
+
+                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+                    $customerData['contact_no'] = trim($data['customer_phone']);
+                }
+
+                if(isset($data['otp']) &&  $data['otp'] != ""){
+                    $customerData['contact_no_verify_status'] = "yes";
+                }
+
+                if(isset($data['gender']) && $data['gender'] != ""){
+                    $customerData['gender'] = $data['gender'];
+                }
 
 				/*if(isset($data['customer_address'])){
 

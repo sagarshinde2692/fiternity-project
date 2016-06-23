@@ -263,6 +263,8 @@ Route::post('search/getfinderresultsv2', 'RankingSearchController@getRankedFinde
 Route::get('buildkeywordcache', 'GlobalSearchController@preparekeywordsearchcache');
 Route::post('keywordsearchwebv1', 'GlobalSearchController@improvedkeywordSearch');
 Route::post('search/searchdirectpefinders', 'RankingSearchController@searchDirectPaymentEnabled');
+Route::post('search/searchviptrials', 'ServiceRankingSearchController@searchviptrials');
+
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
 
@@ -556,6 +558,7 @@ Route::post('campaignsearch', 'CampaignsController@campaignsearch');
 Route::post('campaign/registercustomer', 'CampaignsController@registercustomer');
 Route::post('campaign/campaignregistercustomer', 'CampaignsController@campaignregistercustomer');
 Route::get('campaign/{city_id}/{campaign_name}', 'CampaignsController@campaignServices');
+Route::get('campaign/listbycluster/{campaign_slug}/{city_id}/{cluster_slug}/{campaignby?}',  array('as' => 'campaigns.listbycluster','uses' => 'CampaignsController@listByCluster'));
 
 /******************** Campaign SECTION END HERE ********************/
 ##############################################################################
@@ -634,3 +637,25 @@ Route::get('temp/delete/{customer_phone}', array('as' => 'temps.delete','uses' =
 Route::get('budgetalgocron', 'FindersController@updateBudgetFromRatecardsToFinder');
 /******************  Temp API END HERE************************************************/
 #####################################################################################################
+
+
+
+##################################################################################################
+/*******************  Yoga Day Campaign APIs ************************************************/
+
+Route::post('bookingfromcustomofferorder', 'CustomOfferOrderController@BookingFromCustomOfferOrder');
+
+Route::get('yogaform', 'DebugController@yogaForm');
+
+Route::get('customoffer/getdetails/{id}', array('as' => 'finders.getdetails','uses' => 'CustomOfferOrderController@getdetails'));
+
+Route::post('customoffer/tmporder', array('as' => 'finders.tmporder','uses' => 'CustomOfferOrderController@tmpOrder'));
+Route::get('customoffer/captureorder/{order_id}', array('as' => 'finders.captureorder','uses' => 'CustomOfferOrderController@captureOrder'));
+Route::get('yogaday/{city_id}',  array('as' => 'campaigns.yogaday','uses' => 'CampaignsController@yogaDay'));
+
+Route::group(array('before' => 'validatetoken'), function() {
+	Route::get('customoffer/getorders', array('as' => 'finders.getorders','uses' => 'CustomOfferOrderController@getOrders'));
+});
+/******************  Yoga Day API END HERE************************************************/
+#####################################################################################################
+

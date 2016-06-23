@@ -1079,6 +1079,7 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
             $geolocation = '';
         }
         $comparer = 10000000;
+        
         if(!$flag1){
             foreach ($headerarray as $key => $val) {
                 if(intval($val['budget']) < $comparer){
@@ -1146,20 +1147,23 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
                             'finder_categorytags'           =>      (isset($finderdata['categorytags']) && !empty($finderdata['categorytags'])) ? array_map('strtolower',array_pluck($finderdata['categorytags'],'name')) : "",
                             'workout_session_schedules_price'     =>  (isset($val['price'])) ? intval($val['price']) : 0,
                             'workout_session_schedules_weekday'     =>  $day,
-                            'workout_session_schedules_end_time_24_hrs'     =>  (isset($val['end_time_24_hour_format'])) ? intval($val['end_time_24_hour_format']) : 0,
-                            'workout_session_schedules_start_time_24_hrs'     =>  (isset($val['start_time_24_hour_format'])) ? intval($val['start_time_24_hour_format']) : 0,
-                            'workout_session_schedules_end_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
-                            'workout_session_schedules_start_time' => (isset($val['end_time'])) ? $val['end_time'] : ''
+                            'workout_session_schedules_end_time_24_hrs'     =>  (isset($val['end_time_24_hour_format'])) ? floatval($val['end_time_24_hour_format']) : 0,
+                            'workout_session_schedules_start_time_24_hrs'     =>  (isset($val['start_time_24_hour_format'])) ? floatval($val['start_time_24_hour_format']) : 0,
+                            'workout_session_schedules_end_time' => (isset($val['end_time'])) ? $val['end_time'] : '',
+                            'workout_session_schedules_start_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
+                            'session_type' => (isset($data['session_type'])) ? $data['session_type'] : '',
+                            'finder_address' => (isset($finderdata['contact'])&& isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
+                            'service_address' => (isset($data['address'])) ? $data['address'] : ''
                             );
 
 array_push($data_array, $postfields_data);
 }
 
+}
 
+}
+}
 return $data_array; 
-}
-}
-}
 }
 }
 
@@ -1492,6 +1496,100 @@ if (!function_exists(('error_message'))){
         $message = implode(',', array_values($message));
 
         return $message;
+    }
+}
+
+
+if (!function_exists(('autoRegisterCustomer'))){
+
+    function autoRegisterCustomer($data){
+
+        $customer       =   Customer::active()->where('email', $data['customer_email'])->first();
+
+        if(!$customer) {
+
+            $inserted_id = Customer::max('_id') + 1;
+            $customer = new Customer();
+            $customer->_id = $inserted_id;
+            $customer->name = ucwords($data['customer_name']) ;
+            $customer->email = $data['customer_email'];
+            $customer->dob =  isset($data['dob']) ? $data['dob'] : "";
+            $customer->gender =  isset($data['gender']) ? $data['gender'] : "";
+            $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
+            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+            $customer->password = md5(time());
+
+            if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
+                $customer->contact_no = $data['customer_phone'];
+            }
+
+            if(isset($data['customer_address'])){
+
+                if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+                    $customer->address = implode(",", array_values($data['customer_address']));
+                    $customer->address_array = $data['customer_address'];
+
+                }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+                    $customer->address = $data['customer_address'];
+                }
+
+            }
+
+            $customer->identity = 'email';
+            $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
+            $customer->status = "1";
+            $customer->ishulluser = 1;
+            $customer->save();
+
+            return $inserted_id;
+
+        }else{
+
+            $customerData = [];
+
+            try{
+
+                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+                    $customerData['contact_no'] = trim($data['customer_phone']);
+                }
+
+                if(isset($data['otp']) &&  $data['otp'] != ""){
+                    $customerData['contact_no_verify_status'] = "yes";
+                }
+
+                if(isset($data['gender']) && $data['gender'] != ""){
+                    $customerData['gender'] = $data['gender'];
+                }
+
+                if(isset($data['customer_address'])){
+
+                    if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+                        $customerData['address'] = implode(",", array_values($data['customer_address']));
+                        $customerData['address_array'] = $data['customer_address'];
+
+                    }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+                        $customerData['address'] = $data['customer_address'];
+                    }
+
+                }
+
+                if(count($customerData) > 0){
+                    $customer->update($customerData);
+                }
+
+            } catch(ValidationException $e){
+
+                Log::error($e);
+
+            }
+
+            return $customer->_id;
+        }
+
     }
 }
 
