@@ -1172,7 +1172,6 @@ class SchedulebooktrialsController extends \BaseController {
             }
             
             $source                             =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
-            $customofferorder_id	 			=	(isset($data['customofferorder_id']) && $data['customofferorder_id'] != '') ? $data['customofferorder_id'] : "";
 
             $service_id	 						=	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
             $campaign	 						=	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
@@ -1344,7 +1343,6 @@ class SchedulebooktrialsController extends \BaseController {
                 'fitcard_user'					=>		$fitcard_user,
                 'type'							=>		$type,
 
-                'customofferorder_id'          =>      $customofferorder_id,
 
                 'finder_id' 					=>		$finderid,
                 'finder_name' 					=>		$finder_name,
@@ -1402,9 +1400,17 @@ class SchedulebooktrialsController extends \BaseController {
 
             );
 
+
+
+            
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
-                $booktrialdata['customofferorder_id'] = (int)$data['customofferorder_id'];
+                if($data['source'] != 'cleartrip'){
+                    $booktrialdata['cleartrip_customofferorder_id'] = $data['customofferorder_id'];
+                }else{
+                    $booktrialdata['customofferorder_id'] = intval($data['customofferorder_id']);
+                }
             }
+            
 
             // return $this->customersms->bookTrial($booktrialdata);
 //             return $booktrialdata;
@@ -1715,8 +1721,6 @@ class SchedulebooktrialsController extends \BaseController {
             $fitcard_user						= 	(Input::json()->get('fitcard_user')) ? intval(Input::json()->get('fitcard_user')) : 0;
             $type								= 	(Input::json()->get('type')) ? Input::json()->get('type') : '';
 
-            $customofferorder_id	 			=	(isset($data['customofferorder_id']) && $data['customofferorder_id'] != '') ? $data['customofferorder_id'] : "";
-
 
             $finder_name						= 	(isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
             $finder_slug						= 	(isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
@@ -1868,8 +1872,6 @@ class SchedulebooktrialsController extends \BaseController {
                 'fitcard_user'					=>		$fitcard_user,
                 'type'							=>		$type,
 
-                'customofferorder_id'           =>      $customofferorder_id,
-
                 'finder_id' 					=>		$finderid,
                 'finder_name' 					=>		$finder_name,
                 'finder_slug' 					=>		$finder_slug,
@@ -1923,6 +1925,19 @@ class SchedulebooktrialsController extends \BaseController {
                 'note_to_trainer'               =>      $note_to_trainer,
 
             );
+
+
+
+
+            if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+                if($data['source'] != 'cleartrip'){
+                    $booktrialdata['cleartrip_customofferorder_id'] = $data['customofferorder_id'];
+                }else{
+                    $booktrialdata['customofferorder_id'] = intval($data['customofferorder_id']);
+                }
+            }
+
+
 
             // return $this->customersms->bookTrial($booktrialdata);
             // return $booktrialdata;
