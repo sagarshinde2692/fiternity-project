@@ -1950,4 +1950,5 @@ Route::get('findershaveratecardwithnoservices',  array('as' => 'debug.findershav
 Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices');
 Route::get('renewalsmsstatus', 'DebugController@renewalSmsStatus');
 Route::get('deleteid', 'DebugController@deleteId');
+Route::get('updatebrandstofinders', 'DebugController@updateBrandToFindersFromCSV');
 
