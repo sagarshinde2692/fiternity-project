@@ -2445,5 +2445,19 @@ public function testEmail(){
     	}
 
     }
+	
+	function updateBrandToFindersFromCSV(){
+
+		$filePath = public_path().'/listVendorsWithFewDetails.csv';
+		$data = $this->csv_to_array($filePath);
+		foreach($data as $row){
+			if(isset($row['Brand ID']) && ($row['Brand ID'] != '')){
+				$finder = Finder::find((int) $row['Vendor ID']);
+				$finder->update(array('brand_id'=> (int) $row['Brand ID']));
+			}
+
+		}
+
+	}
     
 }
