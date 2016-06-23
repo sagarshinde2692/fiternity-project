@@ -862,8 +862,10 @@ class MigrationsController extends \BaseController {
 
 		foreach ($orders as $key => $value) {
 
-			$value->amount_finder = (int) $value->amount_finder;
-			$value->update();
+			$amount_finder = (int) $value->amount_finder;
+
+			DB::table('orders')->where('_id',$value->_id)->update(['amount_finder' => $amount_finder]);
+
 		}
 
 		echo"done";exit;
