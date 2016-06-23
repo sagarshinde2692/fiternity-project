@@ -1930,7 +1930,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
-                if($data['source'] == 'cleartrip'){
+                if($data['customer_source'] == 'cleartrip'){
                     $booktrialdata['cleartrip_customofferorder_id'] = $data['customofferorder_id'];
                 }else{
                     $booktrialdata['customofferorder_id'] = intval($data['customofferorder_id']);
