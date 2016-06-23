@@ -3460,6 +3460,14 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
 
+    public function getReminderMessage($customer_mobile){
+
+        $resp       =   array('status' => 200, 'message' => "Hope you are ready for your session at fitness with Harshita Andheri east at 7:00 PM");
+
+        return Response::json($resp,200);
+
+    }
+
 
 
 }

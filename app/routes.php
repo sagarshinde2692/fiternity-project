@@ -314,6 +314,8 @@ Route::get('updateappointmentstatus', array('as' => 'customer.updateappointments
 Route::get('canceltrial/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
 
 
+Route::get('getremindermessage/{customermobile}',  array('as' => 'trial.getremindermessage','uses' => 'SchedulebooktrialsController@getReminderMessage'));
+
 
 Route::group(array('before' => 'validatetoken'), function() {
 
