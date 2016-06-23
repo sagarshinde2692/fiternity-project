@@ -29,6 +29,26 @@ Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 
 
+Route::get('addremindercallmessage', function() {
+
+    $schedule_date                      =   "18-10-2015";
+    $schedule_slot                      =   "18-10-2015";
+    $slot_times 						=	explode('-', $schedule_slot);
+    $schedule_slot_start_time 			=	$slot_times[0];
+    $schedule_slot_end_time 			=	$slot_times[1];
+    $schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+    $slot_date 							=	date('d-m-Y', strtotime($schedule_date));
+    $schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+
+
+    $data = [
+        'customer_phone' => '9773348762',
+        'schedule_date' => '9773348762',
+    ];
+
+});
+
 Route::get('noidacity', function() {
 
 //    $data               =    array( 'country_id' => 1, "lat" => "28.535517", "lon" => "28.535517", "name" => "noida", "name" => "noida", "status"=> "1");

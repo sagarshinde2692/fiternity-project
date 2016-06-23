@@ -97,6 +97,7 @@ Route::get('isregistered/{email}/{id?}/{collection?}',  array('as' => 'customer.
 Route::post('customer/addregid', array('as' => 'customer.addregid','uses' => 'CustomerController@addRegId'));
 
 
+
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
@@ -311,6 +312,8 @@ Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}/{schedulesof?}', 
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 Route::get('canceltrial/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
+
+
 
 Route::group(array('before' => 'validatetoken'), function() {
 
