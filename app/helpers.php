@@ -1153,7 +1153,8 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
                             'workout_session_schedules_start_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
                             'session_type' => (isset($data['session_type'])) ? $data['session_type'] : '',
                             'finder_address' => (isset($finderdata['contact'])&& isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
-                            'service_address' => (isset($data['address'])) ? $data['address'] : ''
+                            'service_address' => (isset($data['address'])) ? $data['address'] : '',
+                            'city_id' => isset($finderdata['city_id']) ? intval($finderdata['city_id']) : 0
                             );
 
 array_push($data_array, $postfields_data);
