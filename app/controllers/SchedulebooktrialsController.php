@@ -1430,6 +1430,22 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true){
 
+            try {
+                $this->addReminderMessage($booktrialid);
+
+            }catch (Exception $e) {
+
+                $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+                $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+                Log::info('addReminderMessage Error : '.json_encode($response));
+            }
+
             $orderid = (int) Input::json()->get('order_id');
             $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
             $booktrial->update(array('redis_id'=>$redisid));
@@ -1951,6 +1967,22 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if($trialbooked == true){
+
+            try {
+                $this->addReminderMessage($booktrialid);
+
+            }catch (Exception $e) {
+
+                $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+                $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+                Log::info('addReminderMessage Error : '.json_encode($response));
+            }
 
             //if vendor type is free special dont send communication
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
@@ -3460,10 +3492,79 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
 
+    public function addReminderMessage($bootrial_id){
+
+        $trial  = Booktrial::find(intval($bootrial_id));
+
+        if($trial && isset($trial['reminder_need_status']) && $trial['reminder_need_status'] =='yes'){
+
+            $customer_phone                     =   $trial['customer_phone'];
+            $finder_id                          =   intval($trial['finder_id']);
+            $schedule_date                      =   $trial['schedule_date'];
+            $schedule_slot                      =   $trial['schedule_slot'];
+
+//        $customer_phone                     =   "9773348762";
+//        $finder_id                          =   3305;
+//        $schedule_date                      =   "30-05-2015";
+//        $schedule_slot                      =   "05:00 PM-06:30 PM";
+
+            $slot_times 						=	explode('-', $schedule_slot);
+            $schedule_slot_start_time 			=	$slot_times[0];
+            $schedule_slot_end_time 			=	$slot_times[1];
+            $schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+            $slot_date 							=	date('d-m-Y', strtotime($schedule_date));
+            $schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+            $schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+
+            $finder                             =   Finder::with('location')->find($finder_id);
+            $findername                         =   "";
+
+            if($finder){
+                if($finder['title'] && $finder['location']['name']){
+                    $findername     = ucwords($finder['title'])." ".ucwords($finder['location']['name']);
+                }else{
+                    $findername     = ($finder['title']) ? ucwords($finder['title']) : "";
+                }
+            }
+
+            $data = [
+                'customer_phone' => trim($customer_phone),
+                'message' => 'Hope you are ready for your session at fitness with '.$findername.' at '.strtoupper($schedule_slot_start_time),
+                'schedule_date' => trim($schedule_date),
+                'schedule_date_time' => trim($schedule_date_time),
+                'schedule_slot' => trim($schedule_slot),
+                'call_status' => 'no',
+                'booktrial_id' => 37688
+            ];
+
+//            return $data;
+
+            $insertedid = Remindercall::max('_id') + 1;
+            $obj       =   new Remindercall($data);
+            $obj->_id  =   $insertedid;
+            $obj->save();
+
+        }
+
+    }
+
     public function getReminderMessage($customer_mobile){
 
-        $resp       =   array('status' => 200, 'message' => "Hope you are ready for your session at fitness with Harshita Andheri east at 7:00 PM");
+        $current_date       =       date("Y-m-d");
+        $reminderMessage    =       Remindercall::where('schedule_date_time', '>=', new DateTime( date("d-m-Y", strtotime( $current_date )) ))
+                                                    ->where('customer_phone', '=', trim($customer_mobile))
+                                                    ->where('call_status', '=','no')
+                                                    ->first();
 
+//       return $reminderMessage;
+
+        if(!$reminderMessage){
+            $resp       =    array('status' => 400, 'message' => "Customer Number Does Not Exist");
+            return Response::json($resp,400);
+        }
+        $message       =       trim($reminderMessage['message']);
+        $resp          =       array('status' => 200, 'message' => $message);
         return Response::json($resp,200);
 
     }
