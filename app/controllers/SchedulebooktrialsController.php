@@ -3498,6 +3498,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trial && isset($trial['reminder_need_status']) && $trial['reminder_need_status'] =='yes'){
 
+            $customer_id                        =   intval($trial['customer_id']);
+            $customer_name                      =   $trial['customer_name'];
             $customer_phone                     =   $trial['customer_phone'];
             $finder_id                          =   intval($trial['finder_id']);
             $schedule_date                      =   $trial['schedule_date'];
@@ -3529,6 +3531,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $data = [
+                'customer_id' => $customer_id,
+                'customer_name' => trim($customer_name),
                 'customer_phone' => trim($customer_phone),
                 'message' => 'Hope you are ready for your session at fitness with '.$findername.' at '.strtoupper($schedule_slot_start_time),
                 'schedule_date' => trim($schedule_date),
@@ -3554,7 +3558,7 @@ class SchedulebooktrialsController extends \BaseController {
         $current_date       =       date("Y-m-d");
         $reminderMessage    =       Remindercall::where('schedule_date_time', '>=', new DateTime( date("d-m-Y", strtotime( $current_date )) ))
                                                     ->where('customer_phone', '=', trim($customer_mobile))
-                                                    ->where('call_status', '=','no')
+                                                    ->where('call_status', '=','yes')
                                                     ->first();
 
 //       return $reminderMessage;

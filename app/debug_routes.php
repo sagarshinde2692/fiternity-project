@@ -33,6 +33,8 @@ Route::get('addremindercallmessage', function() {
 
     $trial  = Booktrial::find(340);
 
+    $customer_id                        =   intval($trial['customer_id']);
+    $customer_name                      =   $trial['customer_name'];
     $customer_phone                     =   $trial['customer_phone'];
     $finder_id                          =   intval($trial['finder_id']);
     $schedule_date                      =   $trial['schedule_date'];
@@ -41,8 +43,9 @@ Route::get('addremindercallmessage', function() {
 
     $customer_phone                     =   "9773348762";
     $finder_id                          =   3305;
-    $schedule_date                      =   "30-05-2015";
-    $schedule_slot                      =   "05:00 PM-06:30 PM";
+    $customer_id                          =   4842;
+//    $schedule_date                      =   "30-05-2015";
+//    $schedule_slot                      =   "05:00 PM-06:30 PM";
 
 
     $slot_times 						=	explode('-', $schedule_slot);
@@ -66,6 +69,8 @@ Route::get('addremindercallmessage', function() {
     }
 
     $data = [
+        'customer_id' => $customer_id,
+        'customer_name' => trim($customer_name),
         'customer_phone' => trim($customer_phone),
         'message' => 'Hope you are ready for your session at fitness with '.$findername.' at '.strtoupper($schedule_slot_start_time),
         'schedule_date' => trim($schedule_date),
@@ -75,7 +80,7 @@ Route::get('addremindercallmessage', function() {
         'booktrial_id' => 37688
     ];
 
-    return $data;
+//    return $data;
 
     $insertedid = Remindercall::max('_id') + 1;
     $obj       =   new Remindercall($data);
