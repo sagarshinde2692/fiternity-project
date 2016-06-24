@@ -28,6 +28,25 @@ Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
 
 
+Route::get('typecastcode', function() {
+
+    $trials = Booktrial::where('code','exists',true)->where('code','!=','')->where('code', 'type', 18)->get(['_id','code']);
+
+//    $trials = Booktrial::where('code','exists',true)->where('code','!=','')->where('code', 'type', 18)->where('_id', 340)->get(['_id','code']);
+
+    foreach($trials as $trial){
+
+        $existtrial        =   Booktrial::find(intval($trial['_id']));
+        if($existtrial && isset($existtrial->code)){
+            $insertData       =   ['code' => (string) $existtrial->code ];
+//            var_dump($trial['_id']); var_dump($insertData);exit;
+            DB::table('booktrials')->where('_id', intval($trial['_id']))->update($insertData);
+        }
+
+    }
+
+});
+
 
 Route::get('addremindercallmessage', function() {
 

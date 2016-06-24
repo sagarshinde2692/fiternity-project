@@ -11,6 +11,12 @@ class Booktrial extends \Basemodel {
 		
 		$this->attributes['_id'] = intval($value);
 	}
+
+	public function setCodeAttribute($value){
+
+		$this->attributes['code'] = (string) $value;
+	}
+
 	
 	public function finder(){
 		return $this->belongsTo('Finder','finder_id');
