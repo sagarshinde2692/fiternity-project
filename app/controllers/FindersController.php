@@ -29,11 +29,11 @@ class FindersController extends \BaseController {
     public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi) {
 
         parent::__construct();
-        $this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
-        $this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
-        $this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
-        $this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
-        $this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
+        $this->elasticsearch_default_url 		=	"http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
+        $this->elasticsearch_url 				=	"http://".Config::get('app.es.host').":".Config::get('app.es.port').'/';
+        $this->elasticsearch_host 				=	Config::get('app.es.host');
+        $this->elasticsearch_port 				=	Config::get('app.es.port');
+        $this->elasticsearch_default_index 		=	Config::get('app.es.default_index');
         $this->findermailer						=	$findermailer;
         $this->cacheapi						=	$cacheapi;
     }
@@ -400,7 +400,7 @@ class FindersController extends \BaseController {
 
         $request = array(
             'url' => $this->elasticsearch_url."fitternity/finder/".$data['_id'],
-            'port' => Config::get('app.elasticsearch_port'),
+            'port' => Config::get('app.es.port'),
             'method' => 'PUT',
             'postfields' => json_encode($postdata)
             );

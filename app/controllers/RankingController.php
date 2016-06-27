@@ -37,11 +37,11 @@ class RankingController extends \BaseController {
 
     public function __construct() {
         parent::__construct();
-        $this->elasticsearch_default_url        =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/'.Config::get('app.elasticsearch_default_index').'/';
-        $this->elasticsearch_url                =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/';
-        $this->elasticsearch_host               =   Config::get('app.elasticsearch_host_new');
-        $this->elasticsearch_port               =   Config::get('app.elasticsearch_port_new');
-        $this->elasticsearch_default_index      =   Config::get('app.elasticsearch_default_index');
+        $this->elasticsearch_default_url        =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
+        $this->elasticsearch_url                =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/';
+        $this->elasticsearch_host               =   Config::get('app.es.host');
+        $this->elasticsearch_port               =   Config::get('app.es.port');
+        $this->elasticsearch_default_index      =   Config::get('app.es.default_index');
         $this->gauss_variance                   =   (-1)*(pow($this->gauss_scale, 2))/(2*log10($this->gauss_decay));
         $this->views_max                        =   Finder::active()->max('views');
         $this->views_min                        =   Finder::active()->min('views');
@@ -499,11 +499,11 @@ class RankingController extends \BaseController {
       
 
       $postfields_data = json_encode($postdata);             
-      $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-      $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
+      $posturl = Config::get('app.es.url')."/".$index_name."/finder/" . $finderdocument['_id'];
+      $posturl1 = Config::get('app.es.url')."/fitternityv2/finder/" . $finderdocument['_id'];
        // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
-      $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
-      $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+      $request = array('url' => $posturl, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+      $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
       $curl_response = es_curl_request($request);
       $curl_response1 = es_curl_request($request1);
         //echo json_encode($curl_response);
@@ -770,11 +770,11 @@ public function IndexFinderDocument($id){
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
         $postfields_data = json_encode($postdata);    
-        $posturl = "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."$index_name/finder/" . $finderdocument['_id'];
-        $posturl1 = "http://ESAdmin:fitternity2020@54.169.120.141:8050/fitternityv2/finder/" . $finderdocument['_id'];
+        $posturl = Config::get('app.es.url')."/".$index_name."/finder/" . $finderdocument['_id'];
+        $posturl1 = Config::get('app.es.url')."/fitternityv2/finder/" . $finderdocument['_id'];
         // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
-        $request = array('url' => $posturl, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
-        $request1 = array('url' => $posturl1, 'port' => 8050, 'method' => 'PUT', 'postfields' => $postfields_data );
+        $request = array('url' => $posturl, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+        $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
         $curl_response = es_curl_request($request);
         $curl_response1 = es_curl_request($request1);
         //echo json_encode($curl_response);
