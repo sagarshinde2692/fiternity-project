@@ -40,6 +40,7 @@ Route::get('landinganytimefitnessfinders/{cityid}', 'HomeController@landingAnyti
 // Power house gym
 Route::get('landingpowerhousefinders/', 'HomeController@landingPowerhouseFinders');
 
+Route::get('landingfinders/{typeoflandingpage}', 'HomeController@landingFinders');
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
 Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 
