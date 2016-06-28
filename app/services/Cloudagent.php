@@ -11,7 +11,7 @@ Class Cloudagent {
     protected $debug                =   false;
     protected $api_key              =   'KKd55347ed3b7d96997d959860ce3abb54';
     protected $username             =   'fitternity_solns';
-    protected $campaign_name        =   'testoutboundcall';
+    protected $campaign_name        =   'ClickToCallWebsite';
     protected $client;
     protected $route_type;
 
@@ -30,6 +30,8 @@ Class Cloudagent {
 
     public function requestToCallBack($data)
     {
+
+        $this->campaign_name = "ClickToCallWebsite";
         $param = [
             'api_key' => $this->api_key,
             'campaign_name' => $this->campaign_name,
@@ -39,6 +41,9 @@ Class Cloudagent {
             'format' => "json"
         ];
         $url = "cloudAgentRestAPI/index.php/CloudAgent/CloudAgentAPI/addCamapaignData?" . http_build_query($param, "&");
+
+
+        Log::info('Cloudagent Url : '.$url);
 
         try {
             $responseData = json_decode($this->client->get($url)->getBody()->getContents(), TRUE);

@@ -50,8 +50,23 @@ Route::get('typecastcode', function() {
 
 Route::get('addremindercallmessage', function() {
 
-    $schedule_date                      =   "18-10-2015";
-    $schedule_slot                      =   "18-10-2015";
+    $trial  = Booktrial::find(340);
+
+    $customer_id                        =   intval($trial['customer_id']);
+    $customer_name                      =   $trial['customer_name'];
+    $customer_phone                     =   $trial['customer_phone'];
+    $finder_id                          =   intval($trial['finder_id']);
+    $schedule_date                      =   $trial['schedule_date'];
+    $schedule_slot                      =   $trial['schedule_slot'];
+
+
+    $customer_phone                     =   "9773348762";
+    $finder_id                          =   3305;
+    $customer_id                          =   4842;
+//    $schedule_date                      =   "30-05-2015";
+//    $schedule_slot                      =   "05:00 PM-06:30 PM";
+
+
     $slot_times 						=	explode('-', $schedule_slot);
     $schedule_slot_start_time 			=	$slot_times[0];
     $schedule_slot_end_time 			=	$slot_times[1];
@@ -59,12 +74,38 @@ Route::get('addremindercallmessage', function() {
 
     $slot_date 							=	date('d-m-Y', strtotime($schedule_date));
     $schedule_date_starttime 			=	strtoupper($slot_date ." ".$schedule_slot_start_time);
+    $schedule_date_time					=	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
+    $finder                             =   Finder::with('location')->find($finder_id);
+    $findername                         =   "";
+
+    if($finder){
+        if($finder['title'] && $finder['location']['name']){
+            $findername     = ucwords($finder['title'])." ".ucwords($finder['location']['name']);
+        }else{
+            $findername     = ($finder['title']) ? ucwords($finder['title']) : "";
+        }
+    }
 
     $data = [
-        'customer_phone' => '9773348762',
-        'schedule_date' => '9773348762',
+        'customer_id' => $customer_id,
+        'customer_name' => trim($customer_name),
+        'customer_phone' => trim($customer_phone),
+        'message' => 'Hope you are ready for your session at fitness with '.$findername.' at '.strtoupper($schedule_slot_start_time),
+        'schedule_date' => trim($schedule_date),
+        'schedule_date_time' => trim($schedule_date_time),
+        'schedule_slot' => trim($schedule_slot),
+        'call_status' => 'no',
+        'booktrial_id' => 37688
     ];
+
+//    return $data;
+
+    $insertedid = Remindercall::max('_id') + 1;
+    $obj       =   new Remindercall($data);
+    $obj->_id  =   $insertedid;
+    $obj->save();
+    
 
 });
 
