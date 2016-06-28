@@ -361,10 +361,18 @@ class RankingController extends \BaseController {
        ->get(); 
 
        foreach ($items as $finderdocument) {  
-        try{         
+        try{
            // return json_decode($finderdocument);exit;
             $ratecard_days = 0; $ratecard_money = 0;
-            $services = Ratecard::where('finder_id', intval($finderdocument['id']))->get();
+            
+            //Exclude exceptional Finders.........
+            $exclude_finders = Config::get('elasticsearch.exclude_finders');
+            $finder_id = intval($finderdocument['_id']);
+            if(in_array($finder_id, $exclude_finders)){
+                continue;
+            }
+            
+            $services = Ratecard::where('finder_id', $finder_id)->get();
             $ratecard_count = 0;  $average_monthly = 0;
             $direct_payment_enabled_bool = false;
             foreach ($services as $service) {

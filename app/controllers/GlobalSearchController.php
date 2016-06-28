@@ -1252,7 +1252,9 @@ $query = '{
      '.$functionquery.$functionfilters.'                                
  }
 }
-}';    
+}';
+
+//    return $query;
 
 $request = array(
     'url' => Config::get('app.es.url')."/fitternity_autosuggestor/autosuggestor/_search",
@@ -1271,6 +1273,7 @@ $autocompleteresponse1 = json_encode($autocompleteresponse, true);
 
 $response       =   json_decode($autocompleteresponse1,true);
 
+//    return $query;
 return Response::json($response);
 
 }
