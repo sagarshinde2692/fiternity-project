@@ -3553,7 +3553,14 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
-    public function getReminderMessage($customer_mobile){
+    public function getReminderMessage(){
+
+        $customer_mobile  = Input::get('phone');
+
+        if(!$customer_mobile){
+            $resp       =    array('status' => 400, 'message' => "Customer phone no required");
+            return Response::json($resp,400);
+        }
 
         $current_date       =       date("Y-m-d");
         $reminderMessage    =       Remindercall::where('schedule_date_time', '>=', new DateTime( date("d-m-Y", strtotime( $current_date )) ))
