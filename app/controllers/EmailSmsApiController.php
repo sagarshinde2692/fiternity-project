@@ -543,7 +543,7 @@ class EmailSmsApiController extends \BaseController {
         try {
 
             $responseData = $this->cloudagent->requestToCallBack($data);
-//            $responseData = $this->addReminderMessage($data);
+            $responseData = $this->addReminderMessage($data);
 
         }catch (Exception $e) {
 
