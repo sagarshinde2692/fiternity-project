@@ -41,6 +41,8 @@ Route::get('landinganytimefitnessfinders/{cityid}', 'HomeController@landingAnyti
 Route::get('landingpowerhousefinders/', 'HomeController@landingPowerhouseFinders');
 
 Route::get('landingfinders/{typeoflandingpage}', 'HomeController@landingFinders');
+Route::get('landingfinderstitle/{typeoflandingpage}/{cityid?}', 'HomeController@landingFindersTitle');
+
 Route::get('/fitcardfinders', 'HomeController@fitcardfinders');
 Route::post('/fitcardfindersv1', 'HomeController@fitcardfindersV1');
 

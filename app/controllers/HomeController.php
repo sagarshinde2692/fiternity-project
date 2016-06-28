@@ -612,7 +612,7 @@ class HomeController extends BaseController {
 		switch($typeoflandingpage){
 			case "yfc" : $finder_ids			=		array(1029,1030,1033,1034,1035,1554,1705,1706,7407,1870,4585,5045);
 			break;
-			case "snap" : $finder_ids			=		array(1392,1393,1579,1580,1581,1582,1583,1584,1602,1604,1605,1607,2235,2236,2244,6890,6891,6893);
+			case "snap" : $finder_ids			=		array(608,2890,3175,3178,3179,3183,3192,3201,3204,3233,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,7081,7106,7111,7114,7116,8872,5566,5735,5736,5737,5738,5739,5964,6254,6594,8878);
 			break;
 			default: $responseArr 		= 		['finders' => [], 'gallery' => [], 'count' => 0];
 					return Response::json($responseArr);
@@ -637,7 +637,29 @@ class HomeController extends BaseController {
 		$responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finders)];
 		return Response::json($responseArr);
 	}
+	public function landingFindersTitle($typeoflandingpage, $city_id = ''){
+        switch($typeoflandingpage){
+            case "yfc" :
+                $finder_ids			=	[1029,1030,1033,1034,1035,1554,1705,1706,7407,1870,4585,5045];
+                break;
+            case "snap" :
+                $finder_ids			=	[608,2890,3175,3178,3179,3183,3192,3201,3204,3233,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,
+                    7081,7106,7111,7114,7116,8872,5566,5735,5736,5737,5738,5739,5964,6254,6594,8878];
+                break;
+            default:
+                $responseArr 		= 	['finders' => []];
+                return Response::json($responseArr);
+        }
 
+        if($city_id == ''){
+            $finders 			= 		Finder::whereIn('_id', $finder_ids)->get(array('_id','slug','title'))->toArray();;
+        }else{
+            $finders 			= 		Finder::whereIn('_id', $finder_ids)->where('city_id', intval($city_id))->get(array('_id','slug','title'))->toArray();;
+        }
+
+        $responseArr 		    = 		['finders' => $finders];
+        return Response::json($responseArr);
+    }
     public function landingAnytimeFitnessFinders(){
 
         $finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909,8821,8823,8871);
