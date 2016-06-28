@@ -403,7 +403,6 @@ class GlobalPushController extends \BaseController
 
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();
-        return $locationcluster;
 
         $postdata = get_elastic_autosuggest_doc($data, $locationcluster[0]['name']);
 
