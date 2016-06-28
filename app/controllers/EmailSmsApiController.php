@@ -543,6 +543,7 @@ class EmailSmsApiController extends \BaseController {
         try {
 
 //            $responseData = $this->cloudagent->requestToCallBack($data);
+            $responseData = $this->addReminderMessage($data);
 
         }catch (Exception $e) {
 
@@ -554,8 +555,9 @@ class EmailSmsApiController extends \BaseController {
             );
 
             $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
-            Log::info('Cloudagent Error : '.json_encode($response));
+            Log::info('Requestcallbackremindercall Error : '.json_encode($response));
         }
+
 
 //        var_dump($responseData);exit;
 
@@ -603,6 +605,56 @@ class EmailSmsApiController extends \BaseController {
 		return Response::json($resp);
 
 	}
+
+
+
+    public function addReminderMessage($reqquesteddata)
+    {
+
+        $customer_name                      =   $reqquesteddata['name'];
+        $customer_phone                     =   $reqquesteddata['phone'];
+        $schedule_date                      =   Carbon::today()->toDateTimeString();
+        $preferred_time                     =   $reqquesteddata['preferred_time'];
+
+
+        if($preferred_time == "Before 10 AM"){
+            $schedule_slot  = "09:00 AM-10:00 PM";
+        }elseif($preferred_time == "10 AM - 2 PM"){
+            $schedule_slot  = "10:00 AM-02:00 PM";
+        }elseif($preferred_time == "2 PM - 6 PM"){
+            $schedule_slot  = "02:00 PM-06:00 PM";
+        }elseif($preferred_time == "6 PM - 10 PM"){
+            $schedule_slot  = "06:00 PM-09:00 PM";
+        }
+
+
+        $slot_times 						=	explode('-', $schedule_slot);
+        $schedule_slot_start_time 			=	$slot_times[0];
+        $schedule_slot_end_time 			=	$slot_times[1];
+        $schedule_slot 						=	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+        $schedule_date_starttime 			=	strtoupper(date('d-m-Y', strtotime($schedule_date)) ." ".$schedule_slot_start_time);
+        $schedule_date_time		            =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+
+
+        $data = [
+            'customer_name' => trim($customer_name),
+            'customer_phone' => trim($customer_phone),
+            'schedule_date' => $schedule_date,
+            'schedule_date_time' => $schedule_date_time,
+            'schedule_slot' => trim($schedule_slot),
+            'call_status' => 'no'
+        ];
+
+//        return $data;
+
+        $insertedid = Requestcallbackremindercall::max('_id') + 1;
+        $obj       =   new Requestcallbackremindercall($data);
+        $obj->_id  =   $insertedid;
+        $obj->save();
+
+
+    }
 
 
 }
