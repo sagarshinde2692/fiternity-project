@@ -367,7 +367,7 @@ class RankingController extends \BaseController {
             
             //Exclude exceptional Finders.........
             $exclude_finders = Config::get('elasticsearch.exclude_finders');
-            $finder_id = intval($finderdocument['id']);
+            $finder_id = intval($finderdocument['_id']);
             if(in_array($finder_id, $exclude_finders)){
                 continue;
             }

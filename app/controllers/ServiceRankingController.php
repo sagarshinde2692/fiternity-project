@@ -61,7 +61,7 @@ class ServiceRankingController extends \BaseController {
 
     }
 
-    public function IndexServiceRankMongo2Elastic($city, $index, $timestamp){
+    public function  IndexServiceRankMongo2Elastic($city, $index, $timestamp){
     // public function IndexServiceRankMongo2Elastic(){
 
         // $city =1 ; $index= 'fitternity_vip_trials2016-06-02'; $timestamp = '2016-06-02';
@@ -94,6 +94,14 @@ class ServiceRankingController extends \BaseController {
             try{
 
                 $finderdata = $finderdocument->toArray();
+
+                //Exclude exceptional Finders.........
+                $exclude_finders = Config::get('elasticsearch.exclude_finders');
+                $finder_id = intval($finderdata['_id']);
+                if(in_array($finder_id, $exclude_finders)){
+                    continue;
+                }
+
                 $score = $this->generateRank($finderdocument);                
                 $serviceitems = Service::with('category')
                 ->with('subcategory')

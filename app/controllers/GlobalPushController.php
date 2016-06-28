@@ -320,7 +320,6 @@ class GlobalPushController extends \BaseController
         Fill ES cluster will data
 
         */
-
         foreach ($this->citylist as $key => $city) {
           $this->pushfinders($index_name, $city);
         }
@@ -387,7 +386,14 @@ class GlobalPushController extends \BaseController
       ->timeout(400000000)                       
       ->get();
 
-      foreach ($indexdocs as $data) { 
+      foreach ($indexdocs as $data) {
+
+        //Exclude exceptional Finders.........
+        $exclude_finders = Config::get('elasticsearch.exclude_finders');
+        $finder_id = intval($data['_id']);
+        if(in_array($finder_id, $exclude_finders)){
+          continue;
+        }
 
         $clusterid = '';
 
@@ -403,13 +409,11 @@ class GlobalPushController extends \BaseController
 
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();
-//        return $locationcluster;
+        $cluster = (isset($locationcluster[0]) && isset($locationcluster[0]['name'])) ? $locationcluster[0]['name'] : '';
 
-        $postdata = get_elastic_autosuggest_doc($data, $locationcluster[0]['name']);
+        $postdata = get_elastic_autosuggest_doc($data, $cluster);
 
         $postfields_data = json_encode($postdata);
-
-      // $postfields_data    =   json_encode(json_decode($mapping,true));  
 
         $request = array(
           'url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/'.$data['_id'],
