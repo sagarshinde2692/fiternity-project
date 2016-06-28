@@ -23,13 +23,13 @@ class ElasticsearchController extends \BaseController {
 
 	public function __construct() {
 		parent::__construct();	
-		$this->elasticsearch_default_url 		=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/'.Config::get('app.elasticsearch_default_index').'/';
-		$this->elasticsearch_url 				=	"http://".Config::get('app.elasticsearch_host').":".Config::get('app.elasticsearch_port').'/';
-		$this->elasticsearch_host 				=	Config::get('app.elasticsearch_host');
-		$this->elasticsearch_port 				=	Config::get('app.elasticsearch_port');
-		$this->elasticsearch_default_index 		=	Config::get('app.elasticsearch_default_index');
-		$this->elasticsearch_host_new			=	Config::get('app.elasticsearch_host_new');
-		$this->elasticsearch_port_new			=	Config::get('app.elasticsearch_port_new');
+		$this->elasticsearch_default_url 		=	"http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
+		$this->elasticsearch_url 				=	"http://".Config::get('app.es.host').":".Config::get('app.es.port').'/';
+		$this->elasticsearch_host 				=	Config::get('app.es.host');
+		$this->elasticsearch_port 				=	Config::get('app.es.port');
+		$this->elasticsearch_default_index 		=	Config::get('app.es.default_index');
+		$this->elasticsearch_host_new			=	Config::get('app.es.host');
+		$this->elasticsearch_port_new			=	Config::get('app.es.port');
 		$this->elasticsearch_url_new			=	"http://".$this->elasticsearch_host_new.":".$this->elasticsearch_port_new."/";
 	}
 
@@ -309,14 +309,14 @@ class ElasticsearchController extends \BaseController {
 		switch (strtolower($type)) {
 			case "fitternityfinder":
 			$typemapping 	=	$common_findermapping;	
-			$typeurl 		=	"ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/finder/_mapping"; 			
+			$typeurl 		=	Config::get('app.es.url')."/fitternity/finder/_mapping";
 			//$typeurl 		=	$this->elasticsearch_url."fitternity/finder/_mapping"; 	
 			//return $typeurl;
 			break;
 
 			case "fitternityservice":
 			$typemapping 	=	$serivcesmapping;
-			$typeurl 		=	"ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/service/_mapping"; 	
+			$typeurl 		=	Config::get('app.es.url')."/fitternity/service/_mapping";
 			break;
 
 			case "fittest":
@@ -336,7 +336,7 @@ class ElasticsearchController extends \BaseController {
 
 			case "autosuggestindex":
 			$typemapping 	=	$autosuggest_mappings;
-			$typeurl 		=	"ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_mapping";
+			$typeurl 		=	Config::get('app.es.url')."/autosuggest_index_alllocations/autosuggestor/_mapping";
 			break;
 		}
 		
@@ -345,7 +345,7 @@ class ElasticsearchController extends \BaseController {
 
 		$request = array(
 			'url' => $typeurl,
-			'port' => 8050,//Config::get('elasticsearch.elasticsearch_port'),
+			'port' => Config::get('app.es.port'),//Config::get('elasticsearch.elasticsearch_port'),
 			'method' => 'PUT',
 			'postfields' => $postfields_data
 			);		
@@ -461,7 +461,7 @@ class ElasticsearchController extends \BaseController {
 				array_set($data, 'finder', $finder);
             	// return Response::json($data);
 
-				$posturl 						=	"http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity/service/".$data['_id'];	
+				$posturl 						=	Config::get('app.es.url')."/fitternity/service/".$data['_id'];
 				$postdata 						= 	get_elastic_service_document($data);
 				break;
 

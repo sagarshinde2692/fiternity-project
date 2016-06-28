@@ -40,11 +40,11 @@ class ServiceRankingController extends \BaseController {
     public function __construct() {
 
         parent::__construct();
-        $this->elasticsearch_default_url        =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/'.Config::get('app.elasticsearch_default_index').'/';
-        $this->elasticsearch_url                =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/';
-        $this->elasticsearch_host               =   Config::get('app.elasticsearch_host_new');
-        $this->elasticsearch_port               =   Config::get('app.elasticsearch_port_new');
-        $this->elasticsearch_default_index      =   Config::get('app.elasticsearch_default_index');
+        $this->elasticsearch_default_url        =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
+        $this->elasticsearch_url                =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/';
+        $this->elasticsearch_host               =   Config::get('app.es.host');
+        $this->elasticsearch_port               =   Config::get('app.es.port');
+        $this->elasticsearch_default_index      =   Config::get('app.es.default_index');
         $this->gauss_variance                   =   (-1)*(pow($this->gauss_scale, 2))/(2*log10($this->gauss_decay));
         $this->views_max                        =   Finder::active()->max('views');
         $this->views_min                        =   Finder::active()->min('views');
@@ -56,8 +56,8 @@ class ServiceRankingController extends \BaseController {
         $this->orders_min                       =   Finder::active()->min('orders30days');
         $this->popularity_max                   =   20000;
         $this->popularity_min                   =   0;
-        $this->es_host = Config::get('app.es_host');
-        $this->es_port = Config::get('app.es_port');
+        $this->es_host = Config::get('app.es.host');
+        $this->es_port = Config::get('app.es.port');
 
     }
 
@@ -67,8 +67,8 @@ class ServiceRankingController extends \BaseController {
         // $city =1 ; $index= 'fitternity_vip_trials2016-06-02'; $timestamp = '2016-06-02';
         ini_set('max_execution_time', 30000);
 
-        $es_host = Config::get('app.es_host');
-        $es_port = Config::get('app.es_port');
+        $es_host = Config::get('app.es.host');
+        $es_port = Config::get('app.es.port');
 
         $vip_trials_index = 'fitternity_vip_trials'.$timestamp;
 
@@ -282,8 +282,8 @@ public function pushdocument($posturl, $postfields_data){
 public function RollingBuildServiceIndex(){
 
 
-    $port = Config::get('app.es_port');
-    $host = Config::get('app.es_host');
+    $port = Config::get('app.es.port');
+    $host = Config::get('app.es.host');
 
     $url = 'http://'.$host.':'.$port.'/';
    

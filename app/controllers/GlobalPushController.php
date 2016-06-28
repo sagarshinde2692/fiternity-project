@@ -19,8 +19,8 @@ class GlobalPushController extends \BaseController
   public function __construct()
   {
     parent::__construct();    
-    $this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
-    $this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
+    $this->elasticsearch_host = Config::get('app.es.host');
+    $this->elasticsearch_port = Config::get('app.es.port');
     $this->elasticsearch_url  = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations3/autosuggestor/';
     $this->build_elasticsearch_url = 'http://'.$this->elasticsearch_host.':'.$this->elasticsearch_port.'/autosuggest_index_alllocations3';
     $this->name = 'autosuggest_index_alllocations';
@@ -402,7 +402,7 @@ class GlobalPushController extends \BaseController
         }
 
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
-        $locationcluster->toArray();    
+        $locationcluster->toArray();
 
         $postdata = get_elastic_autosuggest_doc($data, $locationcluster[0]['name']);
 

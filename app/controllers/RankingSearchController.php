@@ -24,11 +24,11 @@ class RankingSearchController extends \BaseController
     {
         parent::__construct();
 
-        $this->elasticsearch_default_url = "http://" . Config::get('app.elasticsearch_host_new') . ":" . Config::get('app.elasticsearch_port_new') . '/' . Config::get('app.elasticsearch_default_index') . '/' . Config::get('app.elasticsearch_default_type') . '/';
-        $this->elasticsearch_url = "http://" . Config::get('app.elasticsearch_host_new') . ":" . Config::get('app.elasticsearch_port_new') . '/';
-        $this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
-        $this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
-        $this->elasticsearch_default_index = Config::get('app.elasticsearch_default_index');
+        $this->elasticsearch_default_url = "http://" . Config::get('app.es.host') . ":" . Config::get('app.es.port') . '/' . Config::get('app.es.default_index') . '/' . Config::get('app.es.default_type') . '/';
+        $this->elasticsearch_url = "http://" . Config::get('app.es.host') . ":" . Config::get('app.es.port') . '/';
+        $this->elasticsearch_host = Config::get('app.es.host');
+        $this->elasticsearch_port = Config::get('app.es.port');
+        $this->elasticsearch_default_index = Config::get('app.es.default_index');
     }
 
     public function getRankedFinderResults()
@@ -165,8 +165,8 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
 }';
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $body
     );
@@ -451,8 +451,8 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
 }';
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $body
     );
@@ -609,8 +609,8 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
 }';
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $body
     );
@@ -990,8 +990,8 @@ $body = '{
 
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $body
     );
@@ -1203,8 +1203,8 @@ public function searchDirectPaymentEnabled(){
 }
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_finder/finder/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $body
     );

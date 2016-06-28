@@ -34,10 +34,10 @@ class GlobalSearchController extends \BaseController
     {
         parent::__construct();
 
-        $this->elasticsearch_default_url = "http://" . Config::get('app.elasticsearch_host_new') . ":" . Config::get('app.elasticsearch_port_new') . '/' . Config::get('app.elasticsearch_default_index') . '/' . Config::get('app.elasticsearch_default_type') . '/';
-        $this->elasticsearch_url = "http://" . Config::get('app.elasticsearch_host_new') . ":" . Config::get('app.elasticsearch_port_new') . '/';
-        $this->elasticsearch_host = Config::get('app.elasticsearch_host_new');
-        $this->elasticsearch_port = Config::get('app.elasticsearch_port_new');
+        $this->elasticsearch_default_url = "http://" . Config::get('app.es.host') . ":" . Config::get('app.es.port') . '/' . Config::get('app.es.default_index') . '/' . Config::get('app.es.default_type') . '/';
+        $this->elasticsearch_url = "http://" . Config::get('app.es.host') . ":" . Config::get('app.es.port') . '/';
+        $this->elasticsearch_host = Config::get('app.es.host');
+        $this->elasticsearch_port = Config::get('app.es.port');
         $redis_config = Config::get('database.redis');
 
         $this->servers = [
@@ -320,8 +320,8 @@ class GlobalSearchController extends \BaseController
 }';
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."autosuggest_index_alllocations/autosuggestor/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/autosuggest_index_alllocations/autosuggestor/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $query
     );    
@@ -761,8 +761,8 @@ $query = '{
 
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv2/finder/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternityv2/finder/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $query
     );    
@@ -1255,8 +1255,8 @@ $query = '{
 }';    
 
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternity_autosuggestor/autosuggestor/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternity_autosuggestor/autosuggestor/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $query
     );    
@@ -1773,8 +1773,8 @@ $query = '{
 
 // return $query;
 $request = array(
-    'url' => "http://ESAdmin:fitternity2020@54.169.120.141:8050/"."fitternityv2/finder/_search",
-    'port' => 8050,
+    'url' => Config::get('app.es.url')."/fitternityv2/finder/_search",
+    'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $query
     );

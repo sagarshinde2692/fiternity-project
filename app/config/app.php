@@ -215,28 +215,42 @@ return array(
 
 	's3_finder_url'					=> 'https://d3oorwrq3wx4ad.cloudfront.net/f/',
 	's3_service_url'				=> 'https://d3oorwrq3wx4ad.cloudfront.net/s/',
-
-	'elasticsearch_port' 			=> 	9200,
-	'elasticsearch_host_new' 		=> 	'ESAdmin:fitternity2020@54.169.120.141',
-	'elasticsearch_port_new'        => 8050,
-
-	// 'elasticsearch_host_new' 		=> 	'localhost',
-	// 'elasticsearch_port_new'        => 9200,
-
-	//old
-	'elasticsearch_host' 			=> 	'54.179.134.14',
-	'elasticsearch_port' 			=> 	9200,
-	'elasticsearch_default_index' 	=> 	'fitternity',
-	'elasticsearch_default_type' 	=> 	'finder',
+//
+//	'elasticsearch_port' 			=> 	9200,
+//	'elasticsearch_host_new' 		=> 	'ESAdmin:fitternity2020@54.169.120.141',
+//	'elasticsearch_port_new'        => 8050,
+//
+//	// 'elasticsearch_host_new' 		=> 	'localhost',
+//	// 'elasticsearch_port_new'        => 9200,
+//
+//	//old
+//	'elasticsearch_host' 			=> 	'54.179.134.14',
+//	'elasticsearch_port' 			=> 	9200,
+//	'elasticsearch_default_index' 	=> 	'fitternity',
+//	'elasticsearch_default_type' 	=> 	'finder',
 
 
 	/******************************ElasticSearch Config****************/
 	//currently used only for vip trials rolling builds and search api.
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
+	//Production
+	'es' =>array(
+		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+		'port'		=>			8050,
+		'default_index' => 	'fitternity',
+		'default_type' 	=> 	'finder',
+	),
+	//local
+//	'es' =>array(
+//		'url'		=> 			'localhost:9200',
+//		'host'		=> 			'localhost',
+//		'port'		=>			9200,
+//		'default_index' => 	'fitternity',
+//		'default_type' 	=> 	'finder',
+//	),
 
-	'es_host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-	'es_port'		=>			8050,
 
 	// 'es_host'		=> 			'localhost',
 	// 'es_port'		=>			9200,

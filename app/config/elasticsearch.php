@@ -14,7 +14,7 @@ use Monolog\Logger;
 
 
 return array(
-   'hosts' => array('ESAdmin:fitternity2020@54.169.120.141:8050'),
+   'hosts' => array(Config::get('app.es.url')),//array('ESAdmin:fitternity2020@54.169.120.141:8050'),
     'logPath' => 'path/to/your/elasticsearch/log',
     'logLevel' => Logger::INFO,    
 );

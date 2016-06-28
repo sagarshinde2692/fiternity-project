@@ -14,11 +14,11 @@ class ServiceRankingSearchController extends \BaseController {
 
   public function __construct() {
     parent::__construct();
-    $this->elasticsearch_default_url        =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/'.Config::get('app.elasticsearch_default_index').'/';
-    $this->elasticsearch_url                =   "http://".Config::get('app.elasticsearch_host_new').":".Config::get('app.elasticsearch_port_new').'/';
-    $this->elasticsearch_host               =   Config::get('app.elasticsearch_host_new');
-    $this->elasticsearch_port               =   Config::get('app.elasticsearch_port_new');
-    $this->elasticsearch_default_index      =   Config::get('app.elasticsearch_default_index');        
+    $this->elasticsearch_default_url        =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
+    $this->elasticsearch_url                =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/';
+    $this->elasticsearch_host               =   Config::get('app.es.host');
+    $this->elasticsearch_port               =   Config::get('app.es.port');
+    $this->elasticsearch_default_index      =   Config::get('app.es.default_index');
   }
 
   public function searchrankedservices(){
