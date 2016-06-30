@@ -26,8 +26,11 @@ class Booktrial extends \Basemodel {
 		return $this->belongsTo('City','city_id');
 	}
 
-
-	
-
+	public function category(){
+		return $this->belongsTo('Findercategory','finder_category_id');
+	}
+	public function invite(){
+		return $this->hasMany('Invite','referrer_booktrial_id');
+	}
 
 }

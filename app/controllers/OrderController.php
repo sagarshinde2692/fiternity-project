@@ -12,6 +12,10 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\FinderSms as FinderSms;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\Utilities as Utilities;
+use App\Services\CustomerReward as CustomerReward;
+use App\Services\CustomerInfo as CustomerInfo;
+
 
 class OrderController extends \BaseController {
 
@@ -20,16 +24,28 @@ class OrderController extends \BaseController {
 	protected $sidekiq;
 	protected $findermailer;
 	protected $findersms;
+	protected $utilities;
+	protected $customerreward;
 
-	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, Sidekiq $sidekiq,FinderMailer $findermailer, FinderSms $findersms) {
+	public function __construct(
+		CustomerMailer $customermailer,
+		CustomerSms $customersms,
+		Sidekiq $sidekiq,
+		FinderMailer $findermailer,
+		FinderSms $findersms,
+		Utilities $utilities,
+		CustomerReward $customerreward
+	) {
 		parent::__construct();	
 		$this->customermailer		=	$customermailer;
 		$this->customersms 			=	$customersms;
 		$this->sidekiq 				= 	$sidekiq;
 		$this->findermailer		    =	$findermailer;
 		$this->findersms 			=	$findersms;
+		$this->utilities 			=	$utilities;
+		$this->customerreward 		=	$customerreward;
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials');
 
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','mickeymehtaevent','healthytiffintrail','healthytiffinmembership','3daystrial');
 	}
 
 
@@ -45,14 +61,13 @@ class OrderController extends \BaseController {
 		$usedCouponStatus 	= ($usedCnt > 0) ? true : false;		
 		$resp 				= [	'used' => $usedCouponStatus];
 		return Response::json($resp,200);
-
 	}
 
 
 	//capture order status for customer used membership by
-	public function captureOrderStatus(){
+	public function captureOrderStatus($data = null){
 
-		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
+		($data == null) ? $data= array_except(Input::json()->all(), array('preferred_starting_date')) : null;
 
 		Log::info('Capture Order Status',$data);
 
@@ -65,9 +80,7 @@ class OrderController extends \BaseController {
 			$resp 	= 	array('status' => 400,'message' => "Data Missing - status");
 			return  Response::json($resp, 400);
 		}
-
-
-		$orderid 	=	(int) Input::json()->get('order_id');
+		$orderid 	=	(int) $data['order_id'];
 		$order 		= 	Order::findOrFail($orderid);
 
 
@@ -79,10 +92,11 @@ class OrderController extends \BaseController {
 			return Response::json($resp);
 		}
 
+		if($data['status'] == 'success'){
+			// Give Rewards / Cashback to customer based on selection, on purchase success......
 
+			$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
-
-		if(Input::json()->get('status') == 'success'){
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
@@ -417,6 +431,8 @@ class OrderController extends \BaseController {
 
 	public function generateTmpOrder(){
 
+
+
 		// $userdata	=	array_except(Input::all(), array());
 
 		$data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
@@ -581,16 +597,36 @@ class OrderController extends \BaseController {
 		}
 		// return $data;
 
-		$orderid 			=	Order::max('_id') + 1;
-		// $data 				= 	Input::json()->all();
 		$customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);	
+
+		if($data['type'] == 'booktrials' ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'){
+
+			// Throw an error if user has already booked a trial for that vendor...
+			$alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+			if(count($alreadyBookedTrials) > 0){
+				$resp 	= 	array('status' => 403,'message' => "You have already booked a trial for this vendor");
+				return Response::json($resp,403);
+			}
+
+			// Throw an error if user has already booked a trial on same schedule timestamp..
+			if(isset($data['schedule_date'])&&isset($data['schedule_slot'])){
+				$dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'],$data['schedule_slot']);
+				$UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'],$data['finder_id']);
+				if(count($UpcomingTrialsOnTimestamp) > 0){
+					$resp 	= 	array('status' => 403,'message' => "You have already booked a trial on same datetime");
+					return Response::json($resp,403);
+				}
+			}
+
+		}
+
 		$email_body2 		=	(Input::json()->get('email_body2') != "-") ? Input::json()->get('email_body2') : '';	
 		
-		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
-			$reminderTimeAfter12Min 	=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
-			$buyable_after12min 		= 	$this->checkFitmaniaBuyable($orderid ,'checkFitmaniaBuyable', 0, $reminderTimeAfter12Min);
-			array_set($data, 'buyable_after12min_queueid', $buyable_after12min);
-		}
+//		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
+//			$reminderTimeAfter12Min 	=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
+//			$buyable_after12min 		= 	$this->checkFitmaniaBuyable($orderid ,'checkFitmaniaBuyable', 0, $reminderTimeAfter12Min);
+//			array_set($data, 'buyable_after12min_queueid', $buyable_after12min);
+//		}
 
 		if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow' || $data['type'] == 'fitmania-membership-giveaways'){
 			$peppertapobj 	= 	Peppertap::where('status','=', 0)->first();
@@ -714,6 +750,44 @@ class OrderController extends \BaseController {
 		array_set($data, 'status', '0');
 		array_set($data, 'email_body2', trim($email_body2));
 		array_set($data, 'payment_mode', 'paymentgateway');
+
+		// Generate Order......
+		
+		$medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
+        $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
+            
+
+		if($medical_detail != "" && $medication_detail != ""){
+
+                $customer_info = new CustomerInfo();
+                $response = $customer_info->addHealthInfo($data);
+        }
+
+		// Deduct wallet balance if applicable and feasible....
+		$orderid 			=	Order::max('_id') + 1;
+		if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+			$req = array(
+				'customer_id'=>$customer_id,
+				'order_id'=>$orderid,
+				'amount'=>$data['wallet_amount'],
+				'type'=>'DEBIT',
+				'description'=>'Paid for Order ID: '.$orderid,
+			);
+			$walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
+			$walletTransactionResponse = (array) $walletTransactionResponse;
+
+			if($walletTransactionResponse['status'] != 200){
+				return $walletTransactionResponse;
+			}
+
+		}
+
+		// Schedule Check orderfailure and refund wallet amount in that case....
+		$url = Config::get('app.url').'/orderfailureaction/'.$orderid;
+		$delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+		$this->hitURLAfterDelay($url, $delay);
+
 		$order 				= 	new Order($data);
 		$order->_id 		= 	$orderid;
 		$orderstatus   		= 	$order->save();
@@ -1030,6 +1104,66 @@ class OrderController extends \BaseController {
 
 	}
 
+
+	public function orderFailureAction($order_id){
+
+		$data = Order::where('_id',(int) $order_id)
+			->where('status',"0")
+			->first();
+
+		if($data == ''){
+			return Response::json(
+				array(
+					'status' => 200,
+					'message' => 'No Action Required'
+				),200
+
+			);
+		}
+
+		// Update order status to failed........
+		$data->update(['status' => '-1']);
+
+
+		// Refund wallet amount if deducted........
+		if(isset($data['wallet_amount']) && ((int) $data['wallet_amount']) >= 0){
+			$req = array(
+				'customer_id'=>$data['customer_id'],
+				'order_id'=>$order_id,
+				'amount'=>$data['wallet_amount'],
+				'type'=>'REFUND',
+				'description'=>'Refund for Order ID: '.$order_id,
+			);
+
+			$walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
+			$walletTransactionResponse = (array) $walletTransactionResponse;
+
+
+			if($walletTransactionResponse['status'] != 200){
+				return $walletTransactionResponse;
+			}
+
+			return Response::json(
+				array(
+					'status' => 200,
+					'message' => 'Refund Successful'
+				),200
+
+			);
+		}
+		else{
+			return Response::json(
+				array(
+					'status' => 200,
+					'message' => 'No wallet amount has been deducted for the transaction'
+				),200
+
+			);
+		}
+
+
+	}
+
 	public function errorMessage($errors){
 
 		$errors = json_decode(json_encode($errors));
@@ -1041,6 +1175,25 @@ class OrderController extends \BaseController {
 		$message = implode(',', array_values($message));
 
 		return $message;
+	}
+
+	public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
+
+		if($delay !== 0){
+			$delay = $this->getSeconds($delay);
+		}
+
+		$payload = array('url'=>$url,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+		$route  = 'outbound';
+		$result  = $this->sidekiq->sendToQueue($payload,$route);
+
+		if($result['status'] == 200){
+			return $result['task_id'];
+		}else{
+			return $result['status'].':'.$result['reason'];
+		}
+
 	}
 
 

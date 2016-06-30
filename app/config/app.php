@@ -304,6 +304,19 @@ return array(
 		'cover_thumb' 	=> 'https://b.fitn.in/articles/thumbs/',
 	),
 
+	's3_customer_transformation_path'					=> 'c/t/',
 
+	'vip_trial_types' => array(
+		'vip_booktrials','vip_booktrials_rewarded','vip_booktrials_invited','vip_3days_booktrials'
+	),
+	'trial_types' => array(
+		'vip_booktrials','vip_booktrials_rewarded','vip_booktrials_invited','vip_3days_booktrials',
+		'booktrials','3daystrial','healthytiffintrail'
+	),
+	'membership_types' => array('memberships','healthytiffinmembership'),
+	'workout_session_types' => array('workout-session'),
+
+	'kraken_key'							=> '73dbf866dbe673867134dc90204ddf96',
+	'kraken_secret'							=> 'd206555b6c07d8e3eba3807402a183578471251e',
 
 );

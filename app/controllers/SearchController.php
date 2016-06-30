@@ -1248,4 +1248,37 @@ public function getFindersJsonData() {
 
 }
 
+public function locationCity($value){
+
+	$location = array();
+
+	$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->get();
+
+	$data = array();
+
+	if(count($location) > 0){
+		foreach ($location as $key => $value) {
+			foreach ($value->cities as $city_id) {
+				$hesh = array();
+
+				$city = City::find((int) $city_id);
+
+				$hesh['locality'] = ucwords($value->name);
+				$hesh['city'] = ucwords($city->name);
+
+				$data[] = $hesh;
+			}
+			
+		}
+	}
+
+	return Response::json(
+		array(
+			'status' => 200,
+			'location' => $data
+		),200
+	);
+
+}
+
 }

@@ -9,7 +9,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'AutoTrial-Instant-Vendor';
 
-		if(isset($data['type']) && $data['type'] == "vip_booktrials"){
+		if(isset($data['type']) && ($data['type'] == "vip_booktrials" || $data['type'] == "vip_booktrials_rewarded" || $data['type'] == "vip_booktrials_invited" )){
 
 			$label = 'VipTrial-Instant-Vendor';
 		}

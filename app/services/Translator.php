@@ -28,13 +28,21 @@ class Translator {
 			$autcomplete_response->meta = new \stdClass();			
 			$autcomplete_response->meta->total_records = $es_autocomplete_response['hits']['total'];			
 			foreach ($es_autocomplete_response['hits']['hits'] as $value) {
+				$area = '';
+				if($value['fields']['location'][0] === ""){
+					$area = $city;
+				}
+				else{
+					$area = $value['fields']['location'][0];
+				}
+
 				$automodel = new AutocompleteResult();					
 				$automodel->keyword = $value['fields']['autosuggestvalue'][0];
 				$automodel->object->id = $value['_id'];
 				$automodel->object->slug = $value['fields']['slug'][0];
 				$automodel->object->location = new \stdClass();
 				$automodel->object->location->city = $city;
-				$automodel->object->location->area = $value['fields']['location'][0];
+				$automodel->object->location->area = $area;
 				$automodel->object->location->lat = 0.0;
 				$automodel->object->location->long = 0.0;//$value['fields']['location'][0];
 				$automodel->object->category = $value['fields']['inputcat1'][0];
@@ -685,6 +693,8 @@ public static function translate_searchresultsv3($es_searchresult_response){
 
 public static function translate_vip_trials($es_searchresult_response){
 
+	$city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'banglore'=>3,'gurgaon'=>8,'noida'=>9);
+
 	$vip_trial_response = new ViptrialResponse();
 
 	$vip_trial_response->results->aggregationlist = new \stdClass();
@@ -727,7 +737,9 @@ public static function translate_vip_trials($es_searchresult_response){
 			$resultobject->service_address = $result['service_address'];
 			$resultobject->finder_slug = $result['finderslug'];
 			$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
-			$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
+			//$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
+			
+			$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
 
 			$finder->object = $resultobject;
 			array_push($vip_trial_response->results->resultlist, $finder);			

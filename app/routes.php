@@ -98,6 +98,11 @@ Route::get('updatebookmarks/email/{customeremail}/{finderid}/{remove?}',  array(
 Route::get('customerdetail/email/{customeremail}',  array('as' => 'customer.customerdetailbyemail','uses' => 'CustomerController@customerDetailByEmail'));
 Route::get('isregistered/{email}/{id?}/{collection?}',  array('as' => 'customer.isregistered','uses' => 'CustomerController@isRegistered'));
 Route::post('customer/addregid', array('as' => 'customer.addregid','uses' => 'CustomerController@addRegId'));
+Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
+Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
+Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
+
 
 
 
@@ -114,11 +119,34 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customer/getallbookmarks',  array('as' => 'customer.getallbookmarks','uses' => 'CustomerController@getAllBookmarks'));
 	Route::get('customer/editbookmarks/{finder_id}/{remove?}',  array('as' => 'customer.editbookmarks','uses' => 'CustomerController@editBookmarks'));
 	Route::get('getcustomerdetail',  array('as' => 'customer.getcustomerdetail','uses' => 'CustomerController@getCustomerDetail'));
+	Route::get('getcustomertransactions',  array('as' => 'customer.getcustomertransactions','uses' => 'CustomerController@getCustomerTransactions'));
 	Route::get('upcomingtrials',  array('as' => 'customer.upcomingtrials','uses' => 'CustomerController@getUpcomingTrials'));
+	Route::get('customer/myrewards/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewards','uses' => 'MyrewardController@listMyRewards'));
+
+	// Wallet APIs...
+
+	Route::get('getwalletbalance',  array('as' => 'customer.getWalletBalance','uses' => 'CustomerController@getWalletBalance'));
+//	Route::post('wallettransaction',  array('as' => 'customer.walletTransaction','uses' => 'CustomerController@walletTransaction'));
+	Route::get('listwalletsummary/{limit?}/{offset?}',  array('as' => 'customer.listWalletSummary','uses' => 'CustomerController@listWalletSummary'));
+	Route::get('getexistingtrialwithfinder/{finder_id?}', array('as' => 'customer.getExistingTrialWithFinder','uses' => 'CustomerController@getExistingTrialWithFinder'));
+	Route::get('customer/getinteractedfinder',  array('as' => 'customer.getinteractedfinder','uses' => 'CustomerController@getInteractedFinder'));
 
 });
 
 /******************** CUSTOMERS SECTION END HERE ********************/
+##############################################################################
+
+
+
+
+##############################################################################
+/******************** REWARDS SECTION START HERE ***********************/
+
+Route::get('listrewardsapplicableonpurchase', array(
+	'as' => 'rewards.ListRewardsApplicableOnPurchase','uses' => 'RewardofferController@ListRewardsApplicableOnPurchase'
+));
+
+/******************** REWARDS SECTION END HERE ********************/
 ##############################################################################
 
 
@@ -138,6 +166,8 @@ Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','us
 
 Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
 Route::post('buylandingpagepurchase',  array('as' => 'orders.buylandingpagepurchase','uses' => 'OrderController@buyLandingpagePurchase'));
+Route::get('orderfailureaction/{order_id}', array('as' => 'orders.orderFailureAction','uses' => 'OrderController@orderFailureAction'));
+
 
 
 
@@ -218,6 +248,7 @@ Route::get('rollingbuildfindersearch', array('as' => 'elasticsearch.rollingbuild
 Route::get('rollingbuildserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
+Route::get('locationcity/{value}','SearchController@locationCity');
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -316,6 +347,8 @@ Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}/{schedulesof?}', 
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
 Route::get('canceltrial/{trialid}', array('as' => 'trial.cancel', 'uses' => 'SchedulebooktrialsController@cancel'));
 
+Route::post('invitefortrial', array('as' => 'customer.inviteForTrial','uses' => 'SchedulebooktrialsController@inviteForTrial'));
+Route::post('acceptinvite', array('as' => 'customer.acceptInvite','uses' => 'SchedulebooktrialsController@acceptInvite'));
 
 Route::get('getremindermessage/',  array('as' => 'trial.getremindermessage','uses' => 'SchedulebooktrialsController@getReminderMessage'));
 
@@ -431,6 +464,7 @@ Route::get('checkbuyablevalue/{offerid}', 'SpecialofferController@checkBuyableVa
 Route::get('updateexplorecategoryoffers/{cityid?}', 'SpecialofferController@exploreCategoryOffers');
 Route::get('updateexplorelocationclusteroffers/{cityid?}', 'SpecialofferController@exploreLocationClusterOffers');
 Route::get('categorycitywisesuccesspage/{city?}/{from?}/{size?}', 'SpecialofferController@categoryCitywiseSuccessPage');
+Route::get('standardofferstext/{type?}', 'SpecialofferController@standardOffersText');
 
 ######################################################################################################################
 /******************************** End Special Offer Section *****************************************************/
@@ -633,6 +667,12 @@ Route::get('manualtrialdisable', 'DebugController@manualtrialdisable');
 
 Route::post('temp/add', array('as' => 'temps.add','uses' => 'TempsController@add'));
 Route::get('temp/delete/{customer_phone}', array('as' => 'temps.delete','uses' => 'TempsController@delete'));
+
+Route::get('temp/verifynumber/{number}', array('as' => 'temps.verifynumber','uses' => 'TempsController@verifyNumber'));
+Route::get('temp/verifyotp/{temp_id}/{otp}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtp'));
+Route::get('temp/proceedwithoutotp/{temp_id}', array('as' => 'temps.proceedwithoutotp','uses' => 'TempsController@proceedWithoutOtp'));
+Route::get('temp/regenerateotp/{temp_id}', array('as' => 'temps.regenerateotp','uses' => 'TempsController@regenerateOtp'));
+
 
 /******************  Temp API END HERE************************************************/
 #####################################################################################################

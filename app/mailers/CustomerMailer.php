@@ -8,7 +8,7 @@ Class CustomerMailer extends Mailer {
 
 		$label = 'AutoTrial-Instant-Customer';
 
-		if(isset($data['type']) && $data['type'] === "vip_booktrials"){
+		if(isset($data['type']) && ($data['type'] == "vip_booktrials" || $data['type'] == "vip_booktrials_rewarded" || $data['type'] == "vip_booktrials_invited" )){
 
 			$label = 'VipTrial-Instant-Customer';
 		}
@@ -245,6 +245,43 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data,$delay);
 	}
 
+	public function inviteEmail($type, $data){
+
+		switch ($type){
+			case 'vip_booktrials':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
+			case 'vip_booktrials_invited':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
+			case 'vip_3days_booktrials':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
+			default:
+				$label = 'Invite-friend-for-trial';
+				break;
+	}
+
+		$message_data 	= array(
+			'user_email' => array($data['invitee_email']),
+			'user_name' => $data['invitee_name']
+		);
+		return $this->common($label,$data,$message_data);
+
+	}
+
+	public function respondToInviteEmail($data){
+
+		$label = 'respond-to-invite-for-trial';
+
+		$message_data 	= array(
+			'user_email' => array($data['host_email']),
+			'user_name' => $data['host_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 
 	public function healthyTiffinTrial($data){
 
@@ -261,6 +298,18 @@ Class CustomerMailer extends Mailer {
 	public function healthyTiffinMembership($data){
 
 		$label = 'HealthyTiffinMembership-Instant-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function vipReward($data){
+
+		$label = 'VipReward-Instant-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),

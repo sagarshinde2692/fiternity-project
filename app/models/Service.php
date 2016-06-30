@@ -213,15 +213,15 @@ class Service extends \Basemodel{
 	}
 
 	public function finder(){
-		return $this->belongsTo('Finder');
+		return $this->belongsTo('Finder','finder_id');
 	}
 
 	public function location(){
-		return $this->belongsTo('Location');
+		return $this->belongsTo('Location','location_id');
 	}
 
 	public function city(){
-		return $this->belongsTo('City');
+		return $this->belongsTo('City','city_id');
 	}
 
 	public function trainer(){

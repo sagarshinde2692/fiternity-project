@@ -8,9 +8,14 @@ Class CustomerNotification extends Notification{
 
 		$label = 'AutoTrial-Instant-Customer';
 
+		if(isset($data['type']) && $data['type'] === "vip_booktrials"){
+
+			$label = 'VipTrial-Instant-Customer';
+		}
+
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id']);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
 
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}
@@ -21,7 +26,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id']);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
 
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}
@@ -32,7 +37,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id']);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-12");
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
@@ -44,7 +49,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id']);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-1");
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
@@ -56,7 +61,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id']);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2");
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
@@ -67,7 +72,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id']);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}

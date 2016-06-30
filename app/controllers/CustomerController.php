@@ -9,26 +9,32 @@
 
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
-
+use App\Services\Utilities as Utilities;
+use App\Services\CustomerInfo as CustomerInfo;
 
 class CustomerController extends \BaseController {
 
 	protected $customermailer;
 	protected $customersms;
+	protected $utilities;
 
-	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms) {
+
+	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Utilities $utilities) {
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms	=	$customersms;
+		$this->utilities	=	$utilities;
 
 	}
 
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type');
 		$trials 		=	Booktrial::where('customer_email', '=', $customeremail)
 		->whereIn('booktrial_type', array('auto'))
 		->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+		->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+		//->with('invite')
 		->orderBy('_id', 'desc')
 		->get($selectfields)->toArray();
 
@@ -49,10 +55,12 @@ class CustomerController extends \BaseController {
 			array_set($trial, 'finder_offerings', []);
 
 			if(isset($trial['finder_id']) && $trial['finder_id'] != ""){
-				$finderarr = Finder::active()->with('offerings')->where('_id','=', intval($trial['finder_id']))->first();
+				$finderarr = Finder::active()->with('offerings')->with('location')->where('_id','=', intval($trial['finder_id']))->first();
 				if ($finderarr) {
 					$finderarr = $finderarr->toArray();
 					array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
+					array_set($trial, 'finder_location', ucwords($finderarr['location']['name']));
+					array_set($trial, 'average_rating', $finderarr['average_rating']);
 				}
 			}
 
@@ -102,10 +110,61 @@ class CustomerController extends \BaseController {
 				array_push($upcomingtrials, $trial);	
 			}
 
+			$healthytiffintrail = array();
+
+			$ht_selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action');
+
+			$healthytiffintrail = Order::where('customer_email',$customeremail)
+				->where('type','healthytiffintrail')
+				->orWhere(function($query){$query->where('status',"1")->where('order_action','bought')->where('amount','!=',0);})
+				->orWhere(function($query){$query->where('status',"0")->where('amount','exist',false);})
+				->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+				->orderBy('_id', 'desc')
+				->get($ht_selectfields);
+
+			if(count($healthytiffintrail) > 0){
+				$healthytiffintrail = $healthytiffintrail->toArray();
+
+				foreach ($healthytiffintrail as $key => $value) {
+
+					foreach ($selectfields as $field) {
+
+						if(!isset($value[$field])){
+							$healthytiffintrail[$key][$field] = "";
+		}
+
+						if(isset($value['preferred_starting_date'])){
+
+							$healthytiffintrail[$key]['schedule_date_time'] = $value['preferred_starting_date'];
+							$healthytiffintrail[$key]['schedule_date'] = $value['preferred_starting_date'];
+
+							unset($healthytiffintrail[$key]['preferred_starting_date']);
+						}
+
+						if(isset($value['amount'])){
+
+							unset($healthytiffintrail[$key]['amount']);
+						}
+
+						if(isset($value['status'])){
+
+							unset($healthytiffintrail[$key]['status']);
+						}
+
+						if(isset($value['order_action'])){
+
+							unset($healthytiffintrail[$key]['order_action']);
+						}
+
+					}
+
+				}
+			}
+
 		}
 
 		// array_push($customertrials, $trial);
-		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'message' => 'List of scheduled trials');
+		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'healthytiffintrail'=>$healthytiffintrail,'message' => 'List of scheduled trials');
 		return Response::json($resp,200);
 	}
 
@@ -364,6 +423,9 @@ class CustomerController extends \BaseController {
 					$customer->_id = $inserted_id;
 					$customer->name = ucwords($data['name']) ;
 					$customer->email = $data['email'];
+					isset($data['dob']) ? $customer->dob = $data['dob'] : null;
+					isset($data['gender']) ? $customer->gender = $data['gender'] : null;
+					isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
 					$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 					$customer->password = md5($data['password']);
 					if(isset($data['contact_no'])){
@@ -387,6 +449,10 @@ class CustomerController extends \BaseController {
 				$account_link[$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
 				$customer->email = $data['email'];
+
+				isset($data['dob']) ? $customer->dob = $data['dob'] : null;
+				isset($data['gender']) ? $customer->gender = $data['gender'] : null;
+				isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
 				$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
 				$customer->password = md5($data['password']);
 				if(isset($data['contact_no'])){
@@ -606,6 +672,9 @@ class CustomerController extends \BaseController {
 			$customer->_id = $inserted_id;
 			$customer->name = ucwords($data['name']) ;
 			$customer->email = $data['email'];
+			isset($data['dob']) ? $customer->dob = $data['dob'] : null;
+			isset($data['gender']) ? $customer->gender = $data['gender'] : null;
+			isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
 			$customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
 			$customer->identity = $data['identity'];
 			$customer->account_link = $account_link;
@@ -928,7 +997,24 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$decodedToken = $this->customerTokenDecode($jwt_token);
-		$variable = ['name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time','preferred_workout_location','recieve_update','notification'];
+		$variable = ['name',
+			'email',
+			'contact_no',
+			'picture',
+			'location',
+			'gender',
+			'shipping_address',
+			'billing_address',
+			'address',
+			'interest',
+			'dob',
+			'ideal_workout_time',
+			'preferred_workout_location',
+			'recieve_update',
+			'notification',
+			'fitness_goal',
+			'city',
+			'place'];
 
 		$data = Input::json()->all();
 		$validator = Validator::make($data, Customer::$update_rules);
@@ -1058,7 +1144,8 @@ class CustomerController extends \BaseController {
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 		->with('offerings')
 		->whereIn('_id', $finderids)
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
+		->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings','photos'));
 
 		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
 		return Response::json($responseData, 200);
@@ -1291,9 +1378,45 @@ public function customerDetailByEmail($customer_email){
 
 public function customerDetail($customer_id){
 
-	$array = array('name'=>NULL,'email'=>NULL,'contact_no'=>NULL,'picture'=>NULL,'location'=>NULL,'gender'=>NULL,'shipping_address'=>NULL,'billing_address'=>NULL,'address'=>NULL,'interest'=>[],'dob'=>NULL,'ideal_workout_time'=>NULL,'preferred_workout_location'=>NULL,'recieve_update'=>NULL,'notification'=>NULL);
+	$array = array('name'=>NULL,
+		'email'=>NULL,
+		'contact_no'=>NULL,
+		'picture'=>NULL,
+		'location'=>NULL,
+		'gender'=>NULL,
+		'shipping_address'=>NULL,
+		'billing_address'=>NULL,
+		'address'=>NULL,
+		'interest'=>[],
+		'dob'=>NULL,
+		'ideal_workout_time'=>NULL,
+		'preferred_workout_location'=>NULL,
+		'recieve_update'=>NULL,
+		'notification'=>NULL,
+		'fitness_goal'=>NULL,
+		'city'=>NULL,
+		'place'=>NULL
+		);
 
-	$customer = Customer::where('_id',(int) $customer_id)->get(array('name','email','contact_no','picture','location','gender','shipping_address','billing_address','address','interest','dob','ideal_workout_time','identity','preferred_workout_location','recieve_update','notification'))->toArray();
+	$customer = Customer::where('_id',(int) $customer_id)->get(array('name',
+		'email',
+		'contact_no',
+		'picture',
+		'location',
+		'gender',
+		'shipping_address',
+		'billing_address',
+		'address',
+		'interest',
+		'dob',
+		'ideal_workout_time',
+		'identity',
+		'preferred_workout_location',
+		'recieve_update',
+		'notification',
+		'fitness_goal',
+		'city',
+		'place'))->toArray();
 	
 
 	if($customer){
@@ -1331,6 +1454,54 @@ public function getCustomerDetail(){
 	return $this->customerDetail($customer_id);
 
 }
+
+	public function getCustomerTransactions(){
+
+		$jwt_token = Request::header('Authorization');
+		Log::info($jwt_token);
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$free_vip_trials_count = $trials_count = $memberships_count = $workout_sessions_count = 0;
+
+		$free_trials = $this->utilities->getCustomerFreeTrials($customer_id)['result'];
+		$free_orders = $this->utilities->getCustomerFreeOrders($customer_id)['result'];
+		$paid_orders = $this->utilities->getCustomerPaidOrders($customer_id)['result'];
+
+		$vip_trial_types 		= Config::get('app.vip_trial_types');
+		$trial_types 			= Config::get('app.trial_types');
+		$membership_types 		= Config::get('app.membership_types');
+		$workout_session_types 	= Config::get('app.workout_session_types');
+
+
+		foreach($free_trials as $key=>$value){
+			in_array($value['_id']['type'], $vip_trial_types) ? $free_vip_trials_count += $value['count'] : null;
+			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
+		}
+		foreach($free_orders as $key=>$value){
+			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
+			in_array($value['_id']['type'], $membership_types) ? $memberships_count += $value['count'] : null;
+		}
+		foreach($paid_orders as $key=>$value){
+			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
+			in_array($value['_id']['type'], $membership_types) ? $memberships_count += $value['count'] : null;
+			in_array($value['_id']['type'], $workout_session_types) ? $workout_sessions_count += $value['count'] : null;
+		}
+
+
+		$responseData =  array(
+			'free_vip_trials_count'=>$free_vip_trials_count,
+			'trials_count'=>$trials_count,
+			'memberships_count'=>$memberships_count,
+			'workout_sessions_count'=>$workout_sessions_count,
+		);
+
+		return	array('status' => 200,'data' => $responseData);
+
+	}
+	
+	
+	
 
 	public function forYou($customer_email,$city_id,$lat = false,$lon = false){
 
@@ -1702,6 +1873,415 @@ public function getCustomerDetail(){
 
 		return Response::json($response,$response['status']);
 	}
+
+	public function autoRegisterCustomer($data){
+
+        $customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
+
+        if(!$customer) {
+
+            $inserted_id = Customer::max('_id') + 1;
+            $customer = new Customer();
+            $customer->_id = $inserted_id;
+            $customer->name = ucwords($data['customer_name']) ;
+            $customer->email = $data['customer_email'];
+            $customer->picture = "https://www.gravatar.com/avatar/".md5($data['customer_email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+            $customer->password = md5(time());
+            $customer->gender = $data['gender'];
+
+            if(isset($data['customer_phone'])  && $data['customer_phone'] != ''){
+                $customer->contact_no = $data['customer_phone'];
+	}
+
+            if(isset($data['customer_address'])){
+
+                if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+                    $customer->address = implode(",", array_values($data['customer_address']));
+                    $customer->address_array = $data['customer_address'];
+
+                }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+                    $customer->address = $data['customer_address'];
+                }
+
+            }
+
+            $customer->identity = 'email';
+            $customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
+            $customer->status = "1";
+            $customer->ishulluser = 1;
+            $customer->save();
+
+            return $inserted_id;
+
+        }else{
+
+            $customerData = [];
+
+            try{
+
+                if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+                    $customerData['contact_no'] = trim($data['customer_phone']);
+                }
+
+                if(isset($data['otp']) &&  $data['otp'] != ""){
+                    $customerData['contact_no_verify_status'] = "yes";
+                }
+
+                if(isset($data['gender']) && $data['gender'] != ""){
+                    $customerData['gender'] = $data['gender'];
+                }
+
+                if(isset($data['customer_address'])){
+
+                    if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+                        $customerData['address'] = implode(",", array_values($data['customer_address']));
+                        $customerData['address_array'] = $data['customer_address'];
+
+                    }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+                        $customerData['address'] = $data['customer_address'];
+                    }
+
+                }
+
+                if(count($customerData) > 0){
+                    $customer->update($customerData);
+                }
+
+            } catch(ValidationException $e){
+
+                Log::error($e);
+
+            }
+
+            return $customer->_id;
+        }
+
+    }
+
+	public function addHealthInfo(){
+
+		$data = Input::json()->all();
+
+		$customer_info = new CustomerInfo();
+
+		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
+
+		$data['customer_id'] = (int)$customer_id;
+
+		$response = $customer_info->addHealthInfo($data);
+
+		return Response::json($response,$response['status']);
+
+	}
+
+
+	public function listWalletSummary($limit=0,$offset=10){
+
+		$request = Input::json()->all();
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+		$request['customer_id'] = $customer_id;
+
+		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
+			->orderBy('created_at', 'DESC')
+			->skip($limit)
+			->take($offset)
+			->get();
+
+		return Response::json(
+			array(
+				'status' => 200,
+				'data' => $wallet
+			),200
+
+		);
+	}
+
+	public function getWalletBalance(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$data = Customer::where('_id',$customer_id)
+			->get(array('balance'));
+		$data = $data[0];
+
+		// balance and transaction_allowed are same at this time........
+		return Response::json(
+			array(
+				'status' => 200,
+				'balance' => isset($data['balance']) ? $data['balance'] : $data['balance'] = 0,
+				'transaction_allowed' => isset($data['balance']) ? $data['balance'] : $data['balance'] = 0
+			),200
+
+		);
+	}
+
+	
+
+	public function getExistingTrialWithFinder(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_email = $decoded->customer->email;
+		$customer_phone = $decoded->customer->contact_no;
+
+		$rules = [
+			'finder_id' => 'required|integer|numeric'
+		];
+
+		$data = Input::all();
+
+		$validator = Validator::make($data,$rules);
+		if ($validator->fails()) {
+			return Response::json(
+				array(
+					'status' => 400,
+					'message' => $this->errorMessage($validator->errors()
+					)),400
+			);
+		}
+		$result =  $this->utilities->checkExistingTrialWithFinder($customer_email, $customer_phone, $data['finder_id']);
+
+		return Response::json(
+			array(
+				'status' => 200,
+				'data' => $result
+			),200
+
+		);
+	}
+
+	public function getInteractedFinder(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_email = $decoded->customer->email;
+
+		$orders = array();
+		$orders = Order::where('customer_email',$customer_email)->orderBy('_id', 'desc')->get(array('finder_id','created_at'));
+
+		$interaction_data = array();
+		$date_array = array();
+
+		if(count($orders) > 0){
+			$orders = $orders;
+			
+			foreach ($orders as $key => $item) {
+
+				$data['finder_id'] = (int)$item->finder_id;
+				$data['interaction_time'] = strtotime($item->created_at);
+
+				array_push($interaction_data, $data);
+				array_push($date_array, strtotime($item->created_at));
+			}
+		}
+
+		$booktrials = array();
+		$booktrials = Booktrial::where('customer_email',$customer_email)->orderBy('_id', 'desc')->get(array('finder_id','created_at'));
+
+		if(count($booktrials) > 0){
+			$booktrials = $booktrials;
+
+			foreach ($booktrials as $key => $item) {
+
+				$data['finder_id'] = (int)$item->finder_id;
+				$data['interaction_time'] = strtotime($item->created_at);
+				
+				array_push($interaction_data, $data);
+				array_push($date_array, strtotime($item->created_at));
+			}
+		}
+
+		array_multisort($date_array, SORT_DESC, $interaction_data);
+
+		$finder_id = array();
+
+		foreach ($interaction_data as $value) {
+
+			if(!in_array($value['finder_id'], $finder_id)){
+				$finder_id[] = $value['finder_id'];
+			}
+		}
+
+		$data = array();
+
+		foreach ($finder_id as $id) {
+
+			$finder = Finder::select('title','average_rating','slug','city_id','city','coverimage')->find((int)$id);//->select('title','average_rating','slug','city_id','city','coverimage');
+
+			if($finder){
+				$data[] = $finder;
+			}
+		}
+
+		return $data;
+        
+	}
+
+
+	function array_sort_by_column($arr, $col, $dir = SORT_DESC) {
+		
+	    $sort_col = array();
+	    foreach ($arr as $key=> $row) {
+	        $sort_col[$key] = $row[$col];
+	    }
+
+	    		echo "<pre>";print_r($sort_col);exit;
+
+	    return array_multisort($sort_col, $dir, $arr);
+	}
+
+	public function home($city = 'mumbai',$cache = true){
+
+		$jwt_token = Request::header('Authorization');
+		$upcoming = array();
+			
+		if($jwt_token != ""){
+
+			try {
+
+				$decoded = $this->customerTokenDecode($jwt_token);
+				$customeremail = $decoded->customer->email;
+
+				$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code')->get();
+
+				if(count($trials) > 0){
+
+					foreach ($trials as $trial) {
+
+						$data = array();
+
+						$data = $trial->toArray();
+
+						$data['finder_average_rating'] = 0;
+
+						$finder = Finder::find((int) $data['finder_id']);
+
+						if($finder){
+
+							$finder = $finder->toArray();
+
+							if(isset($finder['average_rating'])){
+
+								$data['finder_average_rating'] = $finder['average_rating'];
+							}
+						}
+
+						foreach ($data as $key => $value) {
+
+							$data[$key] = ucwords(strip_tags($value));
+						}
+
+						if(isset($data['schedule_slot_start_time'])){
+							$data['schedule_slot_start_time'] = strtoupper($data['schedule_slot_start_time']);
+						}
+
+						$upcoming[] = $data;
+
+					}
+				}
+
+			} catch (Exception $e) {
+				Log::error($e);
+			}
+			
+		}
+
+		$customer_home_by_city = $cache ? Cache::tags('customer_home_by_city')->has($city) : false;
+
+		if(!$customer_home_by_city){
+
+			$categorytags = $locations = $popular_finders =	$recent_blogs =	array();
+			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+
+			if(!$citydata){
+				return $this->responseNotFound('City does not exist');
+			}
+
+			$city_name 		= 	$citydata['name'];
+			$city_id		= 	(int) $citydata['_id'];	
+
+			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39,43])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+
+			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
+			if(!$homepage){
+				return $this->responseNotFound('homepage does not exist');
+			}
+
+			$str_finder_ids 		= 		$homepage['gym_finders'].",".$homepage['yoga_finders'].",".$homepage['zumba_finders'];
+			$finder_ids 			= 		array_map('intval', explode(",",$str_finder_ids));
+
+			$footer_block1_ids 		= 		array_map('intval', explode(",", $homepage['footer_block1_ids'] ));
+			$footer_block2_ids 		= 		array_map('intval', explode(",", $homepage['footer_block2_ids'] ));
+			$footer_block3_ids 		= 		array_map('intval', explode(",", $homepage['footer_block3_ids'] ));
+			$footer_block4_ids 		= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
+
+
+			$footer_block1_finders 		=		Finder::active()->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block2_finders 		=		Finder::active()->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+			$footer_block4_finders 		=		Finder::active()->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();																										
+
+			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+			
+			$homedata 				= 	array('categorytags' => $categorytags,
+				'locations' => $locations,
+				'city_name' => $city_name,
+				'city_id' => $city_id,
+				'collections' => $collections,
+				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
+				);
+
+			Cache::tags('customer_home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+		}
+
+		$result = Cache::tags('customer_home_by_city')->get($city);
+		$result['upcoming'] = $upcoming;
+
+		return Response::json($result);
+	}
+
+
+	public function transformation(){
+
+		$data = Input::json()->all();
+
+				echo "<pre>";print_r($data);exit;
+
+		if (Input::hasFile('image')) {
+            $coverimg_tmppath = Input::file('image')->getRealPath();
+            list($imagewidth, $imageheight) = getimagesize($coverimg_tmppath);
+            if ($imagewidth < 1000) {
+                $error_messages[] = 'Cover Image : "' . Input::file('image')->getClientOriginalName() . ' width must greater than 1000';
+                Session::flash('error_messages', $error_messages);
+                return Redirect::back()->withInput();
+            }
+        }
+
+        if (Input::hasFile('image')) {
+            $image = array('input' => Input::file('image'), 'path' => 'finders.coverimage', 'id' => $id);
+            $coverimage_response = upload_magic($image);
+            $coverimage_upload_status = $coverimage_response['success'];
+            if ($coverimage_upload_status == 1) {
+                array_set($finderdata, 'coverimage', img_name_from_kraken_url($coverimage_response));
+            } else {
+                array_push($error_messages, 'Coverimage : ' . Input::file('image')->getClientOriginalName() . ' type is not supported or file is corrupted.');
+            }
+            //print_pretty($coverimage_response);
+        }
+	}
+
+
+
 
 
 }

@@ -10,6 +10,11 @@ Class FinderSms extends VersionNextSms{
 
 		$label = 'AutoTrial-Instant-Vendor';
 
+		if(isset($data['type']) && ($data['type'] == "vip_booktrials" || $data['type'] == "vip_booktrials_rewarded" || $data['type'] == "vip_booktrials_invited" )){
+
+			$label = 'VipTrial-Instant-Vendor';
+		}
+
 		return $this->common($label,$to,$data);
 	}
 

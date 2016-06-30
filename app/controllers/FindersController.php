@@ -536,7 +536,8 @@ class FindersController extends \BaseController {
                             'schedule_slot' => $value->schedule_slot,
                             'code' => $value->code,
                             'service_name' => $value->service_name,
-                            'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
+                            'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name,
+                            'type' => $value->type,
                             );
                         array_push($trialdata, $trial);
                     }
@@ -556,7 +557,8 @@ class FindersController extends \BaseController {
                                 'schedule_slot' => $value->schedule_slot,
                                 'code' => $value->code,
                                 'service_name' => $value->service_name,
-                                'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
+                                'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name,
+                                'type' => $value->type,
                                 );
                             array_push($todaytrialdata, $trial);
                         }

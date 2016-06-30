@@ -11,6 +11,7 @@
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\Utilities as Utilities;
 
 
 class SpecialofferController extends \BaseController {
@@ -18,18 +19,26 @@ class SpecialofferController extends \BaseController {
 	protected $customermailer;
 	protected $customersms;
 	protected $findermailer;
+    protected $utilities;
 
 	
-	public function __construct(CustomerMailer $customermailer, CustomerSms $customersms, FinderMailer $findermailer) {
+    public function __construct(
+        CustomerMailer $customermailer,
+        CustomerSms $customersms,
+        FinderMailer $findermailer,
+        Utilities $utilities
+)
+    {
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms		=	$customersms;	
 		$this->findermailer 	=	$findermailer;
+        $this->utilities = $utilities;
 	}
 
 
-
-	public function categoryId($category){
+    public function categoryId($category)
+    {
 
 		$categorydays_arr     =  array('surprise' => 'all', 'personal trainers' => 'all', 'mix bag' => 'all', 'zumba' => '19', 'gym' => '65', 'crossfit' => '111,5','mma' => '3', 'dance' => '2', 'yoga' => '1,4');
 		return $categorydays_arr[$category];
@@ -1438,8 +1447,58 @@ public function emailToFitmaniaVendors (){
 
 }
 
+    public function standardOffersText($type){
 
+        $rules = [
+            'type' => 'in:booktrial,vip_booktrial,membership'
+        ];
 
+        $data = array("type"=>$type);
+
+        $validator = Validator::make($data,$rules);
+        if ($validator->fails()) {
+            return Response::json(
+                array(
+                    'status' => 400,
+                    'message' => $this->utilities->errorMessage($validator->errors()
+                    )),400
+            );
+        }
+
+        switch ($type){
+            case 'booktrial':
+                $data = array(
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                );
+                break;
+            case 'vip_booktrial':
+
+                $data = array(
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Exclusive merchandise worth Rs. 800','image'=>'https://b.fitn.in/global/vip-assests/icon/kit.png'),
+                    array('title'=>'VIP Access','description'=>'Red carpet treatment & no form to be filled','image'=>'https://b.fitn.in/global/vip-assests/icon/vip.png'),
+                    array('title'=>'Grand Experience','description'=>'Train with the best trainers & get a personalised orientation','image'=>'https://b.fitn.in/global/vip-assests/icon/experience.png'),
+                    array('title'=>'Lowest price guarantee','description'=>'Get the best price when buying a membership','image'=>'https://b.fitn.in/global/vip-assests/icon/lowest.png'),
+                    array('title'=>'Buy and get your VIP trial-fee back!','description'=>'Get your VIP trial fee re-imbursed when you buy a membership','image'=>'https://b.fitn.in/global/vip-assests/icon/trial.png'),
+                    array('title'=>'Invite your FIT buddies to join you','description'=>'Extend an exclusive invite to your friends from your favourite profile. They enjoy the same benefits as you','image'=>'https://b.fitn.in/global/vip-assests/icon/invite.png'),
+                    array('title'=>'Fitness Concierge at your service','description'=>'Get personal assistance for queries on +912261222222','image'=>'https://b.fitn.in/global/vip-assests/icon/concierge.png'),
+                );
+                break;
+            case 'membership':
+                $data = array(
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                    array('title'=>'Fitternity Fitness Kit','description'=>'Test Description','image'=>'https://a.fitn.in/global/logo_white.svg'),
+                );
+                break;
+        }
+
+        return Response::json(['data'=>$data], 200);
+
+    }
 
 
 }
