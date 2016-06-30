@@ -243,7 +243,7 @@ class SchedulebooktrialsController extends \BaseController {
                         }
 
                         if($price == 0){
-                            $vip_trial_amount = 200;
+                            $vip_trial_amount = 199;
                         }
 
                     }
@@ -1230,7 +1230,8 @@ class SchedulebooktrialsController extends \BaseController {
             
             $source                             =   (isset($order->customer_source) && $order->customer_source != '') ? trim($order->customer_source) : "website";
 
-            $service_id	 				       =	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
+            $service_id	 				       =	(isset($order->service_id) && $order->service_id != '') ? intval($order->service_id) : "";
+
             $campaign	 				       =	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 					       =	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
             $slot_times 				       =	explode('-',$data['schedule_slot']);
@@ -2189,7 +2190,7 @@ class SchedulebooktrialsController extends \BaseController {
     public function toQueueBookTrialFree($job,$data){
 
     	$job->delete();
-    	
+
         try{
 
             $booktrialid = $data['booktrialid'];
