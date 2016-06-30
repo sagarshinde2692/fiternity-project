@@ -50,14 +50,14 @@ return array(
 			'region' => 'ap-southeast-1',
 		),
 
-		'iron' => array(
+		/*'iron' => array(
 			'driver'  => 'iron',
 			'host'    => 'mq-aws-us-east-1.iron.io',
 			'token'   => 'tsFrArQmL8VS8Cx-5PDg3gij19Y',
 			'project' => '549a5af560c8e60009000030',
 			'queue'   => 'app',
 			'encrypt' => true,
-		),
+		),*/
 
 		// 'ironworker' => array(
 		// 	'host'    => 'worker-aws-us-east-1.iron.io',
@@ -68,14 +68,14 @@ return array(
 		// 	'encrypt' => true,
 		// ),
 
-		'ironworker' => array(
+		/*'ironworker' => array(
 			'host'    => 'worker-aws-us-east-1.iron.io',
 			'driver'  => 'iron',
 			'token'   => 'OM44ZCKbATXCKEfesv_5F2748gI',
 			'project' => '561d23e4c8477c000600008b',
 			'queue'   => 'app',
 			'encrypt' => true,
-		),
+		),*/
 
 		'redis' => array(
 			'driver' => 'redis',
