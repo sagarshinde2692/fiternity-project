@@ -2188,6 +2188,8 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function toQueueBookTrialFree($job,$data){
 
+    	$job->delete();
+    	
         try{
 
             $booktrialid = $data['booktrialid'];
