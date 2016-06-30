@@ -18,6 +18,7 @@ Route::get('migrations/vendorPriceAverage', 'MigrationsController@vendorPriceAve
 Route::get('emailtest', 'DebugController@testEmail');
 Route::get('migrations/order', 'MigrationsController@order');
 Route::get('migrations/ratecard', 'MigrationsController@ratecard');
+Route::get('cleartrip/sendmail', 'DebugController@cleartrip');
 
 
 
