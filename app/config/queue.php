@@ -15,8 +15,8 @@ return array(
 	|
 	*/
 
-	'default' => 'iron',
-	//'default' => 'redis',
+	//'default' => 'iron',
+	'default' => 'redis',
 
 	/*
 	|--------------------------------------------------------------------------
