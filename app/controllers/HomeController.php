@@ -530,7 +530,7 @@ class HomeController extends BaseController {
             $city_name 				= 	$citydata['name'];
             $city_id				= 	(int) $citydata['_id'];
             // $categorytags			= 	Findercategorytag::active()->whereIn('cities',array($city_id))->where('_id', '!=', 42)->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-            $categorytags			= 	Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+            $categorytags			= 	Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39,43,44])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
             $homedata 				= 	array('categorytags' => $categorytags );
 
             Cache::tags('category_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
