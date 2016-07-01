@@ -855,6 +855,18 @@ class MigrationsController extends \BaseController {
 
 	public function order(){
 
+		$services = Service::where('3days_trial','exists',true)->where('3days_trial','!=','')->get()->toArray();
+
+		foreach ($services as $value) {
+
+			$three_day_trial = $value['3days_trial'];
+
+			DB::table('services')->where('_id',$value['_id'])->update(['three_day_trial' => $three_day_trial]);
+
+		}
+
+		echo"done"; exit;
+
 		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
