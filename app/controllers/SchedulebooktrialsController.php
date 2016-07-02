@@ -3794,7 +3794,7 @@ class SchedulebooktrialsController extends \BaseController {
             ->get(array(
                 'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
                 'type', 'finder_name', 'finder_location','finder_address',
-                'schedule_slot_start_time','schedule_date','type','root_booktrial_id'
+                'schedule_slot_start_time','schedule_date','schedule_date_time','type','root_booktrial_id'
             ))
             ->first();
 
@@ -3877,6 +3877,14 @@ class SchedulebooktrialsController extends \BaseController {
                     ),422
                 );
             }
+            if(!isset($url2['status']) ||  $url2['status'] != 200){
+                return Response::json(
+                    array(
+                        'status' => 422,
+                        'message' => 'Unable to Generate Shortren URL'
+                    ),422
+                );
+            }
             $url = $url['url'];
             $url2 = $url2['url'];
 
@@ -3891,6 +3899,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_location'=> $BooktrialData['finder_location'],
                 'finder_address'=> $BooktrialData['finder_address'],
                 'schedule_date'=> $BooktrialData['schedule_date'],
+                'schedule_date_time'=> $BooktrialData['schedule_date_time'],
                 'service_name'=> $BooktrialData['service_name'],
                 'schedule_slot_start_time'=> $BooktrialData['schedule_slot_start_time'],
                 'url' => $url,
