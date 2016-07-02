@@ -1635,7 +1635,9 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){
-                $customer_auto_sms = $this->autoSms($booktrialdata,$schedule_date_starttime);
+
+                //no auto sms (N-3)for paid trial
+                $customer_auto_sms = 'no n-3 for paid trials';//$this->autoSms($booktrialdata,$schedule_date_starttime);
 
                 if($booktrialdata['type'] == 'vip_booktrials'){
                     $myreward = $this->addVIPTrialAsRewardOnVIPPaidTrial($booktrialdata, $orderid);
@@ -1651,8 +1653,6 @@ class SchedulebooktrialsController extends \BaseController {
             !isset($sndInstantSmsFinder) ? $sndInstantSmsFinder =   $this->findersms->bookTrial($booktrialdata) : array();
             $finder_email_messageids['instant']     =   $sndInstantEmailFinder;
             $finer_sms_messageids['instant']        =   $sndInstantSmsFinder;
-
-            $customer_auto_sms = $this->autoSms($booktrialdata,$schedule_date_starttime);
 
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
             if($twelveHourDiffInMin >= (12 * 60)){
