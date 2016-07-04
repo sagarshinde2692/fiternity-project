@@ -1400,7 +1400,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $medical_detail                     =   (isset($order->medical_detail) && $order->medical_detail != '') ? $order->medical_detail : "";
             $medication_detail                  =   (isset($order->medication_detail) && $order->medication_detail != '') ? $order->medication_detail : "";
-            $medical_condition                     =   (isset($order->medical_condition) && $order->medical_condition != '') ? $order->medical_condition : "";
+            $medical_condition                  =   (isset($order->medical_condition) && $order->medical_condition != '') ? $order->medical_condition : "";
+            $physical_activity_detail                     =   (isset($order->physical_activity_detail) && $order->physical_activity_detail != '') ? $order->physical_activity_detail : "";
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -1478,7 +1479,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'note_to_trainer'               =>      $note_to_trainer,
                 'membership_duration_type'      =>      'workout_session',
                 'medical_detail'                =>      $medical_detail,
-                'medication_detail'             =>      $medication_detail
+                'medication_detail'             =>      $medication_detail,
+                'physical_activity_detail'      =>      $physical_activity_detail
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2059,6 +2061,7 @@ class SchedulebooktrialsController extends \BaseController {
             $medical_detail = (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
             $medication_detail = (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
             $source                   =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
+            $physical_activity_detail = (isset($data['physical_activity_detail']) && $data['physical_activity_detail'] != '') ? $data['physical_activity_detail'] : "";
 
 
             $booktrialdata = array(
@@ -2137,7 +2140,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'note_to_trainer' => $note_to_trainer,
                 'reward_id' => $myreward_id,
                 'medical_detail' => $medical_detail,
-                'medication_detail' => $medication_detail
+                'medication_detail' => $medication_detail,
+                'physical_activity_detail'      =>      $physical_activity_detail
 
             );
 
