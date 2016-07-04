@@ -13,7 +13,7 @@ Class CustomerInfo {
 
         try {
 
-            $param = array('customer_id','customer_name','customer_email','customer_phone','medical_detail','medication_detail');
+            $param = array('customer_id','customer_name','customer_email','customer_phone','medical_detail','medication_detail','physical_activity_detail');
 
             $info = array();
 

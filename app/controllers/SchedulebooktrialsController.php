@@ -1260,7 +1260,6 @@ class SchedulebooktrialsController extends \BaseController {
 
             $finder_commercial_type		       = 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
             $finder_category_id				       = 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
-            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             $final_lead_stage = '';
             $final_lead_status = '';
@@ -1286,7 +1285,6 @@ class SchedulebooktrialsController extends \BaseController {
 
             $age                                =   (isset($data['age']) && $data['age'] != '') ? $data['age'] : "";
             $injury                             =   (isset($data['injury']) && $data['injury'] != '') ? $data['injury'] : "";
-            $note_to_trainer                    =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
 
             if($device_type != '' && $gcm_reg_id != ''){
 
@@ -1401,7 +1399,8 @@ class SchedulebooktrialsController extends \BaseController {
             $medical_detail                     =   (isset($order->medical_detail) && $order->medical_detail != '') ? $order->medical_detail : "";
             $medication_detail                  =   (isset($order->medication_detail) && $order->medication_detail != '') ? $order->medication_detail : "";
             $medical_condition                  =   (isset($order->medical_condition) && $order->medical_condition != '') ? $order->medical_condition : "";
-            $physical_activity_detail                     =   (isset($order->physical_activity_detail) && $order->physical_activity_detail != '') ? $order->physical_activity_detail : "";
+            $physical_activity_detail           =   (isset($order->physical_activity_detail) && $order->physical_activity_detail != '') ? $order->physical_activity_detail : "";
+            $note_to_trainer                     =   (isset($order->note_to_trainer) && $order->note_to_trainer != '') ? $order->note_to_trainer : "";
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -1537,7 +1536,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrialv2');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
             $booktrial->update(array('redis_id'=>$redisid));
 
         }
@@ -2188,7 +2187,7 @@ class SchedulebooktrialsController extends \BaseController {
             //if vendor type is free special dont send communication
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrialv2');
+                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
@@ -2725,7 +2724,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
             );
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrialv2');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
             $booktrial->update(array('reschedule_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -3028,7 +3027,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true ){
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrialv2');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
