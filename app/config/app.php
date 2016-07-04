@@ -14,7 +14,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -27,8 +27,8 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a2.fitternity.com',
-	//'url' => 'http://apistg.fitn.in/',
+//	'url' => 'https://a2.fitternity.com',
+	'url' => 'http://apistg.fitn.in/',
 	//'url' => 'http://fitapi.com',
 
 	/*

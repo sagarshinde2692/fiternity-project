@@ -3864,8 +3864,8 @@ class SchedulebooktrialsController extends \BaseController {
             $invite->save();
 
             // Generate bitly for landing page with invite_id and booktrial_id
-            $url = 'www.fitternity.com/invitedtrial?booktrial_id='.$invite['referrer_booktrial_id'].'&invite_id='.$invite['_id'];
-            $url2 = 'www.fitternity.com/invitedtrial?booktrial_id='.$invite['referrer_booktrial_id'].'&invite_id='.$invite['_id'].'&accompany=false';
+            $url = Config::get('app.url').':8020/invitedtrial?booktrial_id='.$invite['referrer_booktrial_id'].'&invite_id='.$invite['_id'];
+            $url2 = Config::get('app.url').':8020/invitedtrial?booktrial_id='.$invite['referrer_booktrial_id'].'&invite_id='.$invite['_id'].'&accompany=false';
             $shorten_url = new ShortenUrl();
             $url = $shorten_url->getShortenUrl($url);
             $url2 = $shorten_url->getShortenUrl($url2);
