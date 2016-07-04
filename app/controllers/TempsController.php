@@ -30,6 +30,27 @@ class TempsController extends \BaseController {
         return $message;
     }
 
+    public function addWeb(){
+        try{
+            $data = Input::json()->all();
+            $temp = new Temp($data);
+            $temp->save();
+            $response =  array('status' => 200,'message'=>'Added Successfull');
+        }catch (Exception $e) {
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);       
+        }
+        return Response::json($response,$response['status']); 
+        
+    }
+
     public function add(){
 
         try{

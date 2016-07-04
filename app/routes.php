@@ -665,6 +665,7 @@ Route::get('manualtrialdisable', 'DebugController@manualtrialdisable');
 ##################################################################################################
 /*******************  Temp API ************************************************/
 
+Route::post('temp/addweb', array('as' => 'temps.addweb','uses' => 'TempsController@addWeb'));
 Route::post('temp/add', array('as' => 'temps.add','uses' => 'TempsController@add'));
 Route::get('temp/delete/{customer_phone}', array('as' => 'temps.delete','uses' => 'TempsController@delete'));
 
