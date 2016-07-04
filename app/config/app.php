@@ -14,7 +14,7 @@ return array(
 	*/
 
 
-	'debug' => TRUE,
+	'debug' => FALSE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -27,8 +27,8 @@ return array(
 	|
 	*/
 
-//	'url' => 'https://a2.fitternity.com',
-	'url' => 'http://apistg.fitn.in/',
+	'url' => 'https://a2.fitternity.com',
+//	'url' => 'http://apistg.fitn.in/',
 	//'url' => 'http://fitapi.com',
 
 	/*
@@ -235,21 +235,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-//	'es' =>array(
-//		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-//		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-//		'port'		=>			8050,
-//		'default_index' => 	'fitternity',
-//		'default_type' 	=> 	'finder',
-//	),
-	//local
 	'es' =>array(
-		'url'		=> 			'localhost:9200',
-		'host'		=> 			'localhost',
-		'port'		=>			9200,
+		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
 	),
+	//local
+//	'es' =>array(
+//		'url'		=> 			'localhost:9200',
+//		'host'		=> 			'localhost',
+//		'port'		=>			9200,
+//		'default_index' => 	'fitternity',
+//		'default_type' 	=> 	'finder',
+//	),
 
 
 	// 'es_host'		=> 			'localhost',
