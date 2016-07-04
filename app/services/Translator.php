@@ -668,6 +668,15 @@ public static function translate_searchresultsv3($es_searchresult_response){
 		array_push($finderresult_response->results->aggregationlist->offerings, $offval);
 	}
 
+	$finderresult_response->results->aggregationlist->vip_trial = array();
+
+	foreach ($aggs['filtered_vip_trial']['vip_trial']['buckets'] as $off){
+		$offval = new \stdClass();
+		$offval->key = $off['key'];
+		$offval->count = $off['doc_count'];
+		array_push($finderresult_response->results->aggregationlist->vip_trial, $offval);
+	}
+
 	$finderresult_response->results->aggregationlist->locationtags = array();
 
 	

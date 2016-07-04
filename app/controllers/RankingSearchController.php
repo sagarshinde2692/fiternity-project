@@ -647,6 +647,7 @@ public function getRankedFinderResultsAppv2()
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
     $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
     $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+    $vip_trial    =         Input::json()->get('vip_trial') ? intval(Input::json()->get('vip_trial')): 0;
     $locat = Input::json()->get('location');
     $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
     $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
@@ -678,6 +679,7 @@ public function getRankedFinderResultsAppv2()
         ';
     }
 
+    $vip_trial_filter =  '{"term" : { "vip_trial" : '.$vip_trial.', "_cache": true }},';
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
     $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
@@ -761,9 +763,9 @@ if($all_nested_filters !== '')
 
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-$must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+$must_filtervalue = trim($vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
 if($trials_day_filter !== ''){
-    $must_filtervalue = trim($location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+    $must_filtervalue = trim($vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
 }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
@@ -828,11 +830,12 @@ if($trials_day_filter !== ''){
 
         $nested_level2_filter = '';
 
-        $location_facets_filter = trim($location_filter.$category_filter,',');
-        $facilities_facets_filter = trim($location_filter.$regions_filter.$category_filter, ',');
-        $offerings_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
-        $budgets_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
-        $trialday_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
+        $vip_trial_facets_filter = trim($vip_trial_filter.$location_filter.$category_filter,',');
+        $location_facets_filter = trim($vip_trial_filter.$location_filter.$category_filter,',');
+        $facilities_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$category_filter, ',');
+        $offerings_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
+        $budgets_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
+        $trialday_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
 
         $facilities_bool = '"filter": {
             "bool" : { "must":['.$facilities_facets_filter.']}
@@ -844,6 +847,10 @@ if($trials_day_filter !== ''){
 
         $budgets_bool = '"filter": {
             "bool" : {"must":['.$budgets_facets_filter.']}
+        }';
+
+        $vip_trial_bool = '"filter": {
+            "bool" : {"must":['.$vip_trial_facets_filter.']}
         }';
 
         $location_bool = '"filter": {
@@ -936,6 +943,20 @@ $budgets_facets = ' "filtered_budgets": {
     }
 },';
 
+$vip_trial_facets = ' "filtered_vip_trial": {
+    '.$vip_trial_bool.',
+    "aggs": {
+        "vip_trial": {
+            "terms": {
+                "field": "vip_trial",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
 $trialdays_facets = ' "filtered_trials": {
     '.$trialdays_bool.',
     "aggs": {
@@ -979,7 +1000,7 @@ $trialdays_facets = ' "filtered_trials": {
 
 $category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
 
-$facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
+$facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets.$vip_trial_facets,',');
 
 $body = '{
     "from": '.$from.',
@@ -987,6 +1008,9 @@ $body = '{
     "aggs": {'.$facetsvalue.'},
     '.$filters_post.$sort.'
 }';
+
+
+//    return $body;
 
 
 $request = array(

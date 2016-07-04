@@ -514,7 +514,7 @@ class RankingController extends \BaseController {
       $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
       $curl_response = es_curl_request($request);
       $curl_response1 = es_curl_request($request1);
-        //echo json_encode($curl_response);
+        echo json_encode($curl_response);
 
   }
   catch(Exception $e){
