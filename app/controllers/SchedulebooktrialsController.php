@@ -3017,8 +3017,8 @@ class SchedulebooktrialsController extends \BaseController {
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
             return Response::json($resp,200);
         }
-
-        if(isset($booktrial->schedule_date_time) && time() >= strtotime($booktrial->schedule_date_time)){
+        
+        if(isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600)){
 
             $resp   =   array('status' => 200, 'message' => "Cannot cancel passed trial");
             return Response::json($resp,200);
