@@ -1401,6 +1401,8 @@ class SchedulebooktrialsController extends \BaseController {
             $medical_condition                  =   (isset($order->medical_condition) && $order->medical_condition != '') ? $order->medical_condition : "";
             $physical_activity_detail           =   (isset($order->physical_activity_detail) && $order->physical_activity_detail != '') ? $order->physical_activity_detail : "";
             $note_to_trainer                     =   (isset($order->note_to_trainer) && $order->note_to_trainer != '') ? $order->note_to_trainer : "";
+            $amount                             =   (isset($order->amount) && $order->amount != '') ? $order->amount : "";
+            $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -1454,7 +1456,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'source'                        =>      $source,
                 'origin'                        =>      'auto',
                 'additional_info'               =>      $additional_info,
-                'amount'                        =>      $order->amount,
+                'amount'                        =>      $amount,
+                'amount_finder'                 =>      $amount_finder,
                 'otp'                           =>      $otp,
                 'source_flag'                   =>      'customer',
 
@@ -3012,6 +3015,12 @@ class SchedulebooktrialsController extends \BaseController {
         if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
+            return Response::json($resp,200);
+        }
+
+        if(isset($booktrial->schedule_date_time) && time() >= strtotime($booktrial->schedule_date_time)){
+
+            $resp   =   array('status' => 200, 'message' => "Cannot cancel passed trial");
             return Response::json($resp,200);
         }
 

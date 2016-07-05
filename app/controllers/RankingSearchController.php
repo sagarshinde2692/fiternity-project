@@ -494,6 +494,24 @@ public function getRankedFinderResultsApp()
     $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
 
 
+    $region = Input::json()->get('regions');
+
+    if(count($region) == 1){
+
+        $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
+
+        $locationCount = Location::where('slug',$region_slug)->count();
+
+        if($locationCount > 0){
+            $lat = "";
+            $lon = "";
+        }
+
+    }else{
+        $lat = "";
+        $lon = "";
+    }
+    
     //return Input::json()->get('offset')['from'];
 
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
@@ -504,6 +522,7 @@ public function getRankedFinderResultsApp()
     $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
     $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
     
     $trial_range_filter = '';
     if(($trial_time_from !== '')&&($trial_time_to !== '')){
@@ -531,7 +550,7 @@ public function getRankedFinderResultsApp()
 },';
 }
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter.$geo_location_filter,',');
 $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
