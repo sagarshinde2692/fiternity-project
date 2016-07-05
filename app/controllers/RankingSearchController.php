@@ -647,7 +647,8 @@ public function getRankedFinderResultsAppv2()
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
     $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
     $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
-    $vip_trial    =         Input::json()->get('vip_trial') ? intval(Input::json()->get('vip_trial')): 0;
+    $vip_trial    =         Input::json()->get('vip_trial') ? array(intval(Input::json()->get('vip_trial'))) : [1,0];
+    $vip_trial = implode($vip_trial,',');
     $locat = Input::json()->get('location');
     $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
     $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
@@ -679,7 +680,7 @@ public function getRankedFinderResultsAppv2()
         ';
     }
 
-    $vip_trial_filter =  '{"term" : { "vip_trial" : '.$vip_trial.', "_cache": true }},';
+    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
     $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
@@ -1026,8 +1027,10 @@ $request = array(
 //     'method' => 'POST',
 //     'postfields' => $body
 //     );
-     
-$search_results     =   es_curl_request($request);
+//        return $body;
+
+    $search_results     =   es_curl_request($request);
+//    return $search_results;
 
 $search_results1    =   json_decode($search_results, true);
 $searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
