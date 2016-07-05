@@ -790,7 +790,7 @@ class VendorpanelController extends BaseController
         $finder_id = intval($finder_id);
 
         $data =  Finder::where('_id', '=', $finder_id)
-            ->with(array('location'=>function($query){$query->select('name','city');}))
+            ->with(array('location'=>function($query){$query->select('name','city');}))->with('reviews')
             ->get(array('_id','slug','title','logo','location_id','location','total_photos'))
             ->first();
 
