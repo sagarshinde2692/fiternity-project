@@ -533,13 +533,13 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        // $this->sendEmail($emaildata);
+        $this->sendEmail($emaildata);
 
         $smsdata = array(
             'send_to' => Input::json()->get('phone'),
             'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
         );
-        // $this->sendSMS($smsdata);
+        $this->sendSMS($smsdata);
 
         $storecapture = Capture::create($data);
 
@@ -753,8 +753,10 @@ class EmailSmsApiController extends \BaseController {
                     isset($responseData['data']['status']) &&
                     $responseData['data']['status'] == "SUCCESS"){
 
-                    $remindercallObj  = \Requestcallbackremindercall::find(intval($requestcallbackremindercall_id));
+                    $remindercallObj  = \Requestcallbackremindercall::find(intval($remindercall['_id']));
                     $remindercallObj->update(['call_status' => 'yes']);
+
+                    return $responseData;
 
                 }
 
