@@ -17,7 +17,7 @@ class EmailSmsApiController extends \BaseController {
     public function __construct(Cloudagent $cloudagent, Sidekiq $sidekiq)
     {
         $this->cloudagent       =   $cloudagent;
-        $this->sidekiq 			= 	$sidekiq;
+        $this->sidekiq          =   $sidekiq;
     }
 
     public function sendSMS($smsdata){
@@ -58,13 +58,13 @@ class EmailSmsApiController extends \BaseController {
 
     public function sendEmail($emaildata){
 
-        $email_template 		= 	$emaildata['email_template'];
-        $email_template_data 	= 	$emaildata['email_template_data'];
-        $reciver_name 			= 	(isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : 'Team Fitternity';
-        $to 					= 	$emaildata['to'];
-        $bcc_emailids 			= 	$emaildata['bcc_emailds'];
-        $email_subject 			= 	ucfirst($emaildata['email_subject']);
-        $send_bcc_status 		= 	$emaildata['send_bcc_status'];
+        $email_template         =   $emaildata['email_template'];
+        $email_template_data    =   $emaildata['email_template_data'];
+        $reciver_name           =   (isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : 'Team Fitternity';
+        $to                     =   $emaildata['to'];
+        $bcc_emailids           =   $emaildata['bcc_emailds'];
+        $email_subject          =   ucfirst($emaildata['email_subject']);
+        $send_bcc_status        =   $emaildata['send_bcc_status'];
 
 
         if($send_bcc_status == 1){
@@ -101,27 +101,27 @@ class EmailSmsApiController extends \BaseController {
 
     public function BookTrial() {
 
-        // return $data	= Input::json()->all();
+        // return $data = Input::json()->all();
 
         $data = array(
-            'capture_type' 			=>		'book_trial',
-            'name' 					=>		Input::json()->get('name'),
-            'email' 				=>		Input::json()->get('email'),
-            'phone' 				=>		Input::json()->get('phone'),
-            'finder' 				=>		Input::json()->get('finder'),
-            'location' 				=>		Input::json()->get('location'),
-            'service'				=>		Input::json()->get('service'),
-            'preferred_time'		=>		Input::json()->get('preferred_time'),
-            'preferred_day'			=>		Input::json()->get('preferred_day'),
-            'date' 					=>		date("h:i:sa")
+            'capture_type'          =>      'book_trial',
+            'name'                  =>      Input::json()->get('name'),
+            'email'                 =>      Input::json()->get('email'),
+            'phone'                 =>      Input::json()->get('phone'),
+            'finder'                =>      Input::json()->get('finder'),
+            'location'              =>      Input::json()->get('location'),
+            'service'               =>      Input::json()->get('service'),
+            'preferred_time'        =>      Input::json()->get('preferred_time'),
+            'preferred_day'         =>      Input::json()->get('preferred_day'),
+            'date'                  =>      date("h:i:sa")
         );
         $emaildata = array(
-            'email_template' 		=> 	'emails.finder.booktrial',
-            'email_template_data' 	=> 	$data,
-            'to'					=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'),
-            'email_subject' 		=> 	'Request For Book a Trial',
-            'send_bcc_status' 		=> 	1
+            'email_template'        =>  'emails.finder.booktrial',
+            'email_template_data'   =>  $data,
+            'to'                    =>  Config::get('mail.to_neha'),
+            'bcc_emailds'           =>  Config::get('mail.bcc_emailds_book_trial'),
+            'email_subject'         =>  'Request For Book a Trial',
+            'send_bcc_status'       =>  1
         );
         $this->sendEmail($emaildata);
 
@@ -135,31 +135,31 @@ class EmailSmsApiController extends \BaseController {
         array_set($data, 'capture_status', 'yet to connect');
 
         $storecapture = Capture::create($data);
-        $resp 	= 	array('status' => 200,'message' => "Book a Trial");
+        $resp   =   array('status' => 200,'message' => "Book a Trial");
         return Response::json($resp);
     }
 
     public function extraBookTrial() {
 
         $data = array(
-            'capture_type' 			=>		'extrabook_trial',
-            'name' 					=>		Input::json()->get('name'),
-            'email' 				=>		Input::json()->get('email'),
-            'phone' 				=>		Input::json()->get('phone'),
-            'finder' 				=>		implode(",",Input::json()->get('vendor')),
-            'location' 				=>		Input::json()->get('location'),
-            'service'				=>		Input::json()->get('service'),
-            'preferred_time'		=>		Input::json()->get('preferred_time'),
-            'preferred_day'			=>		Input::json()->get('preferred_day'),
-            'date' 					=>		date("h:i:sa")
+            'capture_type'          =>      'extrabook_trial',
+            'name'                  =>      Input::json()->get('name'),
+            'email'                 =>      Input::json()->get('email'),
+            'phone'                 =>      Input::json()->get('phone'),
+            'finder'                =>      implode(",",Input::json()->get('vendor')),
+            'location'              =>      Input::json()->get('location'),
+            'service'               =>      Input::json()->get('service'),
+            'preferred_time'        =>      Input::json()->get('preferred_time'),
+            'preferred_day'         =>      Input::json()->get('preferred_day'),
+            'date'                  =>      date("h:i:sa")
         );
         $emaildata = array(
-            'email_template' 		=> 	'emails.finder.booktrial',
-            'email_template_data' 	=> 	$data,
-            'to'					=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_book_trial'),
-            'email_subject' 		=> 	'Request For 2nd Book a Trial',
-            'send_bcc_status' 		=> 	1
+            'email_template'        =>  'emails.finder.booktrial',
+            'email_template_data'   =>  $data,
+            'to'                    =>  Config::get('mail.to_neha'),
+            'bcc_emailds'           =>  Config::get('mail.bcc_emailds_book_trial'),
+            'email_subject'         =>  'Request For 2nd Book a Trial',
+            'send_bcc_status'       =>  1
         );
         $this->sendEmail($emaildata);
 
@@ -188,10 +188,10 @@ class EmailSmsApiController extends \BaseController {
                 'findertitle' => Input::json()->get('findertitle'),
                 'finderaddress' => Input::json()->get('finderaddress')
             ),
-            'to'				=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_finder_lead_pop'),
-            'email_subject' 	=> 'lead generator popup',
-            'send_bcc_status' 	=> 1
+            'to'                =>  Config::get('mail.to_neha'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_finder_lead_pop'),
+            'email_subject'     => 'lead generator popup',
+            'send_bcc_status'   => 1
         );
         $this->sendEmail($emaildata);
 
@@ -222,10 +222,10 @@ class EmailSmsApiController extends \BaseController {
                 'location' => Input::json()->get('location'),
                 'date' => date("h:i:sa")
             ),
-            'to'				=> 	Config::get('mail.to_mailus'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_alternative'),
-            'email_subject' 	=> '5 Fitness requests alternative',
-            'send_bcc_status' 	=> 0
+            'to'                =>  Config::get('mail.to_mailus'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_fivefitness_alternative'),
+            'email_subject'     => '5 Fitness requests alternative',
+            'send_bcc_status'   => 0
         );
         $this->sendEmail($emaildata);
         $data = array(
@@ -258,10 +258,10 @@ class EmailSmsApiController extends \BaseController {
                 'phone' => Input::json()->get('phone'),
                 'date' => date("h:i:sa")
             ),
-            'to'				=> 	Config::get('mail.to_mailus'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_fivefitness_refund'),
-            'email_subject' 	=> '5 Fitness requests refund',
-            'send_bcc_status' 	=> 0
+            'to'                =>  Config::get('mail.to_mailus'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_fivefitness_refund'),
+            'email_subject'     => '5 Fitness requests refund',
+            'send_bcc_status'   => 0
         );
         $this->sendEmail($emaildata);
 
@@ -295,10 +295,10 @@ class EmailSmsApiController extends \BaseController {
                 'location' => Input::json()->get('location'),
                 'date' => date("h:i:sa")
             ),
-            'to'				=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'),
-            'email_subject' 	=> Input::json()->get('subject'),
-            'send_bcc_status' 	=> 1
+            'to'                =>  Config::get('mail.to_neha'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_request_callback_landing_page'),
+            'email_subject'     => Input::json()->get('subject'),
+            'send_bcc_status'   => 1
         );
         $this->sendEmail($emaildata);
         $code = rand(1000,99999);
@@ -308,11 +308,11 @@ class EmailSmsApiController extends \BaseController {
         );
 
         $this->sendSMS($smsdata);
-        $data 			= Input::json()->all();
+        $data           = Input::json()->all();
         array_set($data, 'capture_status', 'yet to connect');
 
-        $storecapture 	= Capture::create($data);
-        $resp 			= array('status' => 200,'message' => "Recieved the Request");
+        $storecapture   = Capture::create($data);
+        $resp           = array('status' => 200,'message' => "Recieved the Request");
         return Response::json($resp);
     }
 
@@ -333,10 +333,10 @@ class EmailSmsApiController extends \BaseController {
                 'location' => Input::json()->get('location'),
                 'date' => date("h:i:sa")
             ),
-            'to'				=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_book_trial_landing_page'),
-            'email_subject' 	=> 	Input::json()->get('subject'),
-            'send_bcc_status' 	=> 1
+            'to'                =>  Config::get('mail.to_neha'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_book_trial_landing_page'),
+            'email_subject'     =>  Input::json()->get('subject'),
+            'send_bcc_status'   => 1
         );
         $this->sendEmail($emaildata);
         $data = array(
@@ -348,8 +348,8 @@ class EmailSmsApiController extends \BaseController {
         );
         array_set($data, 'capture_status', 'yet to connect');
 
-        $storecapture 	= Capture::create($data);
-        $resp 			= array('status' => 200,'message' => "Recieved the Request");
+        $storecapture   = Capture::create($data);
+        $resp           = array('status' => 200,'message' => "Recieved the Request");
         return Response::json($resp);
     }
 
@@ -366,10 +366,10 @@ class EmailSmsApiController extends \BaseController {
                 'email' => Input::json()->get('email'),
                 'pass' => Input::json()->get('password')
             ),
-            'to'				=> 	Input::json()->get('email'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_register_me'),
-            'email_subject' 	=>  'Welcome to Fitternity',
-            'send_bcc_status' 	=> 1
+            'to'                =>  Input::json()->get('email'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_register_me'),
+            'email_subject'     =>  'Welcome to Fitternity',
+            'send_bcc_status'   => 1
         );
 
         $this->sendEmail($emaildata);
@@ -396,12 +396,12 @@ class EmailSmsApiController extends \BaseController {
 
 
         $emaildata = array(
-            'email_template' 		=> 	'emails.finder.offeravailed',
-            'email_template_data' 	=> 	$data,
-            'to'					=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_finder_offer_pop'),
-            'email_subject' 		=> 	$capture_type_subject ." ".Input::json()->get('vendor'),
-            'send_bcc_status' 		=> 	1
+            'email_template'        =>  'emails.finder.offeravailed',
+            'email_template_data'   =>  $data,
+            'to'                    =>  Config::get('mail.to_neha'),
+            'bcc_emailds'           =>  Config::get('mail.bcc_emailds_finder_offer_pop'),
+            'email_subject'         =>  $capture_type_subject ." ".Input::json()->get('vendor'),
+            'send_bcc_status'       =>  1
         );
         $this->sendEmail($emaildata);
 
@@ -414,8 +414,8 @@ class EmailSmsApiController extends \BaseController {
 
         array_set($data, 'capture_status', 'yet to connect');
 
-        $storecapture 	= Capture::create($data);
-        $resp 			= array('status' => 200,'message' => "Recieved the Request");
+        $storecapture   = Capture::create($data);
+        $resp           = array('status' => 200,'message' => "Recieved the Request");
         return Response::json($resp);
     }
 
@@ -432,12 +432,12 @@ class EmailSmsApiController extends \BaseController {
         );
 
         $emaildata = array(
-            'email_template' 		=> 	'emails.finder.fitcardbuy',
-            'email_template_data' 	=> 	$data,
-            'to'					=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_fitcardbuy'),
-            'email_subject' 		=> 'Request for fitcard purchase',
-            'send_bcc_status' 		=> 	1
+            'email_template'        =>  'emails.finder.fitcardbuy',
+            'email_template_data'   =>  $data,
+            'to'                    =>  Config::get('mail.to_neha'),
+            'bcc_emailds'           =>  Config::get('mail.bcc_emailds_fitcardbuy'),
+            'email_subject'         => 'Request for fitcard purchase',
+            'send_bcc_status'       =>  1
         );
         $this->sendEmail($emaildata);
 
@@ -449,8 +449,8 @@ class EmailSmsApiController extends \BaseController {
         $this->sendSMS($smsdata);
         array_set($data, 'capture_status', 'yet to connect');
 
-        $storecapture 	= Capture::create($data);
-        $resp 			= array('status' => 200,'message' => "Recieved the Request");
+        $storecapture   = Capture::create($data);
+        $resp           = array('status' => 200,'message' => "Recieved the Request");
         return Response::json($resp);
 
     }
@@ -467,30 +467,30 @@ class EmailSmsApiController extends \BaseController {
                 'location' => Input::json()->get('location'),
                 'date' => date("h:i:sa")
             ),
-            'to'				=> 	Config::get('mail.to_neha'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback_landing_page'),
-            'email_subject' 	=> Input::json()->get('subject'),
-            'send_bcc_status' 	=> 1
+            'to'                =>  Config::get('mail.to_neha'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_request_callback_landing_page'),
+            'email_subject'     => Input::json()->get('subject'),
+            'send_bcc_status'   => 1
         );
         $this->sendEmail($emaildata);
 
-        $data 			= Input::json()->all();
+        $data           = Input::json()->all();
         array_set($data, 'capture_status', 'yet to connect');
 
-        $storecapture 	= Capture::create($data);
+        $storecapture   = Capture::create($data);
 
         if(Input::json()->get('capture_type') == 'FakeBuy'){
 
             // $smsdata = array(
             // 'send_to' => Input::json()->get('phone'),
-            // 	'message_body'=>'Hi '.Input::json()->get('name').', Your registration code is '.$code
-            // 	);
+            //  'message_body'=>'Hi '.Input::json()->get('name').', Your registration code is '.$code
+            //  );
 
             // $this->sendSMS($smsdata);
         }
 
 
-        $resp 			= array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
+        $resp           = array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
         return Response::json($resp);
     }
 
@@ -506,7 +506,7 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $data = array(
-            'capture_type' 	=>		'request_callback',
+            'capture_type'  =>      'request_callback',
             'vendor' => Input::json()->get('vendor'),
             'city_id' => (Input::json()->get('city_id')) ? intval(Input::json()->get('city_id')) : '',
             'finder_id' => (Input::json()->get('finder_id')) ? intval(Input::json()->get('finder_id')) : '',
@@ -527,10 +527,10 @@ class EmailSmsApiController extends \BaseController {
         $emaildata = array(
             'email_template' => 'emails.callback',
             'email_template_data' => $data,
-            'to'				=> 	Config::get('mail.to_mailus'),
-            'bcc_emailds' 		=> 	Config::get('mail.bcc_emailds_request_callback'),
-            'email_subject' 	=> $subject,
-            'send_bcc_status' 	=> 1
+            'to'                =>  Config::get('mail.to_mailus'),
+            'bcc_emailds'       =>  Config::get('mail.bcc_emailds_request_callback'),
+            'email_subject'     => $subject,
+            'send_bcc_status'   => 1
         );
 
         // $this->sendEmail($emaildata);
@@ -547,7 +547,7 @@ class EmailSmsApiController extends \BaseController {
         try {
 
 //            $responseData = $this->cloudagent->requestToCallBack($data);
-           $responseData = $this->addReminderMessage($storecapture);
+            $responseData = $this->addReminderMessage($storecapture);
 
 
 
@@ -594,19 +594,19 @@ class EmailSmsApiController extends \BaseController {
         );
 
         $emaildata = array(
-            'email_template' 		=> 	'emails.finder.customerlookingfor',
-            'email_template_data' 	=> 	$data,
-            'to'					=> 	Config::get('mail.to_mailus'),
-            'bcc_emailds' 			=> 	Config::get('mail.bcc_emailds_not_able_to_find'),
-            'email_subject' 		=> "Customer request not able to find what they're looking for",
-            'send_bcc_status' 		=> 	1
+            'email_template'        =>  'emails.finder.customerlookingfor',
+            'email_template_data'   =>  $data,
+            'to'                    =>  Config::get('mail.to_mailus'),
+            'bcc_emailds'           =>  Config::get('mail.bcc_emailds_not_able_to_find'),
+            'email_subject'         => "Customer request not able to find what they're looking for",
+            'send_bcc_status'       =>  1
         );
         $this->sendEmail($emaildata);
 
         array_set($data, 'capture_status', 'yet to connect');
 
-        $storecapture 	= Capture::create($data);
-        $resp 			= array('status' => 200,'message' => "Send Mail");
+        $storecapture   = Capture::create($data);
+        $resp           = array('status' => 200,'message' => "Send Mail");
 
         return Response::json($resp);
 
@@ -620,7 +620,7 @@ class EmailSmsApiController extends \BaseController {
         $capture_id         = ($reqquesteddata['_id']) ? $reqquesteddata['_id'] : "";
         $customer_name      = ($reqquesteddata['name']) ? $reqquesteddata['name'] : "";
         $customer_phone     = ($reqquesteddata['phone']) ? $reqquesteddata['phone'] : "";
-        $schedule_date      = Carbon::today()->toDateTimeString(); 
+        $schedule_date      = Carbon::today()->toDateTimeString();
         $preferred_time     = ($reqquesteddata['preferred_time']) ? $reqquesteddata['preferred_time'] : "";
 
         if ($capture_id !="" && $customer_name != "" && $customer_phone != "" && $preferred_time != ""){
@@ -661,7 +661,7 @@ class EmailSmsApiController extends \BaseController {
 
             if($time >= $from_time && $time <= $to_time){
                 $delay = 0;
-                // echo "today ".$delay." --- ".$from_time." -- ".$to_time; 
+                // echo "today ".$delay." --- ".$from_time." -- ".$to_time;
             }else{
                 $tommrow_schedule_date_time = date('Y-m-d H:i:s', strtotime($schedule_date_time . ' +1 day'));
                 $delay = $this->getSeconds($tommrow_schedule_date_time);
@@ -680,9 +680,9 @@ class EmailSmsApiController extends \BaseController {
 //                $data['url'] = $url;
 //            }
 
-             $obj = new Requestcallbackremindercall($data);
-             $obj->_id = $requestcallbackremindercall_id;
-             $obj->save();
+            $obj = new Requestcallbackremindercall($data);
+            $obj->_id = $requestcallbackremindercall_id;
+            $obj->save();
 
         }
     }
@@ -732,9 +732,9 @@ class EmailSmsApiController extends \BaseController {
 
         }else{
 
-            $delay = strtotime($delay) - time();   
+            $delay = strtotime($delay) - time();
         }
-        
+
         return (int) $delay;
     }
 
@@ -742,10 +742,9 @@ class EmailSmsApiController extends \BaseController {
 
     public function requestCallbackCloudAgent($requestcallbackremindercall_id){
 
-
-        $remindercall   =   Requestcallbackremindercall::find($requestcallbackremindercall_id)->toArray();
-        $data           =   ['name' => trim($remindercall['customer_name']), 'phone' => trim($remindercall['customer_phone'])];
-        if($data){
+        $remindercall   =   Requestcallbackremindercall::find(intval($requestcallbackremindercall_id));
+        if($remindercall){
+            $data           =   ['name' => trim($remindercall['customer_name']), 'phone' => trim($remindercall['customer_phone'])];
 
             try {
                 $responseData = $this->cloudagent->requestToCallBack($data);
@@ -754,7 +753,7 @@ class EmailSmsApiController extends \BaseController {
                     isset($responseData['data']['status']) &&
                     $responseData['data']['status'] == "SUCCESS"){
 
-                    $remindercallObj  = \Requestcallbackremindercall::find(intval($remindercall['_id']));
+                    $remindercallObj  = \Requestcallbackremindercall::find(intval($requestcallbackremindercall_id));
                     $remindercallObj->update(['call_status' => 'yes']);
 
                 }
@@ -773,7 +772,7 @@ class EmailSmsApiController extends \BaseController {
             }
 
         }
-        
+
     }
 
 
