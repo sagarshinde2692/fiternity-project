@@ -9,7 +9,7 @@ use \GuzzleHttp\Client;
 class HomeController extends BaseController {
 
 
-    protected $api_url = "https://a1.fitternity.com/";
+    protected $api_url = "http://a1.fitternity.com/";
     protected $debug = false;
     protected $client;
 
@@ -431,7 +431,7 @@ class HomeController extends BaseController {
 
 
 
-    public function getFooterByCityV1($city = 'mumbai', $category = 'all', $cache = true){
+    public function getFooterByCityV1($city = 'mumbai', $category = 'all', $location = "", $cache = false){
 
         $footer_by_city = $cache ? Cache::tags('category_wise_footer_finders')->has($city) : false;
 
@@ -447,10 +447,13 @@ class HomeController extends BaseController {
 //            return $categoryArrWithId; exit;
 
             $footer_finders  = [];
+            $key = 1;
             foreach ($categoryArrWithId as $category => $categoryslug){
 
                 $categoryParm      = ($categoryslug == 'all') ? "" : $categoryslug;
-                $jsonData      = '{
+
+                if($location == ""){
+                    $jsonData      = '{
                         "category":"'.$categoryParm.'",
                         "budget":[],
                         "offerings":[],
@@ -463,21 +466,46 @@ class HomeController extends BaseController {
                         "order":"desc"},
                         "trialdays":[]
                         }';
+                }else{
+                    $jsonData      = '{
+                        "category":"'.$categoryParm.'",
+                        "budget":[],
+                        "offerings":[],
+                        "facilities":[],
+                        "regions":["'.str_ireplace(',', '","',$location).'"],
+                        "location":{"city":"'.$city.'"},
+                        "offset":{"from":0,
+                        "number_of_records":5},
+                        "sort":{"sortfield":"popularity",
+                        "order":"desc"},
+                        "trialdays":[]
+                        }';
+                }
 
                 $payload    =   json_decode($jsonData, true);
                 $url        =   $this->api_url."search/getfinderresultsv2";
                 $response   =  json_decode($this->client->post($url,['json'=>$payload])->getBody()->getContents(), true);
 
 
-                $finders = (isset($response['results']['resultlist'])) ? $response['results']['resultlist'] : [];
+                $finders    = (isset($response['results']['resultlist'])) ? $response['results']['resultlist'] : [];
+                $finderArr  = [];
+                if(count($finders) > 0){
+                    foreach ($finders as $finder){
+                        $finder = array_only($finder['object'], array('id', 'title','slug','category','location','categorytags'));
+                        array_push( $finderArr, $finder);
+                    }
 
-                $category_finder_array = ['category' => $category, 'finders' => $finders];
-                array_push($footer_finders, $category_finder_array);
+                }
+                $footer_finder_block_key                     =   "footer_block".$key."_finders";
+                $footer_finders[$footer_finder_block_key]    =   $finderArr;
+                $footer_title_block_key                      =   "footer_block".$key."_title";
+                $footer_finders[$footer_title_block_key]     =   ucwords($category)." in ".ucwords($city);
+                $key = $key + 1;
             }
 
 //            return $footer_finders;
 
-            $footerdata 	= 	array('category_wise_footer_finders' => $footer_finders, 'city' => $city);
+            $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city);
             Cache::tags('category_wise_footer_finders')->put($city, $footerdata, Config::get('cache.cache_time'));
         }
 

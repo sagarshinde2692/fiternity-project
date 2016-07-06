@@ -3,6 +3,7 @@
 use Hugofirth\Mailchimp\Facades\MailchimpWrapper;
 
 use App\Services\Cloudagent as Cloudagent;
+use App\Services\Sidekiq as Sidekiq;
 
 
 class EmailSmsApiController extends \BaseController {
@@ -10,10 +11,13 @@ class EmailSmsApiController extends \BaseController {
     protected $reciver_email    =   "mailus@fitternity.com";
     protected $reciver_name     =   "Leads From Website";
     protected $cloudagent;
+    protected $sidekiq;
 
-    public function __construct(Cloudagent $cloudagent)
+
+    public function __construct(Cloudagent $cloudagent, Sidekiq $sidekiq)
     {
-        $this->cloudagent = $cloudagent;
+        $this->cloudagent       =   $cloudagent;
+        $this->sidekiq 			= 	$sidekiq;
     }
 
     public function sendSMS($smsdata){
@@ -529,13 +533,13 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status' 	=> 1
         );
 
-        $this->sendEmail($emaildata);
+        // $this->sendEmail($emaildata);
 
         $smsdata = array(
             'send_to' => Input::json()->get('phone'),
             'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
         );
-        $this->sendSMS($smsdata);
+        // $this->sendSMS($smsdata);
 
         $storecapture = Capture::create($data);
 
@@ -543,7 +547,9 @@ class EmailSmsApiController extends \BaseController {
         try {
 
 //            $responseData = $this->cloudagent->requestToCallBack($data);
-            $responseData = $this->addReminderMessage($data);
+           $responseData = $this->addReminderMessage($storecapture);
+
+
 
         }catch (Exception $e) {
 
@@ -611,21 +617,22 @@ class EmailSmsApiController extends \BaseController {
     public function addReminderMessage($reqquesteddata)
     {
 
-        $customer_name = ($reqquesteddata['name']) ? $reqquesteddata['name'] : "";
-        $customer_phone = ($reqquesteddata['phone']) ? $reqquesteddata['phone'] : "";
-        $schedule_date = Carbon::today()->toDateTimeString();
-        $preferred_time = ($reqquesteddata['preferred_time']) ? $reqquesteddata['preferred_time'] : "";
+        $capture_id         = ($reqquesteddata['_id']) ? $reqquesteddata['_id'] : "";
+        $customer_name      = ($reqquesteddata['name']) ? $reqquesteddata['name'] : "";
+        $customer_phone     = ($reqquesteddata['phone']) ? $reqquesteddata['phone'] : "";
+        $schedule_date      = Carbon::today()->toDateTimeString(); 
+        $preferred_time     = ($reqquesteddata['preferred_time']) ? $reqquesteddata['preferred_time'] : "";
 
-        if ($customer_name != "" && $customer_phone != "" && $preferred_time != ""){
+        if ($capture_id !="" && $customer_name != "" && $customer_phone != "" && $preferred_time != ""){
 
             if ($preferred_time == "Before 10 AM") {
-                $schedule_slot = "09:00 AM-10:00 PM";
+                $schedule_slot = "09:00 AM-10:00 AM";
             } elseif ($preferred_time == "10 AM - 2 PM") {
                 $schedule_slot = "10:00 AM-02:00 PM";
             } elseif ($preferred_time == "2 PM - 6 PM") {
                 $schedule_slot = "02:00 PM-06:00 PM";
             } elseif ($preferred_time == "6 PM - 10 PM") {
-                $schedule_slot = "06:00 PM-09:00 PM";
+                $schedule_slot = "06:00 PM-09:30 PM";
             }
 
             $slot_times = explode('-', $schedule_slot);
@@ -633,8 +640,9 @@ class EmailSmsApiController extends \BaseController {
             $schedule_slot_end_time = $slot_times[1];
             $schedule_slot = $schedule_slot_start_time . '-' . $schedule_slot_end_time;
 
-            $schedule_date_starttime = strtoupper(date('d-m-Y', strtotime($schedule_date)) . " " . $schedule_slot_start_time);
-            $schedule_date_time = Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+            $schedule_date_starttime    =   strtoupper(date('d-m-Y', strtotime($schedule_date)) . " " . $schedule_slot_start_time);
+            $schedule_date_time         =   Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+
 
             $data = [
                 'customer_name' => trim($customer_name),
@@ -642,18 +650,134 @@ class EmailSmsApiController extends \BaseController {
                 'schedule_date' => $schedule_date,
                 'schedule_date_time' => $schedule_date_time,
                 'schedule_slot' => trim($schedule_slot),
-                'call_status' => 'no'
+                'call_status' => 'no',
+                'capture_id' => $capture_id
             ];
 
-//        return $data;
 
-            $insertedid = Requestcallbackremindercall::max('_id') + 1;
-            $obj = new Requestcallbackremindercall($data);
-            $obj->_id = $insertedid;
-            $obj->save();
+            $time       = time();
+            $from_time  = strtotime(date('Y-m-d') . $schedule_slot_start_time);
+            $to_time    = strtotime(date('Y-m-d') . $schedule_slot_end_time);
+
+            if($time >= $from_time && $time <= $to_time){
+                $delay = 0;
+                // echo "today ".$delay." --- ".$from_time." -- ".$to_time; 
+            }else{
+                $tommrow_schedule_date_time = date('Y-m-d H:i:s', strtotime($schedule_date_time . ' +1 day'));
+                $delay = $this->getSeconds($tommrow_schedule_date_time);
+                // echo "tommrow ".$tommrow_schedule_date_time." --- ".$from_time." -- ".$to_time;
+            }
+
+
+            $requestcallbackremindercall_id = Requestcallbackremindercall::max('_id') + 1;
+
+            $label      =       "request_callback_cloudagent";
+            $host       =       "http://apistg.fitn.in/";
+            $url        =       $host."requestcallbackcloudagent/".$requestcallbackremindercall_id;
+            $queue_id   =       $this->hitURLAfterDelay($url, $delay, $label);
+            if($queue_id){
+                $data['queue_id'] = $queue_id;
+                $data['url'] = $url;
+            }
+
+             $obj = new Requestcallbackremindercall($data);
+             $obj->_id = $requestcallbackremindercall_id;
+             $obj->save();
 
         }
     }
+
+
+    public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
+
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+
+        $payload = array('url'=>$url,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+        $route  = 'outbound';
+        $result  = $this->sidekiq->sendToQueue($payload,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+    }
+
+
+
+    /**
+     * Calculate the number of seconds with the given delay.
+     *
+     * @param  \DateTime|int  $delay
+     * @return int
+     */
+    public function getSeconds($delay){
+
+        if ($delay instanceof DateTime){
+
+            return max(0, $delay->getTimestamp() - $this->getTime());
+
+        }elseif ($delay instanceof \Carbon\Carbon){
+
+            return max(0, $delay->timestamp - $this->getTime());
+
+        }elseif(isset($delay['date'])){
+
+            $time = strtotime($delay['date']) - $this->getTime();
+
+            return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();   
+        }
+        
+        return (int) $delay;
+    }
+
+
+
+    public function requestCallbackCloudAgent($requestcallbackremindercall_id){
+
+
+        $remindercall   =   Requestcallbackremindercall::find($requestcallbackremindercall_id)->toArray();
+        $data           =   ['name' => trim($remindercall['customer_name']), 'phone' => trim($remindercall['customer_phone'])];
+        if($data){
+
+            try {
+                $responseData = $this->cloudagent->requestToCallBack($data);
+
+                if(isset($responseData) && isset($responseData['data']) &&
+                    isset($responseData['data']['status']) &&
+                    $responseData['data']['status'] == "SUCCESS"){
+
+                    $remindercallObj  = \Requestcallbackremindercall::find(intval($remindercall['_id']));
+                    $remindercallObj->update(['call_status' => 'yes']);
+
+                }
+
+            }catch (Exception $e) {
+
+                $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+                $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+                Log::info('Requestcallbackremindercall Error : '.json_encode($response));
+            }
+
+        }
+        
+    }
+
+
+
 
 
 }
