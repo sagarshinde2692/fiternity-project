@@ -25,7 +25,7 @@ Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
 Route::get('/homev3/{city?}', 'HomeController@getHomePageDatav3');
 Route::get('/homev4/{city?}', 'HomeController@getHomePageDatav4');
 Route::get('footer/{city?}', 'HomeController@getFooterByCity');
-Route::get('footerv1/{city?}/{category}', 'HomeController@getFooterByCityV1');
+Route::get('footerv1/{city?}/{category}/{location?}', 'HomeController@getFooterByCityV1');
 Route::get('/zumbadiscover', 'HomeController@zumbadiscover');
 Route::get('/fitcardpage1finders', 'HomeController@fitcardpagefinders');
 
@@ -374,6 +374,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 /******************** SENDING EMAIL STUFFS SECTION START HERE ********************/
 Route::post('notify/{notifytype}','EmailSmsApiController@triggerNotify');
 Route::post('email/requestcallback','EmailSmsApiController@RequestCallback');
+Route::get('requestcallbackcloudagent/{requestcallbackremindercall_id}','EmailSmsApiController@requestCallbackCloudAgent');
 // Route::post('email/booktrial','EmailSmsApiController@BookTrial');
 // Route::post('email/extrabooktrial','EmailSmsApiController@extraBookTrial');
 Route::post('email/finderlead','EmailSmsApiController@FinderLead');

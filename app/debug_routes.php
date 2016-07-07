@@ -27,6 +27,14 @@ Route::get('cleartrip/sendmail', 'DebugController@cleartrip');
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 
+Route::get('/removevip', function() { 
+	$services = Service::where("vip_trial","1")->where("city_id","<>",1)->get(array('name','vip_trial'));
+	foreach ($services as $service) {
+		$service->vip_trial = "0";
+		$service->update();
+	}
+	return $services;
+});
 
 
 Route::get('typecastcode', function() {

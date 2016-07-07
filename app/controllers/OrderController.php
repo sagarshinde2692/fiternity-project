@@ -1177,6 +1177,9 @@ class OrderController extends \BaseController {
 		return $message;
 	}
 
+
+
+
 	public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
 
 		if($delay !== 0){
@@ -1195,6 +1198,41 @@ class OrderController extends \BaseController {
 		}
 
 	}
+
+
+
+
+
+	/**
+	 * Calculate the number of seconds with the given delay.
+	 *
+	 * @param  \DateTime|int  $delay
+	 * @return int
+	 */
+	public function getSeconds($delay){
+
+        if ($delay instanceof DateTime){
+
+            return max(0, $delay->getTimestamp() - $this->getTime());
+
+        }elseif ($delay instanceof \Carbon\Carbon){
+
+            return max(0, $delay->timestamp - $this->getTime());
+
+        }elseif(isset($delay['date'])){
+
+            $time = strtotime($delay['date']) - $this->getTime();
+
+            return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();   
+        }
+        
+        return (int) $delay;
+    }
+
 
 
 }
