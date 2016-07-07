@@ -113,6 +113,10 @@ Class CustomerMailer extends Mailer {
 
 			$label = 'Order-PG-Wonderise-Customer';
 		}
+		if($data['type'] == 'combat-fitness'){
+
+			$label = 'Order-PG-Combat-fitness-Customer';
+		}
 		if($data['type'] == 'lyfe'){
 
 			$label = 'Order-PG-Lyfe-Customer';
