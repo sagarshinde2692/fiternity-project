@@ -784,9 +784,9 @@ class OrderController extends \BaseController {
 		}
 
 		// Schedule Check orderfailure and refund wallet amount in that case....
-		$url = Config::get('app.url').'/orderfailureaction/'.$orderid;
-		$delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-		$this->hitURLAfterDelay($url, $delay);
+		// $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
+		// $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+		// $this->hitURLAfterDelay($url, $delay);
 
 		$order 				= 	new Order($data);
 		$order->_id 		= 	$orderid;
