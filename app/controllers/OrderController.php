@@ -1234,5 +1234,19 @@ class OrderController extends \BaseController {
     }
 
 
+	
+	public function linkOpenForOrder($order_id){
+
+        $order = Order::find(intval($order_id));
+
+        if(!$order){
+            return Response::json( array( 'status' => 200, 'message' => 'Order Not Exists' ),200 );
+        }
+        $order->update(['link_open' => '1']);
+
+        return Response::json( array( 'status' => 200, 'message' => 'link open status to 1' ),200 );
+	}
+	
+	
 
 }
