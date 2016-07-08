@@ -104,17 +104,45 @@ public function sendSMS($smsdata){
 
 public function postCapture(){
 
-	$data 			= Input::json()->all();
-	$yet_to_connect_arr = array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy');
+	$data 					= 	Input::json()->all();
+	$yet_to_connect_arr 	= 	array('FakeBuy', 'request_callback','FakeBuy','FakeBuy','FakeBuy','FakeBuy','FakeBuy');
 	// if(in_array(Input::json()->get('capture_type'), $yet_to_connect_arr)){
 	// }
 
 	//set default status
 	array_set($data, 'capture_status', 'yet to connect');
-	$uuid = random_numbers(6);
+	$uuid 	= random_numbers(6);
 	array_set($data, 'uuid', $uuid);
 
+
+    if(isset($data['batches']) && $data['batches'] != ""){
+        if(is_array($data['batches'])){
+            $data['batches'] = $data['batches'];
+        }else{
+            $data['batches'] = json_decode($data['batches'],true);
+        }
+
+        foreach ($data['batches'] as $key => $value) {
+
+            if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+                $data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+                break;
+            }
+        }
+    }
+
+    if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '') {
+        if(trim(Input::json()->get('preferred_starting_date')) != '-'){
+            $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+            $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            array_set($data, 'start_date', $preferred_starting_date);
+            array_set($data, 'preferred_starting_date', $preferred_starting_date);
+        }
+    }
+
+    
 	$storecapture = Capture::create($data);
+
 	if($storecapture){
 		if(Input::json()->get('capture_type') == 'pre-register-fitmania'){
 			$sndInstantSmsFinder	=	$this->customersms->fitmaniaPreRegister($data);
@@ -139,7 +167,9 @@ public function postCapture(){
 
 	}
 	return Response::json($storecapture, 200);
-}	
+}
+
+
 
 public function getCaptureDetail($captureid){
 

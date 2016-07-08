@@ -168,6 +168,7 @@ Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership'
 Route::post('buylandingpagepurchase',  array('as' => 'orders.buylandingpagepurchase','uses' => 'OrderController@buyLandingpagePurchase'));
 Route::get('orderfailureaction/{order_id}', array('as' => 'orders.orderFailureAction','uses' => 'OrderController@orderFailureAction'));
 
+Route::get('linkopenfororder/{order_id}',  array('as' => 'orders.linkOpenForOrder','uses' => 'OrderController@linkOpenForOrder'));
 
 
 
