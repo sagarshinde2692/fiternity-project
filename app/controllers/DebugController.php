@@ -12,6 +12,7 @@ use App\Mailers\FinderMailer as FinderMailer;
 //use Queue;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\Bulksms as Bulksms;
 
 class DebugController extends \BaseController {
 
@@ -2475,5 +2476,52 @@ public function testEmail(){
 		}
 
 	}
+
+	function monsoonSale(){
+
+		$finder = Finder::active()->whereIn('commercial_type',array(1,2,3))->get(array('_id','title','finder_vcc_email','finder_vcc_mobile'))->toArray();
+
+		$numbers = array();
+
+		foreach ($finder as $data){
+
+			if(isset($data['finder_vcc_email']) && $data['finder_vcc_email'] != ""){
+
+				$this->findermailer->monsoonSale($data);
+			}
+
+			if(isset($data['finder_vcc_mobile']) && $data['finder_vcc_mobile'] != ""){
+
+				$array = explode(",", $data['finder_vcc_mobile']);
+
+				foreach ($array as $value) {
+
+					$numbers[] = $value;
+				}
+				
+			}
+			
+		}
+
+		$contact_nos = array_chunk($numbers,400);
+
+		$return = array();
+
+		foreach ($contact_nos as $contact_no) {
+
+			$sms['sms_type'] = 'transactional';
+			$sms['contact_no'] = $contact_no;
+			$sms['message'] = "Hi, We are running a monsoon sale campaign starting from 15th July 2016. In order to participate and give exciting offers for this, refer to your registered email for further details or call us on - +919769361661- Team Fitternity";
+
+			$bulkSms = new Bulksms();
+
+			$return[] = $bulkSms->send($sms);
+		}
+
+		echo "<pre>";print_r($return);exit;
+
+	}
+
+	
     
 }
