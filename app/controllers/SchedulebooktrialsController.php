@@ -1146,7 +1146,12 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
+    public function getCleartripCount($finder_id){
 
+        $count = Booktrial::where('finder_id',(int)$finder_id)->where('source','cleartrip')->count();
+
+        return $count;
+    }
 
     public function bookTrialPaid(){
 
@@ -1244,6 +1249,8 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialid 				       =	Booktrial::max('_id') + 1;
             $finderid 					       = 	(int) Input::json()->get('finder_id');
             $finder 					       = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find($finderid);
+
+            $cleartrip_count                   =    $this->getCleartripCount($finderid);
 
             $customer_id 				       =	$this->autoRegisterCustomer($data);
             $customer_name 				       =	Input::json()->get('customer_name');
@@ -1482,7 +1489,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'membership_duration_type'      =>      'workout_session',
                 'medical_detail'                =>      $medical_detail,
                 'medication_detail'             =>      $medication_detail,
-                'physical_activity_detail'      =>      $physical_activity_detail
+                'physical_activity_detail'      =>      $physical_activity_detail,
+                'cleartrip_count'               =>      $cleartrip_count
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -1875,6 +1883,8 @@ class SchedulebooktrialsController extends \BaseController {
             }))->with('locationtags')->where('_id', '=', $finderid)->first()->toArray();
             $customer_id = $this->autoRegisterCustomer($data);
 
+            $cleartrip_count                   =    $this->getCleartripCount($finderid);
+
             // Throw an error if user has already booked a trial for that vendor...
             $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
             if (count($alreadyBookedTrials) > 0) {
@@ -2143,7 +2153,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'reward_id' => $myreward_id,
                 'medical_detail' => $medical_detail,
                 'medication_detail' => $medication_detail,
-                'physical_activity_detail'      =>      $physical_activity_detail
+                'physical_activity_detail'      =>      $physical_activity_detail,
+                'cleartrip_count'               =>      $cleartrip_count
 
             );
 
@@ -2248,6 +2259,8 @@ class SchedulebooktrialsController extends \BaseController {
                         $finder_category_id       = (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
             $customer_email_messageids  =  $finder_email_messageids  =  $customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
+
+            $customer_auto_sms = '';
 
             //Send Instant (Email) To Customer & Finder
             if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){

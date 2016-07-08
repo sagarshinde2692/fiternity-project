@@ -108,6 +108,11 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'Order-PG-Wonderise-Customer';
 		}
 
+		if($data['type'] == 'combat-fitness'){
+
+			$label = 'Order-PG-Combat-fitness-Customer';
+		}
+
 		if($data['type'] == 'mickeymehtaevent'){
 
 			$label = 'Order-PG-Mickeymehtaevent-Customer';

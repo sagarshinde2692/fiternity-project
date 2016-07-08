@@ -357,4 +357,71 @@ class ServiceController extends \BaseController {
 		return Response::json(Cache::tags('servicehomefooter_by_city_v1')->get($city));
 
 	}
+
+	public function getServicesByType($finder_id,$type){
+
+    	switch ($type) {
+    		case 'workoutsession': $type = 'workout session'; break;
+    		case 'membership': $type = 'membership'; break;
+    	}
+
+    	$service_id = Ratecard::where('finder_id',(int) $finder_id)->where('type',$type)->lists('service_id');
+
+    	$service_id = array_map('intval',array_unique($service_id));
+
+		$services = array();
+
+		Service::$withoutAppends = true; 
+
+		$services = Service::active()->whereIn('_id',$service_id)->orderBy('ordering','asc')->get(array('_id','name'));
+
+		if(count($services) > 0){
+			$services = $services->toArray();
+		}
+
+		return Response::json($services,200);
+	}
+
+	public function getWorkoutSessionScheduleByService($service_id,$date = null){
+
+        $currentDateTime        =   \Carbon\Carbon::now();
+        $service_id    =   (int) $service_id;
+        $date         =   ($date == null) ? Carbon::now() : $date;
+        $timestamp    =   strtotime($date);
+        $weekday      =   strtolower(date( "l", $timestamp));
+
+        $date = date('d-m-Y',strtotime($date));
+
+        $item = Service::where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules'));
+
+        $item = $item->toArray();
+        $slots = array();
+
+        foreach ($item['workoutsessionschedules'] as $key => $value) {
+
+        	if($value['weekday'] == $weekday){
+
+        		if(!empty($value['slots'])){
+        			
+        			foreach ($value['slots'] as $key => $slot) {
+
+        				$scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
+	                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+	                    array_set($slot, 'passed', $slot_datetime_pass_status);
+	                    array_push($slots, $slot);
+        			}
+        		}
+        		break;
+        	}
+        	
+        }
+
+        $data['_id'] = (int)$service_id;
+        $data['name'] = $item['name'];
+        $data['finder_id'] = $item['finder_id'];
+        $data['slots'] = $slots;
+        $data['weekday'] = $weekday;
+
+        return Response::json($data,200);
+    }
 }
