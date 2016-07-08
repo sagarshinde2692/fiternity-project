@@ -1153,6 +1153,13 @@ class SchedulebooktrialsController extends \BaseController {
         return $count;
     }
 
+    public function getTrialCount($finder_id){
+
+        $count = Booktrial::where('finder_id',(int)$finder_id)->count();
+
+        return $count;
+    }
+
     public function bookTrialPaid(){
 
         $data = Input::json()->all();
@@ -1251,6 +1258,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder 					       = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find($finderid);
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
+            $trial_count                       =    $this->getTrialCount($finderid);
 
             $customer_id 				       =	$this->autoRegisterCustomer($data);
             $customer_name 				       =	Input::json()->get('customer_name');
@@ -1490,7 +1498,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'medical_detail'                =>      $medical_detail,
                 'medication_detail'             =>      $medication_detail,
                 'physical_activity_detail'      =>      $physical_activity_detail,
-                'cleartrip_count'               =>      $cleartrip_count
+                'cleartrip_count'               =>      $cleartrip_count,
+                'trial_count'                   =>      $trial_count,
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -1884,6 +1893,7 @@ class SchedulebooktrialsController extends \BaseController {
             $customer_id = $this->autoRegisterCustomer($data);
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
+            $trial_count                       =    $this->getTrialCount($finderid);
 
             // Throw an error if user has already booked a trial for that vendor...
             $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
@@ -2154,7 +2164,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'medical_detail' => $medical_detail,
                 'medication_detail' => $medication_detail,
                 'physical_activity_detail'      =>      $physical_activity_detail,
-                'cleartrip_count'               =>      $cleartrip_count
+                'cleartrip_count'               =>      $cleartrip_count,
+                'trial_count'               =>      $trial_count,
 
             );
 
