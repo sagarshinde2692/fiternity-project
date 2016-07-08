@@ -2511,7 +2511,7 @@ public function testEmail(){
 
 			$sms['sms_type'] = 'transactional';
 			$sms['contact_no'] = $contact_no;
-			$sms['message'] = "Hi, We are running a monsoon sale campaign starting from 15th July 2016. In order to participate and give exciting offers for this, refer to your registered email for further details or call us on - +919769361661- Team Fitternity";
+			$sms['message'] = "Hi, We are running a monsoon sale campaign starting from 15th July 2016. In order to participate and give exciting offers for this, refer to your registered email for further details or call us on - +919769361661 - Team Fitternity";
 
 			$bulkSms = new Bulksms();
 
