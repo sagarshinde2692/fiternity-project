@@ -672,13 +672,14 @@ class EmailSmsApiController extends \BaseController {
             $requestcallbackremindercall_id = Requestcallbackremindercall::max('_id') + 1;
 
             $label      =       "request_callback_cloudagent";
-            $host       =       "http://apistg.fitn.in/";
+//            $host       =       "http://apistg.fitn.in/";
+            $host       =       "https://a1.fitternity.com/";
             $url        =       $host."requestcallbackcloudagent/".$requestcallbackremindercall_id;
-//            $queue_id   =       $this->hitURLAfterDelay($url, $delay, $label);
-//            if($queue_id){
-//                $data['queue_id'] = $queue_id;
-//                $data['url'] = $url;
-//            }
+            $queue_id   =       $this->hitURLAfterDelay($url, $delay, $label);
+            if($queue_id){
+                $data['queue_id'] = $queue_id;
+                $data['url'] = $url;
+            }
 
             $obj = new Requestcallbackremindercall($data);
             $obj->_id = $requestcallbackremindercall_id;
