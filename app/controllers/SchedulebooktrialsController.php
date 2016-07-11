@@ -320,14 +320,16 @@ class SchedulebooktrialsController extends \BaseController {
                 $slots = array();
 
                 foreach ($weekdayslots['slots'] as $slot) {
-                    $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
-                    $goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
-                    $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
-                    $slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                    // $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
+                    // $goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
+                    // $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
+                    // $slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                	
+                	$slot_status 		= 	"available";
 
-                    array_set($slot, 'totalbookcnt', $totalbookcnt);
-                    array_set($slot, 'goingcnt', $goingcnt);
-                    array_set($slot, 'cancelcnt', $cancelcnt);
+                    // array_set($slot, 'totalbookcnt', $totalbookcnt);
+                    // array_set($slot, 'goingcnt', $goingcnt);
+                    // array_set($slot, 'cancelcnt', $cancelcnt);
                     array_set($slot, 'status', $slot_status);
 
                     $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
