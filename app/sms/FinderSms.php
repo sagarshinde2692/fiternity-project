@@ -130,6 +130,15 @@ Class FinderSms extends VersionNextSms{
         return $this->common($label,$to,$data);
 	}
 
+	public function firstTrial($data){
+
+		$label = 'First-Autotrial-Fitternity';
+
+		$to = array('9930206022','8976167917','9867812126');
+
+        return $this->common($label,$to,$data);
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();

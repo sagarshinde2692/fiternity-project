@@ -263,6 +263,23 @@ Class FinderMailer extends Mailer {
 
     }
 
+    public function firstTrial($data){
+
+        $label = 'First-Autotrial-Fitternity';
+
+        $user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com');
+
+        $user_name = 'Fitternity Team';
+
+        $message_data 	= array(
+            'user_email' => $user_email,
+            'user_name' =>  $user_name,
+        );
+
+        return $this->common($label,$data,$message_data);
+
+    }
+
 
 	public function common($label,$data,$message_data,$delay = 0){
 
