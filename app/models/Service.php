@@ -18,7 +18,7 @@ class Service extends \Basemodel{
 		'servicesubcategory_id' => 'required'
 
 		);
-
+	public static $withoutAppends = false;
 	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard','servicebatches');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
