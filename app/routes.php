@@ -19,6 +19,7 @@ require __DIR__.'/debug_routes.php';
 
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
+Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
 
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
@@ -428,6 +429,9 @@ Route::get('dropall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** FITMANIA SECTION START HERE *******************************/
+
+
+
 
 Route::get('fitmania/{city?}/{from?}/{size?}', 'FitmaniaController@homeData');
 Route::get('fitmaniadod/{city?}/{from?}/{size?}', 'FitmaniaController@getDealOfDay');

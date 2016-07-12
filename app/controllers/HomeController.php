@@ -1267,7 +1267,51 @@ class HomeController extends BaseController {
     }
 
 
+    // FOR MONSOON SALE
 
+    public function getMonsoonSaleHomepage($city = 'mumbai'){
+
+        $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+        if(!$citydata){
+            return $this->responseNotFound('City does not exist');
+        }
+
+        $city_name 		= 	$citydata['name'];
+        $city_id		= 	(int) $citydata['_id'];
+
+       $fitmaniahomepageobj 	=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+        if($fitmaniahomepageobj){
+
+            $serviceids     =   (isset($fitmaniahomepageobj['serviceids']) && $fitmaniahomepageobj['serviceids'] != "") ? array_map('intval', explode(",", $fitmaniahomepageobj['serviceids']) ) : [];
+
+            if(count($serviceids)> 0) {
+                $resp 	= 	array('status' => 400, 'ratecards' => [], 'message' => 'No Ratecards Exist :)');
+            }
+
+            $ratecardsarr       =   [];
+            $ratecards    	=   Ratecard::whereIn('service_id', $serviceids )
+                                                    ->where("hot_deals", "1")
+                                                    ->with('service')
+                                                    ->get()->toArray();
+            foreach ($ratecards as $ratecard){
+                $item               =    array_except($ratecard, array('service'));
+                if(isset($ratecard['service'])){
+                    $item['service']    =    array_only($ratecard['service'], ['name', 'slug', '_id', 'what_i_should_carry', 'what_i_should_expect', 'workout_intensity', 'workout_tags', 'finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'address', 'body', 'timing']);
+                }else{
+                    $item['service']    =   [];
+                }
+                array_push($ratecardsarr,$item);
+            }
+
+            $responsedata 	=   [ 'ratecards' => $ratecardsarr,  'message' => 'Monsoon Sale Ratecards :)'];
+            return Response::json($responsedata, 200);
+
+
+        }
+
+
+
+    }
 
 
 
