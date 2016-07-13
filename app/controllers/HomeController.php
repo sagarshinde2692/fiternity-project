@@ -1285,7 +1285,7 @@ class HomeController extends BaseController {
             $serviceids     =   (isset($fitmaniahomepageobj['serviceids']) && $fitmaniahomepageobj['serviceids'] != "") ? array_map('intval', explode(",", $fitmaniahomepageobj['serviceids']) ) : [];
 
             if(count($serviceids)> 0) {
-                $resp 	= 	array('status' => 400, 'ratecards' => [], 'message' => 'No Ratecards Exist :)');
+                $resp 	= 	array('status' => 400, 'ratecards' => [], 'message' => 'No Services Exist :)');
             }
 
             $serviceArr         =   [];

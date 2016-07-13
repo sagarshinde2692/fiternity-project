@@ -173,7 +173,7 @@ class SchedulebooktrialsController extends \BaseController {
                     // array_set($slot, 'cancelcnt', $cancelcnt);
                     array_set($slot, 'status', $slot_status);
                     $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
                     array_set($slot, 'passed', $slot_datetime_pass_status);
                     array_push($slots, $slot);
                 }
@@ -259,7 +259,7 @@ class SchedulebooktrialsController extends \BaseController {
                     array_set($slot, 'vip_trial_amount', $vip_trial_amount);
 
                     $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
                     array_set($slot, 'passed', $slot_datetime_pass_status);
                     array_push($slots, $slot);
                 }
@@ -333,7 +333,7 @@ class SchedulebooktrialsController extends \BaseController {
                     array_set($slot, 'status', $slot_status);
 
                     $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
                     array_set($slot, 'passed', $slot_datetime_pass_status);
                     array_push($slots, $slot);
                 }
