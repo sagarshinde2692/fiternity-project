@@ -226,6 +226,11 @@ class Service extends \Basemodel{
 
 	public function trainer(){
 		return $this->belongsTo('Servicetrainer','trainer_id');
-	}	
+	}
+
+
+	public function ratecards(){
+		return $this->hasMany('Ratecard','service_id');
+	}
 
 }

@@ -1288,22 +1288,22 @@ class HomeController extends BaseController {
                 $resp 	= 	array('status' => 400, 'ratecards' => [], 'message' => 'No Ratecards Exist :)');
             }
 
-            $ratecardsarr       =   [];
-            $ratecards    	=   Ratecard::whereIn('service_id', $serviceids )
-                                                    ->where("hot_deals", "1")
-                                                    ->with('service')
-                                                    ->get()->toArray();
-            foreach ($ratecards as $ratecard){
-                $item               =    array_except($ratecard, array('service'));
-                if(isset($ratecard['service'])){
-                    $item['service']    =    array_only($ratecard['service'], ['name', 'slug', '_id', 'what_i_should_carry', 'what_i_should_expect', 'workout_intensity', 'workout_tags', 'finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'address', 'body', 'timing']);
-                }else{
-                    $item['service']    =   [];
-                }
-                array_push($ratecardsarr,$item);
+            $serviceArr         =   [];
+             $services    	    =   Service::whereIn('_id', $serviceids )
+                                    ->with(array('finder'=>function($query){$query->select('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');}))
+                                     ->with('ratecards')
+                                        ->get()
+                                        ->toArray();
+
+            foreach ($services as $service){
+                $item    =      array_only($service, ['ratecards', 'finder', 'name', 'slug', '_id', 'what_i_should_carry', 'what_i_should_expect', 'workout_intensity', 'workout_tags', 'finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'address', 'body', 'timing']);
+                array_push($serviceArr,$item);
             }
 
-            $responsedata 	=   [ 'ratecards' => $ratecardsarr,  'message' => 'Monsoon Sale Ratecards :)'];
+//            return $serviceArr;
+
+
+            $responsedata 	=   [ 'services' => $serviceArr,  'message' => 'Monsoon Sale Services :)'];
             return Response::json($responsedata, 200);
 
 
