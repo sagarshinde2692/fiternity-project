@@ -3303,6 +3303,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $emaildata = array(
+                '_id'                           =>      $booktrialdata->_id,
                 'customer_name'                 =>      $booktrialdata->customer_name,
                 'customer_email'                =>      $booktrialdata->customer_email,
                 'customer_phone'                =>      $booktrialdata->customer_phone,
