@@ -358,10 +358,25 @@ class ServiceController extends \BaseController {
 
 	}
 
+	public function getServiceWithWorkoutSession($finder_id){
+
+		$services = array();
+
+		Service::$withoutAppends = true; 
+
+		$services = Service::active()->where('finder_id', '=', (int)$finder_id)->where('workoutsessionschedules','!=',array())->orderBy('ordering','asc')->get(array('_id','name'));
+
+		if(count($services) > 0){
+			$services = $services->toArray();
+		}
+
+		return Response::json($services,200);
+	}
+
 	public function getServicesByType($finder_id,$type){
 
     	switch ($type) {
-    		case 'workoutsession': $type = 'workout session'; break;
+    		case 'workoutsession': return $this->getServiceWithWorkoutSession($finder_id); break;
     		case 'membership': $type = 'membership'; break;
     	}
 
