@@ -71,7 +71,7 @@ class ServiceRankingController extends \BaseController {
         $es_port = Config::get('app.es.port');
 
         $vip_trials_index = 'fitternity_vip_trials'.$timestamp;
-
+        $sale_ratecard_index = 'fitternity_sale_ratecards'.$timestamp;
 
         $items = Finder::with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
@@ -85,8 +85,9 @@ class ServiceRankingController extends \BaseController {
         ->orderBy('_id')                            
         ->where('city_id', intval($city))
         ->where('status', '=', '1')        
-        ->take(5000)->skip(0)
-        ->timeout(400000000)                        
+//        ->take(1)->skip(0)
+        ->take(50000)->skip(0)
+        ->timeout(400000000)
         ->get(); 
 
         foreach ($items as $finderdocument) {    
@@ -111,8 +112,7 @@ class ServiceRankingController extends \BaseController {
                 ->get();
 
                 if(isset($serviceitems) && (!empty($serviceitems))){ 
-
-                    foreach ($serviceitems as $servicedocument) {                                 
+                    foreach ($serviceitems as $servicedocument) {
                         $servicedata = $servicedocument->toArray();
                         $clusterid = '';             
                         if(!isset($servicedata['location']['locationcluster_id']))
@@ -128,16 +128,13 @@ class ServiceRankingController extends \BaseController {
                     $locationcluster->toArray(); 
 
                     $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);
-                    $postdata_workoutsession_schedules = get_elastic_service_workoutsession_schedules($servicedata, $finderdata, $locationcluster[0]['name']);             
+                    $postdata_workoutsession_schedules = get_elastic_service_workoutsession_schedules($servicedata, $finderdata, $locationcluster[0]['name']);
+                    $postdata_sale_ratecards = get_elastic_service_sale_ratecards($servicedata, $finderdata, $locationcluster[0]['name']);
 
 
                     /******************Index each vip trial session**************/
-
-
-               
-
                     if(isset($postdata_workoutsession_schedules)){
-                       
+
                         foreach ($postdata_workoutsession_schedules as $workout_session) {
 
                             if(intval($workout_session['workout_session_schedules_price']) !== 0){
@@ -154,18 +151,37 @@ class ServiceRankingController extends \BaseController {
                             $request_vip_trial = array('url' => $posturl_vip_trial, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_vip_trial);
 
                             echo "<br>    ---  ".es_curl_request($request_vip_trial);
-                                
+
                             }
                         }
                     }
-
                     /*****************Index each vip trial session***************/
+
+                    /******************Index ratecards**************/
+                    if(isset($postdata_sale_ratecards)){
+
+                        foreach ($postdata_sale_ratecards as $ratecard) {
+
+
+                            $ratecard['rank'] = $score;
+                            $catval = evalBaseCategoryScore($finderdata['category_id']);
+                            $ratecard['rankv1'] = $catval;
+                            $ratecard['rankv2'] = $score + $catval;
+
+                            $postfields_data_sale_ratecard = json_encode($ratecard);
+                            $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/ratecard/'.$ratecard['ratecard_id'];
+                            $request_sale_ratecard = array('url' => $posturl_sale_ratecard, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_sale_ratecard);
+                            echo "<br>    ---  ".es_curl_request($request_sale_ratecard);
+
+                        }
+                    }
+                    /*****************Index each ratecard***************/
 
                     $postdata['rank'] = $score;
                     $catval = evalBaseCategoryScore($finderdata['category_id']);
                     $postdata['rankv1'] = $catval;
-                    $postdata['rankv2'] = $score + $catval;                      
-                    $postfields_data = json_encode($postdata);                                     
+                    $postdata['rankv2'] = $score + $catval;
+                    $postfields_data = json_encode($postdata);
                     $posturl = 'http://'.$es_host.':'.$es_port.'/'.$index.'/service/'.$servicedata['_id'];
                     $request = array('url' => $posturl, 'port' => $es_port, 'method' => 'PUT', 'postfields' => $postfields_data );
                     es_curl_request($request);
@@ -303,6 +319,9 @@ public function RollingBuildServiceIndex(){
     $index_vip_trial = 'fitternity_vip_trials'.$timestamp;
     $index_build_url_vip_trial = $url.$index_vip_trial;
 
+    $index_sale_ratecard = 'fitternity_sale_ratecards'.$timestamp;
+    $index_build_url_sale_ratecard = $url.$index_sale_ratecard;
+
     $request = array(
         'url' =>  $index_build_url,
         'port' => $port,
@@ -314,9 +333,15 @@ public function RollingBuildServiceIndex(){
         'port' => $port,
         'method' => 'POST'
         );
+    $request_sale_ratecard = array(
+        'url' =>  $index_build_url_sale_ratecard,
+        'port' => $port,
+        'method' => 'POST'
+        );
 
     echo es_curl_request($request);
-    echo es_curl_request($request_vip_trial);  
+    echo es_curl_request($request_vip_trial);
+    echo es_curl_request($request_sale_ratecard);
 
     sleep(5);
 
@@ -332,8 +357,15 @@ public function RollingBuildServiceIndex(){
         'method' => 'POST'
         );
 
-    echo es_curl_request($request);  
-    echo es_curl_request($request_vip_trial);  
+    $request_sale_ratecard = array(
+            'url' =>   $index_build_url_sale_ratecard.'/_close',
+            'port' => $port,
+            'method' => 'POST'
+            );
+
+    echo es_curl_request($request);
+    echo es_curl_request($request_vip_trial);
+    echo es_curl_request($request_sale_ratecard);
     sleep(5);
 
     $settings = '{
@@ -448,8 +480,16 @@ public function RollingBuildServiceIndex(){
         'method' => 'PUT'
         );
 
-    echo es_curl_request($request); 
-    echo es_curl_request($request_vip_trial); 
+    $request_sale_ratecard = array(
+            'url' => $index_build_url_sale_ratecard.'/_settings',
+            'port' => $port,
+            'postfields' => $postfields_data,
+            'method' => 'PUT'
+            );
+
+    echo es_curl_request($request);
+    echo es_curl_request($request_vip_trial);
+    echo es_curl_request($request_sale_ratecard);
     sleep(5);
 
     $request = array(
@@ -464,8 +504,15 @@ public function RollingBuildServiceIndex(){
         'method' => 'POST'
         );
 
-    echo es_curl_request($request); 
-    echo es_curl_request($request_vip_trial); 
+    $request_sale_ratecard = array(
+            'url' =>  $index_build_url_sale_ratecard.'/_open',
+            'port' => $port,
+            'method' => 'POST'
+            );
+
+    echo es_curl_request($request);
+    echo es_curl_request($request_vip_trial);
+    echo es_curl_request($request_sale_ratecard);
     sleep(5);
 
     $serivcesmapping = '{
@@ -533,15 +580,40 @@ public function RollingBuildServiceIndex(){
                 "locationcluster" : {"type" : "string", "index": "not_analyzed"},
                 "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
                 "workout_session_schedules_end_time_24_hrs" : {"type" : "float", "index": "not_analyzed"},
-                "workout_session_schedules_start_time_24_hrs" : {"type" : "float", "index": "not_analyzed"}       
+                "workout_session_schedules_start_time_24_hrs" : {"type" : "float", "index": "not_analyzed"}
+            }
+        }
+    }';
+
+    $serivcesmapping_sale_ratecards = '{
+        "ratecard" :{
+            "_source" : {"enabled" : true },
+            "properties":{
+                "name" : {"type" : "string", "index" : "not_analyzed"},
+                "name_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                "findername" : {"type" : "string", "index" : "not_analyzed"},
+                "findername_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                "finderslug" : {"type" : "string", "index" : "not_analyzed"},
+                "finderslug_snow":   { "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                "category" : {"type" : "string","index" : "not_analyzed"},
+                "category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                "subcategory" : {"type" : "string","index" : "not_analyzed"},
+                "subcategory_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                "location" : {"type" : "string", "index" : "not_analyzed"},
+                "location_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                "session_type" : {"type" : "string","index" : "not_analyzed"},
+                "workout_intensity" : {"type" : "string","index" : "not_analyzed"},
+                "workout_tags" : {"type" : "string", "index" : "not_analyzed"},
+                "city" : {"type" : "string","index" : "not_analyzed"},
+                "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10}
             }
         }
     }';
 
 
     $postfields_data    =   json_encode(json_decode($serivcesmapping,true));
-
     $postfields_data_vip_trial    =   json_encode(json_decode($serivcesmapping_vip_trial,true));
+    $postfields_data_sale_ratecards    =   json_encode(json_decode($serivcesmapping_sale_ratecards,true));
 
 
     $request = array(
@@ -549,17 +621,25 @@ public function RollingBuildServiceIndex(){
         'port' => $port,
         'method' => 'PUT',
         'postfields' => $postfields_data
-        );      
+        );
 
     $request_vip_trial = array(
         'url' => $index_build_url_vip_trial.'/service/_mapping',
         'port' => $port,
         'method' => 'PUT',
         'postfields' => $postfields_data_vip_trial
-        );      
+        );
+
+    $request_sale_ratecards = array(
+        'url' => $index_build_url_sale_ratecard.'/ratecard/_mapping',
+        'port' => $port,
+        'method' => 'PUT',
+        'postfields' => $postfields_data_sale_ratecards
+        );
 
     echo es_curl_request($request);
     echo es_curl_request($request_vip_trial);
+    echo es_curl_request($request_sale_ratecards);
     sleep(5);
 
     $city_list = array(1,2,3,4,8);
@@ -600,6 +680,21 @@ public function RollingBuildServiceIndex(){
         }]
     }';
 
+    $alias_request_sale_ratecard = '{
+            "actions": [{
+                "remove": {
+                    "index": "*",
+                    "alias": "fitternity_sale_ratecards"
+                }
+            },
+            {
+                "add": {
+                    "index": "'.$index_sale_ratecard.'",
+                    "alias": "fitternity_sale_ratecards"
+                }
+            }]
+        }';
+
     $url        =   $url."_aliases";
 
     $payload =  json_encode(json_decode($alias_request,true)); 
@@ -620,6 +715,16 @@ public function RollingBuildServiceIndex(){
         );  
 
     echo es_curl_request($request_vip_trial);
+
+    $payload_sale_ratecard =  json_encode(json_decode($alias_request_sale_ratecard,true));
+    $request_sale_ratecard = array(
+        'url' => $url,
+        'port' => $port,
+        'method' => 'POST',
+        'postfields' => $payload_sale_ratecard
+        );
+
+    echo es_curl_request($request_sale_ratecard);
 
 }
 }

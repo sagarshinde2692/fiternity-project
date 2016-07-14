@@ -1194,6 +1194,97 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
 }
 
 
+if (!function_exists('get_elastic_service_sale_ratecards')) {
+
+    function get_elastic_service_sale_ratecards($servicedata = array(), $finderdata = array(), $locationcluster = '')
+    {
+        $data_array = array();
+        $geolocation = '';
+
+        if (isset($servicedata['lat']) && $servicedata['lat'] != '' && isset($servicedata['lon']) && $servicedata['lon'] != '') {
+            $geolocation = array('lat' => $servicedata['lat'], 'lon' => $servicedata['lon']);
+
+        } elseif (isset($finderdata['lat']) && $finderdata['lat'] != '' && isset($finderdata['lon']) && $finderdata['lon'] != '') {
+            $geolocation = array('lat' => $finderdata['lat'], 'lon' => $finderdata['lon']);
+        }
+
+        if (!empty($servicedata['serviceratecard'])) {
+
+            $ratecards = $servicedata['serviceratecard'];
+
+            foreach ($ratecards as $key => $ratecard) {
+
+                $cluster = array('suburb' => $locationcluster, 'locationtag' => array('loc' => (isset($servicedata['location']['name']) && $servicedata['location']['name'] != '') ? strtolower($servicedata['location']['name']) : ""));
+
+                $postfields_data = array(
+                    'ratecard_id'=> $ratecard['_id'],
+                    'ratecard_type'=> (isset($ratecard['type']) && $ratecard['type'] != '') ? strtolower($ratecard['type']) : '',
+                    'price'=> (isset($ratecard['price']) && $ratecard['price'] != '') ? strtolower($ratecard['price']) : '',
+                    'special_price'=> (isset($ratecard['special_price']) && $ratecard['special_price'] != '') ? strtolower($ratecard['special_price']) : '',
+                    'duration'=> (isset($ratecard['duration']) && $ratecard['duration'] != '') ? strtolower($ratecard['duration']) : '',
+                    'duration_type'=> (isset($ratecard['duration_type']) && $ratecard['duration_type'] != '') ? strtolower($ratecard['duration_type']) : '',
+                    'validity'=> (isset($ratecard['validity']) && $ratecard['validity'] != '') ? strtolower($ratecard['validity']) : '',
+                    'validity_type'=> (isset($ratecard['validity_type']) && $ratecard['validity_type'] != '') ? strtolower($ratecard['validity_type']) : '',
+                    'direct_payment_enable'=> (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] != '') ? strtolower($ratecard['direct_payment_enable']) : '',
+                    'remarks'=> (isset($ratecard['remarks']) && $ratecard['remarks'] != '') ? strtolower($ratecard['remarks']) : '',
+                    'service_id' => $servicedata['_id'],
+                    'category' => (isset($servicedata['category']['name']) && $servicedata['category']['name'] != '') ? strtolower($servicedata['category']['name']) : "",
+                    'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ? strtolower($servicedata['subcategory']['name']) : "",
+                    'geolocation' => $geolocation,
+                    'finder_id' => $servicedata['finder_id'],
+                    'findername' => (isset($finderdata['title']) && $finderdata['title'] != '') ? strtolower($finderdata['title']) : "",
+                    'commercial_type' => (isset($finderdata['commercial_type']) && $finderdata['commercial_type'] != '') ? strtolower($finderdata['commercial_type']) : "",
+                    'finderslug' => (isset($finderdata['slug']) && $finderdata['slug'] != '') ? strtolower($finderdata['slug']) : "",
+                    'location' => (isset($servicedata['location']['name']) && $servicedata['location']['name'] != '') ? strtolower($servicedata['location']['name']) : "",
+                    'city' => (isset($finderdata['city']['name']) && $finderdata['city']['name'] != '') ? strtolower($finderdata['city']['name']) : "",
+                    'country' => (isset($finderdata['country']['name']) && $finderdata['country']['name'] != '') ? strtolower($finderdata['country']['name']) : "",
+                    'name' => (isset($servicedata['name']) && $servicedata['name'] != '') ? strtolower($servicedata['name']) : "",
+                    'slug' => (isset($servicedata['slug']) && $servicedata['slug'] != '') ? $servicedata['slug'] : "",
+                    'workout_intensity' => (isset($servicedata['workout_intensity']) && $servicedata['workout_intensity'] != '') ? strtolower($servicedata['workout_intensity']) : "",
+                    'workout_tags' => (isset($servicedata['workout_tags']) && !empty($servicedata['workout_tags'])) ? array_map('strtolower', $servicedata['workout_tags']) : "",
+                    'locationcluster' => $locationcluster,
+                    'short_description' => (isset($servicedata['short_description']) && $servicedata['short_description'] != '') ? strtolower($servicedata['short_description']) : "",
+                    'rating' => 0,
+                    'finder_coverimage' => (isset($finderdata['coverimage']) && $finderdata['coverimage'] != '') ? strtolower($finderdata['coverimage']) : strtolower($finderdata['finder_coverimage']),
+                    'cluster' => $cluster,
+                    'budgetfinder' => isset($finderdata['budget']) ? intval($finderdata['budget']) : 0,
+                    'finder_facilities' => (isset($finderdata['facilities']) && !empty($finderdata['facilities'])) ? array_map('strtolower', array_pluck($finderdata['facilities'], 'name')) : "",
+                    'finder_offerings' => (isset($finderdata['offerings']) && !empty($finderdata['offerings'])) ? array_values(array_unique(array_map('strtolower', array_pluck($finderdata['offerings'], 'name')))) : "",
+                    'finder_price_slab' => $finderdata['price_range'],
+                    'finder_slug' => $finderdata['slug'],
+                    'finder_gallary' => (isset($finderdata['photos'])) ? $finderdata['photos'] : array(),
+                    'finder_location' => (isset($finderdata['location']['name']) && $finderdata['location']['name'] != '') ? strtolower($finderdata['location']['name']) : "",
+                    'finder_locationtags' => (isset($finderdata['locationtags']) && !empty($finderdata['locationtags'])) ? array_map('strtolower', array_pluck($finderdata['locationtags'], 'name')) : "",
+                    'finder_category' => (isset($finderdata['category']['name']) && $finderdata['category']['name'] != '') ? strtolower($finderdata['category']['name']) : "",
+                    'finder_categorytags' => (isset($finderdata['categorytags']) && !empty($finderdata['categorytags'])) ? array_map('strtolower', array_pluck($finderdata['categorytags'], 'name')) : "",
+                    'session_type' => (isset($servicedata['session_type'])) ? $servicedata['session_type'] : '',
+                    'finder_address' => (isset($finderdata['contact']) && isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
+                    'service_address' => (isset($servicedata['address'])) ? $servicedata['address'] : '',
+                    'city_id' => isset($finderdata['city_id']) ? intval($finderdata['city_id']) : 0
+
+
+//                    'workoutsessionschedules' => $slots,
+//                    'ratecards' => $ratecards,
+//                    'durationheader' => $durationheader,
+//                    'budgetheader' => intval($budgetheader),
+//                    'vip_trial_flag' => isset($servicedata['vip_trial']) ? intval($servicedata['vip_trial']) : 0,
+//                    'sm_flagv1' => $servicemarketflag,
+//                    'workout_session_schedules_price' => (isset($val['price'])) ? intval($val['price']) : 0,
+//                    'workout_session_schedules_weekday' => $day,
+//                    'workout_session_schedules_end_time_24_hrs' => (isset($val['end_time_24_hour_format'])) ? floatval($val['end_time_24_hour_format']) : 0,
+//                    'workout_session_schedules_start_time_24_hrs' => (isset($val['start_time_24_hour_format'])) ? floatval($val['start_time_24_hour_format']) : 0,
+//                    'workout_session_schedules_end_time' => (isset($val['end_time'])) ? $val['end_time'] : '',
+//                    'workout_session_schedules_start_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
+                );
+
+                array_push($data_array, $postfields_data);
+            }
+        }
+        return $data_array;
+    }
+}
+
+
 if (!function_exists(('get_elastic_autosuggest_catloc_doc'))) {
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster)
