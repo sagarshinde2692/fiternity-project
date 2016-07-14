@@ -477,6 +477,12 @@ class EmailSmsApiController extends \BaseController {
         $data           = Input::json()->all();
         array_set($data, 'capture_status', 'yet to connect');
 
+        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != "" && $data['preferred_starting_date'] != "-"){
+            $data['preferred_starting_date'] = date('Y-m-d 00:00:00',strtotime($data['preferred_starting_date']));
+        }else{
+            unset($data['preferred_starting_date']);
+        }
+        
         $storecapture   = Capture::create($data);
 
         if(Input::json()->get('capture_type') == 'FakeBuy'){
