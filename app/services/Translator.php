@@ -767,6 +767,24 @@ public static function translate_vip_trials($es_searchresult_response){
 		array_push($vip_trial_response->results->aggregationlist->time_range, $facval);			
 	}
 
+
+	$vip_trial_response->results->aggregationlist->categorysubcategory = array();
+
+	foreach ($aggs['filtered_category_subcategory']['category']['buckets'] as $cluster) {
+		$clusterval = new \stdClass();
+		$clusterval->key = $cluster['key'];
+		$clusterval->count = $cluster['doc_count'];
+		$clusterval->subcategory = array();
+		foreach ($cluster['subcategory']['buckets'] as $reg) {
+			$regval = new \stdClass();
+			$regval->key = $reg['key'];
+			$regval->count = $reg['doc_count'];
+			array_push($clusterval->subcategory, $regval);
+		}
+		array_push($vip_trial_response->results->aggregationlist->categorysubcategory, $clusterval);
+	}
+
+
 	$vip_trial_response->results->aggregationlist->category = array();
 
 	foreach ($aggs['filtered_category']['category']['buckets'] as $fac) {

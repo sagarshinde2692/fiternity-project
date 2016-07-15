@@ -543,6 +543,31 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
+
+    $category_subcategory_facets = '
+      "filtered_category_subcategory": { '.$category_bool.', 
+      "aggs":
+      { "category": {
+        "terms": {
+          "field": "category",
+          "min_doc_count":1
+
+        },"aggs": {
+          "subcategory": {
+            "terms": {
+              "field": "subcategory",
+              "min_doc_count":1,
+              "size":"500",
+              "order": {
+                "_count": "desc"
+              }
+
+            }
+          }
+        }}}
+      },';
+
+
       $category_facets = ' "filtered_category": {
         '.$category_bool.',
         "aggs": {
@@ -658,9 +683,10 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-      $facetsvalue = trim($time_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
+//      $facetsvalue = trim($time_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
 
-      
+        $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
+          
       /*******************************************Drilled Aggregations here ******************************************/
 
       $sort = '"sort":[{"workout_session_schedules_start_time_24_hrs" : {"order" : "asc"}},{"rankv2":{"order":"desc"}}]';
