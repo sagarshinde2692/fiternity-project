@@ -165,6 +165,16 @@ public function postCapture(){
 			$this->sendSMS($smsdata);
 		}
 
+		if(Input::json()->get('capture_type') == 'personal-trainer-page' && Input::json()->get('phone') != ''){
+
+			$smsdata = [
+				'send_to' => Input::json()->get('phone'),
+				'message_body'=> "We have received your request for Personal trainer. Our Fitness Concierge Manager will contact you within the next 48 hours to assist you. For any further queries you can call us on 022-61222222."
+			];
+			$this->sendSMS($smsdata);
+		}
+
+
 	}
 	return Response::json($storecapture, 200);
 }

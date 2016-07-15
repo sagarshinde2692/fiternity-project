@@ -68,7 +68,7 @@ class ServiceController extends \BaseController {
 
 	public function serviceDetail($serviceid){
 
-		$service = Service::where('_id', (int) $serviceid)->with('category')->with('subcategory')->with('location')->with('city')->with('finder')->first();
+		$service = Service::where('_id', (int) $serviceid)->with('category')->with('subcategory')->with('location')->with('city')->with('finder')->with('ratecards')->first();
 		// return $service;
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
@@ -92,7 +92,7 @@ class ServiceController extends \BaseController {
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
 												->remember(Config::get('app.cachetime'))
-												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_ratecards', 'service_coverimage'])
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage'])
 												->take(5)->toArray();	
 
 		//same service form same location and same category
@@ -105,7 +105,7 @@ class ServiceController extends \BaseController {
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
 												->remember(Config::get('app.cachetime'))
-												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_ratecards', 'service_coverimage'])
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage'])
 												->take(5)->toArray();																								
 
 		//different service form same location and same category
@@ -118,7 +118,7 @@ class ServiceController extends \BaseController {
 												->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
 												->with(array('finder'=>function($query){$query->select('_id','title','slug','finder_coverimage','coverimage');}))
 												->remember(Config::get('app.cachetime'))
-												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'ratecards', 'service_ratecards', 'service_coverimage'])
+												->get(['name','_id','finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'service_coverimage'])
 												->take(5)->toArray();												
 
 		$resp 	= 	array('status' => 200, 'service' => $servicedata, 'same_vendor_service' => $same_vendor_service, 'nearby_same_category' => $nearby_same_category, 'nearby_other_category' => $nearby_other_category, 'message' => 'Particular Service Info');
@@ -153,7 +153,7 @@ class ServiceController extends \BaseController {
 			'what_i_should_carry' => (isset($item['what_i_should_carry']) && $item['what_i_should_carry'] != '') ? $item['what_i_should_carry'] : "", 
 			'what_i_should_expect' => (isset($item['what_i_should_expect']) && $item['what_i_should_expect'] != '') ? $item['what_i_should_expect'] : "", 
 			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
-			'service_ratecards' =>  (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards'] : "",
+//			'service_ratecards' =>  (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards'] : "",
 			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'location' =>  array_only($item['location'], array('_id', 'name', 'slug')) ,
