@@ -85,7 +85,7 @@ class ServiceRankingController extends \BaseController {
         ->orderBy('_id')                            
         ->where('city_id', intval($city))
         ->where('status', '=', '1')        
-//        ->take(1)->skip(0)
+//        ->take(10)->skip(0)
         ->take(50000)->skip(0)
         ->timeout(400000000)
         ->get(); 
@@ -156,26 +156,20 @@ class ServiceRankingController extends \BaseController {
                         }
                     }
                     /*****************Index each vip trial session***************/
-
-                    /******************Index ratecards**************/
-                    if(isset($postdata_sale_ratecards)){
-
-                        foreach ($postdata_sale_ratecards as $ratecard) {
-
-
-                            $ratecard['rank'] = $score;
+                        
+                    /******************Index service for sale ratecard**************/
+                        if(isset($postdata_sale_ratecards)){
+                            $postdata_sale_ratecards['rank'] = $score;
                             $catval = evalBaseCategoryScore($finderdata['category_id']);
-                            $ratecard['rankv1'] = $catval;
-                            $ratecard['rankv2'] = $score + $catval;
-
-                            $postfields_data_sale_ratecard = json_encode($ratecard);
-                            $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/ratecard/'.$ratecard['ratecard_id'];
+                            $postdata_sale_ratecards['rankv1'] = $catval;
+                            $postdata_sale_ratecards['rankv2'] = $score + $catval;
+                            $postfields_data_sale_ratecard = json_encode($postdata_sale_ratecards);
+                            $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/service/'.$servicedata['_id'];
                             $request_sale_ratecard = array('url' => $posturl_sale_ratecard, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_sale_ratecard);
                             echo "<br>    ---  ".es_curl_request($request_sale_ratecard);
 
                         }
-                    }
-                    /*****************Index each ratecard***************/
+                    /*****************Index service for sale ratecard***************/
 
                     $postdata['rank'] = $score;
                     $catval = evalBaseCategoryScore($finderdata['category_id']);
@@ -185,6 +179,8 @@ class ServiceRankingController extends \BaseController {
                     $posturl = 'http://'.$es_host.':'.$es_port.'/'.$index.'/service/'.$servicedata['_id'];
                     $request = array('url' => $posturl, 'port' => $es_port, 'method' => 'PUT', 'postfields' => $postfields_data );
                     es_curl_request($request);
+
+
                 }
             }
         }
@@ -315,7 +311,7 @@ public function RollingBuildServiceIndex(){
 
     $index = 'fitternity_service'.$timestamp;
     $index_build_url = $url.$index;
-
+//
     $index_vip_trial = 'fitternity_vip_trials'.$timestamp;
     $index_build_url_vip_trial = $url.$index_vip_trial;
 
@@ -586,7 +582,7 @@ public function RollingBuildServiceIndex(){
     }';
 
     $serivcesmapping_sale_ratecards = '{
-        "ratecard" :{
+        "service" :{
             "_source" : {"enabled" : true },
             "properties":{
                 "name" : {"type" : "string", "index" : "not_analyzed"},
@@ -605,7 +601,16 @@ public function RollingBuildServiceIndex(){
                 "workout_intensity" : {"type" : "string","index" : "not_analyzed"},
                 "workout_tags" : {"type" : "string", "index" : "not_analyzed"},
                 "city" : {"type" : "string","index" : "not_analyzed"},
-                "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10}
+                "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
+                "sale_ratecards": {
+                    "properties": {
+                        "duration" : {"type" : "string", "index" : "not_analyzed"},
+                        "duration_type" : {"type" : "string", "index" : "not_analyzed"},
+                        "price" : {"type" : "integer", "index" : "not_analyzed"},
+                        "special_price" : {"type" : "string", "index" : "not_analyzed"}
+                    },
+                    "type": "nested"
+                }
             }
         }
     }';
@@ -631,7 +636,7 @@ public function RollingBuildServiceIndex(){
         );
 
     $request_sale_ratecards = array(
-        'url' => $index_build_url_sale_ratecard.'/ratecard/_mapping',
+        'url' => $index_build_url_sale_ratecard.'/service/_mapping',
         'port' => $port,
         'method' => 'PUT',
         'postfields' => $postfields_data_sale_ratecards

@@ -1211,22 +1211,19 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
         if (!empty($servicedata['serviceratecard'])) {
 
             $ratecards = $servicedata['serviceratecard'];
+            $sale_ratecards = array_values(
+                array_where($ratecards, function($key, $ratecard)
+                {
+                    if(isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1'){
+                        return $ratecard;
+                    }
+                })
+            );
 
-            foreach ($ratecards as $key => $ratecard) {
-
+            if(count($sale_ratecards) > 0){
                 $cluster = array('suburb' => $locationcluster, 'locationtag' => array('loc' => (isset($servicedata['location']['name']) && $servicedata['location']['name'] != '') ? strtolower($servicedata['location']['name']) : ""));
-
                 $postfields_data = array(
-                    'ratecard_id'=> $ratecard['_id'],
-                    'ratecard_type'=> (isset($ratecard['type']) && $ratecard['type'] != '') ? strtolower($ratecard['type']) : '',
-                    'price'=> (isset($ratecard['price']) && $ratecard['price'] != '') ? strtolower($ratecard['price']) : '',
-                    'special_price'=> (isset($ratecard['special_price']) && $ratecard['special_price'] != '') ? strtolower($ratecard['special_price']) : '',
-                    'duration'=> (isset($ratecard['duration']) && $ratecard['duration'] != '') ? strtolower($ratecard['duration']) : '',
-                    'duration_type'=> (isset($ratecard['duration_type']) && $ratecard['duration_type'] != '') ? strtolower($ratecard['duration_type']) : '',
-                    'validity'=> (isset($ratecard['validity']) && $ratecard['validity'] != '') ? strtolower($ratecard['validity']) : '',
-                    'validity_type'=> (isset($ratecard['validity_type']) && $ratecard['validity_type'] != '') ? strtolower($ratecard['validity_type']) : '',
-                    'direct_payment_enable'=> (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] != '') ? strtolower($ratecard['direct_payment_enable']) : '',
-                    'remarks'=> (isset($ratecard['remarks']) && $ratecard['remarks'] != '') ? strtolower($ratecard['remarks']) : '',
+                    'sale_ratecards' => $sale_ratecards,
                     'service_id' => $servicedata['_id'],
                     'category' => (isset($servicedata['category']['name']) && $servicedata['category']['name'] != '') ? strtolower($servicedata['category']['name']) : "",
                     'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ? strtolower($servicedata['subcategory']['name']) : "",
@@ -1261,26 +1258,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     'finder_address' => (isset($finderdata['contact']) && isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
                     'service_address' => (isset($servicedata['address'])) ? $servicedata['address'] : '',
                     'city_id' => isset($finderdata['city_id']) ? intval($finderdata['city_id']) : 0
-
-
-//                    'workoutsessionschedules' => $slots,
-//                    'ratecards' => $ratecards,
-//                    'durationheader' => $durationheader,
-//                    'budgetheader' => intval($budgetheader),
-//                    'vip_trial_flag' => isset($servicedata['vip_trial']) ? intval($servicedata['vip_trial']) : 0,
-//                    'sm_flagv1' => $servicemarketflag,
-//                    'workout_session_schedules_price' => (isset($val['price'])) ? intval($val['price']) : 0,
-//                    'workout_session_schedules_weekday' => $day,
-//                    'workout_session_schedules_end_time_24_hrs' => (isset($val['end_time_24_hour_format'])) ? floatval($val['end_time_24_hour_format']) : 0,
-//                    'workout_session_schedules_start_time_24_hrs' => (isset($val['start_time_24_hour_format'])) ? floatval($val['start_time_24_hour_format']) : 0,
-//                    'workout_session_schedules_end_time' => (isset($val['end_time'])) ? $val['end_time'] : '',
-//                    'workout_session_schedules_start_time' => (isset($val['start_time'])) ? $val['start_time'] : '',
                 );
-
-                array_push($data_array, $postfields_data);
+                return $postfields_data;
             }
         }
-        return $data_array;
     }
 }
 

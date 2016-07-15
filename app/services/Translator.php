@@ -8,6 +8,9 @@ Use \App\Responsemodels\FinderObject;
 Use \App\Responsemodels\ViptrialResponse;
 Use \App\Responsemodels\VipResult;
 Use \App\Responsemodels\WorkoutSessionObject;
+Use \App\Responsemodels\saleRatecardResponse;
+Use \App\Responsemodels\saleRatecardResult;
+Use \App\Responsemodels\saleRatecardObject;
 
 // Translator methods to model API responses for client
 
@@ -720,7 +723,7 @@ public static function translate_vip_trials($es_searchresult_response){
 			$result = $resultv1['_source'];			
 			$finder = new VipResult();
 			$finder->object_type = 'vendor';
-			$resultobject = new WorkoutSessionObject();		
+			$resultobject = new WorkoutSessionObject();
 
 			$resultobject->id = $result['service_id'];				
 			$resultobject->category = $result['category'];
@@ -746,8 +749,6 @@ public static function translate_vip_trials($es_searchresult_response){
 			$resultobject->service_address = $result['service_address'];
 			$resultobject->finder_slug = $result['finderslug'];
 			$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
-			//$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
-			
 			$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
 
 			$finder->object = $resultobject;
@@ -837,6 +838,56 @@ public static function translate_vip_trials($es_searchresult_response){
 	return $vip_trial_response;
 
 }
+
+public static function translate_sale_ratecards($es_searchresult_response){
+
+	$city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'banglore'=>3,'gurgaon'=>8,'noida'=>9);
+	$sale_ratecard_response = new saleRatecardResponse();
+
+	if(empty($es_searchresult_response['hits']['hits']))
+	{
+		$sale_ratecard_response->results->resultlist = array();
+		$sale_ratecard_response->meta->total_records = 0;
+	}
+	else{
+		$sale_ratecard_response->meta->total_records = $es_searchresult_response['hits']['total'];
+
+		foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+			$result = $resultv1['_source'];
+			$service = new saleRatecardResult();
+			$service->object_type = 'service';
+
+			$resultobject = new saleRatecardObject();
+			$resultobject->id = $result['service_id'];
+			$resultobject->sale_ratecards = $result['sale_ratecards'];
+			$resultobject->category = $result['category'];
+			$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
+			$resultobject->location = $result['location'];
+			$resultobject->findername = $result['findername'];
+			$resultobject->finderslug = $result['finderslug'];
+			$resultobject->city = $result['city'];
+			$resultobject->name = $result['name'];
+			$resultobject->slug = $result['slug'];
+			$resultobject->workoutintensity = $result['workout_intensity'];
+			$resultobject->locationcluster = $result['locationcluster'];
+			$resultobject->rating = $result['rating'];
+			$resultobject->findercoverimage = $result['finder_coverimage'];
+			$resultobject->finder_gallery = $result['finder_gallary'];
+			$resultobject->finder_address = $result['finder_address'];
+			$resultobject->service_address = $result['service_address'];
+			$resultobject->finder_slug = $result['finderslug'];
+			$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
+			$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
+
+			$service->object = $resultobject;
+			array_push($sale_ratecard_response->results->resultlist, $service);
+		}
+	}
+	return $sale_ratecard_response;
+
+}
+
+
 }
 
 ?>
