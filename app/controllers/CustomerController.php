@@ -1145,7 +1145,7 @@ class CustomerController extends \BaseController {
 		->with('offerings')
 		->whereIn('_id', $finderids)
 		->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings','photos'));
+		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings','photos','info'));
 
 		$responseData 		= 	['bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
 		return Response::json($responseData, 200);
@@ -2143,6 +2143,8 @@ public function getCustomerDetail(){
 
 		$jwt_token = Request::header('Authorization');
 		$upcoming = array();
+
+		$city = strtolower($city);
 			
 		if($jwt_token != ""){
 
@@ -2195,11 +2197,23 @@ public function getCustomerDetail(){
 			
 		}
 
+		$mumbai = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","marathon-training","spinning-and-indoor-cycling",/*"personal-trainers",*/"healthy-snacks-and-beverages","dietitians-and-nutritionists","swimming"/*,"sport-nutrition-supliment-stores"*/);
+		$pune = array("gyms","yoga","zumba","fitness-studios","cross-functional-training","crossfit","dance","mma-and-kick-boxing",/*"aerobics",*/"pilates","spinning-and-indoor-cycling",/*"personal-trainers",*/"healthy-tiffins"/*,"sport-nutrition-supliment-stores"*/);
+		$banglore = array("gyms","yoga","zumba","crossfit","fitness-studios","mma-and-kick-boxing","cross-functional-training","dance","pilates","healthy-tiffins","spinning-and-indoor-cycling",/*"personal-trainers",*//*"sport-nutrition-supliment-stores"*/);
+		$delhi = array("gyms","yoga","zumba","cross-functional-training","dance","crossfit","pilates","mma-and-kick-boxing","spinning-and-indoor-cycling","fitness-studios",/*"personal-trainers",*/"healthy-tiffins"/*,"sport-nutrition-supliment-stores"*/);
+		$gurgaon = array("gyms","yoga","zumba","cross-functional-training","dance","crossfit","pilates","mma-and-kick-boxing","spinning-and-indoor-cycling","fitness-studios",/*"personal-trainers",*/"healthy-tiffins"/*,"sport-nutrition-supliment-stores"*/);
+
+        $cities[1] = $mumbai;
+        $cities[2] = $pune;
+        $cities[3] = $banglore;
+        $cities[8] = $delhi;
+        $cities[9] = $gurgaon;
+        
 		$customer_home_by_city = $cache ? Cache::tags('customer_home_by_city')->has($city) : false;
 
 		if(!$customer_home_by_city){
 
-			$categorytags = $locations = $popular_finders =	$recent_blogs =	array();
+			$category = $locations = $popular_finders =	$recent_blogs =	array();
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 
 			if(!$citydata){
@@ -2207,9 +2221,25 @@ public function getCustomerDetail(){
 			}
 
 			$city_name 		= 	$citydata['name'];
-			$city_id		= 	(int) $citydata['_id'];	
+			$city_id		= 	(int) $citydata['_id'];
+			$category_slug 	= 	$cities[$city_id];
 
-			$categorytags			= 		Findercategorytag::active()->whereIn('cities',array($city_id))->whereNotIn('_id', [41,37,39,43,44])->orderBy('ordering')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
+
+			$ordered_category = array();
+
+			foreach ($category_slug as $category_slug_key => $category_slug_value){
+
+				foreach ($category as $category_key => $category_value){
+
+					if($category_value['slug'] == $category_slug_value){
+
+						$ordered_category[] = $category_slug_value;
+						break;
+					}
+				}
+			}
+
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
 
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
@@ -2217,29 +2247,15 @@ public function getCustomerDetail(){
 				return $this->responseNotFound('homepage does not exist');
 			}
 
-			$str_finder_ids 		= 		$homepage['gym_finders'].",".$homepage['yoga_finders'].",".$homepage['zumba_finders'];
-			$finder_ids 			= 		array_map('intval', explode(",",$str_finder_ids));
-
-			$footer_block1_ids 		= 		array_map('intval', explode(",", $homepage['footer_block1_ids'] ));
-			$footer_block2_ids 		= 		array_map('intval', explode(",", $homepage['footer_block2_ids'] ));
-			$footer_block3_ids 		= 		array_map('intval', explode(",", $homepage['footer_block3_ids'] ));
-			$footer_block4_ids 		= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
-
-
-			$footer_block1_finders 		=		Finder::active()->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-			$footer_block2_finders 		=		Finder::active()->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-			$footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-			$footer_block4_finders 		=		Finder::active()->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();																										
-
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
-			$homedata 				= 	array('categorytags' => $categorytags,
+			$homedata 				= 	array('categorytags' => $category,
 				'locations' => $locations,
 				'city_name' => $city_name,
 				'city_id' => $city_id,
 				'collections' => $collections,
 				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
-				);
+			);
 
 			Cache::tags('customer_home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
 		}

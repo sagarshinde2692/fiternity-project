@@ -377,10 +377,11 @@ class ServiceController extends \BaseController {
 
     	switch ($type) {
     		case 'workoutsession': return $this->getServiceWithWorkoutSession($finder_id); break;
-    		case 'membership': $type = 'membership'; break;
+    		case 'membership': $type = array('membership','packages'); break;
+    		case 'package': $type = array('packages'); break;
     	}
 
-    	$service_id = Ratecard::where('finder_id',(int) $finder_id)->where('type',$type)->lists('service_id');
+    	$service_id = Ratecard::where('finder_id',(int) $finder_id)->whereIn('type',$type)->lists('service_id');
 
     	$service_id = array_map('intval',array_unique($service_id));
 
