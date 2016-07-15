@@ -165,6 +165,15 @@ class FindersController extends \BaseController {
                 array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
                 array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
 
+                if(count($finder['services']) > 0 ){
+
+                    $info_timing = $this->getInfoTiming($finder['services']);
+
+                    if(isset($finder['info']) && $info_timing != ""){
+                        $finder['info']['timing'] = $info_timing;
+                    }
+                    
+                }
 
                 $fitmania_offer_cnt 	=	Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
                 if($fitmania_offer_cnt > 0){
@@ -1281,6 +1290,111 @@ class FindersController extends \BaseController {
 
                 $response = $finder->update($finderData);
             }
+        }
+    }
+
+
+    public function getInfoTiming($services){
+
+        $service_batch = array();
+
+        foreach ($services as $service_key => $service_value){
+
+            if(isset($service_value['batches']) && !empty($service_value['batches'])){
+
+                $service_batch[$service_value['name']] = $this->getAllBatches($service_value['batches']);
+            }
+        }
+
+        $info_timing = "";
+
+        if(count($service_batch) > 0){
+
+            foreach ($service_batch as $ser => $btch){
+
+                $info_timing .= "<p><strong>".$ser."</strong></p>";
+                foreach ($btch as $btch_value){
+
+                    foreach ($btch_value as $key => $value) {
+                        $info_timing .= "<p><i>".$this->matchAndReturn($value)." : </i>". $key ."</p>";
+                    }
+
+                }
+            }
+        }
+
+        return $info_timing;
+
+    }
+
+    public function getAllBatches($batches){
+
+        $result = array();
+
+        foreach ($batches as $key => $batch) {
+
+            $result_weekday = array();
+
+            foreach ($batch as $data) {
+
+                $count = 0;
+
+                if(isset($data['slots'])){
+                    foreach ($data['slots'] as $slot) {
+                        if($count == 0){
+
+                            if(isset($slot['weekday']) && isset($slot['slot_time'])){
+                                $result_weekday[ucwords($slot['weekday'])] = strtoupper($slot['slot_time']);
+                            }
+                            
+                        }else{
+                            break;
+                        }
+
+                        $count++;
+                    }
+                }
+            }
+
+            $result[] = $this->getDupKeys($result_weekday);
+
+        }
+
+        return $result;
+            
+    }
+
+    public function getDupKeys($array) {
+
+        $dups = array();
+
+        foreach ($array as $k => $v) {
+                $dups[$v][] = $k;
+        }
+
+        foreach($dups as $k => $v){
+
+            $dups[$k] = implode(",", $v);
+
+        }
+
+        return $dups;
+    }
+
+    public function matchAndReturn($key){
+
+        $match = array(
+            "Monday,Tuesday,Wednesday"=>"Monday - Wednesday",
+            "Monday,Tuesday,Wednesday,Thursday"=>"Monday - Thursday",
+            "Monday,Tuesday,Wednesday,Thursday,Friday"=>"Monday - Friday",
+            "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday"=>"Monday - Saturday",
+            "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"=>"Monday - Sunday",
+        );
+
+        if(array_key_exists($key,$match)){
+            return $match[$key];
+        }else{
+            return $key;
         }
     }
 }
