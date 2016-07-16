@@ -2197,17 +2197,7 @@ public function getCustomerDetail(){
 			
 		}
 
-		$mumbai = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","marathon-training","spinning-and-indoor-cycling",/*"personal-trainers",*/"healthy-snacks-and-beverages","dietitians-and-nutritionists","swimming"/*,"sport-nutrition-supliment-stores"*/);
-		$pune = array("gyms","yoga","zumba","fitness-studios","cross-functional-training","crossfit","dance","mma-and-kick-boxing",/*"aerobics",*/"pilates","spinning-and-indoor-cycling",/*"personal-trainers",*/"healthy-tiffins"/*,"sport-nutrition-supliment-stores"*/);
-		$banglore = array("gyms","yoga","zumba","crossfit","fitness-studios","mma-and-kick-boxing","cross-functional-training","dance","pilates","healthy-tiffins","spinning-and-indoor-cycling",/*"personal-trainers",*//*"sport-nutrition-supliment-stores"*/);
-		$delhi = array("gyms","yoga","zumba","cross-functional-training","dance","crossfit","pilates","mma-and-kick-boxing","spinning-and-indoor-cycling","fitness-studios",/*"personal-trainers",*/"healthy-tiffins"/*,"sport-nutrition-supliment-stores"*/);
-		$gurgaon = array("gyms","yoga","zumba","cross-functional-training","dance","crossfit","pilates","mma-and-kick-boxing","spinning-and-indoor-cycling","fitness-studios",/*"personal-trainers",*/"healthy-tiffins"/*,"sport-nutrition-supliment-stores"*/);
-
-        $cities[1] = $mumbai;
-        $cities[2] = $pune;
-        $cities[3] = $banglore;
-        $cities[8] = $delhi;
-        $cities[9] = $gurgaon;
+        $category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists"/*,"sport-nutrition-supliment-stores"*/);
         
 		$customer_home_by_city = $cache ? Cache::tags('customer_home_by_city')->has($city) : false;
 
@@ -2222,7 +2212,6 @@ public function getCustomerDetail(){
 
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
-			$category_slug 	= 	$cities[$city_id];
 
 			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
 
@@ -2234,7 +2223,7 @@ public function getCustomerDetail(){
 
 					if($category_value['slug'] == $category_slug_value){
 
-						$ordered_category[] = $category_slug_value;
+						$ordered_category[] = $category_value;
 						break;
 					}
 				}
@@ -2249,7 +2238,7 @@ public function getCustomerDetail(){
 
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
-			$homedata 				= 	array('categorytags' => $category,
+			$homedata 				= 	array('categorytags' => $ordered_category,
 				'locations' => $locations,
 				'city_name' => $city_name,
 				'city_id' => $city_id,
