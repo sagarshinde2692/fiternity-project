@@ -73,6 +73,7 @@ class saleRatecardResponse {
 	public  function __construct(){
 		$this->results = new \stdClass();
 		$this->results->resultlist = array();
+		$this->results->aggregationlist = array();
 		$this->meta = new \stdClass();
 	}
 

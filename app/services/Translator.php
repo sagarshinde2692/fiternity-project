@@ -843,6 +843,8 @@ public static function translate_sale_ratecards($es_searchresult_response){
 
 	$city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'banglore'=>3,'gurgaon'=>8,'noida'=>9);
 	$sale_ratecard_response = new saleRatecardResponse();
+	$sale_ratecard_response->results->aggregationlist = array();
+
 
 	if(empty($es_searchresult_response['hits']['hits']))
 	{
@@ -881,6 +883,7 @@ public static function translate_sale_ratecards($es_searchresult_response){
 
 			$service->object = $resultobject;
 			array_push($sale_ratecard_response->results->resultlist, $service);
+			
 		}
 	}
 	return $sale_ratecard_response;
