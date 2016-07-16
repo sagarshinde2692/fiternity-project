@@ -1346,6 +1346,9 @@ class HomeController extends BaseController {
 
 
                     $item                       =   array_only($locationcluster, ['name', 'slug', '_id']);
+                    $locationids                =   array_unique(array_pluck($locationcluster['locations'],'_id'));
+
+                    $item['locations']          =   pluck($locationcluster['locations'], ['name', 'slug', '_id']);
                     $item['ratecard_count']     =   $cluster_ratecard_count;
                     array_push($locationclustersArr,$item);
                 
