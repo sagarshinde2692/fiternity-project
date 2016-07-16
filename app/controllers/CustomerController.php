@@ -2206,8 +2206,8 @@ public function getCustomerDetail(){
         $cities[1] = $mumbai;
         $cities[2] = $pune;
         $cities[3] = $banglore;
-        $cities[8] = $delhi;
-        $cities[9] = $gurgaon;
+        $cities[4] = $delhi;
+        $cities[8] = $gurgaon;
         
 		$customer_home_by_city = $cache ? Cache::tags('customer_home_by_city')->has($city) : false;
 
