@@ -243,4 +243,10 @@ class Service extends \Basemodel{
 		return $this->hasMany('Ratecard','service_id');
 	}
 
+
+
+	public function serviceratecards(){
+		return $this->hasMany('Ratecard','service_id');
+	}
+
 }

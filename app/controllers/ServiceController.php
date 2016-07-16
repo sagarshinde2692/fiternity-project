@@ -68,7 +68,10 @@ class ServiceController extends \BaseController {
 
 	public function serviceDetail($serviceid){
 
-		$service = Service::where('_id', (int) $serviceid)->with('category')->with('subcategory')->with('location')->with('city')->with('finder')->with('ratecards')->first();
+		$service = Service::where('_id', (int) $serviceid)
+		->with('serviceratecards')
+		->with('category')
+		->with('subcategory')->with('location')->with('city')->with('finder')->first();
 		// return $service;
 		if(!$service){
 			$resp 	= 	array('status' => 400, 'service' => [], 'message' => 'No Service Exist :)');
@@ -152,7 +155,7 @@ class ServiceController extends \BaseController {
 			'address' => (isset($item['address']) && $item['address'] != '') ? $item['address'] : "", 
 			'what_i_should_carry' => (isset($item['what_i_should_carry']) && $item['what_i_should_carry'] != '') ? $item['what_i_should_carry'] : "", 
 			'what_i_should_expect' => (isset($item['what_i_should_expect']) && $item['what_i_should_expect'] != '') ? $item['what_i_should_expect'] : "", 
-			'ratecards' =>  (isset($item['ratecards']) && !empty($item['ratecards'])) ? $item['ratecards'] : "",
+			'serviceratecards' =>  (isset($item['serviceratecards']) && !empty($item['serviceratecards'])) ? $item['serviceratecards'] : [],
 //			'service_ratecards' =>  (isset($item['service_ratecards']) && !empty($item['service_ratecards'])) ? $item['service_ratecards'] : "",
 			'category' =>  array_only($item['category'], array('_id', 'name', 'slug', 'parent_name')) ,
 			'subcategory' =>  array_only($item['subcategory'], array('_id', 'name', 'slug', 'parent_name')) ,

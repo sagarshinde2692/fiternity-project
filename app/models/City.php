@@ -31,6 +31,12 @@ class City extends \Basemodel {
 		return $this->belongsToMany('Locationtag', null, 'cities', 'locationtags');
 	}
 
+
+	public function locationclusters(){
+		return $this->hasMany('Locationcluster','city_id');
+	}
+
+
 	public function finders(){
 		return $this->hasMany('Finder','city_id');
 	}

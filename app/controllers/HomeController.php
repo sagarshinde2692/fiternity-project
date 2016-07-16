@@ -1267,55 +1267,98 @@ class HomeController extends BaseController {
     }
 
 
-    // FOR MONSOON SALE
+    
+ // FOR MONSOON SALE
 
     public function getMonsoonSaleHomepage($city = 'mumbai'){
 
-        $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+        $citydata       =   City::where('slug', '=', $city)->first(array('name','slug'));
+
         if(!$citydata){
             return $this->responseNotFound('City does not exist');
         }
 
-        $city_name 		= 	$citydata['name'];
-        $city_id		= 	(int) $citydata['_id'];
+        $city_name      =   $citydata['name'];
+        $city_id        =   (int) $citydata['_id'];
 
-       $fitmaniahomepageobj 	=	Fitmaniahomepage::where('city_id', '=', $city_id)->first();
+        $fitmaniahomepageobj    =   Fitmaniahomepage::where('city_id', '=', $city_id)->first();
         if($fitmaniahomepageobj){
+
 
             $serviceids     =   (isset($fitmaniahomepageobj['serviceids']) && $fitmaniahomepageobj['serviceids'] != "") ? array_map('intval', explode(",", $fitmaniahomepageobj['serviceids']) ) : [];
 
             if(count($serviceids)> 0) {
-                $resp 	= 	array('status' => 400, 'ratecards' => [], 'message' => 'No Services Exist :)');
+                $resp   =   array('status' => 400, 'ratecards' => [], 'message' => 'No Services Exist :)');
             }
 
             $serviceArr         =   [];
-             $services    	    =   Service::whereIn('_id', $serviceids )
-                                    ->with(array('finder'=>function($query){$query->select('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');}))
-                                     ->with('ratecards')
-                                        ->get()
-                                        ->toArray();
+            $services           =   Service::whereIn('_id', $serviceids )
+                ->with(array('finder'=>function($query){$query->select('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');}))
+                ->with(array('serviceratecards'=>function($query){$query->select('*')->where('monsoon_sale_enable',"1");}))
+                ->get()
+                ->toArray();
 
             foreach ($services as $service){
-                $item    =      array_only($service, ['ratecards', 'finder', 'name', 'slug', '_id', 'what_i_should_carry', 'what_i_should_expect', 'workout_intensity', 'workout_tags', 'finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'address', 'body', 'timing']);
+
+                $item    =      array_only($service, ['serviceratecards', 'finder', 'name', 'slug', '_id', 'what_i_should_carry', 'what_i_should_expect', 'workout_intensity', 'workout_tags', 'finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'address', 'body', 'timing']);
                 array_push($serviceArr,$item);
+
             }
 
-//            return $serviceArr;
 
 
-            $responsedata 	=   [ 'services' => $serviceArr,  'message' => 'Monsoon Sale Services :)'];
+
+           // return $serviceArr;
+
+            // return $locationids = array_unique(array_pluck($services,'location_id'));
+           
+           // service ratecard having  monsoon_sale_enable 1
+            $allserviceids              =   array_unique(Ratecard::where("monsoon_sale_enable", "1")->lists("service_id"));
+            $allservices                =   Service::whereIn('_id', $allserviceids )
+                                                ->active()
+                                                ->where('city_id', $city_id)
+                                                ->with(array('serviceratecards'=>function($query){$query->select('*')->where('monsoon_sale_enable',"1");}))
+                                                ->get(['serviceratecards','_id','name','location_id'])->toArray();
+
+            $locationclusters           =   Locationcluster::where('city_id', '=', $city_id)
+                                                ->with(array('locations'=>function($query){$query->select('*');}))
+                                                ->get()->toArray();
+
+            $locationclustersArr        =   [];                                      
+
+            foreach ($locationclusters as $key => $locationcluster) {
+
+                $locationids                =   array_unique(array_pluck($locationcluster['locations'],'_id'));
+                $cluster_ratecard_count     =   0;
+
+                foreach ($allservices as $key => $allservice) {
+                    $location_id = intval($allservice['location_id']);
+                    if(in_array($location_id, $locationids) && isset($allservice['serviceratecards'])){
+                        $service_ratecard_count     =   count($allservice['serviceratecards']);
+                        $cluster_ratecard_count     =   $cluster_ratecard_count + $service_ratecard_count;
+                    }
+
+                }// foreach
+
+
+                $item                       =   array_only($locationcluster, ['name', 'slug', '_id']);
+                $item['ratecard_count']     =   $cluster_ratecard_count;
+                array_push($locationclustersArr,$item);
+            
+            }                                        
+
+
+            $categorys          =       Findercategory::active()->whereIn('_id', [5,6,7,8,11,12,32,35,43])->get(array('name','_id','slug'));
+
+            $responsedata       =   [ 'city' => $citydata, 'services' => $serviceArr, 'locationclusters' => $locationclustersArr, 'categorys' => $categorys,  'message' => 'Monsoon Sale Services :)'];
             return Response::json($responsedata, 200);
 
 
         }
-
-
 
     }
 
 
 
 
-
-
-}																																																																																																																																																																																																																																																																										
+}																																																					
