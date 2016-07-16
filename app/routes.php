@@ -301,6 +301,7 @@ Route::get('buildkeywordcache', 'GlobalSearchController@preparekeywordsearchcach
 Route::post('keywordsearchwebv1', 'GlobalSearchController@improvedkeywordSearch');
 Route::post('search/searchdirectpefinders', 'RankingSearchController@searchDirectPaymentEnabled');
 Route::post('search/searchviptrials', 'ServiceRankingSearchController@searchviptrials');
+Route::post('search/searchsaleratecards/v1', 'ServiceRankingSearchController@searchSaleRatecards');
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################

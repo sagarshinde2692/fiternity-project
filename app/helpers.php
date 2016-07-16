@@ -1194,6 +1194,81 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
 }
 
 
+if (!function_exists('get_elastic_service_sale_ratecards')) {
+
+    function get_elastic_service_sale_ratecards($servicedata = array(), $finderdata = array(), $locationcluster = '')
+    {
+        $data_array = array();
+        $geolocation = '';
+
+        if (isset($servicedata['lat']) && $servicedata['lat'] != '' && isset($servicedata['lon']) && $servicedata['lon'] != '') {
+            $geolocation = array('lat' => $servicedata['lat'], 'lon' => $servicedata['lon']);
+
+        } elseif (isset($finderdata['lat']) && $finderdata['lat'] != '' && isset($finderdata['lon']) && $finderdata['lon'] != '') {
+            $geolocation = array('lat' => $finderdata['lat'], 'lon' => $finderdata['lon']);
+        }
+
+        if (!empty($servicedata['serviceratecard'])) {
+
+            $ratecards = $servicedata['serviceratecard'];
+            $sale_ratecards = array_values(
+                array_where($ratecards, function($key, $ratecard)
+                {
+                    if((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')){
+                        return $ratecard;
+                    }
+                })
+            );
+
+//            $monsoon_sale_enable = in_array(array_fetch($sale_ratecards, 'monsoon_sale_enable'), '1') ? '1' : '0';
+
+            if(count($sale_ratecards) > 0){
+                $cluster = array('suburb' => $locationcluster, 'locationtag' => array('loc' => (isset($servicedata['location']['name']) && $servicedata['location']['name'] != '') ? strtolower($servicedata['location']['name']) : ""));
+                $postfields_data = array(
+                    'sale_ratecards' => $sale_ratecards,
+//                    'monsoon_sale_enable'=>$monsoon_sale_enable,
+                    'service_id' => $servicedata['_id'],
+                    'category' => (isset($servicedata['category']['name']) && $servicedata['category']['name'] != '') ? strtolower($servicedata['category']['name']) : "",
+                    'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ? strtolower($servicedata['subcategory']['name']) : "",
+                    'geolocation' => $geolocation,
+                    'finder_id' => $servicedata['finder_id'],
+                    'findername' => (isset($finderdata['title']) && $finderdata['title'] != '') ? strtolower($finderdata['title']) : "",
+                    'commercial_type' => (isset($finderdata['commercial_type']) && $finderdata['commercial_type'] != '') ? strtolower($finderdata['commercial_type']) : "",
+                    'finderslug' => (isset($finderdata['slug']) && $finderdata['slug'] != '') ? strtolower($finderdata['slug']) : "",
+                    'location' => (isset($servicedata['location']['name']) && $servicedata['location']['name'] != '') ? strtolower($servicedata['location']['name']) : "",
+                    'city' => (isset($finderdata['city']['name']) && $finderdata['city']['name'] != '') ? strtolower($finderdata['city']['name']) : "",
+                    'country' => (isset($finderdata['country']['name']) && $finderdata['country']['name'] != '') ? strtolower($finderdata['country']['name']) : "",
+                    'name' => (isset($servicedata['name']) && $servicedata['name'] != '') ? strtolower($servicedata['name']) : "",
+                    'slug' => (isset($servicedata['slug']) && $servicedata['slug'] != '') ? $servicedata['slug'] : "",
+                    'workout_intensity' => (isset($servicedata['workout_intensity']) && $servicedata['workout_intensity'] != '') ? strtolower($servicedata['workout_intensity']) : "",
+                    'workout_tags' => (isset($servicedata['workout_tags']) && !empty($servicedata['workout_tags'])) ? array_map('strtolower', $servicedata['workout_tags']) : "",
+                    'locationcluster' => $locationcluster,
+                    'short_description' => (isset($servicedata['short_description']) && $servicedata['short_description'] != '') ? strtolower($servicedata['short_description']) : "",
+                    'rating' => 0,
+                    'finder_coverimage' => (isset($finderdata['coverimage']) && $finderdata['coverimage'] != '') ? strtolower($finderdata['coverimage']) : strtolower($finderdata['finder_coverimage']),
+                    'cluster' => $cluster,
+                    'budgetfinder' => isset($finderdata['budget']) ? intval($finderdata['budget']) : 0,
+                    'finder_facilities' => (isset($finderdata['facilities']) && !empty($finderdata['facilities'])) ? array_map('strtolower', array_pluck($finderdata['facilities'], 'name')) : "",
+                    'finder_offerings' => (isset($finderdata['offerings']) && !empty($finderdata['offerings'])) ? array_values(array_unique(array_map('strtolower', array_pluck($finderdata['offerings'], 'name')))) : "",
+                    'finder_price_slab' => $finderdata['price_range'],
+                    'finder_slug' => $finderdata['slug'],
+                    'finder_gallary' => (isset($finderdata['photos'])) ? $finderdata['photos'] : array(),
+                    'finder_location' => (isset($finderdata['location']['name']) && $finderdata['location']['name'] != '') ? strtolower($finderdata['location']['name']) : "",
+                    'finder_locationtags' => (isset($finderdata['locationtags']) && !empty($finderdata['locationtags'])) ? array_map('strtolower', array_pluck($finderdata['locationtags'], 'name')) : "",
+                    'finder_category' => (isset($finderdata['category']['name']) && $finderdata['category']['name'] != '') ? strtolower($finderdata['category']['name']) : "",
+                    'finder_categorytags' => (isset($finderdata['categorytags']) && !empty($finderdata['categorytags'])) ? array_map('strtolower', array_pluck($finderdata['categorytags'], 'name')) : "",
+                    'session_type' => (isset($servicedata['session_type'])) ? $servicedata['session_type'] : '',
+                    'finder_address' => (isset($finderdata['contact']) && isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
+                    'service_address' => (isset($servicedata['address'])) ? $servicedata['address'] : '',
+                    'city_id' => isset($finderdata['city_id']) ? intval($finderdata['city_id']) : 0
+                );
+                return $postfields_data;
+            }
+        }
+    }
+}
+
+
 if (!function_exists(('get_elastic_autosuggest_catloc_doc'))) {
 
     function get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $city, $cluster)

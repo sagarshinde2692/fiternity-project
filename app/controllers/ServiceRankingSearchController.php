@@ -744,4 +744,188 @@ class ServiceRankingSearchController extends \BaseController {
 
     }
   }
+
+    public function searchSaleRatecards(){
+
+        try{
+
+          /*****************************offset********************************************************************************************/
+
+          $from          =         (null !== Input::json()->get('offset')['from']) ? Input::json()->get('offset')['from'] : 0;
+
+          $size          =         (null !== Input::json()->get('offset')['number_of_records']) ? Input::json()->get('offset')['number_of_records'] : 50;
+
+
+          /*****************************offset********************************************************************************************/
+
+          /*****************************sort********************************************************************************************/
+
+          $orderfield    =           (Input::json()->get('sort')) ? strtolower(Input::json()->get('sort')['sortfield']) : '';
+
+          $order         =           (Input::json()->get('sort')) ? strtolower(Input::json()->get('sort')['order']) : '';
+
+
+          /*****************************sort********************************************************************************************/
+
+          /*****************************filters*****************************************************************************************/
+
+          $locat        =         (Input::json()->get('location'));
+          $city         =         $locat['city'] ? strtolower($locat['city']): 'mumbai';
+          $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
+          $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
+          $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
+          $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "location": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
+          $city_filter = '{"terms" : {  "city": ["'.$city.'"],"_cache": true}},';
+
+          /***********************************Geo Range Filter*********************************/
+
+          $geo_distance_filter = '';
+
+          if(($lat !== '')&&($lon !== '')){
+
+           $geo_distance_filter = ' {
+              "geo_distance_range": {
+                  "from": "0km",
+                  "to": "3km",
+                  "geolocation": {
+                      "lat": '.$lat.',
+                      "lon": '.$lon.'
+                  }
+              }
+          },';
+
+        }
+
+        /*********************************Geo Range Filter***********************************/
+
+        $bool_filter = trim($city_filter.$category_filter.$region_filter.$geo_distance_filter, ',');
+
+        $post_filter_query =
+        '{
+          "bool": {
+            "must": ['.$bool_filter.']
+          }
+        }';
+
+        /*********************************Sort Logic******************************************/
+
+//          if($orderfield == 'popularity')
+//          {
+//            if($category_filter != '') {
+//              $category = strtolower(implode('","', Input::json()->get('category')));
+//              $factor = evalBaseCategoryScore($category);
+//              $sort = '"sort":
+//                {"_script" : {
+//                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+//                    "type" : "number",
+//                    "params" : {
+//
+//                        "factor" : 11
+//
+//                    },
+//                    "order" : "' . $order . '"
+//                }}';
+//            }
+//            else{
+//              $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+//            }
+//
+//          }
+//          else
+//          {
+//            $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
+//          }
+
+          $sort = '"sort":[{"rankv2":{"order":"desc"}}]';
+
+
+          /*********************************Sort Logic******************************************/
+
+        $query = '{
+          "from" : '.$from.',
+          "size" : '.$size.',
+          "post_filter" : '.$post_filter_query.' ,
+          '.$sort.'
+        }';
+
+
+
+        $request = array(
+          'url' => $this->elasticsearch_host."/fitternity_sale_ratecards/service/_search",
+          'port' => $this->elasticsearch_port,
+          'method' => 'POST',
+          'postfields' => $query
+          );
+
+
+        $search_results     =   es_curl_request($request);
+        $search_results1    =   json_decode($search_results, true);
+        $searchresulteresponse = Translator::translate_sale_ratecards($search_results1);
+
+        $city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'banglore'=>3,'gurgaon'=>8,'noida'=>9);
+        $agg_location = Location::active()->whereIn('cities',array($city_array[$city]))->orderBy('name')->get(array('name','_id','slug'));
+        $agg_category = array(
+                array(
+                 "_id"=> 5,
+                "name"=> "gyms",
+                "slug"=> "gyms"
+                        ),
+                array(
+                 "_id"=> 6,
+                "name"=> "yoga",
+                "slug"=> "yoga"
+                        ),
+                array(
+                 "_id"=> 7,
+                "name"=> "dance",
+                "slug"=> "dance"
+                        ),
+                array(
+                 "_id"=> 8,
+                "name"=> "MMA and kick boxing",
+                "slug"=> "mma-and-kick-boxing"
+                        ),
+                array(
+                 "_id"=> 11,
+                "name"=> "pilates",
+                "slug"=> "pilates"
+                        ),
+                array(
+                 "_id"=> 12,
+                "name"=> "zumba",
+                "slug"=> "zumba"
+                        ),
+                array(
+                 "_id"=> 32,
+                "name"=> "crossfit",
+                "slug"=> "crossfit"
+                        ),
+                array(
+                 "_id"=> 35,
+                "name"=> "cross functional training",
+                "slug"=> "cross-functional-training"
+                        ),
+                array(
+                 "_id"=> 43,
+                "name"=> "Fitness Studios",
+                "slug"=> "fitness-studios"
+                        )
+        );
+        $searchresulteresponse->results->aggregationlist = array('category'=> $agg_category, 'location'=> $agg_location);
+
+        $searchresulteresponse->meta->number_of_records = intval($size);
+        $searchresulteresponse->meta->from = intval($from);
+        $searchresulteresponse->meta->sortfield = $orderfield;
+        $searchresulteresponse->meta->sortorder = $order;
+        $searchresulteresponse1 = json_encode($searchresulteresponse, true);
+        $response       =   json_decode($searchresulteresponse1,true);
+        return Response::json($response);
+      }
+
+      catch(Exception $e){
+
+        throw $e;
+
+      }
+    }
 }
