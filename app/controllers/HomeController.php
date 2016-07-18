@@ -1285,6 +1285,7 @@ class HomeController extends BaseController {
 
         $monsoon_sale_homepage = $cache ? Cache::tags('monsoon_sale_homepage')->has($city) : false;
 
+
         if(!$monsoon_sale_homepage){
 
             $fitmaniahomepageobj    =   Fitmaniahomepage::where('city_id', '=', $city_id)->first();
@@ -1299,8 +1300,8 @@ class HomeController extends BaseController {
 
                 $serviceArr         =   [];
                 $services           =   Service::whereIn('_id', $serviceids )
-                    ->with(array('finder'=>function($query){$query->select('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');})
-                    ->with('location')
+                    ->with(array('finder'=>function($query){$query->select('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
                     ->with(array('serviceratecards'=>function($query){$query->select('*')->where('hot_deals',"1");}))
                     ->get()
                     ->toArray();
