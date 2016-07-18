@@ -376,7 +376,7 @@ class HomeController extends BaseController {
 
 
 
-    public function getFinderCountLocationwise($city = 'mumbai', $cache = false){
+    public function getFinderCountLocationwise($city = 'mumbai', $cache = true){
 
 
         $findercount_locationwise_city  =   $cache ? Cache::tags('findercount_locationwise_city')->has($city) : false;
@@ -421,7 +421,7 @@ class HomeController extends BaseController {
                     }
                 }
             }
-            
+
             $data               =   ['locations' => $locationsArr, 'message' => 'locations aggregationlist :)'];
             Cache::tags('findercount_locationwise_city')->put($city, $data, Config::get('cache.cache_time'));
 
