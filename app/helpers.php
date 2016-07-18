@@ -1214,7 +1214,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             $sale_ratecards = array_values(
                 array_where($ratecards, function($key, $ratecard)
                 {
-                    if((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')){
+                    // if((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')){
+                    //     return $ratecard;
+                    // }
+                       if(isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1'){
                         return $ratecard;
                     }
                 })
