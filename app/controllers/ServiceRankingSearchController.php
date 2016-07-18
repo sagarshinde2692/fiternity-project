@@ -862,7 +862,7 @@ class ServiceRankingSearchController extends \BaseController {
         $search_results1    =   json_decode($search_results, true);
         $searchresulteresponse = Translator::translate_sale_ratecards($search_results1);
 
-        $city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'banglore'=>3,'gurgaon'=>8,'noida'=>9);
+        $city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'bangalore'=>3,'gurgaon'=>8,'noida'=>9);
         $agg_location = Location::active()->whereIn('cities',array($city_array[$city]))->orderBy('name')->get(array('name','_id','slug'));
         $agg_category = array(
                 array(
