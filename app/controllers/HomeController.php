@@ -422,7 +422,6 @@ class HomeController extends BaseController {
                 }
             }
             
-
             $data               =   ['locations' => $locationsArr, 'message' => 'locations aggregationlist :)'];
             Cache::tags('findercount_locationwise_city')->put($city, $data, Config::get('cache.cache_time'));
 
