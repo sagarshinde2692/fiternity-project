@@ -20,6 +20,7 @@ require __DIR__.'/debug_routes.php';
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
 Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
+Route::get('getfindercountlocationwise/{city?}', 'HomeController@getFinderCountLocationwise');
 
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
