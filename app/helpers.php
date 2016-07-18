@@ -1198,7 +1198,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
     function get_elastic_service_sale_ratecards($servicedata = array(), $finderdata = array(), $locationcluster = '')
     {
-        $data_array = array();
+        $postfields_data = array();
         $geolocation = '';
 
         if (isset($servicedata['lat']) && $servicedata['lat'] != '' && isset($servicedata['lon']) && $servicedata['lon'] != '') {
@@ -1220,13 +1220,13 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                 })
             );
 
-//            $monsoon_sale_enable = in_array(array_fetch($sale_ratecards, 'monsoon_sale_enable'), '1') ? '1' : '0';
+            $monsoon_sale_enable = in_array('1', array_fetch($sale_ratecards, 'monsoon_sale_enable')) ? '1' : '0';
 
             if(count($sale_ratecards) > 0){
                 $cluster = array('suburb' => $locationcluster, 'locationtag' => array('loc' => (isset($servicedata['location']['name']) && $servicedata['location']['name'] != '') ? strtolower($servicedata['location']['name']) : ""));
                 $postfields_data = array(
                     'sale_ratecards' => $sale_ratecards,
-//                    'monsoon_sale_enable'=>$monsoon_sale_enable,
+                    'monsoon_sale_enable'=>$monsoon_sale_enable,
                     'service_id' => $servicedata['_id'],
                     'category' => (isset($servicedata['category']['name']) && $servicedata['category']['name'] != '') ? strtolower($servicedata['category']['name']) : "",
                     'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ? strtolower($servicedata['subcategory']['name']) : "",
@@ -1262,8 +1262,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     'service_address' => (isset($servicedata['address'])) ? $servicedata['address'] : '',
                     'city_id' => isset($finderdata['city_id']) ? intval($finderdata['city_id']) : 0
                 );
-                return $postfields_data;
             }
+
+            return $postfields_data;
+
         }
     }
 }

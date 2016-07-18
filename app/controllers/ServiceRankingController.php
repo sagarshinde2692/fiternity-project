@@ -65,7 +65,7 @@ class ServiceRankingController extends \BaseController {
     // public function IndexServiceRankMongo2Elastic(){
 
         // $city =1 ; $index= 'fitternity_vip_trials2016-06-02'; $timestamp = '2016-06-02';
-        ini_set('max_execution_time', 30000);
+        ini_set('max_execution_time', 90000);
 
         $es_host = Config::get('app.es.host');
         $es_port = Config::get('app.es.port');
@@ -85,7 +85,7 @@ class ServiceRankingController extends \BaseController {
         ->orderBy('_id')                            
         ->where('city_id', intval($city))
         ->where('status', '=', '1')        
-//        ->take(1)->skip(0)
+//        ->take(500)->skip(0)
         ->take(50000)->skip(0)
         ->timeout(400000000)
         ->get(); 
@@ -162,7 +162,8 @@ class ServiceRankingController extends \BaseController {
                             $postdata_sale_ratecards['rank'] = $score;
                             $catval = evalBaseCategoryScore($finderdata['category_id']);
                             $postdata_sale_ratecards['rankv1'] = $catval;
-                            $postdata_sale_ratecards['rankv2'] = $score + $catval;
+                            $monsoon_boost = ($postdata_sale_ratecards['monsoon_sale_enable'] == '1') ? 50 : 0;
+                            $postdata_sale_ratecards['rankv2'] = $score + $catval + $monsoon_boost;
                             $postfields_data_sale_ratecard = json_encode($postdata_sale_ratecards);
                             $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/service/'.$servicedata['_id'];
                             $request_sale_ratecard = array('url' => $posturl_sale_ratecard, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_sale_ratecard);
