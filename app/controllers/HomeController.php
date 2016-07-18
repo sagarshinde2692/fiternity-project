@@ -376,7 +376,7 @@ class HomeController extends BaseController {
 
 
 
-    public function getFinderCountLocationwise($city = 'mumbai', $cache = true){
+    public function getFinderCountLocationwise($city = 'mumbai', $cache = false){
 
 
         $findercount_locationwise_city  =   $cache ? Cache::tags('findercount_locationwise_city')->has($city) : false;
@@ -410,7 +410,20 @@ class HomeController extends BaseController {
             $response           =   json_decode($this->client->post($url,['json'=>$payload])->getBody()->getContents(), true);
             $aggregationlist    =   (isset($response['results']['aggregationlist']) && $response['results']['aggregationlist']['locationtags']) ? $response['results']['aggregationlist']['locationtags'] : [];
 
-            $data               =   ['locations' => $aggregationlist, 'message' => 'locations aggregationlist :)'];
+
+            $locationsArr       =   [];
+
+            if(count($aggregationlist) > 0){
+                foreach ($aggregationlist as $key => $location) {
+                    if(intval($location['count']) > 0){
+                        $location = ['count' => $location['count'], 'name' => $location['key'], 'slug' => url_slug([$location['key']]) ];
+                        array_push($locationsArr, $location);
+                    }
+                }
+            }
+            
+
+            $data               =   ['locations' => $locationsArr, 'message' => 'locations aggregationlist :)'];
             Cache::tags('findercount_locationwise_city')->put($city, $data, Config::get('cache.cache_time'));
 
         }
