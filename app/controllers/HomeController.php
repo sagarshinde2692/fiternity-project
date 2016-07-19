@@ -573,7 +573,10 @@ class HomeController extends BaseController {
 
     public function getCities(){
 
-        $cites		= 	City::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        $array = array(9);
+
+        $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        
         return Response::json($cites,200);
     }
 
@@ -1384,7 +1387,7 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             $allservices                =   Service::whereIn('_id', $allserviceids )
             ->active()
             ->where('city_id', $city_id)
-            ->with(array('serviceratecards'=>function($query){$query->select('*')->where('monsoon_sale_enable',"1");}))
+            ->with(array('serviceratecards'=>function($query){$query->select('*')->where('payment_enable',"1");}))
             ->get(['serviceratecards','_id','name','location_id'])->toArray();
 
             $locationclusters           =   Locationcluster::where('city_id', '=', $city_id)
