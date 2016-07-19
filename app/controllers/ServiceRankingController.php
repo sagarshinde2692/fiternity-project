@@ -162,7 +162,7 @@ class ServiceRankingController extends \BaseController {
                             $postdata_sale_ratecards['rank'] = $score;
                             $catval = evalBaseCategoryScore($finderdata['category_id']);
                             $postdata_sale_ratecards['rankv1'] = $catval;
-                            $monsoon_boost = ($postdata_sale_ratecards['monsoon_sale_enable'] == '1') ? 50 : 0;
+                            $monsoon_boost = (isset($postdata_sale_ratecards['monsoon_sale_enable']) && $postdata_sale_ratecards['monsoon_sale_enable'] == '1') ? 50 : 0;
                             $postdata_sale_ratecards['rankv2'] = $score + $catval + $monsoon_boost;
                             $postfields_data_sale_ratecard = json_encode($postdata_sale_ratecards);
                             $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/service/'.$servicedata['_id'];
