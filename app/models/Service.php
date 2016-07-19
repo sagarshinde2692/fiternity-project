@@ -247,7 +247,7 @@ class Service extends \Basemodel{
 
 	public function serviceratecards(){
 		$ratecards = [];
-		$ratecardsarr = $this->hasMany('Ratecard','service_id')
+		$ratecardsarr = $this->hasMany('Ratecard','service_id');
 		if($ratecardsarr){
 			foreach ($ratecardsarr as $key => $value) {
 
