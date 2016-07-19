@@ -904,11 +904,6 @@ class ServiceRankingSearchController extends \BaseController {
                  "_id"=> 111,
                 "name"=> "Crossfit",
                 "slug"=> "crossfit"
-                        ),
-                array(
-                 "_id"=> 43,
-                "name"=> "Fitness Studios",
-                "slug"=> "fitness-studios"
                         )
         );
         $searchresulteresponse->results->aggregationlist = array('category'=> $agg_category, 'location'=> $agg_location);
