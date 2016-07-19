@@ -1391,7 +1391,7 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             $allservices                =   Service::whereIn('_id', $allserviceids )
             ->active()
             ->where('city_id', $city_id)
-            ->with(array('serviceratecards'=>function($query){$query->select('*')->where('monsoon_sale_enable',"1");}))
+            ->with(array('serviceratecards'=>function($query){$query->select('*')->where('payment_enable',"1");}))
             ->get(['serviceratecards','_id','name','location_id'])->toArray();
 
             $locationclusters           =   Locationcluster::where('city_id', '=', $city_id)
