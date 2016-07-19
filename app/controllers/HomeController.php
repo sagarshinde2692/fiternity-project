@@ -1327,13 +1327,7 @@ public function getCategorytagsOfferings($city = 'mumbai'){
 
 
  // FOR MONSOON SALE
-
 public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
-
-
-
-
-
 
     $citydata       =   City::where('slug', '=', $city)->first(array('name','slug'));
 
@@ -1353,16 +1347,25 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
         $fitmaniahomepageobj    =   Fitmaniahomepage::where('city_id', '=', $city_id)->first();
         if($fitmaniahomepageobj){
 
-
             $serviceids     =   (isset($fitmaniahomepageobj['serviceids']) && $fitmaniahomepageobj['serviceids'] != "") ? array_map('intval', explode(",", $fitmaniahomepageobj['serviceids']) ) : [];
 
             if(count($serviceids)> 0) {
                 $resp   =   array('status' => 400, 'ratecards' => [], 'message' => 'No Services Exist :)');
             }
 
+
             $serviceArr         =   [];
             $services           =   Service::whereIn('_id', $serviceids )
-            ->with(array('finder'=>function($query){$query->select('_id', 'title', 'slug', 'coverimage', 'category_id','finder_coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');}))
+            ->with(
+                array('finder'=>function($query){
+                    $query->select('_id', 'title', 'slug', 'coverimage', 'category_id','finder_coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 
+                                    'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info')
+                             ->with(array('reviews'=>function($query1){
+                                 $query1->select('*')->where('status','=','1')->orderBy('_id', 'DESC');
+                                 })
+                             );
+                })
+            )
             ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
             ->with(array('serviceratecards'=>function($query){$query->select('*')->where('hot_deals',"1");}))
             ->get()
@@ -1389,6 +1392,7 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             ->get(['serviceratecards','_id','name','location_id'])->toArray();
 
             $locationclusters           =   Locationcluster::where('city_id', '=', $city_id)
+            ->active()
             ->with(array('locations'=>function($query){$query->select('*');}))
             ->get()->toArray();
 
