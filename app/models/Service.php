@@ -109,25 +109,11 @@ class Service extends \Basemodel{
 			foreach ($this->ratecards as $key => $value) {
 				$days = $sessions = '';
 				
-				if(isset($value['validity'])){
-					if(intval($value['validity'])%360 == 0){
-						$value['validity']  = intval(intval($value['validity'])/360);
-						if(intval($value['validity']) > 1){
-							$value['validity_type'] = "years";
-						}else{
-							$value['validity_type'] = "year";
-						}
-					}
-					if(intval($value['validity'])%30 == 0){
-						$value['validity']  = intval(intval($value['validity'])/30);
-						if(intval($value['validity']) > 1){
-							$value['validity_type'] = "months";
-						}else{
-							$value['validity_type'] = "month";
-						}
-					}
+				if(isset($value['duration']) && $value['duration'] != ''){
+					$durationObj 	=	Duration::active()->where('slug', url_slug(array($value['duration'])))->first();
+					$days 			=	(isset($durationObj->days)) ? $durationObj->days : "";
+					$sessions 		= 	(isset($durationObj->sessions)) ? $durationObj->sessions : "";
 				}
-				
 
 				$ratecard = [
 				'order'=> (isset($value['order'])) ? $value['order'] : '0',
