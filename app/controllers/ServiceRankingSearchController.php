@@ -866,44 +866,44 @@ class ServiceRankingSearchController extends \BaseController {
         $agg_location = Location::active()->whereIn('cities',array($city_array[$city]))->orderBy('name')->get(array('name','_id','slug'));
         $agg_category = array(
                 array(
-                 "_id"=> 5,
-                "name"=> "gyms",
-                "slug"=> "gyms"
-                        ),
-                array(
-                 "_id"=> 6,
-                "name"=> "yoga",
+                 "_id"=> 1,
+                "name"=> "Yoga",
                 "slug"=> "yoga"
                         ),
                 array(
-                 "_id"=> 7,
-                "name"=> "dance",
+                 "_id"=> 2,
+                "name"=> "Dance",
                 "slug"=> "dance"
                         ),
                 array(
-                 "_id"=> 8,
-                "name"=> "MMA and kick boxing",
-                "slug"=> "mma-and-kick-boxing"
+                 "_id"=> 3,
+                "name"=> "Martial Arts",
+                "slug"=> "martial-arts"
                         ),
                 array(
-                 "_id"=> 11,
-                "name"=> "pilates",
+                 "_id"=> 4,
+                "name"=> "Pilates",
                 "slug"=> "pilates"
                         ),
                 array(
-                 "_id"=> 12,
-                "name"=> "zumba",
+                 "_id"=> 5,
+                "name"=> "Cross Functional Training",
+                "slug"=> "cross-functional-training"
+                        ),
+                array(
+                 "_id"=> 19,
+                "name"=> "Zumba",
                 "slug"=> "zumba"
                         ),
                 array(
-                 "_id"=> 32,
-                "name"=> "crossfit",
-                "slug"=> "crossfit"
+                 "_id"=> 65,
+                "name"=> "Gym",
+                "slug"=> "gym"
                         ),
                 array(
-                 "_id"=> 35,
-                "name"=> "cross functional training",
-                "slug"=> "cross-functional-training"
+                 "_id"=> 111,
+                "name"=> "Crossfit",
+                "slug"=> "crossfit"
                         ),
                 array(
                  "_id"=> 43,
