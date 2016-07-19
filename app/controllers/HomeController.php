@@ -1383,11 +1383,11 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             $serviceArr  = sorting_array($unOrderServiceArr, "_id", $serviceids, true);
 //            return $serviceArr;
 
-            $allserviceids              =   array_unique(Ratecard::where("monsoon_sale_enable", "1")->lists("service_id"));
+            $allserviceids              =   array_unique(Ratecard::where("direct_payment_enable", "1")->lists("service_id"));
             $allservices                =   Service::whereIn('_id', $allserviceids )
             ->active()
             ->where('city_id', $city_id)
-            ->with(array('serviceratecards'=>function($query){$query->select('*')->where('payment_enable',"1");}))
+            ->with(array('serviceratecards'=>function($query){$query->select('*')->where('direct_payment_enable',"1");}))
             ->get(['serviceratecards','_id','name','location_id'])->toArray();
 
             $locationclusters           =   Locationcluster::where('city_id', '=', $city_id)
