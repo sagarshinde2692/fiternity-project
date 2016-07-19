@@ -246,7 +246,33 @@ class Service extends \Basemodel{
 
 
 	public function serviceratecards(){
-		return $this->hasMany('Ratecard','service_id');
+		$ratecards = [];
+		$ratecardsarr = $this->hasMany('Ratecard','service_id')
+		if($ratecardsarr){
+			foreach ($ratecardsarr as $key => $value) {
+
+				if(intval($value['validity'])%360 == 0){
+					$value['validity']  = intval(intval($value['validity'])/360);
+					if(intval($value['validity']) > 1){
+						$value['validity_type'] = "years";
+					}else{
+						$value['validity_type'] = "year";
+					}
+				}
+				
+				if(intval($value['validity'])%30 == 0){
+					$value['validity']  = intval(intval($value['validity'])/30);
+					if(intval($value['validity']) > 1){
+						$value['validity_type'] = "months";
+					}else{
+						$value['validity_type'] = "month";
+					}
+				}
+				array_push($ratecards, $value);
+			}
+			
+		}
+		return $ratecards;
 	}
 
 }
