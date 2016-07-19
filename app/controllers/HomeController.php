@@ -1354,8 +1354,9 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             }
 
 
-            $serviceArr         =   [];
-            $services           =   Service::whereIn('_id', $serviceids )
+            $unOrderServiceArr      =   [];
+            $serviceArr             =   [];
+            $services               =   Service::whereIn('_id', $serviceids )
             ->with(
                 array('finder'=>function($query){
                     $query->select('_id', 'title', 'slug', 'coverimage', 'category_id','finder_coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 
@@ -1372,18 +1373,13 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             ->toArray();
 
             foreach ($services as $service){
-
                 $item    =      array_only($service, ['serviceratecards', 'finder', 'name', 'slug', '_id', 'what_i_should_carry', 'what_i_should_expect', 'workout_intensity', 'workout_tags', 'finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'address', 'body', 'timing','location']);
-                array_push($serviceArr,$item);
-
+                array_push($unOrderServiceArr,$item);
             }
 
+            $serviceArr  = sorting_array($unOrderServiceArr, "_id", $serviceids, true);
+//            return $serviceArr;
 
-               // return $serviceArr;
-
-                // return $locationids = array_unique(array_pluck($services,'location_id'));
-
-               // service ratecard having  monsoon_sale_enable 1
             $allserviceids              =   array_unique(Ratecard::where("monsoon_sale_enable", "1")->lists("service_id"));
             $allservices                =   Service::whereIn('_id', $allserviceids )
             ->active()
