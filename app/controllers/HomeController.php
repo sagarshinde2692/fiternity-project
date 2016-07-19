@@ -573,7 +573,10 @@ class HomeController extends BaseController {
 
     public function getCities(){
 
-        $cites		= 	City::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        $array = array(9);
+
+        $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        
         return Response::json($cites,200);
     }
 
