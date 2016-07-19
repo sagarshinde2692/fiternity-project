@@ -1644,6 +1644,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();
 
+            $customer_auto_sms = '';
+
             //Send Instant (Email) To Customer & Finder
             if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){
 
