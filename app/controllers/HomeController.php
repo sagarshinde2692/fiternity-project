@@ -1330,7 +1330,7 @@ public function getCategorytagsOfferings($city = 'mumbai'){
 
 
  // FOR MONSOON SALE
-public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
+public function getMonsoonSaleHomepage($city = 'mumbai', $cache = false){
 
     $citydata       =   City::where('slug', '=', $city)->first(array('name','slug'));
 
@@ -1363,11 +1363,7 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             ->with(
                 array('finder'=>function($query){
                     $query->select('_id', 'title', 'slug', 'coverimage', 'category_id','finder_coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 
-                                    'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info')
-                             ->with(array('reviews'=>function($query1){
-                                 $query1->select('*')->where('status','=','1')->orderBy('_id', 'DESC');
-                                 })
-                             );
+                                    'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');
                 })
             )
             ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
@@ -1383,12 +1379,12 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
             $serviceArr  = sorting_array($unOrderServiceArr, "_id", $serviceids, true);
 //            return $serviceArr;
 
-            $allserviceids              =   array_unique(Ratecard::where("direct_payment_enable", "1")->lists("service_id"));
-            $allservices                =   Service::whereIn('_id', $allserviceids )
-            ->active()
-            ->where('city_id', $city_id)
-            ->with(array('serviceratecards'=>function($query){$query->select('*')->where('direct_payment_enable',"1");}))
-            ->get(['serviceratecards','_id','name','location_id'])->toArray();
+            // $allserviceids              =   array_unique(Ratecard::where("direct_payment_enable", "1")->lists("service_id"));
+            // $allservices                =   Service::whereIn('_id', $allserviceids )
+            // ->active()
+            // ->where('city_id', $city_id)
+            // ->with(array('serviceratecards'=>function($query){$query->select('*')->where('direct_payment_enable',"1");}))
+            // ->get(['serviceratecards','_id','name','location_id'])->toArray();
 
             $locationclusters           =   Locationcluster::where('city_id', '=', $city_id)
             ->active()
@@ -1402,21 +1398,21 @@ public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
                 $locationids                =   array_unique(array_pluck($locationcluster['locations'],'_id'));
                 $cluster_ratecard_count     =   0;
 
-                foreach ($allservices as $key => $allservice) {
-                    $location_id = intval($allservice['location_id']);
-                    if(in_array($location_id, $locationids) && isset($allservice['serviceratecards'])){
-                        $service_ratecard_count     =   count($allservice['serviceratecards']);
-                        $cluster_ratecard_count     =   $cluster_ratecard_count + $service_ratecard_count;
-                    }
+                // foreach ($allservices as $key => $allservice) {
+                //     $location_id = intval($allservice['location_id']);
+                //     if(in_array($location_id, $locationids) && isset($allservice['serviceratecards'])){
+                //         $service_ratecard_count     =   count($allservice['serviceratecards']);
+                //         $cluster_ratecard_count     =   $cluster_ratecard_count + $service_ratecard_count;
+                //     }
 
-                    }// foreach
+                //     }// foreach
 
 
-                    $item                       =   array_only($locationcluster, ['name', 'slug', '_id']);
+                    $item                       =   array_only($locationcluster, ['name', 'slug', '_id','cluster_ratecard_count']);
                     $locationids                =   array_unique(array_pluck($locationcluster['locations'],'_id'));
 
                     $item['locations']          =   pluck($locationcluster['locations'], ['name', 'slug', '_id']);
-                    $item['ratecard_count']     =   $cluster_ratecard_count;
+                    $item['ratecard_count']     =   $item['cluster_ratecard_count'];
                     array_push($locationclustersArr,$item);
 
                 }                                        
