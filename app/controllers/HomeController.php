@@ -751,7 +751,7 @@ public function landingFindersTitle($typeoflandingpage, $city_id = ''){
 }
 public function landingAnytimeFitnessFinders(){
 
-    $finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909,8821,8823,8871);
+    $finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,5728,7900,7901,7902,7903,7905,7906,7907,7909,8821,8823,8871);
     $gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
     $finders 			= 		Finder::whereIn('_id', $finder_ids)
     ->with('categorytags')
@@ -799,7 +799,7 @@ public function landingPowerhouseFinders(){
 
 public function landingAnytimeFitnessFindersCityWise($cityid)
 {
-    $finder_ids     = array(1484, 5728, 5745, 5746, 5747, 5748, 6250, 7335, 7439, 7900, 7901, 7902, 7903, 7905, 7906, 7907, 7908, 7909);
+    $finder_ids     = array(1484, 5728, 5745, 5746, 5747, 5748, 6250, 7335, 7439, 7900, 7901, 7902, 7903, 7905, 7906, 7907, 7909);
     $finders 		= 		Finder::whereIn('_id', $finder_ids)->where('city_id', intval($cityid))->get(array('_id','slug','title'))->toArray();;
     $finder_html     =       "";
     foreach ($finders as $key => $finder) {
