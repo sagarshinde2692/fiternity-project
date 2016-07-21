@@ -357,7 +357,7 @@ Route::post('invitefortrial', array('as' => 'customer.inviteForTrial','uses' => 
 Route::post('acceptinvite', array('as' => 'customer.acceptInvite','uses' => 'SchedulebooktrialsController@acceptInvite'));
 
 Route::get('getremindermessage/',  array('as' => 'trial.getremindermessage','uses' => 'SchedulebooktrialsController@getReminderMessage'));
-
+Route::post('nutritionstore/',  array('as' => 'trial.nutritionstore','uses' => 'SchedulebooktrialsController@nutritionStore'));
 
 Route::group(array('before' => 'validatetoken'), function() {
 

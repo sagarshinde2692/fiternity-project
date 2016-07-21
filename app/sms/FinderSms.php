@@ -139,6 +139,15 @@ Class FinderSms extends VersionNextSms{
         return $this->common($label,$to,$data);
 	}
 
+	public function nutritionStore ($data){
+
+		$label = 'NutritionStore-Vendor';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+        return $this->common($label,$to,$data);
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();

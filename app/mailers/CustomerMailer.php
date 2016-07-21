@@ -335,6 +335,18 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function nutritionStore($data){
+
+		$label = 'NutritionStore-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 
 	public function common($label,$data,$message_data,$delay = 0){
 

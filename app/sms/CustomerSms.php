@@ -376,6 +376,16 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
+	public function nutritionStore ($data){
+
+		$label = 'NutritionStore-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
