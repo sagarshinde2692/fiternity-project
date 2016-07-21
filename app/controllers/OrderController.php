@@ -1246,7 +1246,52 @@ class OrderController extends \BaseController {
 
         return Response::json( array( 'status' => 200, 'message' => 'link open status to 1' ),200 );
 	}
-	
-	
+
+
+
+
+	public function couponCode(){
+
+        $data		=	Input::json()->all();
+
+        if(empty($data['ratecard_id'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - ratecard_id");
+            return  Response::json($resp, 400);
+        }
+
+        if(empty($data['couponcode'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - couponcode");
+            return  Response::json($resp, 400);
+        }
+
+        $ratecard_id 	    =	intval($data['ratecard_id']);
+        $couponcode 	    =	strtoupper(trim($data['couponcode']));
+        $ratecard 		    = 	Ratecard::find($ratecard_id);
+        $real_ouponcode     =   "LETSFITIN";
+
+        if(!$ratecard){
+            $resp 	= 	array('status' => 200,'message' => "Ratcard Does not Exist", "couponcode_validity" => false);
+            return  Response::json($resp, 200);
+        }
+
+        $price  = 0;
+        if(isset($ratecard['special_price']) && intval($ratecard['special_price']) > 0){
+            $price = intval($ratecard['special_price']);
+        }else{
+            $price = intval($ratecard['price']);
+        }
+
+//        return var_dump($price);
+        
+        $couponcode_validity = (($price > 999) &&  ($real_ouponcode == $couponcode)) ? true : false;
+
+        $discount_price     =   ($couponcode_validity) ? $price - 500 : $price;
+
+        $resp 	= 	array('status' => 200,'message' => "Coupoun Validity details", "couponcode_validity" => $couponcode_validity,  "discount_price" => $discount_price);
+        return  Response::json($resp, 200);
+	}
+
+
+
 
 }
