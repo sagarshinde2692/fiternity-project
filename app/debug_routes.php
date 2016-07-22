@@ -38,6 +38,12 @@ Route::get('/removevip', function() {
 });
 
 
+Route::get('showrcb', function(){
+
+	return Requestcallbackremindercall::orderBy('_id','desc')->get();
+});
+
+
 Route::get('typecastcode', function() {
 
     $trials = Booktrial::where('code','exists',true)->where('code','!=','')->where('code', 'type', 18)->get(['_id','code']);

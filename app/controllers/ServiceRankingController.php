@@ -66,7 +66,7 @@ class ServiceRankingController extends \BaseController {
 
         // $city =1 ; $index= 'fitternity_vip_trials2016-06-02'; $timestamp = '2016-06-02';
         ini_set('max_execution_time', 90000);
-
+        ini_set('memory_limit','2048M');
         $es_host = Config::get('app.es.host');
         $es_port = Config::get('app.es.port');
 
@@ -91,7 +91,7 @@ class ServiceRankingController extends \BaseController {
         ->get(); 
 
         foreach ($items as $finderdocument) {    
-
+            set_time_limit(30);
             try{
 
                 $finderdata = $finderdocument->toArray();
@@ -162,7 +162,7 @@ class ServiceRankingController extends \BaseController {
                             $postdata_sale_ratecards['rank'] = $score;
                             $catval = evalBaseCategoryScore($finderdata['category_id']);
                             $postdata_sale_ratecards['rankv1'] = $catval;
-                            $monsoon_boost = ($postdata_sale_ratecards['monsoon_sale_enable'] == '1') ? 50 : 0;
+                            $monsoon_boost = (isset($postdata_sale_ratecards['monsoon_sale_enable']) && $postdata_sale_ratecards['monsoon_sale_enable'] == '1') ? 50 : 0;
                             $postdata_sale_ratecards['rankv2'] = $score + $catval + $monsoon_boost;
                             $postfields_data_sale_ratecard = json_encode($postdata_sale_ratecards);
                             $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/service/'.$servicedata['_id'];

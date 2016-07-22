@@ -280,6 +280,27 @@ Class FinderMailer extends Mailer {
 
     }
 
+    public function nutritionStore($data){
+
+        $label = 'NutritionStore-Vendor';
+
+        if($data['finder_vcc_email'] != ''){
+            $user_email 	=  	explode(',', $data['finder_vcc_email']);
+        }else{
+            $user_email 	= 	array(Config::get('mail.to_mailus'));
+        }
+
+        $user_name = ucwords($data['finder_name']);
+
+        $message_data 	= array(
+            'user_email' => $user_email,
+            'user_name' =>  $user_name,
+        );
+
+        return $this->common($label,$data,$message_data);
+
+    }
+
 
 	public function common($label,$data,$message_data,$delay = 0){
 

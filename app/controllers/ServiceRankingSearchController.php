@@ -862,53 +862,48 @@ class ServiceRankingSearchController extends \BaseController {
         $search_results1    =   json_decode($search_results, true);
         $searchresulteresponse = Translator::translate_sale_ratecards($search_results1);
 
-        $city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'banglore'=>3,'gurgaon'=>8,'noida'=>9);
+        $city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'bangalore'=>3,'gurgaon'=>8,'noida'=>9);
         $agg_location = Location::active()->whereIn('cities',array($city_array[$city]))->orderBy('name')->get(array('name','_id','slug'));
         $agg_category = array(
                 array(
-                 "_id"=> 5,
-                "name"=> "gyms",
-                "slug"=> "gyms"
-                        ),
-                array(
-                 "_id"=> 6,
-                "name"=> "yoga",
+                 "_id"=> 1,
+                "name"=> "Yoga",
                 "slug"=> "yoga"
                         ),
                 array(
-                 "_id"=> 7,
-                "name"=> "dance",
+                 "_id"=> 2,
+                "name"=> "Dance",
                 "slug"=> "dance"
                         ),
                 array(
-                 "_id"=> 8,
-                "name"=> "MMA and kick boxing",
-                "slug"=> "mma-and-kick-boxing"
+                 "_id"=> 3,
+                "name"=> "Martial Arts",
+                "slug"=> "martial-arts"
                         ),
                 array(
-                 "_id"=> 11,
-                "name"=> "pilates",
+                 "_id"=> 4,
+                "name"=> "Pilates",
                 "slug"=> "pilates"
                         ),
                 array(
-                 "_id"=> 12,
-                "name"=> "zumba",
-                "slug"=> "zumba"
-                        ),
-                array(
-                 "_id"=> 32,
-                "name"=> "crossfit",
-                "slug"=> "crossfit"
-                        ),
-                array(
-                 "_id"=> 35,
-                "name"=> "cross functional training",
+                 "_id"=> 5,
+                "name"=> "Cross Functional Training",
                 "slug"=> "cross-functional-training"
                         ),
                 array(
-                 "_id"=> 43,
-                "name"=> "Fitness Studios",
-                "slug"=> "fitness-studios"
+                 "_id"=> 19,
+                "name"=> "Zumba",
+                "slug"=> "zumba"
+                        ),
+                array(
+                 "_id"=> 65,
+                "name"=> "Gym",
+                "slug"=> "gym"
+                        ),
+                array(
+                 "_id"=> 111,
+                "name"=> "Crossfit",
+                "slug"=> "crossfit"
                         )
         );
         $searchresulteresponse->results->aggregationlist = array('category'=> $agg_category, 'location'=> $agg_location);

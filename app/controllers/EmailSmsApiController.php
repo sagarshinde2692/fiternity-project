@@ -543,7 +543,7 @@ class EmailSmsApiController extends \BaseController {
 
         $smsdata = array(
             'send_to' => Input::json()->get('phone'),
-            'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.',
+            'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.'
         );
         $this->sendSMS($smsdata);
 
@@ -650,17 +650,6 @@ class EmailSmsApiController extends \BaseController {
             $schedule_date_time         =   Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
 
-            $data = [
-                'customer_name' => trim($customer_name),
-                'customer_phone' => trim($customer_phone),
-                'schedule_date' => $schedule_date,
-                'schedule_date_time' => $schedule_date_time,
-                'schedule_slot' => trim($schedule_slot),
-                'call_status' => 'no',
-                'capture_id' => $capture_id
-            ];
-
-
             $time       = time();
             $from_time  = strtotime(date('Y-m-d') . $schedule_slot_start_time);
             $to_time    = strtotime(date('Y-m-d') . $schedule_slot_end_time);
@@ -668,24 +657,38 @@ class EmailSmsApiController extends \BaseController {
             if($time >= $from_time && $time <= $to_time){
                 $delay = 0;
                 // echo "today ".$delay." --- ".$from_time." -- ".$to_time;
+                $schedule_date_time = $schedule_date_time;
             }else{
                 $tommrow_schedule_date_time = date('Y-m-d H:i:s', strtotime($schedule_date_time . ' +1 day'));
                 $delay = $this->getSeconds($tommrow_schedule_date_time);
                 // echo "tommrow ".$tommrow_schedule_date_time." --- ".$from_time." -- ".$to_time;
+                $schedule_date_time = $tommrow_schedule_date_time;
             }
 
+
+            $data = [
+                'customer_name' => trim($customer_name),
+                'customer_phone' => trim($customer_phone),
+                'schedule_date' => $schedule_date,
+                'schedule_date_time' => $schedule_date_time,
+                'schedule_slot' => trim($schedule_slot),
+                'attempt' => 0,
+                'call_status' => 'no',
+                'status' => 'callback',
+                'capture_id' => $capture_id
+            ];
 
             $requestcallbackremindercall_id = Requestcallbackremindercall::max('_id') + 1;
 
-            $label      =       "request_callback_cloudagent";
-//            $host       =       "http://apistg.fitn.in/";
-            $host       =       "https://a1.fitternity.com/";
-            $url        =       $host."requestcallbackcloudagent/".$requestcallbackremindercall_id;
-            $queue_id   =       $this->hitURLAfterDelay($url, $delay, $label);
-            if($queue_id){
-                $data['queue_id'] = $queue_id;
-                $data['url'] = $url;
-            }
+//            $label      =       "request_callback_cloudagent";
+////            $host       =       "http://apistg.fitn.in/";
+//            $host       =       "https://a1.fitternity.com/";
+//            $url        =       $host."requestcallbackcloudagent/".$requestcallbackremindercall_id;
+//            $queue_id   =       $this->hitURLAfterDelay($url, $delay, $label);
+//            if($queue_id){
+//                $data['queue_id'] = $queue_id;
+//                $data['url'] = $url;
+//            }
 
             $obj = new Requestcallbackremindercall($data);
             $obj->_id = $requestcallbackremindercall_id;
@@ -761,7 +764,7 @@ class EmailSmsApiController extends \BaseController {
                     $responseData['data']['status'] == "SUCCESS"){
 
                     $remindercallObj  = \Requestcallbackremindercall::find(intval($remindercall['_id']));
-                    $remindercallObj->update(['call_status' => 'yes']);
+                    $remindercallObj->update(['call_status' => 'yes','status'=> "call_now"]);
 
                     return $responseData;
 

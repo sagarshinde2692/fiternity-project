@@ -376,6 +376,64 @@ class HomeController extends BaseController {
 
 
 
+    public function getFinderCountLocationwise($city = 'mumbai', $cache = true){
+
+
+        $findercount_locationwise_city  =   $cache ? Cache::tags('findercount_locationwise_city')->has($city) : false;
+
+        if(!$findercount_locationwise_city){
+
+            $citydata                       =   City::where('slug', '=', $city)->first(array('name','slug'));
+
+            if(!$citydata){
+                return $this->responseNotFound('City does not exist');
+            }
+
+            $city_name     =       trim(strtolower($citydata['name']));
+            $jsonData      = '{
+                "category":"",
+                "budget":[],
+                "offerings":[],
+                "facilities":[],
+                "regions":[],
+                "location":{"city":"'.$city_name.'"},
+                "offset":{"from":0,
+                "number_of_records":0},
+                "sort":{"sortfield":"popularity",
+                "order":"desc"},
+                "trialdays":[]
+            }';
+
+
+            $payload            =   json_decode($jsonData, true);
+            $url                =   $this->api_url."search/getfinderresultsv2";
+            $response           =   json_decode($this->client->post($url,['json'=>$payload])->getBody()->getContents(), true);
+            $aggregationlist    =   (isset($response['results']['aggregationlist']) && $response['results']['aggregationlist']['locationtags']) ? $response['results']['aggregationlist']['locationtags'] : [];
+
+
+            $locationsArr       =   [];
+
+            if(count($aggregationlist) > 0){
+                foreach ($aggregationlist as $key => $location) {
+                    if(intval($location['count']) > 0){
+                        $location = ['count' => $location['count'], 'name' => $location['key'], 'slug' => url_slug([$location['key']]) ];
+                        array_push($locationsArr, $location);
+                    }
+                }
+            }
+
+            $data               =   ['locations' => $locationsArr, 'message' => 'locations aggregationlist :)'];
+            Cache::tags('findercount_locationwise_city')->put($city, $data, Config::get('cache.cache_time'));
+
+        }
+
+        return Response::json(Cache::tags('findercount_locationwise_city')->get($city));
+
+    }
+
+
+
+
     public function getFooterByCity($city = 'mumbai',$cache = true){
 
         $footer_by_city = $cache ? Cache::tags('footer_by_city')->has($city) : false;
@@ -465,7 +523,7 @@ class HomeController extends BaseController {
                         "sort":{"sortfield":"popularity",
                         "order":"desc"},
                         "trialdays":[]
-                        }';
+                    }';
                 }else{
                     $jsonData      = '{
                         "category":"'.$categoryParm.'",
@@ -479,7 +537,7 @@ class HomeController extends BaseController {
                         "sort":{"sortfield":"popularity",
                         "order":"desc"},
                         "trialdays":[]
-                        }';
+                    }';
                 }
 
                 $payload    =   json_decode($jsonData, true);
@@ -515,7 +573,10 @@ class HomeController extends BaseController {
 
     public function getCities(){
 
-        $cites		= 	City::active()->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        $array = array(9);
+
+        $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+
         return Response::json($cites,200);
     }
 
@@ -637,35 +698,35 @@ class HomeController extends BaseController {
     }
 
     public function landingFinders($typeoflandingpage){
-		switch($typeoflandingpage){
-			case "yfc" : $finder_ids			=		array(1029,1030,1033,1034,1035,1554,1705,1706,7407,1870,4585,5045);
-			break;
-			case "snap" : $finder_ids			=		array(608,2890,3175,3178,3179,3183,3192,3201,3204,3233,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,7081,7106,7111,7114,7116,8872,5566,5735,5736,5737,5738,5739,5964,6254,6594,8878);
-			break;
-			default: $responseArr 		= 		['finders' => [], 'gallery' => [], 'count' => 0];
-					return Response::json($responseArr);
+        switch($typeoflandingpage){
+            case "yfc" : $finder_ids			=		array(1029,1030,1033,1034,1035,1554,1705,1706,7407,1870,4585,5045);
+                break;
+            case "snap" : $finder_ids			=		array(608,2890,3175,3178,3179,3183,3192,3201,3204,3233,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,7081,7106,7111,7114,7116,8872,5566,5735,5736,5737,5738,5739,5964,6254,6594,8878);
+                break;
+            default: $responseArr 		= 		['finders' => [], 'gallery' => [], 'count' => 0];
+                return Response::json($responseArr);
 
-		}
-		$gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
-		$finders 			= 		Finder::whereIn('_id', $finder_ids)
-			->with('categorytags')
-			->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-			->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-			->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-			->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-			->get(array('_id','slug','title','categorytags','category_id','category','location_id','location','city_id','city','contact','services','lat','lon','price_range','average_rating','custom_city','coverimage'))->toArray();;
+        }
+        $gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
+        $finders 			= 		Finder::whereIn('_id', $finder_ids)
+            ->with('categorytags')
+            ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+            ->get(array('_id','slug','title','categorytags','category_id','category','location_id','location','city_id','city','contact','services','lat','lon','price_range','average_rating','custom_city','coverimage'))->toArray();;
 
-		$finderArr = [];
-		foreach ($finders as $key => $value) {
-			$finderobj 	= 	array_except($value, array('services'));
-			array_set($finderobj, 'services', pluck( $value['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory']  ));
-			array_push($finderArr, $finderobj);
-		}
+        $finderArr = [];
+        foreach ($finders as $key => $value) {
+            $finderobj 	= 	array_except($value, array('services'));
+            array_set($finderobj, 'services', pluck( $value['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory']  ));
+            array_push($finderArr, $finderobj);
+        }
 
-		$responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finders)];
-		return Response::json($responseArr);
-	}
-	public function landingFindersTitle($typeoflandingpage, $city_id = ''){
+        $responseArr 		= 		['finders' => $finderArr, 'gallery' => $gallery, 'count' => count($finders)];
+        return Response::json($responseArr);
+    }
+    public function landingFindersTitle($typeoflandingpage, $city_id = ''){
         switch($typeoflandingpage){
             case "yfc" :
                 $finder_ids			=	[1029,1030,1033,1034,1035,1554,1705,1706,7407,1870,4585,5045];
@@ -690,7 +751,7 @@ class HomeController extends BaseController {
     }
     public function landingAnytimeFitnessFinders(){
 
-        $finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,7439,7900,7901,7902,7903,7905,7906,7907,7908,7909,8821,8823,8871);
+        $finder_ids			=		array(1484,5728,5745,5746,5747,5748,6250,7335,5728,7900,7901,7902,7903,7905,7906,7907,7909,8821,8823,8871);
         $gallery 			= 		Finder::whereIn('_id', $finder_ids)->with(array('location'=>function($query){$query->select('_id','name','slug');}))->pluck('photos');
         $finders 			= 		Finder::whereIn('_id', $finder_ids)
             ->with('categorytags')
@@ -738,7 +799,7 @@ class HomeController extends BaseController {
 
     public function landingAnytimeFitnessFindersCityWise($cityid)
     {
-        $finder_ids     = array(1484, 5728, 5745, 5746, 5747, 5748, 6250, 7335, 7439, 7900, 7901, 7902, 7903, 7905, 7906, 7907, 7908, 7909);
+        $finder_ids     = array(1484, 5728, 5745, 5746, 5747, 5748, 6250, 7335, 7439, 7900, 7901, 7902, 7903, 7905, 7906, 7907, 7909);
         $finders 		= 		Finder::whereIn('_id', $finder_ids)->where('city_id', intval($cityid))->get(array('_id','slug','title'))->toArray();;
         $finder_html     =       "";
         foreach ($finders as $key => $finder) {
@@ -839,7 +900,7 @@ class HomeController extends BaseController {
         $finders 		=		Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
             ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
             ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-            ->whereIn('_id', array(1029,1030,1032,1033,1034,1035,1554,1705,1706,1870,4585))
+            ->whereIn('_id', array(1029,1030,1032,1034,1035,1554,1705,1706,1870,4585))
             ->remember(Config::get('app.cachetime'))
             ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','contact'))
             ->toArray();
@@ -1267,11 +1328,9 @@ class HomeController extends BaseController {
     }
 
 
-    
- // FOR MONSOON SALE
 
-    public function getMonsoonSaleHomepage($city = 'mumbai', $cache = true){
-
+    // FOR MONSOON SALE
+    public function getMonsoonSaleHomepage($city = 'mumbai', $cache = false){
 
         $citydata       =   City::where('slug', '=', $city)->first(array('name','slug'));
 
@@ -1285,11 +1344,11 @@ class HomeController extends BaseController {
 
         $monsoon_sale_homepage = $cache ? Cache::tags('monsoon_sale_homepage')->has($city) : false;
 
+
         if(!$monsoon_sale_homepage){
 
             $fitmaniahomepageobj    =   Fitmaniahomepage::where('city_id', '=', $city_id)->first();
             if($fitmaniahomepageobj){
-
 
                 $serviceids     =   (isset($fitmaniahomepageobj['serviceids']) && $fitmaniahomepageobj['serviceids'] != "") ? array_map('intval', explode(",", $fitmaniahomepageobj['serviceids']) ) : [];
 
@@ -1297,66 +1356,70 @@ class HomeController extends BaseController {
                     $resp   =   array('status' => 400, 'ratecards' => [], 'message' => 'No Services Exist :)');
                 }
 
-                $serviceArr         =   [];
-                $services           =   Service::whereIn('_id', $serviceids )
-                    ->with(array('finder'=>function($query){$query->select('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');})
-                    ->with('location')
+
+                $unOrderServiceArr      =   [];
+                $serviceArr             =   [];
+                $services               =   Service::whereIn('_id', $serviceids )
+                    ->with(
+                        array('finder'=>function($query){
+                            $query->select('_id', 'title', 'slug', 'coverimage', 'category_id','finder_coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect',
+                                'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'reviews','info');
+                        })
+                    )
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
                     ->with(array('serviceratecards'=>function($query){$query->select('*')->where('hot_deals',"1");}))
                     ->get()
                     ->toArray();
 
                 foreach ($services as $service){
-
                     $item    =      array_only($service, ['serviceratecards', 'finder', 'name', 'slug', '_id', 'what_i_should_carry', 'what_i_should_expect', 'workout_intensity', 'workout_tags', 'finder_id','location_id','servicecategory_id','servicesubcategory_id','workout_tags', 'address', 'body', 'timing','location']);
-                    array_push($serviceArr,$item);
-
+                    array_push($unOrderServiceArr,$item);
                 }
 
+                $serviceArr  = sorting_array($unOrderServiceArr, "_id", $serviceids, true);
+//            return $serviceArr;
 
-               // return $serviceArr;
-
-                // return $locationids = array_unique(array_pluck($services,'location_id'));
-               
-               // service ratecard having  monsoon_sale_enable 1
-                $allserviceids              =   array_unique(Ratecard::where("monsoon_sale_enable", "1")->lists("service_id"));
-                $allservices                =   Service::whereIn('_id', $allserviceids )
-                                                    ->active()
-                                                    ->where('city_id', $city_id)
-                                                    ->with(array('serviceratecards'=>function($query){$query->select('*')->where('monsoon_sale_enable',"1");}))
-                                                    ->get(['serviceratecards','_id','name','location_id'])->toArray();
+                // $allserviceids              =   array_unique(Ratecard::where("direct_payment_enable", "1")->lists("service_id"));
+                // $allservices                =   Service::whereIn('_id', $allserviceids )
+                // ->active()
+                // ->where('city_id', $city_id)
+                // ->with(array('serviceratecards'=>function($query){$query->select('*')->where('direct_payment_enable',"1");}))
+                // ->get(['serviceratecards','_id','name','location_id'])->toArray();
 
                 $locationclusters           =   Locationcluster::where('city_id', '=', $city_id)
-                                                    ->with(array('locations'=>function($query){$query->select('*');}))
-                                                    ->get()->toArray();
+                    ->active()
+                    ->with(array('locations'=>function($query){$query->select('*');}))
+                    ->get()->toArray();
 
-                $locationclustersArr        =   [];                                      
+                $locationclustersArr        =   [];
 
                 foreach ($locationclusters as $key => $locationcluster) {
 
                     $locationids                =   array_unique(array_pluck($locationcluster['locations'],'_id'));
                     $cluster_ratecard_count     =   0;
 
-                    foreach ($allservices as $key => $allservice) {
-                        $location_id = intval($allservice['location_id']);
-                        if(in_array($location_id, $locationids) && isset($allservice['serviceratecards'])){
-                            $service_ratecard_count     =   count($allservice['serviceratecards']);
-                            $cluster_ratecard_count     =   $cluster_ratecard_count + $service_ratecard_count;
-                        }
+                    // foreach ($allservices as $key => $allservice) {
+                    //     $location_id = intval($allservice['location_id']);
+                    //     if(in_array($location_id, $locationids) && isset($allservice['serviceratecards'])){
+                    //         $service_ratecard_count     =   count($allservice['serviceratecards']);
+                    //         $cluster_ratecard_count     =   $cluster_ratecard_count + $service_ratecard_count;
+                    //     }
 
-                    }// foreach
+                    //     }// foreach
 
 
-                    $item                       =   array_only($locationcluster, ['name', 'slug', '_id']);
+                    $item                       =   array_only($locationcluster, ['name', 'slug', '_id','cluster_ratecard_count']);
                     $locationids                =   array_unique(array_pluck($locationcluster['locations'],'_id'));
 
                     $item['locations']          =   pluck($locationcluster['locations'], ['name', 'slug', '_id']);
-                    $item['ratecard_count']     =   $cluster_ratecard_count;
+                    $item['ratecard_count']     =   $item['cluster_ratecard_count'];
                     array_push($locationclustersArr,$item);
-                
-                }                                        
+
+                }
 
 
-                $categorys          =       Findercategory::active()->whereIn('_id', [5,6,7,8,11,12,32,35,43])->get(array('name','_id','slug'));
+                // $categorys          =       Findercategory::active()->whereIn('_id', [5,6,7,8,11,12,32,35,43])->get(array('name','_id','slug'));
+                $categorys          =       Servicecategory::active()->whereIn('_id', [3,19,65,1,2,4,5,111])->get(array('name','_id','slug'));
 
                 $responsedata       =   [ 'city' => $citydata, 'services' => $serviceArr, 'locationclusters' => $locationclustersArr, 'categorys' => $categorys,  'message' => 'Monsoon Sale Services :)'];
                 // return Response::json($responsedata, 200);
@@ -1373,4 +1436,4 @@ class HomeController extends BaseController {
 
 
 
-}																																																					
+}

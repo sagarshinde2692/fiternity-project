@@ -108,7 +108,7 @@ class Service extends \Basemodel{
 
 			foreach ($this->ratecards as $key => $value) {
 				$days = $sessions = '';
-				
+
 				if(isset($value['duration']) && $value['duration'] != ''){
 					$durationObj 	=	Duration::active()->where('slug', url_slug(array($value['duration'])))->first();
 					$days 			=	(isset($durationObj->days)) ? $durationObj->days : "";
@@ -131,7 +131,7 @@ class Service extends \Basemodel{
 				// dd($ratecard);exit();
 
 				array_push($ratecards, $ratecard);
-			}		
+			}
 		}
 
 		return $ratecards ;
@@ -212,7 +212,7 @@ class Service extends \Basemodel{
 		return $service_batches;
 	}
 
-	
+
 
 	public function category(){
 		return $this->belongsTo('Servicecategory','servicecategory_id');

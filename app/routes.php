@@ -20,6 +20,7 @@ require __DIR__.'/debug_routes.php';
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
 Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
+Route::get('getfindercountlocationwise/{city?}', 'HomeController@getFinderCountLocationwise');
 
 Route::get('/home', 'HomeController@getHomePageData');
 Route::get('/homev2/{city?}', 'HomeController@getHomePageDatav2');
@@ -158,6 +159,7 @@ Route::get('couponcodeusedforhealthytiffinbyphoneno/{phoneno}',  array('as' => '
 
 Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
 
+Route::post('checkcouponcode',  array('as' => 'orders.couponcode','uses' => 'OrderController@couponCode'));
 Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
 Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
 Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'OrderController@captureOrderStatus'));
@@ -356,7 +358,7 @@ Route::post('invitefortrial', array('as' => 'customer.inviteForTrial','uses' => 
 Route::post('acceptinvite', array('as' => 'customer.acceptInvite','uses' => 'SchedulebooktrialsController@acceptInvite'));
 
 Route::get('getremindermessage/',  array('as' => 'trial.getremindermessage','uses' => 'SchedulebooktrialsController@getReminderMessage'));
-
+Route::post('nutritionstore/',  array('as' => 'trial.nutritionstore','uses' => 'SchedulebooktrialsController@nutritionStore'));
 
 Route::group(array('before' => 'validatetoken'), function() {
 

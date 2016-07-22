@@ -6,6 +6,36 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+
+
+if (!function_exists('sorting_array')) {
+    function sorting_array($unOrderArr, $column, $orderIds, $columnIsInt = false){
+        $orderArr        =      [];
+        $columnname      =      trim($column);
+
+        foreach ($orderIds as $orderid){
+            if($columnIsInt){
+                $arrItem  = head(array_where($unOrderArr, function($key, $value) use ($orderid, $columnname){
+                    if(intval($value[$columnname]) == intval($orderid)){
+                        return $value;
+                    }
+                }));
+            }else{
+                $arrItem  = head(array_where($unOrderArr, function($key, $value) use ($orderid, $columnname){
+                    if($value[$columnname] == $orderid){
+                        return $value;
+                    }
+                }));
+            }
+            array_push($orderArr,$arrItem);
+        }
+        return $orderArr;
+    }
+}
+
+
+
+
 if (!function_exists('bitly_url')) {
 
     function bitly_url($url = 'https://www.fitternity.com')
@@ -1214,7 +1244,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             $sale_ratecards = array_values(
                 array_where($ratecards, function($key, $ratecard)
                 {
-                     if((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')){
+                     if(((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')) && (isset($ratecard['type']) && $ratecard['type'] == 'membership') ){
                          return $ratecard;
                      }
                 })
