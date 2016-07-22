@@ -543,7 +543,7 @@ class EmailSmsApiController extends \BaseController {
 
         $smsdata = array(
             'send_to' => Input::json()->get('phone'),
-            'message_body'=>'Dear ('.Input::json()->get('name').'), We hope the call helped you with your fitness needs. In case of any further assistance, please call back on (02261222222). Regards - Team Fitternity',
+            'message_body'=>'Hi '.Input::json()->get('name').', Thank you for your request to call back. We will call you shortly to arrange a time. Regards - Team Fitternity.'
         );
         $this->sendSMS($smsdata);
 

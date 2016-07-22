@@ -40,7 +40,7 @@ Route::get('/removevip', function() {
 
 Route::get('showrcb', function(){
 
-	return Requestcallbackremindercall::get();
+	return Requestcallbackremindercall::orderBy('_id','desc')->get();
 });
 
 
