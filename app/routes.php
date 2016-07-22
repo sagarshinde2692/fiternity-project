@@ -246,9 +246,9 @@ Route::get('indexrankmongo2elastic', array('as' => 'elasticsearch.indexrankmongo
 Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageautosuggestsetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
 Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
 Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexservicerankmongo2elastic','uses' => 'ServiceRankingController@IndexServiceRankMongo2Elastic'));
-Route::get('rollingbuildfindersearch', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
-Route::get('rollingbuildserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
-Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
+Route::get('v1/rollingfinderIndex', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
+Route::get('v1/rollingserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
+//Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
 Route::get('locationcity/{value}','SearchController@locationCity');
 
@@ -639,7 +639,7 @@ Route::get('updatepaymentbooking', 'KYUController@updatepaymentbooking');
 Route::post('getglobalsearchkeywordmatrix', 'KYUController@getglobalsearchkeywordmatrix');
 Route::post('getglobalsearchclickedmatrix', 'KYUController@getglobalsearchclickedmatrix');
 Route::post('getdailyvisitors', 'KYUController@getdailyvisitors');
-Route::get('rollingbuildautosearch', 'GlobalPushController@rollingbuildautosuggest');
+Route::get('v1/rollingautosuggest', 'GlobalPushController@rollingbuildautosuggest');
 
 ####################################################################################################
 /**********************************Moengage Migration COntroller***********************************/
