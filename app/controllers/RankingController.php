@@ -479,15 +479,17 @@ class RankingController extends \BaseController {
         
         $postdata['free_trial_enable'] = 0;
         
-        if(intval($postdata['commercial_type']) !== 0){
+        if(isset($postdata['commercial_type']) && intval($postdata['commercial_type']) !== 0){
 
             $finder_category = strtolower($postdata['category']);
-            if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')){
-                if($postdata['facilities'] !== ''){
-                if(array_search('free trial', $postdata['facilities']) !== false){
+            if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')
+                &&($finder_category !=='healthy tiffins')&&($finder_category !=='sport nutrition supliment stores')
+            ){
+//                if($postdata['facilities'] !== ''){
+//                if(array_search('free trial', $postdata['facilities']) !== false){
                     $postdata['free_trial_enable'] = 1;
-                }                    
-                }
+//                }
+//                }
             }           
         }
         
