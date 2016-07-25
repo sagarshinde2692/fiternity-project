@@ -482,7 +482,7 @@ public function getRankedFinderResultsApp()
     //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
     $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
-    $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+    $location    =         Input::json()->get('location')['city'] ? trim(strtolower(Input::json()->get('location')['city'])): 'mumbai';
     $locat = Input::json()->get('location');
     $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
     $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
