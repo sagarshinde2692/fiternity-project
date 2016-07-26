@@ -244,10 +244,54 @@ public function CategoryAmenities()
 }
 
 public function getcategories(){
-    $city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
+    
+    /*$city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
     $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->get(array('name','_id','slug'));
 
-    return Response::json($categorytags);        
+    return Response::json($categorytags);  */
+
+    $city_id     =  (Input::json()->get('city_id')) ? (int)Input::json()->get('city_id') : 1;
+
+    $category_slug = array(
+        "gyms",
+        "yoga",
+        "zumba",
+        "cross-functional-training",
+        "pilates",
+        "crossfit",
+        "mma-and-kick-boxing",
+        "dance",
+        "fitness-studios",
+        "marathon-training",
+        "healthy-tiffins",
+        "personal-trainers",
+        "swimming",
+        "spinning-and-indoor-cycling",
+        "aerobics",
+       //"luxury-hotels",
+        "healthy-snacks-and-beverages",
+        "sport-nutrition-supliment-stores",
+        "kids-fitness",
+        "dietitians-and-nutritionists"
+    );
+
+    $category           =       Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
+
+    $ordered_category = array();
+
+    foreach ($category_slug as $category_slug_key => $category_slug_value){
+
+        foreach ($category as $category_key => $category_value){
+
+            if($category_value['slug'] == $category_slug_value){
+
+                $ordered_category[] = $category_value;
+                break;
+            }
+        }
+    }
+
+    return Response::json($ordered_category); 
 }
 
 public function getsearchmetadata(){
