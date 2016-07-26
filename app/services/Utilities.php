@@ -382,4 +382,32 @@ Class Utilities {
         return $result;
     }
 
+    public function getCustomerTrials($customer_email){
+
+        return \Booktrial::raw(function($collection) use ($customer_email){
+
+            $aggregate = [];
+            
+            $match['$match']['customer_email'] = $customer_email;
+            $match['$match']['booktrial_type']['$in'] = array("auto");
+
+            $aggregate[] = $match;
+
+            $group = array(
+                '$group' => array(
+                    '_id' => '$type',
+                    'count' => array(
+                        '$sum' => 1
+                    )
+                )
+            );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+    }
+
 }

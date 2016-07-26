@@ -1095,7 +1095,9 @@ class CustomerController extends \BaseController {
 		$size 				=	($size != '') ? intval($size) : 10;
 
 		$orders 			=  	[];
-		$ordersrs 			= 	Order::where('customer_email','=',$customer_email)->where('type','memberships')->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$membership_types 		= Config::get('app.membership_types');
+
+		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
 		foreach ($ordersrs as $key => $value) {
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
@@ -1461,12 +1463,11 @@ public function getCustomerDetail(){
 		Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
+		$customer_email = $decoded->customer->email;
 
 		$free_vip_trials_count = $trials_count = $memberships_count = $workout_sessions_count = 0;
 
-		$free_trials = $this->utilities->getCustomerFreeTrials($customer_id)['result'];
-		$free_orders = $this->utilities->getCustomerFreeOrders($customer_id)['result'];
-		$paid_orders = $this->utilities->getCustomerPaidOrders($customer_id)['result'];
+		$all_trials = $this->utilities->getCustomerTrials($customer_email)['result'];
 
 		$vip_trial_types 		= Config::get('app.vip_trial_types');
 		$trial_types 			= Config::get('app.trial_types');
@@ -1474,20 +1475,13 @@ public function getCustomerDetail(){
 		$workout_session_types 	= Config::get('app.workout_session_types');
 
 
-		foreach($free_trials as $key=>$value){
-			in_array($value['_id']['type'], $vip_trial_types) ? $free_vip_trials_count += $value['count'] : null;
-			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
-		}
-		foreach($free_orders as $key=>$value){
-			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
-			in_array($value['_id']['type'], $membership_types) ? $memberships_count += $value['count'] : null;
-		}
-		foreach($paid_orders as $key=>$value){
-			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
-			in_array($value['_id']['type'], $membership_types) ? $memberships_count += $value['count'] : null;
-			in_array($value['_id']['type'], $workout_session_types) ? $workout_sessions_count += $value['count'] : null;
+		foreach($all_trials as $key=>$value){
+			$trials_count += $value['count'];
+			in_array((string)$value['_id'], $vip_trial_types) ? $free_vip_trials_count += $value['count'] : 0;
+			in_array((string)$value['_id'], $workout_session_types) ? $workout_sessions_count += $value['count'] : 0;
 		}
 
+		$memberships_count = Order::active()->where('customer_email',$customer_email)->where('schedule_date','exists',false)->whereIn('type',$membership_types)->count();
 
 		$responseData =  array(
 			'free_vip_trials_count'=>$free_vip_trials_count,
@@ -1501,8 +1495,6 @@ public function getCustomerDetail(){
 	}
 	
 	
-	
-
 	public function forYou($customer_email,$city_id,$lat = false,$lon = false){
 
 		//blogs catgories
