@@ -772,7 +772,7 @@ class VendorpanelController extends BaseController
         $finder_ids = $this->jwtauth->vendorIdsFromToken();
 
         $data =  Finder::whereIn('_id', $finder_ids)->with('location')
-            ->get(array('_id','slug','title','logo','location_id','location'));
+            ->get(array('_id','slug','title','logo','location_id','location','created_at'));
 
         return Response::json($data, 200);
 
