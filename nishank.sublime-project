@@ -1,0 +1,20 @@
+{
+	"folders":
+	[
+		{
+			"path": "/var/www/html/fitadmin"
+		},
+		{
+			"path": "/home/jarvis/Documents/blast"
+		},
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	],
+	"settings": {
+		"xdebug": {
+ 			"url": "http://fitapi.com/",
+		}
+	}
+}

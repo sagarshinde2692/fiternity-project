@@ -1,0 +1,643 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "app/controllers/EventsController.php",
+			"settings":
+			{
+				"buffer_size": 2041,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/EventsModel.php",
+			"settings":
+			{
+				"buffer_size": 825,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/controllers/BlogsController.php",
+			"settings":
+			{
+				"buffer_size": 10305,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/Blog.php",
+			"settings":
+			{
+				"buffer_size": 902,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "Searching 6841 files for \"getBlogComment\"\n\n/var/www/html/fitternityapi/app/controllers/BlogsController.php:\n  219  	}\n  220  \n  221: 	public function getBlogComment($slug,$cache = true){\n  222  		$data = array();\n  223  		$tslug = (string) $slug;\n\n/var/www/html/fitternityapi/app/routes.php:\n  230  Route::post('/getblogrelatedfinder', 'BlogsController@getblogRelatedFinder');\n  231  Route::post('addcomment', array('as' => 'blogs.addcomment','uses' => 'BlogsController@addComment'));\n  232: Route::get('getblogcomment/{slug}', array('as' => 'blogs.getblogcomment','uses' => 'BlogsController@getBlogComment'));\n  233  \n  234  /******************** BLOGS SECTION END HERE ********************/\n\n4 matches across 2 files\n",
+			"settings":
+			{
+				"buffer_size": 719,
+				"line_ending": "Unix",
+				"name": "Find Results",
+				"scratch": true
+			}
+		},
+		{
+			"file": "app/controllers/BaseController.php",
+			"settings":
+			{
+				"buffer_size": 2070,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/User.php",
+			"settings":
+			{
+				"buffer_size": 778,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/Customer.php",
+			"settings":
+			{
+				"buffer_size": 2277,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/models/Booktrial.php",
+			"settings":
+			{
+				"buffer_size": 704,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "app/controllers/CustomerController.php",
+			"settings":
+			{
+				"buffer_size": 76524,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 212.0,
+		"last_filter": "install",
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 431.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/var/www/html/fitternityapi",
+		"/var/www/html/fitternityapi/app",
+		"/var/www/html/fitternityapi/app/controllers",
+		"/var/www/html/fitternityapi/app/models"
+	],
+	"file_history":
+	[
+		"/var/www/html/fitternityapi/app/routes.php",
+		"/home/jarvis/.config/sublime-text-3/Packages/Default/Preferences.sublime-settings",
+		"/home/jarvis/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/jarvis/.config/sublime-text-3/Packages/Package Control/Package Control.sublime-settings",
+		"/home/jarvis/.config/sublime-text-3/Packages/Colorsublime/Colorsublime.sublime-settings",
+		"/home/jarvis/Documents/blast/app/controllers/00pages.js",
+		"/home/jarvis/Documents/blast/app.js",
+		"/var/www/html/fitternityapi/app/models/Eventcategory.php",
+		"/var/www/html/fitternityapi/app/config/queue.php",
+		"/var/www/html/fitadmin/vendor/jenssegers/mongodb/src/Jenssegers/Eloquent/Model.php",
+		"/var/www/html/fitternityapi/app/models/City.php",
+		"/home/jarvis/.config/sublime-text-3/Packages/User/Distraction Free.sublime-settings",
+		"/var/www/html/fitternityapi/app/models/Event.php",
+		"/var/www/html/fitternityapi/app/models/Basemodel.php",
+		"/var/www/html/fitternityapi/composer.json",
+		"/var/www/html/fitternityapi/app/config/database.php",
+		"/var/www/html/fitternityapi/app/controllers/UsersController.php",
+		"/var/www/html/fitternityapi/vendor/laravel/framework/src/Illuminate/Routing/Controller.php",
+		"/var/www/html/fitadmin/app/controllers/BaseController.php",
+		"/var/www/html/fitternityapi/app/config/app.php",
+		"/var/www/html/fitternityapi/app/controllers/TempsController.php",
+		"/var/www/html/fitternityapi/app/controllers/EventsController.php",
+		"/var/www/html/fitternityapi/app/database/seeds/DatabaseSeeder.php",
+		"/var/www/html/fitternityapi/app/controllers/FindersController.php",
+		"/var/www/html/fitternityapi/app/controllers/MigrationsController.php",
+		"/var/www/html/fitternityapi/app/controllers/BaseController.php",
+		"/var/www/html/fitternityapi/app/controllers/HomeController.php",
+		"/var/www/html/fitternityapi/app/debug_routes.php",
+		"/var/www/html/fitternityapi/app/filters.php",
+		"/var/www/html/fitternityapi/app/helpers.php",
+		"/var/www/html/fitadmin/app/config/database.php",
+		"/home/jarvis/Documents/blast/app/controllers/09vendors.js",
+		"/var/www/html/fitternityapi/app/models/Finder.php",
+		"/var/www/html/fitadmin/public/.htaccess",
+		"/var/www/html/fitadmin/app/controllers/HomeController.php",
+		"/var/www/html/fitadmin/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Model.php"
+	],
+	"find":
+	{
+		"height": 25.0
+	},
+	"find_in_files":
+	{
+		"height": 158.0,
+		"where_history":
+		[
+			"/var/www/html/fitternityapi",
+			"",
+			"/home/jarvis/Documents/blast"
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"getBlogComment",
+			"getUberTrialAttribute",
+			"getUberTrialAttribute()",
+			"getUberTrialAttribute()\n",
+			"getUberTrialAttribute\n",
+			"\"\",\n",
+			"extends \\Moloquent",
+			"extends Moloquent",
+			"with",
+			"node-sass",
+			"sass"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "app/controllers/EventsController.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2041,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								443,
+								443
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 45.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "app/models/EventsModel.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 825,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								396,
+								396
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 7.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "app/controllers/BlogsController.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10305,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								9664,
+								9664
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 225.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "app/models/Blog.php",
+					"semi_transient": true,
+					"settings":
+					{
+						"buffer_size": 902,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 82.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 719,
+						"regions":
+						{
+							"match":
+							{
+								"flags": 112,
+								"regions":
+								[
+									[
+										150,
+										164
+									],
+									[
+										504,
+										518
+									],
+									[
+										549,
+										563
+									],
+									[
+										592,
+										606
+									]
+								],
+								"scope": ""
+							}
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"detect_indentation": false,
+							"line_numbers": false,
+							"output_tag": 1,
+							"result_base_dir": "",
+							"result_file_regex": "^([^ 	].*):$",
+							"result_line_regex": "^ +([0-9]+):",
+							"scroll_past_end": true,
+							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "app/controllers/BaseController.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2070,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								258,
+								258
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "app/models/User.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 778,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								477,
+								477
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "app/models/Customer.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2277,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								858,
+								858
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "app/models/Booktrial.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 704,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "app/controllers/CustomerController.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 76524,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								68936,
+								68942
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 32251.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 25.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "nishank.sublime-project",
+	"replace":
+	{
+		"height": 46.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"route",
+				"fitternityapi/app/routes.php"
+			],
+			[
+				"homecontroller",
+				"fitadmin/app/controllers/HomeController.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+		"xdebug":
+		{
+			"hide_conflict": false
+		}
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 250.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
