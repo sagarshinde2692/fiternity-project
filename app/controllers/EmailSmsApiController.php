@@ -466,6 +466,15 @@ class EmailSmsApiController extends \BaseController {
 
         $data = Input::json()->all();
 
+        if($data['capture_type'] == 'fitness_canvas'){
+            $count = Capture::where('capture_type','fitness_canvas')->where('phone','LIKE','%'.substr($data['phone'], -9).'%')->count();
+
+            if($count >= 2){
+                $resp = array('status' => 402,'message' => "Only 2 requests are allowed");
+                return Response::json($resp,$resp['status']);
+            }
+        }
+
         array_set($data, 'capture_status', 'yet to connect');
 
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != "" && $data['preferred_starting_date'] != "-"){
