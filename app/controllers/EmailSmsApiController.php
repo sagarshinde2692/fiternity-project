@@ -4,6 +4,8 @@ use Hugofirth\Mailchimp\Facades\MailchimpWrapper;
 
 use App\Services\Cloudagent as Cloudagent;
 use App\Services\Sidekiq as Sidekiq;
+Use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Sms\CustomerSms as CustomerSms;
 
 
 class EmailSmsApiController extends \BaseController {
@@ -12,12 +14,16 @@ class EmailSmsApiController extends \BaseController {
     protected $reciver_name     =   "Leads From Website";
     protected $cloudagent;
     protected $sidekiq;
+    protected $customermailer;
+    protected $customersms;
 
 
-    public function __construct(Cloudagent $cloudagent, Sidekiq $sidekiq)
+    public function __construct(Cloudagent $cloudagent, Sidekiq $sidekiq,CustomerMailer $customermailer,CustomerSms $customersms)
     {
         $this->cloudagent       =   $cloudagent;
         $this->sidekiq          =   $sidekiq;
+        $this->customermailer           =   $customermailer;
+        $this->customersms              =   $customersms;
     }
 
     public function sendSMS($smsdata){
@@ -457,9 +463,34 @@ class EmailSmsApiController extends \BaseController {
 
 
     public function landingpagecallback(){
+
+        $data = Input::json()->all();
+
+        if($data['capture_type'] == 'fitness_canvas'){
+            $count = Capture::where('capture_type','fitness_canvas')->where('phone','LIKE','%'.substr($data['phone'], -9).'%')->count();
+
+            if($count >= 2){
+                $resp = array('status' => 402,'message' => "Only 2 requests are allowed");
+                return Response::json($resp,$resp['status']);
+            }
+        }
+
+        array_set($data, 'capture_status', 'yet to connect');
+
+        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != "" && $data['preferred_starting_date'] != "-"){
+            $data['preferred_starting_date'] = date('Y-m-d 00:00:00',strtotime($data['preferred_starting_date']));
+        }else{
+            unset($data['preferred_starting_date']);
+        }
+
+        array_set($data, 'date',date("h:i:sa"));
+        array_set($data, 'ticket_number',random_numbers(5));
+
+        $storecapture   = Capture::create($data);
+
         $emaildata = array(
-            'email_template' => strpos(Input::json()->get('title'), 'marathon-') ? 'emails.finder.marathon' : 'emails.finder.landingcallbacks',
-            'email_template_data' => $data = array(
+            'email_template' => 'emails.finder.landingcallbacks',
+            'email_template_data' => array(
                 'name' => Input::json()->get('name'),
                 'email' => Input::json()->get('email'),
                 'phone' => Input::json()->get('phone'),
@@ -472,29 +503,18 @@ class EmailSmsApiController extends \BaseController {
             'email_subject'     => Input::json()->get('subject'),
             'send_bcc_status'   => 1
         );
-        $this->sendEmail($emaildata);
 
-        $data           = Input::json()->all();
-        array_set($data, 'capture_status', 'yet to connect');
+        $capture_type = array('fitness_canvas');
 
-        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != "" && $data['preferred_starting_date'] != "-"){
-            $data['preferred_starting_date'] = date('Y-m-d 00:00:00',strtotime($data['preferred_starting_date']));
+        if(in_array($data['capture_type'],$capture_type)){
+
+            $this->customermailer->landingPageCallback($data);
+            $this->customersms->landingPageCallback($data);
+
         }else{
-            unset($data['preferred_starting_date']);
+
+            $this->sendEmail($emaildata);
         }
-        
-        $storecapture   = Capture::create($data);
-
-        if(Input::json()->get('capture_type') == 'FakeBuy'){
-
-            // $smsdata = array(
-            // 'send_to' => Input::json()->get('phone'),
-            //  'message_body'=>'Hi '.Input::json()->get('name').', Your registration code is '.$code
-            //  );
-
-            // $this->sendSMS($smsdata);
-        }
-
 
         $resp           = array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
         return Response::json($resp);

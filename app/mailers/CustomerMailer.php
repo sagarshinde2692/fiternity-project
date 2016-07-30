@@ -347,6 +347,23 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function landingPageCallback($data){
+
+		$label = 'FitnessCanvas-Customer';
+
+		switch ($data['capture_type']) {
+			case 'fitness_canvas': $label = 'FitnessCanvas-Customer';break;
+			default:return "no email sms";break;
+		}
+
+		$message_data 	= array(
+			'user_email' => array($data['email']),
+			'user_name' => $data['name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 
 	public function common($label,$data,$message_data,$delay = 0){
 

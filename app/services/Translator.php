@@ -725,6 +725,8 @@ public static function translate_vip_trials($es_searchresult_response){
 			$finder->object_type = 'vendor';
 			$resultobject = new WorkoutSessionObject();
 
+			$sort = $resultv1['sort'];
+
 			$resultobject->id = $result['service_id'];				
 			$resultobject->category = $result['category'];
 			$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
@@ -750,6 +752,18 @@ public static function translate_vip_trials($es_searchresult_response){
 			$resultobject->finder_slug = $result['finderslug'];
 			$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
 			$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
+
+			if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.4)){
+					
+				$resultobject->geolocation = new \stdClass();
+
+                $resultobject->geolocation->lat = (float)$result['geolocation']['lat'];
+				$resultobject->geolocation->long = (float)$result['geolocation']['lon'];
+
+				if(isset($sort[2])){
+					$resultobject->geolocation->distance = round((float)$sort[2],2);
+				}
+			}
 
 			$finder->object = $resultobject;
 			array_push($vip_trial_response->results->resultlist, $finder);			
