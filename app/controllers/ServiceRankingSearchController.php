@@ -479,9 +479,9 @@ class ServiceRankingSearchController extends \BaseController {
 
       $time_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
-      $category_facets_filter = trim($city_filterr.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
+      $category_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
-      $location_facets_filter = trim($city_filterr.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
+      $location_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
       $location_tag_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
@@ -489,7 +489,7 @@ class ServiceRankingSearchController extends \BaseController {
 
       $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
-      $price_facets_filter = trim($city_filterr.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
+      $price_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
 
       $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
