@@ -4318,12 +4318,21 @@ class SchedulebooktrialsController extends \BaseController {
 
         $start_date_time = new DateTime(date("2016-08-02 00:20:00"));
         $end_date_time = new DateTime(date("2016-08-02 13:40:00"));
+        $current_date_time = new DateTime(date("Y-m-d h:i:s"));
 
-        $booktrials = Booktrial::where('created_at','>=',$start_date_time)->where('created_at','<=',$end_date_time)->get();
+        $booktrials = Booktrial::where('created_at','>=',$start_date_time)
+            ->where('created_at','<=',$end_date_time)
+            ->where('schedule_date_time','<=',$current_date_time)
+            ->where(function($query){$query->orWhere('final_lead_status','!=','rescheduled')->orWhere('final_lead_stage','!=','cancel_stage');})
+            ->get();
+
+        //echo "<pre>";print_r(DB::getQueryLog());exit;
 
         if(count($booktrials) > 0){
 
             $booktrials = $booktrials->toArray();
+
+            $result = array();
 
             foreach ($booktrials as $key => $data){
 
@@ -4337,9 +4346,11 @@ class SchedulebooktrialsController extends \BaseController {
                     $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'booktrial');
                 }
 
+                $result[] = $data['_id'];
+
             }
 
-             echo "done";
+            echo "<pre>";print_r($result);
 
         }else{
 
