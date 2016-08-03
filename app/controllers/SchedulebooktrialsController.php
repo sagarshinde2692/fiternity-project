@@ -4328,6 +4328,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         //echo "<pre>";print_r(DB::getQueryLog());exit;
 
+        echo "<pre>";print_r(count($booktrials));exit;
+
         if(count($booktrials) > 0){
 
             $booktrials = $booktrials->toArray();
