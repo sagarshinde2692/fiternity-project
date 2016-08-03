@@ -4326,9 +4326,9 @@ class SchedulebooktrialsController extends \BaseController {
             ->where(function($query){$query->orWhere('final_lead_status','!=','rescheduled')->orWhere('final_lead_stage','!=','cancel_stage');})
             ->get();
 
-         echo "<pre>";print_r(DB::getQueryLog());
+        //echo "<pre>";print_r(DB::getQueryLog());
 
-            echo "<pre>";print_r(count($booktrials));exit;
+        //echo "<pre>";print_r(count($booktrials));exit;
 
         if(count($booktrials) > 0){
 
