@@ -4316,6 +4316,8 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function sendCommunication(){
 
+        echo "<pre>";print_r('bye bye');exit;
+
         $start_date_time = new DateTime(date("2016-08-02 00:20:00"));
         $end_date_time = new DateTime(date("2016-08-02 13:40:00"));
         $current_date_time = new DateTime(date("Y-m-d h:i:s"));
