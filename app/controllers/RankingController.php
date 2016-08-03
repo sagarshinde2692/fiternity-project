@@ -332,8 +332,8 @@ class RankingController extends \BaseController {
     public function IndexRankMongo2Elastic($index_name, $city_id){
    
        ini_set('max_execution_time', 30000);
-       $citykist      =    array(1,2,3,4,8);
-       $items = Finder::with(array('country'=>function($query){$query->select('name');}))
+       $citykist      =    array(1,2,3,4,8,9);
+       $items = Finder::whereNotIn('_id',array(3305))->with(array('country'=>function($query){$query->select('name');}))
        ->with(array('city'=>function($query){$query->select('name');}))
        ->with(array('category'=>function($query){$query->select('name','meta');}))
        ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
