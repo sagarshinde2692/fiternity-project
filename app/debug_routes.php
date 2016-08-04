@@ -27,6 +27,7 @@ Route::get('monsoonsale', 'DebugController@monsoonSale');
 /************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
+Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
 
 Route::get('/removevip', function() { 
 	return Finder::whereNotIn('_id',array(3305))->take(5)->get();
