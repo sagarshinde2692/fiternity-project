@@ -18,7 +18,7 @@ class MigrationReverseController extends \BaseController {
     public function __construct(Cacheapi $cacheapi) {
 
         $this->fitapi = 'mongodb2';
-        $this->fitadmin = 'mongodb3';
+        $this->fitadmin = 'mongodb';
         $this->cacheapi 	=	$cacheapi;
 
     }
