@@ -1323,7 +1323,7 @@ return Response::json($response);
 public function improvedkeywordSearch(){
 
     try {
-        $city_name_list = array('mumbai','pune', 'bangalore', 'delhi', 'gurgaon');
+        $city_name_list = array('mumbai','pune', 'bangalore', 'delhi', 'gurgaon','noida');
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
         $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
         $key     =         strtolower(Input::json()->get('key'));
