@@ -2468,8 +2468,8 @@ public function testEmail(){
 	
 	public function updateBrandToFindersFromCSV(){
 
-		$filePath = base_path('resource/brands.csv');
-//		var_dump($filePath);exit();
+		$filePath = base_path('public/brands.csv');
+		// var_dump($filePath);exit();
 		$data = $this->csv_to_array($filePath);
 		foreach($data as $row){
 
