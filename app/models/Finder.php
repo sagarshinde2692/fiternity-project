@@ -140,5 +140,9 @@ class Finder extends  \Basemodel {
 		return $this->hasOne('Ozonetelno','finder_id');
 	}
 
+	public function brand(){
+		return $this->belongsTo('Brand');
+	}
+
 
 }

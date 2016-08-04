@@ -2446,15 +2446,42 @@ public function testEmail(){
     	}
 
     }
-	
-	function updateBrandToFindersFromCSV(){
 
-		$filePath = public_path().'/listVendorsWithFewDetails.csv';
+	public function getbrandId($brand_name){
+
+		$brand = Brand::where('name',$brand_name)->first(array('_id'));
+
+		if($brand){
+			$brand_id = $brand['_id'];
+		}
+		else{
+			$data = array('name'=>$brand_name,'status'=>'1');
+			$insertedid = Brand::max('_id') + 1;
+			$brand       =   new Brand($data);
+			$brand_id = $brand->_id  =   $insertedid;
+			$brand->save();
+		}
+
+		return $brand_id;
+
+	}
+	
+	public function updateBrandToFindersFromCSV(){
+
+		$filePath = base_path('resource/brands.csv');
+//		var_dump($filePath);exit();
 		$data = $this->csv_to_array($filePath);
 		foreach($data as $row){
-			if(isset($row['Brand ID']) && ($row['Brand ID'] != '')){
+
+			$brand_name = trim($row['Brand']);
+
+			if(isset($brand_name) && ($brand_name != '')){
+
+				$brand_id =  $this->getbrandId($brand_name);
 				$finder = Finder::find((int) $row['Vendor ID']);
-				$finder->update(array('brand_id'=> (int) $row['Brand ID']));
+				if(isset($finder)){
+					$finder->update(array('brand_id'=> $brand_id));
+				}
 			}
 
 		}
