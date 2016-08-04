@@ -1954,6 +1954,10 @@ private function _getOfferingRegex($category){
         $regex = 'steam and sauna|jaccuzi|olympic pool|indoor pool|outdoor pool';
         break;
 
+        case 'luxury hotels':
+        $regex = 'cardio equipment|weights section|stretching workout area|other fitness activities|group activities|steam and sauna|indoor swimming pool|outdoor swimming pool|jacuzzi|spa|personal training';
+        break;
+
         case 'dietitians and nutritionists':
         $regex = 'meals provided|body fat analysis|child nutrition|pregnancy nutrition|medical or disorder related|telephonic  or  online consultation|weight management|sports nutrition';
         break;
