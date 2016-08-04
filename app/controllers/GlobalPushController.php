@@ -1323,7 +1323,7 @@ class GlobalPushController extends \BaseController
 
   public function pushofferingcity($index_name){
 
-    $citylist = array(1,2,3,4,8,9);
+    $citylist = array(1,2,3,4,8);
 
     foreach ($citylist as $city) {
       $cityname = $this->citynames[strval($city)];
