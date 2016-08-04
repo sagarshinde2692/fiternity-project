@@ -2522,6 +2522,16 @@ public function testEmail(){
 
 	}
 
+	function deactivateOzonetelDid(){
+
+		$phone_number = array('911166765187','911166765188','911166765189','911166765190','911166765192','911166765193','911166765194','911166765195','911166765247');
+
+		$ozonetel_no = Ozonetelno::active()->whereIn('phone_number',$phone_number)->where('city','DEL')->where('type','free')->where('finder_id','exists',false)->update(array('status'=>'0'));
+
+		return $ozonetel_no;
+
+	}
+
 	
     
 }
