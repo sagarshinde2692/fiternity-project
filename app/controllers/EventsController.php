@@ -17,7 +17,7 @@ class EventsController extends \BaseController {
 		$event_id = $eventInfo[0]['_id'];
 		$tickets = Tickets::where('event_id', (string) $event_id)->get();
 		$response = array(
-			'event_info' => $eventInfo,
+			'event_info' => $eventInfo[0],
 			'ticket_info' => $tickets
 		);
 		return $response;
