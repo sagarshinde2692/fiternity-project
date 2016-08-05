@@ -192,6 +192,12 @@ class ServiceController extends \BaseController {
 			$data['trainer'] = NULL;
 		}
 
+		$info_timing = $this->getInfoTiming($data);
+
+        if(isset($data['timing']) && $info_timing != ""){
+            $data['timing'] = $info_timing;
+        }
+
 		return $data;
 	}
 
@@ -442,5 +448,102 @@ class ServiceController extends \BaseController {
         $data['weekday'] = $weekday;
 
         return Response::json($data,200);
+    }
+
+    public function getInfoTiming($services){
+
+    	$batch = array();
+
+        if(isset($services['batches']) && !empty($services['batches'])){
+
+            $batch = $this->getAllBatches($services['batches']);
+        }
+
+        $info_timing = "";
+
+        if(count($batch) > 0){
+
+            foreach ($batch as $btch_value){
+
+                foreach ($btch_value as $key => $value) {
+                    $info_timing .= "<p><i>".$this->matchAndReturn($value)." : </i>". $key ."</p>";
+                }
+
+            }
+        }
+
+        return $info_timing;
+
+    }
+
+    public function getAllBatches($batches){
+
+        $result = array();
+
+        foreach ($batches as $key => $batch) {
+
+            $result_weekday = array();
+
+            foreach ($batch as $data) {
+
+                $count = 0;
+
+                if(isset($data['slots'])){
+                    foreach ($data['slots'] as $slot) {
+                        if($count == 0){
+
+                            if(isset($slot['weekday']) && isset($slot['slot_time'])){
+                                $result_weekday[ucwords($slot['weekday'])] = strtoupper($slot['slot_time']);
+                            }
+                            
+                        }else{
+                            break;
+                        }
+
+                        $count++;
+                    }
+                }
+            }
+
+            $result[] = $this->getDupKeys($result_weekday);
+
+        }
+
+        return $result;
+            
+    }
+
+    public function getDupKeys($array) {
+
+        $dups = array();
+
+        foreach ($array as $k => $v) {
+                $dups[$v][] = $k;
+        }
+
+        foreach($dups as $k => $v){
+
+            $dups[$k] = implode(", ", $v);
+
+        }
+
+        return $dups;
+    }
+
+    public function matchAndReturn($key){
+
+        $match = array(
+            "Monday, Tuesday, Wednesday"=>"Monday - Wednesday",
+            "Monday, Tuesday, Wednesday, Thursday"=>"Monday - Thursday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday"=>"Monday - Friday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"=>"Monday - Saturday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"=>"Monday - Sunday",
+        );
+
+        if(array_key_exists($key,$match)){
+            return $match[$key];
+        }else{
+            return $key;
+        }
     }
 }

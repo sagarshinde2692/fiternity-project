@@ -788,7 +788,7 @@ catch(Exception $e){
 }
 
 public function newglobalsearch(){
-
+   $type     =         Input::json()->get('type');
    $from     =         Input::json()->get('offset')['from'];
    $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
    $string   =         strtolower(Input::json()->get('keyword'));
@@ -832,6 +832,19 @@ public function newglobalsearch(){
             }                                           
         },';
     }
+    // Boost to brand........
+    $brandscript = '';
+//    if(isset($type) && $type == 'brand'){
+        $brandscript = '{
+            "script_score": {
+                "params": {
+                    "boost": 100,
+                    "param2": 20
+                },
+                "script": "((doc[\'type\'].value == \'brand\') ? 105 : 0)"
+            }
+        },';
+//    }
     $goldflag = false;
     $crossfitomflag = false;
     if(strpos($string1, 'gold') !== false){
@@ -849,14 +862,13 @@ public function newglobalsearch(){
     $inputv4boost = 40;
     $inputloc1boost = 50;
     $inputcat1boost = 5;
+    $inputservicecatboost = 4;
     $indelimeterboost = 50;
     $withdelimeterboost = 50;
     $withofferingpriorboost = 30;
     $categorylocationscriptboost = 10;
     $geofunction = '';$indelimterscript = '';$withdelimeterscript = '';$withofferingpriorityscript = '';
-    $inputfunction = '';$inputv2function='';$inputv3function=''; $inputv4function = ''; $inputcat1function = ''; $inputloc1function = '';
-
-
+    $inputfunction = '';$inputv2function='';$inputv3function=''; $inputv4function = ''; $inputcat1function = ''; $inputservicecatfunction = ''; $inputloc1function = '';
     $inputfilter = '{
         "query": {
             "match": {
@@ -954,8 +966,19 @@ public function newglobalsearch(){
             }
         }
     },';
-
-
+    $inputservicecatfilter = '{
+        "query": {
+            "match": {
+                "inputservicecat": {
+                    "query": "'.$string.'",
+                    "fuzziness": "2",
+                    "operator": "or",
+                    "prefix_length": 6,
+                    "max_expansions": 100
+                }
+            }
+        }
+    },';
     if(!empty($lat)&&!empty($lon)){
         $geofunction = '{
           "weight": '.$geo_boost.',            
@@ -980,7 +1003,7 @@ if (strpos($string,'in') !== false){
                 "boost": 50,
                 "param2": 20
             },
-            "script": "(doc[\'type\'].value == \'categorycity\') ? 40 :(doc[\'type\'].value == \'allfitnesslocation\') ? 31 :(doc[\'type\'].value == \'categorylocation\') ? 30 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+            "script": "(doc[\'type\'].value == \'categorycity\') ? 40 : (doc[\'type\'].value == \'servicecategorycity\') ? 35 : (doc[\'type\'].value == \'allfitnesslocation\') ? 31 :(doc[\'type\'].value == \'categorylocation\') ? 30 : (doc[\'type\'].value == \'categorylocationoffering\') ? 8 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
         }                                           
     },';
 }
@@ -993,7 +1016,7 @@ if ((strpos($string,'in') === false) && (strpos($string,'with') === false) && (s
                 "boost": 1,
                 "param2": 20
             },
-            "script": "(doc[\'type\'].value == \'categorycity\') ? 80 : (doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
+            "script": "(doc[\'type\'].value == \'categorycity\') ? 80 : (doc[\'type\'].value == \'servicecategorycity\') ? 70 : (doc[\'type\'].value == \'categorylocation\') ? 60 : (doc[\'type\'].value == \'categorylocationoffering\') ? 40 : (doc[\'type\'].value == \'categorylocationfacilities\') ? 6 : 0"
         }                                           
     },';
 }
@@ -1143,7 +1166,23 @@ foreach ($keylist as $key) {
     },';
 
     $inputcat1function = $inputcat1function.$inputcat1function1;
-
+    $inputservicecatfunction1 = '{
+        "filter": {
+            "query": {
+                "match": {
+                    "inputservicecat": {
+                        "query": "'.$key.'",
+                        "fuzziness": "2",
+                        "operator": "or",
+                        "prefix_length": 6,
+                        "max_expansions": 100
+                    }
+                }
+            }
+        },
+        "boost_factor": '.$inputservicecatboost.'
+    },';
+    $inputservicecatfunction = $inputservicecatfunction.$inputservicecatfunction1;
 }
 
 $vendortypescript = '{
@@ -1213,10 +1252,8 @@ if($crossfitomflag){
     "boost_factor": 200
 },';
 }
-$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript.$firstwordscript.$goldfunction.$crossfunction,',');
-
-$filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter,',');
-
+$functionlist = trim($inputfunction.$inputv2function.$inputv3function.$inputv4function.$inputloc1function.$inputcat1function.$geofunction.$indelimterscript.$withdelimeterscript.$withofferingpriorityscript.$vendortypescript.$offeringpriorityscript.$allfitnessscript.$firstwordscript.$brandscript.$goldfunction.$crossfunction,',');
+$filterlist = trim($inputfilter.$inputv2filter.$inputv3filter.$inputv4filter.$inputloc1filter.$inputcat1filter.$inputservicecatfilter,',');
 $functionquery =  '"query": {
     "function_score": {
         "functions": [
@@ -1225,8 +1262,7 @@ $functionquery =  '"query": {
         "boost_mode": "max",
         "score_mode": "sum"
     }
-},'; 
-
+},';
 $functionfilters =  ' "filter": {
     "bool": {
         "must": [{"bool":{"should" :['.$filterlist.']}},
@@ -1243,7 +1279,13 @@ $query = '{
  "type",
  "slug",
  "inputcat1",
- "inputcat"
+ "inputcat",
+ "brand",
+ "brand_id",
+ "inputcat",
+ "inputservicecat",
+ "outlets",
+ "infrastructure_type"
  ],
  "from": '.$from.',
  "size": '.$size.',
@@ -1281,7 +1323,7 @@ return Response::json($response);
 public function improvedkeywordSearch(){
 
     try {
-        $city_name_list = array('mumbai','pune', 'bangalore', 'delhi', 'gurgaon');
+        $city_name_list = array('mumbai','pune', 'bangalore', 'delhi', 'gurgaon','noida');
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
         $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
         $key     =         strtolower(Input::json()->get('key'));
@@ -1292,7 +1334,8 @@ public function improvedkeywordSearch(){
         $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
         $location =          Input::json()->get('regions') ? Input::json()->get('regions') : array();
         $category =         Input::json()->get('category') ? Input::json()->get('category') : array();
-
+        $brand    =         Input::json()->get('brand_id') ? Input::json()->get('brand_id') : array();
+        $servicecategory =   Input::json()->get('servicecategory') ? Input::json()->get('servicecategory') : array();
         $sort_clause = '';
 
         /*
@@ -1303,6 +1346,7 @@ public function improvedkeywordSearch(){
 
         $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter = '{"term" : { "city" : "'.$city.'" } },';
+        $brand_filter = '';
         $regions_filter = '';
         $category_filter = '';
         $keylist = array();
@@ -1321,19 +1365,18 @@ public function improvedkeywordSearch(){
         if(sizeof($category) > 1){
            $keylist = array_unique(array_merge($keylist, $category));
         }
+//        return $location;
         if((sizeof($location) === 1)&&(array_search($location[0], $city_name_list) !== false)){
             $cityBool = true;
         }
-
-        $redis_query_flag = ((sizeof($location) > 0)||(sizeof($category) > 0));    
-
+        $redis_query_flag = ((sizeof($location) > 0)||(sizeof($category) > 0));
         if(!$cityBool){
            if(sizeof($category) > 0){
-            $category_filter = '{"terms" : {  "categorytags": ["'.strtolower(implode('","', $category)).'"],"_cache": true}},';
+            $category_filter = '{"terms" : {  "categorytags": ["'.strtolower(implode('","', $category)).'"]}},';
         }
 
         if(sizeof($location) > 0){
-         $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $location)).'"],"_cache": true}},';
+         $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $location)).'"]}},';
      }
     
     
@@ -1366,13 +1409,12 @@ public function improvedkeywordSearch(){
                 array_push($location, $tag_found[0]);
                 break;
             }
-        }   
-
+        }
         if(sizeof($cat_list) > 0){
-            $category_filter = '{"terms" : {  "categorytags": ["'.strtolower(implode('","', $cat_list)).'"],"_cache": true}},';
+            $category_filter = '{"terms" : {  "categorytags": ["'.strtolower(implode('","', $cat_list)).'"]}},';
         }
         if(sizeof($loc_list) > 0){
-            $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $loc_list)).'"],"_cache": true}},';
+            $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $loc_list)).'"]}},';
         }
     }
 
@@ -1382,20 +1424,16 @@ public function improvedkeywordSearch(){
 
 
 $regez = $this->_getCategoryRegex($city);
-
-$budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';         
+$brand_filter = Input::json()->get('brand_id') ? '{"terms" : {  "brand_id": ['.implode('","', Input::json()->get('brand_id')).'],"_cache": true}},': '';
+$budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
 $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},'  : '';
+$servicecategory_filter = (Input::json()->get('servicecategory')) ? '{"terms" : {  "service_category_synonyms": ["'.strtolower(implode('","', $servicecategory)).'"],"_cache": true}},'  : '';
 $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},'  : '';
-
 $must_filtervalue_post ='';
 if($cityBool){
     $regions_filter = '';
 }
-
-
-$must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_location_filter.$city_filter,',');    
-
-
+$must_filtervalue_post = trim($regions_filter.$offerings_filter.$facilities_filter.$servicecategory_filter.$category_filter.$budget_filter.$brand_filter.$geo_location_filter.$city_filter,',');
 $locations_new_filter =' {"terms" : { "locationtags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
 $category_new_filter =' {"terms" : { "categorytags_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
 $title_new_filter =' {"terms" : { "title_snow" : ["'.strtolower(implode('","', $keylist)).'"] } },';
@@ -1405,11 +1443,10 @@ if($cityBool){
     $locations_new_filter = '';
 }
 $loccatshould_filter = trim($locations_new_filter.$category_new_filter.$title_new_filter.$offering_new_filter.$city_new_filter,',');
-
 $loccatshould = '{"bool":{"should":['.$loccatshould_filter.']}},';
 $mustfilter_post = '"must": ['.$must_filtervalue_post.']';
 $filtervalue_post = trim($mustfilter_post,',');
-$must_filtervalue = trim($city_filter.$loccatshould,',');
+$must_filtervalue = trim($city_filter.$brand_filter.$loccatshould,',');
 $mustfilter = '"must": ['.$must_filtervalue.']'; 
 $filtervalue = trim($mustfilter,',');
 
@@ -1424,12 +1461,11 @@ if($mustfilter_post != ''){
         "bool" : {'.$filtervalue_post.'}
     }';
 }
-
-$location_facets_filter = trim($city_filter.$geo_location_filter.$category_filter,',');
+$location_facets_filter = trim($city_filter,',');
 $facilities_facets_filter = trim($city_filter.$regions_filter.$geo_location_filter.$category_filter, ',');
 $offerings_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
 $budgets_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
-
+$brands_facets_filter = trim($city_filter.$brand_filter, ',');
 $facilities_bool = '"filter": {
     "bool" : { "must":['.$facilities_facets_filter.']}
 }';
@@ -1441,7 +1477,9 @@ $offering_bool = '"filter": {
 $budgets_bool = '"filter": {
     "bool" : {"must":['.$budgets_facets_filter.']}
 }';
-
+$brands_bool = '"filter": {
+    "bool" : {"must":['.$brands_facets_filter.']}
+}';
 $location_bool = '"filter": {
     "bool" : {"must":['.$location_facets_filter.']}
 }';
@@ -1467,9 +1505,9 @@ $regions_facets = '
     "terms": {
         "field": "locationcluster",
         "min_doc_count":1
-
-    },"aggs": {
-      "region": {
+    },
+    "aggs": {
+      "region": {      
         "terms": {
             "field": "location",
             "min_doc_count":1,
@@ -1525,11 +1563,21 @@ $budgets_facets = ' "filtered_budgets": {
         }
     }
 },';
-
-$category_facets = '"category": {"terms": {"field": "categorytags","include":"'.$regez.'","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
-
-$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$location_facets.$category_facets,',');
-
+$brands_facets = ' "filtered_brands": {
+    '.$brands_bool.',
+    "aggs": {
+        "brands": {
+            "terms": {
+                "field": "brand_id",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+$category_facets = '"category": {"terms": {"field": "categorytags","include":"'.$regez.'","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+$facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$brands_facets.$location_facets.$category_facets,',');
 $titleboost = 50;
 if(($key === '5 fitness')||($key === '5 fitness club')){
   $titleboost = 75;
@@ -1679,7 +1727,20 @@ foreach ($keylist as $keyval) {
     },
     "boost_factor": 6
 },';
-
+    if(isset($brand)&& count($brand) > 0){
+        $newval = $newval.'{
+        "filter": {
+        "query": {
+            "bool": {"should": [
+            {"match": {
+                "brand_id": '.$brand[0].'
+            }}
+            ]}
+        }
+    },
+    "boost_factor": 90
+},';
+    }
 $keywordfunction = $keywordfunction.$newval;
 }
 
@@ -1705,22 +1766,17 @@ $query = '{
                             },
                             {
                                 "match": {
-                                    "categorytags_snow": "'.$string.'"
-                                }
-                            },
-                            {
-                                "match": {
-                                    "locationtags_snow": "'.$string.'"
-                                }
-                            },
-                            {
-                                "match": {
                                     "locationtags_snow": "'.$string.'"
                                 }
                             },
                             {
                                 "match": {
                                     "offerings_snow": "'.$string.'"
+                                }
+                            },
+                            {
+                                "match": {
+                                    "service_category_snow": "'.$string.'"
                                 }
                             },
                             {
@@ -1776,7 +1832,7 @@ $query = '{
 
 // return $query;
 $request = array(
-    'url' => Config::get('app.es.url')."/fitternityv2/finder/_search",
+    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
     'port' => Config::get('app.es.port'),
     'method' => 'POST',
     'postfields' => $query

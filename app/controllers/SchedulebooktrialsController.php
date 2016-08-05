@@ -1597,8 +1597,8 @@ class SchedulebooktrialsController extends \BaseController {
         $job->delete();
 
         try{
-            $orderid = $data['orderid'];
-            $booktrialid = $data['booktrialid'];
+            $orderid = (int)$data['orderid'];
+            $booktrialid = (int)$data['booktrialid'];
             $data = $data['data'];
 
             $slot_times 				       =	explode('-',$data['schedule_slot']);
@@ -2265,7 +2265,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         try{
 
-            $booktrialid = $data['booktrialid'];
+            $booktrialid = (int)$data['booktrialid'];
             $data = $data['data'];
 
             $slot_times 				       =	explode('-',$data['schedule_slot']);
@@ -4311,6 +4311,55 @@ class SchedulebooktrialsController extends \BaseController {
         $data['finder_name'] =  $finder_name;
 
         return $data; 
+
+    }
+
+    public function sendCommunication(){
+
+        echo "<pre>";print_r('bye bye');exit;
+
+        $start_date_time = new DateTime(date("2016-08-02 00:20:00"));
+        $end_date_time = new DateTime(date("2016-08-02 13:40:00"));
+        $current_date_time = new DateTime(date("Y-m-d h:i:s"));
+
+        $booktrials = Booktrial::where('created_at','>=',$start_date_time)
+            ->where('created_at','<=',$end_date_time)
+            ->where('schedule_date_time','>=',$current_date_time)
+            ->where(function($query){$query->orWhere('final_lead_status','!=','rescheduled')->orWhere('final_lead_stage','!=','cancel_stage');})
+            ->get();
+
+        //echo "<pre>";print_r(DB::getQueryLog());
+
+        //echo "<pre>";print_r(count($booktrials));exit;
+
+        if(count($booktrials) > 0){
+
+            $booktrials = $booktrials->toArray();
+
+            $result = array();
+
+            foreach ($booktrials as $key => $data){
+
+                $order = Order::where('booktrial_id',(int)$data['_id'])->first();
+
+                if($order){
+
+                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$order->_id,'booktrialid'=>$data['_id']),'booktrial');
+                }else{
+
+                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'booktrial');
+                }
+
+                $result[] = $data['_id'];
+
+            }
+
+            echo "<pre>";print_r($result);
+
+        }else{
+
+            echo "no trials";
+        }
 
     }
 

@@ -2446,15 +2446,42 @@ public function testEmail(){
     	}
 
     }
-	
-	function updateBrandToFindersFromCSV(){
 
-		$filePath = public_path().'/listVendorsWithFewDetails.csv';
+	public function getbrandId($brand_name){
+
+		$brand = Brand::where('name',$brand_name)->first(array('_id'));
+
+		if($brand){
+			$brand_id = $brand['_id'];
+		}
+		else{
+			$data = array('name'=>$brand_name,'status'=>'1');
+			$insertedid = Brand::max('_id') + 1;
+			$brand       =   new Brand($data);
+			$brand_id = $brand->_id  =   $insertedid;
+			$brand->save();
+		}
+
+		return $brand_id;
+
+	}
+	
+	public function updateBrandToFindersFromCSV(){
+
+		$filePath = base_path('public/brands.csv');
+		// var_dump($filePath);exit();
 		$data = $this->csv_to_array($filePath);
 		foreach($data as $row){
-			if(isset($row['Brand ID']) && ($row['Brand ID'] != '')){
+
+			$brand_name = trim($row['Brand']);
+
+			if(isset($brand_name) && ($brand_name != '')){
+
+				$brand_id =  $this->getbrandId($brand_name);
 				$finder = Finder::find((int) $row['Vendor ID']);
-				$finder->update(array('brand_id'=> (int) $row['Brand ID']));
+				if(isset($finder)){
+					$finder->update(array('brand_id'=> $brand_id));
+				}
 			}
 
 		}
@@ -2519,6 +2546,16 @@ public function testEmail(){
 		}
 
 		echo "<pre>";print_r($return);exit;
+
+	}
+
+	function deactivateOzonetelDid(){
+
+		$phone_number = array('911166765187','911166765188','911166765189','911166765190','911166765192','911166765193','911166765194','911166765195','911166765247');
+
+		$ozonetel_no = Ozonetelno::active()->whereIn('phone_number',$phone_number)->where('city','DEL')->where('type','free')->where('finder_id','exists',false)->update(array('status'=>'0'));
+
+		return $ozonetel_no;
 
 	}
 

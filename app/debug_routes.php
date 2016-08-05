@@ -20,15 +20,17 @@ Route::get('migrations/order', 'MigrationsController@order');
 Route::get('migrations/ratecard', 'MigrationsController@ratecard');
 Route::get('cleartrip/sendmail', 'DebugController@cleartrip');
 Route::get('monsoonsale', 'DebugController@monsoonSale');
-
+Route::get('deactivate/ozoneteldid', 'DebugController@deactivateOzonetelDid');
 
 
 ############################################################################################
 /************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
+Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
 
 Route::get('/removevip', function() { 
+	return Finder::whereNotIn('_id',array(3305))->take(5)->get();
 	$services = Service::where("vip_trial","1")->where("city_id","<>",1)->get(array('name','vip_trial'));
 	foreach ($services as $service) {
 		$service->vip_trial = "0";

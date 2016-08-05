@@ -386,6 +386,21 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
+	public function landingPageCallback ($data){
+
+		$label = 'FitnessCanvas-Customer';
+
+		switch ($data['capture_type']) {
+			case 'fitness_canvas': $label = 'FitnessCanvas-Customer';break;
+			default:return "no email sms";break;
+		}
+
+		$to = $data['phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){

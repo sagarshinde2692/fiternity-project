@@ -69,6 +69,9 @@ Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCu
 
 /*Events API*/
 Route::get('events/{eventSlug}', 'EventsController@getEventInfo');
+
+Route::get('send/communication', 'SchedulebooktrialsController@sendCommunication');
+
 ##############################################################################
 /******************** CUSTOMERS SECTION START HERE ***********************/
 Route::get('/fitcardautobooktrials/{customeremail}',  array('as' => 'customer.fitcardautobooktrials','uses' => 'CustomerController@getFitcardAutoBookTrials'));

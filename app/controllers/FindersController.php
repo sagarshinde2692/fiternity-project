@@ -1374,7 +1374,7 @@ class FindersController extends \BaseController {
 
         foreach($dups as $k => $v){
 
-            $dups[$k] = implode(",", $v);
+            $dups[$k] = implode(", ", $v);
 
         }
 
@@ -1384,11 +1384,11 @@ class FindersController extends \BaseController {
     public function matchAndReturn($key){
 
         $match = array(
-            "Monday,Tuesday,Wednesday"=>"Monday - Wednesday",
-            "Monday,Tuesday,Wednesday,Thursday"=>"Monday - Thursday",
-            "Monday,Tuesday,Wednesday,Thursday,Friday"=>"Monday - Friday",
-            "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday"=>"Monday - Saturday",
-            "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"=>"Monday - Sunday",
+            "Monday, Tuesday, Wednesday"=>"Monday - Wednesday",
+            "Monday, Tuesday, Wednesday, Thursday"=>"Monday - Thursday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday"=>"Monday - Friday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"=>"Monday - Saturday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"=>"Monday - Sunday",
         );
 
         if(array_key_exists($key,$match)){
