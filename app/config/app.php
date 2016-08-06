@@ -207,7 +207,7 @@ return array(
 		//'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 		'AWS' 				=> 'Aws\Laravel\AwsFacade',
-
+		'DbEvent' 					=> 'App\Models\Event',
 	),
 
 	'cachetime' 					=> 	10,

@@ -7,6 +7,6 @@
  * @author Nishank Jain <nishankjain@fitternity.com>
  */
 
-class Tickets extends \Basemodel {
+class Ticket extends \Basemodel {
 	protected $collection = "tickets";
 }
