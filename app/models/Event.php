@@ -13,7 +13,7 @@ class Event extends \Basemodel {
 
 	protected $collection = "events";
 
-	// protected $dates = array('start_date','end_date');
+	protected $dates = array('start_date','end_date');
 
 	public function scopeActive ($query){
 		return $query->where('status','=','1');

@@ -9,4 +9,6 @@
 
 class Ticket extends \Basemodel {
 	protected $collection = "tickets";
+
+	protected $dates = array('start_date','end_date');
 }
