@@ -2468,6 +2468,10 @@ public function testEmail(){
 	
 	public function updateBrandToFindersFromCSV(){
 
+		Schema::dropIfExists('brands');
+
+		Finder::where('brand_id','exists',true)->unset('brand_id');
+
 		$filePath = base_path('public/brands.csv');
 		// var_dump($filePath);exit();
 		$data = $this->csv_to_array($filePath);
