@@ -44,7 +44,7 @@ class OrderController extends \BaseController {
 		$this->findersms 			=	$findersms;
 		$this->utilities 			=	$utilities;
 		$this->customerreward 		=	$customerreward;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials','combat-fitness','monsoon');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials','combat-fitness','monsoon','events');
 
 	}
 
@@ -142,20 +142,37 @@ class OrderController extends \BaseController {
 				
 			}
 
-			$abundant_category = array(42,45);
+//            $abundant_category = array(42,45);
+            $abundant_category = array();
 
 			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
 
 				if(!in_array($finder->category_id, $abundant_category)){
-					$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+                    $emailData      =   [];
+                    $emailData      =   $order->toArray();
+
+                    if($emailData['type'] == 'events'){
+                        if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+                            $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+                        }
+
+                        if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+                            $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+                        }
+                    }
+
+//                    print_pretty($emailData);exit;
+					$sndPgMail	= 	$this->customermailer->sendPgOrderMail($emailData);
 				}
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
-				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness"){
-					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
+				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness" && $order->type != "events" ){
+					
+                    $sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 				}
+
 			} 
 			
 			//SEND payment gateway SMS TO CUSTOMER and vendor

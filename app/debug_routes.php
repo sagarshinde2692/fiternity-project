@@ -42,7 +42,9 @@ Route::get('/removevip', function() {
 
 Route::get('showrcb', function(){
 
-	return Requestcallbackremindercall::orderBy('_id','desc')->get();
+	echo date( "l\, jS F\'y h:i A", strtotime("2016-07-21 18:30:00"));
+
+//	return Requestcallbackremindercall::orderBy('_id','desc')->get();
 });
 
 

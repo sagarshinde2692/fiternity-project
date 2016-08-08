@@ -127,6 +127,11 @@ Class CustomerMailer extends Mailer {
 			$label = 'Order-PG-Mickeymehtaevent-Customer';
 		}
 
+		if($data['type'] == 'events'){
+			
+			$label = 'Order-PG-Event';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
