@@ -177,7 +177,21 @@ class OrderController extends \BaseController {
 			
 			//SEND payment gateway SMS TO CUSTOMER and vendor
 			if(!in_array($finder->category_id, $abundant_category)){
-				$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
+
+				$emailData      =   [];
+				$emailData      =   $order->toArray();
+
+				if($emailData['type'] == 'events'){
+					if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+						$emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+					}
+
+					if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+						$emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+					}
+				}
+				
+				$sndPgSms	= 	$this->customersms->sendPgOrderSms($emailData);
 			}
 
 
