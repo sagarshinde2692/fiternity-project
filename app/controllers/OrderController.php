@@ -196,7 +196,7 @@ class OrderController extends \BaseController {
 
 
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
-			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness"){
+			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness" && $order->type != "events" ){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
