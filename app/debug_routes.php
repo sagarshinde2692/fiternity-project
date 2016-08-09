@@ -21,6 +21,7 @@ Route::get('migrations/ratecard', 'MigrationsController@ratecard');
 Route::get('cleartrip/sendmail', 'DebugController@cleartrip');
 Route::get('monsoonsale', 'DebugController@monsoonSale');
 Route::get('deactivate/ozoneteldid', 'DebugController@deactivateOzonetelDid');
+Route::get('unset/viptrial', 'DebugController@unsetVipTrial');
 
 
 ############################################################################################
