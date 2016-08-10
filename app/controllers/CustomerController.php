@@ -2192,12 +2192,18 @@ public function getCustomerDetail(){
         if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
         	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+
+        	$cache_tag = 'customer_home_by_city_2_5';
+
         }else{
 
         	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers","luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists"/*,"sport-nutrition-supliment-stores"*/);
+
+        	$cache_tag = 'customer_home_by_city';
+
         }
         
-		$customer_home_by_city = $cache ? Cache::tags('customer_home_by_city')->has($city) : false;
+		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
 
 		if(!$customer_home_by_city){
 
@@ -2244,10 +2250,10 @@ public function getCustomerDetail(){
 				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
 			);
 
-			Cache::tags('customer_home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+			Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
 		}
 
-		$result = Cache::tags('customer_home_by_city')->get($city);
+		$result = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
 
 		return Response::json($result);
