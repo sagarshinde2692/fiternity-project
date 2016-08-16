@@ -302,6 +302,28 @@ Class FinderMailer extends Mailer {
     }
 
 
+    public function acceptVendorMou ($data){
+
+		$label = 'AcceptVendorMou-Vendor';
+		
+		if($data['rm_email'] != ''){
+			$user_email 	=  	[$data['rm_email']];
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['rm_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+
 	public function common($label,$data,$message_data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();

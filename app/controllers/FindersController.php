@@ -39,6 +39,23 @@ class FindersController extends \BaseController {
     }
 
 
+
+    public function acceptVendorMou($mouid){
+
+
+        $vendormou = Vendormou::find(intval($mouid));
+
+        if($vendormou){
+
+            $vendormouData =    $vendormou->toArray();
+
+            $this->findermailer->acceptVendorMou($vendormouData);
+
+        }
+
+
+    }
+
     public function finderdetail($slug, $cache = true){
 
         $data 	=  array();

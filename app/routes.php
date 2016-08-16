@@ -17,8 +17,14 @@ require __DIR__.'/debug_routes.php';
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
+
+Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
+
+
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
+
+
 Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
 Route::get('getfindercountlocationwise/{city?}', 'HomeController@getFinderCountLocationwise');
 
