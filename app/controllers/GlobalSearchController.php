@@ -1332,7 +1332,7 @@ public function improvedkeywordSearch(){
         $lon     =         Input::json()->get('lon') ? Input::json()->get('lon') : '';
         $sort    =         Input::json()->get('sort') ? Input::json()->get('sort') : '';
         $order   =         Input::json()->get('order') ? Input::json()->get('order') : '';
-        $location =          Input::json()->get('regions') ? Input::json()->get('regions') : array();
+        $location =          Input::json()->get('regions') ? Input::json()->get('regions') : array($city);
         $category =         Input::json()->get('category') ? Input::json()->get('category') : array();
         $brand    =         Input::json()->get('brand_id') ? Input::json()->get('brand_id') : array();
         $servicecategory =   Input::json()->get('servicecategory') ? Input::json()->get('servicecategory') : array();
@@ -1579,6 +1579,7 @@ $brands_facets = ' "filtered_brands": {
 $category_facets = '"category": {"terms": {"field": "categorytags","include":"'.$regez.'","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
 $facetsvalue = trim($regions_facets.$facilities_facets.$offerings_facets.$budgets_facets.$brands_facets.$location_facets.$category_facets,',');
 $titleboost = 50;
+$commercial_type_boost = 50;
 if(($key === '5 fitness')||($key === '5 fitness club')){
   $titleboost = 75;
 }
@@ -1727,6 +1728,53 @@ foreach ($keylist as $keyval) {
     },
     "boost_factor": 6
 },';
+
+//    {
+//        "filter": {
+//        "query": {
+//            "bool": {
+//                "should": [
+//                {
+//                    "match": {
+//                    "commercial_type": 1
+//                    }
+//                }
+//                ]
+//            }
+//        }
+//    },
+//    "boost_factor": 15
+//},{
+//        "filter": {
+//            "query": {
+//                "bool": {
+//                    "should": [
+//                {
+//                    "match": {
+//                    "commercial_type": 3
+//                    }
+//                }
+//                ]
+//            }
+//        }
+//    },
+//    "boost_factor": 10
+//},{
+//        "filter": {
+//            "query": {
+//                "bool": {
+//                    "should": [
+//                {
+//                    "match": {
+//                    "commercial_type": 2
+//                    }
+//                }
+//                ]
+//            }
+//        }
+//    },
+//    "boost_factor": 5
+//},
     if(isset($brand)&& count($brand) > 0){
         $newval = $newval.'{
         "filter": {
@@ -1838,7 +1886,6 @@ $request = array(
     'postfields' => $query
     );
 
-$search_results     =   es_curl_request($request);       
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 $searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);
