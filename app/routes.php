@@ -19,6 +19,7 @@ require __DIR__.'/debug_routes.php';
 
 
 Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
+Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
 
 
 ##############################################################################

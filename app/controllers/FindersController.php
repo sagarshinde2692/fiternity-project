@@ -43,18 +43,37 @@ class FindersController extends \BaseController {
     public function acceptVendorMou($mouid){
 
 
-        $vendormou = Vendormou::find(intval($mouid));
+        $vendormou = Vendormou::with(array('finder'=>function($query){$query->select('_id','title','slug');}))->find(intval($mouid));
 
         if($vendormou){
 
             $vendormouData =    $vendormou->toArray();
 
-            $this->findermailer->acceptVendorMou($vendormouData);
+            return $this->findermailer->acceptVendorMou($vendormouData);
 
         }
 
 
     }
+
+
+     public function cancelVendorMou($mouid){
+
+
+        $vendormou = Vendormou::with(array('finder'=>function($query){$query->select('_id','title','slug');}))->find(intval($mouid));
+
+        if($vendormou){
+
+            $vendormouData =    $vendormou->toArray();
+
+            return $this->findermailer->cancelVendorMou($vendormouData);
+
+        }
+
+
+    }
+
+
 
     public function finderdetail($slug, $cache = true){
 

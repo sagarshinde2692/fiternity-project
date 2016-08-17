@@ -304,7 +304,46 @@ Class FinderMailer extends Mailer {
 
     public function acceptVendorMou ($data){
 
-		$label = 'AcceptVendorMou-Vendor';
+		$label = 'AcceptVendorMou-Paid-Cash-Cheque-Vendor';
+
+
+
+		if($data['mou_type'] == 'cos'){
+
+			$label = 'AcceptVendorMou-Cos-Vendor';
+
+		}elseif($data['mou_type'] == 'paid' && $data['payment_mode'] == 'online'){
+
+			$label = 'AcceptVendorMou-Paid-Online-Vendor';
+
+
+		}
+
+		// var_dump($label);exit();
+
+		
+		if($data['rm_email'] != ''){
+			$user_email 	=  	[$data['rm_email']];
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['rm_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+
+
+    public function cancelVendorMou ($data){
+
+		$label = 'CancelVendorMou-Vendor';
 		
 		if($data['rm_email'] != ''){
 			$user_email 	=  	[$data['rm_email']];
