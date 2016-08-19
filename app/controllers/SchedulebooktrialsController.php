@@ -2951,6 +2951,15 @@ class SchedulebooktrialsController extends \BaseController {
 
                 }
 
+                if((isset($booktrial->rescheduleafter4days) && $booktrial->rescheduleafter4days != '')){
+
+                    try {
+                        $sidekiq->delete($booktrial->rescheduleafter4days);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
             }
 
 
@@ -3112,6 +3121,15 @@ class SchedulebooktrialsController extends \BaseController {
 
             $id = $data['id'];
             $booktrial = Booktrial::find($id);
+
+            if((isset($booktrial->rescheduleafter4days) && $booktrial->rescheduleafter4days != '')){
+
+                try {
+                    $sidekiq->delete($booktrial->rescheduleafter4days);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
 
             //hit fitness force api to cancel trial
             if(isset($booktrial->fitness_force_appointment['appointmentid']) && $booktrial->fitness_force_appointment['appointmentid'] != ''){

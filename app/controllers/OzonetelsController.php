@@ -757,8 +757,10 @@ class OzonetelsController extends \BaseController {
 	public function misscall($type){
 
 		try{
+           $customer_sms_messageids  =  array();
 
-			$request = $_REQUEST;
+
+            $request = $_REQUEST;
 
 			$ozonetel_missedcall = new Ozonetelmissedcall();
 			$ozonetel_missedcall->_id = Ozonetelmissedcall::max('_id') + 1;
@@ -783,6 +785,7 @@ class OzonetelsController extends \BaseController {
 				$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
 
 				if($booktrial){
+                    $shorten_url = new ShortenUrl();
 
 					$finder = Finder::find((int) $booktrial->finder_id);
 
@@ -795,14 +798,27 @@ class OzonetelsController extends \BaseController {
 
 						$google_pin = "https://maps.google.com/maps?q=".$finder_lat.",".$finder_lon."&ll=".$finder_lat.",".$finder_lon;
 
-						$shorten_url = new ShortenUrl();
-
 			            $url = $shorten_url->getShortenUrl($google_pin);
 
 			            if(isset($url['status']) &&  $url['status'] == 200){
 			                $google_pin = $url['url'];
 			            }
+
 			        }
+
+                    $customer_profile_url   = "";
+                    if(isset($booktrial->customer_email) && $booktrial->customer_email != "" ){
+
+                        $customer_profile_url   =   "https://www.fitternity.com/profile/".$booktrial->customer_email;
+                        $customerurl            =   $shorten_url->getShortenUrl($customer_profile_url);
+
+                        if(isset($customerurl['status']) &&  $customerurl['status'] == 200){
+                            $customer_profile_url = $customerurl['url'];
+                        }
+
+                    }
+
+
 
 					$sidekiq = new Sidekiq();
 
@@ -813,20 +829,30 @@ class OzonetelsController extends \BaseController {
 					$data['customer_phone'] = $ozonetel_missedcall->customer_number;
 					$data['schedule_date_time'] = $booktrial->schedule_date_time;
 					$data['service_name'] = $booktrial->service_name;
-					$data['google_pin'] = $google_pin;
+                    $data['google_pin'] = $google_pin;
+                    $data['customer_profile_url'] = $customer_profile_url;
 					$data['finder_vcc_mobile'] = $booktrial->finder_vcc_mobile;
 					$data['finder_category_id'] = (int)$booktrial->finder_category_id;
 
 					Log::info('Missedcall N-3 - '.$type);
 
-					$delayReminderTimeAfter2Hour		=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A',strtotime($booktrial->schedule_date_time)))->addMinutes(60 * 2);
+                    $delayReminderTimeAfter2Hour		    =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A',strtotime($booktrial->schedule_date_time)))->addMinutes(60 * 2);
 
 					switch ($type) {
-						
-						case 'confirm': $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);$this->findersms->confirmTrial($data);break;
-						case 'cancel': $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);$this->findersms->cancelTrial($data);break;
-						case 'reschedule': $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);$this->findersms->rescheduleTrial($data);break;
+						case 'confirm':
+                            $booktrial->missedcall_sms = $this->customersms->confirmTrial($data);
+                            $this->findersms->confirmTrial($data);
+                            break;
+						case 'cancel':
+                            $booktrial->missedcall_sms = $this->customersms->cancelTrial($data);
+                            $this->findersms->cancelTrial($data);
+                            break;
+						case 'reschedule':
+                            $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);
+                            $this->findersms->rescheduleTrial($data);
+                            break;
 					}
+
 
 					$in_array = array('cancel','reschedule');
 
@@ -888,11 +914,32 @@ class OzonetelsController extends \BaseController {
 							}
 
 						}
-					}
+
+                        if((isset($booktrial->rescheduleafter4days) && $booktrial->rescheduleafter4days != '')){
+
+                            try {
+                                $sidekiq->delete($booktrial->rescheduleafter4days);
+                            }catch(\Exception $exception){
+                                Log::error($exception);
+                            }
+                        }
+                        
+                    }
+
+//                    $delayReminderRescheduleAfter4Days	=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(5);
+                    $delayReminderRescheduleAfter4Days	=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addDays(4);
+
+                    switch ($type) {
+                        case 'reschedule':
+                            $rescheduleafter4days               =   $this->customersms->reminderRescheduleAfter4Days($data, $delayReminderRescheduleAfter4Days);
+                            $booktrial->rescheduleafter4days    =   $rescheduleafter4days;
+                            break;
+                    }
 
 					$booktrial->missedcall_date = date('Y-m-d h:i:s');
 					$booktrial->missedcall_status = $missedcall_status[$type];
-					$booktrial->source_flag = 'missedcall';
+                    $booktrial->source_flag = 'missedcall';
+                    $booktrial->customer_profile_url = $customer_profile_url;
 					$booktrial->update();
 				}
 			}
