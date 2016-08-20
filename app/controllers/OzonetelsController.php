@@ -810,11 +810,11 @@ class OzonetelsController extends \BaseController {
                     if(isset($booktrial->customer_email) && $booktrial->customer_email != "" ){
 
                         $customer_profile_url   =   "https://www.fitternity.com/profile/".$booktrial->customer_email;
-                        $customerurl            =   $shorten_url->getShortenUrl($customer_profile_url);
-
-                        if(isset($customerurl['status']) &&  $customerurl['status'] == 200){
-                            $customer_profile_url = $customerurl['url'];
-                        }
+//                        $customerurl            =   $shorten_url->getShortenUrl($customer_profile_url);
+//
+//                        if(isset($customerurl['status']) &&  $customerurl['status'] == 200){
+//                            $customer_profile_url = $customerurl['url'];
+//                        }
 
                     }
 
