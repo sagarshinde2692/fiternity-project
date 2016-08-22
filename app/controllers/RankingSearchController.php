@@ -207,6 +207,9 @@ public function CategoryAmenities()
         break; 
         case 'gurgaon':
         $city_id = 8;
+        break;
+        case 'noida':
+        $city_id = 9;
         break;           
         default:                
         break;
@@ -1994,6 +1997,9 @@ private function _getCategoryRegex($city){
         $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
         break;
         case 'gurgaon':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'noida':
         $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
         break;
         

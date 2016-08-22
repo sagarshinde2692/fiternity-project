@@ -53,7 +53,7 @@ class RankingController extends \BaseController {
         $this->orders_min                       =   Finder::active()->min('orders30days');
         $this->popularity_max                   =   20000;
         $this->popularity_min                   =   0;
-        $this->city_list                        =   array(1,2,3,4,8);
+        $this->city_list                        =   array(1,2,3,4,8,9);
     }
 
     /*
