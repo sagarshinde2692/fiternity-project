@@ -10,7 +10,7 @@ class GlobalPushController extends \BaseController
   protected $elasticsearch_url = "";
   protected $elasticsearch_default_url = "";
   protected $elasticsearch_host = "";
-  protected $citylist = array(1,2,3,4,8);
+  protected $citylist = array(1,2,3,4,8,9);
   protected $citynames = array('1' => 'mumbai','2' => 'pune', '3' => 'bangalore', '4' => 'delhi', '8' => 'gurgaon', '9' => 'noida');
   protected $primaryfiltersrank = array('free trial' => '10', 'group classes' => '8', 'parking' => '6', 'sunday open' => '4', 'locker and shower facility' => '2');
 
@@ -1323,7 +1323,7 @@ class GlobalPushController extends \BaseController
 
   public function pushofferingcity($index_name){
 
-    $citylist = array(1,2,3,4,8);
+    $citylist = array(1,2,3,4,8,9);
 
     foreach ($citylist as $city) {
       $cityname = $this->citynames[strval($city)];
