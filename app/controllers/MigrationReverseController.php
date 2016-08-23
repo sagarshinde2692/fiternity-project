@@ -592,8 +592,11 @@ class MigrationReverseController extends \BaseController {
 
             if(isset($Findercategory['detail_rating']) && !empty($Findercategory['detail_rating'])){
                 foreach ($Findercategory['detail_rating'] as $key => $value) {
-                    array_push($detail_rating_summary_average, $Finder->detail_rating[strtolower($value)]["value"]);
-                    array_push($detail_rating_summary_count, $Finder->detail_rating[strtolower($value)]["count"]);
+                    if(isset($Finder->detail_rating[strtolower($value)])){
+                        array_push($detail_rating_summary_average, $Finder->detail_rating[strtolower($value)]["value"]);
+                        array_push($detail_rating_summary_count, $Finder->detail_rating[strtolower($value)]["count"]);
+                    }
+
                 }
             }
 

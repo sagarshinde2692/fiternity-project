@@ -308,14 +308,13 @@ Class FinderMailer extends Mailer {
 
 
 
-		if($data['mou_type'] == 'cos'){
+		if($data['contract_type'] == 'premium'){
 
 			$label = 'AcceptVendorMou-Cos-Vendor';
 
-		}elseif($data['mou_type'] == 'paid' && $data['payment_mode'] == 'online'){
+		}elseif(($data['contract_type'] == 'platinum' || $data['contract_type'] == 'launch plan' ) && $data['payment_mode'] == 'online'){
 
 			$label = 'AcceptVendorMou-Paid-Online-Vendor';
-
 
 		}
 
