@@ -738,8 +738,51 @@ class MigrationReverseController extends \BaseController {
                 $entity->save();
             }else{
                 // $Finder = Finder::on($this->fitadmin)->where('_id', intval($id) )->update($insertData);
-                $Finder = Finder::on($this->fitadmin)->find(intval($id));
-                $Finder->update($insertData);
+                $entity = Finder::on($this->fitadmin)->find(intval($id));
+                $entity->update($insertData);
+            }
+
+           $finder_id = intval($entity['_id']);
+
+            //manage categorytags
+            if (isset($entity['categorytags']) && !empty($entity['categorytags'])) {
+                $findercategorytags = array_map('intval', $entity['categorytags']);
+                $finder = Finder::on($this->fitadmin)->find($finder_id);
+                $finder->categorytags()->sync(array());
+                foreach ($findercategorytags as $key => $value) {
+                    $finder->categorytags()->attach($value);
+                }
+            }
+
+            //manage locationtags
+            if (isset($entity['locationtags']) && !empty($entity['locationtags'])) {
+                $finderlocationtags = array_map('intval', $entity['locationtags']);
+                $finder = Finder::on($this->fitadmin)->find($finder_id);
+                $finder->locationtags()->sync(array());
+                foreach ($finderlocationtags as $key => $value) {
+                    $finder->locationtags()->attach($value);
+                }
+            }
+
+
+            //manage facilities
+            if (isset($entity['facilities']) && !empty($entity['facilities'])) {
+                $finderfacilities = array_map('intval', $entity['facilities']);
+                $finder = Finder::on($this->fitadmin)->find($finder_id);
+                $finder->facilities()->sync(array());
+                foreach ($finderfacilities as $key => $value) {
+                    $finder->facilities()->attach($value);
+                }
+            }
+
+            //manage offerings
+            if (isset($entity['offerings']) && !empty($entity['offerings'])) {
+                $finderofferings = array_map('intval', $entity['offerings']);
+                $finder = Finder::on($this->fitadmin)->find($finder_id);
+                $finder->offerings()->sync(array());
+                foreach ($finderofferings as $key => $value) {
+                    $finder->offerings()->attach($value);
+                }
             }
 
             $response = array('status' => 200, 'message' => 'Success');

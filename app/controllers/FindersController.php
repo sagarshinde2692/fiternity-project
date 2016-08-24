@@ -75,7 +75,7 @@ class FindersController extends \BaseController {
 
 
 
-    public function finderdetail($slug, $cache = true){
+    public function finderdetail($slug, $cache = false){
 
         $data 	=  array();
         $tslug 	= (string) strtolower($slug);
