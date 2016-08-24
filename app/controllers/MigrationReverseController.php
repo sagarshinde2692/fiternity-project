@@ -645,7 +645,8 @@ class MigrationReverseController extends \BaseController {
             }//offering
 //                 var_dump($new_offering_ids_arr);exit();
 
-            if(isset($Finder->contact['point_of_contact'])){
+
+                if(isset($Finder->contact['point_of_contact'])){
                 $finder_poc_for_customer_mobile_arr = $finder_poc_for_customer_name_arr = [];
                 $finder_vcc_email_arr = $finder_vcc_mobile_arr = [];
 
@@ -700,15 +701,15 @@ class MigrationReverseController extends \BaseController {
                 'contact' 	=>  [
                     'address' 	=>  ($Finder->address['line1']) ? trim($Finder->address['line1']).",".trim($Finder->address['line2']).",".trim($Finder->address['line3']) : "",
                     'email' 	=>  (isset($Finder->contact['email']) && count($Finder->contact['email']) > 0)  ? implode(",", $Finder->contact['email']) : "",
-                    'phone' 	=>  ($Finder->seo['description']) ? trim($Finder->seo['description']) : "",
-                    'website' 	=>  ($Finder->seo['description']) ? trim($Finder->seo['description']) : "",
+                    'phone' 	=>  (isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0)  ? implode(",", $Finder->contact['phone']['mobile']) : "",
+                    'website' 	=>  "",
                 ],
                 'landmark' 	=>  ($Finder->address['landmark']) ? trim($Finder->address['landmark']) : "",
-                'coverimage' 							=>  (isset($Finder->coverimage)) ? $Finder->coverimage : "",
+                 'coverimage' 							=>  (isset($Finder->coverimage)) ? $Finder->coverimage : "",
                 'logo' 									=>  (isset($Finder->logo)) ? $Finder->logo : "",
-                'photos' 								=>  (isset($Finder->photos)) ? $Finder->photos : [],
-                'total_photos' 							=>  count($Finder->photos),
-                'videos' 								=>  (isset($Finder->videos)) ? $Finder->videos : [],
+                'photos' 								=>  (isset($Finder['media']['images']['gallery']) && count($Finder['media']['images']['gallery']) > 0) ? $Finder['media']['images']['gallery'] : [],
+                'total_photos' 							=>  count($Finder['media']['images']['gallery']),
+                'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
                 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
                 'total_rating_count' 					=>  (isset($Finder->rating['count'])) ? $Finder->rating['count'] : 0,
                 'detail_rating_summary_average' 		=>  $detail_rating_summary_average,
@@ -742,7 +743,10 @@ class MigrationReverseController extends \BaseController {
                 $entity->update($insertData);
             }
 
-           $finder_id = intval($entity['_id']);
+            $this->cacheapi->flushTagKey('finder_detail',$entity->slug);
+
+
+            $finder_id = intval($entity['_id']);
 
             //manage categorytags
             if (isset($entity['categorytags']) && !empty($entity['categorytags'])) {
@@ -784,6 +788,7 @@ class MigrationReverseController extends \BaseController {
                     $finder->offerings()->attach($value);
                 }
             }
+
 
             $response = array('status' => 200, 'message' => 'Success');
 
