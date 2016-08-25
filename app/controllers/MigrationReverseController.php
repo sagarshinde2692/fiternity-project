@@ -729,6 +729,8 @@ class MigrationReverseController extends \BaseController {
                 'updated_at' 							=>  $Finder->updated_at
             ];
 
+            $insertData['vip_trial']                    = ($Finder['vip_trial'] == true ) ? '1' : '0';
+
 //            var_dump($insertData);exit();
             $Finder_exists_cnt	=	DB::connection($this->fitadmin)->table('finders')->where('_id', intval($id) )->count();
 
