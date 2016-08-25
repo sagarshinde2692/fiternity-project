@@ -911,14 +911,17 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];
             }
+            $insertData['show_on']      =   "1";
+            $insertData['created_at']   =   $data['created_at'];
+            $insertData['updated_at']   =   $data['updated_at'];
 
-            $insertData['created_at'] = $data['created_at'];
-            $insertData['updated_at'] = $data['updated_at'];
+//            return $insertData;
 
             $service_exists = Service::on($this->fitadmin)->find(intval($id));
 
             if($service_exists){
                 $service_exists->update($insertData);
+//                return var_dump($service_exists->toArray());
             }else{
                 $service_exists = new Service($insertData);
                 $service_exists->setConnection($this->fitadmin);
