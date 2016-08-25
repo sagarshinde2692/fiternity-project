@@ -41,6 +41,7 @@ class MigrationReverseController extends \BaseController {
             case 'schedule' : $return = $this->schedule($id);break;
             case 'batch' : $return = $this->batch($id);break;
             case 'deleteschedulebyvendor' : $return = $this->deletescheduleByVendorId($id);break;
+            case 'deletebatchbyservice' : $return = $this->deleteBatchByServiceId($id);break;
 
             default : $return = "no function found";break;
         }
@@ -1181,8 +1182,8 @@ class MigrationReverseController extends \BaseController {
             $vendorservice_id = $vendorservice_id;
 
             $schedules = Schedule::where('vendorservice_id',intval($vendorservice_id))->get();
-
-            //Trial Price From Ratecard
+            if(count($schedules) > 0){
+                //Trial Price From Ratecard
             $trialPrice = 0;
             $trialRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->count();
 
@@ -1278,6 +1279,10 @@ class MigrationReverseController extends \BaseController {
                     'workoutsessionschedules' => $workoutsessionschedules
                 ]);
             }
+            }else{
+                $serivce_ids    =   Service::where('_id',intval($vendorservice_id))->update(['trialschedules'=>[],'workoutsessionschedules'=>[]]);
+            }
+            
 
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
@@ -1398,11 +1403,11 @@ class MigrationReverseController extends \BaseController {
 
         try{
 
-            $serivce_ids    =   Service::where('finder_id',intval($finder_id))->lists('_id');
+            $serivce_ids    =   Service::where('finder_id',intval($finder_id))->update(['trialschedules'=>[],'workoutsessionschedules'=>[]]);
 
-            foreach ($serivce_ids as $serivce_id){
-                $this->updatescheduleByServiceId(intval($serivce_id));
-            }
+            // foreach ($serivce_ids as $serivce_id){
+            //     $service = Service::find($serivce_id);
+            // }
 
             $finder = Finder::on($this->fitadmin)->find(intval($finder_id));
 
@@ -1426,6 +1431,11 @@ class MigrationReverseController extends \BaseController {
         }
 
         return Response::json($response,$response['status']);
+
+    }
+    public function deleteBatchByServiceId($service_id){
+        
+        $serivce_ids    =   Service::where('_id',intval($service_id))->update(['batches' => []]);
 
     }
 
