@@ -922,6 +922,7 @@ class MigrationReverseController extends \BaseController {
 
             if($service_exists){
                 $service_exists->update($insertData);
+                $this->updatescheduleByServiceId($id);
 //                return var_dump($service_exists->toArray());
             }else{
                 $service_exists = new Service($insertData);
