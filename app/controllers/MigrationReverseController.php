@@ -40,6 +40,7 @@ class MigrationReverseController extends \BaseController {
             case 'ratecard' : $return = $this->ratecard($id);break;
             case 'schedule' : $return = $this->schedule($id);break;
             case 'batch' : $return = $this->batch($id);break;
+            case 'deleteschedulebyvendor' : $return = $this->deletescheduleByVendorId($id);break;
 
             default : $return = "no function found";break;
         }
@@ -465,12 +466,12 @@ class MigrationReverseController extends \BaseController {
                         if($offering_exists_cnt === 0){
 
                             $offering_id_exists_cnt	=	DB::connection($this->fitadmin)->table('offerings')->where('_id', intval($offering->_id))->count();
-							if($offering_id_exists_cnt === 0){
+                            if($offering_id_exists_cnt === 0){
                                 $offering_id    = 	intval($offering->_id);
-							}else{
-								$lastofferingid  = 	DB::connection($this->fitadmin)->table('offerings')->max('_id');
+                            }else{
+                                $lastofferingid  = 	DB::connection($this->fitadmin)->table('offerings')->max('_id');
                                 $offering_id  	= 	intval($lastofferingid) + 1;
-							}
+                            }
 
                             $entity 		=	new Offering($insertData);
                             $entity->setConnection($this->fitadmin);
@@ -646,7 +647,7 @@ class MigrationReverseController extends \BaseController {
 //                 var_dump($new_offering_ids_arr);exit();
 
 
-                if(isset($Finder->contact['point_of_contact'])){
+            if(isset($Finder->contact['point_of_contact'])){
                 $finder_poc_for_customer_mobile_arr = $finder_poc_for_customer_name_arr = [];
                 $finder_vcc_email_arr = $finder_vcc_mobile_arr = [];
 
@@ -675,7 +676,7 @@ class MigrationReverseController extends \BaseController {
                 }
             }
 
-             $insertData = [
+            $insertData = [
                 'title' 				=>  trim($Finder->name),
                 'slug' 					=>  trim($Finder->slug),
                 'country_id' 			=>  intval($Finder->country_id),
@@ -705,12 +706,12 @@ class MigrationReverseController extends \BaseController {
                     'website' 	=>  "",
                 ],
                 'landmark' 	=>  ($Finder->address['landmark']) ? trim($Finder->address['landmark']) : "",
-                 'coverimage' 							=>  (isset($Finder->coverimage)) ? $Finder->coverimage : "",
+                'coverimage' 							=>  (isset($Finder->coverimage)) ? $Finder->coverimage : "",
                 'logo' 									=>  (isset($Finder->logo)) ? $Finder->logo : "",
                 'photos' 								=>  (isset($Finder['media']['images']['gallery']) && count($Finder['media']['images']['gallery']) > 0) ? $Finder['media']['images']['gallery'] : [],
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),
-                 'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
-                 'multiaddress' 					    =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
+                'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
+                'multiaddress' 					    =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
                 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
                 'total_rating_count' 					=>  (isset($Finder->rating['count'])) ? $Finder->rating['count'] : 0,
                 'detail_rating_summary_average' 		=>  $detail_rating_summary_average,
@@ -935,7 +936,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-	        $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -990,7 +991,7 @@ class MigrationReverseController extends \BaseController {
             }
 
 
-             $ratecart_exists = Ratecard::on($this->fitadmin)->find(intval($id));
+            $ratecart_exists = Ratecard::on($this->fitadmin)->find(intval($id));
 
             if($ratecart_exists){
                 $ratecart_exists->update($insertData);
@@ -1012,7 +1013,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($ratecart_exists->finder_id));
 
-	        $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1146,7 +1147,7 @@ class MigrationReverseController extends \BaseController {
 
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-	        $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1177,7 +1178,7 @@ class MigrationReverseController extends \BaseController {
 
         try{
 
-             $vendorservice_id = $vendorservice_id;
+            $vendorservice_id = $vendorservice_id;
 
             $schedules = Schedule::where('vendorservice_id',intval($vendorservice_id))->get();
 
@@ -1310,66 +1311,66 @@ class MigrationReverseController extends \BaseController {
     public function batch($id){
 
         try{
-	        $batch = Batch::find($id);
+            $batch = Batch::find($id);
 
-	        $batches 		=  Batch::where('vendorservice_id',intval($batch->vendorservice_id))->get();
-	        $batchesdata 	= [];
+            $batches 		=  Batch::where('vendorservice_id',intval($batch->vendorservice_id))->get();
+            $batchesdata 	= [];
 
-	        // return $batches;
-	        foreach ($batches as $key => $batch) {
-	            // return $batch;
-	            $batchdata 				=	[];
-	            // $weekdaydata['slots'] 	=	[];
+            // return $batches;
+            foreach ($batches as $key => $batch) {
+                // return $batch;
+                $batchdata 				=	[];
+                // $weekdaydata['slots'] 	=	[];
 
-	            if(isset($batch['slots'])){
-	                $batch_weekdays_data  = [];
+                if(isset($batch['slots'])){
+                    $batch_weekdays_data  = [];
 
-	                foreach ($batch['slots'] as $k => $slot) {
-	                    // return $slot;
-	                    $batch_weekdays_data['weekday'] =	$slot['day'];
+                    foreach ($batch['slots'] as $k => $slot) {
+                        // return $slot;
+                        $batch_weekdays_data['weekday'] =	$slot['day'];
 
-	                    if (intval($slot['start_time']['hours']) < 12) {
-	                        $start_time = $slot['start_time']['hours'] .":00 am";
-	                    }else{
-	                        $start_time = (intval($slot['start_time']['hours']) + 12) .":00 pm";
-	                    }
+                        if (intval($slot['start_time']['hours']) < 12) {
+                            $start_time = $slot['start_time']['hours'] .":00 am";
+                        }else{
+                            $start_time = (intval($slot['start_time']['hours']) + 12) .":00 pm";
+                        }
 
-	                    if (intval($slot['end_time']['hours']) < 12) {
-	                        $end_time = $slot['end_time']['hours'] .":00 am";
-	                    }else{
-	                        $end_time = (intval($slot['end_time']['hours']) + 12) .":00 pm";
-	                    }
+                        if (intval($slot['end_time']['hours']) < 12) {
+                            $end_time = $slot['end_time']['hours'] .":00 am";
+                        }else{
+                            $end_time = (intval($slot['end_time']['hours']) + 12) .":00 pm";
+                        }
 
-	                    $batch_weekdays_data['slots'] =	[
-	                        [
-	                            'weekday' => $slot['day'],
-	                            'start_time' => $start_time,
-	                            'end_time' => $end_time,
-	                            'slot_time' => $start_time."-".$end_time,
-	                            'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
-	                            'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
-	                        ]
-	                    ];
+                        $batch_weekdays_data['slots'] =	[
+                            [
+                                'weekday' => $slot['day'],
+                                'start_time' => $start_time,
+                                'end_time' => $end_time,
+                                'slot_time' => $start_time."-".$end_time,
+                                'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
+                                'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
+                            ]
+                        ];
 
-	                    // return $batch_weekdays_data;
-	                    array_push($batchdata, $batch_weekdays_data);
-	                    // return $batchdata;
+                        // return $batch_weekdays_data;
+                        array_push($batchdata, $batch_weekdays_data);
+                        // return $batchdata;
 
-	                }
-	            }
-	            array_push($batchesdata, $batchdata);
-	        }
+                    }
+                }
+                array_push($batchesdata, $batchdata);
+            }
 
-	        // return $batchesdata;
+            // return $batchesdata;
 
-	        $service_exists = Service::on($this->fitadmin)->find(intval($batch->vendorservice_id));
-	        if($service_exists){
-	            $service_exists->update(['batches' => $batchesdata]);
-	        }
+            $service_exists = Service::on($this->fitadmin)->find(intval($batch->vendorservice_id));
+            if($service_exists){
+                $service_exists->update(['batches' => $batchesdata]);
+            }
 
-	        $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
+            $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-	        $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1392,6 +1393,41 @@ class MigrationReverseController extends \BaseController {
     }
 
 
+
+    public function deletescheduleByVendorId($finder_id){
+
+        try{
+
+            $serivce_ids    =   Service::where('finder_id',intval($finder_id))->lists('_id');
+
+            foreach ($serivce_ids as $serivce_id){
+                $this->updatescheduleByServiceId(intval($serivce_id));
+            }
+
+            $finder = Finder::on($this->fitadmin)->find(intval($finder_id));
+
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+
+            $response = array('status' => 200, 'message' => 'Success');
+
+        }catch(Exception $e){
+
+            Log::error($e);
+
+            $message = array(
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+            $response = array('status' => 404, 'message' => $message);
+
+        }
+
+        return Response::json($response,$response['status']);
+
+    }
 
 
 }
