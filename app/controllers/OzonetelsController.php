@@ -24,15 +24,31 @@ class OzonetelsController extends \BaseController {
 	protected $ozontelOutboundCall;
 	protected $customersms;
 
+    protected $jump_finder_ids;
+    protected $jump_start_time;
+    protected $jump_end_time;
+    protected $current_date_time;
+    protected $jump_fitternity_no;
+
+
+
 	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms,FinderSms $findersms) {
 
-		$this->ozonetelResponse	=	$ozonetelResponse;
-		$this->ozonetelCollectDtmf	=	$ozonetelCollectDtmf;
-		$this->ozontelOutboundCall	=	$ozontelOutboundCall;
+		$this->ozonetelResponse			=	$ozonetelResponse;
+		$this->ozonetelCollectDtmf		=	$ozonetelCollectDtmf;
+		$this->ozontelOutboundCall		=	$ozontelOutboundCall;
 		$this->customersms 				=	$customersms;
 		$this->findersms 				=	$findersms;
 
+        $this->jump_finder_ids 		    =	[1,10,30,40];
+        $this->jump_start_time 			=	strtotime( date("d-m-Y")." 09:00:00");
+        $this->jump_end_time 			=	strtotime( date("d-m-Y")." 21:00:00");
+        $this->current_date_time 		=	time();
+        $this->jump_fitternity_no 		=	"02261222225";
+
 	}
+
+
 
 	public function freeVendor(){	
 
@@ -54,7 +70,7 @@ class OzonetelsController extends \BaseController {
 	    			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    		$this->ozonetelCollectDtmf->addPlayText("You have dailed wrong extension number please dial correct extension number");
 		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
-		 
+
 	    		}else{
 
 	    			$extension = (string) $extension;
@@ -65,8 +81,17 @@ class OzonetelsController extends \BaseController {
 			    		$phone = $finderDetails->finder->contact['phone'];
 			    		$phone = explode(',', $phone);
 			    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
-			    		$this->ozonetelResponse->addDial($contact_no,"true");
-			    		$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true);
+
+                        //OZONETEL JUMP LOGIC
+                        $call_jump = false;
+                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
+                            $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+                            $call_jump = true;
+                        }else{
+                            $this->ozonetelResponse->addDial($contact_no,"true");
+                        }
+
+			    		$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true, $call_jump);
 			    	}else{
 			    		$this->ozonetelResponse->addPlayText("You have dailed wrong extension number");
 			    		$this->ozonetelResponse->addHangup();
@@ -88,15 +113,15 @@ class OzonetelsController extends \BaseController {
 					
 					if($finder){
 
-						/*$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
-				    	if($direct_payment_enable_count > 0){
+//						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
 
-	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
-	                        $this->ozonetelResponse->addDial('02261222225',"true");
-	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-	                        
-	                    }else{*/
+                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
+
+                            $this->ozonetelResponse->addHangup();
+
+
+                        }else{
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -147,6 +172,7 @@ class OzonetelsController extends \BaseController {
 
 	}
 
+        
 	public function paidVendor(){	
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
@@ -160,8 +186,18 @@ class OzonetelsController extends \BaseController {
 	    		$phone = $finderDetails->finder->contact['phone'];
 	    		$phone = explode(',', $phone);
 	    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
-	    		$this->ozonetelResponse->addDial($contact_no,"true");
-	    		$add_capture = $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
+//	    		$this->ozonetelResponse->addDial($contact_no,"true");
+
+                $call_jump = false;
+                //OZONETEL JUMP LOGIC
+                if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
+                    $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+                    $call_jump = true;
+                }else{
+                    $this->ozonetelResponse->addDial($contact_no,"true");
+                }
+
+                $add_capture = $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true, $call_jump);
 	    	}else{
 	    		$this->ozonetelResponse->addHangup();
 	    	}
@@ -180,15 +216,14 @@ class OzonetelsController extends \BaseController {
 					
 					if($finder){
 
-						/*$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
+//						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
+//
+                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
 
-				    	if($direct_payment_enable_count > 0){
+                            $this->ozonetelResponse->addHangup();
 
-	                        $this->ozonetelResponse->addPlayText("Call diverted to another number");
-	                        $this->ozonetelResponse->addDial('02261222225',"true");
-	                        $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
-	                        
-	                    }else{*/
+
+	                    }else{
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -264,7 +299,7 @@ class OzonetelsController extends \BaseController {
 	}
 
 
-	public function addCapture($data,$finder_id = false,$add_count = false){
+	public function addCapture($data,$finder_id = false,$add_count = false , $call_jump = false){
 		
 		$ozonetel_capture = new Ozonetelcapture();
 		$ozonetel_capture->_id = Ozonetelcapture::max('_id') + 1;
@@ -275,6 +310,12 @@ class OzonetelsController extends \BaseController {
 		$ozonetel_capture->customer_contact_operator = (string)$data['operator'];
 		$ozonetel_capture->customer_contact_type = (string)$data['cid_type'];
 		$ozonetel_capture->customer_cid = (string)$data['cid'];
+
+        if($call_jump){
+            $ozonetel_capture->call_jump = $call_jump;
+            $ozonetel_capture->call_jump_number = $this->jump_fitternity_no;
+        }
+        
 
 		if($finder_id){
 			$ozonetel_capture->finder_id = (int) $finder_id;
@@ -291,7 +332,7 @@ class OzonetelsController extends \BaseController {
 		return $ozonetel_capture;
 	}
 
-	public function updateCapture($data,$finder_id = false,$extension = false,$add_count = false){
+	public function updateCapture($data,$finder_id = false,$extension = false,$add_count = false, $call_jump = false){
 
 		$ozonetel_capture = Ozonetelcapture::where('ozonetel_unique_id','=',$data['sid'])->first();
 
@@ -309,6 +350,11 @@ class OzonetelsController extends \BaseController {
 			if($add_count){
 				$ozonetel_capture->count += 1;
 			}
+
+            if($call_jump){
+                $ozonetel_capture->call_jump = $call_jump;
+                $ozonetel_capture->call_jump_number = $this->jump_fitternity_no;
+            }
 
 
 			if(isset($data['status']) && $data['status'] != ''){

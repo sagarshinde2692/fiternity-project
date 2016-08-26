@@ -30,6 +30,37 @@ Route::get('unset/viptrial', 'DebugController@unsetVipTrial');
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
 
+
+Route::get('checkozoneteljump/{finderid}', function($finderid){
+
+
+    $jump_finder_ids    =   [1,10,30,40];
+    $jump_start_time    =   strtotime( date("d-m-Y")." 09:00:00");
+    $jump_end_time      =   strtotime( date("d-m-Y")." 21:00:00");
+    $finderid           =   intval(trim($finderid));
+
+    $current_date_time  =   time();
+    echo "<br>jump_start_time : $jump_start_time <br><br>  jump_end_time : $jump_end_time <br><br>  current_date_time : $current_date_time <br>";
+    echo "<br>";
+
+    if($jump_start_time < $current_date_time && $current_date_time < $jump_end_time  && in_array($finderid, $jump_finder_ids)){
+
+        echo "jump dial to fitternity";
+
+    }else{
+
+        echo "not jump dial to vendor";
+
+    }
+
+
+
+
+
+
+
+});
+
 Route::get('/removevip', function() { 
 	return Finder::whereNotIn('_id',array(3305))->take(5)->get();
 	$services = Service::where("vip_trial","1")->where("city_id","<>",1)->get(array('name','vip_trial'));
@@ -42,6 +73,7 @@ Route::get('/removevip', function() {
 
 
 Route::get('showrcb', function(){
+
 
 	return Requestcallbackremindercall::orderBy('_id','desc')->get();
 });
