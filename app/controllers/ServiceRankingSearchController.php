@@ -369,8 +369,13 @@ class ServiceRankingSearchController extends \BaseController {
           $service_filter = isset($campaignServices) ? '{"terms" : {  "service_id": '.json_encode($campaignServices).',"_cache": true}},' : '';
         }
 
+        $service_type = (Input::json()->get('service_type')) ? strtolower(Input::json()->get('service_type')) : 'workout_session';
 
-
+        $service_type_filter = "";
+        
+        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
+          $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
+        }
 
         /***********************************Geo Range Filter*********************************/
 
@@ -465,7 +470,7 @@ class ServiceRankingSearchController extends \BaseController {
 
       /**********************************************************************************************/
       
-      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter, ',');
+      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter.$service_type_filter, ',');
 
       $post_filter_query = 
       '{
@@ -797,9 +802,39 @@ class ServiceRankingSearchController extends \BaseController {
           $city         =         $locat['city'] ? strtolower($locat['city']): 'mumbai';
           $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
           $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
+
+          $meal_type    =         (Input::json()->get('meal_type')) ? strtolower(Input::json()->get('meal_type')) : '';
+          $subcategory    =       (Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : '';
+          $validity    =       (Input::json()->get('validity')) ? Input::json()->get('validity') : '';
+          $validity_type    =       (Input::json()->get('validity_type')) ? strtolower(Input::json()->get('validity_type')) : '';
+
           $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
           $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "location": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
           $city_filter = '{"terms" : {  "city": ["'.$city.'"],"_cache": true}},';
+
+          $meal_type_filter = ($meal_type != "") ? '{"terms" : {  "meal_type": ["'.$meal_type.'"],"_cache": true}},' : '';
+          $subcategory_filter = ($subcategory != "") ? '{"terms" : {  "subcategory": ["'.$subcategory.'"],"_cache": true}},' : '';
+
+
+          $validity_filter = ($validity != "") ? '{"term" : {  "validity": '.$validity.'}},' : '';
+          $validity_type_filter = ($validity_type != "") ? '{"term" : {  "validity_type": "'.$validity_type.'"}},' : '';
+
+          $bool_rate_card_filter = trim($validity_filter.$validity_type_filter, ',');
+
+          $rate_card_filter = '{
+            "nested": {
+              "path": "sale_ratecards",
+              "query": {
+                "filtered": {
+                  "filter": {
+                    "bool": {
+                      "must": ['.$bool_rate_card_filter.']
+                    }
+                  }
+                }
+              }
+            }
+          }';
 
           /***********************************Geo Range Filter*********************************/
 
@@ -822,7 +857,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         /*********************************Geo Range Filter***********************************/
 
-        $bool_filter = trim($city_filter.$category_filter.$region_filter.$geo_distance_filter, ',');
+        $bool_filter = trim($city_filter.$category_filter.$region_filter.$geo_distance_filter.$meal_type_filter.$subcategory_filter.$rate_card_filter, ',');
 
         $post_filter_query =
         '{

@@ -5,13 +5,6 @@ use App\Services\Sidekiq as Sidekiq;
 
 abstract Class VersionNextSms {
 
-    protected $sidekiq;
-
-    public function __construct(Sidekiq $sidekiq) {
-
-        $this->sidekiq = $sidekiq;
-    }
-
 	public function sendTo($to, $message, $delay = null ){
 
         // return $to;exit;
@@ -241,6 +234,8 @@ abstract Class VersionNextSms {
 
     public function sendToWorker($to, $message, $label = 'label', $delay = 0){
 
+        $sidekiq = new Sidekiq();
+
         if(is_array($delay))
         {
             \Log::info('sms - '.$label.' -- '. $delay['date']);
@@ -255,7 +250,7 @@ abstract Class VersionNextSms {
         $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'label' => $label);
         
         $route  = 'sms';
-        $result  = $this->sidekiq->sendToQueue($payload,$route);
+        $result  = $sidekiq->sendToQueue($payload,$route);
 
         if($result['status'] == 200){
             return $result['task_id'];

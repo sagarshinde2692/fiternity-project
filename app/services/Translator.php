@@ -884,7 +884,8 @@ public static function translate_sale_ratecards($es_searchresult_response){
 	$city_array = array('mumbai'=>1,'pune'=>2,'delhi'=>4,'banglore'=>3,'gurgaon'=>8,'noida'=>9);
 	$sale_ratecard_response = new saleRatecardResponse();
 	$sale_ratecard_response->results->aggregationlist = array();
-
+	$validity = (Input::json()->get('validity')) ? Input::json()->get('validity') : '';
+	$validity_type = (Input::json()->get('validity_type')) ? Input::json()->get('validity_type') : '';
 
 	if(empty($es_searchresult_response['hits']['hits']))
 	{
@@ -901,6 +902,22 @@ public static function translate_sale_ratecards($es_searchresult_response){
 
 			$resultobject = new saleRatecardObject();
 			$resultobject->id = $result['service_id'];
+
+			if($validity != ""){
+				foreach ($result['sale_ratecards'] as $sale_ratecards_key => $sale_ratecards_value){
+					if($sale_ratecards_value['validity'] !== $validity){
+						unset($result['sale_ratecards'][$sale_ratecards_key]);
+					} 
+				}
+			}
+
+			if($validity_type != ""){
+				foreach ($result['sale_ratecards'] as $sale_ratecards_key => $sale_ratecards_value){
+					if($sale_ratecards_value['validity_type'] !== $validity_type){
+						unset($result['sale_ratecards'][$sale_ratecards_key]);
+					} 
+				}
+			}
 			$resultobject->sale_ratecards = $result['sale_ratecards'];
 			$resultobject->category = $result['category'];
 			$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
@@ -920,7 +937,8 @@ public static function translate_sale_ratecards($es_searchresult_response){
 			$resultobject->finder_slug = $result['finderslug'];
 			$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
 			$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
-
+			$resultobject->meal_type = isset($result['meal_type']) ? $result['meal_type'] : "";
+			$resultobject->short_description = isset($result['short_description']) ? strip_tags($result['short_description']) : "";
 			$service->object = $resultobject;
 			array_push($sale_ratecard_response->results->resultlist, $service);
 			

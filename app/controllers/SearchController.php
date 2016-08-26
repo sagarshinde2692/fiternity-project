@@ -1252,7 +1252,20 @@ public function locationCity($value){
 
 	$location = array();
 
-	$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->get();
+	$data = Input::all();
+
+	$lat = 	(isset($data['lat']) && $data['lat'] != "") ? $data['lat'] : "";
+	$lon = 	(isset($data['lon']) && $data['lon'] != "") ? $data['lon'] : "";
+
+	if($lat != "" && $lon != ""){
+
+		$lonlat = [(float)$lon,(float)$lat];
+		$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->where('lonlat','near',$lonlat)->get();
+
+	}else{
+
+		$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->get();
+	}
 
 	$data = array();
 
@@ -1265,6 +1278,8 @@ public function locationCity($value){
 
 				$hesh['locality'] = ucwords($value->name);
 				$hesh['city'] = ucwords($city->name);
+				$hesh['lat'] = (isset($value->lat)) ? (string)$value->lat : "";
+				$hesh['lon'] = (isset($value->lon)) ? (string)$value->lon : "";
 
 				$data[] = $hesh;
 			}

@@ -1,15 +1,19 @@
 <?php
 
 use App\Sms\CustomerSms as CustomerSms;
+use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Services\CustomerReward as CustomerReward;
+use App\Services\Utilities as Utilities;
 
 
 class CaptureController extends \BaseController {
 
 	protected $customersms;
 
-	public function __construct(CustomerSms $customersms){
+	public function __construct(CustomerSms $customersms,CustomerMailer $customermailer){
 
 		$this->customersms 				=	$customersms;
+		$this->customermailer 			=	$customermailer;
 
 		$this->afterFilter(function($response) {
 			header("Access-Control-Allow-Origin: *");
@@ -140,7 +144,38 @@ public function postCapture(){
         }
     }
 
+    if(isset($data['finder_id']) && $data['finder_id'] != ""){
+    	
+    	$utilities = new Utilities();
+
+        $finderData = $utilities->getFinderData($data['finder_id']);
+        $data  = array_merge($data,$finderData);
+    }
+
     
+    $data['customer_name'] = $data['name'];
+	$data['customer_email'] = $data['email'];
+	$data['customer_phone'] = $data['phone'];
+	$data['customer_address'] = $data['address'];
+
+	$data['customer_id'] = autoRegisterCustomer($data);
+
+    if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
+
+    	$customerreward = new CustomerReward();
+
+        $createMyRewardCapture = $customerreward->createMyRewardCapture($data);
+
+        if($createMyRewardCapture['status'] !== 200){
+
+            return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+        }
+
+        $my_reward = Myreward::find((int)$data['myreward_id'])->toArray();
+
+        $data['my_reward'] = $my_reward;
+    }
+
 	$storecapture = Capture::create($data);
 
 	if($storecapture){
@@ -172,6 +207,13 @@ public function postCapture(){
 				'message_body'=> "We have received your request for Personal trainer. Our Fitness Concierge Manager will contact you within the next 48 hours to assist you. For any further queries you can call us on 022-61222222."
 			];
 			$this->sendSMS($smsdata);
+		}
+
+		if(isset($data['capture_type']) && $data['capture_type'] == 'personal-trainer-page' && isset($data['myreward_id']) && $data['myreward_id'] != ""){
+			
+			$data['label'] = "Reward-PersonalTrainer-AtHome-Customer";
+
+			$this->customermailer->rewardClaim($data);
 		}
 
 

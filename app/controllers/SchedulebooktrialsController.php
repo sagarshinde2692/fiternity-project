@@ -982,6 +982,15 @@ class SchedulebooktrialsController extends \BaseController {
         $orderid 	       =	Order::max('_id') + 1;
         $customer_id        =	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
         array_set($data, 'customer_id', intval($customer_id));
+
+        if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
+            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);
+
+            if($createMyRewardCapture['status'] !== 200){
+
+                return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+            }
+        }
         
         if(trim(Input::json()->get('finder_id')) != '' ){
 
@@ -1078,7 +1087,19 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(Input::json()->get('status') == 'success') {
 
-//            echo "ih";exit();
+            $order_data = $order->toArray();
+
+            $order_data['customer_id'] = (int)$this->autoRegisterCustomer($order_data);
+
+            if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != ""){
+            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
+
+                if($createMyRewardCapture['status'] !== 200){
+
+                    return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+                }
+            }
+
             $orderData = [];
             array_set($orderData, 'status', '1');
             array_set($orderData, 'order_action', 'bought');
@@ -1249,6 +1270,21 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
                 return Response::json($resp);
+            }
+
+            $order_data = $order->toArray();
+
+            $order_data['customer_id'] = (int)$this->autoRegisterCustomer($order_data);
+
+            if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != ""){
+            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
+
+                if($createMyRewardCapture['status'] !== 200){
+
+                    return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+                }
+
+                $data['myreward_id'] = $order_data['myreward_id'];
             }
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
@@ -1536,6 +1572,18 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
                 $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
             }
+
+            if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
+
+                $booktrialdata['myreward_id'] = $data['myreward_id'];
+
+                $myreward = Myreward::find((int)$data['myreward_id']);
+
+                if($myreward){
+                    $booktrialdata['reward_balance'] = $myreward->quantity - $myreward->claimed;
+                }
+            }
+
             // return $this->customersms->bookTrial($booktrialdata);
 //             return $booktrialdata;
             $booktrial = new Booktrial($booktrialdata);
@@ -1879,20 +1927,20 @@ class SchedulebooktrialsController extends \BaseController {
 
         $myreward_id = "";
 
-        if (isset($data['type']) && $data['type'] == 'vip_booktrials_rewarded') {
-            if (empty($data['reward_id'])) {
-                $resp = array('status' => 400, 'message' => "Data Missing - reward_id");
-                return Response::json($resp, 400);
-            } else {
+        if (empty($data['reward_id'])) {
+            $resp = array('status' => 400, 'message' => "Data Missing - reward_id");
+            return Response::json($resp, 400);
+        } else {
 
-                $myreward_id = (int)$data['reward_id'];
+            $myreward_id = $data['myreward_id'] = (int)$data['reward_id'];
 
-                $myreward = Myreward::find($myreward_id);
+            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);
 
-                if ($myreward->status == "1") {
-                    $resp = array('status' => 400, 'message' => "Reward Already Claimed");
-                    return Response::json($resp, 400);
-                }
+            if($createMyRewardCapture['status'] !== 200){
+
+                return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+
+
             }
         }
 
@@ -2192,9 +2240,21 @@ class SchedulebooktrialsController extends \BaseController {
                 'physical_activity_detail'      =>      $physical_activity_detail,
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'               =>      $trial_count,
-                'before_three_month_trial_count' =>     $before_three_month_trial_count
+                'before_three_month_trial_count' =>     $before_three_month_trial_count,
+                'myreward_id' => $myreward_id
 
             );
+
+            if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
+
+                $booktrialdata['myreward_id'] = $data['myreward_id'];
+
+                $myreward = Myreward::find((int)$data['myreward_id']);
+
+                if($myreward){
+                    $booktrialdata['reward_balance'] = $myreward->quantity - $myreward->claimed;
+                }
+            }
 
             // return $this->customersms->bookTrial($booktrialdata);
             // return $booktrialdata;
@@ -4246,15 +4306,27 @@ class SchedulebooktrialsController extends \BaseController {
         $validator = Validator::make($data,$rules);
 
         if($validator->fails()) {
-            return array('status' => 404,'message' => error_message($validator->errors()));
+
+            $resp = array('status' => 404,'message' => error_message($validator->errors()));
+            return Response::json($resp,$resp['status']);
         }
 
         $data['customer_id'] = (int)$this->autoRegisterCustomer($data);
+
+        if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
+            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);
+
+            if($createMyRewardCapture['status'] !== 200){
+
+                return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+            }
+        }
 
         $finderData = $this->getFinderData($data['finder_id']);
         $data  = array_merge($data,$finderData);
         $data['type'] = 'nutrition';
         $code = $data['code'] = random_numbers(5);
+         $off = $data['off'] = "20%";
 
         $store = new Store($data);
         $store_id = $store->_id = Store::max('_id') + 1;

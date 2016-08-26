@@ -117,6 +117,11 @@ Class CustomerSms extends VersionNextSms{
 
 			$label = 'Order-PG-Mickeymehtaevent-Customer';
 		}
+
+		if($data['type'] == 'events'){
+			
+			$label = 'Order-PG-Event';
+		}
 		
 		$to = $data['customer_phone'];
 
@@ -315,6 +320,12 @@ Class CustomerSms extends VersionNextSms{
 
 		switch ($type){
 			case 'vip_booktrials':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
+			case 'vip_booktrials_invited':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
+			case 'vip_3days_booktrials':
 				$label = 'Invite-friend-for-vip-trial';
 				break;
 			default:

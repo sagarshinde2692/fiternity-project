@@ -310,8 +310,53 @@ class OzonetelsController extends \BaseController {
 				$ozonetel_capture->count += 1;
 			}
 
+			if($ozonetel_capture->finder_id){
+
+				$finder_id = $ozonetel_capture->finder_id;
+
+				$finder = Finder::with(array('location'=>function($query){$query->select('name','slug');}))->with(array('city'=>function($query){$query->select('name','slug');}))->find((int)$finder_id);
+
+				if($finder){
+
+					$finder = $finder->toArray();
+
+					$data['finder_name'] = $ozonetel_capture->finder_name = ucwords($finder['title']);
+					$data['finder_commercial_type'] = $ozonetel_capture->finder_commercial_type = (int)$finder['commercial_type'];
+					$data['finder_location'] = $ozonetel_capture->finder_location = ucwords($finder['location']['name']);
+					$data['finder_city'] = $ozonetel_capture->finder_city = ucwords($finder['city']['name']);
+
+					$finder_url = ($finder['commercial_type'] != 0) ? "www.fitternity.com/".$finder['slug'] : "www.fitternity.com/".$finder['city']['slug']."/fitness/".$finder['location']['slug'];
+
+					$shorten_url = new ShortenUrl();
+
+		            $url = $shorten_url->getShortenUrl($finder_url);
+
+		            if(isset($url['status']) &&  $url['status'] == 200){
+		                $finder_url = $url['url'];
+		            }
+
+					$data['finder_url'] = $ozonetel_capture->finder_url = $finder_url;
+
+				}
+			}
+
+			$ozonetelmissedcallno= Ozonetelmissedcallno::active()->where('label','CustomerCallToVendor')->get();
+			$data['missedcallno'] = array();
+			foreach ($ozonetelmissedcallno as $key => $value) {
+
+				$data['missedcallno'][$value->type] = $value->number;
+			}
+
+			if(isset($data['event']) && $data['event'] != ''){
+				$ozonetel_capture->event = $data['event'];
+			}
+
+			$ozonetel_capture->missedcallno = $data['missedcallno'];
 
 			if(isset($data['status']) && $data['status'] != ''){
+
+
+
 				if($data['status'] != 'answered'){
 
 					$ozonetel_capture->call_status = "not_answered";
@@ -329,14 +374,15 @@ class OzonetelsController extends \BaseController {
 					$ozonetel_capture->telco_code = $data['telco_code'];
 					$ozonetel_capture->rec_md5_checksum = $data['rec_md5_checksum'];
 					$ozonetel_capture->pickduration = $data['pickduration'];
-					
-					/*$aws_filename = time().$data['sid'].'.wav';
-					$ozonetel_capture->aws_file_name = $aws_filename;
-					$this->addToAws($data['data'],$aws_filename);*/
+
 				}
 			}
 
 			$ozonetel_capture->update();
+
+			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect'){
+				$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+			}
 
 			return $ozonetel_capture;
 
@@ -1387,6 +1433,130 @@ class OzonetelsController extends \BaseController {
         }
 
         return Response::json($response,$response['status']);
+
+	}
+
+	public function outboundCallStayOnTrack($id){
+
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+
+			$stayontrack = Stayontrack::find((int) $id);
+
+			$this->ozonetelResponse->addPlayText("Hi ".$stayontrack->customer_name.", this is regarding a workout session",3);
+
+		   	$this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+
+			if (isset($_REQUEST['status']) && $_REQUEST['status'] == 'not_answered') {
+
+				$update_outbound = $this->updateOutbound($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+
+			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
+
+				$update_outbound = $this->updateOutbound($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+		    	
+			}else{
+
+				$this->ozonetelResponse->addHangup();
+			}
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
+
+		    $update_outbound = $this->updateOutbound($_REQUEST);
+		    $this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Disconnect') {
+
+		    $update_outbound = $this->updateOutbound($_REQUEST);
+		    $this->ozonetelResponse->addHangup();
+
+		}else {
+
+		    $this->ozonetelResponse->addHangup();
+		}
+		
+		$this->ozonetelResponse->send();
+
+	}
+
+	public function customerCallToVendorMissedcall(){
+
+		Log::info('----------Customer Call To Vendor Missedcall--------');
+
+		try{
+
+			$request = $_REQUEST;
+
+			$ozonetelmissedcallnos = new \stdClass();
+
+			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.substr($request['called_number'], -9).'%')->where('for','CustomerCallToVendor')->first();
+
+			$ozonetelcapture = new \stdClass();
+
+			if(count($ozonetelmissedcallnos) > 0){
+
+				switch ($ozonetelmissedcallnos->type){
+
+					case 'integrated_vendor_enquiry': $operator = "!="; break;
+					case 'integrated_vendor_assistance': $operator = "!="; break;
+					case 'non_integrated_vendor_assistance': $operator = "="; break;
+					default: $operator = ""; break;
+				}
+
+				if($operator != ""){
+
+					Log::info('operator - '.$operator);
+					
+					$ozonetelcapture = Ozonetelcapture::where('created_at', '>=', new DateTime( date("Y-m-d 00:00:00")))->where('created_at', '<=', new DateTime( date("Y-m-d 23:59:00")))->where('finder_commercial_type',$operator,0)->where('customer_cid','LIKE','%'.substr($request['cid'], -9))->orderBy('_id','desc')->first();
+
+					Log::info('ozonetelcapture - '.count($ozonetelcapture));
+
+				}
+			}
+
+			$ozonetel_missedcall = new Ozonetelmissedcall();
+			$ozonetel_missedcall->_id = Ozonetelmissedcall::max('_id') + 1;
+			$ozonetel_missedcall->type = isset($ozonetelmissedcallnos['type']) ? $ozonetelmissedcallnos['type'] : '';
+			$ozonetel_missedcall->label = isset($ozonetelmissedcallnos['label']) ? $ozonetelmissedcallnos['label'] : '';
+			$ozonetel_missedcall->status = "1";
+			$ozonetel_missedcall->cid = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->customer_number = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->sid = isset($request['sid']) ? $request['sid'] : '';
+			$ozonetel_missedcall->called_number = isset($request['called_number']) ? $request['called_number'] : '';
+			$ozonetel_missedcall->circle = isset($request['circle']) ? $request['circle'] : '';
+			$ozonetel_missedcall->operator = isset($request['operator']) ? $request['operator'] : '';
+			$ozonetel_missedcall->call_time = isset($request['call_time']) ? $request['call_time'] : ''; 
+			$ozonetel_missedcall->called_at = isset($request['call_time']) ? strtotime($request['call_time']) : '';
+			$ozonetel_missedcall->for = isset($ozonetelmissedcallnos['for']) ? $ozonetelmissedcallnos['for'] : '';
+			$ozonetel_missedcall->finder_id = isset($ozonetelcapture['finder_id']) ? $ozonetelcapture['finder_id'] : '';
+			$ozonetel_missedcall->finder_name = isset($ozonetelcapture['finder_name']) ? $ozonetelcapture['finder_name'] : '';
+			$ozonetel_missedcall->finder_commercial_type = isset($ozonetelcapture['finder_commercial_type']) ? $ozonetelcapture['finder_commercial_type'] : '';
+			$ozonetel_missedcall->finder_city = isset($ozonetelcapture['finder_city']) ? $ozonetelcapture['finder_city'] : '';
+			$ozonetel_missedcall->ozonetelcapture_id = isset($ozonetelcapture['_id']) ? $ozonetelcapture['_id'] : '';
+			$ozonetel_missedcall->ozonetel_called_at = isset($ozonetelcapture['created_at']) ? $ozonetelcapture['created_at'] : '';
+			$ozonetel_missedcall->save();
+
+			$response = array('status'=>200,'message'=>'success');
+
+		}catch (Exception $e) {
+
+            $message = array(
+                    'type'    => get_class($e),
+                    'message' => $e->getMessage(),
+                    'file'    => $e->getFile(),
+                    'line'    => $e->getLine(),
+                );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+            
+            Log::error($e);
+            
+        }
+
+        return $response;
 
 	}
 

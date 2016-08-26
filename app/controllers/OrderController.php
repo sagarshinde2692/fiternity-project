@@ -97,6 +97,28 @@ class OrderController extends \BaseController {
 
 			$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
+			if(isset($order->reward_ids) && !empty($order->reward_ids)){
+
+                $reward_detail = array();
+
+                $reward_ids = array_map('intval',$order->reward_ids);
+
+                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity'));
+
+                if(count($rewards) > 0){
+
+                    foreach ($rewards as $value) {
+
+                        $reward_detail[] = $value->quantity." ".$value->title;
+
+                    }
+
+                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                    array_set($data, 'reward_info', $reward_info);
+                }
+
+            }
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
@@ -729,20 +751,34 @@ class OrderController extends \BaseController {
 
 		if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
 
-			$ratecard = Ratecard::find($data['ratecard_id']);
+            $ratecard = Ratecard::find((int)$data['ratecard_id']);
 
-			if(isset($ratecard->validity) && $ratecard->validity != ""){
-				$duration_day = (int)$ratecard->validity;
-				$data['duration_day'] = $duration_day;
-				if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
-				}
+            if($ratecard){
 
-				if($duration_day <= 90){
-					$data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
-				}
-			}	
-		}
+                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                    $data['amount_finder'] = $ratecard->special_price;
+                }else{
+                    $data['amount_finder'] = $ratecard->price;
+                }
+
+                if(isset($ratecard->validity) && $ratecard->validity != ""){
+                    $duration_day = (int)$ratecard->validity;
+                    $data['duration_day'] = $duration_day;
+                    if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
+                    }
+
+                    if($duration_day <= 90){
+                        $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
+                    }
+                }
+                
+            }else{
+
+                $resp   =   array('status' => 400,'message' => "Ratecard not found");
+                return Response::json($resp,400);
+            }
+        }
 	
 		array_set($data, 'service_name_purchase', $data['service_name']);
 		array_set($data, 'service_duration_purchase', $data['service_duration']);
@@ -761,6 +797,20 @@ class OrderController extends \BaseController {
 
                 $customer_info = new CustomerInfo();
                 $response = $customer_info->addHealthInfo($data);
+        }
+
+        if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
+            $rewardoffers   =     array_map('intval', $data['reward_ids']);
+            array_set($data, 'reward_ids', $rewardoffers);
+        }
+
+        if(isset($data['amount_finder'])){
+
+        	$data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id']);
+
+            if(isset($data['wallet']) && $data['wallet'] == true){
+                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+            }
         }
 
 		// Deduct wallet balance if applicable and feasible....
