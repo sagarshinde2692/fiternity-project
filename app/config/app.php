@@ -326,5 +326,7 @@ return array(
 
 	'kraken_key'							=> '73dbf866dbe673867134dc90204ddf96',
 	'kraken_secret'							=> 'd206555b6c07d8e3eba3807402a183578471251e',
+	'manual_trial_auto_finderids' => []
+
 
 );

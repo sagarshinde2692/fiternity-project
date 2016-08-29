@@ -1992,4 +1992,5 @@ Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices
 Route::get('renewalsmsstatus', 'DebugController@renewalSmsStatus');
 Route::get('deleteid', 'DebugController@deleteId');
 Route::get('updatebrandstofinders', 'DebugController@updateBrandToFindersFromCSV');
+Route::get('addmanualtrialautoflagtoFinders', array('as'=> 'DebugController.addManualTrialAutoFlag', 'uses' => 'DebugController@addManualTrialAutoFlag'));
 
