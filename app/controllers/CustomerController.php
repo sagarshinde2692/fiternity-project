@@ -11,6 +11,7 @@ use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerInfo as CustomerInfo;
+use App\Services\CustomerReward as CustomerReward;
 
 class CustomerController extends \BaseController {
 
@@ -19,11 +20,12 @@ class CustomerController extends \BaseController {
 	protected $utilities;
 
 
-	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Utilities $utilities) {
+	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Utilities $utilities,CustomerReward $customerreward) {
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms	=	$customersms;
 		$this->utilities	=	$utilities;
+		$this->customerreward = $customerreward;
 
 	}
 
@@ -2192,12 +2194,18 @@ public function getCustomerDetail(){
         if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
         	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+
+        	$cache_tag = 'customer_home_by_city_2_5';
+
         }else{
 
         	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers","luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists"/*,"sport-nutrition-supliment-stores"*/);
+
+        	$cache_tag = 'customer_home_by_city';
+
         }
         
-		$customer_home_by_city = $cache ? Cache::tags('customer_home_by_city')->has($city) : false;
+		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
 
 		if(!$customer_home_by_city){
 
@@ -2244,47 +2252,31 @@ public function getCustomerDetail(){
 				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
 			);
 
-			Cache::tags('customer_home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+			Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
 		}
 
-		$result = Cache::tags('customer_home_by_city')->get($city);
+		$result = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
 
 		return Response::json($result);
 	}
 
 
-	public function transformation(){
+	public function captureMyReward(){
 
-		$data = Input::json()->all();
+		$data = Input::all();
 
-				echo "<pre>";print_r($data);exit;
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
 
-		if (Input::hasFile('image')) {
-            $coverimg_tmppath = Input::file('image')->getRealPath();
-            list($imagewidth, $imageheight) = getimagesize($coverimg_tmppath);
-            if ($imagewidth < 1000) {
-                $error_messages[] = 'Cover Image : "' . Input::file('image')->getClientOriginalName() . ' width must greater than 1000';
-                Session::flash('error_messages', $error_messages);
-                return Redirect::back()->withInput();
-            }
-        }
+		$data['customer_id'] = $customer_id;
 
-        if (Input::hasFile('image')) {
-            $image = array('input' => Input::file('image'), 'path' => 'finders.coverimage', 'id' => $id);
-            $coverimage_response = upload_magic($image);
-            $coverimage_upload_status = $coverimage_response['success'];
-            if ($coverimage_upload_status == 1) {
-                array_set($finderdata, 'coverimage', img_name_from_kraken_url($coverimage_response));
-            } else {
-                array_push($error_messages, 'Coverimage : ' . Input::file('image')->getClientOriginalName() . ' type is not supported or file is corrupted.');
-            }
-            //print_pretty($coverimage_response);
-        }
+		$response  = $this->customerreward->createMyRewardCapture($data);
+
+		return Response::json($response,$response['status']);
+
 	}
-
-
-
 
 
 }

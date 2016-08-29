@@ -17,8 +17,15 @@ require __DIR__.'/debug_routes.php';
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
+
+Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
+Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
+
+
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
+
+
 Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
 Route::get('getfindercountlocationwise/{city?}', 'HomeController@getFinderCountLocationwise');
 
@@ -137,6 +144,13 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('listwalletsummary/{limit?}/{offset?}',  array('as' => 'customer.listWalletSummary','uses' => 'CustomerController@listWalletSummary'));
 	Route::get('getexistingtrialwithfinder/{finder_id?}', array('as' => 'customer.getExistingTrialWithFinder','uses' => 'CustomerController@getExistingTrialWithFinder'));
 	Route::get('customer/getinteractedfinder',  array('as' => 'customer.getinteractedfinder','uses' => 'CustomerController@getInteractedFinder'));
+	Route::post('customer/capturemyreward', array('as' => 'customer.capturemyreward','uses' => 'CustomerController@captureMyReward'));
+
+	Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
+	Route::post('customer/stayontrack', array('as' => 'customer.stayontrack','uses' => 'CustomerController@stayOnTrack'));
+
+	Route::get('customer/gettransformation', array('as' => 'customer.gettransformation','uses' => 'CustomerController@getTransformation'));
+	Route::get('customer/getstayontrack', array('as' => 'customer.getstayontrack','uses' => 'CustomerController@getStayOnTrack'));
 
 });
 
@@ -152,6 +166,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 Route::get('listrewardsapplicableonpurchase', array(
 	'as' => 'rewards.ListRewardsApplicableOnPurchase','uses' => 'RewardofferController@ListRewardsApplicableOnPurchase'
 ));
+Route::post('getrewardoffers/', array('as' => 'rewards.getRewardOffers','uses' => 'RewardofferController@getRewardOffers'));
 
 /******************** REWARDS SECTION END HERE ********************/
 ##############################################################################
@@ -324,6 +339,7 @@ Route::get('servicedetail/{id}', array('as' => 'service.servicedetail','uses' =>
 Route::get('servicecategorys', array('as' => 'service.servicecategorys','uses' => 'ServiceController@getServiceCategorys'));
 Route::get('servicemarketv1/{city?}', array('as' => 'service.servicemarket','uses' => 'ServiceController@getServiceHomePageDataV1'));
 Route::get('servicemarketfooterv1/{city?}', array('as' => 'service.servicemarketfooter','uses' => 'ServiceController@getFooterByCityV1'));
+Route::get('service/getservicewithworkoutsession/{finder_id}', array('as' => 'service.getservicewithworkoutsession','uses' => 'ServiceController@getServiceWithWorkoutSession'));
 Route::get('service/getworkoutsessionschedulebyservice/{service_id}/{date?}', array('as' => 'service.getworkoutsessionschedulebyservice','uses' => 'ServiceController@getWorkoutSessionScheduleByService'));
 Route::get('getservicesbytype/{finder_id}/{type}', array('as' => 'service.getservicesbytype','uses' => 'ServiceController@getServicesByType'));
 
@@ -541,6 +557,9 @@ Route::post('callcenter/callback',  array('as' => 'ozonetel.callback','uses' => 
 
 Route::get('ozonetel/misscallreview/{type}',  array('as' => 'ozonetel.misscallreview','uses' => 'OzonetelsController@misscallReview'));
 Route::get('ozonetel/misscallorder/{type}',  array('as' => 'ozonetel.misscallorder','uses' => 'OzonetelsController@misscallOrder'));
+Route::get('ozonetel/outboundcall/stayontrack/{id}',  array('as' => 'ozonetel.outboundcallstayontrack','uses' => 'OzonetelsController@outboundCallStayOnTrack'));
+Route::get('ozonetel/customercalltovendor/missedcall',  array('as' => 'ozonetel.customercalltovendormissedcall','uses' => 'OzonetelsController@customerCallToVendorMissedcall'));
+
 
 /******************** OZONETELS SECTION END HERE ********************/
 ##############################################################################
@@ -724,3 +743,4 @@ Route::group(array('before' => 'validatetoken'), function() {
 /******************  Yoga Day API END HERE************************************************/
 #####################################################################################################
 
+Route::post('seourl', 'GlobalSearchController@seourl');

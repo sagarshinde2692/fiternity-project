@@ -39,6 +39,42 @@ class FindersController extends \BaseController {
     }
 
 
+
+    public function acceptVendorMou($mouid){
+
+
+        $vendormou = Vendormou::with(array('finder'=>function($query){$query->select('_id','title','slug');}))->find(intval($mouid));
+
+        if($vendormou){
+
+            $vendormouData =    $vendormou->toArray();
+
+            return $this->findermailer->acceptVendorMou($vendormouData);
+
+        }
+
+
+    }
+
+
+     public function cancelVendorMou($mouid){
+
+
+        $vendormou = Vendormou::with(array('finder'=>function($query){$query->select('_id','title','slug');}))->find(intval($mouid));
+
+        if($vendormou){
+
+            $vendormouData =    $vendormou->toArray();
+
+            return $this->findermailer->cancelVendorMou($vendormouData);
+
+        }
+
+
+    }
+
+
+
     public function finderdetail($slug, $cache = true){
 
         $data 	=  array();
@@ -59,7 +95,6 @@ class FindersController extends \BaseController {
             ->with('offerings')
             ->with('facilities')
             ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-                //->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
             ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
             ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
             ->first();

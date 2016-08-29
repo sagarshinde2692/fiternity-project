@@ -119,7 +119,6 @@ Class CustomerSms extends VersionNextSms{
 		}
 
 		if($data['type'] == 'events'){
-
 			$label = 'Order-PG-Event';
 		}
 		
@@ -322,6 +321,12 @@ Class CustomerSms extends VersionNextSms{
 			case 'vip_booktrials':
 				$label = 'Invite-friend-for-vip-trial';
 				break;
+			case 'vip_booktrials_invited':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
+			case 'vip_3days_booktrials':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
 			default:
 				$label = 'Invite-friend-for-trial';
 				break;
@@ -403,6 +408,18 @@ Class CustomerSms extends VersionNextSms{
 		$to = $data['phone'];
 
 		return $this->common($label,$to,$data);
+
+	}
+
+
+
+	public function reminderRescheduleAfter4Days($data,$delay){
+
+		$label = 'RescheduleAfter4Days-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
 
 	}
 

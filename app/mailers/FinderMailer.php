@@ -304,6 +304,87 @@ Class FinderMailer extends Mailer {
     }
 
 
+    public function acceptVendorMou ($data){
+
+		$label = 'AcceptVendorMou-Paid-Cash-Cheque-Vendor';
+
+
+
+		if($data['contract_type'] == 'premium'){
+
+			$label = 'AcceptVendorMou-Cos-Vendor';
+
+		}elseif(($data['contract_type'] == 'platinum' || $data['contract_type'] == 'launch plan' ) && $data['payment_mode'] == 'online'){
+
+			$label = 'AcceptVendorMou-Paid-Online-Vendor';
+
+		}
+
+		// var_dump($label);exit();
+
+		
+		if($data['rm_email'] != ''){
+			$user_email 	=  	[$data['rm_email']];
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['rm_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+
+
+    public function cancelVendorMou ($data){
+
+		$label = 'CancelVendorMou-Vendor';
+		
+		if($data['rm_email'] != ''){
+			$user_email 	=  	[$data['rm_email']];
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['rm_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+	public function rewardClaim($data){
+
+        $label = $data['label'];
+        
+        if($data['finder_vcc_email'] != ''){
+            $user_email 	=  	explode(',', $data['finder_vcc_email']);
+        }else{
+            $user_email 	= 	array(Config::get('mail.to_mailus'));
+        }
+
+        $user_name = ucwords($data['title']);
+
+        $message_data 	= array(
+            'user_email' => $user_email,
+            'user_name' =>  $user_name,
+        );
+
+        return $this->common($label,$data,$message_data);
+
+    }
+
+
 	public function common($label,$data,$message_data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();

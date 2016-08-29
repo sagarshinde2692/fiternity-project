@@ -207,6 +207,9 @@ public function CategoryAmenities()
         break; 
         case 'gurgaon':
         $city_id = 8;
+        break;
+        case 'noida':
+        $city_id = 9;
         break;           
         default:                
         break;
@@ -745,6 +748,7 @@ public function getRankedFinderResultsAppv2()
 
     $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+    $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
     $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
     $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
@@ -827,9 +831,9 @@ if($all_nested_filters !== '')
 
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-$must_filtervalue = trim($vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+$must_filtervalue = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
 if($trials_day_filter !== ''){
-    $must_filtervalue = trim($vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+    $must_filtervalue = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
 }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
@@ -894,12 +898,12 @@ if($trials_day_filter !== ''){
 
         $nested_level2_filter = '';
 
-        $vip_trial_facets_filter = trim($vip_trial_filter.$location_filter.$category_filter,',');
-        $location_facets_filter = trim($vip_trial_filter.$location_filter.$category_filter,',');
-        $facilities_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$category_filter, ',');
-        $offerings_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
-        $budgets_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
-        $trialday_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
+        $vip_trial_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$category_filter,',');
+        $location_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$category_filter,',');
+        $facilities_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$category_filter, ',');
+        $offerings_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
+        $budgets_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
+        $trialday_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
 
         $facilities_bool = '"filter": {
             "bool" : { "must":['.$facilities_facets_filter.']}
@@ -1994,6 +1998,9 @@ private function _getCategoryRegex($city){
         $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
         break;
         case 'gurgaon':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'noida':
         $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
         break;
         

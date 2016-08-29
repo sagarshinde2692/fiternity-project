@@ -5,13 +5,6 @@ use App\Services\Sidekiq as Sidekiq;
 
 abstract Class Mailer {
 
-	protected $sidekiq;
-
-    public function __construct(Sidekiq $sidekiq) {
-
-        $this->sidekiq = $sidekiq;
-    }
-    
 	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
 
 		if($delay == null){
@@ -157,6 +150,8 @@ abstract Class Mailer {
 
 	public function sendToWorker($to = '',$email_template, $template_data = [], $message_data = [], $label = 'label', $priority = 0, $delay = 0){
 
+		$sidekiq = new Sidekiq();
+
 		if(is_array($delay))
 		{
 			\Log::info('email - '.$label.' -- '. $delay['date']);
@@ -173,7 +168,7 @@ abstract Class Mailer {
 		$payload = array('to'=>$to,'email_template'=>$email_template,'template_data'=>$template_data,'email_html'=>$email_html,'user_data'=>$message_data,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 
 		$route	= 'email';
-		$result  = $this->sidekiq->sendToQueue($payload,$route);
+		$result  = $sidekiq->sendToQueue($payload,$route);
 
 		if($result['status'] == 200){
 			return $result['task_id'];
@@ -184,6 +179,8 @@ abstract Class Mailer {
 	}
 
 	public function sendDbToWorker($to = '',$email_template, $message_data = [], $label = 'label', $delay = 0){
+
+		$sidekiq = new Sidekiq();
 
 		if(is_array($delay))
 		{
@@ -201,7 +198,7 @@ abstract Class Mailer {
 		$payload = array('to'=>$to,'email_html'=>$email_template,'user_data'=>$message_data,'delay'=>$delay,'label' => $label);
 
 		$route	= 'email';
-		$result  = $this->sidekiq->sendToQueue($payload,$route);
+		$result  = $sidekiq->sendToQueue($payload,$route);
 
 		if($result['status'] == 200){
 			return $result['task_id'];

@@ -2468,7 +2468,7 @@ public function testEmail(){
 	
 	public function updateBrandToFindersFromCSV(){
 
-		Schema::dropIfExists('brands');
+		// Schema::dropIfExists('brands');
 
 		Finder::where('brand_id','exists',true)->unset('brand_id');
 
