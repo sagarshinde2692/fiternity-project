@@ -33,7 +33,8 @@
 			"app/notification",
 			"app/services",
 			"app/workers",
-			"app/responsemodels"
+			"app/responsemodels",
+			"app/facades"
 		]
 	},
 	"scripts": {

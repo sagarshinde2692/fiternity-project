@@ -14,7 +14,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -207,7 +207,7 @@ return array(
 		//'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 		'AWS' 				=> 'Aws\Laravel\AwsFacade',
-
+		'DbEvent' 					=> 'App\Models\Event',
 	),
 
 	'cachetime' 					=> 	10,
@@ -326,5 +326,7 @@ return array(
 
 	'kraken_key'							=> '73dbf866dbe673867134dc90204ddf96',
 	'kraken_secret'							=> 'd206555b6c07d8e3eba3807402a183578471251e',
+	'manual_trial_auto_finderids' => []
+
 
 );

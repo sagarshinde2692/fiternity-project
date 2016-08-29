@@ -2574,7 +2574,17 @@ public function testEmail(){
 
 		echo "<pre>";print_r($service);exit;
 
-    }	
+    }
+
+	public function addManualTrialAutoFlag($finder_ids = null){
+		if(!isset($finder_ids)){
+			$finder_ids = Config::get('app.manual_trial_auto_finderids');
+		}
+		$finder_ids = array_map('intval',$finder_ids);
+		Vendor::whereIn('_id',$finder_ids)->update(['manual_trial_auto'=>true]);
+		Finder::whereIn('_id',$finder_ids)->update(['manual_trial_auto'=>'1']);
+		echo "done";return;
+	}
 
 	
     

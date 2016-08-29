@@ -607,11 +607,14 @@ public function RollingBuildServiceIndex(){
                     "properties": {
                         "duration" : {"type" : "string", "index" : "not_analyzed"},
                         "duration_type" : {"type" : "string", "index" : "not_analyzed"},
+                        "validity" : {"type" : "string", "index" : "not_analyzed"},
+                        "validity_type" : {"type" : "string", "index" : "not_analyzed"},
                         "price" : {"type" : "integer", "index" : "not_analyzed"},
                         "special_price" : {"type" : "string", "index" : "not_analyzed"}
                     },
                     "type": "nested"
-                }
+                },
+                "meal_type" : {"type" : "string","index" : "not_analyzed"}
             }
         }
     }';

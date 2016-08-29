@@ -44,7 +44,7 @@ class OrderController extends \BaseController {
 		$this->findersms 			=	$findersms;
 		$this->utilities 			=	$utilities;
 		$this->customerreward 		=	$customerreward;
-		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials','combat-fitness','monsoon');
+		$this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials','combat-fitness','monsoon','events');
 
 	}
 
@@ -97,6 +97,28 @@ class OrderController extends \BaseController {
 
 			$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
+			if(isset($order->reward_ids) && !empty($order->reward_ids)){
+
+                $reward_detail = array();
+
+                $reward_ids = array_map('intval',$order->reward_ids);
+
+                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity'));
+
+                if(count($rewards) > 0){
+
+                    foreach ($rewards as $value) {
+
+                        $reward_detail[] = $value->quantity." ".$value->title;
+
+                    }
+
+                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                    array_set($data, 'reward_info', $reward_info);
+                }
+
+            }
 
 			array_set($data, 'status', '1');
 			array_set($data, 'order_action', 'bought');
@@ -142,30 +164,61 @@ class OrderController extends \BaseController {
 				
 			}
 
-			$abundant_category = array(42,45);
+//            $abundant_category = array(42,45);
+            $abundant_category = array();
 
 			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
 				$order->update(['email_not_sent'=>'captureOrderStatus']);
 			}else{
 
 				if(!in_array($finder->category_id, $abundant_category)){
-					$sndPgMail	= 	$this->customermailer->sendPgOrderMail($order->toArray());
+                    $emailData      =   [];
+                    $emailData      =   $order->toArray();
+
+                    if($emailData['type'] == 'events'){
+                        if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+                            $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+                        }
+
+                        if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+                            $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+                        }
+                    }
+
+//                    print_pretty($emailData);exit;
+					$sndPgMail	= 	$this->customermailer->sendPgOrderMail($emailData);
 				}
 
 				//no email to Healthy Snacks Beverages and Healthy Tiffins
-				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness"){
-					$sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
+				if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness" && $order->type != "events" ){
+					
+                    $sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
 				}
+
 			} 
 			
 			//SEND payment gateway SMS TO CUSTOMER and vendor
 			if(!in_array($finder->category_id, $abundant_category)){
-				$sndPgSms	= 	$this->customersms->sendPgOrderSms($order->toArray());
+
+				$emailData      =   [];
+				$emailData      =   $order->toArray();
+
+				if($emailData['type'] == 'events'){
+					if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+						$emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+					}
+
+					if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+						$emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+					}
+				}
+				
+				$sndPgSms	= 	$this->customersms->sendPgOrderSms($emailData);
 			}
 
 
 			//no sms to Healthy Snacks Beverages and Healthy Tiffins
-			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness"){
+			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "combat-fitness" && $order->type != "events" ){
 				$sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
 			}
 
@@ -729,20 +782,34 @@ class OrderController extends \BaseController {
 
 		if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
 
-			$ratecard = Ratecard::find($data['ratecard_id']);
+            $ratecard = Ratecard::find((int)$data['ratecard_id']);
 
-			if(isset($ratecard->validity) && $ratecard->validity != ""){
-				$duration_day = (int)$ratecard->validity;
-				$data['duration_day'] = $duration_day;
-				if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-					$data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
-				}
+            if($ratecard){
 
-				if($duration_day <= 90){
-					$data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
-				}
-			}	
-		}
+                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                    $data['amount_finder'] = $ratecard->special_price;
+                }else{
+                    $data['amount_finder'] = $ratecard->price;
+                }
+
+                if(isset($ratecard->validity) && $ratecard->validity != ""){
+                    $duration_day = (int)$ratecard->validity;
+                    $data['duration_day'] = $duration_day;
+                    if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
+                    }
+
+                    if($duration_day <= 90){
+                        $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
+                    }
+                }
+                
+            }else{
+
+                $resp   =   array('status' => 400,'message' => "Ratecard not found");
+                return Response::json($resp,400);
+            }
+        }
 	
 		array_set($data, 'service_name_purchase', $data['service_name']);
 		array_set($data, 'service_duration_purchase', $data['service_duration']);
@@ -761,6 +828,20 @@ class OrderController extends \BaseController {
 
                 $customer_info = new CustomerInfo();
                 $response = $customer_info->addHealthInfo($data);
+        }
+
+        if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
+            $rewardoffers   =     array_map('intval', $data['reward_ids']);
+            array_set($data, 'reward_ids', $rewardoffers);
+        }
+
+        if(isset($data['amount_finder'])){
+
+        	$data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id']);
+
+            if(isset($data['wallet']) && $data['wallet'] == true){
+                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+            }
         }
 
 		// Deduct wallet balance if applicable and feasible....

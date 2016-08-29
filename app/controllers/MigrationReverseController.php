@@ -727,6 +727,7 @@ class MigrationReverseController extends \BaseController {
                 'finder_vcc_email' 						=>  implode(",", array_unique($finder_vcc_email_arr)),
                 'finder_vcc_mobile' 					=>  implode(",", array_unique($finder_vcc_mobile_arr)),
                 'status' 								=>  (isset($Finder->hidden) && $Finder->hidden === false) ? "1" : "0",
+                'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
                 'updated_at' 							=>  $Finder->updated_at
             ];

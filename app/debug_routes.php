@@ -54,6 +54,7 @@ Route::get('migratecustomofferorder', function(){
 });
 
 
+
 Route::get('checkozoneteljump/{finderid}', function($finderid){
 
 
@@ -99,6 +100,8 @@ Route::get('showrcb', function(){
 
 
 	return Requestcallbackremindercall::orderBy('_id','desc')->get();
+	echo date( "l\, jS F\'y h:i A", strtotime("2016-07-21 18:30:00"));
+
 });
 
 
@@ -2047,4 +2050,5 @@ Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices
 Route::get('renewalsmsstatus', 'DebugController@renewalSmsStatus');
 Route::get('deleteid', 'DebugController@deleteId');
 Route::get('updatebrandstofinders', 'DebugController@updateBrandToFindersFromCSV');
+Route::get('addmanualtrialautoflagtoFinders', array('as'=> 'DebugController.addManualTrialAutoFlag', 'uses' => 'DebugController@addManualTrialAutoFlag'));
 
