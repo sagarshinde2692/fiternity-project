@@ -175,8 +175,8 @@ Class CustomerReward {
                 return array('status' => 404,'message' => "Validity Is Over");
             }
 
-            $claim_all = array('personal_trainer_at_studio','personal_trainer_at_home');
-
+            $claim_all = array('personal_trainer_at_studio','personal_trainer_at_home','healthy_tiffin');
+            
             if(!isset($myreward->claimed) || $myreward->claimed < $myreward->quantity){
 
                 $claimed = (isset($myreward->claimed) && $myreward->claimed != "") ? $myreward->claimed : 0;

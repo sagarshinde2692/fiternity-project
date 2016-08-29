@@ -761,7 +761,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
 				//$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
 
-				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.4)){
+				/*if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.4)){
 
 					$resultobject->geolocation = new \stdClass();
 
@@ -771,7 +771,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					if(isset($sort[2])){
 						$resultobject->geolocation->distance = round((float)$sort[2],2);
 					}
-				}
+				}*/
 
 				$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
 
