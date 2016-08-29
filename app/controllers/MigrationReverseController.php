@@ -1338,13 +1338,24 @@ class MigrationReverseController extends \BaseController {
                         if (intval($slot['start_time']['hours']) < 12) {
                             $start_time = $slot['start_time']['hours'] .":00 am";
                         }else{
-                            $start_time = (intval($slot['start_time']['hours']) + 12) .":00 pm";
+
+                             $start_time = "12:00 pm";
+
+                            if(intval($slot['start_time']['hours']) != 12){
+                                $start_time = (intval($slot['start_time']['hours']) - 12) .":00 pm";         
+                            }                            
+
                         }
 
                         if (intval($slot['end_time']['hours']) < 12) {
                             $end_time = $slot['end_time']['hours'] .":00 am";
                         }else{
-                            $end_time = (intval($slot['end_time']['hours']) + 12) .":00 pm";
+
+                            $end_time = "12:00 pm";
+
+                             if(intval($slot['end_time']['hours']) != 12){
+                                $end_time = (intval($slot['end_time']['hours']) - 12) .":00 pm";
+                            }
                         }
 
                         $batch_weekdays_data['slots'] =	[
@@ -1434,11 +1445,112 @@ class MigrationReverseController extends \BaseController {
         return Response::json($response,$response['status']);
 
     }
-    public function deleteBatchByServiceId($service_id){
-        
-        $serivce_ids    =   Service::where('_id',intval($service_id))->update(['batches' => []]);
 
+
+ public function deleteBatchByServiceId($service_id){
+        
+
+
+        try{
+
+            $batches        =  Batch::where('vendorservice_id',intval($service_id))->get();
+            $batchesdata    = [];
+
+
+            
+
+                 
+             if(count($batches) > 0){
+
+                    // return $batches;
+                    foreach ($batches as $key => $batch) {
+                        // return $batch;
+                        $batchdata              =   [];
+                        // $weekdaydata['slots']    =   [];
+
+                        if(isset($batch['slots'])){
+                            $batch_weekdays_data  = [];
+
+                            foreach ($batch['slots'] as $k => $slot) {
+                                // return $slot;
+                                $batch_weekdays_data['weekday'] =   $slot['day'];
+
+                                if (intval($slot['start_time']['hours']) < 12) {
+                                    $start_time = $slot['start_time']['hours'] .":00 am";
+                                }else{
+
+                                     $start_time = "12:00 pm";
+
+                                    if(intval($slot['start_time']['hours']) != 12){
+                                        $start_time = (intval($slot['start_time']['hours']) - 12) .":00 pm";         
+                                    }                            
+
+                                }
+
+                                if (intval($slot['end_time']['hours']) < 12) {
+                                    $end_time = $slot['end_time']['hours'] .":00 am";
+                                }else{
+
+                                    $end_time = "12:00 pm";
+                                    
+                                     if(intval($slot['end_time']['hours']) != 12){
+                                        $end_time = (intval($slot['end_time']['hours']) - 12) .":00 pm";
+                                    }
+                                }
+
+                                $batch_weekdays_data['slots'] = [
+                                    [
+                                        'weekday' => $slot['day'],
+                                        'start_time' => $start_time,
+                                        'end_time' => $end_time,
+                                        'slot_time' => $start_time."-".$end_time,
+                                        'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
+                                        'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
+                                    ]
+                                ];
+
+                                // return $batch_weekdays_data;
+                                array_push($batchdata, $batch_weekdays_data);
+                                // return $batchdata;
+
+                            }
+                        }
+                        array_push($batchesdata, $batchdata);
+                    }
+
+            }
+
+            // return $batchesdata;
+
+            $service_exists = Service::on($this->fitadmin)->find(intval($service_id));
+            if($service_exists){
+                $service_exists->update(['batches' => $batchesdata]);
+            }
+
+            $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
+
+            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+
+            $response = array('status' => 200, 'message' => 'Success');
+
+        }catch(Exception $e){
+
+            Log::error($e);
+
+            $message = array(
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+            $response = array('status' => 404, 'message' => $message);
+
+        }
+
+        return Response::json($response,$response['status']);
     }
+
 
 
 }

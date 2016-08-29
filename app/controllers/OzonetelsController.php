@@ -359,13 +359,11 @@ class OzonetelsController extends \BaseController {
 				$ozonetel_capture->count += 1;
 			}
 
-<<<<<<< HEAD
             if($call_jump){
                 $ozonetel_capture->call_jump = $call_jump;
                 $ozonetel_capture->call_jump_number = $this->jump_fitternity_no;
             }
 
-=======
 			if($ozonetel_capture->finder_id){
 
 				$finder_id = $ozonetel_capture->finder_id;
@@ -408,7 +406,6 @@ class OzonetelsController extends \BaseController {
 			}
 
 			$ozonetel_capture->missedcallno = $data['missedcallno'];
->>>>>>> 9f9cee061e82e5d0b07d0273cbec9ee61aff13a3
 
 			if(isset($data['status']) && $data['status'] != ''){
 
