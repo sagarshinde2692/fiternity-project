@@ -119,7 +119,6 @@ Class CustomerSms extends VersionNextSms{
 		}
 
 		if($data['type'] == 'events'){
-			
 			$label = 'Order-PG-Event';
 		}
 		

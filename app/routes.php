@@ -74,6 +74,9 @@ Route::get('booktrialdetail/{captureid}', 'SchedulebooktrialsController@booktria
 
 Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCustomer');
 
+/*Events API*/
+Route::get('events/{eventSlug}', 'EventsController@getEventInfo');
+
 Route::get('send/communication', 'SchedulebooktrialsController@sendCommunication');
 
 ##############################################################################

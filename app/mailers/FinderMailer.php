@@ -119,6 +119,8 @@ Class FinderMailer extends Mailer {
 
 			$label = 'Order-PG-Crossfit-Week-Vendor';
 		}
+		
+		
 
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);
