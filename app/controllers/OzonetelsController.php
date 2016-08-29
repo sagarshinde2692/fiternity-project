@@ -30,6 +30,7 @@ class OzonetelsController extends \BaseController {
     protected $current_date_time;
     protected $jump_fitternity_no;
 
+    protected   $jump_fitternity_no2;
 
 
 	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms,FinderSms $findersms) {
@@ -40,11 +41,17 @@ class OzonetelsController extends \BaseController {
 		$this->customersms 				=	$customersms;
 		$this->findersms 				=	$findersms;
 
-        $this->jump_finder_ids 		    =	[1,10,30,40];
+        $this->jump_finder_ids 		    =	[1484,9111,878,1,941,6466,1490,862,1427,4141,4534,6081,613,8546,1041,596,1873,7036,1664,1068,1739,2806,2821,2824,2828,2833,2844,2848,7896,881,1766,1667,1671,827,1029,1030,
+					1034,1035,1554,1705,1706,1870,4585,5045,7407,9428,608,2890,3175,3178,3179,3183,3192,3201,3204,3233,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5566,5735,5736,5737,5738,5739,5964,
+					6254,6594,7081,7106,7111,7114,7116,8872,8878,7336,4307,3239,3229,3972,3619,3620,3499,4763,3491,3774,3775,3777,6945,6947,6948,9422,3193,7035,7037,3350,3351,6985,6988,6991,6993,6995,6999,7006,7017,7020,7360,
+					7441,7870,7872,8646,8647,8648,8666,8729,8731,8741,9390,9418,5066,7136,5303,6796,5347,6440,4834,4901,6566,6460,6333,7143,5740,1908,1863,1865,1884,6227,1846,2861,1895,1971,2723,7297,7003,1935,9304,
+					9423,1892,1853];
+
         $this->jump_start_time 			=	strtotime( date("d-m-Y")." 09:00:00");
         $this->jump_end_time 			=	strtotime( date("d-m-Y")." 21:00:00");
         $this->current_date_time 		=	time();
-        $this->jump_fitternity_no 		=	"02261222225";
+        $this->jump_fitternity_no 		=	"02261222242";
+        $this->jump_fitternity_no2 		=	"02261222209";
 
 	}
 
@@ -84,6 +91,7 @@ class OzonetelsController extends \BaseController {
 
                         //OZONETEL JUMP LOGIC
                         $call_jump = false;
+
                         if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
                             $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
                             $call_jump = true;
@@ -114,11 +122,12 @@ class OzonetelsController extends \BaseController {
 					if($finder){
 
 
-//						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
-
                         if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
 
-                            $this->ozonetelResponse->addHangup();
+
+                            $this->ozonetelResponse->addDial($this->jump_fitternity_no2, "true");
+                            $call_jump = true;
+                            $this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true, $call_jump);
 
 
                         }else{
@@ -216,12 +225,11 @@ class OzonetelsController extends \BaseController {
 					
 					if($finder){
 
-//						$direct_payment_enable_count = Ratecard::where("direct_payment_enable","1")->where("finder_id",(int)$capture->finder_id)->count();
-//
                         if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
 
-                            $this->ozonetelResponse->addHangup();
-
+                            $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+                            $call_jump = true;
+                            $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true, $call_jump);
 
 	                    }else{
 

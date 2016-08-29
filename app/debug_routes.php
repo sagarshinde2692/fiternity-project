@@ -31,6 +31,29 @@ Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
 
 
+
+Route::get('migratecustomofferorder', function(){
+
+
+    $rows   = Booktrial::where('customofferorder_id','exists', true)->get();
+    foreach ($rows as $row){
+        if(is_int($row['customofferorder_id'])){
+            DB::table('booktrials')->where('_id', intval($row['_id']))->update(['fitadmin_customofferorder_id' => $row['customofferorder_id'] ]);
+            DB::table('booktrials')->where('_id', intval($row['_id']))->unset('customofferorder_id');
+        }
+    }
+
+    $rows   = Order::where('customofferorder_id','exists', true)->get();
+    foreach ($rows as $row){
+        if(is_int($row['customofferorder_id'])){
+            DB::table('orders')->where('_id', intval($row['_id']))->update(['fitadmin_customofferorder_id' => $row['customofferorder_id'] ]);
+            DB::table('orders')->where('_id', intval($row['_id']))->unset('customofferorder_id');
+        }
+    }
+
+});
+
+
 Route::get('checkozoneteljump/{finderid}', function($finderid){
 
 
