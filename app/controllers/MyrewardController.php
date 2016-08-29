@@ -50,9 +50,30 @@ class MyrewardController extends BaseController {
         $myrewards = array();
         $myrewards = $query->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
-        if(count($myrewards) > 0){
-            $myrewards->toArray();
-        }
+        /*if(count($myrewards) > 0){
+
+            if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] < 2.6)){
+        
+                foreach ($myrewards as $key => $value){
+
+                    $created_at = date('Y-m-d h:i:s',strtotime($value->created_at));
+                    $validity_in_days = $value->created_at;
+
+                    $validity_date_unix = strtotime($created_at . ' +'.(int)$myreward->validity_in_days.' days');
+                    $current_date_unix = time();
+
+                    if($validity_date_unix < $current_date_unix){
+                        $validity_in_days = 0;
+                    }else{
+
+                        $validity_in_days = ($validity_date_unix - $current_date_unix)/(60*60*24);
+                    }
+
+                    $myrewards[$key]['validity_in_days'] = $validity_in_days;
+
+                }
+            }
+        }*/
 
         return Response::json(array('status' => 200,'data' => $myrewards), 200);
     }
