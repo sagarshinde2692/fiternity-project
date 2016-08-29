@@ -75,6 +75,24 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function manualTrialAuto ($data){
+
+		$label = 'ManualTrialAuto-Customer';
+	
+		$to = $data['customer_phone'];
+	
+		return $this->common($label,$to,$data);
+	}
+
+	public function reminderToConfirmManualTrial ($data,$delay){
+	
+		$label = 'Reminder-To-Confirm-ManualTrial-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+	}
+	
 	public function sendCodOrderSms ($data){
 
 		$label = 'Order-COD-Customer';
