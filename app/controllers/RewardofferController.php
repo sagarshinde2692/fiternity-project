@@ -150,13 +150,13 @@ class RewardofferController extends BaseController {
         $calculation = $customerReward->purchaseGame($amount,$finder_id);
         
         $cashback  = array(
-            'title'=>$calculation['algo']['cashback'].'% Cashback on Purchase',
+            'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',
             'commision'=>$calculation['algo']['cashback'],
             'calculation'=>$calculation
         );
 
-        $renewal_cashback  = array('title'=>'Cashback of 15% on Renewal');
+        $renewal_cashback  = array('title'=>'Discount of 15% on Renewal');
         $selection_limit = 1;
 
         $data = array(
