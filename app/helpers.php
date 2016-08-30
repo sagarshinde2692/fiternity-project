@@ -1347,7 +1347,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             $ratecards = $servicedata['serviceratecard'];
             $sale_ratecards = array_values(
                 array_where($ratecards, function ($key, $ratecard) {
-                    if (((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')) && (isset($ratecard['type']) && ($ratecard['type'] == 'membership' || $ratecard['type'] == 'packages'))) {
+                    if (((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')) && (isset($ratecard['type']) && ($ratecard['type'] == 'membership' || $ratecard['type'] == 'packages' || || $ratecard['type'] == 'trial'))) {
                         return $ratecard;
                     }
                 })
