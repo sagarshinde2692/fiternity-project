@@ -6,6 +6,7 @@ use Validator;
 use Response;
 use Config;
 use JWT;
+use Finder;
 
 Class Utilities {
 
