@@ -2276,10 +2276,11 @@ public function getCustomerDetail(){
 		$customer = Customer::find((int)$customer_id);
 
         if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-            $data['customer_address'] = implode(",", array_values($data['customer_address']));
+        	
             $customerData['address'] = $data['customer_address'];
             $customer->update($customerData);
+
+            $data['customer_address'] = implode(",", array_values($data['customer_address']));
 
         }
 
