@@ -411,8 +411,6 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-
-
 	public function reminderRescheduleAfter4Days($data,$delay){
 
 		$label = 'RescheduleAfter4Days-Customer';
@@ -420,6 +418,36 @@ Class CustomerSms extends VersionNextSms{
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data,$delay);
+
+	}
+
+	public function ozonetelCapture($data){
+
+       $label = 'OzonetelCapture-Customer';
+       
+       $to = $data['customer_contact_no'];
+
+       return $this->common($label,$to,$data);
+
+   	}
+
+  	public function downloadApp($data){
+
+       $label = 'DownloadApp-Customer';
+       
+       $to = $data['phone'];
+
+       return $this->common($label,$to,$data);
+
+   	}
+
+   	public function rewardClaim($data){
+
+		$label = $data['label'];
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
 
 	}
 

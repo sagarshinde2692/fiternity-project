@@ -164,8 +164,8 @@ class OrderController extends \BaseController {
 				
 			}
 
-//            $abundant_category = array(42,45);
-            $abundant_category = array();
+         	$abundant_category = array(42,45);
+            //$abundant_category = array();
 
 			if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
 				$order->update(['email_not_sent'=>'captureOrderStatus']);

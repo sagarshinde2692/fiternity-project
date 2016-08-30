@@ -577,7 +577,8 @@ public function RollingBuildServiceIndex(){
                 "locationcluster" : {"type" : "string", "index": "not_analyzed"},
                 "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
                 "workout_session_schedules_end_time_24_hrs" : {"type" : "float", "index": "not_analyzed"},
-                "workout_session_schedules_start_time_24_hrs" : {"type" : "float", "index": "not_analyzed"}
+                "workout_session_schedules_start_time_24_hrs" : {"type" : "float", "index": "not_analyzed"},
+                "service_type" : {"type" : "string","index" : "not_analyzed"}
             }
         }
     }';
