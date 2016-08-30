@@ -1082,24 +1082,30 @@ class OrderController extends \BaseController {
 
 	public function getOrderDetail($orderid){
 
-		$orderdata 		=	Order::find(intval($orderid));
+        $orderdata 		=	Order::find(intval($orderid));
 
-		if(isset($orderdata->start_date) && $orderdata->start_date == ""){
-			unset($orderdata->start_date);
-		}
+        if(isset($orderdata->reward_ids) && !empty($orderdata->reward_ids)){
 
-		if(isset($orderdata->preferred_starting_date) && $orderdata->preferred_starting_date == ""){
-			unset($orderdata->preferred_starting_date);
-		}
+        	$rewards = Reward::whereIn("_id",$orderdata->reward_ids)->get();
+        	$orderdata->rewards = $rewards;
+        }
 
-		if(!$orderdata){
-			return $this->responseNotFound('Order does not exist');
-		}
+        if(isset($orderdata->start_date) && $orderdata->start_date == ""){
+            unset($orderdata->start_date);
+        }
 
-		$responsedata 	= ['orderdata' => $orderdata,  'message' => 'Order Detial'];
-		return Response::json($responsedata, 200);
+        if(isset($orderdata->preferred_starting_date) && $orderdata->preferred_starting_date == ""){
+            unset($orderdata->preferred_starting_date);
+        }
 
-	}
+        if(!$orderdata){
+            return $this->responseNotFound('Order does not exist');
+        }
+
+        $responsedata 	= ['orderdata' => $orderdata,  'message' => 'Order Detial'];
+        return Response::json($responsedata, 200);
+
+    }
 
 
 

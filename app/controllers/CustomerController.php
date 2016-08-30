@@ -2273,7 +2273,28 @@ public function getCustomerDetail(){
 
 		$data['customer_id'] = $customer_id;
 
+		$customer = Customer::find((int)$customer_id);
+
+		if(isset($data['customer_address'])){
+
+            if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+
+                $customerData['address'] = implode(",", array_values($data['customer_address']));
+                $customerData['address_array'] = $data['customer_address'];
+
+            }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+
+                $customerData['address'] = $data['customer_address'];
+            }
+
+        }
+
+        $customer->update($customerData);
+
+		$token = $this->createToken($customer);
+
 		$response  = $this->customerreward->createMyRewardCapture($data);
+		$response['token'] = $token;
 
 		return Response::json($response,$response['status']);
 
