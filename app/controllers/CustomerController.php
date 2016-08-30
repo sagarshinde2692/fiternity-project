@@ -2275,23 +2275,12 @@ public function getCustomerDetail(){
 
 		$customer = Customer::find((int)$customer_id);
 
-		$customerData = array();
+        if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
-		if(isset($data['customer_address'])){
+            $data['customer_address'] = implode(",", array_values($data['customer_address']));
+            $customerData['address'] = $data['customer_address'];
+            $customer->update($customerData);
 
-            if(is_array($data['customer_address']) && !empty($data['customer_address'])){
-
-                $data['customer_address'] = implode(",", array_values($data['customer_address']));
-                $customerData['address'] = $data['customer_address'];
-
-            }else{
-
-                $customerData['address'] = $data['customer_address'];
-            }
-        }
-
-        if(!empty($customerData)){
-        	$customer->update($customerData);
         }
 
 		$token = $this->createToken($customer);
