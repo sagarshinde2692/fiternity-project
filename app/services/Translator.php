@@ -11,6 +11,7 @@ Use \App\Responsemodels\WorkoutSessionObject;
 Use \App\Responsemodels\saleRatecardResponse;
 Use \App\Responsemodels\saleRatecardResult;
 Use \App\Responsemodels\saleRatecardObject;
+use \Input;
 
 // Translator methods to model API responses for client
 
