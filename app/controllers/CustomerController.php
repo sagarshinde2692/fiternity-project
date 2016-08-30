@@ -2275,6 +2275,8 @@ public function getCustomerDetail(){
 
 		$customer = Customer::find((int)$customer_id);
 
+		$customerData = array();
+
 		if(isset($data['customer_address'])){
 
             if(is_array($data['customer_address']) && !empty($data['customer_address'])){
@@ -2289,7 +2291,9 @@ public function getCustomerDetail(){
 
         }
 
-        $customer->update($customerData);
+        if(!empty($customerData)){
+        	$customer->update($customerData);
+        }
 
 		$token = $this->createToken($customer);
 
