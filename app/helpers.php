@@ -1342,6 +1342,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             $geolocation = array('lat' => $finderdata['lat'], 'lon' => $finderdata['lon']);
         }
 
+        $sale_ratecards = array();
+
         if (!empty($servicedata['serviceratecard'])) {
 
             $ratecards = $servicedata['serviceratecard'];
