@@ -2277,17 +2277,14 @@ public function getCustomerDetail(){
 
 		$customerData = array();
 
-		if(isset($data['customer_address'])){
+        if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
-            if(is_array($data['customer_address']) && !empty($data['customer_address'])){
+            $data['customer_address'] = implode(",", array_values($data['customer_address']));
+            $customerData['address'] = $data['customer_address'];
 
-                $data['customer_address'] = implode(",", array_values($data['customer_address']));
-                $customerData['address'] = $data['customer_address'];
+        }else{
 
-            }else{
-
-                $customerData['address'] = $data['customer_address'];
-            }
+            $customerData['address'] = $data['customer_address'];
         }
 
         if(!empty($customerData)){
