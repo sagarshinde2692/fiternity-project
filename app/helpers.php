@@ -1363,7 +1363,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                 'monsoon_sale_enable' => $monsoon_sale_enable,
                 'service_id' => $servicedata['_id'],
                 'category' => (isset($servicedata['category']['name']) && $servicedata['category']['name'] != '') ? strtolower($servicedata['category']['name']) : "",
-                'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ? strtolower($servicedata['subcategory']['name']) : "",
+                'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ?  trim(strtolower($servicedata['subcategory']['name'])) : "",
                 'geolocation' => $geolocation,
                 'finder_id' => $servicedata['finder_id'],
                 'findername' => (isset($finderdata['title']) && $finderdata['title'] != '') ? strtolower($finderdata['title']) : "",
