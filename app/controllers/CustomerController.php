@@ -709,9 +709,8 @@ class CustomerController extends \BaseController {
 		$customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
 		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
-		$customer['address_array'] = (isset($customer['address_array'])) ? $customer['address_array'] : new \stdClass();
 
-		$data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],"contact_no"=>$customer['contact_no'],"location"=>$customer['location'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location'],"address_array"=>$customer['address_array']));	
+		$data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],"contact_no"=>$customer['contact_no'],"location"=>$customer['location'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location']));	
 
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
@@ -2282,14 +2281,13 @@ public function getCustomerDetail(){
 
             if(is_array($data['customer_address']) && !empty($data['customer_address'])){
 
-                $customerData['address'] = implode(",", array_values($data['customer_address']));
-                $customerData['address_array'] = $data['customer_address'];
+                $data['customer_address'] = implode(",", array_values($data['customer_address']));
+                $customerData['address'] = $data['customer_address'];
 
-            }elseif(!is_array($data['customer_address']) && $data['customer_address'] != ''){
+            }else{
 
                 $customerData['address'] = $data['customer_address'];
             }
-
         }
 
         if(!empty($customerData)){
