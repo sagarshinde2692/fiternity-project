@@ -116,6 +116,7 @@ Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','us
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
+Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 
 
 
