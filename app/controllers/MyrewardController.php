@@ -39,41 +39,48 @@ class MyrewardController extends BaseController {
 
         $query      =   Myreward::where('customer_id',$customer_id);
 
-        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] < 2.6)){
-            $query->where("payload.booktrial_type","vip_booktrials");
-        }
-
-        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
-            $query->where("payload.booktrial_type","vip_booktrials");
-        }
+        $query->where("payload.booktrial_type","vip_booktrials");
 
         $myrewards = array();
         $myrewards = $query->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
-        /*if(count($myrewards) > 0){
+        if(count($myrewards) > 0){
 
-            if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] < 2.6)){
-        
-                foreach ($myrewards as $key => $value){
+            $myrewards = $myrewards->toArray();
 
-                    $created_at = date('Y-m-d h:i:s',strtotime($value->created_at));
-                    $validity_in_days = $value->created_at;
+            foreach ($myrewards as $key => $value){
 
-                    $validity_date_unix = strtotime($created_at . ' +'.(int)$myreward->validity_in_days.' days');
-                    $current_date_unix = time();
+                $created_at = date('Y-m-d h:i:s',strtotime($value['created_at']));
+                $validity_in_days = $value['created_at'];
 
-                    if($validity_date_unix < $current_date_unix){
-                        $validity_in_days = 0;
-                    }else{
+                $validity_date_unix = strtotime($created_at . ' +'.(int)$myreward['validity_in_days'].' days');
+                $current_date_unix = time();
 
-                        $validity_in_days = ($validity_date_unix - $current_date_unix)/(60*60*24);
-                    }
+                if($validity_date_unix < $current_date_unix){
+                    $validity_in_days = 0;
+                }else{
 
-                    $myrewards[$key]['validity_in_days'] = $validity_in_days;
-
+                    $validity_in_days = ($validity_date_unix - $current_date_unix)/(60*60*24);
                 }
+
+                $myrewards[$key]['validity_in_days'] = $validity_in_days;
+
             }
-        }*/
+        }
+
+        return Response::json(array('status' => 200,'data' => $myrewards), 200);
+    }
+
+    public function listMyRewardsV1($offset = 0, $limit = 10){
+    
+        $jwt_token = Request::header('Authorization');
+        $decoded = $this->utilities->customerTokenDecode($jwt_token);
+        $customer_id = (int)$decoded->customer->_id;
+
+        $query      =   Myreward::where('customer_id',$customer_id);
+
+        $myrewards = array();
+        $myrewards = $query->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
         return Response::json(array('status' => 200,'data' => $myrewards), 200);
     }
