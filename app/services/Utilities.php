@@ -140,7 +140,7 @@ Class Utilities {
         }
         $customerwallet = new Customerwallet();
         $id = Customerwallet::max('_id');
-        echo $id;
+        //echo $id;
         $max_id = (isset($id) && !empty($id)) ? $id : 0;
         $customerwallet->_id = $max_id + 1;
         $customerwallet->customer_id = (int) $request['customer_id'];
