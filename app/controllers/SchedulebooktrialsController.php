@@ -1927,10 +1927,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $myreward_id = "";
 
-        if (empty($data['reward_id'])) {
-            $resp = array('status' => 400, 'message' => "Data Missing - reward_id");
-            return Response::json($resp, 400);
-        } else {
+        if (isset($data['reward_id']) && $data['reward_id'] != "") {
 
             $myreward_id = $data['myreward_id'] = (int)$data['reward_id'];
 
@@ -1939,10 +1936,8 @@ class SchedulebooktrialsController extends \BaseController {
             if($createMyRewardCapture['status'] !== 200){
 
                 return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
-
-
             }
-        }
+        } 
 
         try {
 
