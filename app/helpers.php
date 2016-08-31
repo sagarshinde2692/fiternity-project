@@ -1354,7 +1354,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         return $ratecard;
                     }
 
-                    if(isset($ratecard['type']) && $ratecard['type'] == 'trial' && $finderdata['commercial_type'] != 0){
+                    if(isset($ratecard['type']) && $ratecard['type'] == 'trial' && isset($finderdata['commercial_type']) && $finderdata['commercial_type'] != 0){
                         return $ratecard;
                     }
 
