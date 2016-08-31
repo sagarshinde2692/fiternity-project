@@ -561,7 +561,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             'finder_id' 	       =>		$finder_id,
             'city_id'		       =>		$city_id,
-            'finder_name' 	       =>		$finder_name,
+            'finder_name' 	       =>		isset($finder->title) ? $finder->title : $finder_name,
             'finder_category_id' 	=>		intval($finder->category_id),
             'manual_trial_auto' 	=>	    isset($finder->manual_trial_auto) ? $finder->manual_trial_auto : '0',
             'finder_vcc_email' 	    =>	    isset($finder->finder_vcc_email) ? $finder->finder_vcc_email : '',
@@ -1917,8 +1917,10 @@ class SchedulebooktrialsController extends \BaseController {
     public function bookTrialFree($data = null)
     {
 
+
         // send error message if any thing is missing
         !isset($data) ? $data = Input::json()->all() : null;
+        (!is_array($data)) ? $data = $data->toArray() : null;
 
         Log::info('input_data',$data);
 
@@ -1963,23 +1965,25 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $myreward_id = "";
+        if (isset($data['reward_id'])) {
+            if (empty($data['reward_id'])) {
+                $resp = array('status' => 400, 'message' => "Data Missing - reward_id");
+                return Response::json($resp, 400);
+            } else {
 
-        if (empty($data['reward_id'])) {
-            $resp = array('status' => 400, 'message' => "Data Missing - reward_id");
-            return Response::json($resp, 400);
-        } else {
+                $myreward_id = $data['myreward_id'] = (int)$data['reward_id'];
 
-            $myreward_id = $data['myreward_id'] = (int)$data['reward_id'];
+                $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);
 
-            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);
+                if($createMyRewardCapture['status'] !== 200){
 
-            if($createMyRewardCapture['status'] !== 200){
-
-                return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+                    return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
 
 
+                }
             }
         }
+
 
         try {
 
@@ -2008,18 +2012,18 @@ class SchedulebooktrialsController extends \BaseController {
 
             // Throw an error if user has already booked a trial for that vendor...
             $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-            if (count($alreadyBookedTrials) > 0) {
-                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
-                return Response::json($resp, 403);
-            }
+//            if (count($alreadyBookedTrials) > 0) {
+//                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
+//                return Response::json($resp, 403);
+//            }
 
             // Throw an error if user has already booked a trial on same schedule timestamp..
             $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
             $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
-            if (count($UpcomingTrialsOnTimestamp) > 0) {
-                $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
-                return Response::json($resp, 403);
-            }
+//            if (count($UpcomingTrialsOnTimestamp) > 0) {
+//                $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
+//                return Response::json($resp, 403);
+//            }
 
             isset($data['customer_name']) ? $customer_name = $data['customer_name'] : null;
             isset($data['customer_email']) ? $customer_email = $data['customer_email'] : null;
@@ -2271,16 +2275,18 @@ class SchedulebooktrialsController extends \BaseController {
                 'age' => $age,
                 'injury' => $injury,
                 'note_to_trainer' => $note_to_trainer,
-                'reward_id' => $myreward_id,
                 'medical_detail' => $medical_detail,
                 'medication_detail' => $medication_detail,
                 'physical_activity_detail'      =>      $physical_activity_detail,
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'               =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
-                'myreward_id' => $myreward_id
 
             );
+
+            !empty($myreward_id) ? $data['reward_id'] = $myreward_id : null;
+            !empty($myreward_id) ? $data['myreward_id'] = $myreward_id : null;
+
 
             if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
 
@@ -2295,9 +2301,18 @@ class SchedulebooktrialsController extends \BaseController {
 
             // return $this->customersms->bookTrial($booktrialdata);
             // return $booktrialdata;
-            $booktrial = new Booktrial($booktrialdata);
-            $booktrial->_id = $booktrialid;
-            $trialbooked = $booktrial->save();
+
+            if(isset($data['_id'])){
+                $booktrialid = (int) $data['_id'];
+                $booktrial = Booktrial::where('_id',$booktrialid);
+                $trialbooked = $booktrial->update($booktrialdata);
+            }
+            else{
+                $booktrial = new Booktrial($booktrialdata);
+                $booktrial->_id = $booktrialid;
+                $trialbooked = $booktrial->save();
+            }
+
 
             if ($medical_detail != "" && $medication_detail != "") {
 
@@ -2336,7 +2351,7 @@ class SchedulebooktrialsController extends \BaseController {
             //if vendor type is free special dont send communication
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+                $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
@@ -4189,6 +4204,45 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
+    public function confirmmanualtrialbyvendor(){
+        $data = Input::json()->all();
+
+        if(empty($data['service_name'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
+            return  Response::json($resp, 400);
+        }if(empty($data['amount'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - amount");
+            return  Response::json($resp, 400);
+        }if(empty($data['schedule_date'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_date");
+            return  Response::json($resp, 400);
+        }if(empty($data['schedule_slot'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_slot");
+            return  Response::json($resp, 400);
+        }if(empty($data['_id'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - _id");
+            return  Response::json($resp, 400);
+        }
+
+        $data['schedule_date'] = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+        $booktrial = Booktrial::findOrFail((int) $data['_id']);
+
+        if($booktrial['booktrial_type'] == 'auto'){
+            $resp 	= 	array('status' => 422,'message' => "We have already recieved input for this trial");
+            return  Response::json($resp, 422);
+        }
+        if($booktrial->update($data)){
+            $booktrialData = Booktrial::where('_id',(int) $data['_id'])->get();
+            $booktrialData = $booktrialData[0];
+            $booktrialData['customer_source'] = $booktrialData['source'];
+            return $this->bookTrialFree($booktrialData);
+        }
+
+        // Hit booktrialfree API for communication...
+        // Handle existing booktrial in booktrial API...
+
+    }
+
     public function addVIPTrialAsRewardOnVIPPaidTrial($booktrialdata, $order_id=null){
 
         try {
@@ -4440,6 +4494,8 @@ class SchedulebooktrialsController extends \BaseController {
         return $data; 
 
     }
+
+
 
     public function sendCommunication(){
 
