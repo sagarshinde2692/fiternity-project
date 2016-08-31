@@ -152,6 +152,10 @@ class CustomofferorderController extends \BaseController
 				$order->_id = Customofferorder::max('_id') + 1;
 				$order->save();
 
+                if($offer->price == 0){
+                    return $this->captureOrder($order->_id);
+                }
+
 				return Response::json(array('status' => 200,'message' => 'Tmp order generated sucessfull','order_id'=>$order->_id),200);
 
 			}else{

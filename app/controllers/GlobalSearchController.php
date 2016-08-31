@@ -1988,4 +1988,21 @@ private function _getCategoryRegex($city){
 
 }
 
+    public function seourl(){
+
+        $data = Input::json()->all();
+
+        $slug = $data['slug'];
+
+        $seourl = Seourl::where('slug',$slug)->orderBy('_id','desc')->first();
+
+        if($seourl){
+            $response = array('status'=>200,'message'=>'Success','data'=>$seourl);
+        }else{
+            $response = array('status'=>401,'message'=>'Slug Not Found','data'=>$seourl);
+        }
+
+        return Response::json($response,$response['status']);
+    }
+
 }

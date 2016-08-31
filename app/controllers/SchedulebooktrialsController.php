@@ -1284,7 +1284,7 @@ class SchedulebooktrialsController extends \BaseController {
                     return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
                 }
 
-                $data['myreward_id'] = $order_data['myreward_id'];
+                $data['myreward_id'] = (int)$order_data['myreward_id'];
             }
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
@@ -1575,7 +1575,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
 
-                $booktrialdata['myreward_id'] = $data['myreward_id'];
+                $booktrialdata['myreward_id'] = (int)$data['myreward_id'];
 
                 $myreward = Myreward::find((int)$data['myreward_id']);
 

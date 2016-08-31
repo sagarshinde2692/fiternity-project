@@ -116,6 +116,7 @@ Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','us
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
+Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 
 
 
@@ -136,6 +137,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('getcustomertransactions',  array('as' => 'customer.getcustomertransactions','uses' => 'CustomerController@getCustomerTransactions'));
 	Route::get('upcomingtrials',  array('as' => 'customer.upcomingtrials','uses' => 'CustomerController@getUpcomingTrials'));
 	Route::get('customer/myrewards/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewards','uses' => 'MyrewardController@listMyRewards'));
+	Route::get('customer/myrewardsv1/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewardsv1','uses' => 'MyrewardController@listMyRewardsV1'));
 
 	// Wallet APIs...
 

@@ -1342,14 +1342,25 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             $geolocation = array('lat' => $finderdata['lat'], 'lon' => $finderdata['lon']);
         }
 
+        $sale_ratecards = array();
+
         if (!empty($servicedata['serviceratecard'])) {
 
             $ratecards = $servicedata['serviceratecard'];
             $sale_ratecards = array_values(
                 array_where($ratecards, function ($key, $ratecard) {
-                    if (((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')) && (isset($ratecard['type']) && $ratecard['type'] == 'membership')) {
+
+                    if(isset($ratecard['type']) && ($ratecard['type'] == 'membership' || $ratecard['type'] == 'packages') && (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')){
                         return $ratecard;
                     }
+
+                    if(isset($ratecard['type']) && $ratecard['type'] == 'trial' && isset($finderdata['commercial_type']) && $finderdata['commercial_type'] != 0){
+                        return $ratecard;
+                    }
+
+                    /*if (((isset($ratecard['monsoon_sale_enable']) && $ratecard['monsoon_sale_enable'] == '1') || (isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] == '1')) && (isset($ratecard['type']) && ($ratecard['type'] == 'membership' || $ratecard['type'] == 'packages' || $ratecard['type'] == 'trial'))) {
+                        return $ratecard;
+                    }*/
                 })
             );
         }
@@ -1363,7 +1374,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                 'monsoon_sale_enable' => $monsoon_sale_enable,
                 'service_id' => $servicedata['_id'],
                 'category' => (isset($servicedata['category']['name']) && $servicedata['category']['name'] != '') ? strtolower($servicedata['category']['name']) : "",
-                'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ? strtolower($servicedata['subcategory']['name']) : "",
+                'subcategory' => (isset($servicedata['subcategory']['name']) && $servicedata['subcategory']['name'] != '') ?  trim(strtolower($servicedata['subcategory']['name'])) : "",
                 'geolocation' => $geolocation,
                 'finder_id' => $servicedata['finder_id'],
                 'findername' => (isset($finderdata['title']) && $finderdata['title'] != '') ? strtolower($finderdata['title']) : "",

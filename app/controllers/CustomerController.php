@@ -12,6 +12,7 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\CustomerReward as CustomerReward;
+use App\Services\ShortenUrl as ShortenUrl;
 
 class CustomerController extends \BaseController {
 
@@ -2272,9 +2273,216 @@ public function getCustomerDetail(){
 
 		$data['customer_id'] = $customer_id;
 
+		$customer = Customer::find((int)$customer_id);
+
+        if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
+        	
+            $customerData['address'] = $data['customer_address'];
+            $customer->update($customerData);
+
+            $data['customer_address'] = implode(",", array_values($data['customer_address']));
+
+        }
+
+		$token = $this->createToken($customer);
+
 		$response  = $this->customerreward->createMyRewardCapture($data);
+		$response['token'] = $token;
 
 		return Response::json($response,$response['status']);
+
+	}
+
+	public function transformation(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$rules = [
+			'customer_id' => 'required',
+			//'weight' => 'required',
+			//'energy_level' => 'required',
+			//'record'=>'required',
+			'image'=>'image'
+		];
+
+		$data = Input::all();
+
+		$data['customer_id'] = $customer_id;
+
+		unset($data['image']);
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+		}else{
+
+			$transformationid 		=	Transformation::max('_id') + 1;
+
+	        if (Input::hasFile('image')) {
+
+	        	$image_detail = array(
+	        		array('type'=>'cover','path'=>'customer/'.$customer_id.'/transformation/cover/','width'=>720),
+	        		array('type'=>'thumb','path'=>'customer/'.$customer_id.'/transformation/thumb/','width'=>256),
+	        	);
+
+	            $image = array('input' => Input::file('image'),'detail' => $image_detail,'id' => $transformationid);
+
+	            $image_response = upload_magic($image);
+
+	            foreach ($image_response['response'] as $key => $value){
+
+	            	if(isset($value['success']) && $value['success']){
+
+	            		$image_success['width'] = $value['kraked_width'];
+	            		$image_success['height'] = $value['kraked_height'];
+	            		$image_success['s3_url'] = $value['kraked_url'];
+	            		$image_success['s3_folder_path'] = $value['folder_path'];
+	            		$image_success['s3_file_path'] = $value['folder_path'].$image_response['image_name'];
+	            		$image_success['name'] = $image_response['image_name'];
+
+	            		$data[$value['type']] = $image_success;
+	            	}
+
+	           	}
+
+	        }
+
+	        $duration = (isset($data['record']['duration']) && $data['record']['duration'] != "") ? (int)$data['record']['duration'] : "";
+		    $duration_type = (isset($data['record']['duration_type']) && $data['record']['duration_type'] != "") ? $data['record']['duration_type'] : "";
+		    $duration_day = 0;
+
+		    if($duration != "" && $duration_type != ""){
+
+		    	switch ($dutarion_type){
+
+		    		case 'day': $duration_day = $duration; break;
+		    		case 'week': $duration_day = ($duration*7); break;
+		    		case 'month': $duration_day = ($duration*30); break;
+		    		default : break;
+
+		    	}
+
+		    }
+
+		    if($duration_day != 0){
+
+		    	$data['reminder_schedule_date'] = date('Y-m-d 00:00:00', strtotime('+'.$duration_day.' days'));
+
+		    }
+
+		    $data['duration'] = $duration;
+		    $data['duration_type'] = $duration_type;
+
+		    Transformation::where('status','1')->where('customer_id',$customer_id)->update(array('status'=>'0'));
+
+			$transformation 		= 	new Transformation($data);
+			$transformation->_id 	= 	$transformationid;
+			$transformation->status = 	"1";
+			$transformation->save();
+
+			return Response::json(array('status' => 200,'message' => "Transformation added Successfull",'data'=>$transformation),200);
+		}
+		
+	}
+
+	
+	public function stayOnTrack(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$rules = [
+			'customer_id' => 'required',
+			//'weekdays' => 'required',
+			//'session_time' => 'required',
+			//'wake_up_by'=>'required',
+			//'wake_up_time'=>'required'
+		];
+
+		$data = Input::json()->all();
+
+		$data['customer_id'] = $customer_id;
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+		}else{
+
+			Stayontrack::where('status','1')->where('customer_id',$customer_id)->update(array('status'=>'0'));
+
+			$stayontrackid 		=	Stayontrack::max('_id') + 1;
+			$stayontrack 		= 	new Stayontrack($data);
+			$stayontrack->_id 	= 	$stayontrackid;
+			$stayontrack->status = 	"1";
+			$stayontrack->save();
+
+			return Response::json(array('status' => 200,'message' => "StayOnTrack added Successfull"),200);
+		}
+
+	}
+
+
+	public function getTransformation(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$transformation = array();
+
+		$transformation = Transformation::where('customer_id',$customer_id)->orderBy('_id','desc')->get();
+
+		return Response::json(array('status' => 200,'message' => "Customer transformation List",'data'=>$transformation),200);
+
+	}
+
+	public function getStayOnTrack(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$stayontrack = array();
+
+		$stayontrack = Stayontrack::where('customer_id',$customer_id)->orderBy('_id','desc')->get();
+
+		return Response::json(array('status' => 200,'message' => "Customer StayOnTrack List",'data'=>$stayontrack),200);
+
+	}
+
+	public function downloadApp(){
+
+		$rules = [
+			'phone' => 'required',
+			'device_type' => 'required'
+		];
+
+		$data = Input::json()->all();
+
+		$data['url'] = "https://play.google.com/store/apps/details?id=com.discover.fitternity";
+
+        $shorten_url = new ShortenUrl();
+
+        $url = $shorten_url->getShortenUrl($data['url']);
+
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $data['url'] = $url['url'];
+        }
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+			return array('status' => 401,'message' =>$this->errorMessage($validator->errors()));  
+		}
+
+		$this->customersms->downloadApp($data);
+
+		return array('status' => 200,'message' =>"SMS Sent");
 
 	}
 
