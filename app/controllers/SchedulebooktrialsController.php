@@ -2249,6 +2249,11 @@ class SchedulebooktrialsController extends \BaseController {
                 if($myreward){
                     $booktrialdata['reward_balance'] = $myreward->quantity - $myreward->claimed;
                 }
+
+                if ($type == 'vip_booktrials_rewarded') {
+
+                    $myreward->update(array('status' => '1','reward_action' => 'claimed','claimed' => '1'));
+                }
             }
 
             // return $this->customersms->bookTrial($booktrialdata);
@@ -2261,11 +2266,6 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $customer_info = new CustomerInfo();
                 $response = $customer_info->addHealthInfo($booktrialdata);
-            }
-
-            if ($type == 'vip_booktrials_rewarded') {
-
-                $myreward->update(array('status' => '1', 'reward_action' => 'claimed'));
             }
 
         } catch (ValidationException $e) {
