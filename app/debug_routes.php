@@ -32,6 +32,15 @@ Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@by
 
 
 
+Route::get('migratescheduletype', function(){
+
+
+	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+
+
+});
+
+
 Route::get('migratecustomofferorder', function(){
 
 
