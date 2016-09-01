@@ -115,7 +115,7 @@ class OrderController extends \BaseController {
 			                $title = "Personal Trainer At ".$order->finder_name." (".$order->finder_location.")";
 			            }
 
-                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $value->quantity." ".$title : $title;
+                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
 
                     }
 
