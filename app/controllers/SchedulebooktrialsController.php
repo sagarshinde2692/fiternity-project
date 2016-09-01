@@ -1927,10 +1927,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $myreward_id = "";
 
-        if (empty($data['reward_id'])) {
-            $resp = array('status' => 400, 'message' => "Data Missing - reward_id");
-            return Response::json($resp, 400);
-        } else {
+        if (isset($data['reward_id']) && $data['reward_id'] != "") {
 
             $myreward_id = $data['myreward_id'] = (int)$data['reward_id'];
 
@@ -1939,10 +1936,8 @@ class SchedulebooktrialsController extends \BaseController {
             if($createMyRewardCapture['status'] !== 200){
 
                 return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
-
-
             }
-        }
+        } 
 
         try {
 
@@ -2254,6 +2249,11 @@ class SchedulebooktrialsController extends \BaseController {
                 if($myreward){
                     $booktrialdata['reward_balance'] = $myreward->quantity - $myreward->claimed;
                 }
+
+                if ($type == 'vip_booktrials_rewarded') {
+
+                    $myreward->update(array('status' => '1','reward_action' => 'claimed','claimed' => '1'));
+                }
             }
 
             // return $this->customersms->bookTrial($booktrialdata);
@@ -2266,11 +2266,6 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $customer_info = new CustomerInfo();
                 $response = $customer_info->addHealthInfo($booktrialdata);
-            }
-
-            if ($type == 'vip_booktrials_rewarded') {
-
-                $myreward->update(array('status' => '1', 'reward_action' => 'claimed'));
             }
 
         } catch (ValidationException $e) {
