@@ -122,7 +122,7 @@ class OzonetelsController extends \BaseController {
 					if($finder){
 
 
-                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
+                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
 
 
                             $this->ozonetelResponse->addDial($this->jump_fitternity_no2, "true");
@@ -226,7 +226,7 @@ class OzonetelsController extends \BaseController {
 					
 					if($finder){
 
-                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
+                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
 
                             $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
                             $call_jump = true;
@@ -246,7 +246,7 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                    /*}*/
+	                    }
 
 	                }else{
 	                    
@@ -436,7 +436,7 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_capture->update();
 
 			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect'){
-				$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+//				$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 			}
 
 			return $ozonetel_capture;
