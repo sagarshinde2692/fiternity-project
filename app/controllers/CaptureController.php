@@ -160,6 +160,16 @@ public function postCapture(){
 
 	$data['customer_id'] = autoRegisterCustomer($data);
 
+	$customer = Customer::find((int)$data['customer_id']);
+
+    if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
+    	
+        $customerData['address'] = $data['customer_address'];
+        $customer->update($customerData);
+
+        $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
+    }
+
     if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
 
     	$customerreward = new CustomerReward();
