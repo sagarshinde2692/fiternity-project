@@ -112,7 +112,7 @@ class OrderController extends \BaseController {
                     	$title = $value->title;
 
                     	if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
-			                $title = "Personal Trainer At ".$order->finder_name." (".$order->finder_location.")";
+			                $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
 			            }
 
                         $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;

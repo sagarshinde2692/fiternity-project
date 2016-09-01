@@ -81,7 +81,7 @@ Class CustomerReward {
             $reward['claimed']          =   0;
 
             if($reward['reward_type'] == 'personal_trainer_at_studio' && isset($finderData['finder_name']) && isset($finderData['finder_location'])){
-                $reward['title'] = "Personal Trainer At ".$finderData['finder_name']." (".$finderData['finder_location'].")";
+                $reward['title'] = "Personal Training At ".$finderData['finder_name']." (".$finderData['finder_location'].")";
             }
 
             $reward['reward_id']        =   $reward['_id'];
