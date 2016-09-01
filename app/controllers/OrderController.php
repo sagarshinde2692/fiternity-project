@@ -103,13 +103,19 @@ class OrderController extends \BaseController {
 
                 $reward_ids = array_map('intval',$order->reward_ids);
 
-                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity'));
+                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
 
                 if(count($rewards) > 0){
 
                     foreach ($rewards as $value) {
 
-                        $reward_detail[] = $value->quantity." ".$value->title;
+                    	$title = $value->title;
+
+                    	if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+			                $title = "Personal Trainer At ".$order->finder_name." (".$order->finder_location.")";
+			            }
+
+                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $value->quantity." ".$title : $title;
 
                     }
 
