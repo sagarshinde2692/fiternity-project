@@ -1925,20 +1925,7 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        $myreward_id = "";
-
-        if (isset($data['reward_id']) && $data['reward_id'] != "") {
-
-            $myreward_id = $data['myreward_id'] = (int)$data['reward_id'];
-
-            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);
-
-            if($createMyRewardCapture['status'] !== 200){
-
-                return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
-            }
-        } 
-
+         
         try {
 
             $service_id	 				       =	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
@@ -1967,7 +1954,7 @@ class SchedulebooktrialsController extends \BaseController {
             // Throw an error if user has already booked a trial for that vendor...
             $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
             if (count($alreadyBookedTrials) > 0) {
-                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
+                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
                 return Response::json($resp, 403);
             }
 
@@ -1977,6 +1964,20 @@ class SchedulebooktrialsController extends \BaseController {
             if (count($UpcomingTrialsOnTimestamp) > 0) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
                 return Response::json($resp, 403);
+            }
+
+            $myreward_id = "";
+
+            if (isset($data['reward_id']) && $data['reward_id'] != "") {
+
+                $myreward_id = $data['myreward_id'] = (int)$data['reward_id'];
+
+                $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);
+
+                if($createMyRewardCapture['status'] !== 200){
+
+                    return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
+                }
             }
 
             isset($data['customer_name']) ? $customer_name = $data['customer_name'] : null;
