@@ -436,7 +436,7 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_capture->update();
 
 			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect'){
-//				$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+				$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 			}
 
 			return $ozonetel_capture;
