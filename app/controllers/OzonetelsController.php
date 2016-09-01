@@ -144,10 +144,11 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                   	/* }*/
+	                   	}
 
-	                }else{
-	                    
+	                }
+					else{
+
 	                    $this->ozonetelResponse->addHangup();
 	                }
 
