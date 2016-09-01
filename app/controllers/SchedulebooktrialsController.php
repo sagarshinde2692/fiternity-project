@@ -513,6 +513,13 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
+        // Throw an error if user has already booked a trial for that vendor...
+        $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+        if (count($alreadyBookedTrials) > 0) {
+            $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
+            return Response::json($resp, 403);
+        }
+
         // return $data	= Input::json()->all();
         $booktrialid 		       =	Booktrial::max('_id') + 1;
         $finder_id 			       = 	(int) Input::json()->get('finder_id');
@@ -606,7 +613,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
 
-        // return $booktrialdata;
+//         return $booktrialdata;
         $booktrial = new Booktrial($booktrialdata);
         $booktrial->_id = $booktrialid;
         $trialbooked = $booktrial->save();
@@ -616,15 +623,17 @@ class SchedulebooktrialsController extends \BaseController {
             if($booktrialdata['manual_trial_auto'] === '1'){
 
                 $now = Carbon::now();
-                $tomorrow = Carbon::tomorrow()->setTime(9,0,0);
                 $time = date('H.i', time());
 
-                $addHours = ($time > 21) ? 6.0 : (($time+6) > 21) ? ($time+6) - 21 : 0.0;
-                $hours = explode('.', $addHours)[0];
-                $minutes = explode('.', $addHours)[1];
+                ($time >= 9.0 && $time <= 15.0) ? $finder_reminder_time = $now->addHours(6) : null;
+                $tomorrow = ($time >15.0 && $time <= 24.0) ? Carbon::tomorrow()->setTime(9,0,0) : Carbon::today()->setTime(9,0,0);
 
-                $finder_reminder_time = $tomorrow->addHours($hours)->addMinutes($minutes);
-                $customer_reminder_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $now)->addMinutes(60 * 8);
+                $addHours = ($time > 21.0) ? 6.0 : ((($time+6) > 21) ? floatval(($time+6) - 21) : 0.0);
+                $hours = explode('.', $addHours)[0];
+                $minutes = isset(explode('.', $addHours)[1]) ? explode('.', $addHours)[1] : 0;
+
+                !isset($finder_reminder_time) ? $finder_reminder_time = $tomorrow->addHours($hours)->addMinutes($minutes) : null;
+                $customer_reminder_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now())->addHours(8);
 
                 $sndInstantEmailCustomer       = 	$this->customermailer->manualTrialAuto($booktrialdata);
                 $sndInstantSmsCustomer	       =	$this->customersms->manualTrialAuto($booktrialdata);
@@ -2012,18 +2021,18 @@ class SchedulebooktrialsController extends \BaseController {
 
             // Throw an error if user has already booked a trial for that vendor...
             $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-//            if (count($alreadyBookedTrials) > 0) {
-//                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
-//                return Response::json($resp, 403);
-//            }
+            if (count($alreadyBookedTrials) > 0) {
+                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
+                return Response::json($resp, 403);
+            }
 
             // Throw an error if user has already booked a trial on same schedule timestamp..
             $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
             $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
-//            if (count($UpcomingTrialsOnTimestamp) > 0) {
-//                $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
-//                return Response::json($resp, 403);
-//            }
+            if (count($UpcomingTrialsOnTimestamp) > 0) {
+                $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
+                return Response::json($resp, 403);
+            }
 
             isset($data['customer_name']) ? $customer_name = $data['customer_name'] : null;
             isset($data['customer_email']) ? $customer_email = $data['customer_email'] : null;
@@ -4211,8 +4220,7 @@ class SchedulebooktrialsController extends \BaseController {
             $resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
             return  Response::json($resp, 400);
         }if(empty($data['amount'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - amount");
-            return  Response::json($resp, 400);
+            $data['amount'] = 0;
         }if(empty($data['schedule_date'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_date");
             return  Response::json($resp, 400);
@@ -4227,19 +4235,33 @@ class SchedulebooktrialsController extends \BaseController {
         $data['schedule_date'] = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
         $booktrial = Booktrial::findOrFail((int) $data['_id']);
 
-        if($booktrial['booktrial_type'] == 'auto'){
-            $resp 	= 	array('status' => 422,'message' => "We have already recieved input for this trial");
-            return  Response::json($resp, 422);
-        }
+//        if($booktrial['booktrial_type'] == 'auto'){
+//            $resp 	= 	array('status' => 422,'message' => "We have already recieved input for this trial");
+//            return  Response::json($resp, 422);
+//        }
         if($booktrial->update($data)){
             $booktrialData = Booktrial::where('_id',(int) $data['_id'])->get();
             $booktrialData = $booktrialData[0];
             $booktrialData['customer_source'] = $booktrialData['source'];
-            return $this->bookTrialFree($booktrialData);
+            $resp = $this->bookTrialFree($booktrialData);
+            $data = $resp->getData();
+            if($data->status == 200){
+
+                if(isset($booktrialData['customer_smsqueuedids']['manualtrialauto_8hours']) && $booktrialData['customer_smsqueuedids']['manualtrialauto_8hours'] != ''){
+                    try {
+                        $this->sidekiq->delete($booktrialData['customer_smsqueuedids']['manualtrialauto_8hours']);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+            }
+            return $resp;
+
         }
 
         // Hit booktrialfree API for communication...
         // Handle existing booktrial in booktrial API...
+        // Delete customer scheduled msg if confirmation is done
 
     }
 
