@@ -989,6 +989,8 @@ class OzonetelsController extends \BaseController {
 					$booktrial->update();
 				}
 			}
+			
+			
 
 			$response = array('status'=>200,'message'=>'success','ozonetel_missedcall'=> $ozonetel_missedcall );
 
@@ -1131,6 +1133,69 @@ class OzonetelsController extends \BaseController {
         }
 
         return $response;
+
+	}
+
+	public function misscallManualTrial($type){
+
+		Log::info('misscallManualTrial - ');
+
+		try{
+
+			$request = $_REQUEST;
+
+			Log::info('$request - ',$request);
+
+
+			$ozonetel_missedcall = new Ozonetelmissedcall();
+			$ozonetel_missedcall->_id = Ozonetelmissedcall::max('_id') + 1;
+			$ozonetel_missedcall->status = "1";
+			$ozonetel_missedcall->cid = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->customer_number = isset($request['cid']) ? preg_replace("/[^0-9]/", "", $request['cid']) : '';
+			$ozonetel_missedcall->sid = isset($request['sid']) ? $request['sid'] : '';
+			$ozonetel_missedcall->called_number = isset($request['called_number']) ? $request['called_number'] : '';
+			$ozonetel_missedcall->circle = isset($request['circle']) ? $request['circle'] : '';
+			$ozonetel_missedcall->operator = isset($request['operator']) ? $request['operator'] : '';
+			$ozonetel_missedcall->call_time = isset($request['call_time']) ? $request['call_time'] : '';
+			$ozonetel_missedcall->called_at = isset($request['call_time']) ? strtotime($request['call_time']) : '';
+			$ozonetel_missedcall->type = $type;
+			$ozonetel_missedcall->label = 'manualtrial';
+			$ozonetel_missedcall->save();
+
+			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('status','1')->where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('label','manualtrial')->where('type',$type)->first();
+
+			if($ozonetelmissedcallnos){
+				$booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('manual_trial_auto','1')->orderBy('_id','desc')->first();
+
+				if($booktrial){
+
+					$booktrial->missedcall_manualtrial_type = $type;
+					$booktrial->missedcall_manualtrial_date = date('Y-m-d h:i:s');
+					$booktrial->update();
+
+					$ozonetel_missedcall->update(array('trial_id'=>$booktrial->_id));
+				}
+			}
+
+
+			$response = array('status'=>200,'message'=>'success');
+
+		}catch (Exception $e) {
+
+			$message = array(
+				'type'    => get_class($e),
+				'message' => $e->getMessage(),
+				'file'    => $e->getFile(),
+				'line'    => $e->getLine(),
+			);
+
+			$response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+
+			Log::error($e);
+
+		}
+
+		return $response;
 
 	}
 

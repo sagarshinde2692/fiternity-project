@@ -555,6 +555,7 @@ Route::post('callcenter/callback',  array('as' => 'ozonetel.callback','uses' => 
 
 Route::get('ozonetel/misscallreview/{type}',  array('as' => 'ozonetel.misscallreview','uses' => 'OzonetelsController@misscallReview'));
 Route::get('ozonetel/misscallorder/{type}',  array('as' => 'ozonetel.misscallorder','uses' => 'OzonetelsController@misscallOrder'));
+Route::get('ozonetel/misscallmanualtrial/{type}',  array('as' => 'ozonetel.misscallmanualtrial','uses' => 'OzonetelsController@misscallManualTrial'));
 Route::get('ozonetel/outboundcall/stayontrack/{id}',  array('as' => 'ozonetel.outboundcallstayontrack','uses' => 'OzonetelsController@outboundCallStayOnTrack'));
 Route::get('ozonetel/customercalltovendor/missedcall',  array('as' => 'ozonetel.customercalltovendormissedcall','uses' => 'OzonetelsController@customerCallToVendorMissedcall'));
 
