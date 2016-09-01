@@ -38,6 +38,7 @@ class MigrationReverseController extends \BaseController {
             case 'vendorservicecategory' : $return = $this->vendorservicecategory($id);break;
             case 'vendorservice' : $return = $this->vendorservice($id);break;
             case 'ratecard' : $return = $this->ratecard($id);break;
+            case 'deleteratecard' : $return = $this->deleteRatecard($id);break;
             case 'schedule' : $return = $this->schedule($id);break;
             case 'batch' : $return = $this->batch($id);break;
             case 'deleteschedulebyvendor' : $return = $this->deletescheduleByVendorId($id);break;
@@ -694,6 +695,7 @@ class MigrationReverseController extends \BaseController {
                     'about' 	=>  ($Finder->info['about']) ? trim($Finder->info['about']) : "",
                     'additional_info' 	=>  ($Finder->info['additional_info']) ? trim($Finder->info['additional_info']) : "",
                     'timing' 	=>  ($Finder->info['timing']) ? trim($Finder->info['timing']) : "",
+                    'delivery_timing' 	=>  ($Finder->info['delivery_timing']) ? trim($Finder->info['delivery_timing']) : "",
                     'service' 	=>  ($Finder->info['service']) ? "<ul><li>". implode("</li><li>", $Finder->info['service'])."</li></ul>" : "",
                 ],
                 'meta' 	=>  [
@@ -901,9 +903,10 @@ class MigrationReverseController extends \BaseController {
             $insertData['lat'] = $data['geometry']['coordinates']['1'];
             $insertData['location_id'] = (int)$data['location_id'];
             $insertData['city_id'] = (int)$data['city_id'];
-            $insertData['workout_intensity'] = $data['workout_intensity'];
-            $insertData['session_type'] = $data['session_type'];
-            $insertData['workout_tags'] = $data['workout_tags'];
+            $insertData['workout_intensity'] = (isset($data['workout_intensity'])) ? $data['workout_intensity'] : "";
+            $insertData['session_type'] = (isset($data['session_type'])) ? $data['session_type'] : "";
+            $insertData['meal_type'] = (isset($data['meal_type'])) ? $data['meal_type'] : "";
+            $insertData['workout_tags'] = (isset($data['workout_tags']) && !empty($data['workout_tags'])) ? $data['workout_tags'] : [];
             $insertData['status'] = (isset($data['hidden']) && $data['hidden'] == true) ? '0' : '1';
             $insertData['deduct'] = (isset($data['trial_cashback_status'])  && $data['trial_cashback_status'] == true) ? '1' : '0';
             $insertData['rockbottom'] = (isset($data['rockbottom_price_status'])  && $data['rockbottom_price_status'] == true) ? '1' : '0';
@@ -917,6 +920,7 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];
             }
+
             $insertData['show_on']      =   "1";
             $insertData['created_at']   =   $data['created_at'];
             $insertData['updated_at']   =   $data['updated_at'];
@@ -930,6 +934,10 @@ class MigrationReverseController extends \BaseController {
                 $this->updatescheduleByServiceId($id);
 //                return var_dump($service_exists->toArray());
             }else{
+                $insertData['trialschedules'] = [];
+                $insertData['workoutsessionschedules'] = [];
+                $insertData['batches'] = [];
+
                 $service_exists = new Service($insertData);
                 $service_exists->setConnection($this->fitadmin);
                 $service_exists->_id 	=	intval($id);
@@ -980,7 +988,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['validity'] = (int)$data['duration'];
             $insertData['validity_type'] = $data['duration_type'];
             $insertData['duration'] = (int)$data['quantity'];
-            $insertData['duration_type'] = 'sessions';
+            $insertData['duration_type'] = $data['quantity_type'];
             $insertData['created_at'] = $data['created_at'];
             $insertData['updated_at'] = $data['updated_at'];
 
@@ -1036,6 +1044,40 @@ class MigrationReverseController extends \BaseController {
 
         return Response::json($response,$response['status']);
 
+    }
+
+
+    public function deleteRatecard($id){
+
+        try{
+
+            $ratecard   =   Ratecard::on($this->fitadmin)->find(intval($id));
+
+            if($ratecard){
+
+                $delete = Ratecard::destroy(intval($id));
+
+                $finder = Finder::on($this->fitadmin)->find(intval($ratecard->finder_id));
+                $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+            }
+
+        }catch(Exception $e){
+
+            Log::error($e);
+
+            $message = array(
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+            $response = array('status' => 404, 'message' => $message);
+
+        }
+
+        return Response::json($response,$response['status']);
+        
     }
 
 
@@ -1279,15 +1321,17 @@ class MigrationReverseController extends \BaseController {
                     'trialschedules' => $trialschedulesdata,
                     'workoutsessionschedules' => $workoutsessionschedules
                 ]);
+
+                $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
+
+                $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
             }
             }else{
                 $serivce_ids    =   Service::where('_id',intval($vendorservice_id))->update(['trialschedules'=>[],'workoutsessionschedules'=>[]]);
             }
             
 
-            $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
-            $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
             $response = array('status' => 200, 'message' => 'Success');
 
@@ -1335,35 +1379,16 @@ class MigrationReverseController extends \BaseController {
                         // return $slot;
                         $batch_weekdays_data['weekday'] =	$slot['day'];
 
-                        if (intval($slot['start_time']['hours']) < 12) {
-                            $start_time = $slot['start_time']['hours'] .":00 am";
-                        }else{
-
-                             $start_time = "12:00 pm";
-
-                            if(intval($slot['start_time']['hours']) != 12){
-                                $start_time = (intval($slot['start_time']['hours']) - 12) .":00 pm";         
-                            }                            
-
-                        }
-
-                        if (intval($slot['end_time']['hours']) < 12) {
-                            $end_time = $slot['end_time']['hours'] .":00 am";
-                        }else{
-
-                            $end_time = "12:00 pm";
-
-                             if(intval($slot['end_time']['hours']) != 12){
-                                $end_time = (intval($slot['end_time']['hours']) - 12) .":00 pm";
-                            }
-                        }
+                        $slot_times 			=	explode('-',$slot['duration']);
+                        $start_time 	        =	$slot_times[0];
+                        $end_time 	            =	$slot_times[1];
 
                         $batch_weekdays_data['slots'] =	[
                             [
                                 'weekday' => $slot['day'],
                                 'start_time' => $start_time,
                                 'end_time' => $end_time,
-                                'slot_time' => $start_time."-".$end_time,
+                                'slot_time' => $slot['duration'],
                                 'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
                                 'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
                             ]
