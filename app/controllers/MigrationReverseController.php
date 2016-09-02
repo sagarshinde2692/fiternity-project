@@ -1059,6 +1059,8 @@ class MigrationReverseController extends \BaseController {
 
                 $finder = Finder::on($this->fitadmin)->find(intval($ratecard->finder_id));
                 $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+
+                $response = array('status' => 200, 'message' => 'Success');
             }
 
         }catch(Exception $e){
