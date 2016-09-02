@@ -1189,6 +1189,25 @@ class OzonetelsController extends \BaseController {
 
 	}
 
+	public function misscallManualTrial($type){
+
+		$req = $_REQUEST;
+		$ci = curl_init();
+		curl_setopt($ci, CURLOPT_TIMEOUT, 200);
+		curl_setopt($ci, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ci, CURLOPT_FORBID_REUSE, 0);
+		curl_setopt($ci, CURLOPT_URL, 'http://apistg.fitn.in/ozonetel/misscallmanualtrial/'.$type);
+
+		if (isset($params['method'])) {
+			curl_setopt($ci, CURLOPT_CUSTOMREQUEST, 'GET');
+		}
+		if (isset($params['postfields'])) {
+			curl_setopt($ci, CURLOPT_POSTFIELDS, $req);
+		}
+
+		return $response = curl_exec($ci);
+	}
+
 	public function misscallOrder($type){
 
 		Log::info('Missedcall Order Renew - '.$type);
