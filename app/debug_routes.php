@@ -32,6 +32,18 @@ Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@by
 
 
 
+
+
+Route::get('gettrialscsv', function(){
+
+
+	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+
+
+});
+
+
+
 Route::get('migratescheduletype', function(){
 
 
@@ -981,7 +993,9 @@ Route::get('exportcustomer/{start_date?}/{end_date?}', function() {
 
 Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_date, $end_date) { 
 	// return $reminderTimeAfter12Min 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
-	ini_set('max_execution_time', 300);
+    ini_set('memory_limit', '-1');
+    set_time_limit(3000000000);
+    ini_set('max_execution_time', 30000);
 
 	$file_name = $type."_".$start_date."_".$end_date;
 
@@ -994,6 +1008,7 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 	,   'Pragma'              => 'public'
 	];
 
+//    $output = "";
 	// ORDERS
 	if($type == 'order' || $type == 'orders'){
 		$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, ORDER TYPE, ORDER ACTION, AMOUNT, ORDER DATE, FINDER CITY, FINDER NAME, FINDER LOCATION, FINDER CATEGORY, SERVICE NAME, SERVICE CATEGORY  \n";
@@ -1051,18 +1066,22 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 	// BOOKTRIALS
 	if($type == 'booktrial' || $type == 'booktrials'){
 
-		$output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION, FINDER CITY, FINDER CATEGORY, SERVICE NAME, SERVICE CATEGORY, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
-		$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->where('city_id', 1)->take(10000)->skip(10000)->get();
+		$output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, CUSTOMER GENDER, FINDER NAME, FINDER LOCATION, FINDER CITY, FINDER CATEGORY, COMMERCIAL TYPE, SERVICE NAME, SERVICE CATEGORY, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE, TRIAL TYPE  \n";
+//		$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->where('city_id', 1)->take(30000)->get();
 		// $items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->get();
+        $items = $items = Booktrial::where('schedule_date', 'exists', true)->where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->where('city_id', 1)->get();
 
 		foreach ($items as $key => $value) {
-			// var_dump($value;)exit();
+//			 var_dump($value->toArray());exit();
+
+
 			$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
 			$source 				= 	(isset($value['source']) && $value['source'] !="") ? $value['source'] : "-";
 			$booktrial_type 		= 	(isset($value['booktrial_type']) && $value['booktrial_type'] !="") ? $value['booktrial_type'] : "-";
 			$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
 			$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
 			$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
+            $customer_gender 		= 	(isset($value['gender']) && $value['gender'] !="") ? $value['gender'] : "-";
 			$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
 			$post_trial_status 		= 	(isset($value['post_trial_status']) && $value['post_trial_status'] !="") ? $value['post_trial_status'] : "-";
 			$schedule_date 			= 	(isset($value['schedule_date']) && $value['schedule_date'] !="") ? $value['schedule_date'] : "-";
@@ -1070,6 +1089,16 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
 			$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? str_replace(',', '|', $value['finder_name']) : "-";
 			$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
+
+            $trial_type = "";
+
+            if(isset($value['premium_session']) && $value['premium_session'] == "1"){
+                $trial_type = "PAID";
+            }
+
+            if(isset($value['premium_session']) && $value['premium_session'] == "0"){
+                $trial_type = "FREE";
+            }
 
 
 			$finder_category =  $service_name = $service_category = $finder_city = "-";
@@ -1085,6 +1114,9 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 					$finder_location = ($finder->location->name) ? $finder->location->name : "-"; 
 					$finder_city = ($finder->city->name) ? $finder->city->name : "-";  
 					$finder_category = ($finder->category->name) ? $finder->category->name : "-";
+
+                    $commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
+                    $commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
 				}
 			}else{
 				if(isset($value['city_id']) && $value['city_id'] != ''){
@@ -1102,7 +1134,10 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			}
 
 
-			$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $finder_name, $finder_location, $finder_city, $finder_category, $service_name, $service_category,  $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at \n";
+
+
+
+			$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $customer_gender, $finder_name, $finder_location, $finder_city, $finder_category, $commercial_type, $service_name, $service_category,  $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at, $trial_type \n";
 		}
 	}
 
