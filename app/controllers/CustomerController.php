@@ -2284,6 +2284,12 @@ public function getCustomerDetail(){
 
         }
 
+        if(isset($data['gender']) && $data['gender'] != ""){
+        	
+            $customerData['gender'] = $data['gender'];
+            $customer->update($customerData);
+        }
+
 		$token = $this->createToken($customer);
 
 		$response  = $this->customerreward->createMyRewardCapture($data);
