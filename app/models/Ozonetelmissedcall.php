@@ -11,4 +11,6 @@ class Ozonetelmissedcall extends  \Basemodel {
 
 	protected $collection = "ozonetelmissedcall";
 
+	protected $dates = array('ozonetel_called_at');
+
 }
