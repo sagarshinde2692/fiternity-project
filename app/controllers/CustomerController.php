@@ -1984,6 +1984,7 @@ public function getCustomerDetail(){
 		$request['customer_id'] = $customer_id;
 
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
+			->where('amount','!=',0)
 			->orderBy('created_at', 'DESC')
 			->skip($limit)
 			->take($offset)
