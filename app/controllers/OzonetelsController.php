@@ -1608,6 +1608,7 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_missedcall->finder_id = isset($ozonetelcapture['finder_id']) ? $ozonetelcapture['finder_id'] : '';
 			$ozonetel_missedcall->finder_name = isset($ozonetelcapture['finder_name']) ? $ozonetelcapture['finder_name'] : '';
 			$ozonetel_missedcall->finder_commercial_type = isset($ozonetelcapture['finder_commercial_type']) ? $ozonetelcapture['finder_commercial_type'] : '';
+			$ozonetel_missedcall->finder_location = isset($ozonetelcapture['finder_location']) ? $ozonetelcapture['finder_location'] : '';
 			$ozonetel_missedcall->finder_city = isset($ozonetelcapture['finder_city']) ? $ozonetelcapture['finder_city'] : '';
 			$ozonetel_missedcall->ozonetelcapture_id = isset($ozonetelcapture['_id']) ? $ozonetelcapture['_id'] : '';
 			$ozonetel_missedcall->ozonetel_called_at = isset($ozonetelcapture['created_at']) ? $ozonetelcapture['created_at'] : '';
