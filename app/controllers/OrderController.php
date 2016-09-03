@@ -95,6 +95,15 @@ class OrderController extends \BaseController {
 		if($data['status'] == 'success'){
 			// Give Rewards / Cashback to customer based on selection, on purchase success......
 
+			if(isset($order->wallet_refund_sidekiq) && $order->wallet_refund_sidekiq != ''){
+
+            	try {
+                    $this->sidekiq->delete($order->wallet_refund_sidekiq);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
 			$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
 			if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -868,12 +877,12 @@ class OrderController extends \BaseController {
 				return $walletTransactionResponse;
 			}
 
-		}
+			// Schedule Check orderfailure and refund wallet amount in that case....
+	        $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
+	        $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+	        $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
 
-		// Schedule Check orderfailure and refund wallet amount in that case....
-		// $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
-		// $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-		// $this->hitURLAfterDelay($url, $delay);
+		}
 
 		if(isset($data['address']) && $data['address'] != ''){
 
