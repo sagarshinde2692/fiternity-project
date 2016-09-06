@@ -417,7 +417,7 @@ class ServiceController extends \BaseController {
 
         $date = date('d-m-Y',strtotime($date));
 
-        $item = Service::where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules'));
+        $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules'));
 
         $item = $item->toArray();
         $slots = array();
