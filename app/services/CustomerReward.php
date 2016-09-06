@@ -190,6 +190,10 @@ Class CustomerReward {
                     $myreward->status = "1";
                 }
 
+                if(isset($data['customer_address'])){
+                    $myreward->customer_address = $data['customer_address'];
+                }
+
                 $myreward->update();
 
                 if(isset($myreward->finder_id) && $myreward->finder_id != ""){
