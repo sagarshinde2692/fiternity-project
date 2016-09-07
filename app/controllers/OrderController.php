@@ -1340,67 +1340,7 @@ class OrderController extends \BaseController {
         return (int) $delay;
     }
 
-    public function orderUpdate($order_id){
-
-    	$rules = array(
-    		""
-    	);
-
-    	$data =	Input::json()->all();
-
-    	$order_id = (int) $data['order_id'];
-
-    	$order = array();
-
-    	$order = Order::find($order_id);
-
-    	if(count($order) < 1){
-
-    		$resp 	= 	array("status" => 401,"message" => "Order Does Not Exists");
-            return Response::json($resp);
-    	}
-
-    	if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
-
-            $resp 	= 	array("status" => 401,"message" => "Already Status Successfull");
-            return Response::json($resp);
-        }
-
-        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-
-            $ratecard = Ratecard::find((int)$data['ratecard_id']);
-
-            if($ratecard){
-
-                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
-                    $data['amount_finder'] = $ratecard->special_price;
-                }else{
-                    $data['amount_finder'] = $ratecard->price;
-                }
-
-                if(isset($ratecard->validity) && $ratecard->validity != ""){
-                    $duration_day = (int)$ratecard->validity;
-                    $data['duration_day'] = $duration_day;
-                    if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
-                    }
-
-                    if($duration_day <= 90){
-                        $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
-                    }
-                }
-                
-            }else{
-
-                $resp   =   array('status' => 400,'message' => "Ratecard not found");
-                return Response::json($resp,400);
-            }
-        }
-
-
-
-
-    }
+    
 
 
 
