@@ -340,10 +340,10 @@ class MigrationReverseController extends \BaseController {
             ];
 
             if($location['geometry']['coordinates'][0] != "" && $location['geometry']['coordinates'][1] != "" ){
-                $insertData['lat'] = $location['geometry']['coordinates'][0];
-                $insertData['lon'] = $location['geometry']['coordinates'][1];
-                $insertData['lonlat']['lat'] = $location['geometry']['coordinates'][0];
-                $insertData['lonlat']['lon'] = $location['geometry']['coordinates'][1];
+                $insertData['lon'] = $location['geometry']['coordinates'][0];
+                $insertData['lat'] = $location['geometry']['coordinates'][1];
+                $insertData['lonlat']['lon'] = $location['geometry']['coordinates'][0];
+                $insertData['lonlat']['lat'] = $location['geometry']['coordinates'][1];
             }
 
 
