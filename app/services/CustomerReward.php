@@ -49,8 +49,6 @@ Class CustomerReward {
             );
         }
 
-
-        $customer_id = $utilities->autoRegisterCustomer($data);
         $rewards = Reward::findMany($data['reward_ids']);
 
         if(count($rewards) == 0){
@@ -74,7 +72,7 @@ Class CustomerReward {
             $reward  = array_merge($reward,$finderData);
 
             $reward = array_except($reward, [ 'created_at','updated_at','status','rewrardoffers']);
-            $reward['customer_id']      =   $customer_id;
+            $reward['customer_id']      =   (int)$data['customer_id'];
             $reward['customer_name']    =   $data['customer_name'];
             $reward['customer_email']   =   $data['customer_email'];
             $reward['customer_phone']   =   $data['customer_phone'];
