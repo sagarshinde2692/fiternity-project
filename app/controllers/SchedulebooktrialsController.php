@@ -1677,11 +1677,11 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
             $order = Order::findOrFail($orderid);
             $finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
-            if(isset($booktrialdata['customofferorder_id'])){
+            /*if(isset($booktrialdata['customofferorder_id'])){
                 $booktrialdata['customofferorder'] = Customofferorder::where('_id',$booktrialdata['customofferorder_id'])
                     ->with('customoffer')
                     ->first();
-            }
+            }*/
 
             $finder_category_id 		       = (isset($booktrialdata['finder_category_id']) && $booktrialdata['finder_category_id'] != '') ? $booktrialdata['finder_category_id'] : "";
 
@@ -2240,6 +2240,10 @@ class SchedulebooktrialsController extends \BaseController {
                 'myreward_id' => $myreward_id
 
             );
+
+            if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+                $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
+            }
 
             if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
 
