@@ -217,6 +217,18 @@ class FindersController extends \BaseController {
                     array_set($finder, 'fitmania_offer_exist', false);
                 }
 
+                if(isset($finderarr['brand_id'])){
+
+                    $brand = Brand::find((int)$finderarr['brand_id']);
+
+                    $brandFinder = Finder::select('_id','title','slug','brand_id')->where("brand_id",(int)$finderarr['brand_id'])->where("_id","!=",(int)$finderarr['_id'])->get();
+
+                    $finderarr['brand']['brand_detail'] = $brand;
+                    $finderarr['brand']['finder_detail'] = $brandFinder;
+                    $finder['brand'] = $finderarr['brand'];
+
+                }
+
             }else{
 
                 $finder = null;
