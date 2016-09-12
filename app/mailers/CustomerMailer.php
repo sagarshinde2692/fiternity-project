@@ -229,6 +229,33 @@ Class CustomerMailer extends Mailer {
 
 		return $this->common($label,$data,$message_data);
 	}
+	
+	public function cancelBookTrialByVendor($data){
+
+		$label = 'Vendor-trial-cancellation-email-to-customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function reviewReplyByVendor($data){
+
+//		print_r($data);
+//		return;
+
+		$label = 'review-reply-to-customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
 
 	public function orderAfter10Days($data, $delay){
 

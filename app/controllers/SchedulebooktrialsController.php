@@ -20,6 +20,8 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 
+use App\Services\Jwtauth as Jwtauth;
+
 
 
 class SchedulebooktrialsController extends \BaseController {
@@ -35,6 +37,7 @@ class SchedulebooktrialsController extends \BaseController {
     protected $ozontelOutboundCall;
     protected $utilities;
     protected $customerreward;
+	protected $jwtauth;
 
 
     public function __construct(
@@ -47,7 +50,8 @@ class SchedulebooktrialsController extends \BaseController {
         Sidekiq $sidekiq,
         OzontelOutboundCall $ozontelOutboundCall,
         Utilities $utilities,
-        CustomerReward $customerreward
+        CustomerReward $customerreward,
+        Jwtauth $jwtauth
     ) {
         //parent::__construct();
         date_default_timezone_set("Asia/Kolkata");
@@ -61,9 +65,9 @@ class SchedulebooktrialsController extends \BaseController {
         $this->ozontelOutboundCall  =   $ozontelOutboundCall;
         $this->utilities            =   $utilities;
         $this->customerreward            =   $customerreward;
+		$this->jwtauth 	=	$jwtauth;
 
     }
-
     /**
      * Display the ScheduleBookTrial.
      *
@@ -2888,7 +2892,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }elseif($old_schedule_date != $booktrial->schedule_date || $old_schedule_slot_start_time != $booktrial->schedule_slot_start_time || $old_schedule_slot_start_time != $booktrial->schedule_slot_end_time && isset($booktrial->fitness_force_appointment['appointmentbooktrialid']) && $booktrial->fitness_force_appointment['appointmentid'] != ''){
 
                 	try {
-                        $this->updateBookTrialFintnessForce($id);
+                        $this->updateBookTrialFintnessForce($booktrialid);
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -3014,7 +3018,7 @@ class SchedulebooktrialsController extends \BaseController {
                 if((isset($booktrial->rescheduleafter4days) && $booktrial->rescheduleafter4days != '')){
 
                     try {
-                        $sidekiq->delete($booktrial->rescheduleafter4days);
+                        $this->sidekiq->delete($booktrial->rescheduleafter4days);
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -3126,9 +3130,28 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
     }
+	public function cancelTrialSessionByVendor($finder_id, $trial_id){
+
+		$data = Input::json()->all();
+		$reason = isset($data['reason']) ? $data['reason'] : '';
+
+		$finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+		if (!(in_array($finder_id, $finder_ids))) {
+			$data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
+			return Response::json($data, 401);
+		}
+
+		return $this->cancel($trial_id, 'vendor', $reason);
+	}
 
 
-    public function cancel($id){
+	/**
+	 * @param $id
+	 * @return mixed
+     */
+	public function cancel($id, $source_flag='customer', $reason=''){
+
 
         $id 		       = 	(int) $id;
         $bookdata 	       = 	array();
@@ -3151,9 +3174,9 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'booktrial_actions', '');
         array_set($bookdata, 'followup_date', '');
         array_set($bookdata, 'followup_date_time', '');
-        array_set($bookdata, 'source_flag', 'customer');
+        array_set($bookdata, 'source_flag', $source_flag);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
-        array_set($bookdata, 'cancel_by', 'customer');
+        array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
 
         if($trialbooked == true ){
@@ -3185,7 +3208,7 @@ class SchedulebooktrialsController extends \BaseController {
             if((isset($booktrial->rescheduleafter4days) && $booktrial->rescheduleafter4days != '')){
 
                 try {
-                    $sidekiq->delete($booktrial->rescheduleafter4days);
+                    $this->sidekiq->delete($booktrial->rescheduleafter4days);
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -3428,17 +3451,28 @@ class SchedulebooktrialsController extends \BaseController {
                 'source'                        =>      $booktrialdata->source
             );
 
-            $this->findermailer->cancelBookTrial($emaildata);
-            $this->findersms->cancelBookTrial($emaildata);
+			if($booktrialdata->source_flag == 'vendor'){
 
-            if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
-                $this->customermailer->cancelBookTrial($emaildata);
-                if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
-                    $this->customernotification->cancelBookTrial($emaildata);
-                }else{
-                    $this->customersms->cancelBookTrial($emaildata);
-                }
-            }
+				$this->customermailer->cancelBookTrialByVendor($emaildata);
+				$this->findermailer->cancelBookTrialByVendor($emaildata);
+				$this->customersms->cancelBookTrialByVendor($emaildata);
+				$this->findersms->cancelBookTrialByVendor($emaildata);
+			}
+			else{
+				$this->findermailer->cancelBookTrial($emaildata);
+				$this->findersms->cancelBookTrial($emaildata);
+
+				if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
+					$this->customermailer->cancelBookTrial($emaildata);
+					if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
+						$this->customernotification->cancelBookTrial($emaildata);
+					}else{
+						$this->customersms->cancelBookTrial($emaildata);
+					}
+				}
+			}
+
+            
 
 
         }catch(\Exception $exception){
@@ -4454,5 +4488,51 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
 
+    public function cancelByslot(){  
+
+        $data = Input::json()->all();
+
+        $rules = [
+            'finder_id' => 'required',
+            'service_id' => 'required',
+            'slot' => 'required',
+            'date' => 'required',
+            'reason' => 'required',
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+
+            $response = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+
+        }else{
+
+            $finder_id = $data['finder_id'];
+            $service_id = $data['service_id'];
+            $schedule_slot = $data['slot'];
+            $schedule_date = $data['date'];
+            $reason = $data['reason'];
+
+            $schedule_start_date_time = new DateTime(date("d-m-Y 00:00:00", strtotime($schedule_date)));
+            $schedule_end_date_time = new DateTime(date("d-m-Y 00:00:00", strtotime($schedule_date."+ 1 days")));
+
+            $booktrial = Booktrial::where("finder_id",(int)$finder_id)->where("service_id",(int)$service_id)->where("schedule_slot",$schedule_slot)->where('schedule_date_time', '>=',$schedule_start_date_time)->where('schedule_date_time', '<=',$schedule_end_date_time)->get();
+
+            if(count($booktrial) > 0){
+
+                foreach ($booktrial as $key => $value) {
+
+                    $this->cancel($value->_id,'vendor', $reason);
+                }
+
+            }
+
+            $response = array('status' => 200,'message' =>'success');
+        }
+
+        return Response::json($response, $response['status']);
+
+    }
 
 }

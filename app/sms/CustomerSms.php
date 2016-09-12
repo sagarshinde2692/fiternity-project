@@ -65,6 +65,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function cancelBookTrialByVendor ($data){
+
+		$label = 'Vendor-trial-cancellation-email-to-customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 
 	public function manualBookTrial ($data){
 
