@@ -51,6 +51,7 @@ class CustomerController extends \BaseController {
 		$currentDateTime =	\Carbon\Carbon::now();
 		$upcomingtrials = [];
 		$passedtrials = [];
+		$healthytiffintrail = [];
 		
 		foreach ($trials as $trial){
 
@@ -134,7 +135,7 @@ class CustomerController extends \BaseController {
 
 						if(!isset($value[$field])){
 							$healthytiffintrail[$key][$field] = "";
-		}
+						}
 
 						if(isset($value['preferred_starting_date'])){
 
