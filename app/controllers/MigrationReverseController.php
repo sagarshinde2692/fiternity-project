@@ -709,7 +709,7 @@ class MigrationReverseController extends \BaseController {
                     'website' 	=>  "",
                 ],
                 'landmark' 	=>  (isset($Finder->address['landmark'])) ? trim($Finder->address['landmark']) : "",
-                'coverimage' 							=>  (isset($Finder->coverimage)) ? $Finder->coverimage : "",
+                'coverimage' 							=>  (isset($Finder['media']['images']['cover'])) ? $Finder['media']['images']['cover'] : "",
                 'logo' 									=>  (isset($Finder->logo)) ? $Finder->logo : "",
                 'photos' 								=>  (isset($Finder['media']['images']['gallery']) && count($Finder['media']['images']['gallery']) > 0) ? $Finder['media']['images']['gallery'] : [],
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),
