@@ -111,6 +111,59 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function cancelBookTrialByVendor ($data){
+
+		$label = 'Vendor-trial-cancellation-email-to-vendor';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function VendorEmailOnProfileEditRequest ($data){
+
+		$label = 'Vendor-email-on-profile-edit-request';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+//		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+//			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function RMEmailOnProfileEditRequest ($data){
+
+		$label = 'RM-email-on-profile-edit-request';
+
+		$user_email = array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com');
+
+		$message_data 	= array(
+			'user_email' => $user_email
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	public function sendPgOrderMail ($data){
 
 		$label = 'Order-PG-Vendor';
@@ -413,7 +466,7 @@ Class FinderMailer extends Mailer {
 	    // will throw it out to the exception handler.
 	    try
 	    {
-	        eval('?>'.$generated);
+			eval('?>'.$generated);
 	    }
 
 	    // If we caught an exception, we'll silently flush the output
