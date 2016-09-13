@@ -402,6 +402,7 @@ Route::post('getrankedfinderapp', 'RankingSearchController@getRankedFinderResult
 Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
 Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderResultsApp');
 Route::post('search/getfinderresultsv2', 'RankingSearchController@getRankedFinderResultsAppv2');
+Route::post('search/getfinderresultsv3', 'RankingSearchController@getRankedFinderResultsAppv3');
 Route::get('buildkeywordcache', 'GlobalSearchController@preparekeywordsearchcache');
 Route::post('keywordsearchwebv1', 'GlobalSearchController@improvedkeywordSearch');
 Route::post('search/searchdirectpefinders', 'RankingSearchController@searchDirectPaymentEnabled');

@@ -745,7 +745,12 @@ public function getRankedFinderResultsAppv2()
         }]
         ';
     }
+    $free_trial_enable = Input::json()->get('free_trial_enable');
+    $trial_filter = '';
+    if(intval($free_trial_enable) == 1){
+        $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
 
+    }
     $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
@@ -831,9 +836,9 @@ if($all_nested_filters !== '')
 
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-$must_filtervalue = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+$must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
 if($trials_day_filter !== ''){
-    $must_filtervalue = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+    $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
 }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
@@ -1129,7 +1134,8 @@ public function getRankedFinderResultsAppv3()
         //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
         $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : 'popularity';
         $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : 'desc';
-        $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+        $loc             = Input::json()->get('location');
+        $location    =         isset($loc['city']) ? strtolower(Input::json()->get('location')['city']): '';
         $vip_trial    =         Input::json()->get('vip_trial') ? array(intval(Input::json()->get('vip_trial'))) : [1,0];
         $vip_trial = implode($vip_trial,',');
         $locat = Input::json()->get('location');
@@ -1166,9 +1172,14 @@ public function getRankedFinderResultsAppv3()
         ';
         }
 
+        $free_trial_enable = Input::json()->get('free_trial_enable');
+        $trial_filter = '';
+        if(intval($free_trial_enable) == 1){
+            $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
+
+        }
         $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
-        $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval(Input::json()->get('free_trial_enable')).',"_cache": true }},' : '';
-        $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+        $location_filter =  $location != '' ? '{"term" : { "city" : "'.$location.'", "_cache": true }},' : '';
         $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
         $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
         $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
