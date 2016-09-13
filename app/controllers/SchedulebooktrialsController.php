@@ -3175,6 +3175,7 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'followup_date', '');
         array_set($bookdata, 'followup_date_time', '');
         array_set($bookdata, 'source_flag', $source_flag);
+        array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
