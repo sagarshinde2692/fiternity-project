@@ -331,13 +331,13 @@ Class CustomerReward {
 
         $original_amount = $amount;
 
-        $wallet_amount = $amount * $setAlgo['fitcash'] / 100;
+        $wallet_amount = round($amount * $setAlgo['fitcash'] / 100);
 
-        $amount_discounted = $amount * $setAlgo['discount'] / 100;
+        $amount_discounted = round($amount * $setAlgo['discount'] / 100);
 
-        $wallet_algo = ($amount * $commision / 100) * ($wallet_percentage / 100);
+        $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
 
-        $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : $wallet;
+        $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
 
         $final_amount_discount_only = $original_amount - $amount_discounted;
 
@@ -350,7 +350,7 @@ Class CustomerReward {
         $data['final_amount_discount_and_wallet'] = $final_amount_discount_and_wallet;
         $data['wallet_amount'] = $wallet_amount;
         $data['algo'] = $setAlgo;
-        $data['current_wallet_balance'] = $wallet;
+        $data['current_wallet_balance'] = round($wallet);
 
         return $data;
 
