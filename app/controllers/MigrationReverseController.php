@@ -711,8 +711,10 @@ class MigrationReverseController extends \BaseController {
                     'phone' 	=>  (isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0)  ? implode(",", $Finder->contact['phone']['mobile']) : "",
                     'website' 	=>  "",
                 ],
+
                 'landmark' 	                            =>  (isset($Finder->address['landmark'])) ? trim($Finder->address['landmark']) : "",
-                'coverimage' 							=>  (isset($Finder->coverimage)) ? $Finder->coverimage : "",
+                'coverimage' 							=>  (isset($Finder['media']['images']['cover'])) ? $Finder['media']['images']['cover'] : "",
+
                 'logo' 									=>  (isset($Finder->logo)) ? $Finder->logo : "",
                 'photos' 								=>  (isset($Finder['media']['images']['gallery']) && count($Finder['media']['images']['gallery']) > 0) ? $Finder['media']['images']['gallery'] : [],
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),

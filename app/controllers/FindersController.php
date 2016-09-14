@@ -209,6 +209,20 @@ class FindersController extends \BaseController {
                     }
                     
                 }
+                if(count($finder['offerings']) > 0 ){
+                    $tempoffering = [];
+                    $tempofferingname = [];
+                    foreach ($finder['offerings'] as $offering) {
+                        if(in_array($offering["name"],$tempofferingname)){
+
+                        }else{
+                            array_push($tempoffering,$offering);
+                            array_push($tempofferingname,$offering['name']);
+                        }
+                    }
+                    $finder['offerings'] = $tempoffering;
+                    
+                }
 
                 $fitmania_offer_cnt 	=	Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
                 if($fitmania_offer_cnt > 0){

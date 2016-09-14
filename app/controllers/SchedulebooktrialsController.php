@@ -142,7 +142,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules'))->toArray();
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
@@ -162,6 +162,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $slots = array();
                 foreach ($weekdayslots['slots'] as $slot) {
+
+                    
                     // $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
                     // $goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
                     // $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
@@ -176,10 +178,19 @@ class SchedulebooktrialsController extends \BaseController {
                     // array_set($slot, 'goingcnt', $goingcnt);
                     // array_set($slot, 'cancelcnt', $cancelcnt);
                     array_set($slot, 'status', $slot_status);
-                    $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
-                    array_set($slot, 'passed', $slot_datetime_pass_status);
-                    array_push($slots, $slot);
+
+                    try{
+
+                        $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
+                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_push($slots, $slot);
+
+                    }catch(Exception $e){
+
+                        Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
+                    }
+                     
                 }
 
                 $service['slots'] = $slots;
@@ -201,7 +212,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items                  =   Service::where('finder_id', '=', $finderid)->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $items                  =   Service::where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules'))->toArray();
 
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
@@ -262,10 +273,19 @@ class SchedulebooktrialsController extends \BaseController {
 
                     array_set($slot, 'vip_trial_amount', $vip_trial_amount);
 
-                    $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
-                    array_set($slot, 'passed', $slot_datetime_pass_status);
-                    array_push($slots, $slot);
+                    try{
+
+                        $scheduleDateTime               =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
+                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_push($slots, $slot);
+
+                    }catch(Exception $e){
+
+                        Log::info("getTrialScheduleIfDontSoltsAlso Error : ".$date." ".$slot['start_time']);
+                    }
+
+                    
                 }
             }
 
