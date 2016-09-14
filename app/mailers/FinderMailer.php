@@ -437,6 +437,25 @@ Class FinderMailer extends Mailer {
 
     }
 
+	public function manualTrialAuto ($data){
+
+		$label = 'ManualTrialAuto-Finder';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
 
 	public function common($label,$data,$message_data,$delay = 0){
 
@@ -444,8 +463,6 @@ Class FinderMailer extends Mailer {
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
-
-		//$message_data['user_email'] = array('maheshjadhav@fitternity.com');
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
