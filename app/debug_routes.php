@@ -124,6 +124,48 @@ Route::get('/removevip', function() {
 
 Route::get('/updatevendorwebsitecontact', function() {
 
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+//    $vendor_ids = DB::connection('mongodb2')->table('vendors')->where('contact.phone.mobile', 'exists', true)->where('contact.phone.mobile', [])->count();
+    $vendor_ids = DB::connection('mongodb2')->table('vendors')->where('contact.phone.mobile', 'exists', true)->where('contact.phone.mobile', [])->lists("_id");
+
+    foreach ($vendor_ids as $vendor_id){
+
+        $finder = Finder::find(intval($vendor_id));
+
+        if($finder){
+
+            if(isset($finder->contact['phone']) && $finder->contact['phone'] != ""){
+                $phone              =   [];
+                $phone['mobile']    =   $phone['landline'] =  [];
+                $phone_arr          =   array_map('trim', explode(",",str_replace("/", ",", trim($finder->contact['phone']) )) ) ;
+
+                if(count($phone_arr) > 0){
+                    foreach ($phone_arr as $key => $value) {
+                        $varx = $value;
+                        if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33') || starts_with($varx, '011') || starts_with($varx, '1') || starts_with($varx, '11')){
+                            array_push($phone['landline'], ltrim($varx,"+"));
+                        }else{
+                            $find_arr= ["+","+(91)-","(91)","(91)-","91-"];
+                            $replace_arr= ["","","","",""];
+                            $clean_mobile_no = trim(str_replace($find_arr, $replace_arr, $varx));
+                            array_push($phone['mobile'], ltrim($clean_mobile_no,"+"));
+                        }
+                    }
+                }
+
+                $existVendorData                       =        DB::connection('mongodb2')->table('vendors')->where('_id', intval($vendor_id))->first();
+                $contactData                           =       (isset($existVendorData['contact'])) ? $existVendorData['contact'] : [];
+                $contactData['phone']       =       $phone;
+//                return $contactData;
+                $updateWebsiteContact       =   DB::connection('mongodb2')->table('vendors')->where('_id', intval($vendor_id))->update(['contact'=>$contactData]);
+
+            }
+
+        }
+
+    }
 
 });
 
