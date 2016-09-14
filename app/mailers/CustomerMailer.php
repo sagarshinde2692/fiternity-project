@@ -86,7 +86,20 @@ Class CustomerMailer extends Mailer {
 
 	}
 
-	
+	public function manualTrialAuto ($data){
+
+		$label = 'ManualTrialAuto-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+
 	public function sendCodOrderMail ($data){
 
 		$label = 'Order-COD-Customer';
