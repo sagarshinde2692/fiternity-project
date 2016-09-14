@@ -1243,7 +1243,51 @@ public function getRankedFinderResultsAppv3()
         $sort = '';
 
         switch ($orderfield){
-            case 'popularity':
+
+            case 'distance':
+                if(($lat !== '')&&($lon !== '')){
+
+                    $geo_range_filter = '{
+            "geo_distance_range": {
+                "from": "0km",
+                "to": "1000km",
+                "geolocation": {
+                    "lat": '.$lat.',
+                    "lon": '.$lon.'
+                }
+            }
+        },';
+                }
+
+                $distance_score_function = '  {
+                            "script_score": {
+                                "params": {
+                                    "lat": '.$lat.',
+                                    "lon": '.$lon.'
+                                },
+                                "script": "doc[\'geolocation\'].distanceInKm(lat,lon) ? doc[\'geolocation\'].distanceInKm(lat,lon) : 0"
+
+                            }
+                        }';
+
+                $function_score_query_googleplaces = $distance_score_function;
+                $sort = '"sort":[{"_score":{"order":"'.$order.'"}}]';
+                break;
+            case 'average_price':
+                //Either..........
+//                $commercial_type_function = '{
+//                            "script_score": {
+//                                "script": "(doc[\'commercial_type\'].value == 1)||(doc[\'commercial_type\'].value == 3) ? 15000 : (doc[\'commercial_type\'].value == 2) ? 7000 : 0"
+//                            }
+//                        }';
+//
+//                $function_score_query_googleplaces = $commercial_type_function;
+//
+//                $sort = '"sort":[{"_score":{"order":"'.$order.'"},"'.$orderfield.'":{"order":"'.$order.'"}}]';
+                // OR..........
+                $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
+                break;
+            default:    // Popularity
                 if(($lat !== '')&&($lon !== '')){
 
                     $geo_range_filter = '{
@@ -1295,49 +1339,6 @@ public function getRankedFinderResultsAppv3()
                 $function_score_query_googleplaces = $commercial_type_function.$distance_decay_function.$distance_slabs_function;
 
                 $sort = '"sort":[{"_score":{"order":"'.$order.'"},"'.$orderfield.'":{"order":"'.$order.'"}}]';
-                break;
-            case 'distance':
-                if(($lat !== '')&&($lon !== '')){
-
-                    $geo_range_filter = '{
-            "geo_distance_range": {
-                "from": "0km",
-                "to": "1000km",
-                "geolocation": {
-                    "lat": '.$lat.',
-                    "lon": '.$lon.'
-                }
-            }
-        },';
-                }
-
-                $distance_score_function = '  {
-                            "script_score": {
-                                "params": {
-                                    "lat": '.$lat.',
-                                    "lon": '.$lon.'
-                                },
-                                "script": "doc[\'geolocation\'].distanceInKm(lat,lon) ? doc[\'geolocation\'].distanceInKm(lat,lon) : 0"
-
-                            }
-                        }';
-
-                $function_score_query_googleplaces = $distance_score_function;
-                $sort = '"sort":[{"_score":{"order":"'.$order.'"}}]';
-                break;
-            case 'average_price':
-                //Either..........
-//                $commercial_type_function = '{
-//                            "script_score": {
-//                                "script": "(doc[\'commercial_type\'].value == 1)||(doc[\'commercial_type\'].value == 3) ? 15000 : (doc[\'commercial_type\'].value == 2) ? 7000 : 0"
-//                            }
-//                        }';
-//
-//                $function_score_query_googleplaces = $commercial_type_function;
-//
-//                $sort = '"sort":[{"_score":{"order":"'.$order.'"},"'.$orderfield.'":{"order":"'.$order.'"}}]';
-                // OR..........
-                $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
                 break;
 
         }
