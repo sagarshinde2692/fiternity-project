@@ -678,6 +678,9 @@ class MigrationReverseController extends \BaseController {
                 }
             }
 
+
+
+
             $insertData = [
                 'title' 				=>  trim($Finder->name),
                 'slug' 					=>  trim($Finder->slug),
@@ -708,13 +711,15 @@ class MigrationReverseController extends \BaseController {
                     'phone' 	=>  (isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0)  ? implode(",", $Finder->contact['phone']['mobile']) : "",
                     'website' 	=>  "",
                 ],
-                'landmark' 	=>  (isset($Finder->address['landmark'])) ? trim($Finder->address['landmark']) : "",
+
+                'landmark' 	                            =>  (isset($Finder->address['landmark'])) ? trim($Finder->address['landmark']) : "",
                 'coverimage' 							=>  (isset($Finder['media']['images']['cover'])) ? $Finder['media']['images']['cover'] : "",
+
                 'logo' 									=>  (isset($Finder->logo)) ? $Finder->logo : "",
                 'photos' 								=>  (isset($Finder['media']['images']['gallery']) && count($Finder['media']['images']['gallery']) > 0) ? $Finder['media']['images']['gallery'] : [],
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),
                 'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
-                'multiaddress' 					    =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
+                'multiaddress' 					        =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
                 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
                 'total_rating_count' 					=>  (isset($Finder->rating['count'])) ? $Finder->rating['count'] : 0,
                 'detail_rating_summary_average' 		=>  $detail_rating_summary_average,
@@ -729,12 +734,16 @@ class MigrationReverseController extends \BaseController {
                 'finder_vcc_email' 						=>  implode(",", array_unique($finder_vcc_email_arr)),
                 'finder_vcc_mobile' 					=>  implode(",", array_unique($finder_vcc_mobile_arr)),
                 'status' 								=>  (isset($Finder->hidden) && $Finder->hidden === false) ? "1" : "0",
+                'budget' 								=>  (isset($Finder->average_price) && $Finder->average_price != "") ? intval($Finder->average_price) : 0,
+                'price_range' 							=>  (isset($Finder->price_range) && $Finder->price_range != "") ? trim($Finder->price_range) : "one",
+                'purchase_gamification_disable' 		=>  (isset($Finder->purchase_gamification_disable) && $Finder->purchase_gamification_disable === true) ? "1" : "0",
+                'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
                 'updated_at' 							=>  $Finder->updated_at
             ];
 
-            $insertData['vip_trial']                    = ($Finder['vip_trial'] == true ) ? '1' : '0';
+            $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
 
 //            var_dump($insertData);exit();
             $Finder_exists_cnt	=	DB::connection($this->fitadmin)->table('finders')->where('_id', intval($id) )->count();
