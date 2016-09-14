@@ -134,15 +134,19 @@ class RewardofferController extends BaseController {
 
         $rewards = array();
 
-        $rewardoffer           =   Rewardoffer::where('findercategory_id', $findercategory_id)
+        if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
+            $rewards = array();
+        }else{
+            $rewardoffer           =   Rewardoffer::where('findercategory_id', $findercategory_id)
             ->where('amount_min','<', $amount)
             ->where('amount_max','>=', $amount)
             ->with('rewards')
             ->orderBy('_id','desc')->first();
 
-        if ($rewardoffer){
-            $rewardoffer = $rewardoffer->toArray();
-            $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
+            if ($rewardoffer){
+                $rewardoffer = $rewardoffer->toArray();
+                $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
+            }
         }
 
         $customerReward = new CustomerReward();
