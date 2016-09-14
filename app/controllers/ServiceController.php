@@ -430,10 +430,18 @@ class ServiceController extends \BaseController {
         			
         			foreach ($value['slots'] as $key => $slot) {
 
-        				$scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
-	                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
-	                    array_set($slot, 'passed', $slot_datetime_pass_status);
-	                    array_push($slots, $slot);
+        				try{
+
+	                        $scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
+		                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+		                    array_set($slot, 'passed', $slot_datetime_pass_status);
+		                    array_push($slots, $slot);
+
+	                    }catch(Exception $e){
+
+	                        Log::info("getWorkoutSessionScheduleByService Error : ".$date." ".$slot['start_time']);
+	                    }
+        				
         			}
         		}
         		break;

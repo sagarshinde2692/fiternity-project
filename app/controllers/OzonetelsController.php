@@ -85,17 +85,21 @@ class OzonetelsController extends \BaseController {
 			    		$phone = explode(',', $phone);
 			    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
 
-                        //OZONETEL JUMP LOGIC
-                        $call_jump = false;
+			    		$this->ozonetelResponse->addDial($contact_no,"true");
+			    		$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true);
 
-                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
+                        //OZONETEL JUMP LOGIC
+                        /*$call_jump = false;
+
+                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
                             $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
                             $call_jump = true;
                         }else{
                             $this->ozonetelResponse->addDial($contact_no,"true");
                         }
 
-			    		$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true, $call_jump);
+			    		$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true, $call_jump);*/
+			    		
 			    	}else{
 			    		$this->ozonetelResponse->addPlayText("You have dailed wrong extension number");
 			    		$this->ozonetelResponse->addHangup();
@@ -118,15 +122,15 @@ class OzonetelsController extends \BaseController {
 					if($finder){
 
 
-                        if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
+                        /*if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
 
 
                             $this->ozonetelResponse->addDial($this->jump_fitternity_no2, "true");
                             $call_jump = true;
-                            $this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true, $call_jump);
+                            $this->updateCapture($_REQUEST,$finder->_id,$extension,$add_count = true, $call_jump);
 
 
-                        }else{
+                        }else{*/
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -140,7 +144,7 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                   	}
+	                   	//}
 
 	                }
 					else{
@@ -196,7 +200,7 @@ class OzonetelsController extends \BaseController {
 
                 $call_jump = false;
                 //OZONETEL JUMP LOGIC
-                if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->_id, $this->jump_finder_ids)) {
+                if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
                     $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
                     $call_jump = true;
                 }else{

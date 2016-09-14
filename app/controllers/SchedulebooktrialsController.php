@@ -1336,7 +1336,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $order        = 	Order::findOrFail((int)$order_id);
 
-            if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+            if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought' && !isset($data['order_success_flag'])){
 
                 $resp 	= 	array('status' => 200, 'order_id' => $order_id, 'message' => "Already Status Successfull");
                 return Response::json($resp);
@@ -1346,8 +1346,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $order_data['customer_id'] = (int)$this->autoRegisterCustomer($order_data);
 
-            if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != ""){
-            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
+            if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != "" && !empty($order_data['myreward_id'])){
+                $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
 
                 if($createMyRewardCapture['status'] !== 200){
 
@@ -1372,13 +1372,18 @@ class SchedulebooktrialsController extends \BaseController {
             $campaign	 				       =	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 					       =	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
             $slot_times 				       =	explode('-',$data['schedule_slot']);
-            $schedule_slot_start_time 	       =	$slot_times[0];
-            $schedule_slot_end_time 	       =	$slot_times[1];
+            $schedule_slot_start_time 	       =	trim($slot_times[0]);
+            $schedule_slot_end_time 	       =	trim($slot_times[1]);
             $schedule_slot 				       =	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
             $slot_date 					       =	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
             $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
 
-            $booktrialid 				       =	Booktrial::max('_id') + 1;
+            if(isset($order->booktrial_id)){
+                $booktrialid = (int)$order->booktrial_id;
+            }else{
+                $booktrialid                       =    Booktrial::max('_id') + 1;
+            }
+
             $finderid 					       = 	(int) Input::json()->get('finder_id');
             $finder 					       = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find($finderid);
 
@@ -1656,12 +1661,17 @@ class SchedulebooktrialsController extends \BaseController {
 
             // return $this->customersms->bookTrial($booktrialdata);
 //             return $booktrialdata;
-            $booktrial = new Booktrial($booktrialdata);
-            $booktrial->_id = (int) $booktrialid;
-            $trialbooked = $booktrial->save();
 
-            Log::info('$trialbooked : '.json_encode($trialbooked));
+            if(isset($order->booktrial_id)){
+                $trialbooked = true;
+                $booktrial = Booktrial::find($booktrialid);
+            }else{
+                $booktrial = new Booktrial($booktrialdata);
+                $booktrial->_id = (int) $booktrialid;
+                $trialbooked = $booktrial->save();
 
+                Log::info('$trialbooked : '.json_encode($trialbooked));
+            }
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
@@ -1720,8 +1730,8 @@ class SchedulebooktrialsController extends \BaseController {
             $data = $data['data'];
 
             $slot_times 				       =	explode('-',$data['schedule_slot']);
-            $schedule_slot_start_time 	       =	$slot_times[0];
-            $schedule_slot_end_time 	       =	$slot_times[1];
+            $schedule_slot_start_time 	       =	trim($slot_times[0]);
+            $schedule_slot_end_time 	       =	trim($slot_times[1]);
             $schedule_slot 				       =	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
 
             $slot_date 					       =	date('d-m-Y', strtotime($data['schedule_date']));
