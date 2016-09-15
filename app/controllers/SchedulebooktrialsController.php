@@ -1978,8 +1978,9 @@ class SchedulebooktrialsController extends \BaseController {
     {
 
         // send error message if any thing is missing
-        $data = (!isset($data)) ? Input::json()->all() : null;
-        $data = (!is_array($data)) ? $data->toArray() : null;
+        (!isset($data)) ? $data = Input::json()->all() : null;
+        (!is_array($data)) ? $data = $data->toArray() : null;
+
 
         Log::info('input_data',$data);
 
@@ -4312,15 +4313,14 @@ class SchedulebooktrialsController extends \BaseController {
         $data['schedule_date'] = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
         $booktrial = Booktrial::findOrFail((int) $data['_id']);
 
-//        if($booktrial['booktrial_type'] == 'auto'){
-//            $resp 	= 	array('status' => 422,'message' => "We have already recieved input for this trial");
-//            return  Response::json($resp, 422);
-//        }
+        if($booktrial['booktrial_type'] == 'auto'){
+            $resp 	= 	array('status' => 422,'message' => "We have already recieved input for this trial");
+            return  Response::json($resp, 422);
+        }
         if($booktrial->update($data)){
-            $booktrialData = Booktrial::where('_id',(int) $data['_id'])->get();
-            $booktrialData = $booktrialData[0];
-            $booktrialData['customer_source'] = $booktrialData['source'];
-            $resp = $this->bookTrialFree($booktrialData);
+
+            $booktrial['customer_source'] = $booktrial['source'];
+            $resp = $this->bookTrialFree($booktrial);
             $data = $resp->getData();
             if($data->status == 200){
 
