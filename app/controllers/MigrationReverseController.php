@@ -680,6 +680,16 @@ class MigrationReverseController extends \BaseController {
 
 
 
+            $address = '';
+            if(isset($Finder->address['line1'])){   $address .= $Finder->address['line1'];  }
+            if($address != ""){   $address .= ",";  }
+            if(isset($Finder->address['line2'])){   $address .= $Finder->address['line2']; }
+            if($address != ""){   $address .= ",";  }
+            if(isset($Finder->address['line3'])){   $address .= $Finder->address['line3']; }
+            if($address != ""){   $address .= ",";  }
+            if(isset($Finder->address['pincode'])){   $address .= $Finder->address['pincode']; }
+
+
 
             $insertData = [
                 'title' 				=>  trim($Finder->name),
@@ -706,7 +716,7 @@ class MigrationReverseController extends \BaseController {
                     'description' 	=>  (isset($Finder->seo['description'])) ? trim($Finder->seo['description']) : "",
                 ],
                 'contact' 	=>  [
-                    'address' 	=>  (isset($Finder->address['line1']) && isset($Finder->address['line2']) && isset($Finder->address['line3'])) ? trim($Finder->address['line1']).",".trim($Finder->address['line2']).",".trim($Finder->address['line3']) : "",
+                    'address' 	=>  $address,
                     'email' 	=>  (isset($Finder->contact['email']) && count($Finder->contact['email']) > 0)  ? implode(",", $Finder->contact['email']) : "",
                     'phone' 	=>  (isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0)  ? implode(",", $Finder->contact['phone']['mobile']) : "",
                     'website' 	=>  "",
@@ -737,7 +747,7 @@ class MigrationReverseController extends \BaseController {
                 'budget' 								=>  (isset($Finder->cost) && isset($Finder->cost['average_price']) && $Finder->cost['average_price'] != "") ? intval($Finder->cost['average_price']) : 0,
                 'price_range' 							=>  (isset($Finder->cost) && isset($Finder->cost['price_range']) && $Finder->cost['price_range'] != "") ? trim($Finder->cost['price_range']) : "one",
                 'purchase_gamification_disable' 		=>  (isset($Finder->flags) && isset($Finder->flags['purchase_gamification_disable']) && $Finder->flags['purchase_gamification_disable'] === true) ? "1" : "0",
-                'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
+                'manual_trial_enable' 				    =>  (isset($Finder->manual_trial_enable) && $Finder->manual_trial_enable === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
                 'updated_at' 							=>  $Finder->updated_at
@@ -1239,12 +1249,12 @@ class MigrationReverseController extends \BaseController {
             if(count($schedules) > 0){
                 //Trial Price From Ratecard
             $trialPrice = 0;
-            $trialRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->count();
+            $trialRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('hidden', false)->count();
 
             if($trialRatecard_exists_cnt === 0){
-                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->first();
+                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('hidden', false)->first();
             }else{
-                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('quantity',1)->first();
+                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('quantity',1)->where('hidden', false)->first();
             }
 
             if($trialRatecard && isset($trialRatecard['price'])){
@@ -1253,12 +1263,12 @@ class MigrationReverseController extends \BaseController {
 
             //Workout session Price From Ratecard
             $workoutSessionPrice = 0;
-            $workoutSessionRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->count();
+            $workoutSessionRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->where('hidden', false)->count();
 
             if($workoutSessionRatecard_exists_cnt === 0){
-                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->first();
+                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->where('hidden', false)->first();
             }else{
-                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->where('quantity',1)->first();
+                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->where('quantity',1)->where('hidden', false)->first();
             }
 
             if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
