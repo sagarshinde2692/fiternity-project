@@ -200,6 +200,7 @@ abstract Class Mailer {
 		$route	= 'email';
 		$result  = $sidekiq->sendToQueue($payload,$route);
 
+
 		if($result['status'] == 200){
 			return $result['task_id'];
 		}else{

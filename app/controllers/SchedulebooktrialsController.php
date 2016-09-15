@@ -500,6 +500,7 @@ class SchedulebooktrialsController extends \BaseController {
     public function manualBookTrial() {
 
 
+
         $data = Input::json()->all();
 
         if(empty($data['customer_name'])){
@@ -546,6 +547,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         // return $data	= Input::json()->all();
         $booktrialid 		       =	Booktrial::max('_id') + 1;
+
         $finder_id 			       = 	(int) Input::json()->get('finder_id');
         $city_id 			       =	(int) Input::json()->get('city_id');
         $finder_name 		       =	Input::json()->get('finder_name');
@@ -642,9 +644,18 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial->_id = $booktrialid;
         $trialbooked = $booktrial->save();
 
+//        return $booktrial;
+
         if($trialbooked){
 
+
+
             if($booktrialdata['manual_trial_auto'] === '1'){
+
+
+
+                $booktrialdata['id'] = $booktrialid;
+
 
                 $now = Carbon::now();
                 $time = date('H.i', time());
@@ -660,31 +671,36 @@ class SchedulebooktrialsController extends \BaseController {
                 $customer_reminder_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now())->addHours(8);
 
                 $sndInstantEmailCustomer       = 	$this->customermailer->manualTrialAuto($booktrialdata);
-                $sndInstantSmsCustomer	       =	$this->customersms->manualTrialAuto($booktrialdata);
-                $sndScheduledSmsCustomer	   =	$this->customersms->reminderToConfirmManualTrial($booktrialdata, $customer_reminder_time);
-                $sndInstantEmailFinder         = 	$this->findermailer->manualTrialAuto($booktrialdata);
-                $sndInstantSmsFinder	       =	$this->findersms->manualTrialAuto($booktrialdata);
-                $sndScheduledSmsFinder	       =	$this->findersms->reminderToConfirmManualTrial($booktrialdata, $finder_reminder_time);
+//                $sndInstantSmsCustomer	       =	$this->customersms->manualTrialAuto($booktrialdata);
+//                $sndScheduledSmsCustomer	   =	$this->customersms->reminderToConfirmManualTrial($booktrialdata, $customer_reminder_time);
+//                $sndInstantEmailFinder         = 	$this->findermailer->manualTrialAuto($booktrialdata);
+//                $sndInstantSmsFinder	       =	$this->findersms->manualTrialAuto($booktrialdata);
+//                $sndScheduledSmsFinder	       =	$this->findersms->reminderToConfirmManualTrial($booktrialdata, $finder_reminder_time);
+//
+//                $booktrial->update(
+//                    array(
+//                        'customer_smsqueuedids'=>array(
+//                            'manualtrialauto_8hours' => $sndScheduledSmsCustomer
+//                        ),'finder_smsqueuedids'=>array(
+//                            'manualtrialauto_6hours' => $sndScheduledSmsFinder
+//                        )
+//                    )
+//                );
 
-                $booktrial->update(
-                    array(
-                        'customer_smsqueuedids'=>array(
-                            'manualtrialauto_8hours' => $sndScheduledSmsCustomer
-                        ),'finder_smsqueuedids'=>array(
-                            'manualtrialauto_6hours' => $sndScheduledSmsFinder
-                        )
-                    )
-                );
+                var_dump($booktrialid);exit();
+
             }
             else{
                 $sndInstantEmailCustomer       = 	$this->customermailer->manualBookTrial($booktrialdata);
                 $sndInstantSmsCustomer	       =	$this->customersms->manualBookTrial($booktrialdata);
             }
 
+
+
         }
 
-        $resp 	= 	array('status' => 200,'booktrial'=> $booktrial, 'message' => "Book a Trial");
-        return Response::json($resp,200);
+//        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
+//        return Response::json($resp,200);
     }
 
 
@@ -2392,7 +2408,7 @@ class SchedulebooktrialsController extends \BaseController {
             //if vendor type is free special dont send communication
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+                $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
