@@ -734,9 +734,9 @@ class MigrationReverseController extends \BaseController {
                 'finder_vcc_email' 						=>  implode(",", array_unique($finder_vcc_email_arr)),
                 'finder_vcc_mobile' 					=>  implode(",", array_unique($finder_vcc_mobile_arr)),
                 'status' 								=>  (isset($Finder->hidden) && $Finder->hidden === false) ? "1" : "0",
-                'budget' 								=>  (isset($Finder->budget) && isset($Finder->budget['average_price']) && $Finder->budget['average_price'] != "") ? intval($Finder->budget['average_price']) : 0,
-                'price_range' 							=>  (isset($Finder->budget) && isset($Finder->budget['price_range']) && $Finder->budget['price_range'] != "") ? trim($Finder->budget['price_range']) : "one",
-                'purchase_gamification_disable' 		=>  (isset($Finder->purchase_gamification_disable) && $Finder->purchase_gamification_disable === true) ? "1" : "0",
+                'budget' 								=>  (isset($Finder->cost) && isset($Finder->cost['average_price']) && $Finder->cost['average_price'] != "") ? intval($Finder->cost['average_price']) : 0,
+                'price_range' 							=>  (isset($Finder->cost) && isset($Finder->cost['price_range']) && $Finder->cost['price_range'] != "") ? trim($Finder->cost['price_range']) : "one",
+                'purchase_gamification_disable' 		=>  (isset($Finder->flags) && isset($Finder->flags['purchase_gamification_disable']) && $Finder->flags['purchase_gamification_disable'] === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
@@ -1324,7 +1324,9 @@ class MigrationReverseController extends \BaseController {
 
             }
 
-//            return $trialschedulesdata;
+//            return $workoutsessionschedules;
+
+//                print_pretty($workoutsessionschedules);exit;
 
             $service_exists = Service::on($this->fitadmin)->find(intval($schedule->vendorservice_id));
             if($service_exists){

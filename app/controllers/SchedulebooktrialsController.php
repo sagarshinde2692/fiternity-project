@@ -1977,10 +1977,9 @@ class SchedulebooktrialsController extends \BaseController {
     public function bookTrialFree($data = null)
     {
 
-
         // send error message if any thing is missing
-        !isset($data) ? $data = Input::json()->all() : null;
-        (!is_array($data)) ? $data = $data->toArray() : null;
+        $data = (!isset($data)) ? Input::json()->all() : null;
+        $data = (!is_array($data)) ? $data->toArray() : null;
 
         Log::info('input_data',$data);
 
@@ -2230,7 +2229,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-                        $finder_vcc_mobile = (isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
+            $finder_vcc_mobile = (isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
             $finder_poc_for_customer_name = (isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
             $finder_poc_for_customer_no = (isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
             $share_customer_no = (isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
@@ -2321,6 +2320,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 'google_pin'          =>      $google_pin,
                 'note_to_trainer'     =>      $note_to_trainer,
+                'reward_id' => $myreward_id
                 'referrer_booktrial_id' => $referrer_booktrial_id,
                 'root_booktrial_id' => $root_booktrial_id,
                 'kit_enabled' => $kit_enabled,
@@ -2335,12 +2335,9 @@ class SchedulebooktrialsController extends \BaseController {
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'               =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
+                'myreward_id' => $myreward_id
 
             );
-
-            !empty($myreward_id) ? $data['reward_id'] = $myreward_id : null;
-            !empty($myreward_id) ? $data['myreward_id'] = $myreward_id : null;
-
 
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
                 $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
@@ -2367,7 +2364,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($data['_id'])){
                 $booktrialid = (int) $data['_id'];
-                $booktrial = Booktrial::where('_id',$booktrialid);
+                $booktrial = Booktrial::find($booktrialid);
                 $trialbooked = $booktrial->update($booktrialdata);
             }
             else{
