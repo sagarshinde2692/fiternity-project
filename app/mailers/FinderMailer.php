@@ -452,6 +452,7 @@ Class FinderMailer extends Mailer {
 			'user_name' => $data['customer_name']
 		);
 
+
 		return $this->common($label,$data,$message_data);
 
 	}
