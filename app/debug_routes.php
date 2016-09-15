@@ -126,9 +126,11 @@ Route::get('/removeunwantedratecardsolddb/{offeset?}/', function($offset = ""){
         $service_ids = DB::connection('mongodb2')->table('vendorservices')->take(5000)->skip(intval($offset))->lists('_id');
     }
 
+//    $service_ids = [2714];
     foreach ($service_ids as $service_id) {
         $new_ratecard_ids       =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id', intval($service_id))->lists('_id');
-        $old_ratecard_ids       =   DB::connection('mongodb')->table('ratecards')->whereNotIn('_id', $new_ratecard_ids)->delete();
+        $old_ratecard_ids       =   DB::connection('mongodb')->table('ratecards')->where('service_id', intval($service_id))->whereNotIn('_id', $new_ratecard_ids)->lists('_id');
+        $deleteRatecardids      =   DB::connection('mongodb')->table('ratecards')->where('service_id', intval($service_id))->whereIn('_id', $old_ratecard_ids)->delete();
 
     }
 
