@@ -100,10 +100,6 @@ Route::get('checkozoneteljump/{finderid}', function($finderid){
 
 
 
-
-
-
-
 });
 
 Route::get('/removevip', function() { 
@@ -118,9 +114,23 @@ Route::get('/removevip', function() {
 
 
 
-Route::get('/updatevendorwebsitecontact', function() {
 
+Route::get('/removeunwantedratecardsolddb/{offeset?}/', function($offset = ""){
 
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    if($offset == ""){
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->lists('_id');
+    }else{
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->take(5000)->skip(intval($offset))->lists('_id');
+    }
+
+    foreach ($service_ids as $service_id) {
+        $new_ratecard_ids       =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id', intval($service_id))->lists('_id');
+        $old_ratecard_ids       =   DB::connection('mongodb')->table('ratecards')->whereNotIn('_id', $new_ratecard_ids)->delete();
+
+    }
 
 });
 
