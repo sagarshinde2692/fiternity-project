@@ -118,8 +118,11 @@ Route::get('/removevip', function() {
 
 
 
+Route::get('/updatevendorwebsitecontact', function() {
 
 
+
+});
 
 
 Route::get('/updatevendorwebsitecontact', function() {
