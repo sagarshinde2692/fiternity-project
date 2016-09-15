@@ -4318,10 +4318,9 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 422);
         }
         if($booktrial->update($data)){
-            $booktrialData = Booktrial::where('_id',(int) $data['_id'])->get();
-            $booktrialData = $booktrialData[0];
-            $booktrialData['customer_source'] = $booktrialData['source'];
-            $resp = $this->bookTrialFree($booktrialData);
+
+            $booktrial['customer_source'] = $booktrial['source'];
+            $resp = $this->bookTrialFree($booktrial);
             $data = $resp->getData();
             if($data->status == 200){
 
