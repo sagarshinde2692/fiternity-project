@@ -670,24 +670,25 @@ class SchedulebooktrialsController extends \BaseController {
                 !isset($finder_reminder_time) ? $finder_reminder_time = $tomorrow->addHours($hours)->addMinutes($minutes) : null;
                 $customer_reminder_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now())->addHours(8);
 
-                $sndInstantEmailCustomer       = 	$this->customermailer->manualTrialAuto($booktrialdata);
-//                $sndInstantSmsCustomer	       =	$this->customersms->manualTrialAuto($booktrialdata);
-//                $sndScheduledSmsCustomer	   =	$this->customersms->reminderToConfirmManualTrial($booktrialdata, $customer_reminder_time);
-//                $sndInstantEmailFinder         = 	$this->findermailer->manualTrialAuto($booktrialdata);
-//                $sndInstantSmsFinder	       =	$this->findersms->manualTrialAuto($booktrialdata);
-//                $sndScheduledSmsFinder	       =	$this->findersms->reminderToConfirmManualTrial($booktrialdata, $finder_reminder_time);
-//
-//                $booktrial->update(
-//                    array(
-//                        'customer_smsqueuedids'=>array(
-//                            'manualtrialauto_8hours' => $sndScheduledSmsCustomer
-//                        ),'finder_smsqueuedids'=>array(
-//                            'manualtrialauto_6hours' => $sndScheduledSmsFinder
-//                        )
-//                    )
-//                );
 
-                var_dump($booktrialid);exit();
+
+                $sndInstantEmailCustomer       = 	$this->customermailer->manualTrialAuto($booktrialdata);
+                $sndInstantSmsCustomer	       =	$this->customersms->manualTrialAuto($booktrialdata);
+                $sndScheduledSmsCustomer	   =	$this->customersms->reminderToConfirmManualTrial($booktrialdata, $customer_reminder_time);
+                $sndInstantEmailFinder         = 	$this->findermailer->manualTrialAuto($booktrialdata);
+                $sndInstantSmsFinder	       =	$this->findersms->manualTrialAuto($booktrialdata);
+                $sndScheduledSmsFinder	       =	$this->findersms->reminderToConfirmManualTrial($booktrialdata, $finder_reminder_time);
+
+                $booktrial->update(
+                    array(
+                        'customer_smsqueuedids'=>array(
+                            'manualtrialauto_8hours' => $sndScheduledSmsCustomer
+                        ),'finder_smsqueuedids'=>array(
+                            'manualtrialauto_6hours' => $sndScheduledSmsFinder
+                        )
+                    )
+                );
+
 
             }
             else{
@@ -699,8 +700,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         }
 
-//        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial");
-//        return Response::json($resp,200);
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'booktrial' => $booktrial, 'message' => "Book a Trial");
+        return Response::json($resp,200);
     }
 
 
