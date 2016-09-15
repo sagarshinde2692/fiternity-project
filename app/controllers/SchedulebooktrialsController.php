@@ -2320,7 +2320,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 'google_pin'          =>      $google_pin,
                 'note_to_trainer'     =>      $note_to_trainer,
-                'reward_id' => $myreward_id
+                'reward_id' => $myreward_id,
                 'referrer_booktrial_id' => $referrer_booktrial_id,
                 'root_booktrial_id' => $root_booktrial_id,
                 'kit_enabled' => $kit_enabled,
