@@ -1979,7 +1979,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         // send error message if any thing is missing
         (!isset($data)) ? $data = Input::json()->all() : null;
-        $data = (!is_array($data)) ? $data->toArray() : null;
+        (!is_array($data)) ? $data = $data->toArray() : null;
 
 
         Log::info('input_data',$data);
