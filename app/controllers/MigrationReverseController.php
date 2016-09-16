@@ -916,8 +916,8 @@ class MigrationReverseController extends \BaseController {
             $insertData['name'] = $data['name'];
             $insertData['servicecategory_id'] = (int)$data['category']['primary'];
             $insertData['servicesubcategory_id'] = (int)$data['category']['secondary'];
-            $insertData['lon'] = $data['geometry']['coordinates']['0'];
-            $insertData['lat'] = $data['geometry']['coordinates']['1'];
+            $insertData['lat'] = $data['geometry']['coordinates']['0'];
+            $insertData['lon'] = $data['geometry']['coordinates']['1'];
             $insertData['location_id'] = (int)$data['location_id'];
             $insertData['city_id'] = (int)$data['city_id'];
             $insertData['workout_intensity'] = (isset($data['workout_intensity'])) ? $data['workout_intensity'] : "";
