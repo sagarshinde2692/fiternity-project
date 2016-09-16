@@ -112,37 +112,25 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-
 	public function sendPgOrderMail ($data){
 
 		$label = 'Order-PG-Customer';
 
-		if($data['type'] == 'crossfit-week'){
-
-			$label = 'Order-PG-Crossfit-Week-Customer';
+		switch ($data['payment_mode']) {
+			case 'cod': $label = 'Order-COD-Customer'; break;
+			case 'paymentgateway': $label = 'Order-PG-Customer'; break;
+			case 'at the studio': $label = 'Order-At-Finder-Customer'; break;
+			default: break;
 		}
 
-		if($data['type'] == 'wonderise'){
-
-			$label = 'Order-PG-Wonderise-Customer';
-		}
-		if($data['type'] == 'combat-fitness'){
-
-			$label = 'Order-PG-Combat-fitness-Customer';
-		}
-		if($data['type'] == 'lyfe'){
-
-			$label = 'Order-PG-Lyfe-Customer';
-		}
-
-		if($data['type'] == 'mickeymehtaevent'){
-
-			$label = 'Order-PG-Mickeymehtaevent-Customer';
-		}
-
-		if($data['type'] == 'events'){
-			
-			$label = 'Order-PG-Event';
+		switch ($data['type']) {
+			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Customer';
+			case 'wonderise' :  $label = 'Order-PG-Wonderise-Customer';
+			case 'combat-fitness' :  $label = 'Order-PG-Combat-fitness-Customer';
+			case 'lyfe' :  $label = 'Order-PG-Lyfe-Customer';
+			case 'mickeymehtaevent' :  $label = 'Order-PG-Mickeymehtaevent-Customer';
+			case 'events' :  $label = 'Order-PG-Event';
+			default: break;
 		}
 
 		$message_data 	= array(
@@ -424,6 +412,18 @@ Class CustomerMailer extends Mailer {
 	public function campaignRegisterCustomer($data){
 
 		$label = 'Campaign-Register-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function orderUpdatePaymentAtVendor($data){
+
+		$label = 'OrderUpdatePaymentAtVendor-Customer';
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),

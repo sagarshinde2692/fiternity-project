@@ -28,9 +28,7 @@ Class Sidekiq {
     }
 
     public function sendToQueue($payload,$type){
-
-//        print_r($payload);
-
+        
         $route = $this->route_type[$type];
 
         try {

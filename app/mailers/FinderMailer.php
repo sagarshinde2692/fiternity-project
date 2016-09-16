@@ -168,12 +168,17 @@ Class FinderMailer extends Mailer {
 
 		$label = 'Order-PG-Vendor';
 
-		if($data['type'] == 'crossfit-week'){
-
-			$label = 'Order-PG-Crossfit-Week-Vendor';
+		switch ($data['payment_mode']) {
+			case 'cod': $label = 'Order-COD-Vendor'; break;
+			case 'paymentgateway': $label = 'Order-PG-Vendor'; break;
+			case 'at the studio': $label = 'Order-At-Finder-Vendor'; break;
+			default: break;
 		}
-		
-		
+
+		switch ($data['type']) {
+			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Vendor';
+			default: break;
+		}
 
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);
@@ -452,9 +457,28 @@ Class FinderMailer extends Mailer {
 			'user_name' => $data['customer_name']
 		);
 
-
 		return $this->common($label,$data,$message_data);
 
+	}
+
+	public function orderUpdatePaymentAtVendor($data){
+
+		$label = 'OrderUpdatePaymentAtVendor-Vendor';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
 	}
 
 

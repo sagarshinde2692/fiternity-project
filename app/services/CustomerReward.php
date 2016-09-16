@@ -112,8 +112,17 @@ Class CustomerReward {
             // For Cashback.....
             if(isset($order['cashback']) && $order['cashback'] == true && isset($order['cashback_detail']['wallet_amount'])){
 
+                $customerWallet = Customerwallet::where("order_id",(int)$order['_id'])->where("type","CASHBACK")->get();
+
+                if($customerWallet){
+                    return true;
+                }
+
                 $cashback_amount = $order['cashback_detail']['wallet_amount'];
 
+                if($order['payment_mode'] = "at the studio"){
+                    $cashback_amount = $order['amount_finder'] * 5 / 100;
+                }
 
                 $req = array(
                     "customer_id"=>$order['customer_id'],
@@ -127,6 +136,12 @@ Class CustomerReward {
                 $order->update(array('cashback_amount'=>$cashback_amount));
 
             }elseif(isset($order['reward_ids']) && !empty($order['reward_ids'])){
+
+                $myReward = Myreward::where("order_id",(int)$order['_id'])->get();
+
+                if($myReward){
+                    return true;
+                }
 
                 $order['order_id'] = $order['_id'];
                 $this->createMyReward($order);

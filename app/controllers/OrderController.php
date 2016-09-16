@@ -86,10 +86,15 @@ class OrderController extends \BaseController {
 
 
         //If Already Status Successfull Just Send Response
-        if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+        if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
-            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Already Status Successfull");
-            return Response::json($resp);
+            $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "Already Status Successfull");
+            return Response::json($resp,401);
+
+        }elseif(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && isset($order->status) && $order->status != '1' && isset($order->order_action) && $order->order_action != 'bought'){
+
+            $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "Status should be Bought");
+            return Response::json($resp,401);
         }
 
         if($data['status'] == 'success'){
@@ -135,14 +140,18 @@ class OrderController extends \BaseController {
 
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
-            array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+                
+                array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-            if($count > 0){
-                array_set($data, 'acquisition_type', 'renewal_direct');
-            }else{
-                array_set($data,'acquisition_type','direct_payment');
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+
+                if($count > 0){
+                    array_set($data, 'acquisition_type', 'renewal_direct');
+                }else{
+                    array_set($data,'acquisition_type','direct_payment');
+                }
             }
 
             if(isset($order->wallet_refund_sidekiq) && $order->wallet_refund_sidekiq != ''){
@@ -203,13 +212,32 @@ class OrderController extends \BaseController {
                             $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
                         }
                     }
-//                    print_pretty($emailData);exit;
-                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+
+                    //print_pretty($emailData);exit;
+                    if(isset($data["send_communication_customer"]) && isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if($data["send_communication_customer"] != ""){
+
+                            $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                        }
+
+                    }else{
+                        $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                    }
                 }
 
                 //no email to Healthy Snacks Beverages and Healthy Tiffins
                 if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
-                    $sndPgMail	= 	$this->findermailer->sendPgOrderMail($order->toArray());
+                    
+                    if(isset($data["send_communication_vendor"]) && isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if($data["send_communication_vendor"] != ""){
+
+                            $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                        }
+                        
+                    }else{
+                        $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                    }
+
                 }
             }
 
@@ -235,7 +263,7 @@ class OrderController extends \BaseController {
             }
 
 
-            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships"){
+            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
 
                 $preferred_starting_date = $order->preferred_starting_date;
                 $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
@@ -1346,8 +1374,189 @@ class OrderController extends \BaseController {
         return (int) $delay;
     }
 
-    
+    public function orderUpdate(){
 
+        $rules = array(
+            "customer_name"=>"required",
+            "customer_email"=>"email|required",
+            "customer_phone"=>"required",
+            "payment_mode"=>"required",
+            "order_id"=>"numeric|required"
+        );
+
+        $data = Input::json()->all();
+
+        Log::info('Order Update',$data);
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+
+            return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+
+        }else{
+
+            $order_id = (int) $data['order_id'];
+
+            $order = array();
+
+            $order = Order::find($order_id);
+
+            if(count($order) < 1){
+
+                $resp   =   array("status" => 401,"message" => "Order Does Not Exists");
+                return Response::json($resp);
+            }
+
+            if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+
+                $resp   =   array("status" => 401,"message" => "Already Status Successfull");
+                return Response::json($resp);
+            }
+
+            $data['amount_finder'] = $order->amount_finder;
+            $data['amount'] = $order->amount;
+
+            $customer_id = $this->autoRegisterCustomer($data);
+
+            if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
+                if(trim(Input::json()->get('preferred_starting_date')) != '-'){
+                    $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+                    $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                    array_set($data, 'start_date', $preferred_starting_date);
+                    array_set($data, 'preferred_starting_date', $preferred_starting_date);
+                }
+            }
+
+            if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
+                if(trim(Input::json()->get('preferred_payment_date')) != '-'){
+                    $date_arr = explode('-', Input::json()->get('preferred_payment_date'));
+                    $preferred_payment_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                    array_set($data, 'preferred_payment_date', $preferred_payment_date);
+                }
+            }
+
+            if(isset($order->ratecard_id) && $order->ratecard_id != ""){
+
+                $ratecard = Ratecard::find((int)$order->ratecard_id);
+
+                if($ratecard){
+
+                    if($data['payment_mode'] == "paymentgateway"){
+                        if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                            $data['amount_finder'] = $ratecard->special_price;
+                        }else{
+                            $data['amount_finder'] = $ratecard->price;
+                        }
+                    }
+
+                    if(isset($ratecard->validity) && $ratecard->validity != "" && isset($preferred_starting_date)){
+                        $duration_day = (int)$ratecard->validity;
+                        $data['duration_day'] = $duration_day;
+                        if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
+                            $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
+                        }
+
+                        if($duration_day <= 90){
+                            $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
+                        }
+                    }
+                    
+                }else{
+
+                    $resp   =   array('status' => 401,'message' => "Ratecard not found");
+                    return Response::json($resp,401);
+                }
+            }
+
+            if(isset($data['amount_finder'])){
+
+                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id);
+
+                if(isset($data['wallet']) && $data['wallet'] == true){
+                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                }
+            }
+
+            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+                $req = array(
+                    'customer_id'=>$customer_id,
+                    'order_id'=>$order_id,
+                    'amount'=>$data['wallet_amount'],
+                    'type'=>'DEBIT',
+                    'description'=>'Paid for Order ID: '.$order_id,
+                );
+                $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
+                $walletTransactionResponse = (array) $walletTransactionResponse;
+
+                if($walletTransactionResponse['status'] != 200){
+                    return $walletTransactionResponse;
+                }
+
+                // Schedule Check orderfailure and refund wallet amount in that case....
+                $url = Config::get('app.url').'/orderfailureaction/'.$order_id;
+                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+            }
+
+            if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
+                $rewardoffers   =     array_map('intval', $data['reward_ids']);
+                array_set($data, 'reward_ids', $rewardoffers);
+            }
+
+            if(isset($data['address']) && $data['address'] != ''){
+
+                $data['customer_address']  = $data['address'];
+            }
+
+            $customer = Customer::find((int)$customer_id);
+
+            if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
+                
+                $customerData['address'] = $data['customer_address'];
+                $customer->update($customerData);
+
+                $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
+            }
+
+            if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
+                $reward_detail = array();
+                $reward_ids = array_map('intval',$data['reward_ids']);
+                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+                if(count($rewards) > 0){
+                    foreach ($rewards as $value) {
+                        $title = $value->title;
+                        if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+                            $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                        }
+                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+                    }
+                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+                    array_set($data, 'reward_info', $reward_info);
+                }
+            }
+
+            if(isset($data['cashback']) && $data['cashback'] === true && isset($order['cashback_detail']) ){
+                $reward_info = "Cashback";
+                
+                array_set($data, 'reward_info', $reward_info);
+            }
+
+            $order->update($data);
+
+            if($order->payment_mode == "at the studio" /*&& isset($data['reward_info'])*/){
+                $this->findermailer->orderUpdatePaymentAtVendor($order->toArray());
+                $this->customermailer->orderUpdatePaymentAtVendor($order->toArray());
+            }
+
+            $resp   =   array("status" => 200, 'message' => "Order Updated Successfull",'order' => $order);
+
+            return Response::json($resp);
+        }
+
+    }
 
 
 }

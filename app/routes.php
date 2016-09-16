@@ -276,6 +276,8 @@ Route::get('orderfailureaction/{order_id}', array('as' => 'orders.orderFailureAc
 
 Route::get('linkopenfororder/{order_id}',  array('as' => 'orders.linkOpenForOrder','uses' => 'OrderController@linkOpenForOrder'));
 
+Route::post('orderupdate', array('as' => 'orders.orderupdate','uses' => 'OrderController@orderUpdate'));
+
 
 
 
