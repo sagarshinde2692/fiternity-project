@@ -679,7 +679,6 @@ class MigrationReverseController extends \BaseController {
             }
 
 
-
             $address = '';
             if(isset($Finder->address['line1'])){   $address .= $Finder->address['line1'];  }
             if($address != ""){   $address .= ",";  }
@@ -688,7 +687,6 @@ class MigrationReverseController extends \BaseController {
             if(isset($Finder->address['line3'])){   $address .= $Finder->address['line3']; }
             if($address != ""){   $address .= ",";  }
             if(isset($Finder->address['pincode'])){   $address .= $Finder->address['pincode']; }
-
 
 
             $insertData = [
@@ -702,8 +700,8 @@ class MigrationReverseController extends \BaseController {
                 'locationtags' 			=>  array_unique($new_locationtag_ids_arr),
                 'offerings' 			=>  array_unique($new_offering_ids_arr),
                 'facilities' 			=>  (isset($Finder->filter['facilities'])) ? array_unique(array_map('intval', $Finder->filter['facilities'])) : [],
-                'lon' 					=>  (isset($Finder->geometry['coordinates'][0])) ? trim($Finder->geometry['coordinates'][0]) : "",
-                'lat' 					=>  (isset($Finder->geometry['coordinates'][1])) ? trim($Finder->geometry['coordinates'][1]) : "",
+                'lat' 					=>  (isset($Finder->geometry['coordinates'][0])) ? trim($Finder->geometry['coordinates'][0]) : "",
+                'lon' 					=>  (isset($Finder->geometry['coordinates'][1])) ? trim($Finder->geometry['coordinates'][1]) : "",
                 'info' 	=>  [
                     'about' 	=>  (isset($Finder->info['about'])) ? trim($Finder->info['about']) : "",
                     'additional_info' 	=>  (isset($Finder->info['additional_info'])) ? trim($Finder->info['additional_info']) : "",
@@ -929,6 +927,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['status'] = (isset($data['hidden']) && $data['hidden'] == true) ? '0' : '1';
             $insertData['deduct'] = (isset($data['trial_cashback_status'])  && $data['trial_cashback_status'] == true) ? '1' : '0';
             $insertData['rockbottom'] = (isset($data['rockbottom_price_status'])  && $data['rockbottom_price_status'] == true) ? '1' : '0';
+            $insertData['vip_trial'] = (isset($data['vip_trial'])  && $data['vip_trial'] == true) ? '1' : '0';
             $insertData['ordering'] = (int)$data['order'];
             $insertData['short_description'] = $data['info']['short_description'];
             $insertData['body'] = $data['info']['long_description'];
@@ -1246,8 +1245,10 @@ class MigrationReverseController extends \BaseController {
             $vendorservice_id = $vendorservice_id;
 
             $schedules = Schedule::where('vendorservice_id',intval($vendorservice_id))->get();
+
             if(count($schedules) > 0){
-                //Trial Price From Ratecard
+
+            //Trial Price From Ratecard
             $trialPrice = 0;
             $trialRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('hidden', false)->count();
 
