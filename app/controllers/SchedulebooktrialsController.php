@@ -4292,6 +4292,7 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
     public function confirmmanualtrialbyvendor(){
+
         $data = Input::json()->all();
 
         if(empty($data['service_name'])){
@@ -4319,21 +4320,21 @@ class SchedulebooktrialsController extends \BaseController {
         }
         if($booktrial->update($data)){
 
+            $booktrial = $booktrial->toArray();
             $booktrial['customer_source'] = $booktrial['source'];
             $resp = $this->bookTrialFree($booktrial);
             $data = $resp->getData();
             if($data->status == 200){
 
-                if(isset($booktrialData['customer_smsqueuedids']['manualtrialauto_8hours']) && $booktrialData['customer_smsqueuedids']['manualtrialauto_8hours'] != ''){
+                if(isset($booktrial['customer_smsqueuedids']['manualtrialauto_8hours']) && $booktrial['customer_smsqueuedids']['manualtrialauto_8hours'] != ''){
                     try {
-                        $this->sidekiq->delete($booktrialData['customer_smsqueuedids']['manualtrialauto_8hours']);
+                        $this->sidekiq->delete($booktrial['customer_smsqueuedids']['manualtrialauto_8hours']);
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
             }
             return $resp;
-
         }
 
         // Hit booktrialfree API for communication...

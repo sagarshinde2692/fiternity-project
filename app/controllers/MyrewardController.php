@@ -68,6 +68,10 @@ class MyrewardController extends BaseController {
 
                 $myrewards[$key]['validity_in_days'] = $validity_in_days;
 
+                if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
+                    $myrewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
+                }
+
             }
         }
 
@@ -84,6 +88,19 @@ class MyrewardController extends BaseController {
 
         $myrewards = array();
         $myrewards = $query->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+
+        if(count($myrewards) > 0){
+
+            $myrewards = $myrewards->toArray();
+
+            foreach ($myrewards as $key => $value){
+                
+                if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
+                    $myrewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
+                }
+
+            }
+        }
 
         return Response::json(array('status' => 200,'data' => $myrewards), 200);
     }
