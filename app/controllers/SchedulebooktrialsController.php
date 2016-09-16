@@ -1680,8 +1680,8 @@ class SchedulebooktrialsController extends \BaseController {
 //             return $booktrialdata;
 
             if(isset($order->booktrial_id)){
-                $trialbooked = true;
-                $booktrial = Booktrial::find($booktrialid);
+                $booktrial = Booktrial::find((int)$order->booktrial_id);
+                $trialbooked = $booktrial->update($booktrialdata); 
             }else{
                 $booktrial = new Booktrial($booktrialdata);
                 $booktrial->_id = (int) $booktrialid;
