@@ -118,7 +118,7 @@ class RewardofferController extends BaseController {
         $ratecard = Ratecard::where('_id',$ratecard_id)/*->where('price',$amount)*/->where('finder_id',$finder_id)->first();
 
         if(!$ratecard){
-            $resp   =   array('status' => 401,'message' => "Ratecard Price and Amount does not Match");
+            $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
             return  Response::json($resp, 401);
         }
 
@@ -145,7 +145,16 @@ class RewardofferController extends BaseController {
 
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
+
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
+
+                if(count($rewards) > 0){
+                    foreach ($rewards as $key => $value){
+                        if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
+                            $rewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
+                        }
+                    }
+                }
             }
         }
 
