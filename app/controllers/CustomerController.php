@@ -2207,6 +2207,14 @@ public function getCustomerDetail(){
         	$cache_tag = 'customer_home_by_city';
 
         }
+
+        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
+
+        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+
+        	$cache_tag = 'customer_home_by_city_2_5';
+
+        }
         
 		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
 
