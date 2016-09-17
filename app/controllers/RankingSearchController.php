@@ -751,7 +751,8 @@ public function getRankedFinderResultsAppv2()
         $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
 
     }
-    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
+    $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
+//    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
@@ -863,6 +864,9 @@ if($trials_day_filter !== ''){
                     "order" : "' . $order . '"
                 }}';
             }
+//            if($category_filter != '') {
+//                $sort = '"sort":[{"rank":{"order":"'.$order.'"}}]';
+//            }
             else{
                 $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
             }

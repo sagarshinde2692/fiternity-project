@@ -97,7 +97,7 @@ class Translator {
 			$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
 			$resultobject->coverimage = isset($result['coverimage']) ? $result['coverimage'] : "";;
 			$resultobject->commercial_type = isset($result['commercial_type']) ? $result['commercial_type'] : "";;
-			$resultobject->finder_type = isset($result['finder_type']) ? $result['finder_type'] : "";;
+			$resultobject->finder_type = isset($result['finder_type']) ? $result['finder_type'] : 0;
 			$resultobject->business_type = isset($result['business_type']) ? $result['business_type'] : "";;
 			$resultobject->fitternityno = '+917506122637';
 			$resultobject->facilities = empty($result['facilities']) ? array() : $result['facilities'];
