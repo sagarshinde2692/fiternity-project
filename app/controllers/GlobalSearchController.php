@@ -821,7 +821,7 @@ public function newglobalsearch(){
     }
     $firstwordscript = '';
 
-    if($keylist[0] === 'i'){
+    if(isset($keylist[0]) && $keylist[0] === 'i'){
         $firstwordscript = '{
             "script_score": {            
                 "params": {

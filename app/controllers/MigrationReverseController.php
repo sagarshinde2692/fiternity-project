@@ -1114,12 +1114,12 @@ class MigrationReverseController extends \BaseController {
 
             //Trial Price From Ratecard
             $trialPrice = 0;
-            $trialRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'trial')->count();
+            $trialRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'trial')->where('hidden', false)->count();
 
             if($trialRatecard_exists_cnt === 0){
-                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'trial')->first();
+                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'trial')->where('hidden', false)->first();
             }else{
-                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'trial')->where('quantity',1)->first();
+                $trialRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'trial')->where('quantity',1)->where('hidden', false)->first();
             }
 
             if($trialRatecard && isset($trialRatecard['price'])){
@@ -1128,12 +1128,12 @@ class MigrationReverseController extends \BaseController {
 
             //Workout session Price From Ratecard
             $workoutSessionPrice = 0;
-            $workoutSessionRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'workout session')->count();
+            $workoutSessionRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'workout session')->where('hidden', false)->count();
 
             if($workoutSessionRatecard_exists_cnt === 0){
-                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'workout session')->first();
+                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'workout session')->where('hidden', false)->first();
             }else{
-                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'workout session')->where('quantity',1)->first();
+                $workoutSessionRatecard	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($schedule->vendorservice_id))->where('type', 'workout session')->where('quantity',1)->where('hidden', false)->first();
             }
 
             if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
