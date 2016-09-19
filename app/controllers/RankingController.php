@@ -569,7 +569,7 @@ public function evalProfileCompleteness($finderDocument = ''){
 
 public function evalVendorType($finderDocument = ''){
 
-    switch($finderDocument['finder_type'])
+    switch($finderDocument['commercial_type'])
     {
         case 0:
         $val=0;

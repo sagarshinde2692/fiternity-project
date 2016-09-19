@@ -864,12 +864,12 @@ if($trials_day_filter !== ''){
 //                    "order" : "' . $order . '"
 //                }}';
 //            }
-            if($category_filter != '') {
+//            if($category_filter != '') {
                 $sort = '"sort":[{"rank":{"order":"'.$order.'"}}]';
-            }
-            else{
-                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
-            }
+//            }
+//            else{
+//                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+//            }
 
         }
         else
