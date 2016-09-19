@@ -504,6 +504,7 @@ class RankingController extends \BaseController {
         $catval = evalBaseCategoryScore($finderdocument['category_id']);
         $postdata['rankv1'] = $catval;
         $postdata['rankv2'] = $score + $catval;
+        $postdata['alloptions_rank'] = $this->generateAllFitnessRank($finderdocument);
         $postdata['average_price'] = $average_monthly;
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
@@ -539,6 +540,15 @@ public function generateRank($finderDocument = ''){
         //$finderCategory = $finderDocument['category'];
 
     $score = (8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/13;
+    return $score;
+
+}
+
+public function generateAllFitnessRank($finderDocument = ''){
+
+        //$finderCategory = $finderDocument['category'];
+
+    $score = (((9/11)*evalBaseCategoryScore($finderDocument['category_id'])) + 8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/22;
     return $score;
 
 }

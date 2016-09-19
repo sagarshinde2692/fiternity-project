@@ -850,23 +850,23 @@ if($trials_day_filter !== ''){
 
         if($orderfield == 'popularity')
         {
-            if($category_filter != '') {
-                $factor = evalBaseCategoryScore($category);
-                $sort = '"sort":
-                {"_script" : {
-                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
-                    "type" : "number",
-                    "params" : {
-
-                        "factor" : 11
-
-                    },
-                    "order" : "' . $order . '"
-                }}';
-            }
 //            if($category_filter != '') {
-//                $sort = '"sort":[{"rank":{"order":"'.$order.'"}}]';
+//                $factor = evalBaseCategoryScore($category);
+//                $sort = '"sort":
+//                {"_script" : {
+//                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+//                    "type" : "number",
+//                    "params" : {
+//
+//                        "factor" : 11
+//
+//                    },
+//                    "order" : "' . $order . '"
+//                }}';
 //            }
+            if($category_filter != '') {
+                $sort = '"sort":[{"rank":{"order":"'.$order.'"}}]';
+            }
             else{
                 $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
             }
