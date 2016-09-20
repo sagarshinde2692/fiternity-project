@@ -114,7 +114,7 @@ Route::get('/removevip', function() {
 
 
 
-
+//REMOVE OLD RATECARDS
 Route::get('/removeunwantedratecardsolddb/{offeset?}/', function($offset = ""){
 
     ini_set('memory_limit', '500M');
@@ -186,6 +186,122 @@ Route::get('/updatevendorwebsitecontact', function() {
 
 
 
+Route::get('/removeworkoutsession', function() {
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    $trialRatecard  =   DB::connection('mongodb')->table('ratecards')->where('type', 'workout session')->delete();
+    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('type', 'workout session')->delete();
+});
+
+
+
+Route::get('createworkoutsessionifnotexist/{offeset?}/', function($offset = ""){
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    if($offset == ""){
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->lists('_id');
+    }else{
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->take(5000)->skip(intval($offset))->lists('_id');
+    }
+
+//    $service_ids = [811];
+//    return $service_ids;
+
+
+    foreach ($service_ids as $service_id) {
+
+        $workoutSessionRatecard_exists_cnt = DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id', intval($service_id))->where('type', 'workout session')->where('hidden', false)->count();
+
+        if($workoutSessionRatecard_exists_cnt < 1){
+
+            $trialRatecard_exists_cnt   =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('hidden', false)->count();
+
+            if($trialRatecard_exists_cnt > 0){
+
+                if($trialRatecard_exists_cnt < 2){
+                    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('hidden', false)->first();
+                }else{
+                    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('quantity',1)->where('hidden', false)->first();
+                }
+
+                if($trialRatecard){
+                    $lastlocationtagid      =   DB::connection('mongodb2')->table('ratecards')->max('_id');
+                    $newratecardid          =   intval($lastlocationtagid) + 1;
+                    $insertData             =   $trialRatecard;
+                    $insertData['type']     =   'workout session';
+                    $workoutSessionPrice     =   intval($trialRatecard['price']);
+
+                    if($workoutSessionPrice   == 0){
+                        $service = DB::connection('mongodb2')->table('vendorservices')->where('_id',intval($service_id))->first();
+                        if($service && isset($service['category']) && isset($service['category']['primary'])){
+                            $sercviecategory_id     =   intval($service['category']['primary']);
+                            $workoutSessionPrice    =   ($sercviecategory_id == 65) ? 300 : 500;
+                        }
+                    }
+                    $insertData['price']     =   $workoutSessionPrice;
+//                    return $insertData;
+
+                    if($workoutSessionPrice > 0){
+                        $ratecart_exists        = new Ratecard($insertData);
+                        $ratecart_exists->setConnection('mongodb2');
+                        $ratecart_exists->_id   =   $newratecardid;
+                        $ratecart_exists->save();
+
+                        $curl   =   curl_init();
+                        $url    =   "http://a1.fitternity.com/reverse/migration/ratecard/$newratecardid";
+//                        $url    =   "http://apistg.fitn.in/reverse/migration/ratecard/$newratecardid";
+//                    $url    =   "http://fitapi.com/reverse/migration/ratecard/$newratecardid";
+                        curl_setopt_array($curl, array( CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url ));
+                        $resp = curl_exec($curl);
+                        curl_close($curl);
+                        var_dump($resp);
+                    }
+                }
+            }//Trial Ratecard exists
+
+        }//WorkoutSession Ratecard Not Exists
+
+    }
+
+});
+
+
+
+
+
+Route::get('updateworkoutsessionprices/{offeset?}/', function($offset = ""){
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    if($offset == ""){
+        $service_ids = Service::active()->lists('_id');
+    }else{
+        $service_ids = Service::active()->take(5000)->skip(intval($offset))->lists('_id');
+    }
+
+    foreach ($service_ids as $service_id){
+
+        $curl   =   curl_init();
+        $id     =   trim($service_id);
+        $url    =   "http://a1.fitternity.com/reverse/migration/vendorservice/$id";
+//        $url    =   "http://apistg.fitn.in/reverse/migration/vendorservice/$id";
+//        $url    =   "http://fitapi.com/reverse/migration/vendorservice/$id";
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url
+        ));
+        $resp = curl_exec($curl);
+        curl_close($curl);
+        var_dump($resp);
+
+
+    }
+});
 
 
 

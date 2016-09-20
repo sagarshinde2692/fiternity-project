@@ -772,6 +772,11 @@ class MigrationReverseController extends \BaseController {
             $finder_id = intval($entity['_id']);
 
             //manage categorytags
+            try{
+                $removeFinderIdsCategorytags      =    Findercategorytag::where('finders', $finder_id)->pull('finders',$finder_id);
+            }catch(Exception $e){
+                Log::error($e);
+            }
             if (isset($entity['categorytags']) && !empty($entity['categorytags'])) {
                 $findercategorytags = array_map('intval', $entity['categorytags']);
                 $finder = Finder::on($this->fitadmin)->find($finder_id);
@@ -782,6 +787,11 @@ class MigrationReverseController extends \BaseController {
             }
 
             //manage locationtags
+            try{
+                $removeFinderIdsLocationtag      =    Locationtag::where('finders', $finder_id)->pull('finders',$finder_id);
+            }catch(Exception $e){
+                Log::error($e);
+            }
             if (isset($entity['locationtags']) && !empty($entity['locationtags'])) {
                 $finderlocationtags = array_map('intval', $entity['locationtags']);
                 $finder = Finder::on($this->fitadmin)->find($finder_id);
@@ -794,8 +804,6 @@ class MigrationReverseController extends \BaseController {
 
             //manage facilities
             try{
-//                $removeFinderIdsFacilities =    Facility::where('finders', $finder_id)->lists('_id');
-//                var_dump($removeFacilities);exit;
                 $removeFinderIdsFacilities      =    Facility::where('finders', $finder_id)->pull('finders',$finder_id);
             }catch(Exception $e){
                 Log::error($e);
@@ -816,6 +824,11 @@ class MigrationReverseController extends \BaseController {
             }
 
             //manage offerings
+            try{
+                $removeFinderIdsOffering      =    Offering::where('finders', $finder_id)->pull('finders',$finder_id);
+            }catch(Exception $e){
+                Log::error($e);
+            }
             if (isset($entity['offerings']) && !empty($entity['offerings'])) {
                 $finderofferings = array_map('intval', $entity['offerings']);
                 $finder = Finder::on($this->fitadmin)->find($finder_id);
