@@ -2586,6 +2586,44 @@ public function testEmail(){
 		echo "done";return;
 	}
 
+	public function removePersonalTrainerStudio(){
+
+		$reward_id = Reward::where("reward_type","personal_trainer_at_studio")->lists("_id");
+
+		$reward = Reward::where("reward_type","personal_trainer_at_studio")->delete();
+
+		$reward_category = Rewardcategory::where("reward_type","personal_trainer_at_studio")->delete();
+
+		foreach ($reward_id as $r_id){
+
+			$reward_offer = Rewardoffer::where("rewards",$r_id)->get();
+
+			if(count($reward_offer) > 0){
+
+				foreach ($reward_offer as $key => $value){
+
+					$rewards = $value->rewards;
+
+					foreach ($rewards as $rewards_key => $rewards_value){
+
+						if($r_id == $rewards_value){
+							unset($rewards[$rewards_key]);
+						}
+
+					}
+
+					$rewards = array_values($rewards);
+
+					$value->rewards = $rewards;
+					$value->update();
+
+				}
+			}
+		}
+		
+		echo "done";
+	}
+
 	
     
 }
