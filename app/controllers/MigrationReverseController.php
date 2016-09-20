@@ -599,7 +599,6 @@ class MigrationReverseController extends \BaseController {
                         array_push($detail_rating_summary_average, $Finder->detail_rating[strtolower($value)]["value"]);
                         array_push($detail_rating_summary_count, $Finder->detail_rating[strtolower($value)]["count"]);
                     }
-
                 }
             }
 
@@ -680,14 +679,12 @@ class MigrationReverseController extends \BaseController {
 
 
             $address = '';
-            if(isset($Finder->address['line1'])){   $address .= $Finder->address['line1'];  }
-            if($address != ""){   $address .= ",";  }
-            if(isset($Finder->address['line2'])){   $address .= $Finder->address['line2']; }
-            if($address != ""){   $address .= ",";  }
-            if(isset($Finder->address['line3'])){   $address .= $Finder->address['line3']; }
-            if($address != ""){   $address .= ",";  }
-            if(isset($Finder->address['pincode'])){   $address .= $Finder->address['pincode']; }
-
+            if(isset($Finder->address['line1']) && $Finder->address['line1'] != ""){   $address .= $Finder->address['line1'].","; }
+            if(isset($Finder->address['line2']) && $Finder->address['line2'] != ""){   $address .= $Finder->address['line2'].","; }
+            if(isset($Finder->address['line3']) && $Finder->address['line3'] != ""){   $address .= $Finder->address['line3'].","; }
+            if(isset($Finder->address['landmark']) && $Finder->address['landmark'] != "" ){  $address .= $Finder->address['landmark'].","; }
+            if(isset($Finder->address['pincode']) && $Finder->address['pincode'] != ""){   $address .= $Finder->address['pincode']; }
+//            var_dump($address);exit;
 
             $insertData = [
                 'title' 				=>  trim($Finder->name),
@@ -796,13 +793,26 @@ class MigrationReverseController extends \BaseController {
 
 
             //manage facilities
+            try{
+//                $removeFinderIdsFacilities =    Facility::where('finders', $finder_id)->lists('_id');
+//                var_dump($removeFacilities);exit;
+                $removeFinderIdsFacilities      =    Facility::where('finders', $finder_id)->pull('finders',$finder_id);
+            }catch(Exception $e){
+                Log::error($e);
+            }
+
             if (isset($entity['facilities']) && !empty($entity['facilities'])) {
+
                 $finderfacilities = array_map('intval', $entity['facilities']);
                 $finder = Finder::on($this->fitadmin)->find($finder_id);
+                $finder->facilities()->attach($finderfacilities[0]);
                 $finder->facilities()->sync(array());
                 foreach ($finderfacilities as $key => $value) {
                     $finder->facilities()->attach($value);
                 }
+            }else{
+                $finder = Finder::on($this->fitadmin)->find($finder_id);
+                $finder->facilities()->sync(array());
             }
 
             //manage offerings
@@ -813,6 +823,9 @@ class MigrationReverseController extends \BaseController {
                 foreach ($finderofferings as $key => $value) {
                     $finder->offerings()->attach($value);
                 }
+            }else{
+                $finder = Finder::on($this->fitadmin)->find($finder_id);
+                $finder->offerings()->sync(array());
             }
 
 
