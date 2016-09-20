@@ -3239,12 +3239,27 @@ class SchedulebooktrialsController extends \BaseController {
 		$data = Input::json()->all();
 		$reason = isset($data['reason']) ? $data['reason'] : '';
 
-		$finder_ids = $this->jwtauth->vendorIdsFromToken();
+        if(isset($_GET['token']) && $_GET['token'] != ""){
+
+            $booktrial = Booktrial::where("_id",(int)$trial_id)->where("token",$_GET['token'])->get();
+
+            if(count($booktrial) > 0){
+                $data = ['status_code' => 401, 'message' => ['error' => 'Trial does not exists']];
+                return Response::json($data, 401);
+            }
+
+        }else{
+
+            $data = ['status_code' => 401, 'message' => ['error' => 'Hash Required']];
+            return Response::json($data, 401);
+        }
+
+		/*$finder_ids = $this->jwtauth->vendorIdsFromToken();
 
 		if (!(in_array($finder_id, $finder_ids))) {
 			$data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
 			return Response::json($data, 401);
-		}
+		}*/
 
 		return $this->cancel($trial_id, 'vendor', $reason);
 	}
