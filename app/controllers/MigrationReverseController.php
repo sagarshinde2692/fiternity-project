@@ -686,6 +686,15 @@ class MigrationReverseController extends \BaseController {
             if(isset($Finder->address['pincode']) && $Finder->address['pincode'] != ""){   $address .= $Finder->address['pincode']; }
 //            var_dump($address);exit;
 
+            $mobilePhoneStr = "";
+            if(isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0){
+                $mobilePhoneStr .= implode(",", $Finder->contact['phone']['mobile']);
+            }
+
+            if(isset($Finder->contact['phone']['landline']) && count($Finder->contact['phone']['landline']) > 0){
+                $mobilePhoneStr .= implode(",", $Finder->contact['phone']['landline']);
+            }
+
             $insertData = [
                 'title' 				=>  trim($Finder->name),
                 'slug' 					=>  trim($Finder->slug),
@@ -713,7 +722,7 @@ class MigrationReverseController extends \BaseController {
                 'contact' 	=>  [
                     'address' 	=>  $address,
                     'email' 	=>  (isset($Finder->contact['email']) && count($Finder->contact['email']) > 0)  ? implode(",", $Finder->contact['email']) : "",
-                    'phone' 	=>  (isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0)  ? implode(",", $Finder->contact['phone']['mobile']) : "",
+                    'phone' 	=>  $mobilePhoneStr,
                     'website' 	=>  "",
                 ],
 
@@ -742,6 +751,8 @@ class MigrationReverseController extends \BaseController {
                 'budget' 								=>  (isset($Finder->cost) && isset($Finder->cost['average_price']) && $Finder->cost['average_price'] != "") ? intval($Finder->cost['average_price']) : 0,
                 'price_range' 							=>  (isset($Finder->cost) && isset($Finder->cost['price_range']) && $Finder->cost['price_range'] != "") ? trim($Finder->cost['price_range']) : "one",
                 'purchase_gamification_disable' 		=>  (isset($Finder->flags) && isset($Finder->flags['purchase_gamification_disable']) && $Finder->flags['purchase_gamification_disable'] === true) ? "1" : "0",
+                'trial' 		                        =>  (isset($Finder->flags) && isset($Finder->flags['trial']) && $Finder->flags['trial'] === true) ? $Finder->flags['trial'] : "auto",
+                'membership' 		                    =>  (isset($Finder->flags) && isset($Finder->flags['membership']) && $Finder->flags['membership'] === true) ? $Finder->flags['membership'] : "auto",
                 'manual_trial_enable' 				    =>  (isset($Finder->manual_trial_enable) && $Finder->manual_trial_enable === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
