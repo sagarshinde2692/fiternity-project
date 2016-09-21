@@ -35,17 +35,34 @@ Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@by
 
 
 
+
+
 Route::get('checkfileons3', function (){
 
-    $s3 = AWS::get('s3');
+    $s3 = \AWS::get('s3');
 
-    $s3->getObjectInfo("bucketName","folder_name/donotdelete.txt");
+    $objects = $s3->getIterator('ListObjects', array(
+        'Bucket' => "b.fitn.in",
+        "Prefix" => 'f/c/'
+    ));
 
-//    $s3->putObject(array(
-//        'Bucket'     => Config::get('app.aws.bucket'),
-//        'Key'        => Config::get('app.aws.order.path').$original,
-//        'SourceFile' => "$destinationPath$original"
-//    ));
+
+// Use the high-level iterators (returns ALL of your objects).
+    try {
+        $objects = $s3->getIterator('ListObjects', array(
+            'Bucket' => "b.fitn.in",
+            "Prefix" => 'f/c/'
+        ));
+
+        echo "Keys retrieved!\n";
+        foreach ($objects as $object) {
+            echo $object['Key'] . "<br>";
+        }
+    } catch (S3Exception $e) {
+        echo $e->getMessage() . "\n";
+    }
+
+
 
 });
 
