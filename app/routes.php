@@ -26,6 +26,7 @@ Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou')
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
+
 Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 
 Route::group(array('before' => 'validatevendor'), function() {
