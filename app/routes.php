@@ -29,6 +29,9 @@ Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou')
 
 Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 
+Route::post('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',
+		array('as' => 'vendor.cancelTrialSessionByVendor','uses' => 'SchedulebooktrialsController@cancelTrialSessionByVendor'));
+
 Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::post('/refreshWebToken',
@@ -75,9 +78,6 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::post('/vendorsummary/recentprofileupdaterequest/{finder_id?}',
 		array('as' => 'vendor.getrecentprofileupdaterequest','uses' => 'VendorpanelController@getRecentProfileUpdateRequest'));
-
-	Route::post('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',
-		array('as' => 'vendor.cancelTrialSessionByVendor','uses' => 'SchedulebooktrialsController@cancelTrialSessionByVendor'));
 
 	Route::post('/vendorsummary/{finder_id?}/reviews/{review_id?}/reply',
 		array('as' => 'vendor.reviewReplyByVendor','uses' => 'VendorpanelController@reviewReplyByVendor'));

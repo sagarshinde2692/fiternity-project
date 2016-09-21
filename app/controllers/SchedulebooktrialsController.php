@@ -1648,7 +1648,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'physical_activity_detail'      =>      $physical_activity_detail,
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'                   =>      $trial_count,
-                'before_three_month_trial_count' =>     $before_three_month_trial_count
+                'before_three_month_trial_count' =>     $before_three_month_trial_count,
+                'token'                         =>      random_number_string()
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2336,7 +2337,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'               =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
-                'myreward_id' => $myreward_id
+                'myreward_id' => $myreward_id,
+                'token'                         =>      random_number_string()
 
             );
 
@@ -3239,12 +3241,27 @@ class SchedulebooktrialsController extends \BaseController {
 		$data = Input::json()->all();
 		$reason = isset($data['reason']) ? $data['reason'] : '';
 
-		$finder_ids = $this->jwtauth->vendorIdsFromToken();
+        if(isset($_GET['token']) && $_GET['token'] != ""){
+
+            $booktrial = Booktrial::where("_id",(int)$trial_id)->where("token",$_GET['token'])->get();
+
+            if(count($booktrial) > 0){
+                $data = ['status_code' => 401, 'message' => ['error' => 'Trial does not exists']];
+                return Response::json($data, 401);
+            }
+
+        }else{
+
+            $data = ['status_code' => 401, 'message' => ['error' => 'Hash Required']];
+            return Response::json($data, 401);
+        }
+
+		/*$finder_ids = $this->jwtauth->vendorIdsFromToken();
 
 		if (!(in_array($finder_id, $finder_ids))) {
 			$data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
 			return Response::json($data, 401);
-		}
+		}*/
 
 		return $this->cancel($trial_id, 'vendor', $reason);
 	}

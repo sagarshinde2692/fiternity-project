@@ -114,8 +114,8 @@ Class CustomerReward {
 
                 $customerWallet = Customerwallet::where("order_id",(int)$order['_id'])->where("type","CASHBACK")->get();
 
-                if($customerWallet){
-                    return true;
+                if(count($customerWallet) > 0){
+                    return 'true';
                 }
 
                 $cashback_amount = $order['cashback_detail']['wallet_amount'];
@@ -139,8 +139,8 @@ Class CustomerReward {
 
                 $myReward = Myreward::where("order_id",(int)$order['_id'])->get();
 
-                if($myReward){
-                    return true;
+                if(count($myReward) > 0){
+                    return 'true';
                 }
 
                 $order['order_id'] = $order['_id'];

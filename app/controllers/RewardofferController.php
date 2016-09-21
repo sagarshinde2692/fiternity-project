@@ -128,6 +128,17 @@ class RewardofferController extends BaseController {
             $amount = $ratecard->price;
         }
 
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+
+            $order_id = (int) $data['order_id'];
+
+            $order = Order::find($order_id);
+
+            if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
+                $amount = (int)$data['amount'];
+            }
+        }
+
         $finder = Finder::find($finder_id);
 
         $findercategory_id      =   intval($finder->category_id);

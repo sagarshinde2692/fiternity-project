@@ -214,8 +214,8 @@ class OrderController extends \BaseController {
                     }
 
                     //print_pretty($emailData);exit;
-                    if(isset($data["send_communication_customer"]) && isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                        if($data["send_communication_customer"] != ""){
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
                             $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
                         }
@@ -228,8 +228,8 @@ class OrderController extends \BaseController {
                 //no email to Healthy Snacks Beverages and Healthy Tiffins
                 if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
                     
-                    if(isset($data["send_communication_vendor"]) && isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                        if($data["send_communication_vendor"] != ""){
+                   if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
                             $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
                         }
@@ -254,12 +254,30 @@ class OrderController extends \BaseController {
                     }
                 }
                 
-                $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                        $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+                    }
+
+                }else{
+                    $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+                }
             }
 
             //no sms to Healthy Snacks Beverages and Healthy Tiffins
             if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
-                $sndPgSms	= 	$this->findersms->sendPgOrderSms($order->toArray());
+                
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                        $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+                    }
+                    
+                }else{
+                    $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+                }
+                
             }
 
 
