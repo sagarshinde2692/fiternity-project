@@ -1648,7 +1648,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'physical_activity_detail'      =>      $physical_activity_detail,
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'                   =>      $trial_count,
-                'before_three_month_trial_count' =>     $before_three_month_trial_count
+                'before_three_month_trial_count' =>     $before_three_month_trial_count,
+                'token'                         =>      random_number_string()
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2336,7 +2337,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'               =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
-                'myreward_id' => $myreward_id
+                'myreward_id' => $myreward_id,
+                'token'                         =>      random_number_string()
 
             );
 

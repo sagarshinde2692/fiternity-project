@@ -2046,4 +2046,21 @@ if (!function_exists(('error_message_array'))){
     }
 }
 
+if (!function_exists(('random_number_string'))){
+
+    function random_number_string($length = 10)
+    {      
+        $characters = '0123456789ABCDEFGHIJKLMOPQRSTUVWXYZ';
+        $result = '';
+        $charactersLength = strlen($characters);
+
+        for ($p = 0; $p < $length; $p++)
+        {
+            $result .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $result;
+    }
+}
+
 ?>
