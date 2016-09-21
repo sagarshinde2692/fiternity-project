@@ -26,6 +26,7 @@ Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou')
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
+
 Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 
 Route::post('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',

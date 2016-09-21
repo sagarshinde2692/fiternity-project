@@ -400,12 +400,44 @@ class VendorpanelController extends BaseController
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
 
         $req = Input::all();
+        $content_type = Request::header('Content-type');
+
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
 
         $finder_id = intval($finder_id);
-        $result = $this->trialsListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
-        return Response::json($result, 200);
+
+        if($content_type == 'text/csv'){
+            $headers = [
+                'Content-type'        => 'text/csv'
+                ,   'Content-Disposition' => 'attachment'
+            ];
+
+            $csv = "NAME, REQUEST DATE, TRIAL DATE, SLOT, SERVICE, POST TRIAL STATUS, ATTENDED STATUS \n";
+            $result = $this->trialsListHelper($finder_id, $type, $start_date, $end_date, 50000, 0);
+            foreach ($result['data'] as $key => $value) {
+                $csv .= (isset($value['customer_name']) && $value['customer_name'] !="") ? str_replace(',', '|', $value['customer_name']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['created_at']) && $value['created_at'] !="") ? str_replace(',', '|', $value['created_at']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['schedule_date']) && $value['schedule_date'] !="") ? str_replace(',', '|', $value['schedule_date']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['schedule_slot']) && $value['schedule_slot'] !="") ? str_replace(',', '|', $value['schedule_slot']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['service_name']) && $value['service_name'] !="") ? str_replace(',', '|', $value['service_name']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['going_status_txt']) && $value['going_status_txt'] !="") ? str_replace(',', '|', $value['going_status_txt']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['trial_attended_finder']) && $value['trial_attended_finder'] !="") ? str_replace(',', '|', $value['trial_attended_finder']) : "-";
+                $csv .= " \n";
+            }
+
+            return Response::make(rtrim($csv, "\n"), 200, $headers);
+        }else{
+            $result = $this->trialsListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+            return Response::json($result, 200);
+        }
+
 
     }
 
@@ -424,6 +456,24 @@ class VendorpanelController extends BaseController
                 $result['data'] = $this
                     ->trialssummary
                     ->getBookedTrials($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                            'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                            'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                            'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                            'service_id', 'service_name', 'share_customer_no','created_at','trial_attended_finder','finder_id')
+                    );
+                break;
+            case 'upcoming':
+                $result['count'] = $this
+                    ->trialssummary
+                    ->getUpcomingTrials($finder_id)
+                    ->count();
+                $result['data'] = $this
+                    ->trialssummary
+                    ->getUpcomingTrials($finder_id)
                     ->take($limit)
                     ->skip($offset)
                     ->get(
@@ -666,7 +716,8 @@ class VendorpanelController extends BaseController
     public function getSummaryReviews($finder_id, $start_date = NULL, $end_date = NULL)
     {
 
-        $req = Input::all();
+        $req = Input::json()->all();
+        $content_type = Request::header('Content-type');
         $finder_ids = $this->jwtauth->vendorIdsFromToken();
 
         if (!(in_array($finder_id, $finder_ids))) {
@@ -682,12 +733,51 @@ class VendorpanelController extends BaseController
         $offset = isset($req['offset']) ? $req['offset'] : 0;
 
         $finder_id = intval($finder_id);
-        $reviews_summary = $this
-            ->reviewssummary
-            ->getReviews($min_rating, $max_rating, $finder_id, $start_date, $end_date, $limit, $offset);
 
 
-        return Response::json($reviews_summary, 200);
+
+        if($content_type == 'text/csv'){
+            $headers = [
+                'Content-type'        => 'text/csv'
+                ,   'Content-Disposition' => 'attachment; filename=Reviews.csv'
+            ];
+
+            $csv = "NAME, DATETIME, RATING, REVIEW, REPLY \n";
+            $reviews_summary = $this
+                ->reviewssummary
+                ->getReviews($min_rating, $max_rating, $finder_id, $start_date, $end_date, 50000, 0);
+//            return $reviews_summary;exit();
+            foreach ($reviews_summary['data'] as $key => $value) {
+                $csv .= (isset($value['customer']['name']) && $value['customer']['name'] !="") ? str_replace(',', '|', $value['customer']['name']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['created_at']) && $value['created_at'] !="") ? str_replace(',', '|', $value['created_at']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['rating']) && $value['rating'] !="") ? str_replace(',', '|', $value['rating']) : "-";
+                $csv .= ", ";
+//                if((is_array($value['finder']['category']['detail_rating']) && is_array($value['detail_rating']))){
+//                    $detail_rating = array_combine($value['finder']['category']['detail_rating'], $value['detail_rating']);
+//                }
+//
+//                foreach ($detail_rating as $key=>$value){
+//                    $csv .= (isset($key) && $key !="") ? str_replace(',', '|', $key) : "";
+//                    $csv .= (isset($value) && $value !="") ? str_replace(',', '|', $value) : "";
+//
+//
+//                }
+//                $csv .= ", ";
+                $csv .= (isset($value['description']) && $value['description'] !="") ? str_replace(',', '|', $value['description']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['reply']) && $value['reply'] !="") ? str_replace(',', '|', $value['reply']) : "-";
+                $csv .= " \n";
+            }
+
+            return Response::make(rtrim($csv, "\n"), 200, $headers);
+        }else{
+            $reviews_summary = $this
+                ->reviewssummary
+                ->getReviews($min_rating, $max_rating, $finder_id, $start_date, $end_date, $limit, $offset);
+            return Response::json($reviews_summary, 200);
+        }
     }
 
 
@@ -1149,7 +1239,7 @@ class VendorpanelController extends BaseController
     {
         $data = Input::json()->all();
 
-        if(empty($data['trial_attended_finder'])){
+        if(!isset($data['trial_attended_finder']) || $data['trial_attended_finder'] == ""){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - Attended status");
             return  Response::json($resp, 400);
         }
