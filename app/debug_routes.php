@@ -34,14 +34,26 @@ Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@by
 
 
 
-Route::get('gettrialscsv', function(){
 
+Route::get('checkfileons3', function (){
 
-	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+    $s3 = AWS::get('s3');
 
+    $s3->getObjectInfo("bucketName","folder_name/donotdelete.txt");
+
+//    $s3->putObject(array(
+//        'Bucket'     => Config::get('app.aws.bucket'),
+//        'Key'        => Config::get('app.aws.order.path').$original,
+//        'SourceFile' => "$destinationPath$original"
+//    ));
 
 });
 
+
+
+Route::get('gettrialscsv', function(){
+	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+});
 
 
 Route::get('migratescheduletype', function(){
@@ -191,8 +203,8 @@ Route::get('/removeworkoutsession', function() {
     ini_set('memory_limit', '500M');
     set_time_limit(3000);
 
-    $trialRatecard  =   DB::connection('mongodb')->table('ratecards')->where('type', 'workout session')->delete();
-    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('type', 'workout session')->delete();
+//    $trialRatecard  =   DB::connection('mongodb')->table('ratecards')->where('type', 'workout session')->delete();
+//    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('type', 'workout session')->delete();
 });
 
 
