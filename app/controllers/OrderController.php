@@ -1428,19 +1428,19 @@ class OrderController extends \BaseController {
 
             if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
-                $resp   =   array("status" => 401,"message" => "Already Status Successfull");
+                $resp   =   array("status" => 401,"message" => "You have purchased this membership");
                 return Response::json($resp,$resp["status"]);
             }
 
             if(isset($order->cashback) && $order->cashback == true){
 
-                $resp   =   array("status" => 401,"message" => "Already Selected Cashback");
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);
             }
 
             if(isset($order->reward_ids) && count($order->reward_ids) > 0){
 
-                $resp   =   array("status" => 401,"message" => "Already Selected Reward");
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);
             }
 
