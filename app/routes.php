@@ -367,7 +367,7 @@ Route::get('locationcity/{value}','SearchController@locationCity');
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
 Route::get('migratedatatoclevertap', 'KYUController@migratedatatoclevertap');
-Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
+Route::get('getvendorview/{vendor_id}/{start_date?}/{end_date?}','KYUController@getvendorviewcount');
 Route::post('getcitywiseviews','KYUController@getcitywiseviews');
 //Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
 
