@@ -16,3 +16,7 @@ Thumbs.db
 /public/*.csv
 /public/.htaccess
 /app/config/database.php
+composer.lock
+app/config/database.php
+app/config/app.php
+composer.lock
