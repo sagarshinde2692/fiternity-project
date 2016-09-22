@@ -2590,9 +2590,9 @@ public function testEmail(){
 
 		$reward_id = Reward::where("reward_type","personal_trainer_at_studio")->lists("_id");
 
-		$reward = Reward::where("reward_type","personal_trainer_at_studio")->delete();
+		// $reward = Reward::where("reward_type","personal_trainer_at_studio")->delete();
 
-		$reward_category = Rewardcategory::where("reward_type","personal_trainer_at_studio")->delete();
+		// $reward_category = Rewardcategory::where("reward_type","personal_trainer_at_studio")->delete();
 
 		foreach ($reward_id as $r_id){
 
