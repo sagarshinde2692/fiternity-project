@@ -415,6 +415,33 @@ Route::get('addremindercallmessage', function() {
     return Requestcallbackremindercall::get();
 });
 
+
+Route::get('bringbacklandline', function(){
+
+	$Finders = Vendor::on('mongodb2')->where('contact.phone.landline',"!=",[])->get(['contact','name']);
+	$phone = [];
+	foreach($Finders as $key => $Finder){
+		$mobilePhoneStr = "";
+		if(isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0){
+			$mobilePhoneStr = implode(",", $Finder->contact['phone']['mobile']);
+			$mobilePhoneStr .= ",";
+		}
+
+		if(isset($Finder->contact['phone']['landline']) && count($Finder->contact['phone']['landline']) > 0){
+			$mobilePhoneStr .= implode(",", $Finder->contact['phone']['landline']);
+		}
+		$oldfinder = Finder::find($Finder->_id,['contact']);
+		$contact = $oldfinder->contact;
+		$contact['phone'] = $mobilePhoneStr;
+		$oldfinder->update(['contact'=>$contact]);
+		array_push($phone,$Finder->name);
+	}
+return $phone;
+
+
+});
+
+
 Route::get('noidacity', function() {
 
 		$city_id				=		9;
