@@ -334,6 +334,7 @@ Class CustomerReward {
 
         if($payment_mode != "paymentgateway"){
             $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
+            $wallet = 0;
         }else{
 
             foreach ($algo as $key => $value) {
