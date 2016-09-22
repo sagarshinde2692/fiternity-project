@@ -1410,7 +1410,7 @@ class OrderController extends \BaseController {
 
         if ($validator->fails()) {
 
-            return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+            return Response::json(array('status' => 401,'message' => $this->errorMessage($validator->errors())),400);
 
         }else{
 
@@ -1429,6 +1429,18 @@ class OrderController extends \BaseController {
             if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
                 $resp   =   array("status" => 401,"message" => "Already Status Successfull");
+                return Response::json($resp);
+            }
+
+            if(isset($order->cashback) && $order->cashback == true){
+
+                $resp   =   array("status" => 401,"message" => "Already Selected Cashback");
+                return Response::json($resp);
+            }
+
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
+
+                $resp   =   array("status" => 401,"message" => "Already Selected Reward");
                 return Response::json($resp);
             }
 
