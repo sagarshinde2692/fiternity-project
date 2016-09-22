@@ -334,18 +334,19 @@ Class CustomerReward {
 
         if($payment_mode != "paymentgateway"){
             $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
-        }
+        }else{
 
-        foreach ($algo as $key => $value) {
+            foreach ($algo as $key => $value) {
 
-            $min_flag = ($commision >= $value['min'] || $value['min'] == 0) ? true : false;
-            $max_flag = ($commision < $value['max'] || $value['max'] == 0) ? true : false;
+                $min_flag = ($commision >= $value['min'] || $value['min'] == 0) ? true : false;
+                $max_flag = ($commision < $value['max'] || $value['max'] == 0) ? true : false;
 
-            if($min_flag && $max_flag){
-                $setAlgo = $value;
-                break;
+                if($min_flag && $max_flag){
+                    $setAlgo = $value;
+                    break;
+                }
+
             }
-
         }
 
         $original_amount = $amount;
