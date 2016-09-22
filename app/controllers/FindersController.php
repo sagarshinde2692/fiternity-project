@@ -213,11 +213,11 @@ class FindersController extends \BaseController {
                     $tempoffering = [];
                     $tempofferingname = [];
                     foreach ($finder['offerings'] as $offering) {
-                        if(in_array($offering["name"],$tempofferingname)){
+                        if(in_array(strtolower($offering["name"]),$tempofferingname)){
 
                         }else{
                             array_push($tempoffering,$offering);
-                            array_push($tempofferingname,$offering['name']);
+                            array_push($tempofferingname,strtolower($offering["name"]));
                         }
                     }
                     $finder['offerings'] = $tempoffering;

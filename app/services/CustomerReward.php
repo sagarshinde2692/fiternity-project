@@ -120,9 +120,9 @@ Class CustomerReward {
 
                 $cashback_amount = $order['cashback_detail']['wallet_amount'];
 
-                if($order['payment_mode'] = "at the studio"){
+                /*if($order['payment_mode'] = "at the studio"){
                     $cashback_amount = $order['amount_finder'] * 5 / 100;
-                }
+                }*/
 
                 $req = array(
                     "customer_id"=>$order['customer_id'],
@@ -294,7 +294,7 @@ Class CustomerReward {
         }*/
     }
 
-    public function purchaseGame($amount,$finder_id){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway"){
 
         $wallet = 0;
 
@@ -332,16 +332,22 @@ Class CustomerReward {
 
         $setAlgo = array('cashback'=>10,'fitcash'=>5,'discount'=>5);
 
-        foreach ($algo as $key => $value) {
+        if($payment_mode != "paymentgateway"){
+            $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
+            $wallet = 0;
+        }else{
 
-            $min_flag = ($commision >= $value['min'] || $value['min'] == 0) ? true : false;
-            $max_flag = ($commision < $value['max'] || $value['max'] == 0) ? true : false;
+            foreach ($algo as $key => $value) {
 
-            if($min_flag && $max_flag){
-                $setAlgo = $value;
-                break;
+                $min_flag = ($commision >= $value['min'] || $value['min'] == 0) ? true : false;
+                $max_flag = ($commision < $value['max'] || $value['max'] == 0) ? true : false;
+
+                if($min_flag && $max_flag){
+                    $setAlgo = $value;
+                    break;
+                }
+
             }
-
         }
 
         $original_amount = $amount;

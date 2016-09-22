@@ -34,14 +34,43 @@ Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@by
 
 
 
-Route::get('gettrialscsv', function(){
 
 
-	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+
+Route::get('checkfileons3', function (){
+
+    $s3 = \AWS::get('s3');
+
+    $objects = $s3->getIterator('ListObjects', array(
+        'Bucket' => "b.fitn.in",
+        "Prefix" => 'f/c/'
+    ));
+
+
+// Use the high-level iterators (returns ALL of your objects).
+    try {
+        $objects = $s3->getIterator('ListObjects', array(
+            'Bucket' => "b.fitn.in",
+            "Prefix" => 'f/c/'
+        ));
+
+        echo "Keys retrieved!\n";
+        foreach ($objects as $object) {
+            echo $object['Key'] . "<br>";
+        }
+    } catch (S3Exception $e) {
+        echo $e->getMessage() . "\n";
+    }
+
 
 
 });
 
+
+
+Route::get('gettrialscsv', function(){
+	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+});
 
 
 Route::get('migratescheduletype', function(){
@@ -191,8 +220,8 @@ Route::get('/removeworkoutsession', function() {
     ini_set('memory_limit', '500M');
     set_time_limit(3000);
 
-    $trialRatecard  =   DB::connection('mongodb')->table('ratecards')->where('type', 'workout session')->delete();
-    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('type', 'workout session')->delete();
+//    $trialRatecard  =   DB::connection('mongodb')->table('ratecards')->where('type', 'workout session')->delete();
+//    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('type', 'workout session')->delete();
 });
 
 
@@ -385,6 +414,33 @@ Route::get('addremindercallmessage', function() {
 
     return Requestcallbackremindercall::get();
 });
+
+
+Route::get('bringbacklandline', function(){
+
+	$Finders = Vendor::on('mongodb2')->where('contact.phone.landline',"!=",[])->get(['contact','name']);
+	$phone = [];
+	foreach($Finders as $key => $Finder){
+		$mobilePhoneStr = "";
+		if(isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0){
+			$mobilePhoneStr = implode(",", $Finder->contact['phone']['mobile']);
+			$mobilePhoneStr .= ",";
+		}
+
+		if(isset($Finder->contact['phone']['landline']) && count($Finder->contact['phone']['landline']) > 0){
+			$mobilePhoneStr .= implode(",", $Finder->contact['phone']['landline']);
+		}
+		$oldfinder = Finder::find($Finder->_id,['contact']);
+		$contact = $oldfinder->contact;
+		$contact['phone'] = $mobilePhoneStr;
+		$oldfinder->update(['contact'=>$contact]);
+		array_push($phone,$Finder->name);
+	}
+return $phone;
+
+
+});
+
 
 Route::get('noidacity', function() {
 

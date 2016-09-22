@@ -115,7 +115,7 @@ class RewardofferController extends BaseController {
         $amount = (int)$data['amount'];
         $ratecard_id = (int)$data['ratecard_id'];
 
-        $ratecard = Ratecard::where('_id',$ratecard_id)/*->where('price',$amount)*/->where('finder_id',$finder_id)->first();
+        $ratecard = Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
 
         if(!$ratecard){
             $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
@@ -172,7 +172,19 @@ class RewardofferController extends BaseController {
         $customerReward = new CustomerReward();
 
         $calculation = $customerReward->purchaseGame($amount,$finder_id);
-        
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+
+            $order_id = (int) $data['order_id'];
+
+            $order = Order::find($order_id);
+
+            if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
+                $calculation = $customerReward->purchaseGame($amount,$finder_id,"at the studio");
+            }
+
+        }
+
         $cashback  = array(
             'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',

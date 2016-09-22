@@ -1410,7 +1410,7 @@ class OrderController extends \BaseController {
 
         if ($validator->fails()) {
 
-            return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+            return Response::json(array('status' => 401,'message' => $this->errorMessage($validator->errors())),401);
 
         }else{
 
@@ -1423,13 +1423,25 @@ class OrderController extends \BaseController {
             if(count($order) < 1){
 
                 $resp   =   array("status" => 401,"message" => "Order Does Not Exists");
-                return Response::json($resp);
+                return Response::json($resp,$resp["status"]);
             }
 
             if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
-                $resp   =   array("status" => 401,"message" => "Already Status Successfull");
-                return Response::json($resp);
+                $resp   =   array("status" => 401,"message" => "You have purchased this membership");
+                return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($order->cashback) && $order->cashback == true){
+
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
+                return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
+
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
+                return Response::json($resp,$resp["status"]);
             }
 
             $data['amount_finder'] = $order->amount_finder;
@@ -1489,7 +1501,7 @@ class OrderController extends \BaseController {
 
             if(isset($data['amount_finder'])){
 
-                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id);
+                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode']);
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
