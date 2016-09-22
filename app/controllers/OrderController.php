@@ -1489,7 +1489,7 @@ class OrderController extends \BaseController {
 
             if(isset($data['amount_finder'])){
 
-                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id);
+                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode']);
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
