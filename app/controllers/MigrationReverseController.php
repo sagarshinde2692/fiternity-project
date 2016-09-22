@@ -689,6 +689,7 @@ class MigrationReverseController extends \BaseController {
             $mobilePhoneStr = "";
             if(isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0){
                 $mobilePhoneStr .= implode(",", $Finder->contact['phone']['mobile']);
+                $mobilePhoneStr .= ",";
             }
 
             if(isset($Finder->contact['phone']['landline']) && count($Finder->contact['phone']['landline']) > 0){
