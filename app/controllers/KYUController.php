@@ -295,7 +295,7 @@ class KYUController extends \BaseController
     );
 
   $search_results1     =   es_curl_request($request);
-  return $search_results = json_decode($search_results1, true);
+  //return $search_results = json_decode($search_results1, true);
   $response = array();
   foreach ($search_results['aggregations']['cityname']['buckets'] as $agg) {
    array_push($response, array($agg['key'] => $agg['eventtype']['buckets']));
