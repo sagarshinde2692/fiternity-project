@@ -2446,15 +2446,46 @@ public function testEmail(){
     	}
 
     }
-	
-	function updateBrandToFindersFromCSV(){
 
-		$filePath = public_path().'/listVendorsWithFewDetails.csv';
+	public function getbrandId($brand_name){
+
+		$brand = Brand::where('name',$brand_name)->first(array('_id'));
+
+		if($brand){
+			$brand_id = $brand['_id'];
+		}
+		else{
+			$data = array('name'=>$brand_name,'status'=>'1');
+			$insertedid = Brand::max('_id') + 1;
+			$brand       =   new Brand($data);
+			$brand_id = $brand->_id  =   $insertedid;
+			$brand->save();
+		}
+
+		return $brand_id;
+
+	}
+	
+	public function updateBrandToFindersFromCSV(){
+
+		// Schema::dropIfExists('brands');
+
+		Finder::where('brand_id','exists',true)->unset('brand_id');
+
+		$filePath = base_path('public/brands.csv');
+		// var_dump($filePath);exit();
 		$data = $this->csv_to_array($filePath);
 		foreach($data as $row){
-			if(isset($row['Brand ID']) && ($row['Brand ID'] != '')){
+
+			$brand_name = trim($row['Brand']);
+
+			if(isset($brand_name) && ($brand_name != '')){
+
+				$brand_id =  $this->getbrandId($brand_name);
 				$finder = Finder::find((int) $row['Vendor ID']);
-				$finder->update(array('brand_id'=> (int) $row['Brand ID']));
+				if(isset($finder)){
+					$finder->update(array('brand_id'=> $brand_id));
+				}
 			}
 
 		}
@@ -2520,6 +2551,77 @@ public function testEmail(){
 
 		echo "<pre>";print_r($return);exit;
 
+	}
+
+	function deactivateOzonetelDid(){
+
+		$phone_number = array('911166765187','911166765188','911166765189','911166765190','911166765192','911166765193','911166765194','911166765195','911166765247');
+
+		$ozonetel_no = Ozonetelno::active()->whereIn('phone_number',$phone_number)->where('city','DEL')->where('type','free')->where('finder_id','exists',false)->update(array('status'=>'0'));
+
+		return $ozonetel_no;
+
+	}
+
+	public function unsetVipTrial(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$finder_id = array(1,2443,941,6466,1698,987,1501,2421,6049,417,1495,1484,9111,1242,2818,4742,7498,984,442,6134,1750,6414,171,1309570,2501,2386,5043,7041,7456,1490,7728,6289,7451,1496,862,1427,4141,7215,4534,6081,613,7376,7656,1041,1873,147,1518,647,1388,292,1219,1259,1260,1262,1263,1266,1233,1257,1261,7696,6422,1664,1421,329,5570,5585,424,6603,1676,7054,1068,7024,328,2806,2821,2824,2828,2833,2844,2848,1739,7896,1215,1215,881,6468,8021,6259,6452,7319,1026,1040,7319,1038,1510,1392,1393,1579,1580,1581,1583,1584,1602,1604,1605,1606,1607,2235,2236,2244,6891,6893,6890,1582,4680,4679,4678,3579,3105,179,5898,561,7421,608,3382,1630,3451,1766,7878,1667,6009,1677,7444,6377,1756,2209,4773,5387,6151,1671,7724,827,1029,1033,1554,1705,1706,7407,1682,1493,1965,1986,6129,1771,1783,1691);
+
+		$service = Service::whereNotIn('finder_id',$finder_id)->where('vip_trial','exists',true)->unset('vip_trial');
+
+		echo "<pre>";print_r($service);exit;
+
+    }
+
+	public function addManualTrialAutoFlag($finder_ids = null){
+		if(!isset($finder_ids)){
+			$finder_ids = Config::get('app.manual_trial_auto_finderids');
+		}
+		$finder_ids = array_map('intval',$finder_ids);
+		Vendor::whereIn('_id',$finder_ids)->update(['manual_trial_auto'=>true]);
+		Finder::whereIn('_id',$finder_ids)->update(['manual_trial_auto'=>'1']);
+		echo "done";return;
+	}
+
+	public function removePersonalTrainerStudio(){
+
+		$reward_id = Reward::where("reward_type","personal_trainer_at_studio")->lists("_id");
+
+		$reward = Reward::where("reward_type","personal_trainer_at_studio")->delete();
+
+		$reward_category = Rewardcategory::where("reward_type","personal_trainer_at_studio")->delete();
+
+		foreach ($reward_id as $r_id){
+
+			$reward_offer = Rewardoffer::where("rewards",$r_id)->get();
+
+			if(count($reward_offer) > 0){
+
+				foreach ($reward_offer as $key => $value){
+
+					$rewards = $value->rewards;
+
+					foreach ($rewards as $rewards_key => $rewards_value){
+
+						if($r_id == $rewards_value){
+							unset($rewards[$rewards_key]);
+						}
+
+					}
+
+					$rewards = array_values($rewards);
+
+					$value->rewards = $rewards;
+					$value->update();
+
+				}
+			}
+		}
+		
+		echo "done";
 	}
 
 	

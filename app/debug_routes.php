@@ -20,15 +20,119 @@ Route::get('migrations/order', 'MigrationsController@order');
 Route::get('migrations/ratecard', 'MigrationsController@ratecard');
 Route::get('cleartrip/sendmail', 'DebugController@cleartrip');
 Route::get('monsoonsale', 'DebugController@monsoonSale');
-
-
+Route::get('deactivate/ozoneteldid', 'DebugController@deactivateOzonetelDid');
+Route::get('unset/viptrial', 'DebugController@unsetVipTrial');
+Route::get('removepersonaltrainerstudio', 'DebugController@removePersonalTrainerStudio');
 
 ############################################################################################
 /************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
+Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
+
+
+
+
+
+
+
+
+Route::get('checkfileons3', function (){
+
+    $s3 = \AWS::get('s3');
+
+    $objects = $s3->getIterator('ListObjects', array(
+        'Bucket' => "b.fitn.in",
+        "Prefix" => 'f/c/'
+    ));
+
+
+// Use the high-level iterators (returns ALL of your objects).
+    try {
+        $objects = $s3->getIterator('ListObjects', array(
+            'Bucket' => "b.fitn.in",
+            "Prefix" => 'f/c/'
+        ));
+
+        echo "Keys retrieved!\n";
+        foreach ($objects as $object) {
+            echo $object['Key'] . "<br>";
+        }
+    } catch (S3Exception $e) {
+        echo $e->getMessage() . "\n";
+    }
+
+
+
+});
+
+
+
+Route::get('gettrialscsv', function(){
+	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+});
+
+
+Route::get('migratescheduletype', function(){
+
+
+	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+
+
+});
+
+
+Route::get('migratecustomofferorder', function(){
+
+
+    $rows   = Booktrial::where('customofferorder_id','exists', true)->get();
+    foreach ($rows as $row){
+        if(is_int($row['customofferorder_id'])){
+            DB::table('booktrials')->where('_id', intval($row['_id']))->update(['fitadmin_customofferorder_id' => $row['customofferorder_id'] ]);
+            DB::table('booktrials')->where('_id', intval($row['_id']))->unset('customofferorder_id');
+        }
+    }
+
+    $rows   = Order::where('customofferorder_id','exists', true)->get();
+    foreach ($rows as $row){
+        if(is_int($row['customofferorder_id'])){
+            DB::table('orders')->where('_id', intval($row['_id']))->update(['fitadmin_customofferorder_id' => $row['customofferorder_id'] ]);
+            DB::table('orders')->where('_id', intval($row['_id']))->unset('customofferorder_id');
+        }
+    }
+
+});
+
+
+
+Route::get('checkozoneteljump/{finderid}', function($finderid){
+
+
+    $jump_finder_ids    =   [1,10,30,40];
+    $jump_start_time    =   strtotime( date("d-m-Y")." 09:00:00");
+    $jump_end_time      =   strtotime( date("d-m-Y")." 21:00:00");
+    $finderid           =   intval(trim($finderid));
+
+    $current_date_time  =   time();
+    echo "<br>jump_start_time : $jump_start_time <br><br>  jump_end_time : $jump_end_time <br><br>  current_date_time : $current_date_time <br>";
+    echo "<br>";
+
+    if($jump_start_time < $current_date_time && $current_date_time < $jump_end_time  && in_array($finderid, $jump_finder_ids)){
+
+        echo "jump dial to fitternity";
+
+    }else{
+
+        echo "not jump dial to vendor";
+
+    }
+
+
+
+});
 
 Route::get('/removevip', function() { 
+	return Finder::whereNotIn('_id',array(3305))->take(5)->get();
 	$services = Service::where("vip_trial","1")->where("city_id","<>",1)->get(array('name','vip_trial'));
 	foreach ($services as $service) {
 		$service->vip_trial = "0";
@@ -38,9 +142,205 @@ Route::get('/removevip', function() {
 });
 
 
+
+//REMOVE OLD RATECARDS
+Route::get('/removeunwantedratecardsolddb/{offeset?}/', function($offset = ""){
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    if($offset == ""){
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->lists('_id');
+    }else{
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->take(5000)->skip(intval($offset))->lists('_id');
+    }
+
+//    $service_ids = [2714];
+    foreach ($service_ids as $service_id) {
+        $new_ratecard_ids       =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id', intval($service_id))->where('hidden', false)->lists('_id');
+        $old_ratecard_ids       =   DB::connection('mongodb')->table('ratecards')->where('service_id', intval($service_id))->whereNotIn('_id', $new_ratecard_ids)->lists('_id');
+        $deleteRatecardids      =   DB::connection('mongodb')->table('ratecards')->where('service_id', intval($service_id))->whereIn('_id', $old_ratecard_ids)->delete();
+
+    }
+
+});
+
+
+Route::get('/updatevendorwebsitecontact', function() {
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+//    $vendor_ids = DB::connection('mongodb2')->table('vendors')->where('contact.phone.mobile', 'exists', true)->where('contact.phone.mobile', [])->count();
+    $vendor_ids = DB::connection('mongodb2')->table('vendors')->where('contact.phone.mobile', 'exists', true)->where('contact.phone.mobile', [])->lists("_id");
+
+    foreach ($vendor_ids as $vendor_id){
+
+        $finder = Finder::find(intval($vendor_id));
+
+        if($finder){
+
+            if(isset($finder->contact['phone']) && $finder->contact['phone'] != ""){
+                $phone              =   [];
+                $phone['mobile']    =   $phone['landline'] =  [];
+                $phone_arr          =   array_map('trim', explode(",",str_replace("/", ",", trim($finder->contact['phone']) )) ) ;
+
+                if(count($phone_arr) > 0){
+                    foreach ($phone_arr as $key => $value) {
+                        $varx = $value;
+                        if(starts_with($varx, '02') || starts_with($varx, '2') || starts_with($varx, '33') || starts_with($varx, '011') || starts_with($varx, '1') || starts_with($varx, '11')){
+                            array_push($phone['landline'], ltrim($varx,"+"));
+                        }else{
+                            $find_arr= ["+","+(91)-","(91)","(91)-","91-"];
+                            $replace_arr= ["","","","",""];
+                            $clean_mobile_no = trim(str_replace($find_arr, $replace_arr, $varx));
+                            array_push($phone['mobile'], ltrim($clean_mobile_no,"+"));
+                        }
+                    }
+                }
+
+                $existVendorData                       =        DB::connection('mongodb2')->table('vendors')->where('_id', intval($vendor_id))->first();
+                $contactData                           =       (isset($existVendorData['contact'])) ? $existVendorData['contact'] : [];
+                $contactData['phone']       =       $phone;
+//                return $contactData;
+                $updateWebsiteContact       =   DB::connection('mongodb2')->table('vendors')->where('_id', intval($vendor_id))->update(['contact'=>$contactData]);
+
+            }
+
+        }
+
+    }
+
+});
+
+
+
+Route::get('/removeworkoutsession', function() {
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+//    $trialRatecard  =   DB::connection('mongodb')->table('ratecards')->where('type', 'workout session')->delete();
+//    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('type', 'workout session')->delete();
+});
+
+
+
+Route::get('createworkoutsessionifnotexist/{offeset?}/', function($offset = ""){
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    if($offset == ""){
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->lists('_id');
+    }else{
+        $service_ids = DB::connection('mongodb2')->table('vendorservices')->take(5000)->skip(intval($offset))->lists('_id');
+    }
+
+//    $service_ids = [811];
+//    return $service_ids;
+
+
+    foreach ($service_ids as $service_id) {
+
+        $workoutSessionRatecard_exists_cnt = DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id', intval($service_id))->where('type', 'workout session')->where('hidden', false)->count();
+
+        if($workoutSessionRatecard_exists_cnt < 1){
+
+            $trialRatecard_exists_cnt   =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('hidden', false)->count();
+
+            if($trialRatecard_exists_cnt > 0){
+
+                if($trialRatecard_exists_cnt < 2){
+                    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('hidden', false)->first();
+                }else{
+                    $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('quantity',1)->where('hidden', false)->first();
+                }
+
+                if($trialRatecard){
+                    $lastlocationtagid      =   DB::connection('mongodb2')->table('ratecards')->max('_id');
+                    $newratecardid          =   intval($lastlocationtagid) + 1;
+                    $insertData             =   $trialRatecard;
+                    $insertData['type']     =   'workout session';
+                    $workoutSessionPrice     =   intval($trialRatecard['price']);
+
+                    if($workoutSessionPrice   == 0){
+                        $service = DB::connection('mongodb2')->table('vendorservices')->where('_id',intval($service_id))->first();
+                        if($service && isset($service['category']) && isset($service['category']['primary'])){
+                            $sercviecategory_id     =   intval($service['category']['primary']);
+                            $workoutSessionPrice    =   ($sercviecategory_id == 65) ? 300 : 500;
+                        }
+                    }
+                    $insertData['price']     =   $workoutSessionPrice;
+//                    return $insertData;
+
+                    if($workoutSessionPrice > 0){
+                        $ratecart_exists        = new Ratecard($insertData);
+                        $ratecart_exists->setConnection('mongodb2');
+                        $ratecart_exists->_id   =   $newratecardid;
+                        $ratecart_exists->save();
+
+                        $curl   =   curl_init();
+                        $url    =   "http://a1.fitternity.com/reverse/migration/ratecard/$newratecardid";
+//                        $url    =   "http://apistg.fitn.in/reverse/migration/ratecard/$newratecardid";
+//                    $url    =   "http://fitapi.com/reverse/migration/ratecard/$newratecardid";
+                        curl_setopt_array($curl, array( CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url ));
+                        $resp = curl_exec($curl);
+                        curl_close($curl);
+                        var_dump($resp);
+                    }
+                }
+            }//Trial Ratecard exists
+
+        }//WorkoutSession Ratecard Not Exists
+
+    }
+
+});
+
+
+
+
+
+Route::get('updateworkoutsessionprices/{offeset?}/', function($offset = ""){
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    if($offset == ""){
+        $service_ids = Service::active()->lists('_id');
+    }else{
+        $service_ids = Service::active()->take(5000)->skip(intval($offset))->lists('_id');
+    }
+
+    foreach ($service_ids as $service_id){
+
+        $curl   =   curl_init();
+        $id     =   trim($service_id);
+        $url    =   "http://a1.fitternity.com/reverse/migration/vendorservice/$id";
+//        $url    =   "http://apistg.fitn.in/reverse/migration/vendorservice/$id";
+//        $url    =   "http://fitapi.com/reverse/migration/vendorservice/$id";
+        curl_setopt_array($curl, array(
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $url
+        ));
+        $resp = curl_exec($curl);
+        curl_close($curl);
+        var_dump($resp);
+
+
+    }
+});
+
+
+
+
 Route::get('showrcb', function(){
 
+
 	return Requestcallbackremindercall::orderBy('_id','desc')->get();
+	echo date( "l\, jS F\'y h:i A", strtotime("2016-07-21 18:30:00"));
+
 });
 
 
@@ -115,7 +415,43 @@ Route::get('addremindercallmessage', function() {
     return Requestcallbackremindercall::get();
 });
 
+
+Route::get('bringbacklandline', function(){
+
+	$Finders = Vendor::on('mongodb2')->where('contact.phone.landline',"!=",[])->get(['contact','name']);
+	$phone = [];
+	foreach($Finders as $key => $Finder){
+		$mobilePhoneStr = "";
+		if(isset($Finder->contact['phone']['mobile']) && count($Finder->contact['phone']['mobile']) > 0){
+			$mobilePhoneStr = implode(",", $Finder->contact['phone']['mobile']);
+			$mobilePhoneStr .= ",";
+		}
+
+		if(isset($Finder->contact['phone']['landline']) && count($Finder->contact['phone']['landline']) > 0){
+			$mobilePhoneStr .= implode(",", $Finder->contact['phone']['landline']);
+		}
+		$oldfinder = Finder::find($Finder->_id,['contact']);
+		$contact = $oldfinder->contact;
+		$contact['phone'] = $mobilePhoneStr;
+		$oldfinder->update(['contact'=>$contact]);
+		array_push($phone,$Finder->name);
+	}
+return $phone;
+
+
+});
+
+
 Route::get('noidacity', function() {
+
+		$city_id				=		9;
+        $locationids        	=    	Location::whereIn('cities',[$city_id])->lists('_id');        
+        $locationtagsids        =    	Locationtag::whereIn('cities',[$city_id])->lists('_id');
+   		$city          			=    	City::where('_id',$city_id)->push('locations', $locationids, true);
+   		$city          			=    	City::where('_id',$city_id)->push('locationtags', $locationtagsids, true);
+
+
+
 
 //    $data               =    array( 'country_id' => 1, "lat" => "28.535517", "lon" => "28.535517", "name" => "noida", "name" => "noida", "status"=> "1");
 //    $existcity          =    City::where('slug','noida')->first();
@@ -135,71 +471,14 @@ Route::get('noidacity', function() {
 //        $city_id = $existcity->_id;
 //    }
 
-   $locations = ["Ashok Nagar","Golf Course","Greater Noida","Indirapuram","Vaishali","Sector 5","Sector 11","Sector 12","Sector 15","Sector 16","Sector 18","Sector 19","Sector 20","Sector 22","Sector 25","Sector 26","Sector 27","Sector 30","Sector 31","Sector 37","Sector 38A","Sector 44","Sector 45","Setor 48","Sector 50","Sector 51","Sector 52","Sector 56","Sector 60","Sector 61","Sector 62","Sector 62","Sector 66","Sector 76","Sector 127",
-       "Sector 144"];
-
-    // $locations = ["Ashok Nagar"];
-    $city_id = 9;
-
-    foreach ($locations as $location) {
-
-        // for location
-        $insertData = [
-            'name' => trim($location),
-            'slug' => url_slug([$location]),
-            'cities' => [intval($city_id)],
-            'location_group' => "general",
-            'status' => "1"
-        ];
-         $existlocation          =    Location::where('slug',url_slug([$location]))->first();
-        if($existlocation){
-
-        	$cities		= (isset($existlocation['cities'])) ?  array_merge($existlocation['cities'], [intval($city_id)]) : [intval($city_id)];
-        	$citiesArr 	= array_unique($cities);
-        	array_set($insertData, 'cities', $citiesArr);
-            $city       = Location::find(intval($existlocation['_id']));
-            $city->update($insertData);
-        }else{
-//            return $insertData;
-        	$insertedid = Location::max('_id') + 1;
-            $city       =   new Location($insertData);
-            $city->_id  =   $insertedid;
-            $city->save();
-
-        }
 
 
-        // for locationtags
-        $data = [
-            'name' => trim($location),
-            'slug' => url_slug([$location]),
-            'cities' => [intval($city_id)],
-            'status' => "1"
-        ];
-        $existlocationtag          =    Locationtag::where('slug',url_slug([$location]))->first();
-        if($existlocationtag) {
 
-        	$cities		= (isset($existlocationtag['cities'])) ?  array_merge($existlocationtag['cities'], [intval($city_id)]) : [intval($city_id)];
-        	$citiesArr 	= array_unique($cities);
-        	array_set($data, 'cities', $citiesArr);
-
-            $city       = Locationtag::find(intval($existlocationtag['_id']));
-            $city->update($data);
-           
-        }else{
-
-        	$locationtag = new Locationtag($data);
-            $insertedid = Locationtag::max('_id') + 1;
-            $locationtag->_id = $insertedid;
-            $locationtag->save();
-
-        }
-
-
-    }
 
 
     echo "done";
+	exit;
+    
 
 
 });
@@ -959,7 +1238,9 @@ Route::get('exportcustomer/{start_date?}/{end_date?}', function() {
 
 Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_date, $end_date) { 
 	// return $reminderTimeAfter12Min 			=	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(12);
-	ini_set('max_execution_time', 300);
+    ini_set('memory_limit', '-1');
+    set_time_limit(3000000000);
+    ini_set('max_execution_time', 30000);
 
 	$file_name = $type."_".$start_date."_".$end_date;
 
@@ -972,6 +1253,7 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 	,   'Pragma'              => 'public'
 	];
 
+//    $output = "";
 	// ORDERS
 	if($type == 'order' || $type == 'orders'){
 		$output = "ID, CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, ORDER TYPE, ORDER ACTION, AMOUNT, ORDER DATE, FINDER CITY, FINDER NAME, FINDER LOCATION, FINDER CATEGORY, SERVICE NAME, SERVICE CATEGORY  \n";
@@ -1029,18 +1311,22 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 	// BOOKTRIALS
 	if($type == 'booktrial' || $type == 'booktrials'){
 
-		$output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, FINDER NAME, FINDER LOCATION, FINDER CITY, FINDER CATEGORY, SERVICE NAME, SERVICE CATEGORY, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE  \n";
-		$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->where('city_id', 1)->take(10000)->skip(10000)->get();
+		$output = "ID, SOURCE, BOOKTRIAL TYPE,  CUSTOMER NAME, CUSTOMER EMAIL, CUSTOMER NUMBER, CUSTOMER GENDER, FINDER NAME, FINDER LOCATION, FINDER CITY, FINDER CATEGORY, COMMERCIAL TYPE, SERVICE NAME, SERVICE CATEGORY, AMOUNT, POST TRIAL STATUS, SCHEDULE DATE, SCHEDULE SLOT, REQUESTED DATE, TRIAL TYPE  \n";
+//		$items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->where('city_id', 1)->take(30000)->get();
 		// $items = $items = Booktrial::where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->get();
+        $items = $items = Booktrial::where('schedule_date', 'exists', true)->where('created_at', '>=', new DateTime( date("d-m-Y", strtotime( $start_date )) ))->where('created_at', '<=', new DateTime( date("d-m-Y", strtotime( $end_date)) ))->where('city_id', 1)->get();
 
 		foreach ($items as $key => $value) {
-			// var_dump($value;)exit();
+//			 var_dump($value->toArray());exit();
+
+
 			$id 					= 	(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
 			$source 				= 	(isset($value['source']) && $value['source'] !="") ? $value['source'] : "-";
 			$booktrial_type 		= 	(isset($value['booktrial_type']) && $value['booktrial_type'] !="") ? $value['booktrial_type'] : "-";
 			$customer_name 			= 	(isset($value['customer_name']) && $value['customer_name'] !="") ? $value['customer_name'] : "-";
 			$customer_email 		= 	(isset($value['customer_email']) && $value['customer_email'] !="") ? $value['customer_email'] : "-";
 			$customer_phone 		= 	(isset($value['customer_phone']) && $value['customer_phone'] !="") ? $value['customer_phone'] : "-";
+            $customer_gender 		= 	(isset($value['gender']) && $value['gender'] !="") ? $value['gender'] : "-";
 			$amount 				= 	(isset($value['amount']) && $value['amount'] !="") ? $value['amount'] : "-";
 			$post_trial_status 		= 	(isset($value['post_trial_status']) && $value['post_trial_status'] !="") ? $value['post_trial_status'] : "-";
 			$schedule_date 			= 	(isset($value['schedule_date']) && $value['schedule_date'] !="") ? $value['schedule_date'] : "-";
@@ -1048,6 +1334,16 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			$created_at 			= 	(isset($value['created_at']) && $value['created_at'] !="") ? $value['created_at'] : "-";
 			$finder_name 			= 	(isset($value['finder_name']) && $value['finder_name'] !="") ? str_replace(',', '|', $value['finder_name']) : "-";
 			$finder_location 		= 	(isset($value['finder_location']) && $value['finder_location'] !="") ? $value['finder_location'] : "-";
+
+            $trial_type = "";
+
+            if(isset($value['premium_session']) && $value['premium_session'] == "1"){
+                $trial_type = "PAID";
+            }
+
+            if(isset($value['premium_session']) && $value['premium_session'] == "0"){
+                $trial_type = "FREE";
+            }
 
 
 			$finder_category =  $service_name = $service_category = $finder_city = "-";
@@ -1063,6 +1359,9 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 					$finder_location = ($finder->location->name) ? $finder->location->name : "-"; 
 					$finder_city = ($finder->city->name) ? $finder->city->name : "-";  
 					$finder_category = ($finder->category->name) ? $finder->category->name : "-";
+
+                    $commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'free special', 3 => 'commission on sales');
+                    $commercial_type 	= $commercial_type_arr[intval($finder->commercial_type)];
 				}
 			}else{
 				if(isset($value['city_id']) && $value['city_id'] != ''){
@@ -1080,7 +1379,10 @@ Route::get('exportdata/{type}/{start_date}/{end_date}', function($type, $start_d
 			}
 
 
-			$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $finder_name, $finder_location, $finder_city, $finder_category, $service_name, $service_category,  $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at \n";
+
+
+
+			$output .= "$id, $source, $booktrial_type, $customer_name, $customer_email, $customer_phone, $customer_gender, $finder_name, $finder_location, $finder_city, $finder_category, $commercial_type, $service_name, $service_category,  $amount, $post_trial_status, $schedule_date, $schedule_slot, $created_at, $trial_type \n";
 		}
 	}
 
@@ -2037,4 +2339,5 @@ Route::get('csv/paymentenabledservices', 'DebugController@paymentEnabledServices
 Route::get('renewalsmsstatus', 'DebugController@renewalSmsStatus');
 Route::get('deleteid', 'DebugController@deleteId');
 Route::get('updatebrandstofinders', 'DebugController@updateBrandToFindersFromCSV');
+Route::get('addmanualtrialautoflagtoFinders', array('as'=> 'DebugController.addManualTrialAutoFlag', 'uses' => 'DebugController@addManualTrialAutoFlag'));
 

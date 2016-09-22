@@ -11,6 +11,8 @@ use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerInfo as CustomerInfo;
+use App\Services\CustomerReward as CustomerReward;
+use App\Services\ShortenUrl as ShortenUrl;
 
 class CustomerController extends \BaseController {
 
@@ -19,11 +21,12 @@ class CustomerController extends \BaseController {
 	protected $utilities;
 
 
-	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Utilities $utilities) {
+	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Utilities $utilities,CustomerReward $customerreward) {
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms	=	$customersms;
 		$this->utilities	=	$utilities;
+		$this->customerreward = $customerreward;
 
 	}
 
@@ -48,6 +51,7 @@ class CustomerController extends \BaseController {
 		$currentDateTime =	\Carbon\Carbon::now();
 		$upcomingtrials = [];
 		$passedtrials = [];
+		$healthytiffintrail = [];
 		
 		foreach ($trials as $trial){
 
@@ -131,7 +135,7 @@ class CustomerController extends \BaseController {
 
 						if(!isset($value[$field])){
 							$healthytiffintrail[$key][$field] = "";
-		}
+						}
 
 						if(isset($value['preferred_starting_date'])){
 
@@ -1095,7 +1099,9 @@ class CustomerController extends \BaseController {
 		$size 				=	($size != '') ? intval($size) : 10;
 
 		$orders 			=  	[];
-		$ordersrs 			= 	Order::where('customer_email','=',$customer_email)->where('type','memberships')->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$membership_types 		= Config::get('app.membership_types');
+
+		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
 		foreach ($ordersrs as $key => $value) {
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
@@ -1461,12 +1467,11 @@ public function getCustomerDetail(){
 		Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
+		$customer_email = $decoded->customer->email;
 
 		$free_vip_trials_count = $trials_count = $memberships_count = $workout_sessions_count = 0;
 
-		$free_trials = $this->utilities->getCustomerFreeTrials($customer_id)['result'];
-		$free_orders = $this->utilities->getCustomerFreeOrders($customer_id)['result'];
-		$paid_orders = $this->utilities->getCustomerPaidOrders($customer_id)['result'];
+		$all_trials = $this->utilities->getCustomerTrials($customer_email)['result'];
 
 		$vip_trial_types 		= Config::get('app.vip_trial_types');
 		$trial_types 			= Config::get('app.trial_types');
@@ -1474,20 +1479,13 @@ public function getCustomerDetail(){
 		$workout_session_types 	= Config::get('app.workout_session_types');
 
 
-		foreach($free_trials as $key=>$value){
-			in_array($value['_id']['type'], $vip_trial_types) ? $free_vip_trials_count += $value['count'] : null;
-			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
-		}
-		foreach($free_orders as $key=>$value){
-			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
-			in_array($value['_id']['type'], $membership_types) ? $memberships_count += $value['count'] : null;
-		}
-		foreach($paid_orders as $key=>$value){
-			in_array($value['_id']['type'], $trial_types) ? $trials_count += $value['count'] : null;
-			in_array($value['_id']['type'], $membership_types) ? $memberships_count += $value['count'] : null;
-			in_array($value['_id']['type'], $workout_session_types) ? $workout_sessions_count += $value['count'] : null;
+		foreach($all_trials as $key=>$value){
+			$trials_count += $value['count'];
+			in_array((string)$value['_id'], $vip_trial_types) ? $free_vip_trials_count += $value['count'] : 0;
+			in_array((string)$value['_id'], $workout_session_types) ? $workout_sessions_count += $value['count'] : 0;
 		}
 
+		$memberships_count = Order::active()->where('customer_email',$customer_email)->where('schedule_date','exists',false)->whereIn('type',$membership_types)->count();
 
 		$responseData =  array(
 			'free_vip_trials_count'=>$free_vip_trials_count,
@@ -1501,8 +1499,6 @@ public function getCustomerDetail(){
 	}
 	
 	
-	
-
 	public function forYou($customer_email,$city_id,$lat = false,$lon = false){
 
 		//blogs catgories
@@ -1989,6 +1985,7 @@ public function getCustomerDetail(){
 		$request['customer_id'] = $customer_id;
 
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
+			->where('amount','!=',0)
 			->orderBy('created_at', 'DESC')
 			->skip($limit)
 			->take($offset)
@@ -2197,9 +2194,29 @@ public function getCustomerDetail(){
 			
 		}
 
-        $category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers","luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists"/*,"sport-nutrition-supliment-stores"*/);
+        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
+
+        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+
+        	$cache_tag = 'customer_home_by_city_2_5';
+
+        }else{
+
+        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers","luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists"/*,"sport-nutrition-supliment-stores"*/);
+
+        	$cache_tag = 'customer_home_by_city';
+
+        }
+
+        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
+
+        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+
+        	$cache_tag = 'customer_home_by_city_2_5';
+
+        }
         
-		$customer_home_by_city = $cache ? Cache::tags('customer_home_by_city')->has($city) : false;
+		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
 
 		if(!$customer_home_by_city){
 
@@ -2246,47 +2263,244 @@ public function getCustomerDetail(){
 				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
 			);
 
-			Cache::tags('customer_home_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
+			Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
 		}
 
-		$result = Cache::tags('customer_home_by_city')->get($city);
+		$result = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
 
 		return Response::json($result);
 	}
 
 
+	public function captureMyReward(){
+
+		$data = Input::all();
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$data['customer_id'] = $customer_id;
+
+		$customer = Customer::find((int)$customer_id);
+
+        if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
+        	
+            $customerData['address'] = $data['customer_address'];
+            $customer->update($customerData);
+
+            $data['customer_address'] = implode(",", array_values($data['customer_address']));
+
+        }
+
+        if(isset($data['gender']) && $data['gender'] != ""){
+        	
+            $customerData['gender'] = $data['gender'];
+            $customer->update($customerData);
+        }
+
+		$token = $this->createToken($customer);
+
+		$response  = $this->customerreward->createMyRewardCapture($data);
+		$response['token'] = $token;
+
+		return Response::json($response,$response['status']);
+
+	}
+
 	public function transformation(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$rules = [
+			'customer_id' => 'required',
+			//'weight' => 'required',
+			//'energy_level' => 'required',
+			//'record'=>'required',
+			'image'=>'image'
+		];
+
+		$data = Input::all();
+
+		$data['customer_id'] = $customer_id;
+
+		unset($data['image']);
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+		}else{
+
+			$transformationid 		=	Transformation::max('_id') + 1;
+
+	        if (Input::hasFile('image')) {
+
+	        	$image_detail = array(
+	        		array('type'=>'cover','path'=>'customer/'.$customer_id.'/transformation/cover/','width'=>720),
+	        		array('type'=>'thumb','path'=>'customer/'.$customer_id.'/transformation/thumb/','width'=>256),
+	        	);
+
+	            $image = array('input' => Input::file('image'),'detail' => $image_detail,'id' => $transformationid);
+
+	            $image_response = upload_magic($image);
+
+	            foreach ($image_response['response'] as $key => $value){
+
+	            	if(isset($value['success']) && $value['success']){
+
+	            		$image_success['width'] = $value['kraked_width'];
+	            		$image_success['height'] = $value['kraked_height'];
+	            		$image_success['s3_url'] = $value['kraked_url'];
+	            		$image_success['s3_folder_path'] = $value['folder_path'];
+	            		$image_success['s3_file_path'] = $value['folder_path'].$image_response['image_name'];
+	            		$image_success['name'] = $image_response['image_name'];
+
+	            		$data[$value['type']] = $image_success;
+	            	}
+
+	           	}
+
+	        }
+
+	        $duration = (isset($data['record']['duration']) && $data['record']['duration'] != "") ? (int)$data['record']['duration'] : "";
+		    $duration_type = (isset($data['record']['duration_type']) && $data['record']['duration_type'] != "") ? $data['record']['duration_type'] : "";
+		    $duration_day = 0;
+
+		    if($duration != "" && $duration_type != ""){
+
+		    	switch ($dutarion_type){
+
+		    		case 'day': $duration_day = $duration; break;
+		    		case 'week': $duration_day = ($duration*7); break;
+		    		case 'month': $duration_day = ($duration*30); break;
+		    		default : break;
+
+		    	}
+
+		    }
+
+		    if($duration_day != 0){
+
+		    	$data['reminder_schedule_date'] = date('Y-m-d 00:00:00', strtotime('+'.$duration_day.' days'));
+
+		    }
+
+		    $data['duration'] = $duration;
+		    $data['duration_type'] = $duration_type;
+
+		    Transformation::where('status','1')->where('customer_id',$customer_id)->update(array('status'=>'0'));
+
+			$transformation 		= 	new Transformation($data);
+			$transformation->_id 	= 	$transformationid;
+			$transformation->status = 	"1";
+			$transformation->save();
+
+			return Response::json(array('status' => 200,'message' => "Transformation added Successfull",'data'=>$transformation),200);
+		}
+		
+	}
+
+	
+	public function stayOnTrack(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$rules = [
+			'customer_id' => 'required',
+			//'weekdays' => 'required',
+			//'session_time' => 'required',
+			//'wake_up_by'=>'required',
+			//'wake_up_time'=>'required'
+		];
 
 		$data = Input::json()->all();
 
-				echo "<pre>";print_r($data);exit;
+		$data['customer_id'] = $customer_id;
 
-		if (Input::hasFile('image')) {
-            $coverimg_tmppath = Input::file('image')->getRealPath();
-            list($imagewidth, $imageheight) = getimagesize($coverimg_tmppath);
-            if ($imagewidth < 1000) {
-                $error_messages[] = 'Cover Image : "' . Input::file('image')->getClientOriginalName() . ' width must greater than 1000';
-                Session::flash('error_messages', $error_messages);
-                return Redirect::back()->withInput();
-            }
-        }
+		$validator = Validator::make($data,$rules);
 
-        if (Input::hasFile('image')) {
-            $image = array('input' => Input::file('image'), 'path' => 'finders.coverimage', 'id' => $id);
-            $coverimage_response = upload_magic($image);
-            $coverimage_upload_status = $coverimage_response['success'];
-            if ($coverimage_upload_status == 1) {
-                array_set($finderdata, 'coverimage', img_name_from_kraken_url($coverimage_response));
-            } else {
-                array_push($error_messages, 'Coverimage : ' . Input::file('image')->getClientOriginalName() . ' type is not supported or file is corrupted.');
-            }
-            //print_pretty($coverimage_response);
-        }
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+		}else{
+
+			Stayontrack::where('status','1')->where('customer_id',$customer_id)->update(array('status'=>'0'));
+
+			$stayontrackid 		=	Stayontrack::max('_id') + 1;
+			$stayontrack 		= 	new Stayontrack($data);
+			$stayontrack->_id 	= 	$stayontrackid;
+			$stayontrack->status = 	"1";
+			$stayontrack->save();
+
+			return Response::json(array('status' => 200,'message' => "StayOnTrack added Successfull"),200);
+		}
+
 	}
 
 
+	public function getTransformation(){
 
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$transformation = array();
+
+		$transformation = Transformation::where('customer_id',$customer_id)->orderBy('_id','desc')->get();
+
+		return Response::json(array('status' => 200,'message' => "Customer transformation List",'data'=>$transformation),200);
+
+	}
+
+	public function getStayOnTrack(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$stayontrack = array();
+
+		$stayontrack = Stayontrack::where('customer_id',$customer_id)->orderBy('_id','desc')->get();
+
+		return Response::json(array('status' => 200,'message' => "Customer StayOnTrack List",'data'=>$stayontrack),200);
+
+	}
+
+	public function downloadApp(){
+
+		$rules = [
+			'phone' => 'required',
+			'device_type' => 'required'
+		];
+
+		$data = Input::json()->all();
+
+		$data['url'] = "https://play.google.com/store/apps/details?id=com.discover.fitternity";
+
+        $shorten_url = new ShortenUrl();
+
+        $url = $shorten_url->getShortenUrl($data['url']);
+
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $data['url'] = $url['url'];
+        }
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+			return array('status' => 401,'message' =>$this->errorMessage($validator->errors()));  
+		}
+
+		$this->customersms->downloadApp($data);
+
+		return array('status' => 200,'message' =>"SMS Sent");
+
+	}
 
 
 }

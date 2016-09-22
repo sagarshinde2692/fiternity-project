@@ -207,6 +207,9 @@ public function CategoryAmenities()
         break; 
         case 'gurgaon':
         $city_id = 8;
+        break;
+        case 'noida':
+        $city_id = 9;
         break;           
         default:                
         break;
@@ -244,10 +247,54 @@ public function CategoryAmenities()
 }
 
 public function getcategories(){
-    $city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
+    
+    /*$city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
     $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->get(array('name','_id','slug'));
 
-    return Response::json($categorytags);        
+    return Response::json($categorytags);  */
+
+    $city_id     =  (Input::json()->get('city_id')) ? (int)Input::json()->get('city_id') : 1;
+
+    $category_slug = array(
+        "gyms",
+        "yoga",
+        "zumba",
+        "cross-functional-training",
+        "pilates",
+        "crossfit",
+        "mma-and-kick-boxing",
+        "dance",
+        "fitness-studios",
+        "marathon-training",
+        "healthy-tiffins",
+        "personal-trainers",
+        "swimming",
+        "spinning-and-indoor-cycling",
+        "aerobics",
+       //"luxury-hotels",
+        "healthy-snacks-and-beverages",
+        "sport-nutrition-supliment-stores",
+        "kids-fitness",
+        "dietitians-and-nutritionists"
+    );
+
+    $category           =       Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
+
+    $ordered_category = array();
+
+    foreach ($category_slug as $category_slug_key => $category_slug_value){
+
+        foreach ($category as $category_key => $category_value){
+
+            if($category_value['slug'] == $category_slug_value){
+
+                $ordered_category[] = $category_value;
+                break;
+            }
+        }
+    }
+
+    return Response::json($ordered_category); 
 }
 
 public function getsearchmetadata(){
@@ -482,7 +529,7 @@ public function getRankedFinderResultsApp()
     //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
     $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
     $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
-    $location    =         Input::json()->get('location')['city'] ? trim(strtolower(Input::json()->get('location')['city'])): 'mumbai';
+    $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
     $locat = Input::json()->get('location');
     $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
     $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
@@ -698,9 +745,16 @@ public function getRankedFinderResultsAppv2()
         }]
         ';
     }
+    $free_trial_enable = Input::json()->get('free_trial_enable');
+    $trial_filter = '';
+    if(intval($free_trial_enable) == 1){
+        $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
 
-    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
+    }
+    $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
+//    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+    $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
     $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
     $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
@@ -783,9 +837,9 @@ if($all_nested_filters !== '')
 
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-$must_filtervalue = trim($vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+$must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
 if($trials_day_filter !== ''){
-    $must_filtervalue = trim($vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+    $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
 }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
@@ -796,23 +850,26 @@ if($trials_day_filter !== ''){
 
         if($orderfield == 'popularity')
         {
-            if($category_filter != '') {
-                $factor = evalBaseCategoryScore($category);
-                $sort = '"sort":
-                {"_script" : {
-                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
-                    "type" : "number",
-                    "params" : {
-
-                        "factor" : 11
-
-                    },
-                    "order" : "' . $order . '"
-                }}';
-            }
-            else{
-                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
-            }
+//            if($category_filter != '') {
+//                $factor = evalBaseCategoryScore($category);
+//                $sort = '"sort":
+//                {"_script" : {
+//                    "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+//                    "type" : "number",
+//                    "params" : {
+//
+//                        "factor" : 11
+//
+//                    },
+//                    "order" : "' . $order . '"
+//                }}';
+//            }
+//            if($category_filter != '') {
+                $sort = '"sort":[{"rank":{"order":"'.$order.'"}}]';
+//            }
+//            else{
+//                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+//            }
 
         }
         else
@@ -850,12 +907,12 @@ if($trials_day_filter !== ''){
 
         $nested_level2_filter = '';
 
-        $vip_trial_facets_filter = trim($vip_trial_filter.$location_filter.$category_filter,',');
-        $location_facets_filter = trim($vip_trial_filter.$location_filter.$category_filter,',');
-        $facilities_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$category_filter, ',');
-        $offerings_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
-        $budgets_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
-        $trialday_facets_filter = trim($vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
+        $vip_trial_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$category_filter,',');
+        $location_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$category_filter,',');
+        $facilities_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$category_filter, ',');
+        $offerings_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$category_filter, ',');
+        $budgets_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter, ',');
+        $trialday_facets_filter = trim($commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
 
         $facilities_bool = '"filter": {
             "bool" : { "must":['.$facilities_facets_filter.']}
@@ -1046,7 +1103,587 @@ $request = array(
 //     'method' => 'POST',
 //     'postfields' => $body
 //     );
+     
+$search_results     =   es_curl_request($request);
+
+$search_results1    =   json_decode($search_results, true);
+$searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
+$searchresulteresponse->meta->number_of_records = intval($size);
+$searchresulteresponse->meta->from = intval($from);
+$searchresulteresponse->meta->sortfield = $orderfield;
+$searchresulteresponse->meta->sortorder = $order;
+
+$searchresulteresponse1 = json_encode($searchresulteresponse, true);
+
+$response       =   json_decode($searchresulteresponse1,true);
+
+return Response::json($response);
+
+}
+
+
+/********************************************google places search api *************************************/
+
+public function getRankedFinderResultsAppv3()
+    {
+        // echo "yo";
+        // return Input::json()->all();
+        $searchParams = array();
+        $facetssize =  $this->facetssize;
+        $rankField = 'rankv2';
+        $type = "finder";
+        $filters = "";
+        $from    =        (null !== Input::json()->get('offset')['from']) ? Input::json()->get('offset')['from'] : 0;
+        $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+        //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+        $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : 'popularity';
+        $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : 'desc';
+        $loc             = Input::json()->get('location');
+        $location    =         isset($loc['city']) ? strtolower(Input::json()->get('location')['city']): '';
+        $vip_trial    =         Input::json()->get('vip_trial') ? array(intval(Input::json()->get('vip_trial'))) : [1,0];
+        $vip_trial = implode($vip_trial,',');
+        $locat = Input::json()->get('location');
+        $lat     =         (isset($locat['lat'])) ? floatval($locat['lat'])  : '';
+        $lon    =         (isset($locat['long'])) ? floatval($locat['long'])  : '';
+
+
+
+        //input filters
+
+        $category = Input::json()->get('category');
+
+        $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
+        $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
+
+        // return $category;
+        $offering_regex = $this->_getOfferingRegex($category);
+
+        //return Input::json()->get('offset')['from'];
+        $must_not_filter = '';
+
+        if($category === ''){
+            $must_not_filter = ',
+        "must_not": [{
+            "terms": {
+                "categorytags": [
+                "healthy tiffins",
+                "healthy snacks and beverages",
+                "sport nutrition supliment stores",
+                "dietitians and nutritionists"
+                ]
+            }
+        }]
+        ';
+        }
+
+        $free_trial_enable = Input::json()->get('free_trial_enable');
+        $trial_filter = '';
+        if(intval($free_trial_enable) == 1){
+            $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
+
+        }
+        $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
+        $location_filter =  $location != '' ? '{"term" : { "city" : "'.$location.'", "_cache": true }},' : '';
+        $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
+        $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
+        $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
+        $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+        $trials_day_filterv2 = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "day": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+        $trial_range_filter = '';
+        $geo_range_filter = '';
+        $distance_decay_function='';
+        $distance_slabs_function='';
+
+
+
+        if(($trial_time_from !== '')&&($trial_time_to !== '')){
+
+            $trial_range_filter = '  {
+            "nested": {
+              "path": "trials",
+              "query": {
+                "filtered": {
+                    "filter": {"bool": {"must": [
+                    {"range": {
+                        "trials.start": {
+                          "gte": '.$trial_time_from.'
+                      }
+                  }},
+                  {
+                    "range": {
+                      "trials.end": {
+                        "lte": '.$trial_time_to.'
+                    }
+                }
+            }
+            ]}}
+        }}
+    }
+},';
+        }
+
+
+        $function_score_complete_query = '';
+
+        $source_fields = '';
+
+        if(($lat !== '')&&($lon !== '')){
+            $source_fields = ' "fields": ["_source"],
+                                "script_fields":{
+                                    "distance": {
+                                      "params": {
+                                        "lat": '.$lat.',
+                                        "lon": '.$lon.'
+                                    },
+                                    "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
+                                }
+                            },';
+        }
+
+        $function_score_query_googleplaces = '';
+        $sort = '';
+
+        switch ($orderfield){
+
+            case 'distance':
+                if(($lat !== '')&&($lon !== '')){
+
+                    $geo_range_filter = '{
+            "geo_distance_range": {
+                "from": "0km",
+                "to": "1000km",
+                "geolocation": {
+                    "lat": '.$lat.',
+                    "lon": '.$lon.'
+                }
+            }
+        },';
+                }
+
+                $distance_score_function = '  {
+                            "script_score": {
+                                "params": {
+                                    "lat": '.$lat.',
+                                    "lon": '.$lon.'
+                                },
+                                "script": "doc[\'geolocation\'].distanceInKm(lat,lon) ? doc[\'geolocation\'].distanceInKm(lat,lon) : 0"
+
+                            }
+                        }';
+
+                $function_score_query_googleplaces = $distance_score_function;
+                $sort = '"sort":[{"_score":{"order":"'.$order.'"}}]';
+                break;
+            case 'average_price':
+                //Either..........
+//                $commercial_type_function = '{
+//                            "script_score": {
+//                                "script": "(doc[\'commercial_type\'].value == 1)||(doc[\'commercial_type\'].value == 3) ? 15000 : (doc[\'commercial_type\'].value == 2) ? 7000 : 0"
+//                            }
+//                        }';
+//
+//                $function_score_query_googleplaces = $commercial_type_function;
+//
+//                $sort = '"sort":[{"_score":{"order":"'.$order.'"},"'.$orderfield.'":{"order":"'.$order.'"}}]';
+                // OR..........
+                $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
+                break;
+            default:    // Popularity
+                if(($lat !== '')&&($lon !== '')){
+
+                    $geo_range_filter = '{
+            "geo_distance_range": {
+                "from": "0km",
+                "to": "5km",
+                "geolocation": {
+                    "lat": '.$lat.',
+                    "lon": '.$lon.'
+                }
+            }
+        },';
+                }
+
+                $commercial_type_function = '{
+                            "script_score": {
+                                "script": "(doc[\'commercial_type\'].value == 1)||(doc[\'commercial_type\'].value == 3) ? 15000 : (doc[\'commercial_type\'].value == 2) ? 7000 : 0"
+                            }
+                        }';
+
+                if(($lat !== '')&&($lon !== '')){
+                    $distance_decay_function = ',{
+                            "linear": {
+                                "geolocation": {
+                                    "origin": {
+                                        "lat": '.$lat.',
+                                        "lon": '.$lon.'
+                                    },
+                                    "scale": "100m",
+                                    "decay": 0.95,
+                                    "offset": "50m"
+                                }
+                            },
+                            "weight": "0"
+                        },';
+
+
+                    $distance_slabs_function = '  {
+                            "script_score": {
+                                "params": {
+                                    "lat": '.$lat.',
+                                    "lon": '.$lon.'
+                                },
+                                "script": "(doc[\'geolocation\'].distanceInKm(lat,lon) <= 3)&&(doc[\'commercial_type\'].value != 0) ? 5000: (doc[\'geolocation\'].distanceInKm(lat,lon) <= 5)&&(doc[\'geolocation\'].distanceInKm(lat,lon) > 3)&&(doc[\'commercial_type\'].value != 0) ? 3000 : 0"
+                            }
+                        }';
+                }
+
+                $function_score_query_googleplaces = $commercial_type_function.$distance_decay_function.$distance_slabs_function;
+
+                $sort = '"sort":[{"_score":{"order":"'.$order.'"},"'.$orderfield.'":{"order":"'.$order.'"}}]';
+                break;
+
+        }
+
+        $function_score_query = '                                        
+                                        "function_score": {
+                                                "functions": ['.$function_score_query_googleplaces.'],
+                                                "score_mode": "sum"
+                                            }';
+
+        $function_score_complete_query = ' "query": {"filtered": {
+                                        "query": {'.$function_score_query.'}
+                                      }},';
+
+
+        $service_slots_filters = '';
+
+        if(($trials_day_filter !== '')||($trial_time_from !== '')||($trial_time_to !== ''))
+        {
+            $service_slots_filters = ' {"nested": {
+      "path": "service_level_data.slots_nested",
+      "query": {"filtered": {
+        "filter": {"bool": {"must": [
+        '.trim($trials_day_filterv2.$trial_time_from.$trial_time_to, ',').'
+
+        ]}
+    }
+}}
+}},';
+        }
+
+        $service_category_synonyms_filters = '';
+
+        if(($category !== '')&&($category !== 'fitness studios'))
+        {
+            $service_category_synonyms_filters = '{
+      "term": {
+        "service_category_synonyms": "'.$category.'"
+    }
+},';
+        }
+
+        $all_nested_filters = trim($service_slots_filters.$service_category_synonyms_filters,',');
+
+        $service_level_nested_filter = '';
+
+        if($all_nested_filters !== '')
+        {
+            $service_level_nested_filter = '{
+      "nested": {
+        "path": "service_level_data",
+        "query": {"filtered": {
+          "filter": {"bool": {"must": [
+          '.$all_nested_filters.'
+          ]}}
+      }}
+  }
+},';
+        }
+
+        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+
+        $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_range_filter,',');
+        if($trials_day_filter !== ''){
+            $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter.$geo_range_filter,',');
+        }
+
+        $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
+        $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
+        $mustfilter_post = '"must": ['.$must_filtervalue.']';
+        $filtervalue_post = trim($mustfilter_post,',');
+        $filtervalue = trim($shouldfilter.$mustfilter,',');
+
+
+
+
+
+
+        //     if($category_filter != '') {
+        //         $factor = evalBaseCategoryScore($category);
+        //         $sort = '"sort":
+        //         {"_script" : {
+        //             "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
+        //             "type" : "number",
+        //             "params" : {
+
+        //                 "factor" : 11
+
+        //             },
+        //             "order" : "' . $order . '"
+        //         }}';
+        //     }
+        //     else{
+        //         $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
+        //     }
+
+        // }
+        // else
+        // {
+        //     $sort = '"sort":[{"'.$orderfield.'":{"order":"'.$order.'"}}]';
+        // }
+
+
+        if($shouldfilter != '' || $mustfilter != ''){
+            $filters = '"filter": {
+                "bool" : {'.$filtervalue.'}
+            },"_cache" : true';
+        }
+
+        if($mustfilter != ''){
+            $filters_post = '"post_filter": {
+            "bool" : {'.$filtervalue_post.$must_not_filter.'
+        }}';
+        }
+
+        /*
+
+        Aggregations filters here for drilling down
+
+        */
+
+        $nested_level1_filter = ($category_filter === '') ? '': '  {"nested": {
+          "path": "service_level_data",
+          "query": {"filtered": {
+            "filter": {"bool": {"must": [
+            {"term": {
+                "service_category_synonyms": "'.$category.'"
+            }}
+            ]}}
+        }}
+    }}';
+
+        $nested_level2_filter = '';
+
+        $vip_trial_facets_filter = trim($location_filter.$category_filter,',');
+        $location_facets_filter = trim($location_filter.$category_filter.$geo_range_filter,',');
+        $facilities_facets_filter = trim($location_filter.$regions_filter.$category_filter.$geo_range_filter, ',');
+        $offerings_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$category_filter.$geo_range_filter, ',');
+        $budgets_facets_filter = trim($location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$geo_range_filter, ',');
+        $trialday_facets_filter = trim($geo_range_filter.$location_filter.$regions_filter.$facilities_filter.$offerings_filter.$category_filter.$budget_filter.$nested_level1_filter, ',');
+
+        $facilities_bool = '"filter": {
+        "bool" : { "must":['.$facilities_facets_filter.']}
+    }';
+
+        $offering_bool = '"filter": {
+        "bool" : {"must":['.$offerings_facets_filter.']}
+    }';
+
+        $budgets_bool = '"filter": {
+        "bool" : {"must":['.$budgets_facets_filter.']}
+    }';
+
+        $vip_trial_bool = '"filter": {
+            "bool" : {"must":['.$vip_trial_facets_filter.']}
+        }';
+
+        $location_bool = '"filter": {
+        "bool" : {"must":['.$location_facets_filter.']}
+    }';
+
+        $trialdays_bool = '"filter": {
+        "bool" : {"must":['.$trialday_facets_filter.']}
+    }';
+
+        $regions_facets = '
+    "filtered_locations": { '.$location_bool.', 
+    "aggs":
+    { "loccluster": {
+        "terms": {
+            "field": "locationcluster",
+            "min_doc_count":1
+
+        },"aggs": {
+          "region": {
+            "terms": {
+                "field": "location",
+                "min_doc_count":1,
+                "size":"500",
+                "order": {
+                  "_term": "asc"
+              }
+
+          }
+      }
+  }}}
+},';
+
+
+        $locationtags_facets = ' "filtered_locationtags": {
+    '.$location_bool.',
+    "aggs": {
+        "offerings": {
+            "terms": {
+                "field": "locationtags",             
+                "min_doc_count": 1,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+        $facilities_facets = ' "filtered_facilities": {
+    '.$facilities_bool.',
+    "aggs": {
+        "facilities": {
+            "terms": {
+                "field": "facilities",
+                "include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+        $offerings_facets = ' "filtered_offerings": {
+    '.$offering_bool.',
+    "aggs": {
+        "offerings": {
+            "terms": {
+                "field": "offerings",
+                "include" : "'.$offering_regex.'",
+                "min_doc_count": 1,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+        $budgets_facets = ' "filtered_budgets": {
+    '.$budgets_bool.',
+    "aggs": {
+        "budgets": {
+            "terms": {
+                "field": "price_range",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+        $vip_trial_facets = ' "filtered_vip_trial": {
+    '.$vip_trial_bool.',
+    "aggs": {
+        "vip_trial": {
+            "terms": {
+                "field": "vip_trial",
+                "min_doc_count": 0,
+                "size": 500,
+                "order":{"_term": "asc"}
+            }
+        }
+    }
+},';
+
+        $trialdays_facets = ' "filtered_trials": {
+    '.$trialdays_bool.',
+    "aggs": {
+     "level1": {
+       "nested": {
+         "path": "service_level_data"
+     },
+     "aggs": {
+         "level2": {
+           "nested": {
+             "path": "service_level_data.slots_nested"
+         },
+         "aggs": {
+             "daysaggregator": {
+               "terms": {
+                 "field": "day",
+                 "size": 10000,
+                 "min_doc_count" : 0
+             },
+             "aggs": {
+                 "backtolevel1": {
+                   "reverse_nested": {
+                     "path": "service_level_data"
+                 },
+                 "aggs": {
+                     "backtorootdoc": {
+                       "reverse_nested": {
+                       }
+                   }
+               }
+           }
+       }
+   }
+}
+}
+}
+}
+}
+},';
+
+
+        $category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+
+        $facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets.$vip_trial_facets,',');
+
+
+// $body = '{    
+//     '.$source_fields.'
+//     "from": '.$from.',
+//     "size": '.$size.',
+//     "query" : '.$function_score_query.',
+//     "aggs": {'.$facetsvalue.'},
+//     '.$filters_post.$sort.'
+// }';
+
+        $body = '{    
+    '.$source_fields.'
+    "from": '.$from.',
+    "size": '.$size.',
+    '.$function_score_complete_query.'
+    "aggs": {'.$facetsvalue.'},
+    '.$filters_post.','.$sort.'
+}';
+
 //        return $body;
+
+
+        $request = array(
+            'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+            'port' => Config::get('app.es.port'),
+            'method' => 'POST',
+            'postfields' => $body
+        );
+
+// $request = array(
+//     'url' => "http://localhost:9200/"."fitternity_finder/finder/_search",
+//     'port' => 9200,
+//     'method' => 'POST',
+//     'postfields' => $body
+//     );
 
     $search_results     =   es_curl_request($request);
 //    return $search_results;
@@ -1337,6 +1974,10 @@ private function _getOfferingRegex($category){
         $regex = 'steam and sauna|jaccuzi|olympic pool|indoor pool|outdoor pool';
         break;
 
+        case 'luxury hotels':
+        $regex = 'cardio equipment|weights section|stretching workout area|other fitness activities|group activities|steam and sauna|indoor swimming pool|outdoor swimming pool|jacuzzi|spa|personal training';
+        break;
+
         case 'dietitians and nutritionists':
         $regex = 'meals provided|body fat analysis|child nutrition|pregnancy nutrition|medical or disorder related|telephonic  or  online consultation|weight management|sports nutrition';
         break;
@@ -1373,6 +2014,9 @@ private function _getCategoryRegex($city){
         $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
         break;
         case 'gurgaon':
+        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+        break;
+        case 'noida':
         $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
         break;
         

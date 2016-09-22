@@ -39,6 +39,42 @@ class FindersController extends \BaseController {
     }
 
 
+
+    public function acceptVendorMou($mouid){
+
+
+        $vendormou = Vendormou::with(array('finder'=>function($query){$query->select('_id','title','slug');}))->find(intval($mouid));
+
+        if($vendormou){
+
+            $vendormouData =    $vendormou->toArray();
+
+            return $this->findermailer->acceptVendorMou($vendormouData);
+
+        }
+
+
+    }
+
+
+     public function cancelVendorMou($mouid){
+
+
+        $vendormou = Vendormou::with(array('finder'=>function($query){$query->select('_id','title','slug');}))->find(intval($mouid));
+
+        if($vendormou){
+
+            $vendormouData =    $vendormou->toArray();
+
+            return $this->findermailer->cancelVendorMou($vendormouData);
+
+        }
+
+
+    }
+
+
+
     public function finderdetail($slug, $cache = true){
 
         $data 	=  array();
@@ -59,7 +95,6 @@ class FindersController extends \BaseController {
             ->with('offerings')
             ->with('facilities')
             ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-                //->with(array('services'=>function($query){$query->select('*')->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
             ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
             ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
             ->first();
@@ -174,12 +209,38 @@ class FindersController extends \BaseController {
                     }
                     
                 }
+                if(count($finder['offerings']) > 0 ){
+                    $tempoffering = [];
+                    $tempofferingname = [];
+                    foreach ($finder['offerings'] as $offering) {
+                        if(in_array($offering["name"],$tempofferingname)){
+
+                        }else{
+                            array_push($tempoffering,$offering);
+                            array_push($tempofferingname,$offering['name']);
+                        }
+                    }
+                    $finder['offerings'] = $tempoffering;
+                    
+                }
 
                 $fitmania_offer_cnt 	=	Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
                 if($fitmania_offer_cnt > 0){
                     array_set($finder, 'fitmania_offer_exist', true);
                 }else{
                     array_set($finder, 'fitmania_offer_exist', false);
+                }
+
+                if(isset($finderarr['brand_id'])){
+
+                    $brand = Brand::find((int)$finderarr['brand_id']);
+
+                    $brandFinder = Finder::select('_id','title','slug','brand_id','location_id','city_id')->with(array('location'=>function($query){$query->select('_id','name','slug');}))->where("brand_id",(int)$finderarr['brand_id'])->where("_id","!=",(int)$finderarr['_id'])->where('city_id',(int)$finderarr['city_id'])->get();
+
+                    $finderarr['brand']['brand_detail'] = $brand;
+                    $finderarr['brand']['finder_detail'] = $brandFinder;
+                    $finder['brand'] = $finderarr['brand'];
+
                 }
 
             }else{
@@ -1374,7 +1435,7 @@ class FindersController extends \BaseController {
 
         foreach($dups as $k => $v){
 
-            $dups[$k] = implode(",", $v);
+            $dups[$k] = implode(", ", $v);
 
         }
 
@@ -1384,11 +1445,11 @@ class FindersController extends \BaseController {
     public function matchAndReturn($key){
 
         $match = array(
-            "Monday,Tuesday,Wednesday"=>"Monday - Wednesday",
-            "Monday,Tuesday,Wednesday,Thursday"=>"Monday - Thursday",
-            "Monday,Tuesday,Wednesday,Thursday,Friday"=>"Monday - Friday",
-            "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday"=>"Monday - Saturday",
-            "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday"=>"Monday - Sunday",
+            "Monday, Tuesday, Wednesday"=>"Monday - Wednesday",
+            "Monday, Tuesday, Wednesday, Thursday"=>"Monday - Thursday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday"=>"Monday - Friday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday"=>"Monday - Saturday",
+            "Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday"=>"Monday - Sunday",
         );
 
         if(array_key_exists($key,$match)){

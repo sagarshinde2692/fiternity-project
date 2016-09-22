@@ -21,7 +21,11 @@ class Finder extends  \Basemodel {
 	'location_id' => 'required',
 	'category_id' => 'required',
 	'finder_logo' => 'mimes:jpeg,png|image|max:2000',
-	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000'
+	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000',
+	];
+
+	public static $update_rules = [
+		'title' => 'sometimes|required|string'
 	];
 
 	protected $appends = array('finder_coverimage','commercial_type_status', 'business_type_status');
@@ -138,6 +142,10 @@ class Finder extends  \Basemodel {
 
 	public function ozonetelno(){
 		return $this->hasOne('Ozonetelno','finder_id');
+	}
+
+	public function brand(){
+		return $this->belongsTo('Brand');
 	}
 
 

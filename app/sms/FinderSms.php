@@ -48,6 +48,15 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function cancelBookTrialByVendor ($data){
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		$label = 'Vendor-trial-cancellation-email-to-vendor';
+
+		return $this->common($label,$to,$data);
+	}
+
 	public function sendPgOrderSms ($data){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
@@ -148,14 +157,30 @@ Class FinderSms extends VersionNextSms{
         return $this->common($label,$to,$data);
 	}
 
+	public function manualTrialAuto ($data){
+
+		$label = 'ManualTrialAuto-Finder';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+	}
+
+	public function reminderToConfirmManualTrial ($data,$delay){
+	
+			$label = 'Reminder-To-Confirm-ManualTrial-Finder';
+	
+			$to = explode(',', $data['finder_vcc_mobile']);
+	
+			return $this->common($label,$to,$data,$delay);
+		}
+	
 	public function common($label,$to,$data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();
 
 		$message = $this->bladeCompile($template->sms_text,$data);
-
-		//$to = array('9920864894');
-
+		
 		return $this->sendToWorker($to, $message, $label, $delay);
 	}
 

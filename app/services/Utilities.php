@@ -6,6 +6,7 @@ use Validator;
 use Response;
 use Config;
 use JWT;
+use Finder;
 
 Class Utilities {
 
@@ -139,7 +140,7 @@ Class Utilities {
         }
         $customerwallet = new Customerwallet();
         $id = Customerwallet::max('_id');
-        echo $id;
+        //echo $id;
         $max_id = (isset($id) && !empty($id)) ? $id : 0;
         $customerwallet->_id = $max_id + 1;
         $customerwallet->customer_id = (int) $request['customer_id'];
@@ -380,6 +381,75 @@ Class Utilities {
             }
         }
         return $result;
+    }
+
+    public function getCustomerTrials($customer_email){
+
+        return \Booktrial::raw(function($collection) use ($customer_email){
+
+            $aggregate = [];
+            
+            $match['$match']['customer_email'] = $customer_email;
+            $match['$match']['booktrial_type']['$in'] = array("auto");
+
+            $aggregate[] = $match;
+
+            $group = array(
+                '$group' => array(
+                    '_id' => '$type',
+                    'count' => array(
+                        '$sum' => 1
+                    )
+                )
+            );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+        });
+
+    }
+
+    public function getFinderData($finder_id){
+
+        $data = array();
+
+        $finder                             =   Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finder_id))->first()->toArray();
+
+        $finder_city                       =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+        $finder_location                   =    (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+        $finder_address                    =    (isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
+        $finder_vcc_email                  =    (isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
+        $finder_vcc_mobile                 =    (isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
+        $finder_poc_for_customer_name       =   (isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != '') ? $finder['finder_poc_for_customer_name'] : "";
+        $finder_poc_for_customer_no        =    (isset($finder['finder_poc_for_customer_mobile']) && $finder['finder_poc_for_customer_mobile'] != '') ? $finder['finder_poc_for_customer_mobile'] : "";
+        $show_location_flag                =    (count($finder['locationtags']) > 1) ? false : true;
+        $share_customer_no                 =    (isset($finder['share_customer_no']) && $finder['share_customer_no'] == '1') ? true : false;
+        $finder_lon                        =    (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
+        $finder_lat                        =    (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+        $finder_category_id                =    (isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
+        $finder_slug                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+        $finder_name                       =    (isset($finder['title']) && $finder['title'] != '') ? ucwords($finder['title']) : "";
+
+        $data['finder_city'] =  trim($finder_city);
+        $data['finder_location'] =  trim($finder_location);
+        $data['finder_address'] =  trim($finder_address);
+        $data['finder_vcc_email'] =  trim($finder_vcc_email);
+        $data['finder_vcc_mobile'] =  trim($finder_vcc_mobile);
+        $data['finder_poc_for_customer_name'] =  trim($finder_poc_for_customer_name);
+        $data['finder_poc_for_customer_no'] =  trim($finder_poc_for_customer_no);
+        $data['show_location_flag'] =  $show_location_flag;
+        $data['share_customer_no'] =  $share_customer_no;
+        $data['finder_lon'] =  $finder_lon;
+        $data['finder_lat'] =  $finder_lat;
+        $data['finder_branch'] =  trim($finder_location);
+        $data['finder_category_id'] =  $finder_category_id;
+        $data['finder_slug'] =  $finder_slug;
+        $data['finder_name'] =  $finder_name;
+
+        return $data; 
+
     }
 
 }

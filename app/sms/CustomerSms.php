@@ -65,6 +65,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function cancelBookTrialByVendor ($data){
+
+		$label = 'Vendor-trial-cancellation-email-to-customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 
 	public function manualBookTrial ($data){
 
@@ -75,6 +84,24 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function manualTrialAuto ($data){
+
+		$label = 'ManualTrialAuto-Customer';
+	
+		$to = $data['customer_phone'];
+	
+		return $this->common($label,$to,$data);
+	}
+
+	public function reminderToConfirmManualTrial ($data,$delay){
+	
+		$label = 'Reminder-To-Confirm-ManualTrial-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+	}
+	
 	public function sendCodOrderSms ($data){
 
 		$label = 'Order-COD-Customer';
@@ -116,6 +143,10 @@ Class CustomerSms extends VersionNextSms{
 		if($data['type'] == 'mickeymehtaevent'){
 
 			$label = 'Order-PG-Mickeymehtaevent-Customer';
+		}
+
+		if($data['type'] == 'events'){
+			$label = 'Order-PG-Event';
 		}
 		
 		$to = $data['customer_phone'];
@@ -317,6 +348,12 @@ Class CustomerSms extends VersionNextSms{
 			case 'vip_booktrials':
 				$label = 'Invite-friend-for-vip-trial';
 				break;
+			case 'vip_booktrials_invited':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
+			case 'vip_3days_booktrials':
+				$label = 'Invite-friend-for-vip-trial';
+				break;
 			default:
 				$label = 'Invite-friend-for-trial';
 				break;
@@ -379,6 +416,61 @@ Class CustomerSms extends VersionNextSms{
 	public function nutritionStore ($data){
 
 		$label = 'NutritionStore-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function landingPageCallback ($data){
+
+		$label = 'FitnessCanvas-Customer';
+
+		switch ($data['capture_type']) {
+			case 'fitness_canvas': $label = 'FitnessCanvas-Customer';break;
+			default:return "no email sms";break;
+		}
+
+		$to = $data['phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function reminderRescheduleAfter4Days($data,$delay){
+
+		$label = 'RescheduleAfter4Days-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+
+	}
+
+	public function ozonetelCapture($data){
+
+       $label = 'OzonetelCapture-Customer';
+       
+       $to = $data['customer_contact_no'];
+
+       return $this->common($label,$to,$data);
+
+   	}
+
+  	public function downloadApp($data){
+
+       $label = 'DownloadApp-Customer';
+       
+       $to = $data['phone'];
+
+       return $this->common($label,$to,$data);
+
+   	}
+
+   	public function rewardClaim($data){
+
+		$label = $data['label'];
 
 		$to = $data['customer_phone'];
 

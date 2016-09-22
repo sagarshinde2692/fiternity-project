@@ -11,4 +11,8 @@ class Ozonetelcapture extends  \Basemodel {
 
 	protected $collection = "ozonetelcaptures";
 
+	public function finder(){
+        return $this->belongsTo('Finder');
+  	}
+
 }

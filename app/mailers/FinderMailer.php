@@ -111,13 +111,73 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function cancelBookTrialByVendor ($data){
+
+		$label = 'Vendor-trial-cancellation-email-to-vendor';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function VendorEmailOnProfileEditRequest ($data){
+
+		$label = 'Vendor-email-on-profile-edit-request';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+//		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+//			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function RMEmailOnProfileEditRequest ($data){
+
+		$label = 'RM-email-on-profile-edit-request';
+
+		$user_email = array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com');
+
+		$message_data 	= array(
+			'user_email' => $user_email
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	public function sendPgOrderMail ($data){
 
 		$label = 'Order-PG-Vendor';
 
-		if($data['type'] == 'crossfit-week'){
+		switch ($data['payment_mode']) {
+			case 'cod': $label = 'Order-COD-Vendor'; break;
+			case 'paymentgateway': $label = 'Order-PG-Vendor'; break;
+			case 'at the studio': $label = 'Order-At-Finder-Vendor'; break;
+			default: break;
+		}
 
-			$label = 'Order-PG-Crossfit-Week-Vendor';
+		switch ($data['type']) {
+			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Vendor';
+			default: break;
 		}
 
 		if($data['finder_vcc_email'] != ''){
@@ -302,14 +362,132 @@ Class FinderMailer extends Mailer {
     }
 
 
+    public function acceptVendorMou ($data){
+
+		$label = 'AcceptVendorMou-Paid-Cash-Cheque-Vendor';
+
+
+
+		if($data['contract_type'] == 'premium'){
+
+			$label = 'AcceptVendorMou-Cos-Vendor';
+
+		}elseif(($data['contract_type'] == 'platinum' || $data['contract_type'] == 'launch plan' ) && $data['payment_mode'] == 'online'){
+
+			$label = 'AcceptVendorMou-Paid-Online-Vendor';
+
+		}
+
+		// var_dump($label);exit();
+
+		
+		if($data['rm_email'] != ''){
+			$user_email 	=  	[$data['rm_email']];
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['rm_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+
+
+    public function cancelVendorMou ($data){
+
+		$label = 'CancelVendorMou-Vendor';
+		
+		if($data['rm_email'] != ''){
+			$user_email 	=  	[$data['rm_email']];
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['rm_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+	public function rewardClaim($data){
+
+        $label = $data['label'];
+        
+        if($data['finder_vcc_email'] != ''){
+            $user_email 	=  	explode(',', $data['finder_vcc_email']);
+        }else{
+            $user_email 	= 	array(Config::get('mail.to_mailus'));
+        }
+
+        $user_name = ucwords($data['title']);
+
+        $message_data 	= array(
+            'user_email' => $user_email,
+            'user_name' =>  $user_name,
+        );
+
+        return $this->common($label,$data,$message_data);
+
+    }
+
+	public function manualTrialAuto ($data){
+
+		$label = 'ManualTrialAuto-Finder';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+	public function orderUpdatePaymentAtVendor($data){
+
+		$label = 'OrderUpdatePaymentAtVendor-Vendor';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+
 	public function common($label,$data,$message_data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
-
-		//$message_data['user_email'] = array('maheshjadhav@fitternity.com');
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
@@ -330,7 +508,7 @@ Class FinderMailer extends Mailer {
 	    // will throw it out to the exception handler.
 	    try
 	    {
-	        eval('?>'.$generated);
+			eval('?>'.$generated);
 	    }
 
 	    // If we caught an exception, we'll silently flush the output

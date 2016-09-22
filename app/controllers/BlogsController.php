@@ -11,10 +11,10 @@
 class BlogsController extends \BaseController {
 
 	public function __construct() {
-     	parent::__construct();	
-    }
+		parent::__construct();	
+	}
 
-    // Limiting to something
+	// Limiting to something
 	public function getBlogs($offset = 0,$limit = 10, $cache = true){
 
 		$blog_list = $cache ? Cache::tags('blog_list')->has($offset.'_'.$limit) : false;
@@ -195,27 +195,27 @@ class BlogsController extends \BaseController {
 	public function addComment(){
 
 		$inserted_id = Comment::max('_id') + 1;
-        $validator = Validator::make($data = Input::json()->all(), Comment::$rules);
+		$validator = Validator::make($data = Input::json()->all(), Comment::$rules);
 
-        if ($validator->fails()) {
-            $response = array('status' => 404,'message' =>$validator->errors());
-        }else{
-        	$customer = Customer::findOrFail((int)$data['customer_id']);
-	        $data['customer'] = array('name'=>$customer['name'],'email'=>$customer['email'],'profile_image'=>$customer['profile_image']);
+		if ($validator->fails()) {
+			$response = array('status' => 404,'message' =>$validator->errors());
+		}else{
+			$customer = Customer::findOrFail((int)$data['customer_id']);
+			$data['customer'] = array('name'=>$customer['name'],'email'=>$customer['email'],'profile_image'=>$customer['profile_image']);
 
-	        $commentdata = $data;
-	        
-	        $comment = new Comment($commentdata);
-	        $comment->_id = $inserted_id;
-	        $comment->blog_id = (int)$data['blog_id'];
-	        $comment->customer_id = (int)$data['customer_id'];
-	        $comment->description = $data['description'];
-	        $comment->save();
+			$commentdata = $data;
+			
+			$comment = new Comment($commentdata);
+			$comment->_id = $inserted_id;
+			$comment->blog_id = (int)$data['blog_id'];
+			$comment->customer_id = (int)$data['customer_id'];
+			$comment->description = $data['description'];
+			$comment->save();
 
-	        $response = array('status' => 200);
-        } 
+			$response = array('status' => 200);
+		} 
 
-        return Response::json($response);  
+		return Response::json($response);  
 	}
 
 	public function getBlogComment($slug,$cache = true){

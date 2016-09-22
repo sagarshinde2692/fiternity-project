@@ -19,3 +19,4 @@ Thumbs.db
 composer.lock
 app/config/database.php
 app/config/app.php
+composer.lock

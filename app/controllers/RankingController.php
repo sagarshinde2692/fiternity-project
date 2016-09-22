@@ -33,7 +33,7 @@ class RankingController extends \BaseController {
     protected $popularity_min   =   0;
     protected $popularity_max   =   0;
 
-    protected $name = 'fitternity';
+    protected $name = 'fitternity_finder';
 
     public function __construct() {
         parent::__construct();
@@ -53,7 +53,7 @@ class RankingController extends \BaseController {
         $this->orders_min                       =   Finder::active()->min('orders30days');
         $this->popularity_max                   =   20000;
         $this->popularity_min                   =   0;
-        $this->city_list                        =   array(1,2,3,4,8);
+        $this->city_list                        =   array(1,2,3,4,8,9);
     }
 
     /*
@@ -241,7 +241,10 @@ class RankingController extends \BaseController {
                     "facilities" : {"type" : "string", "index" : "not_analyzed"},
                     "geolocation" : {"type" : "geo_point","geohash": true,"geohash_prefix": true,"geohash_precision": 10},
                     "average_rating" : {"type" : "float", "index" : "not_analyzed"},
-                    "locationcluster" : {"type" : "string", "index" : "not_analyzed"},
+                    "locationcluster" : {"type" : "string", "index" : "not_analyzed"},                    
+                    "service_category_synonyms" : {"type": "string", "index":"not_analyzed"},
+                    "service_category_exact" : {"type": "string", "index":"not_analyzed"},
+                    "service_category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
                     "trials": {
                         "properties": {
                             "day" : {"type" : "string", "index" : "not_analyzed"},
@@ -332,8 +335,10 @@ class RankingController extends \BaseController {
     public function IndexRankMongo2Elastic($index_name, $city_id){
    
        ini_set('max_execution_time', 30000);
-       $citykist      =    array(1,2,3,4,8);
-       $items = Finder::with(array('country'=>function($query){$query->select('name');}))
+//       ini_set('memory_limit', '512M');
+
+       $citykist      =    array(1,2,3,4,8,9);
+       $items = Finder::active()->with(array('country'=>function($query){$query->select('name');}))
        ->with(array('city'=>function($query){$query->select('name');}))
        ->with(array('category'=>function($query){$query->select('name','meta');}))
        ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
@@ -348,7 +353,7 @@ class RankingController extends \BaseController {
         $query2->select('name');
     }));}))
        ->with(array('ozonetelno'=>function($query){$query->select('phone_number','extension')->where('status','=','1');}))
-       ->active()
+       ->with(array('brand'=>function($query){$query->select('name');}))
        ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
                             //->whereIn('_id', array(579))
@@ -363,7 +368,9 @@ class RankingController extends \BaseController {
 
        foreach ($items as $finderdocument) {  
         try{
-           // return json_decode($finderdocument);exit;
+            ini_set('max_execution_time', 300);
+
+//            var_dump($finderdocument->toArray());exit;
             $ratecard_days = 0; $ratecard_money = 0;
             
             //Exclude exceptional Finders.........
@@ -479,15 +486,17 @@ class RankingController extends \BaseController {
         
         $postdata['free_trial_enable'] = 0;
         
-        if(intval($postdata['commercial_type']) !== 0){
+        if(isset($postdata['commercial_type']) && intval($postdata['commercial_type']) !== 0){
 
             $finder_category = strtolower($postdata['category']);
-            if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')){
-                if($postdata['facilities'] !== ''){
-                if(array_search('free trial', $postdata['facilities']) !== false){
+            if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')
+                &&($finder_category !=='healthy tiffins')&&($finder_category !=='sport nutrition supliment stores')
+            ){
+//                if($postdata['facilities'] !== ''){
+//                if(array_search('free trial', $postdata['facilities']) !== false){
                     $postdata['free_trial_enable'] = 1;
-                }                    
-                }
+//                }
+//                }
             }           
         }
         
@@ -495,6 +504,7 @@ class RankingController extends \BaseController {
         $catval = evalBaseCategoryScore($finderdocument['category_id']);
         $postdata['rankv1'] = $catval;
         $postdata['rankv2'] = $score + $catval;
+        $postdata['alloptions_rank'] = $this->generateAllFitnessRank($finderdocument);
         $postdata['average_price'] = $average_monthly;
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
@@ -534,6 +544,15 @@ public function generateRank($finderDocument = ''){
 
 }
 
+public function generateAllFitnessRank($finderDocument = ''){
+
+        //$finderCategory = $finderDocument['category'];
+
+    $score = (((9/11)*evalBaseCategoryScore($finderDocument['category_id'])) + 8*($this->evalVendorType($finderDocument)) + 2*($this->evalProfileCompleteness($finderDocument)) + 3*($this->evalPopularity($finderDocument)))/22;
+    return $score;
+
+}
+
 public function evalProfileCompleteness($finderDocument = ''){
 
     $aboutUs        = $finderDocument['info']['about'] != '' ? 1 : 0;
@@ -550,7 +569,7 @@ public function evalProfileCompleteness($finderDocument = ''){
 
 public function evalVendorType($finderDocument = ''){
 
-    switch($finderDocument['finder_type'])
+    switch($finderDocument['commercial_type'])
     {
         case 0:
         $val=0;

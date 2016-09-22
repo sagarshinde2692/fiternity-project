@@ -313,6 +313,8 @@ class ServiceRankingSearchController extends \BaseController {
 
       try{
 
+        $data = Input::json()->all();
+        Log::info('quickbook_search',$data);
         /*****************************offset********************************************************************************************/
 
         $from          =         (null !== Input::json()->get('offset')['from']) ? Input::json()->get('offset')['from'] : 0;
@@ -367,8 +369,13 @@ class ServiceRankingSearchController extends \BaseController {
           $service_filter = isset($campaignServices) ? '{"terms" : {  "service_id": '.json_encode($campaignServices).',"_cache": true}},' : '';
         }
 
+        $service_type = (Input::json()->get('service_type')) ? strtolower(Input::json()->get('service_type')) : 'workout_session';
 
-
+        $service_type_filter = "";
+        
+        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
+          $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
+        }
 
         /***********************************Geo Range Filter*********************************/
 
@@ -455,69 +462,74 @@ class ServiceRankingSearchController extends \BaseController {
 
       }
 
+      $mustnot_filter = "";
+      $exclude_category = '{"terms" : {  "category": ["dietitians and nutritionists","healthy tiffins","marathon training","healthy snacks and beverages","sport nutrition supliment stores"]}},';
+      $exclude_categorytags   = '{"terms" : {  "categorytags": ["dietitians and nutritionists","healthy tiffins","marathon training","healthy snacks and beverages","sport nutrition supliment stores"]}},';
+      $mustnot_filter = trim($exclude_category.$exclude_categorytags,',');
       
 
       /**********************************************************************************************/
       
-      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter, ',');
+      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter.$service_type_filter, ',');
 
       $post_filter_query = 
       '{
         "bool": {
-          "must": ['.$bool_filter.']
+          "must": ['.$bool_filter.'],
+          "must_not": ['.$mustnot_filter.']
         }
       }';
 
       /*******************************************Drilled Aggregations here********************************************/
 
-      $time_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter.$service_filter,',');
+      $time_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
-      $category_facets_filter = trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter.$service_filter,',');
+      $category_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
-      $location_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter.$service_filter,',');
+      $location_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
-      $location_tag_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter.$service_filter,',');
+      $location_tag_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter,',');
 
-      $subcategory_facets_filter = trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter.$service_filter, ',');
+      $subcategory_facets_filter = trim($city_filter.$workout_intensity_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
-      $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter.$service_filter, ',');
+      $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
-      $price_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
+      $price_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
 
-      $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$price_range_filter.$service_filter, ',');
+      $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
 
 
       $time_bool = '"filter": {
-        "bool" : { "must":['.$time_facets_filter.']}
+        "bool" : { "must":['.$time_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $category_bool = '"filter": {
-        "bool" : {"must":['.$category_facets_filter.']}
+        "bool" : {"must":['.$category_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $location_bool = '"filter": {
-        "bool" : {"must":['.$location_facets_filter.']}
+        "bool" : {"must":['.$location_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $subcategory_bool = '"filter": {
-        "bool" : {"must":['.$subcategory_facets_filter.']}
+        "bool" : {"must":['.$subcategory_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $workout_bool = '"filter": {
-        "bool" : {"must":['.$workout_facets_filter.']}
+        "bool" : {"must":['.$workout_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $price_bool = '"filter": {
-        "bool" : {"must":['.$price_facets_filter.']}
+        "bool" : {"must":['.$price_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $vendor_bool = '"filter": {
-        "bool" : {"must":['.$vendor_facets_filter.']}
+        "bool" : {"must":['.$vendor_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $region_tag_bool = '"filter": {
-        "bool" : {"must":['.$location_tag_facets_filter.']}
+        "bool" : {"must":['.$location_tag_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $time_facets = '"filtered_time": {
@@ -543,8 +555,7 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-
-    $category_subcategory_facets = '
+            $category_subcategory_facets = '
       "filtered_category_subcategory": { '.$category_bool.', 
       "aggs":
       { "category": {
@@ -567,8 +578,7 @@ class ServiceRankingSearchController extends \BaseController {
         }}}
       },';
 
-
-      $category_facets = ' "filtered_category": {
+            $category_facets = ' "filtered_category": {
         '.$category_bool.',
         "aggs": {
           "category": {
@@ -582,7 +592,7 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-      $region_tag_facets = ' "filtered_region_tag": {
+            $region_tag_facets = ' "filtered_region_tag": {
         '.$location_bool.',
         "aggs": {
           "locationtags": {
@@ -596,7 +606,7 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-      $regions_facets = '
+            $regions_facets = '
       "filtered_locations": { '.$location_bool.', 
       "aggs":
       { "loccluster": {
@@ -619,7 +629,7 @@ class ServiceRankingSearchController extends \BaseController {
         }}}
       },';
 
-      $subcategory_facets = ' "filtered_subcategory": {
+            $subcategory_facets = ' "filtered_subcategory": {
         '.$subcategory_bool.',
         "aggs": {
           "subcategory": {
@@ -683,13 +693,32 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-//      $facetsvalue = trim($time_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
+            $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
 
-        $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
-          
+      
       /*******************************************Drilled Aggregations here ******************************************/
 
-      $sort = '"sort":[{"workout_session_schedules_start_time_24_hrs" : {"order" : "asc"}},{"rankv2":{"order":"desc"}}]';
+      $geo_sort = "";
+
+      if(($lat !== '')&&($lon !== '')){
+
+        $geo_sort = ',{"_geo_distance": {
+          "geolocation": { 
+            "lat":  '.$lat.',
+            "lon": '.$lon.'
+          },
+          "order":"asc",
+          "unit":"km", 
+          "distance_type": "plane" 
+        }}';
+
+      }
+
+    //  $sort = 
+
+      $sort = '"sort":[{"workout_session_schedules_start_time_24_hrs" : {"order" : "asc"}},{"rankv2":{"order":"desc"}}'.$geo_sort.']';
+
+          //echo "<pre>";print_r($sort);exit;
 
       $current_hour = intval(date("G")); 
 
@@ -773,9 +802,39 @@ class ServiceRankingSearchController extends \BaseController {
           $city         =         $locat['city'] ? strtolower($locat['city']): 'mumbai';
           $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
           $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
+
+          $meal_type    =         (Input::json()->get('meal_type')) ? strtolower(Input::json()->get('meal_type')) : '';
+          $subcategory    =       (Input::json()->get('subcategory')) ? strtolower(Input::json()->get('subcategory')) : '';
+          $validity    =       (Input::json()->get('validity')) ? Input::json()->get('validity') : '';
+          $validity_type    =       (Input::json()->get('validity_type')) ? strtolower(Input::json()->get('validity_type')) : '';
+
           $category_filter = ( (null !== Input::json()->get('category')) &&(!empty(Input::json()->get('category')))) ? '{"terms" : {  "category": ["'.strtolower(implode('","', Input::json()->get('category'))).'"],"_cache": true}},' : '';
           $region_filter = (isset($locat['regions']) && !empty($locat['regions'])) ? '{"terms" : {  "location": ["'.strtolower(implode('","', $locat['regions'])).'"],"_cache": true}},' : '';
           $city_filter = '{"terms" : {  "city": ["'.$city.'"],"_cache": true}},';
+
+          $meal_type_filter = ($meal_type != "") ? '{"terms" : {  "meal_type": ["'.$meal_type.'"],"_cache": true}},' : '';
+          $subcategory_filter = ($subcategory != "") ? '{"terms" : {  "subcategory": ["'.$subcategory.'"],"_cache": true}},' : '';
+
+
+          $validity_filter = ($validity != "") ? '{"term" : {  "validity": '.$validity.'}},' : '';
+          $validity_type_filter = ($validity_type != "") ? '{"term" : {  "validity_type": "'.$validity_type.'"}},' : '';
+
+          $bool_rate_card_filter = trim($validity_filter.$validity_type_filter, ',');
+
+          $rate_card_filter = '{
+            "nested": {
+              "path": "sale_ratecards",
+              "query": {
+                "filtered": {
+                  "filter": {
+                    "bool": {
+                      "must": ['.$bool_rate_card_filter.']
+                    }
+                  }
+                }
+              }
+            }
+          }';
 
           /***********************************Geo Range Filter*********************************/
 
@@ -798,7 +857,7 @@ class ServiceRankingSearchController extends \BaseController {
 
         /*********************************Geo Range Filter***********************************/
 
-        $bool_filter = trim($city_filter.$category_filter.$region_filter.$geo_distance_filter, ',');
+        $bool_filter = trim($city_filter.$category_filter.$region_filter.$geo_distance_filter.$meal_type_filter.$subcategory_filter.$rate_card_filter, ',');
 
         $post_filter_query =
         '{

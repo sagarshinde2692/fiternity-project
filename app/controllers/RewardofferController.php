@@ -1,6 +1,7 @@
 <?php
 
 use App\Services\Utilities as Utilities;
+use App\Services\CustomerReward as CustomerReward;
 
 
 class RewardofferController extends BaseController {
@@ -79,6 +80,120 @@ class RewardofferController extends BaseController {
 
             return Response::json(array('status' => 404,'message' => $e->getMessage()),404);
         }
+    }
+
+    public function errorMessage($errors){
+
+        $errors = json_decode(json_encode($errors));
+        $message = array();
+        foreach ($errors as $key => $value) {
+            $message[$key] = $value[0];
+        }
+
+        $message = implode(',', array_values($message));
+
+        return $message;
+    }
+
+    public function getRewardOffers(){
+
+        $data = Input::json()->all();
+
+        $rules = array(
+            'finder_id'=>'required',
+            'amount'=>'required',
+            'ratecard_id'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),401);
+        }
+
+        $finder_id = (int)$data['finder_id'];
+        $amount = (int)$data['amount'];
+        $ratecard_id = (int)$data['ratecard_id'];
+
+        $ratecard = Ratecard::where('_id',$ratecard_id)/*->where('price',$amount)*/->where('finder_id',$finder_id)->first();
+
+        if(!$ratecard){
+            $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
+            return  Response::json($resp, 401);
+        }
+
+        if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){
+            $amount = $ratecard->special_price;
+        }else{
+            $amount = $ratecard->price;
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+
+            $order_id = (int) $data['order_id'];
+
+            $order = Order::find($order_id);
+
+            if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
+                $amount = (int)$data['amount'];
+            }
+        }
+
+        $finder = Finder::find($finder_id);
+
+        $findercategory_id      =   intval($finder->category_id);
+
+        $rewards = array();
+
+        if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
+            $rewards = array();
+        }else{
+            $rewardoffer           =   Rewardoffer::where('findercategory_id', $findercategory_id)
+            ->where('amount_min','<', $amount)
+            ->where('amount_max','>=', $amount)
+            ->with('rewards')
+            ->orderBy('_id','desc')->first();
+
+            if ($rewardoffer){
+                $rewardoffer = $rewardoffer->toArray();
+
+                $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
+
+                if(count($rewards) > 0){
+                    foreach ($rewards as $key => $value){
+                        if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
+                            $rewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
+                        }
+                    }
+                }
+            }
+        }
+
+        $customerReward = new CustomerReward();
+
+        $calculation = $customerReward->purchaseGame($amount,$finder_id);
+        
+        $cashback  = array(
+            'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
+            'percentage'=>$calculation['algo']['cashback'].'%',
+            'commision'=>$calculation['algo']['cashback'],
+            'calculation'=>$calculation
+        );
+
+        $renewal_cashback  = array('title'=>'Discount of 15% on Renewal');
+        $selection_limit = 1;
+
+        $data = array(
+            'renewal_cashback'          =>   $renewal_cashback,
+            'cashback'                  =>   $cashback,
+            'rewards'                   =>   $rewards,
+            'selection_limit'           =>   $selection_limit,
+            'status' => 200,
+            'message' => "Rewards offers"
+        );
+
+        return  Response::json($data, 200);
+
     }
 	
 }																																																																																																																																																																																																																																																																										

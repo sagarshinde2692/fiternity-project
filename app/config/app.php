@@ -82,7 +82,6 @@ return array(
 	| will not be safe. Please do this before deploying an application!
 	|
 	*/
-
 	'key' => 'llUcLdw8v9nl6kEzYDW5uwGRRRJkpIOV',
 
 	'cipher' => MCRYPT_RIJNDAEL_128,
@@ -207,7 +206,7 @@ return array(
 		//'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 		'AWS' 				=> 'Aws\Laravel\AwsFacade',
-
+		'DbEvent' 					=> 'App\Models\Event',
 	),
 
 	'cachetime' 					=> 	10,
@@ -242,14 +241,22 @@ return array(
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
 	),
+	//stage
+//	 'es' =>array(
+//	 	'url'		=> 			'139.59.16.74:1243',
+//	 	'host'		=> 			'139.59.16.74',
+//	 	'port'		=>			1243,
+//	 	'default_index' => 	'fitternity',
+//	 	'default_type' 	=> 	'finder',
+//	 ),
 	//local
-//	'es' =>array(
-//		'url'		=> 			'localhost:9200',
-//		'host'		=> 			'localhost',
-//		'port'		=>			9200,
-//		'default_index' => 	'fitternity',
-//		'default_type' 	=> 	'finder',
-//	),
+	/*'es' =>array(
+		'url'		=> 			'localhost:9200',
+		'host'		=> 			'localhost',
+		'port'		=>			9200,
+		'default_index' => 	'fitternity',
+		'default_type' 	=> 	'finder',
+	),*/
 
 
 	// 'es_host'		=> 			'localhost',
@@ -313,10 +320,12 @@ return array(
 		'vip_booktrials','vip_booktrials_rewarded','vip_booktrials_invited','vip_3days_booktrials',
 		'booktrials','3daystrial','healthytiffintrail'
 	),
-	'membership_types' => array('memberships','healthytiffinmembership'),
-	'workout_session_types' => array('workout-session'),
+	'membership_types' => array('memberships','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffinmembership'),
+	'workout_session_types' => array('memberships','workout-session'),
 
 	'kraken_key'							=> '73dbf866dbe673867134dc90204ddf96',
 	'kraken_secret'							=> 'd206555b6c07d8e3eba3807402a183578471251e',
+	'manual_trial_auto_finderids' => []
+
 
 );
