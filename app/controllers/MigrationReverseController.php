@@ -1825,5 +1825,31 @@ class MigrationReverseController extends \BaseController {
     }
 
 
+    public function deleteWorkoutSessionRatecard(){
+
+        $vendor_ids = Vendor::on($this->fitapi)->whereIn("vendorcategory.primary",array(45,42))->lists("_id");
+
+        $vendor_ids = array_map('intval',$vendor_ids);
+
+        echo "ratecard_ids"; echo "<pre>";print_r($ratecard_ids);
+
+        $ratecard_ids = Ratecard::on($this->fitapi)->whereIn("vendor_id",$vendor_ids)->where("type","workout session")->where("hidden",false)->lists("_id");
+
+        echo "ratecard_ids"; echo "<pre>";print_r($ratecard_ids);
+
+        $ratecards = Ratecard::on($this->fitadmin)->whereIn("_id",$ratecard_ids)->delete();
+
+        /*foreach ($ratecard_ids as $ratecard_id) {
+
+            $this->deleteRatecard($ratecard_id);
+        }*/
+
+        $ratecards = Ratecard::on($this->fitapi)->whereIn("_id",$ratecard_ids)->update(['hidden' => true]);
+
+        echo "done";
+
+    }
+
+
 
 }

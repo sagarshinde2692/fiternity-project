@@ -29,12 +29,7 @@ Route::get('removepersonaltrainerstudio', 'DebugController@removePersonalTrainer
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
-
-
-
-
-
-
+Route::get('reverse/migration/deleteworkoutsessionratecard','MigrationReverseController@deleteWorkoutSessionRatecard');
 
 
 Route::get('checkfileons3', function (){

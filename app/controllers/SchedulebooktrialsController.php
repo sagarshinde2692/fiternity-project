@@ -427,22 +427,36 @@ class SchedulebooktrialsController extends \BaseController {
             $slots = array();
             if(count($weekdayslots['slots']) > 0){
                 foreach ($weekdayslots['slots'] as $slot) {
-                    $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
-                    $goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
+
+                    $totalbookcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
+                    $goingcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
                     // $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
-                    $slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                    //$slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                    $slot_status        =   "available";
 
                     array_set($slot, 'totalbookcnt', $totalbookcnt);
                     array_set($slot, 'goingcnt', $goingcnt);
                     // array_set($slot, 'cancelcnt', $cancelcnt);
                     array_set($slot, 'status', $slot_status);
 
-                    $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
+
+                    try{
+
+                        $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_push($slots, $slot);
+
+                    }catch(Exception $e){
+
+                        Log::info("getServiceSchedule Error : ".$date." ".$slot['start_time']);
+                    }
+
+
+                    
                     // $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
                     // $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
-                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
-                    array_set($slot, 'passed', $slot_datetime_pass_status);
-                    array_push($slots, $slot);
+                    
                 }
             }
 
