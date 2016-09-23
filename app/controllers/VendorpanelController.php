@@ -1372,4 +1372,262 @@ class VendorpanelController extends BaseController
         return Response::json($response, $response['status']);
 
     }
+
+
+
+
+
+    // App Specific APIs.................
+    public function dashboard($finder_id){
+
+        $data = Input::json()->all();
+        $result = $ozonetel = $UpcomingTrials = array();
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor profile']];
+            return Response::json($data, 401);
+        }
+
+        $aggregate = $this->getOzonetelaggregate($finder_id);
+        $ozonetel = Ozonetelcapture::raw(function($collection) use ($aggregate){
+            return $collection->aggregate($aggregate);
+        });
+
+        $SalesAggregate = $this->getSalesAggregate($finder_id);
+        $sale = Order::raw(function($collection) use ($SalesAggregate){
+            return $collection->aggregate($SalesAggregate);
+        });
+
+        $Trialaggregate = $this->getTrialaggregate($finder_id);
+        $trials = Booktrial::raw(function($collection) use ($Trialaggregate){
+            return $collection->aggregate($Trialaggregate);
+        });
+
+        $UpcomingTrialaggregate = $this->getUpcomingTrialaggregate($finder_id);
+        $upcomingTrials = Booktrial::raw(function($collection) use ($UpcomingTrialaggregate){
+            return $collection->aggregate($UpcomingTrialaggregate);
+        });
+
+
+        $result['ozonetel'] = count($ozonetel['result']) > 0 ? $ozonetel['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
+        $result['trials'] = count($trials['result']) > 0 ? $trials['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
+        $result['upcomingTrials'] = count($upcomingTrials['result']) > 0 ? $upcomingTrials['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
+        $result['sale'] = count($sale['result']) > 0 ? $sale['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
+
+        return Response::json($result);
+
+
+    }
+
+
+    public function getUpcomingTrialaggregate($finder_id){
+
+        $today = date("Y-m-d 00:00:00", time());
+        $upcomingWeek = (new DateTime())->modify('this Sunday')->format('Y-m-d');
+
+        $from = (new DateTime())->modify('last month')->format('Y-m-d');
+        $tomorrow = (new DateTime())->modify('tomorrow')->format('Y-m-d');
+        $from = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($from))));
+        $tomorrow = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($tomorrow))));
+
+        $today = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($today))));
+        $upcomingWeek = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($upcomingWeek))));
+
+        $match['$match']['schedule_date_time']['$gte'] = $today;
+        $match['$match']['schedule_date_time']['$lte'] = $tomorrow;
+        $match['$match']['finder_id'] = (int) $finder_id;
+
+        $project_today['$and'] = array(
+            array('$gte'=>array('$schedule_date_time',$today)),
+            array('$lte'=>array('$schedule_date_time',$tomorrow))
+        );$project_week['$and'] = array(
+            array('$gte'=>array('$schedule_date_time',$tomorrow)),
+            array('$lte'=>array('$schedule_date_time',$upcomingWeek))
+        );
+
+        $project['$project']['today']['$cond'] = array($project_today,1,0);
+        $project['$project']['upcomingWeek']['$cond'] = array($project_week,1,0);
+
+        $group = array(
+            '$group' => array(
+                '_id' => null,
+                'weeks' => array(
+                    '$sum' => '$upcomingWeek'
+                ),'today' => array(
+                    '$sum' => '$today'
+                )
+            )
+        );
+        $aggregate = [];
+        $aggregate[] = $match;
+        $aggregate[] = $project;
+        $aggregate[] = $group;
+
+        return $aggregate;
+    }
+
+    public function getOzonetelaggregate($finder_id){
+
+        $today = date("Y-m-d 00:00:00", time());
+        $month = (new DateTime())->modify('first day of this month')->format('Y-m-d');
+        $week = (new DateTime())->modify('this week')->format('Y-m-d');
+
+        $from = (new DateTime())->modify('last month')->format('Y-m-d');
+        $tomorrow = (new DateTime())->modify('tomorrow')->format('Y-m-d');
+
+        $from = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($from))));
+        $tomorrow = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($tomorrow))));
+        $today = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($today))));
+        $month = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($month))));
+        $week = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($week))));
+
+        $match['$match']['created_at']['$gte'] = $from;
+        $match['$match']['created_at']['$lte'] = $today;
+        $match['$match']['finder_id'] = (int) $finder_id;
+
+        $project_today['$and'] = array(
+            array('$gte'=>array('$created_at',$today)),
+            array('$lte'=>array('$created_at',$tomorrow))
+        );$project_week['$and'] = array(
+            array('$gte'=>array('$created_at',$week)),
+            array('$lte'=>array('$created_at',$tomorrow))
+        );$project_month['$and'] = array(
+            array('$gte'=>array('$created_at',$month)),
+            array('$lte'=>array('$created_at',$tomorrow))
+        );
+
+        $project['$project']['today']['$cond'] = array($project_today,1,0);
+        $project['$project']['week']['$cond'] = array($project_week,1,0);
+        $project['$project']['month']['$cond'] = array($project_month,1,0);
+
+        $group = array(
+            '$group' => array(
+                '_id' => null,
+                'weeks' => array(
+                    '$sum' => '$week'
+                ),'months' => array(
+                    '$sum' => '$month'
+                ),'today' => array(
+                    '$sum' => '$today'
+                )
+            )
+        );
+        $aggregate = [];
+        $aggregate[] = $match;
+        $aggregate[] = $project;
+        $aggregate[] = $group;
+
+        return $aggregate;
+    }
+
+    public function getSalesAggregate($finder_id){
+
+        $today = date("Y-m-d 00:00:00", time());
+        $month = (new DateTime())->modify('first day of this month')->format('Y-m-d');
+        $week = (new DateTime())->modify('this week')->format('Y-m-d');
+
+        $from = (new DateTime())->modify('last month')->format('Y-m-d');
+        $tomorrow = (new DateTime())->modify('tomorrow')->format('Y-m-d');
+
+        $from = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($from))));
+        $tomorrow = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($tomorrow))));
+        $today = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($today))));
+        $month = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($month))));
+        $week = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($week))));
+
+        $match['$match']['created_at']['$gte'] = $from;
+        $match['$match']['created_at']['$lte'] = $today;
+        $match['$match']['finder_id'] = (int) $finder_id;
+
+        $project_today['$and'] = array(
+            array('$gte'=>array('$created_at',$today)),
+            array('$lte'=>array('$created_at',$tomorrow))
+        );$project_week['$and'] = array(
+            array('$gte'=>array('$created_at',$week)),
+            array('$lte'=>array('$created_at',$tomorrow))
+        );$project_month['$and'] = array(
+            array('$gte'=>array('$created_at',$month)),
+            array('$lte'=>array('$created_at',$tomorrow))
+        );
+
+        $project['$project']['today']['$cond'] = array($project_today,'$amount',0);
+        $project['$project']['week']['$cond'] = array($project_week,'$amount',0);
+        $project['$project']['month']['$cond'] = array($project_month,'$amount',0);
+
+        $group = array(
+            '$group' => array(
+                '_id' => null,
+                'weeks' => array(
+                    '$sum' => '$week'
+                ),'months' => array(
+                    '$sum' => '$month'
+                ),'today' => array(
+                    '$sum' => '$today'
+                )
+            )
+        );
+        $aggregate = [];
+        $aggregate[] = $match;
+        $aggregate[] = $project;
+        $aggregate[] = $group;
+
+        return $aggregate;
+    }
+
+    public function getTrialaggregate($finder_id){
+
+        $today = date("Y-m-d 00:00:00", time());
+        $month = (new DateTime())->modify('first day of this month')->format('Y-m-d');
+        $week = (new DateTime())->modify('this week')->format('Y-m-d');
+
+        $from = (new DateTime())->modify('last month')->format('Y-m-d');
+        $tomorrow = (new DateTime())->modify('tomorrow')->format('Y-m-d');
+
+        $from = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($from))));
+        $tomorrow = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($tomorrow))));
+        $today = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($today))));
+        $month = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($month))));
+        $week = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($week))));
+
+        $match['$match']['schedule_date_time']['$gte'] = $from;
+        $match['$match']['schedule_date_time']['$lte'] = $today;
+        $match['$match']['finder_id'] = (int) $finder_id;
+
+        $project_today['$and'] = array(
+            array('$gte'=>array('$schedule_date_time',$today)),
+            array('$lte'=>array('$schedule_date_time',$tomorrow))
+        );$project_week['$and'] = array(
+            array('$gte'=>array('$schedule_date_time',$week)),
+            array('$lte'=>array('$schedule_date_time',$tomorrow))
+        );$project_month['$and'] = array(
+            array('$gte'=>array('$schedule_date_time',$month)),
+            array('$lte'=>array('$schedule_date_time',$tomorrow))
+        );
+
+        $project['$project']['today']['$cond'] = array($project_today,1,0);
+        $project['$project']['week']['$cond'] = array($project_week,1,0);
+        $project['$project']['month']['$cond'] = array($project_month,1,0);
+
+        $group = array(
+            '$group' => array(
+                '_id' => null,
+                'weeks' => array(
+                    '$sum' => '$week'
+                ),'months' => array(
+                    '$sum' => '$month'
+                ),'today' => array(
+                    '$sum' => '$today'
+                )
+            )
+        );
+        $aggregate = [];
+        $aggregate[] = $match;
+        $aggregate[] = $project;
+        $aggregate[] = $group;
+
+        return $aggregate;
+    }
+
+
 }
