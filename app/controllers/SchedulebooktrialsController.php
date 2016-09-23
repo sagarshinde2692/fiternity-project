@@ -258,7 +258,7 @@ class SchedulebooktrialsController extends \BaseController {
                         $price = (int) $slot['price'];
 
                         if($price >= 500){
-                            $vip_trial_amount = 500;
+                            $vip_trial_amount = $price;
                         }
 
                         if($price < 500){
