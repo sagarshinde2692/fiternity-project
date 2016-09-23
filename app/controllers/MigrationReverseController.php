@@ -1831,7 +1831,7 @@ class MigrationReverseController extends \BaseController {
 
         $vendor_ids = array_map('intval',$vendor_ids);
 
-        echo "ratecard_ids"; echo "<pre>";print_r($ratecard_ids);
+        echo "vendor_ids"; echo "<pre>";print_r($vendor_ids);
 
         $ratecard_ids = Ratecard::on($this->fitapi)->whereIn("vendor_id",$vendor_ids)->where("type","workout session")->where("hidden",false)->lists("_id");
 
