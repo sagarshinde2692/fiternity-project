@@ -1165,7 +1165,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($trialRatecard && isset($trialRatecard['price'])){
-                $trialPrice = $trialRatecard['price'];
+                $trialPrice = (isset($trialRatecard['selling_price']) && intval($trialRatecard['selling_price']) > 0) ? $trialRatecard['selling_price'] : $trialRatecard['price'];
             }
 
             //Workout session Price From Ratecard
@@ -1179,7 +1179,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
-                $workoutSessionPrice = $workoutSessionRatecard['price'];
+                $workoutSessionPrice = (isset($workoutSessionRatecard['selling_price']) && intval($workoutSessionRatecard['selling_price']) > 0) ? $workoutSessionRatecard['selling_price'] : $workoutSessionRatecard['price'];
             }
 
 
@@ -1301,7 +1301,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($trialRatecard && isset($trialRatecard['price'])){
-                $trialPrice = $trialRatecard['price'];
+                $trialPrice = (isset($trialRatecard['selling_price']) && intval($trialRatecard['selling_price']) > 0) ? $trialRatecard['selling_price'] : $trialRatecard['price'];
             }
 
             //Workout session Price From Ratecard
@@ -1315,7 +1315,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
-                $workoutSessionPrice = $workoutSessionRatecard['price'];
+                $workoutSessionPrice = (isset($workoutSessionRatecard['selling_price']) && intval($workoutSessionRatecard['selling_price']) > 0) ? $workoutSessionRatecard['selling_price'] : $workoutSessionRatecard['price'];
             }
 
 
@@ -1548,8 +1548,6 @@ class MigrationReverseController extends \BaseController {
             $batchesdata    = [];
 
 
-            
-
                  
              if(count($batches) > 0){
 
@@ -1671,7 +1669,7 @@ class MigrationReverseController extends \BaseController {
                 }
 
                 if($trialRatecard && isset($trialRatecard['price'])){
-                    $trialPrice = $trialRatecard['price'];
+                    $trialPrice = (isset($trialRatecard['selling_price']) && intval($trialRatecard['selling_price']) > 0) ? $trialRatecard['selling_price'] : $trialRatecard['price'];
                 }
 
 //                var_dump($vendorservice_id); exit;
@@ -1689,7 +1687,7 @@ class MigrationReverseController extends \BaseController {
 //                print_pretty($workoutSessionRatecard); exit;
 
                 if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
-                    $workoutSessionPrice = $workoutSessionRatecard['price'];
+                    $workoutSessionPrice = (isset($workoutSessionRatecard['selling_price']) && intval($workoutSessionRatecard['selling_price']) > 0) ? $workoutSessionRatecard['selling_price'] : $workoutSessionRatecard['price'];
                 }else{
                     $workoutSessionPrice = $trialPrice;
                 }
