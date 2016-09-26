@@ -739,7 +739,8 @@ public function getRankedFinderResultsAppv2()
                 "healthy tiffins",
                 "healthy snacks and beverages",
                 "sport nutrition supliment stores",
-                "dietitians and nutritionists"
+                "dietitians and nutritionists",
+                "personal trainers"
                 ]
             }
         }]
