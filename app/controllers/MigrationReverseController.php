@@ -755,8 +755,8 @@ class MigrationReverseController extends \BaseController {
                 'budget' 								=>  (isset($Finder->cost) && isset($Finder->cost['average_price']) && $Finder->cost['average_price'] != "") ? intval($Finder->cost['average_price']) : 0,
                 'price_range' 							=>  (isset($Finder->cost) && isset($Finder->cost['price_range']) && $Finder->cost['price_range'] != "") ? trim($Finder->cost['price_range']) : "one",
                 'purchase_gamification_disable' 		=>  (isset($Finder->flags) && isset($Finder->flags['purchase_gamification_disable']) && $Finder->flags['purchase_gamification_disable'] === true) ? "1" : "0",
-                'trial' 		                        =>  (isset($Finder->flags) && isset($Finder->flags['trial']) && $Finder->flags['trial'] === true) ? $Finder->flags['trial'] : "auto",
-                'membership' 		                    =>  (isset($Finder->flags) && isset($Finder->flags['membership']) && $Finder->flags['membership'] === true) ? $Finder->flags['membership'] : "auto",
+                'trial' 		                        =>  (isset($Finder->flags) && isset($Finder->flags['trial'])) ? $Finder->flags['trial'] : "auto",
+                'membership' 		                    =>  (isset($Finder->flags) && isset($Finder->flags['membership'])) ? $Finder->flags['membership'] : "auto",
                 'manual_trial_enable' 				    =>  (isset($Finder->manual_trial_enable) && $Finder->manual_trial_enable === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
@@ -766,6 +766,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
             $insertData['finder_type']                    = (isset($insertData['commercial_type']) && !empty(($insertData['commercial_type'])) ) ? (( $insertData['commercial_type'] == 1  || $insertData['commercial_type'] == 3 ) ? 1: 0) :0;
 
+//            dd($Finder->flags['membership']);
 //            var_dump($insertData);exit();
             $Finder_exists_cnt	=	DB::connection($this->fitadmin)->table('finders')->where('_id', intval($id) )->count();
 
