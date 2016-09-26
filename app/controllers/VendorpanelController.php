@@ -1423,26 +1423,25 @@ class VendorpanelController extends BaseController
 
     public function getUpcomingTrialaggregate($finder_id){
 
-        $today = date("Y-m-d 00:00:00", time());
-        $upcomingWeek = (new DateTime())->modify('this Sunday')->format('Y-m-d');
+        $upcomingWeek = (new DateTime())->modify('this Sunday')->format('Y-m-d h:i:s');
 
-        $from = (new DateTime())->modify('last month')->format('Y-m-d');
-        $tomorrow = (new DateTime())->modify('tomorrow')->format('Y-m-d');
-        $from = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($from))));
-        $tomorrow = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($tomorrow))));
+        $from = (new DateTime())->modify('last month')->format('Y-m-d h:i:s');
+        $tomorrow = (new DateTime())->modify('tomorrow')->format('Y-m-d h:i:s');
+        $from = new MongoDate(strtotime(date('Y-m-d h:i:s', strtotime($from))));
+        $tomorrow = new MongoDate(strtotime(date('Y-m-d h:i:s', strtotime($tomorrow))));
 
-        $today = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($today))));
-        $upcomingWeek = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($upcomingWeek))));
+        $today = new MongoDate();
+        $upcomingWeek = new MongoDate(strtotime(date('Y-m-d h:i:s', strtotime($upcomingWeek))));
 
         $match['$match']['schedule_date_time']['$gte'] = $today;
-        $match['$match']['schedule_date_time']['$lte'] = $tomorrow;
+        $match['$match']['schedule_date_time']['$lte'] = $upcomingWeek;
         $match['$match']['finder_id'] = (int) $finder_id;
 
         $project_today['$and'] = array(
             array('$gte'=>array('$schedule_date_time',$today)),
             array('$lte'=>array('$schedule_date_time',$tomorrow))
         );$project_week['$and'] = array(
-            array('$gte'=>array('$schedule_date_time',$tomorrow)),
+            array('$gte'=>array('$schedule_date_time',$today)),
             array('$lte'=>array('$schedule_date_time',$upcomingWeek))
         );
 
