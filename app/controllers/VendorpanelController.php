@@ -1410,10 +1410,10 @@ class VendorpanelController extends BaseController
         });
 
 
-        $result['ozonetel'] = count($ozonetel['result']) > 0 ? $ozonetel['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
-        $result['trials'] = count($trials['result']) > 0 ? $trials['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
-        $result['upcomingTrials'] = count($upcomingTrials['result']) > 0 ? $upcomingTrials['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
-        $result['sale'] = count($sale['result']) > 0 ? $sale['result'] : array("weeks"=>0, "months"=>0, "today"=>0);
+        $result['ozonetel'] = count($ozonetel['result']) > 0 ? $ozonetel['result'][0] : array("weeks"=>0, "months"=>0, "today"=>0);
+        $result['trials'] = count($trials['result']) > 0 ? $trials['result'][0] : array("weeks"=>0, "months"=>0, "today"=>0);
+        $result['upcomingTrials'] = count($upcomingTrials['result']) > 0 ? $upcomingTrials['result'][0] : array("weeks"=>0, "months"=>0, "today"=>0);
+        $result['sale'] = count($sale['result']) > 0 ? $sale['result'][0] : array("weeks"=>0, "months"=>0, "today"=>0);
 
         return Response::json($result);
 
