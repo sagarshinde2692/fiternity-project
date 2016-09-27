@@ -1335,7 +1335,6 @@ class VendorpanelController extends BaseController
 
     }
 
-
     public function gettrialdetail($booktrial_id){  
 
 
@@ -1372,9 +1371,6 @@ class VendorpanelController extends BaseController
         return Response::json($response, $response['status']);
 
     }
-
-
-
 
 
     // App Specific APIs.................
@@ -1419,7 +1415,6 @@ class VendorpanelController extends BaseController
 
 
     }
-
 
     public function getUpcomingTrialaggregate($finder_id){
 
@@ -1626,6 +1621,47 @@ class VendorpanelController extends BaseController
         $aggregate[] = $group;
 
         return $aggregate;
+    }
+
+    public function getReviewsApp($finder_id, $start_date=NULL, $end_date=NULL){
+
+        $req = Input::json()->all();
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+        $today_date = date("d-m-Y", time());
+        $start_date = ($start_date != NULL) ? date("d-m-Y", $start_date) : $today_date;
+        $end_date = ($end_date != NULL) ? date("d-m-Y", $end_date) : $today_date;
+        $min_rating = isset($req['min_rating']) ? $req['min_rating'] : 0;
+        $max_rating = isset($req['max_rating']) ? $req['max_rating'] : 5;
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+
+        $finder_id = intval($finder_id);
+
+        $reviews = $this
+            ->reviewssummary
+            ->getAppReviews($min_rating, $max_rating, $finder_id, $start_date, $end_date, $limit, $offset);
+
+        $reviewArr = array();
+        foreach ($reviews['data'] as $review){
+            $reviewObj = array();
+            $reviewObj['customer_name'] = $review['customer']['name'];
+            $reviewObj['customer_image'] = $review['customer']['picture'];
+            $reviewObj['detail_rating'] = array_combine($review['finder']['category']['detail_rating'], array_map('intval', $review['detail_rating']));
+            $reviewObj['rating'] = intval($review['rating']);
+            $reviewObj['reply'] = $review['reply'];
+            $reviewObj['replied_at'] = strtotime($review['replied_at']);
+            $reviewObj['created_at'] = strtotime($review['created_at']);
+            array_push($reviewArr, $reviewObj);
+        }
+
+        $reviews['data'] = $reviewArr;
+
+        return $reviews;
     }
 
 

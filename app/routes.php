@@ -36,7 +36,9 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 	Route::post('/vendorapp/dashboard/{finder_id?}',
 		array('as' => 'vendor.dashboard', 'uses' => 'VendorpanelController@dashboard'));
-	
+
+	Route::post('/vendorapp/reviews/{finder_id?}/{start_date?}/{end_date?}',
+		array('as' => 'vendor.reviews','uses' => 'VendorpanelController@getReviewsApp'));
 
 	Route::post('/refreshWebToken',
 		array('as' => 'vendor.refreshWebToken', 'uses' => 'VendorpanelController@refreshWebToken'));
