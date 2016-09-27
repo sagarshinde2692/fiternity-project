@@ -1265,6 +1265,11 @@ class VendorpanelController extends BaseController
 
         if($reviewData){
 
+            if($reviewData['finder_id'] != $finder_id){
+                $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to reply']];
+                return Response::json($data, 401);
+            }
+
             // UPdate in DB....
             //ToDO correct replied_at timestamp..........
             $reviewData->update(
@@ -1649,6 +1654,7 @@ class VendorpanelController extends BaseController
         $reviewArr = array();
         foreach ($reviews['data'] as $review){
             $reviewObj = array();
+            $reviewObj['_id'] = $review['_id'];
             $reviewObj['customer_name'] = $review['customer']['name'];
             $reviewObj['customer_image'] = $review['customer']['picture'];
             $reviewObj['detail_rating'] = array_combine($review['finder']['category']['detail_rating'], array_map('intval', $review['detail_rating']));
