@@ -371,11 +371,11 @@ class ServiceRankingSearchController extends \BaseController {
 
         $service_type = (Input::json()->get('service_type')) ? strtolower(Input::json()->get('service_type')) : 'workout_session';
 
-        $service_type_filter = "";
+        // $service_type_filter = "";
         
-        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
           $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
-        }
+        // if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
+        // }
 
         /***********************************Geo Range Filter*********************************/
 
