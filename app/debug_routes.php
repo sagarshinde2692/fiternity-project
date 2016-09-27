@@ -63,12 +63,16 @@ Route::get('checkfileons3', function (){
 
 
 
-Route::get('gettrialscsv', function(){
-	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+Route::get('updatefinders', function(){
+
+    DB::connection('mongodb')->table('finders')->whereNotIn('city_id',[1])->update(['vip_trial' => '0']);
+    DB::connection('mongodb2')->table('vendors')->whereNotIn('city_id',[1])->update(['vip_trial' =>  false]);
+
 });
 
 
 Route::get('migratescheduletype', function(){
+
 
 
 	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
