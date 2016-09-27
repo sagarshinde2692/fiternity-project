@@ -717,6 +717,7 @@ class MigrationReverseController extends \BaseController {
                     'additional_info' 	=>  (isset($Finder->info['additional_info'])) ? trim($Finder->info['additional_info']) : "",
                     'timing' 	=>  (isset($Finder->info['timing'])) ? trim($Finder->info['timing']) : "",
                     'delivery_timing' 	=>  (isset($Finder->info['delivery_timing'])) ? trim($Finder->info['delivery_timing']) : "",
+                    'delivery_address' 	=>  (isset($Finder->info['delivery_address'])) ? trim($Finder->info['delivery_address']) : "",
                     'service' 	=>  (isset($Finder->info['service'])) ? "<ul><li>". implode("</li><li>", $Finder->info['service'])."</li></ul>" : "",
                 ],
                 'meta' 	=>  [
@@ -738,6 +739,7 @@ class MigrationReverseController extends \BaseController {
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),
                 'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
                 'multiaddress' 					        =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
+                'peak_hours' 					        =>  (isset($Finder['peak_hours']) && count($Finder['peak_hours']) > 0) ? $Finder['peak_hours'] : [],
                 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
                 'total_rating_count' 					=>  (isset($Finder->rating['count'])) ? $Finder->rating['count'] : 0,
                 'detail_rating_summary_average' 		=>  $detail_rating_summary_average,
@@ -1444,26 +1446,28 @@ class MigrationReverseController extends \BaseController {
 
                     foreach ($batch['slots'] as $k => $slot) {
                         // return $slot;
-                        $batch_weekdays_data['weekday'] =	$slot['day'];
+                        if(isset($slot['day']) && isset($slot['duration'])){
+                            $batch_weekdays_data['weekday'] =	$slot['day'];
 
-                        $slot_times 			=	explode('-',$slot['duration']);
-                        $start_time 	        =	$slot_times[0];
-                        $end_time 	            =	$slot_times[1];
+                            $slot_times 			=	explode('-',$slot['duration']);
+                            $start_time 	        =	$slot_times[0];
+                            $end_time 	            =	$slot_times[1];
 
-                        $batch_weekdays_data['slots'] =	[
-                            [
-                                'weekday' => $slot['day'],
-                                'start_time' => $start_time,
-                                'end_time' => $end_time,
-                                'slot_time' => $slot['duration'],
-                                'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
-                                'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
-                            ]
-                        ];
+                            $batch_weekdays_data['slots'] =	[
+                                [
+                                    'weekday' => $slot['day'],
+                                    'start_time' => $start_time,
+                                    'end_time' => $end_time,
+                                    'slot_time' => $slot['duration'],
+                                    'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
+                                    'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
+                                ]
+                            ];
 
-                        // return $batch_weekdays_data;
-                        array_push($batchdata, $batch_weekdays_data);
-                        // return $batchdata;
+                            // return $batch_weekdays_data;
+                            array_push($batchdata, $batch_weekdays_data);
+                            // return $batchdata;
+                        }
 
                     }
                 }
