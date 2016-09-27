@@ -304,6 +304,21 @@ class VendorpanelController extends BaseController
                             'amount_finder', 'payment_mode', 'booktrial_id','created_at')
                     );
                 break;
+            case 'paymentgateway_cod':
+                $result['count'] = $this
+                    ->salessummary
+                    ->getPaymentGatewayCodSales($finder_id, $start_date, $end_date)
+                    ->count();
+                $result['data'] = $this
+                    ->salessummary
+                    ->getPaymentGatewayCodSales($finder_id, $start_date, $end_date)
+                    ->take($limit)
+                    ->skip($offset)
+                    ->get(
+                        array('customer_email', 'customer_name', 'customer_phone', 'service_id', 'service_name', 'service_duration',
+                            'amount_finder', 'payment_mode', 'booktrial_id','created_at')
+                    );
+                break;
             case 'paymentgateway':
                 $result['count'] = $this
                     ->salessummary
@@ -1628,7 +1643,7 @@ class VendorpanelController extends BaseController
         return $aggregate;
     }
 
-    public function getReviewsApp($finder_id, $start_date=NULL, $end_date=NULL){
+    public function getReviewsApp($finder_id){
 
         $req = Input::json()->all();
         $finder_ids = $this->jwtauth->vendorIdsFromToken();
@@ -1637,9 +1652,10 @@ class VendorpanelController extends BaseController
             $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
             return Response::json($data, 401);
         }
-        $today_date = date("d-m-Y", time());
-        $start_date = ($start_date != NULL) ? date("d-m-Y", $start_date) : $today_date;
-        $end_date = ($end_date != NULL) ? date("d-m-Y", $end_date) : $today_date;
+
+        $today_date = strtotime(date("d-m-Y", time()));
+        $start_date = isset($req['start_date']) ? date("d-m-Y", $req['start_date']) : $today_date;
+        $end_date = isset($req['end_date']) ? date("d-m-Y", $req['end_date']) : $today_date;
         $min_rating = isset($req['min_rating']) ? $req['min_rating'] : 0;
         $max_rating = isset($req['max_rating']) ? $req['max_rating'] : 5;
         $limit = isset($req['limit']) ? $req['limit'] : 10;
@@ -1655,9 +1671,20 @@ class VendorpanelController extends BaseController
         foreach ($reviews['data'] as $review){
             $reviewObj = array();
             $reviewObj['_id'] = $review['_id'];
+            $reviewObj['description'] = $review['description'];
             $reviewObj['customer_name'] = $review['customer']['name'];
             $reviewObj['customer_image'] = $review['customer']['picture'];
-            $reviewObj['detail_rating'] = array_combine($review['finder']['category']['detail_rating'], array_map('intval', $review['detail_rating']));
+            $reviewObj['detail_rating'] = array();
+
+            $length = count($review['finder']['category']['detail_rating']);
+
+                for ($x = 0; $x < $length; $x++) {
+                    $temp = array();
+                    $temp['ammenity'] = $review['finder']['category']['detail_rating'][$x];
+                    $temp['rating'] = isset($review['detail_rating'][$x]) ? intval($review['detail_rating'][$x]) : 0;
+                    array_push($reviewObj['detail_rating'], $temp);
+                }
+
             $reviewObj['rating'] = intval($review['rating']);
             $reviewObj['reply'] = $review['reply'];
             $reviewObj['replied_at'] = strtotime($review['replied_at']);
@@ -1668,6 +1695,115 @@ class VendorpanelController extends BaseController
         $reviews['data'] = $reviewArr;
 
         return $reviews;
+    }
+    
+    public function getSalesApp($finder_id){
+
+        $req = Input::json()->all();
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+
+
+        $today_date = strtotime(date("d-m-Y", time()));
+        $start_date = isset($req['start_date']) ? date("d-m-Y", $req['start_date']) : $today_date;
+        $end_date = isset($req['end_date']) ? date("d-m-Y", $req['end_date']) : $today_date;
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+        $type = isset($req['type']) ? $req['type'] : 'renewal_nonrenewal';
+
+
+        $finder_id = intval($finder_id);
+        $result = [];
+
+        $result['renewal_nonrenewal']['count'] = $this
+            ->salessummary
+            ->getRenewalNonRenewal($finder_id, $start_date, $end_date)
+            ->count();
+        $result['renewal_nonrenewal']['amount'] = $this
+            ->salessummary
+            ->getRenewalNonRenewal($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['renewal']['amount'] = $this
+            ->salessummary
+            ->getRenewal($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['paymentgateway_cod']['amount'] = $this
+            ->salessummary
+            ->getPaymentGatewayCodSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['atthestudio']['amount'] = $this
+            ->salessummary
+            ->getAtthestudioSales($finder_id, $start_date, $end_date)
+            ->sum('amount_finder');
+
+        $result['list'] = array();
+
+        $list = $this->salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+        foreach ($list['data'] as $item){
+            $temp = array();
+            $temp['_id'] = isset($item['_id']) ? $item['_id'] : '';
+            $temp['customer_name'] = isset($item['customer_name']) ? $item['customer_name'] : '';
+            $temp['customer_phone'] = isset($item['customer_phone']) ? $item['customer_phone'] : '';
+            $temp['customer_email'] = isset($item['customer_email']) ? $item['customer_email'] : '';
+            $temp['service_name'] = isset($item['service_name']) ? $item['service_name'] : '';
+            $temp['service_duration'] = isset($item['service_duration']) ? $item['service_duration'] : '';
+            $temp['amount_finder'] = isset($item['amount_finder']) && $item['amount_finder'] != ''  ? $item['amount_finder'] : (isset($item['amount']) && $item['amount'] != '' ? $item['amount'] : 0);
+            $temp['membership_origin'] = isset($item['membership_origin']) ? $item['membership_origin'] : '';
+            $temp['purchase_mode'] = isset($item['purchase_mode']) ? $item['purchase_mode'] : '';
+            $temp['created_at'] = isset($item['created_at']) ? strtotime($item['created_at']) : '';
+            array_push($result['list'],$temp);
+        }
+
+        return Response::json($result, 200);
+    }
+
+    public function getOzonetelApp($finder_id){
+
+        $req = Input::json()->all();
+        $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+        if (!(in_array($finder_id, $finder_ids))) {
+            $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+            return Response::json($data, 401);
+        }
+
+
+        $today_date = strtotime(date("d-m-Y", time()));
+        $start_date = isset($req['start_date']) ? date("d-m-Y", $req['start_date']) : $today_date;
+        $end_date = isset($req['end_date']) ? date("d-m-Y", $req['end_date']) : $today_date;
+        $limit = isset($req['limit']) ? $req['limit'] : 10;
+        $offset = isset($req['offset']) ? $req['offset'] : 0;
+        $type = isset($req['type']) ? $req['type'] : 'total';
+
+
+        $finder_id = intval($finder_id);
+        $result = $this->ozonetelcallssummary->getOzonetelcallsSummary($finder_id, $start_date, $end_date);
+
+
+        $result['list'] = array();
+        $list = $this->ozonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+        foreach ($list['data'] as $item){
+            $temp = array();
+            $temp['_id'] = isset($item['_id']) ? $item['_id'] : '';
+            $temp['ozonetel_no'] = isset($item['ozonetel_no']) ? $item['ozonetel_no'] : '';
+            $temp['customer_contact_no'] = isset($item['customer_contact_no']) ? $item['customer_contact_no'] : '';
+            $temp['customer_contact_circle'] = isset($item['customer_contact_circle']) ? $item['customer_contact_circle'] : '';
+            $temp['customer_contact_operator'] = isset($item['customer_contact_operator']) ? $item['customer_contact_operator'] : '';
+            $temp['call_status'] = isset($item['call_status']) ? $item['call_status'] : '';
+            $temp['call_duration'] = isset($item['call_duration']) && $item['call_duration'] != '' ? $item['call_duration'] : 0;
+            $temp['mp3'] = isset($item['aws_file_name']) && $item['aws_file_name'] != '' ? 'https://d3oorwrq3wx4ad.cloudfront.net/ozonetel/'.$item['aws_file_name'] : '';
+            $temp['created_at'] = isset($item['created_at']) ? strtotime($item['created_at']) : '';
+            array_push($result['list'],$temp);
+        }
+
+        return Response::json($result, 200);
     }
 
 

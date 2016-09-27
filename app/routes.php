@@ -37,8 +37,14 @@ Route::group(array('before' => 'validatevendor'), function() {
 	Route::post('/vendorapp/dashboard/{finder_id?}',
 		array('as' => 'vendor.dashboard', 'uses' => 'VendorpanelController@dashboard'));
 
-	Route::post('/vendorapp/reviews/{finder_id?}/{start_date?}/{end_date?}',
+	Route::post('/vendorapp/reviews/{finder_id?}',
 		array('as' => 'vendor.reviews','uses' => 'VendorpanelController@getReviewsApp'));
+
+	Route::post('/vendorapp/sales/{finder_id?}',
+			array('as' => 'vendor.sales','uses' => 'VendorpanelController@getSalesApp'));
+
+	Route::post('/vendorapp/ozonetel/{finder_id?}',
+				array('as' => 'vendor.ozonetel','uses' => 'VendorpanelController@getOzonetelApp'));
 
 	Route::post('/refreshWebToken',
 		array('as' => 'vendor.refreshWebToken', 'uses' => 'VendorpanelController@refreshWebToken'));
