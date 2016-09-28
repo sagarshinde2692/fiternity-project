@@ -1654,18 +1654,19 @@ class VendorpanelController extends BaseController
         }
 
         $today_date = strtotime(date("d-m-Y", time()));
-        $start_date = isset($req['start_date']) ? date("d-m-Y", $req['start_date']) : $today_date;
-        $end_date = isset($req['end_date']) ? date("d-m-Y", $req['end_date']) : $today_date;
+        $start_date = isset($req['start_date']) && $req['start_date'] != 0 ? date("d-m-Y", $req['start_date']) : $today_date;
+        $end_date = isset($req['end_date']) && $req['end_date'] != 0 ? date("d-m-Y", $req['end_date']) : $today_date;
         $min_rating = isset($req['min_rating']) ? $req['min_rating'] : 0;
         $max_rating = isset($req['max_rating']) ? $req['max_rating'] : 5;
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
+        $reply = isset($req['reply']) && is_bool($req['reply']) ? $req['reply'] : '';
 
         $finder_id = intval($finder_id);
 
         $reviews = $this
             ->reviewssummary
-            ->getAppReviews($min_rating, $max_rating, $finder_id, $start_date, $end_date, $limit, $offset);
+            ->getAppReviews($min_rating, $max_rating, $finder_id, $start_date, $end_date, $limit, $offset, $reply);
 
         $reviewArr = array();
         foreach ($reviews['data'] as $review){
@@ -1687,8 +1688,8 @@ class VendorpanelController extends BaseController
 
             $reviewObj['rating'] = intval($review['rating']);
             $reviewObj['reply'] = $review['reply'];
-            $reviewObj['replied_at'] = strtotime($review['replied_at']);
-            $reviewObj['created_at'] = strtotime($review['created_at']);
+            $reviewObj['replied_at'] = is_bool(strtotime($review['replied_at'])) ? 0 :strtotime($review['replied_at']);
+            $reviewObj['created_at'] = is_bool(strtotime($review['created_at'])) ? 0 : strtotime($review['created_at']);
             array_push($reviewArr, $reviewObj);
         }
 
@@ -1709,8 +1710,8 @@ class VendorpanelController extends BaseController
 
 
         $today_date = strtotime(date("d-m-Y", time()));
-        $start_date = isset($req['start_date']) ? date("d-m-Y", $req['start_date']) : $today_date;
-        $end_date = isset($req['end_date']) ? date("d-m-Y", $req['end_date']) : $today_date;
+        $start_date = isset($req['start_date']) && $req['start_date'] != 0 ? date("d-m-Y", $req['start_date']) : $today_date;
+        $end_date = isset($req['end_date']) && $req['end_date'] != 0 ? date("d-m-Y", $req['end_date']) : $today_date;
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
         $type = isset($req['type']) ? $req['type'] : 'renewal_nonrenewal';
@@ -1743,9 +1744,11 @@ class VendorpanelController extends BaseController
             ->getAtthestudioSales($finder_id, $start_date, $end_date)
             ->sum('amount_finder');
 
-        $result['list'] = array();
+        $result['sales'] = array();
 
         $list = $this->salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+        $result['count'] = $list['count'];
+
         foreach ($list['data'] as $item){
             $temp = array();
             $temp['_id'] = isset($item['_id']) ? $item['_id'] : '';
@@ -1757,8 +1760,8 @@ class VendorpanelController extends BaseController
             $temp['amount_finder'] = isset($item['amount_finder']) && $item['amount_finder'] != ''  ? $item['amount_finder'] : (isset($item['amount']) && $item['amount'] != '' ? $item['amount'] : 0);
             $temp['membership_origin'] = isset($item['membership_origin']) ? $item['membership_origin'] : '';
             $temp['purchase_mode'] = isset($item['purchase_mode']) ? $item['purchase_mode'] : '';
-            $temp['created_at'] = isset($item['created_at']) ? strtotime($item['created_at']) : '';
-            array_push($result['list'],$temp);
+            $temp['created_at'] = is_bool(strtotime($item['created_at'])) ? 0 : strtotime($item['created_at']);
+            array_push($result['sales'],$temp);
         }
 
         return Response::json($result, 200);
@@ -1776,8 +1779,8 @@ class VendorpanelController extends BaseController
 
 
         $today_date = strtotime(date("d-m-Y", time()));
-        $start_date = isset($req['start_date']) ? date("d-m-Y", $req['start_date']) : $today_date;
-        $end_date = isset($req['end_date']) ? date("d-m-Y", $req['end_date']) : $today_date;
+        $start_date = isset($req['start_date']) && $req['start_date'] != 0 ? date("d-m-Y", $req['start_date']) : $today_date;
+        $end_date = isset($req['end_date']) && $req['end_date'] != 0 ? date("d-m-Y", $req['end_date']) : $today_date;
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
         $type = isset($req['type']) ? $req['type'] : 'total';
@@ -1785,10 +1788,17 @@ class VendorpanelController extends BaseController
 
         $finder_id = intval($finder_id);
         $result = $this->ozonetelcallssummary->getOzonetelcallsSummary($finder_id, $start_date, $end_date);
+        $durations = $this->ozonetelcallssummary->getCallRecords($finder_id, $start_date, $end_date)->get(array('call_duration'));
+        $durations = array_map('intval',(array_pluck($durations,'call_duration')));
 
-
-        $result['list'] = array();
+        $result['answered'] = ($result['answered']*100)/$result['total'];
+        $result['not_answered'] = ($result['not_answered']*100)/$result['total'];
+        $result['called'] = ($result['called']*100)/$result['total'];
+        $result['duration_seconds'] = array_sum($durations);
+        $result['ozonetellogs'] = array();
         $list = $this->ozonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+        $result['count'] = $list['count'];
+
         foreach ($list['data'] as $item){
             $temp = array();
             $temp['_id'] = isset($item['_id']) ? $item['_id'] : '';
@@ -1799,12 +1809,116 @@ class VendorpanelController extends BaseController
             $temp['call_status'] = isset($item['call_status']) ? $item['call_status'] : '';
             $temp['call_duration'] = isset($item['call_duration']) && $item['call_duration'] != '' ? $item['call_duration'] : 0;
             $temp['mp3'] = isset($item['aws_file_name']) && $item['aws_file_name'] != '' ? 'https://d3oorwrq3wx4ad.cloudfront.net/ozonetel/'.$item['aws_file_name'] : '';
-            $temp['created_at'] = isset($item['created_at']) ? strtotime($item['created_at']) : '';
-            array_push($result['list'],$temp);
+            $temp['created_at'] = is_bool(strtotime($item['created_at'])) ? 0 : strtotime($item['created_at']);
+            array_push($result['ozonetellogs'],$temp);
         }
 
         return Response::json($result, 200);
     }
+
+    public function getTrialsApp($finder_id){
+
+            $req = Input::json()->all();
+            $finder_ids = $this->jwtauth->vendorIdsFromToken();
+
+            if (!(in_array($finder_id, $finder_ids))) {
+                $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+                return Response::json($data, 401);
+            }
+
+
+            $today_date = strtotime(date("d-m-Y", time()));
+            $start_date = isset($req['start_date']) && $req['start_date'] != 0 ? date("d-m-Y", $req['start_date']) : $today_date;
+            $end_date = isset($req['end_date']) && $req['end_date'] != 0 ? date("d-m-Y", $req['end_date']) : $today_date;
+            $limit = isset($req['limit']) ? $req['limit'] : 10;
+            $offset = isset($req['offset']) ? $req['offset'] : 0;
+            $type = isset($req['type']) ? $req['type'] : 'booked';
+
+
+            $finder_id = intval($finder_id);
+            $result = [
+                'booked' => $this->trialssummary->getBookedTrials($finder_id, $start_date, $end_date)->count(),
+                'attended' => $this->trialssummary->getAttendedTrials($finder_id, $start_date, $end_date)->count(),
+                'upcoming' => $this->trialssummary->getUpcomingTrials($finder_id)->count(),
+                'converted' => $this->trialssummary->getTrialsConverted($finder_id, $start_date, $end_date)->count(),
+                'sales' => $this->salessummary->getRenewalNonRenewal($finder_id, $start_date, $end_date)->sum('amount_finder')
+            ];
+            $result['trials'] = array();
+            $list = $this->trialsListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+            $result['count'] = $list['count'];
+
+        foreach ($list['data'] as $item){
+                $temp = array();
+                $temp['_id'] = isset($item['_id']) ? $item['_id'] : '';
+                $temp['schedule_date'] = strtotime($item['schedule_date']);
+                $temp['created_at'] = is_bool(strtotime($item['created_at'])) ? 0 : strtotime($item['created_at']);
+                $temp['service_name'] = isset($item['service_name']) ? $item['service_name'] : '';
+                $temp['schedule_slot'] = isset($item['schedule_slot']) ? $item['schedule_slot'] : '';
+                $temp['going_status_txt'] = isset($item['going_status_txt']) ? $item['going_status_txt'] : '';
+                $temp['going_status'] = $item['going_status'];
+                array_push($result['trials'],$temp);
+            }
+
+            return Response::json($result, 200);
+        }
+
+
+        public function getUpcomingTrialsApp($finder_id){
+
+            $req = Input::json()->all();
+            $finder_ids = $this->jwtauth->vendorIdsFromToken();
+            $finder_id = intval($finder_id);
+            if (!(in_array($finder_id, $finder_ids))) {
+                $data = ['status_code' => 401, 'message' => ['error' => 'Unauthorized to access this vendor data']];
+                return Response::json($data, 401);
+            }
+
+
+            $today_date = strtotime(date("d-m-Y", time()));
+            $start_date = isset($req['start_date']) && $req['start_date'] != 0 ? date("d-m-Y", $req['start_date']) : $today_date;
+            $end_date = isset($req['end_date']) && $req['end_date'] != 0 ? date("d-m-Y", $req['end_date']) : $today_date;
+            $limit = isset($req['limit']) ? $req['limit'] : 10;
+            $offset = isset($req['offset']) ? $req['offset'] : 0;
+            $going_status = isset($req['going_status']) && $req['going_status'] != '' ? $req['going_status'] : NULL;
+
+            $UpcomingTrialaggregate = $this->getUpcomingTrialaggregate($finder_id);
+            $upcomingTrials = Booktrial::raw(function($collection) use ($UpcomingTrialaggregate){
+                return $collection->aggregate($UpcomingTrialaggregate);
+            });
+            $result['statistics'] = count($upcomingTrials['result']) > 0 ? $upcomingTrials['result'][0] : array("weekly"=>0, "monthly"=>0, "today"=>0);
+            $query = $this->trialssummary->getUpcomingBooktrials($finder_id, $start_date, $end_date);
+
+            if(isset($going_status)){
+
+                $query->where('going_status_txt',$going_status);
+
+            }
+
+            $result['count'] = $query->count();
+            $result['upcomingtrials'] = array();
+            $list = $query->take($limit)->skip($offset)->get(
+                array('booktrial_actions', 'booktrial_type', 'code', 'customer_email',
+                    'customer_name', 'customer_phone', 'final_lead_stage', 'final_lead_status',
+                    'going_status', 'going_status_txt', 'missedcall_batch', 'origin',
+                    'premium_session', 'schedule_date', 'schedule_date_time', 'schedule_slot',
+                    'service_id', 'service_name', 'share_customer_no','created_at','trial_attended_finder','finder_id')
+            );
+
+
+            foreach ($list as $item){
+                $temp = array();
+                $temp['_id'] = isset($item['_id']) ? $item['_id'] : '';
+                $temp['schedule_date'] = strtotime($item['schedule_date']);
+                $temp['created_at'] = is_bool(strtotime($item['created_at'])) ? 0 : strtotime($item['created_at']);
+                $temp['service_name'] = isset($item['service_name']) ? $item['service_name'] : '';
+                $temp['schedule_slot'] = isset($item['schedule_slot']) ? $item['schedule_slot'] : '';
+                $temp['going_status_txt'] = isset($item['going_status_txt']) ? $item['going_status_txt'] : '';
+                $temp['going_status'] = $item['going_status'];
+                array_push($result['upcomingtrials'],$temp);
+            }
+
+            return Response::json($result, 200);
+        }
 
 
 }
