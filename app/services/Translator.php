@@ -739,7 +739,6 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$sort = $resultv1['sort'];
 
 				// var_dump($result['commercial_type'] );exit;
-				if(isset($result['commercial_type']) && $result['commercial_type'] != "0"){
 
 					// var_dump($result['commercial_type'] );exit();
 
@@ -788,7 +787,6 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					array_push($vip_trial_response->results->resultlist, $finder);
 
 
-				}
 				
 
 			}
