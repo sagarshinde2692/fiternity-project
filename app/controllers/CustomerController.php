@@ -2521,5 +2521,44 @@ public function getCustomerDetail(){
 
 	}
 
+	public function forceUpdate(){
+
+		$rules = [
+			'app_version' => 'numeric|required',
+			'device_type' => 'required'
+		];
+
+		$data = $_REQUEST;
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
+		}
+
+		$current_version_android = 2.6;
+		$current_version_ios = 2.0;
+
+		$result_android = array(
+			"title" => "Version ".$current_version_android." is available on Play Store",
+			"description" => "Version ".$current_version_android." is available on Play Store",
+			"force_update" => false,
+			"available_version" => $current_version_android,
+		);
+
+		$result_ios = array(
+			"title" => "Version ".$current_version_ios." is available on App Store",
+			"description" => "Version ".$current_version_ios." is available on App Store",
+			"force_update" => false,
+			"available_version" => $current_version_ios,
+		);
+
+		$result = ($data['device_type'] == 'android') ? $result_android : $result_ios;
+
+		return Response::json(array('status' => 200,'data' => $result),200);
+
+	}
+
 
 }
