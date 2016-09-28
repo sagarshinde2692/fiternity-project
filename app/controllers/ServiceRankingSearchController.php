@@ -373,9 +373,8 @@ class ServiceRankingSearchController extends \BaseController {
 
         $service_type_filter = "";
         
-        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
-          $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
-        }
+        
+        $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
 
         /***********************************Geo Range Filter*********************************/
 
