@@ -1645,7 +1645,7 @@ class VendorpanelController extends BaseController
 
     public function getReviewsApp($finder_id){
 
-        $req = Input::json()->all();
+        $req = Input::all();
         $finder_ids = $this->jwtauth->vendorIdsFromToken();
 
         if (!(in_array($finder_id, $finder_ids))) {
@@ -1660,7 +1660,7 @@ class VendorpanelController extends BaseController
         $max_rating = isset($req['max_rating']) ? $req['max_rating'] : 5;
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
-        $reply = isset($req['reply']) && is_bool($req['reply']) ? $req['reply'] : '';
+        $reply = isset($req['reply']) &&  $req['reply'] != "true" ? false : '';
 
         $finder_id = intval($finder_id);
 
