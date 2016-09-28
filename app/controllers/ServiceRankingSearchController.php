@@ -371,11 +371,11 @@ class ServiceRankingSearchController extends \BaseController {
 
         $service_type = (Input::json()->get('service_type')) ? strtolower(Input::json()->get('service_type')) : 'workout_session';
 
-        // $service_type_filter = "";
+        $service_type_filter = "";
         
+        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
           $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
-        // if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
-        // }
+        }
 
         /***********************************Geo Range Filter*********************************/
 
@@ -465,7 +465,8 @@ class ServiceRankingSearchController extends \BaseController {
       $mustnot_filter = "";
       $exclude_category = '{"terms" : {  "category": ["dietitians and nutritionists","healthy tiffins","marathon training","healthy snacks and beverages","sport nutrition supliment stores"]}},';
       $exclude_categorytags   = '{"terms" : {  "categorytags": ["dietitians and nutritionists","healthy tiffins","marathon training","healthy snacks and beverages","sport nutrition supliment stores"]}},';
-      $mustnot_filter = trim($exclude_category.$exclude_categorytags,',');
+      $exclude_commercial_type   = '{"terms" : {  "commercial_type": ["0"]}},';
+      $mustnot_filter = trim($exclude_commercial_type.$exclude_category.$exclude_categorytags,',');
       
 
       /**********************************************************************************************/
@@ -738,6 +739,9 @@ class ServiceRankingSearchController extends \BaseController {
         '.$sort.'
       }';
 
+
+
+      // var_dump($query);exit();
    
 
       $request = array(
