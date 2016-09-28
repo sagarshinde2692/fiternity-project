@@ -2541,17 +2541,17 @@ public function getCustomerDetail(){
 		$current_version_ios = 2.0;
 
 		$result_android = array(
-			"Title" => "Version ".$current_version_android." is available on Play Store",
-			"Description" => "Version ".$current_version_android." is available on Play Store",
+			"title" => "Version ".$current_version_android." is available on Play Store",
+			"description" => "Version ".$current_version_android." is available on Play Store",
 			"force_update" => false,
-			"current_version" => $current_version_android,
+			"available_version" => $current_version_android,
 		);
 
 		$result_ios = array(
-			"Title" => "Version ".$current_version_ios." is available on App Store",
-			"Description" => "Version ".$current_version_ios." is available on App Store",
+			"title" => "Version ".$current_version_ios." is available on App Store",
+			"description" => "Version ".$current_version_ios." is available on App Store",
 			"force_update" => false,
-			"current_version" => $current_version_ios,
+			"available_version" => $current_version_ios,
 		);
 
 		$result = ($data['device_type'] == 'android') ? $result_android : $result_ios;
