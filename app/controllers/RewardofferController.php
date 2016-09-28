@@ -160,11 +160,45 @@ class RewardofferController extends BaseController {
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
 
                 if(count($rewards) > 0){
+
                     foreach ($rewards as $key => $value){
+
+                        unset($rewards[$key]['rewrardoffers']);
+                        unset($rewards[$key]['updated_at']);
+                        unset($rewards[$key]['created_at']);
+
                         if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
                             $rewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
                         }
                     }
+
+                    $reward_ordered = array();
+
+                    $reward_type_order = array(
+                        'fitness_kit',
+                        'sessions',
+                        'healthy_snacks',
+                        'personal_trainer_at_home',
+                        'healthy_tiffin',
+                        'nutrition_store',
+                        'fitternity_voucher'
+                    );
+
+                    foreach ($reward_type_order as $reward_type_order_value){
+
+                        foreach ($rewards as $rewards_value){
+
+                            if($rewards_value['reward_type'] == $reward_type_order_value){
+
+                                $reward_ordered[] = $rewards_value;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    $rewards = $reward_ordered;
+
                 }
             }
         }
