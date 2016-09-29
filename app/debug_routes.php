@@ -31,6 +31,11 @@ Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
 Route::get('reverse/migration/deleteworkoutsessionratecard','MigrationReverseController@deleteWorkoutSessionRatecard');
 
+Route::get('latlonswap', 'DebugController@latLonSwap');
+Route::get('latlonswapapi', 'DebugController@latLonSwapApi');
+Route::get('latlonswapservice', 'DebugController@latLonSwapService');
+Route::get('latlonswapserviceapi', 'DebugController@latLonSwapServiceApi');
+
 
 Route::get('checkfileons3', function (){
 
