@@ -27,8 +27,8 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
-//	'url' => 'http://apistg.fitn.in/',
+	//'url' => 'https://a1.fitternity.com',
+	'url' => 'http://appstg.fitn.in/',
 	//'url' => 'http://fitapi.com',
 
 	/*
