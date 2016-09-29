@@ -2588,7 +2588,7 @@ public function testEmail(){
 
 	public function removePersonalTrainerStudio(){
 
-		$reward_id = Reward::where("reward_type","personal_trainer_at_studio")->lists("_id");
+		$reward_id = Reward::where("reward_type","healthy_snacks")->lists("_id");
 
 		// $reward = Reward::where("reward_type","personal_trainer_at_studio")->delete();
 
