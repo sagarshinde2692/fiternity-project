@@ -180,6 +180,8 @@ Class FinderSms extends VersionNextSms{
 		$template = \Template::where('label',$label)->first();
 
 		$message = $this->bladeCompile($template->sms_text,$data);
+
+		$to = array('8976167917');
 		
 		return $this->sendToWorker($to, $message, $label, $delay);
 	}
