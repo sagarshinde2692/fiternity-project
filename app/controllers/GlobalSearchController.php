@@ -812,16 +812,15 @@ public function newglobalsearch(){
      }
 
 
-     $keylist   = array_filter(explode(" ", $string1));
+    $keylist   = array_filter(explode(" ", $string1));
 
-     if(sizeof($keylist) > 1){
-        if(($keylist[1] === 'i')){
-            array_splice($keylist, 1);
-        }
+    if(sizeof($keylist) > 1 && isset($keylist[1]) && $keylist[1] === 'i'){
+        array_splice($keylist, 1);
     }
+
     $firstwordscript = '';
 
-    if(isset($keylist[0]) && $keylist[0] === 'i'){
+    if(sizeof($keylist) > 1 && isset($keylist[0]) && $keylist[0] === 'i'){
         $firstwordscript = '{
             "script_score": {            
                 "params": {
