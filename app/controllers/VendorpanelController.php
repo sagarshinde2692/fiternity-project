@@ -1305,7 +1305,7 @@ class VendorpanelController extends BaseController
             $this->customermailer->reviewReplyByVendor($template_data);
 
             // Send response....
-            $resp 	= 	'Success';
+            $resp 	= 	array('status' => 200,'message' => "Success");
             return  Response::json($resp, 200);
 
         }
