@@ -2059,7 +2059,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder = Finder::with(array('location' => function ($query) {
                 $query->select('_id', 'name', 'slug');
             }))->with('locationtags')->where('_id', '=', $finderid)->first()->toArray();
-            $customer_id = $this->autoRegisterCustomer($data);
+            $data['customer_id'] = $customer_id = $this->autoRegisterCustomer($data);
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
             $trial_count                       =    $this->getTrialCount($finderid);
