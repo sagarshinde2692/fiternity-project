@@ -372,6 +372,21 @@ class FindersController extends \BaseController {
                 $data['nearby_same_category'] 			= 		$nearby_same_category;
                 $data['nearby_other_category'] 			= 		$nearby_other_category;
 
+
+                if(Request::header('Authorization')){
+                    $decoded                            =       decode_customer_token();
+                    $customer_email                     =       $decoded->customer->email;
+                    $customer_phone                     =       $decoded->customer->contact_no;
+                    $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+                                                                    ->where('finder_id', '=', (int) $finderid)
+                                                                    ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                                                                    ->get(array('id'));
+                    $data['trials_detials']              =      $customer_trials_with_vendors;
+                    $data['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+                }
+
+
+
                 Cache::tags('finder_detail')->put($tslug,$data,Config::get('cache.cache_time'));
 
                 return Response::json(Cache::tags('finder_detail')->get($tslug));
@@ -1458,4 +1473,17 @@ class FindersController extends \BaseController {
             return $key;
         }
     }
+
+
+
+    public function customerTokenDecode($token){
+
+        $jwt_token = $token;
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+        $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        return $decodedToken;
+    }
+
 }
