@@ -138,6 +138,16 @@ class OrderController extends \BaseController {
                 array_set($data, 'reward_info', $reward_info);
             }
 
+            if(isset($order->ratecard_id) && $order->ratecard_id != ""){
+
+                $ratecard = Ratecard::find((int)$order->ratecard_id);
+
+                if(isset($ratecard->remarks) && $ratecard->remarks){
+                
+                    array_set($data, 'ratecard_remarks', $ratecard->remarks);
+                }
+            }
+
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
 
