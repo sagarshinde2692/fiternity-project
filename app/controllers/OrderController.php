@@ -600,11 +600,23 @@ class OrderController extends \BaseController {
         if(empty($data['city_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
             return Response::json($resp,404);
+        }else{
+            $citydata 		=	City::find(intval($data['city_id']));
+            if(!$citydata){
+                $resp 	= 	array('status' => 404,'message' => "City does not exist");
+                return Response::json($resp,404);
+            }
         }
 
         if(empty($data['finder_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
             return Response::json($resp,404);
+        }else{
+            $finderdata 		=	Finder::find(intval($data['finder_id']));
+            if(!$finderdata) {
+                $resp = array('status' => 404, 'message' => "Finder does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['finder_name'])){
@@ -620,11 +632,25 @@ class OrderController extends \BaseController {
         if(empty($data['service_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
             return Response::json($resp,404);
+        }else{
+            $servicedata 		=	Service::find(intval($data['service_id']));
+            if(!$servicedata) {
+                $resp = array('status' => 404, 'message' => "Service does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['service_name'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
             return Response::json($resp,404);
+        }
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $ratecarddata 		=	Ratecard::find(intval($data['ratecard_id']));
+            if(!$ratecarddata) {
+                $resp = array('status' => 404, 'message' => "Ratecard does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['amount'])){

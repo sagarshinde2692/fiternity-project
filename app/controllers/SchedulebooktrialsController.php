@@ -2022,6 +2022,12 @@ class SchedulebooktrialsController extends \BaseController {
         if(empty($data['finder_id'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
             return  Response::json($resp, 400);
+        }else{
+            $finderdata 		=	Finder::find(intval($data['finder_id']));
+            if(!$finderdata) {
+                $resp = array('status' => 404, 'message' => "Finder does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['service_name'])){
@@ -2037,6 +2043,14 @@ class SchedulebooktrialsController extends \BaseController {
         if(empty($data['schedule_slot'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_slot");
             return  Response::json($resp, 400);
+        }
+
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+            $servicedata 		=	Service::find(intval($data['service_id']));
+            if(!$servicedata) {
+                $resp = array('status' => 404, 'message' => "Service does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
          

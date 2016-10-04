@@ -228,7 +228,7 @@ class OzonetelsController extends \BaseController {
 
                         if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
 
-                            $this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+                            $this->ozonetelResponse->addDial($this->jump_fitternity_no2, "true");
                             $call_jump = true;
                             $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true, $call_jump);
 
