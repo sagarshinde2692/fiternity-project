@@ -77,6 +77,7 @@ class FindersController extends \BaseController {
 
     public function finderdetail($slug, $cache = true){
 
+//        return Cache::tags('finder_detail')->get($slug);
         $data 	=  array();
         $tslug 	= (string) strtolower($slug);
 
@@ -104,23 +105,10 @@ class FindersController extends \BaseController {
                 // $ratecards 			= 	Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
                 $finderarr = $finderarr->toArray();
 
-
-                 // return $finder;
                 // return  pluck( $finderarr['categorytags'] , array('name', '_id') );
                 $finder 		= 	array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
                 $coverimage  	=	($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
                 array_set($finder, 'coverimage', $coverimage);
-
-                // $servicesArr = [];
-                // $services = pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos'] );
-                // if($services){
-                // 	foreach ($services as $key => $value) {
-                // 		$tmparr = $value;
-                // 		if(!isset($value['photos'])){ $tmparr['photos'] = []; }
-                // 		array_push($servicesArr, $tmparr);
-                // 	}
-                // }
-                // array_set($finder, 'services', $servicesArr);
 
                 $finder['today_opening_hour'] =  null;
                 $finder['today_closing_hour'] = null;
@@ -401,7 +389,22 @@ class FindersController extends \BaseController {
             }
         }else{
 
-            return Response::json(Cache::tags('finder_detail')->get($tslug));
+
+            $finderData = Cache::tags('finder_detail')->get($tslug);
+
+            if(Request::header('Authorization')){
+                $decoded                            =       decode_customer_token();
+                $customer_email                     =       $decoded->customer->email;
+                $customer_phone                     =       $decoded->customer->contact_no;
+                $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+                    ->where('finder_id', '=', (int) $finderData['finder']['_id'])
+                    ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                    ->get(array('id'));
+                $finderData['trials_detials']              =      $customer_trials_with_vendors;
+                $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+            }
+
+            return Response::json($finderData);
         }
     }
 
