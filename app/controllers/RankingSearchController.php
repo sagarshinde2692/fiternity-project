@@ -725,6 +725,25 @@ public function getRankedFinderResultsAppv2()
     $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
     $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
 
+
+    $region = Input::json()->get('regions');
+
+    if(count($region) == 1){
+
+        $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
+
+        $locationCount = Location::where('slug',$region_slug)->count();
+
+        if($locationCount > 0){
+            $lat = "";
+            $lon = "";
+        }
+
+    }else{
+        $lat = "";
+        $lon = "";
+    }
+
     // return $category;
     $offering_regex = $this->_getOfferingRegex($category);
 
@@ -746,6 +765,9 @@ public function getRankedFinderResultsAppv2()
         }]
         ';
     }
+
+    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+
     $free_trial_enable = Input::json()->get('free_trial_enable');
     $trial_filter = '';
     if(intval($free_trial_enable) == 1){
@@ -836,11 +858,11 @@ if($all_nested_filters !== '')
 },';
 }
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter.$geo_location_filter,',');
 
-$must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+$must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
 if($trials_day_filter !== ''){
-    $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+    $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
 }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
