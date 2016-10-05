@@ -361,7 +361,7 @@ class FindersController extends \BaseController {
                 $data['nearby_other_category'] 			= 		$nearby_other_category;
 
                 $data = Cache::tags('finder_detail')->put($tslug,$data,Config::get('cache.cache_time'));
-                
+                $data = Cache::tags('finder_detail')->get($tslug);
                 if(Request::header('Authorization')){
                     $decoded                            =       decode_customer_token();
                     $customer_email                     =       $decoded->customer->email;
