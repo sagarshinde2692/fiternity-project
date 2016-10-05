@@ -1428,9 +1428,9 @@ public function getRankedFinderResultsAppv3()
 
         $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-        $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_range_filter,',');
+        $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_range_filter,',');
         if($trials_day_filter !== ''){
-            $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter.$geo_range_filter,',');
+            $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter.$geo_range_filter,',');
         }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
