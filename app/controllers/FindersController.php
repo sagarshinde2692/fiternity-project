@@ -372,6 +372,9 @@ class FindersController extends \BaseController {
                                                                     ->get(array('id'));
                     $data['trials_detials']              =      $customer_trials_with_vendors;
                     $data['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+                }else{
+                    $data['trials_detials']              =      [];
+                    $data['trials_booked_status']        =      false;
                 }
 
 
@@ -403,6 +406,9 @@ class FindersController extends \BaseController {
                     ->get(array('id'));
                 $finderData['trials_detials']              =      $customer_trials_with_vendors;
                 $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+            }else{
+                $data['trials_detials']              =      [];
+                $data['trials_booked_status']        =      false;
             }
 
             return Response::json($finderData);
