@@ -2196,7 +2196,7 @@ public function getCustomerDetail(){
 
         if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
-        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores","aerobics");
 
         	$cache_tag = 'customer_home_by_city_2_5';
 
@@ -2217,13 +2217,13 @@ public function getCustomerDetail(){
 
         	$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
 
-			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
+			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores","aerobics");
 
 			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
 
 			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
 
-			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios","crossfit","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
+			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
 
 			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios","crossfit","mma-and-kick-boxing","dance");
 
