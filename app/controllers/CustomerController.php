@@ -2136,7 +2136,7 @@ public function getCustomerDetail(){
 	    return array_multisort($sort_col, $dir, $arr);
 	}
 
-	public function home($city = 'mumbai',$cache = true){
+	public function home($city = 'mumbai',$cache = false){
 
 		$jwt_token = Request::header('Authorization');
 		$upcoming = array();
@@ -2249,8 +2249,8 @@ public function getCustomerDetail(){
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
 
-			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
-
+			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
+			
 			$ordered_category = array();
 
 			foreach ($category_slug as $category_slug_key => $category_slug_value){
@@ -2265,7 +2265,7 @@ public function getCustomerDetail(){
 				}
 			}
 
-			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
 
 			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
 			if(!$homepage){
