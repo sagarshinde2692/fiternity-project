@@ -727,7 +727,7 @@ public function getRankedFinderResultsAppv2()
 
 
     $region = Input::json()->get('regions');
-
+$locationCount = 0;
     if(count($region) == 1){
 
         $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
