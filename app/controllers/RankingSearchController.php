@@ -557,6 +557,7 @@ public function getRankedFinderResultsApp()
     }else{
         $lat = "";
         $lon = "";
+        $locationCount = count($region);
     }
     
     //return Input::json()->get('offset')['from'];
@@ -564,8 +565,8 @@ public function getRankedFinderResultsApp()
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
     $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
-    $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $regions_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $region_tags_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
     $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
     $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
@@ -597,8 +598,8 @@ public function getRankedFinderResultsApp()
 },';
 }
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter.$geo_location_filter,',');
-$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$regions_filter.$geo_location_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -727,7 +728,7 @@ public function getRankedFinderResultsAppv2()
 
 
     $region = Input::json()->get('regions');
-$locationCount = 0;
+    $locationCount = 0;
     if(count($region) == 1){
 
         $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
