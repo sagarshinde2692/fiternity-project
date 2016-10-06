@@ -742,6 +742,7 @@ $locationCount = 0;
     }else{
         $lat = "";
         $lon = "";
+        $locationCount = count($region);
     }
 
     // return $category;
