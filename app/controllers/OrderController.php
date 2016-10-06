@@ -874,6 +874,9 @@ class OrderController extends \BaseController {
 
             if($ratecard){
 
+                $data['duration'] = (isset($ratecard->duration)) ? $ratecard->duration : "";
+                $data['duration_type'] = (isset($ratecard->duration_type)) ? $ratecard->duration_type : "";
+
                 if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                     $data['amount_finder'] = $ratecard->special_price;
                 }else{
