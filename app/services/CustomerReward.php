@@ -231,7 +231,16 @@ Class CustomerReward {
                     $this->sendCommunication($myreward_capture);
                 }
 
-                return array('status' => 200,'message' => "My Reward Captured Successfull");
+                switch ($myreward->reward_type) {
+
+                    case 'healthy_snacks': $message = "Thank you! Your Fitness Kit would be delivered n next 5 to 7 working days";break;
+                    case 'fitness_kit': $message = "Thank you! Your Healthy Snacks Hamper would be delivered n next 5 to 7 working days";break;
+                    case 'personal_trainer_at_studio': $message = "Thank you! We have notified ".$myreward->title."about your Personal training sessions";break;
+                    case 'personal_trainer_at_home': $message = "Your 'Personal Training at Home' request has being processed. We will reach out to your shortly with trainer details to schedule your first session";break;
+                    default: $message = "Reward Claimed Successfull";break;
+                }
+
+                return array('status' => 200,'message' =>$message);
 
             }else{
 
