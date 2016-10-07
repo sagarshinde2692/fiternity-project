@@ -264,70 +264,9 @@ class FindersController extends \BaseController {
                 $findercategoryid 	= (int) $finderdata['category_id'];
                 $finderlocationid 	= (int) $finderdata['location_id'];
 
-                $skip_categoryid_finders    = [25,42,45,46];
-                //if category is helath tifins or ditesion
+                $skip_categoryid_finders    = [41,42,45,25,46,10];
 
-                if($findercategoryid == 25 || $findercategoryid == 42){
-
-                    $nearby_same_category 		= 	Finder::where('_id','!=',$finderid)
-                    ->where('category_id','=',$findercategoryid)
-                    ->where('city_id','=', $finder_cityid)
-                    ->where('status', '=', '1')
-                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                    ->orderBy('popularity', 'DESC')
-                    ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                    ->take(5)->toArray();
-
-                    if($findercategoryid == 25){ $other_categoryid = 42; }else{ $other_categoryid = 25; }
-
-                    $nearby_other_category 		= 	Finder::where('_id','!=',$finderid)
-//                        ->where('category_id','=',$other_categoryid)
-                    ->whereNotIn('category_id', $skip_categoryid_finders)
-                    ->where('city_id','=', $finder_cityid)
-                    ->where('status', '=', '1')
-                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                    ->orderBy('popularity', 'DESC')
-                    ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                    ->take(5)->toArray();
-
-                }elseif ($findercategoryid == 45 ) {
-                    //if category is healthy foods and bevrages
-                    $nearby_same_category 		= 	Finder::where('_id','!=',$finderid)
-                    ->where('category_id','=', 45)
-                    ->where('city_id','=', $finder_cityid)
-                    ->where('status', '=', '1')
-                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                    ->orderBy('popularity', 'DESC')
-                    ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                    ->take(5)->toArray();
-
-
-                    $nearby_other_category 		= 	Finder::where('_id','!=',$finderid)
-//                        ->where('category_id','=', 42)
-                    ->whereNotIn('category_id', $skip_categoryid_finders)
-                    ->where('city_id','=', $finder_cityid)
-                    ->where('status', '=', '1')
-                    ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                    ->orderBy('popularity', 'DESC')
-                    ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
-                    ->take(5)->toArray();
-
-
-                }else{
-
-                    $nearby_same_category 		= 	Finder::where('category_id','=',$findercategoryid)
+                $nearby_same_category 		= 	Finder::where('category_id','=',$findercategoryid)
                     ->where('location_id','=',$finderlocationid)
                     ->where('_id','!=',$finderid)
                     ->where('status', '=', '1')
@@ -340,7 +279,7 @@ class FindersController extends \BaseController {
                     ->take(5)->toArray();
 
 
-                    $nearby_other_category 		= 	Finder::where('category_id','!=',$findercategoryid)
+                $nearby_other_category 		= 	Finder::where('category_id','!=',$findercategoryid)
                     ->whereNotIn('category_id', $skip_categoryid_finders)
                     ->where('location_id','=',$finderlocationid)
                     ->where('_id','!=',$finderid)
@@ -352,7 +291,6 @@ class FindersController extends \BaseController {
                     ->remember(Config::get('app.cachetime'))
                     ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
                     ->take(5)->toArray();
-                }
 
                 $data['statusfinder'] 					= 		200;
                 $data['finder']                         =       $finder;
