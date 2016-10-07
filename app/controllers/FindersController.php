@@ -264,7 +264,7 @@ class FindersController extends \BaseController {
                 $findercategoryid 	= (int) $finderdata['category_id'];
                 $finderlocationid 	= (int) $finderdata['location_id'];
 
-                $skip_categoryid_finders    = [41,42,45,25,46,10];
+                $skip_categoryid_finders    = [41,42,45,25,46,10,26,40];
 
                 $nearby_same_category 		= 	Finder::where('category_id','=',$findercategoryid)
                     ->where('location_id','=',$finderlocationid)
