@@ -403,13 +403,20 @@ class ServiceRankingSearchController extends \BaseController {
 
       $time = ( (null !== Input::json()->get('time')) &&(!empty(Input::json()->get('time')))) ? Input::json()->get('time') : '';
 
-      $price_range_filter = '';
-      $time_range_filter = '';        
+      $price_range_filter = $price_range_above_100_filter = '{
+        "range": {
+          "workout_session_schedules_price": {
+            "gte": 100
+          }
+        }
+      },';
+
+      $time_range_filter = ''; 
 
       if($price !== ''){
 
-        $price_from = isset($price['from']) ? $price['from'] : 0;
-        $price_to = isset($price['to']) ? $price['to'] : 1000000;
+        $price_from = (isset($price['from']) && $price['from'] >= 100 ) ? $price['from'] : 100;
+        $price_to = (isset($price['to']) && $price['to'] >= 100) ? $price['to'] : 1000000;
 
         $price_range_filter = '{
           "range": {
@@ -494,7 +501,7 @@ class ServiceRankingSearchController extends \BaseController {
 
       $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
-      $price_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
+      $price_facets_filter = trim($city_filter.$vip_trial_filter.$price_range_above_100_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
 
       $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
