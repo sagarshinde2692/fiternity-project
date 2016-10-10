@@ -160,7 +160,7 @@ Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCu
 Route::get('events/{eventSlug}', 'EventsController@getEventInfo');
 
 /*Coupons API*/
-Route::get('getcouponinfo/{couponCode}', 'CouponsController@getCouponInfo');
+Route::get('getcouponinfo/{couponCode}/{ticketID}', 'CouponsController@getCouponInfo');
 
 Route::get('send/communication', 'SchedulebooktrialsController@sendCommunication');
 

@@ -12,8 +12,8 @@ class CouponsController extends \BaseController {
 		parent::__construct();
 	}
 
-	public function getCouponInfo($couponCode) {
-		$couponInfo = Coupon::where('code', $couponCode)->get();
+	public function getCouponInfo($couponCode, $ticketID) {
+		$couponInfo = Coupon::where('code', $couponCode)->whereIn('tickets', [intval($ticketID)])->get();
 		return $couponInfo;
 	}
 }
