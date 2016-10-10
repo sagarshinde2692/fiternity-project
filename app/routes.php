@@ -199,8 +199,7 @@ Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward'
 Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
-
-
+Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
 
 
 Route::group(array('before' => 'validatetoken'), function() {
@@ -367,7 +366,7 @@ Route::get('locationcity/{value}','SearchController@locationCity');
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
 Route::get('migratedatatoclevertap', 'KYUController@migratedatatoclevertap');
-Route::get('getvendorview/{vendor_slug}','KYUController@getvendorviewcount');
+Route::get('getvendorview/{vendor_id}/{start_date?}/{end_date?}','KYUController@getvendorviewcount');
 Route::post('getcitywiseviews','KYUController@getcitywiseviews');
 //Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
 

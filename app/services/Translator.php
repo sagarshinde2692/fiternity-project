@@ -729,6 +729,8 @@ public static function translate_searchresultsv2($es_searchresult_response){
 			$vip_trial_response->meta->total_records = $es_searchresult_response['hits']['total'];
 
 			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+
+
 				$result = $resultv1['_source'];
 				$finder = new VipResult();
 				$finder->object_type = 'vendor';
@@ -736,48 +738,57 @@ public static function translate_searchresultsv2($es_searchresult_response){
 
 				$sort = $resultv1['sort'];
 
-				$resultobject->id = $result['service_id'];
-				$resultobject->category = $result['category'];
-				$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
-				$resultobject->location = $result['location'];
-				$resultobject->findername = $result['findername'];
-				$resultobject->finderslug = $result['finderslug'];
-				$resultobject->city = $result['city'];
-				$resultobject->name = $result['name'];
-				$resultobject->slug = $result['slug'];
-				$resultobject->workoutintensity = $result['workout_intensity'];
-				$resultobject->locationcluster = $result['locationcluster'];
-				$resultobject->rating = $result['rating'];
-				$resultobject->findercoverimage = $result['finder_coverimage'];
-				$resultobject->workout_session_schedules_price = $result['workout_session_schedules_price'];
-				$resultobject->workout_session_schedules_weekday = $result['workout_session_schedules_weekday'];
-				$resultobject->workout_session_schedules_end_time_24_hrs = $result['workout_session_schedules_end_time_24_hrs'];
-				$resultobject->workout_session_schedules_start_time_24_hrs = $result['workout_session_schedules_start_time_24_hrs'];
-				$resultobject->workout_session_schedules_end_time = $result['workout_session_schedules_end_time'];
-				$resultobject->workout_session_schedules_start_time = $result['workout_session_schedules_start_time'];
-				$resultobject->finder_gallery = $result['finder_gallary'];
-				$resultobject->finder_address = $result['finder_address'];
-				$resultobject->service_address = $result['service_address'];
-				$resultobject->finder_slug = $result['finderslug'];
-				$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
-				//$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
+				// var_dump($result['commercial_type'] );exit;
 
-				/*if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.4)){
+					// var_dump($result['commercial_type'] );exit();
 
-					$resultobject->geolocation = new \stdClass();
 
-					$resultobject->geolocation->lat = (float)$result['geolocation']['lat'];
-					$resultobject->geolocation->long = (float)$result['geolocation']['lon'];
+					$resultobject->id = $result['service_id'];
+					$resultobject->category = $result['category'];
+					$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
+					$resultobject->location = $result['location'];
+					$resultobject->findername = $result['findername'];
+					$resultobject->finderslug = $result['finderslug'];
+					$resultobject->city = $result['city'];
+					$resultobject->name = $result['name'];
+					$resultobject->slug = $result['slug'];
+					$resultobject->workoutintensity = $result['workout_intensity'];
+					$resultobject->locationcluster = $result['locationcluster'];
+					$resultobject->rating = $result['rating'];
+					$resultobject->findercoverimage = $result['finder_coverimage'];
+					$resultobject->workout_session_schedules_price = $result['workout_session_schedules_price'];
+					$resultobject->workout_session_schedules_weekday = $result['workout_session_schedules_weekday'];
+					$resultobject->workout_session_schedules_end_time_24_hrs = $result['workout_session_schedules_end_time_24_hrs'];
+					$resultobject->workout_session_schedules_start_time_24_hrs = $result['workout_session_schedules_start_time_24_hrs'];
+					$resultobject->workout_session_schedules_end_time = $result['workout_session_schedules_end_time'];
+					$resultobject->workout_session_schedules_start_time = $result['workout_session_schedules_start_time'];
+					$resultobject->finder_gallery = $result['finder_gallary'];
+					$resultobject->finder_address = $result['finder_address'];
+					$resultobject->service_address = $result['service_address'];
+					$resultobject->finder_slug = $result['finderslug'];
+					$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
+					//$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
 
-					if(isset($sort[2])){
-						$resultobject->geolocation->distance = round((float)$sort[2],2);
-					}
-				}*/
+					/*if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.4)){
 
-				$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
+						$resultobject->geolocation = new \stdClass();
 
-				$finder->object = $resultobject;
-				array_push($vip_trial_response->results->resultlist, $finder);
+						$resultobject->geolocation->lat = (float)$result['geolocation']['lat'];
+						$resultobject->geolocation->long = (float)$result['geolocation']['lon'];
+
+						if(isset($sort[2])){
+							$resultobject->geolocation->distance = round((float)$sort[2],2);
+						}
+					}*/
+
+					$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
+
+					$finder->object = $resultobject;
+					array_push($vip_trial_response->results->resultlist, $finder);
+
+
+				
+
 			}
 		}
 

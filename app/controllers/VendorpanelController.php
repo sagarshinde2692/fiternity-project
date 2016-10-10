@@ -194,12 +194,46 @@ class VendorpanelController extends BaseController
         $end_date       = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
 
         $req = Input::all();
+        $content_type = Request::header('Content-type');
+
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
 
         $finder_id = intval($finder_id);
-        $result = $this->salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
-        return Response::json($result, 200);
+
+
+        if($content_type == 'text/csv'){
+            $headers = [
+                'Content-type'        => 'text/csv'
+                ,   'Content-Disposition' => 'attachment; filename=Sales.csv'
+            ];
+
+            $csv = "NAME, EMAIL, NUMBER, TYPE, SERVICE MEMBERSHIP, DURATION, AMOUNT, PAYMENT TRANSFERRED \n";
+            $result = $this->salesListHelper($finder_id, $type, $start_date, $end_date, 50000, 0);
+            foreach ($result['data'] as $key => $value) {
+                $csv .= (isset($value['customer_name']) && $value['customer_name'] !="") ? str_replace(',', '|', $value['customer_name']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['customer_email']) && $value['customer_email'] !="") ? str_replace(',', '|', $value['customer_email']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['customer_phone']) && $value['customer_phone'] !="") ? str_replace(',', '|', $value['customer_phone']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['membership_origin']) && $value['membership_origin'] !="") ? str_replace(',', '|', $value['membership_origin']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['service_name']) && $value['service_name'] !="") ? str_replace(',', '|', $value['service_name']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['service_duration']) && $value['service_duration'] !="") ? str_replace(',', '|', $value['service_duration']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['amount_finder']) && $value['amount_finder'] !="") ? str_replace(',', '|', $value['amount_finder']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['payment_transfer']) && $value['payment_transfer'] !="") ? str_replace(',', '|', $value['payment_transfer']) : "-";
+                $csv .= " \n";
+            }
+
+            return Response::make(rtrim($csv, "\n"), 200, $headers);
+        }else{
+            $result = $this->salesListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+            return Response::json($result, 200);
+        }
 
     }
 
@@ -410,7 +444,7 @@ class VendorpanelController extends BaseController
         if($content_type == 'text/csv'){
             $headers = [
                 'Content-type'        => 'text/csv'
-                ,   'Content-Disposition' => 'attachment'
+                ,   'Content-Disposition' => 'attachment; filename=Trials.csv'
             ];
 
             $csv = "NAME, REQUEST DATE, TRIAL DATE, SLOT, SERVICE, POST TRIAL STATUS, ATTENDED STATUS \n";
@@ -617,12 +651,41 @@ class VendorpanelController extends BaseController
         $end_date = ($end_date != NULL) ? date("d-m-Y", strtotime($end_date)) : $today_date;
 
         $req = Input::all();
+        $content_type = Request::header('Content-type');
+
         $limit = isset($req['limit']) ? $req['limit'] : 10;
         $offset = isset($req['offset']) ? $req['offset'] : 0;
 
         $finder_id = intval($finder_id);
-        $result = $this->ozonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
-        return Response::json($result, 200);
+
+        if($content_type == 'text/csv'){
+            $headers = [
+                'Content-type'        => 'text/csv'
+                ,   'Content-Disposition' => 'attachment; filename=OzonetelLogs.csv'
+            ];
+
+            $csv = "Number, Operator, Circle, Datetime, Duration, Status \n";
+            $result = $this->ozonetelListHelper($finder_id, $type, $start_date, $end_date, 50000, 0);
+            foreach ($result['data'] as $key => $value) {
+                $csv .= (isset($value['customer_contact_no']) && $value['customer_contact_no'] !="") ? str_replace(',', '|', $value['customer_contact_no']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['customer_contact_operator']) && $value['customer_contact_operator'] !="") ? str_replace(',', '|', $value['customer_contact_operator']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['customer_contact_circle']) && $value['customer_contact_circle'] !="") ? str_replace(',', '|', $value['customer_contact_circle']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['created_at']) && $value['created_at'] !="") ? str_replace(',', '|', $value['created_at']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['call_duration']) && $value['call_duration'] !="") ? str_replace(',', '|', $value['call_duration']) : "-";
+                $csv .= ", ";
+                $csv .= (isset($value['call_status']) && $value['call_status'] !="") ? str_replace(',', '|', $value['call_status']) : "-";
+                $csv .= " \n";
+            }
+
+            return Response::make(rtrim($csv, "\n"), 200, $headers);
+        }else{
+            $result = $this->ozonetelListHelper($finder_id, $type, $start_date, $end_date, $limit, $offset);
+            return Response::json($result, 200);
+        }
 
     }
 

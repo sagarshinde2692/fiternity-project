@@ -43,6 +43,9 @@ class MigrationReverseController extends \BaseController {
             case 'batch' : $return = $this->batch($id);break;
             case 'deleteschedulebyvendor' : $return = $this->deletescheduleByVendorId($id);break;
             case 'deletebatchbyservice' : $return = $this->deleteBatchByServiceId($id);break;
+            case 'updateschedulebyserviceidv1' : $return = $this->updatescheduleByServiceIdV1($id);break;
+
+
 
             default : $return = "no function found";break;
         }
@@ -712,8 +715,8 @@ class MigrationReverseController extends \BaseController {
                 'info' 	=>  [
                     'about' 	=>  (isset($Finder->info['about'])) ? trim($Finder->info['about']) : "",
                     'additional_info' 	=>  (isset($Finder->info['additional_info'])) ? trim($Finder->info['additional_info']) : "",
-                    'timing' 	=>  (isset($Finder->info['timing'])) ? trim($Finder->info['timing']) : "",
-                    'delivery_timing' 	=>  (isset($Finder->info['delivery_timing'])) ? trim($Finder->info['delivery_timing']) : "",
+                    'timing' 	=>  (isset($Finder->info['delivery_timing'])) ? trim($Finder->info['delivery_timing']) : "",
+                    'delivery_address' 	=>  (isset($Finder->info['delivery_address'])) ? trim($Finder->info['delivery_address']) : "",
                     'service' 	=>  (isset($Finder->info['service'])) ? "<ul><li>". implode("</li><li>", $Finder->info['service'])."</li></ul>" : "",
                 ],
                 'meta' 	=>  [
@@ -735,6 +738,7 @@ class MigrationReverseController extends \BaseController {
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),
                 'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
                 'multiaddress' 					        =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
+                'peak_hours' 					        =>  (isset($Finder['peak_hours']) && count($Finder['peak_hours']) > 0) ? $Finder['peak_hours'] : [],
                 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
                 'total_rating_count' 					=>  (isset($Finder->rating['count'])) ? $Finder->rating['count'] : 0,
                 'detail_rating_summary_average' 		=>  $detail_rating_summary_average,
@@ -752,8 +756,8 @@ class MigrationReverseController extends \BaseController {
                 'budget' 								=>  (isset($Finder->cost) && isset($Finder->cost['average_price']) && $Finder->cost['average_price'] != "") ? intval($Finder->cost['average_price']) : 0,
                 'price_range' 							=>  (isset($Finder->cost) && isset($Finder->cost['price_range']) && $Finder->cost['price_range'] != "") ? trim($Finder->cost['price_range']) : "one",
                 'purchase_gamification_disable' 		=>  (isset($Finder->flags) && isset($Finder->flags['purchase_gamification_disable']) && $Finder->flags['purchase_gamification_disable'] === true) ? "1" : "0",
-                'trial' 		                        =>  (isset($Finder->flags) && isset($Finder->flags['trial']) && $Finder->flags['trial'] === true) ? $Finder->flags['trial'] : "auto",
-                'membership' 		                    =>  (isset($Finder->flags) && isset($Finder->flags['membership']) && $Finder->flags['membership'] === true) ? $Finder->flags['membership'] : "auto",
+                'trial' 		                        =>  (isset($Finder->flags) && isset($Finder->flags['trial'])) ? $Finder->flags['trial'] : "auto",
+                'membership' 		                    =>  (isset($Finder->flags) && isset($Finder->flags['membership'])) ? $Finder->flags['membership'] : "auto",
                 'manual_trial_enable' 				    =>  (isset($Finder->manual_trial_enable) && $Finder->manual_trial_enable === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
@@ -763,6 +767,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
             $insertData['finder_type']                    = (isset($insertData['commercial_type']) && !empty(($insertData['commercial_type'])) ) ? (( $insertData['commercial_type'] == 1  || $insertData['commercial_type'] == 3 ) ? 1: 0) :0;
 
+//            dd($Finder->flags['membership']);
 //            var_dump($insertData);exit();
             $Finder_exists_cnt	=	DB::connection($this->fitadmin)->table('finders')->where('_id', intval($id) )->count();
 
@@ -951,6 +956,13 @@ class MigrationReverseController extends \BaseController {
 
             $data	=	DB::connection($this->fitapi)->table('vendorservices')->where('_id', intval($id))->first();
 
+            $insertData = [
+                'calorie_burn'	=>  [
+                    'avg' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["avg"]) ) ? intval($data['calorie_burn']["avg"]) : 0,
+                    'type' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["type"]) ) ? intval($data['calorie_burn']["type"]) : "kcal"
+                    ]
+            ];
+
             $insertData['finder_id'] = (int)$data['vendor_id'];
             $insertData['name'] = $data['name'];
             $insertData['servicecategory_id'] = (int)$data['category']['primary'];
@@ -963,6 +975,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['session_type'] = (isset($data['session_type'])) ? $data['session_type'] : "";
             $insertData['meal_type'] = (isset($data['meal_type'])) ? $data['meal_type'] : "";
             $insertData['workout_tags'] = (isset($data['workout_tags']) && !empty($data['workout_tags'])) ? $data['workout_tags'] : [];
+            $insertData['workout_results'] = (isset($data['workout_results']) && !empty($data['workout_results'])) ? $data['workout_results'] : [];
             $insertData['status'] = (isset($data['hidden']) && $data['hidden'] == true) ? '0' : '1';
             $insertData['deduct'] = (isset($data['trial_cashback_status'])  && $data['trial_cashback_status'] == true) ? '1' : '0';
             $insertData['rockbottom'] = (isset($data['rockbottom_price_status'])  && $data['rockbottom_price_status'] == true) ? '1' : '0';
@@ -973,6 +986,9 @@ class MigrationReverseController extends \BaseController {
             $insertData['address'] = ($data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['pincode'] == '' && $data['address']['landmark'] == '') ? '' : $data['address']['line1'].', '.$data['address']['line2'].', '.$data['address']['line3'].', '.$data['address']['landmark'].', '.$data['address']['pincode'];
             $insertData['what_i_should_carry'] = $data['what_i_should_carry'];
             $insertData['what_i_should_expect'] = $data['what_i_should_expect'];
+
+
+
 
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];
@@ -1162,7 +1178,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($trialRatecard && isset($trialRatecard['price'])){
-                $trialPrice = $trialRatecard['price'];
+                $trialPrice = (isset($trialRatecard['selling_price']) && intval($trialRatecard['selling_price']) > 0) ? $trialRatecard['selling_price'] : $trialRatecard['price'];
             }
 
             //Workout session Price From Ratecard
@@ -1176,7 +1192,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
-                $workoutSessionPrice = $workoutSessionRatecard['price'];
+                $workoutSessionPrice = (isset($workoutSessionRatecard['selling_price']) && intval($workoutSessionRatecard['selling_price']) > 0) ? $workoutSessionRatecard['selling_price'] : $workoutSessionRatecard['price'];
             }
 
 
@@ -1298,7 +1314,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($trialRatecard && isset($trialRatecard['price'])){
-                $trialPrice = $trialRatecard['price'];
+                $trialPrice = (isset($trialRatecard['selling_price']) && intval($trialRatecard['selling_price']) > 0) ? $trialRatecard['selling_price'] : $trialRatecard['price'];
             }
 
             //Workout session Price From Ratecard
@@ -1312,7 +1328,7 @@ class MigrationReverseController extends \BaseController {
             }
 
             if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
-                $workoutSessionPrice = $workoutSessionRatecard['price'];
+                $workoutSessionPrice = (isset($workoutSessionRatecard['selling_price']) && intval($workoutSessionRatecard['selling_price']) > 0) ? $workoutSessionRatecard['selling_price'] : $workoutSessionRatecard['price'];
             }
 
 
@@ -1440,26 +1456,28 @@ class MigrationReverseController extends \BaseController {
 
                     foreach ($batch['slots'] as $k => $slot) {
                         // return $slot;
-                        $batch_weekdays_data['weekday'] =	$slot['day'];
+                        if(isset($slot['day']) && isset($slot['duration'])){
+                            $batch_weekdays_data['weekday'] =	$slot['day'];
 
-                        $slot_times 			=	explode('-',$slot['duration']);
-                        $start_time 	        =	$slot_times[0];
-                        $end_time 	            =	$slot_times[1];
+                            $slot_times 			=	explode('-',$slot['duration']);
+                            $start_time 	        =	$slot_times[0];
+                            $end_time 	            =	$slot_times[1];
 
-                        $batch_weekdays_data['slots'] =	[
-                            [
-                                'weekday' => $slot['day'],
-                                'start_time' => $start_time,
-                                'end_time' => $end_time,
-                                'slot_time' => $slot['duration'],
-                                'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
-                                'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
-                            ]
-                        ];
+                            $batch_weekdays_data['slots'] =	[
+                                [
+                                    'weekday' => $slot['day'],
+                                    'start_time' => $start_time,
+                                    'end_time' => $end_time,
+                                    'slot_time' => $slot['duration'],
+                                    'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
+                                    'price' => (isset($slot['price'])) ?  intval($slot['price']) : 0
+                                ]
+                            ];
 
-                        // return $batch_weekdays_data;
-                        array_push($batchdata, $batch_weekdays_data);
-                        // return $batchdata;
+                            // return $batch_weekdays_data;
+                            array_push($batchdata, $batch_weekdays_data);
+                            // return $batchdata;
+                        }
 
                     }
                 }
@@ -1544,8 +1562,6 @@ class MigrationReverseController extends \BaseController {
             $batches        =  Batch::where('vendorservice_id',intval($service_id))->get();
             $batchesdata    = [];
 
-
-            
 
                  
              if(count($batches) > 0){
@@ -1637,6 +1653,214 @@ class MigrationReverseController extends \BaseController {
         }
 
         return Response::json($response,$response['status']);
+    }
+
+
+
+
+
+
+    /**
+     * Migration for updatescheduleByServiceId
+     */
+    public function updatescheduleByServiceIdV1($vendorservice_id){
+
+        try{
+
+            $vendorservice_id = $vendorservice_id;
+
+            $schedules = Schedule::where('vendorservice_id',intval($vendorservice_id))->get();
+
+            if(count($schedules) > 0){
+
+                //Trial Price From Ratecard
+                $trialPrice = 0;
+                $trialRatecard_exists_cnt  =   DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('hidden', false)->count();
+
+                if($trialRatecard_exists_cnt < 2){
+                    $trialRatecard  =   DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('hidden', false)->first();
+                }else{
+                    $trialRatecard  =   DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('quantity',1)->where('hidden', false)->first();
+                }
+
+                if($trialRatecard && isset($trialRatecard['price'])){
+                    $trialPrice = (isset($trialRatecard['selling_price']) && intval($trialRatecard['selling_price']) > 0) ? $trialRatecard['selling_price'] : $trialRatecard['price'];
+                }
+
+//                var_dump($vendorservice_id); exit;
+
+                //Workout session Price From Ratecard
+                $workoutSessionPrice = 0;
+                $workoutSessionRatecard_exists_cnt  =   DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->where('hidden', false)->count();
+
+                if($workoutSessionRatecard_exists_cnt < 2){
+                    $workoutSessionRatecard =   DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->where('hidden', false)->first();
+                }else{
+                    $workoutSessionRatecard =   DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'workout session')->where('quantity',1)->where('hidden', false)->first();
+                }
+
+//                print_pretty($workoutSessionRatecard); exit;
+
+                if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
+                    $workoutSessionPrice = (isset($workoutSessionRatecard['selling_price']) && intval($workoutSessionRatecard['selling_price']) > 0) ? $workoutSessionRatecard['selling_price'] : $workoutSessionRatecard['price'];
+                }else{
+                    $workoutSessionPrice = $trialPrice;
+                }
+
+//                var_dump($trialPrice); exit;
+                if($workoutSessionPrice < 1){
+                    $service = Service::find(intval($vendorservice_id));
+                    if($service && isset($service['servicecategory_id']) ){
+                        $sercviecategory_id = intval($service['servicecategory_id']);
+                        $workoutSessionPrice = ($sercviecategory_id == 65) ? 300 : 500;
+                    }
+                }
+
+
+//                echo $workoutSessionPrice; exit;
+
+                $trialschedulesdata = [];
+
+                $workoutsessionschedules = [];
+
+                foreach ($schedules as $key => $schedule) {
+                    $weekdaydata                =   [];
+                    $type                       =   trim($schedule['type']);
+
+                    if(isset($schedule['slots']) && count($schedule['slots']) > 0 && $type == 'trial'){
+                        $weekdaydata['weekday']     =   $schedule['day'];
+                        $weekdaydata['slots']       =   [];
+
+                        foreach ($schedule['slots'] as $k => $slot) {
+                            if(isset($slot['duration'])){
+                                $duration_arr = explode('-', $slot['duration']);
+                                $newslot = [
+                                    'start_time' => $duration_arr[0],
+                                    'end_time' => $duration_arr[1],
+                                    'start_time_24_hour_format' => $slot['start_time']['hours'],
+                                    'end_time_24_hour_format' => $slot['end_time']['hours'],
+                                    'slot_time' => $slot['duration'],
+                                    'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
+                                    'price' => intval($trialPrice)
+                                ];
+                                array_push($weekdaydata['slots'], $newslot);
+                            }
+                        }
+                        array_push($trialschedulesdata, $weekdaydata);
+
+                    }
+
+
+
+//                echo $workoutSessionPrice; exit;
+
+                    if($workoutSessionPrice > 0){
+                        $weekdaydata                =   [];
+
+
+                        if(isset($schedule['slots']) && count($schedule['slots']) > 0 && $type == 'trial'){
+
+                            $weekdaydata['weekday']     =   $schedule['day'];
+                            $weekdaydata['slots']       =   [];
+
+                            foreach ($schedule['slots'] as $k => $slot) {
+                                if(isset($slot['duration'])){
+                                    $duration_arr = explode('-', $slot['duration']);
+                                    $newslot = [
+                                        'start_time' => $duration_arr[0],
+                                        'end_time' => $duration_arr[1],
+                                        'start_time_24_hour_format' => $slot['start_time']['hours'],
+                                        'end_time_24_hour_format' => $slot['end_time']['hours'],
+                                        'slot_time' => $slot['duration'],
+                                        'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
+                                        'price' => intval($workoutSessionPrice)
+                                    ];
+                                    array_push($weekdaydata['slots'], $newslot);
+                                }
+                            }//foreach
+                            array_push($workoutsessionschedules, $weekdaydata);
+
+                        }//if
+
+                    }
+
+                }//foreach
+
+//            return $workoutsessionschedules;
+
+//                return $schedule->vendorservice_id;
+                $service_exists = Service::on($this->fitadmin)->find(intval($schedule->vendorservice_id));
+                if($service_exists){
+
+                    $updateServiceData = [
+                        'trialschedules' => $trialschedulesdata,
+                        'workoutsessionschedules' => $workoutsessionschedules
+                    ];
+
+//                    print_pretty($updateServiceData);exit();
+
+                    $update_service = Service::on($this->fitadmin)->find(intval($schedule->vendorservice_id))->update($updateServiceData);
+
+
+                    try{
+                        $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
+                        $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+                    }catch(Exception $e){
+                        Log::error($e);
+
+                    }
+                }
+            }else{
+                $serivce_ids    =   Service::where('_id',intval($vendorservice_id))->update(['trialschedules'=>[],'workoutsessionschedules'=>[]]);
+            }
+
+
+
+
+            $response = array('status' => 200, 'message' => 'Success');
+
+        }catch(Exception $e){
+
+            Log::error($e);
+
+            $message = array(
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+            $response = array('status' => 404, 'message' => $message);
+
+        }
+
+        return Response::json($response,$response['status']);
+    }
+
+
+    public function deleteWorkoutSessionRatecard(){
+
+        $vendor_ids = Vendor::on($this->fitapi)->whereIn("vendorcategory.primary",array(45,42))->lists("_id");
+
+        $vendor_ids = array_map('intval',$vendor_ids);
+
+        echo "vendor_ids"; echo "<pre>";print_r($vendor_ids);
+
+        $ratecard_ids = Ratecard::on($this->fitapi)->whereIn("vendor_id",$vendor_ids)->where("type","workout session")->where("hidden",false)->lists("_id");
+
+        echo "ratecard_ids"; echo "<pre>";print_r($ratecard_ids);
+
+        $ratecards = Ratecard::on($this->fitadmin)->whereIn("_id",$ratecard_ids)->delete();
+
+        /*foreach ($ratecard_ids as $ratecard_id) {
+
+            $this->deleteRatecard($ratecard_id);
+        }*/
+
+        $ratecards = Ratecard::on($this->fitapi)->whereIn("_id",$ratecard_ids)->update(['hidden' => true]);
+
+        echo "done";
+
     }
 
 

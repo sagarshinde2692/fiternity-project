@@ -115,7 +115,7 @@ class RewardofferController extends BaseController {
         $amount = (int)$data['amount'];
         $ratecard_id = (int)$data['ratecard_id'];
 
-        $ratecard = Ratecard::where('_id',$ratecard_id)/*->where('price',$amount)*/->where('finder_id',$finder_id)->first();
+        $ratecard = Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
 
         if(!$ratecard){
             $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
@@ -160,11 +160,65 @@ class RewardofferController extends BaseController {
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
 
                 if(count($rewards) > 0){
+
                     foreach ($rewards as $key => $value){
+
+                        unset($rewards[$key]['rewrardoffers']);
+                        unset($rewards[$key]['updated_at']);
+                        unset($rewards[$key]['created_at']);
+
                         if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
                             $rewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
                         }
                     }
+
+                    $reward_ordered = array();
+
+                    $reward_type_order = array(
+                        'fitness_kit',
+                        'sessions',
+                        'healthy_snacks',
+                        'personal_trainer_at_home',
+                        'healthy_tiffin',
+                        'nutrition_store',
+                        'fitternity_voucher'
+                    );
+
+                    foreach ($reward_type_order as $reward_type_order_value){
+
+                        foreach ($rewards as $rewards_value){
+                            if($rewards_value['reward_type'] == "fitness_kit" || $rewards_value['reward_type'] == "healthy_snacks"){
+                                switch(true){
+                                 case $amount < 3000 : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1000 : 650;
+                                 break;
+                                 case (3000 < $amount && $amount < 5000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1000 : 1150;
+                                 break;
+                                 case (5000 < $amount && $amount < 7500) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1500 : 1550;
+                                 break;
+                                 case (7500 < $amount && $amount < 10000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3000 : 2150;
+                                 break;
+                                 case (10000 < $amount && $amount < 15000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 3150;
+                                 break;
+                                 case (15000 < $amount && $amount < 20000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 5000 : 4050;
+                                 break;
+                                 case (20000 < $amount && $amount < 25000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 6000 : 4550;
+                                 break;
+                                 case ($amount > 35000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 8000 : 5150;
+                                 break;
+                                }
+                            }
+
+                            if($rewards_value['reward_type'] == $reward_type_order_value){
+
+                                $reward_ordered[] = $rewards_value;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    $rewards = $reward_ordered;
+
                 }
             }
         }
@@ -172,7 +226,19 @@ class RewardofferController extends BaseController {
         $customerReward = new CustomerReward();
 
         $calculation = $customerReward->purchaseGame($amount,$finder_id);
-        
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+
+            $order_id = (int) $data['order_id'];
+
+            $order = Order::find($order_id);
+
+            if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
+                $calculation = $customerReward->purchaseGame($amount,$finder_id,"at the studio");
+            }
+
+        }
+
         $cashback  = array(
             'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',

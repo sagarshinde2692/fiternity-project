@@ -258,7 +258,7 @@ class SchedulebooktrialsController extends \BaseController {
                         $price = (int) $slot['price'];
 
                         if($price >= 500){
-                            $vip_trial_amount = 500;
+                            $vip_trial_amount = $price;
                         }
 
                         if($price < 500){
@@ -427,22 +427,36 @@ class SchedulebooktrialsController extends \BaseController {
             $slots = array();
             if(count($weekdayslots['slots']) > 0){
                 foreach ($weekdayslots['slots'] as $slot) {
-                    $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
-                    $goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
+
+                    $totalbookcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
+                    $goingcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
                     // $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
-                    $slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                    //$slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                    $slot_status        =   "available";
 
                     array_set($slot, 'totalbookcnt', $totalbookcnt);
                     array_set($slot, 'goingcnt', $goingcnt);
                     // array_set($slot, 'cancelcnt', $cancelcnt);
                     array_set($slot, 'status', $slot_status);
 
-                    $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
+
+                    try{
+
+                        $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_push($slots, $slot);
+
+                    }catch(Exception $e){
+
+                        Log::info("getServiceSchedule Error : ".$date." ".$slot['start_time']);
+                    }
+
+
+                    
                     // $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
                     // $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
-                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
-                    array_set($slot, 'passed', $slot_datetime_pass_status);
-                    array_push($slots, $slot);
+                    
                 }
             }
 
@@ -2008,6 +2022,12 @@ class SchedulebooktrialsController extends \BaseController {
         if(empty($data['finder_id'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
             return  Response::json($resp, 400);
+        }else{
+            $finderdata 		=	Finder::find(intval($data['finder_id']));
+            if(!$finderdata) {
+                $resp = array('status' => 404, 'message' => "Finder does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['service_name'])){
@@ -2023,6 +2043,14 @@ class SchedulebooktrialsController extends \BaseController {
         if(empty($data['schedule_slot'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_slot");
             return  Response::json($resp, 400);
+        }
+
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+            $servicedata 		=	Service::find(intval($data['service_id']));
+            if(!$servicedata) {
+                $resp = array('status' => 404, 'message' => "Service does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
          
@@ -2045,7 +2073,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder = Finder::with(array('location' => function ($query) {
                 $query->select('_id', 'name', 'slug');
             }))->with('locationtags')->where('_id', '=', $finderid)->first()->toArray();
-            $customer_id = $this->autoRegisterCustomer($data);
+            $data['customer_id'] = $customer_id = $this->autoRegisterCustomer($data);
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
             $trial_count                       =    $this->getTrialCount($finderid);

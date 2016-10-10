@@ -2588,7 +2588,7 @@ public function testEmail(){
 
 	public function removePersonalTrainerStudio(){
 
-		$reward_id = Reward::where("reward_type","personal_trainer_at_studio")->lists("_id");
+		$reward_id = Reward::where("reward_type","healthy_snacks")->lists("_id");
 
 		// $reward = Reward::where("reward_type","personal_trainer_at_studio")->delete();
 
@@ -2624,6 +2624,296 @@ public function testEmail(){
 		echo "done";
 	}
 
-	
+
+	public function latLonSwap(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$finders = $this->finderQuery($offset,$limit);
+
+			while(count($finders) != 0){
+
+				foreach ($finders as $key => $finder) {
+
+					ini_set('set_time_limit', 30);
+
+					$lat = (float)$finder->lat;
+					$lon = (float)$finder->lon;
+
+					if($lat > 60){
+						$finder->lat = (string)$lon;
+						$finder->lon = (string)$lat;
+					}
+
+					$finder->latlon_change = true;
+					$finder->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$finders = $this->finderQuery($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Finder::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function finderQuery($offset,$limit){
+
+		$finders = Finder::where('lat','exists',true)->where('lat','!=',"")->where('lon','!=',"")->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","lat","lon","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $finders;
+	}
+
+	public function latLonSwapApi(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$finders = $this->finderQueryApi($offset,$limit);
+
+			while(count($finders) != 0){
+
+				foreach ($finders as $key => $finder) {
+
+					$lat = (float)$finder->geometry['coordinates'][0];
+					$lon = (float)$finder->geometry['coordinates'][1];
+
+					if($lat > 60){
+
+						$lat_new = (string)$lon;
+						$lon_new = (string)$lat;
+
+						$geometry = array(
+							"type" => "Point",
+							"coordinates" => array($lat_new,$lon_new)
+						);
+
+						$finder->geometry = $geometry;
+						
+					}
+
+					$finder->latlon_change = true;
+					$finder->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$finders = $this->finderQueryApi($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Vendor::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function finderQueryApi($offset,$limit){
+
+		$finders = Vendor::where('geometry','exists',true)->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","geometry","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $finders;
+	}
+
+	public function latLonSwapService(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$services = $this->serviceQuery($offset,$limit);
+
+			while(count($services) != 0){
+
+				foreach ($services as $key => $service) {
+
+					ini_set('set_time_limit', 30);
+
+					$lat = (float)$service->lat;
+					$lon = (float)$service->lon;
+
+					if($lat > 60){
+						$service->lat = (string)$lon;
+						$service->lon = (string)$lat;
+					}
+
+					$service->latlon_change = true;
+					$service->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$services = $this->serviceQuery($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Service::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function serviceQuery($offset,$limit){
+
+		$services = Service::where('lat','exists',true)->where('lat','!=',"")->where('lon','!=',"")->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","lat","lon","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $services;
+	}
+
+	public function latLonSwapServiceApi(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$services = $this->serviceQueryApi($offset,$limit);
+
+			while(count($services) != 0){
+
+				foreach ($services as $key => $service) {
+
+					$lat = (double)$service->geometry['coordinates'][0];
+					$lon = (double)$service->geometry['coordinates'][1];
+
+					if($lat > 60){
+
+						$lat_new = (double)$lon;
+						$lon_new = (double)$lat;
+
+						$geometry = array(
+							"type" => "Point",
+							"coordinates" => array($lat_new,$lon_new)
+						);
+
+						$service->geometry = $geometry;
+						
+					}
+
+					$service->latlon_change = true;
+					$service->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$services = $this->serviceQueryApi($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Vendorservice::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function serviceQueryApi($offset,$limit){
+
+		$services = Vendorservice::where('geometry','exists',true)->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","geometry","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $services;
+	}
+
     
 }

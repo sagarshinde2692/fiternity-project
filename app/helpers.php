@@ -6,7 +6,17 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+if (!function_exists('decode_customer_token')) {
 
+    function decode_customer_token(){
+        $jwt_token              =   Request::header('Authorization');
+        $jwt_key                =   Config::get('app.jwt.key');
+        $jwt_alg                =   Config::get('app.jwt.alg');
+        $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        return $decodedToken;
+    }
+
+}
 
 if (!function_exists('sorting_array')) {
     function sorting_array($unOrderArr, $column, $orderIds, $columnIsInt = false){

@@ -29,12 +29,12 @@ Route::get('removepersonaltrainerstudio', 'DebugController@removePersonalTrainer
 
 Route::get('reversemigrations/country', 'ReversemigrationsController@country');
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
+Route::get('reverse/migration/deleteworkoutsessionratecard','MigrationReverseController@deleteWorkoutSessionRatecard');
 
-
-
-
-
-
+Route::get('latlonswap', 'DebugController@latLonSwap');
+Route::get('latlonswapapi', 'DebugController@latLonSwapApi');
+Route::get('latlonswapservice', 'DebugController@latLonSwapService');
+Route::get('latlonswapserviceapi', 'DebugController@latLonSwapServiceApi');
 
 
 Route::get('checkfileons3', function (){
@@ -68,12 +68,16 @@ Route::get('checkfileons3', function (){
 
 
 
-Route::get('gettrialscsv', function(){
-	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
+Route::get('updatefinders', function(){
+
+    DB::connection('mongodb')->table('services')->whereNotIn('city_id',[1])->update(['vip_trial' => '0']);
+    DB::connection('mongodb2')->table('vendorservices')->whereNotIn('city_id',[1])->update(['vip_trial' =>  false]);
+
 });
 
 
 Route::get('migratescheduletype', function(){
+
 
 
 	DB::connection('mongodb2')->table('schedules')->update(['type' => "trial"]);
@@ -225,7 +229,6 @@ Route::get('/removeworkoutsession', function() {
 });
 
 
-
 Route::get('createworkoutsessionifnotexist/{offeset?}/', function($offset = ""){
 
     ini_set('memory_limit', '500M');
@@ -237,7 +240,12 @@ Route::get('createworkoutsessionifnotexist/{offeset?}/', function($offset = ""){
         $service_ids = DB::connection('mongodb2')->table('vendorservices')->take(5000)->skip(intval($offset))->lists('_id');
     }
 
-//    $service_ids = [811];
+
+    //1671,1645,1429,7146,1664,1020,1518
+
+//    $service_ids = DB::connection('mongodb2')->table('vendorservices')->whereIn('vendor_id',[1020])->lists('_id');
+
+//    $service_ids = [1937];
 //    return $service_ids;
 
 
@@ -248,9 +256,7 @@ Route::get('createworkoutsessionifnotexist/{offeset?}/', function($offset = ""){
         if($workoutSessionRatecard_exists_cnt < 1){
 
             $trialRatecard_exists_cnt   =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('hidden', false)->count();
-
             if($trialRatecard_exists_cnt > 0){
-
                 if($trialRatecard_exists_cnt < 2){
                     $trialRatecard  =   DB::connection('mongodb2')->table('ratecards')->where('vendorservice_id',intval($service_id))->where('type', 'trial')->where('hidden', false)->first();
                 }else{
@@ -287,7 +293,7 @@ Route::get('createworkoutsessionifnotexist/{offeset?}/', function($offset = ""){
                         curl_setopt_array($curl, array( CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url ));
                         $resp = curl_exec($curl);
                         curl_close($curl);
-                        var_dump($resp);
+                        echo "<br><br> Ratecard Url -- ".$url;
                     }
                 }
             }//Trial Ratecard exists
@@ -313,25 +319,28 @@ Route::get('updateworkoutsessionprices/{offeset?}/', function($offset = ""){
         $service_ids = Service::active()->take(5000)->skip(intval($offset))->lists('_id');
     }
 
+//    $service_ids = DB::connection('mongodb2')->table('vendorservices')->whereIn('vendor_id',[1671,1645,1429,7146,1664,1020,1518])->lists('_id');
+
+//    $service_ids = [830];
     foreach ($service_ids as $service_id){
 
         $curl   =   curl_init();
         $id     =   trim($service_id);
-        $url    =   "http://a1.fitternity.com/reverse/migration/vendorservice/$id";
+//        $url    =   "http://apistg.fitn.in/reverse/migration/updateschedulebyserviceid/$id";
+
 //        $url    =   "http://apistg.fitn.in/reverse/migration/vendorservice/$id";
 //        $url    =   "http://fitapi.com/reverse/migration/vendorservice/$id";
-        curl_setopt_array($curl, array(
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $url
-        ));
+        $url    =   "http://a1.fitternity.com/reverse/migration/updateschedulebyserviceidv1/$id";
+        curl_setopt_array($curl, array(CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url));
         $resp = curl_exec($curl);
         curl_close($curl);
         var_dump($resp);
 
 
     }
-});
 
+
+});
 
 
 

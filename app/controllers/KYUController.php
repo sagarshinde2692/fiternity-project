@@ -99,22 +99,19 @@ class KYUController extends \BaseController
       'port' => 8060,
       'postfields' => $postfields_data,
       'method' => 'POST',
-      );       
+      );
     echo es_curl_request($request); 
   }
 
-  public function getvendorviewcount($vendor_id,$start_date = NULL, $end_date = NULL){
+    public function getvendorviewcount($vendor_id,$start_date = NULL, $end_date = NULL){
+        $slug_data =Finder::active()
+            ->where('_id', intval($vendor_id))
+            ->get();
+        $start_date = isset($start_date) ? strtotime($start_date) : 1413904497799;
+        $end_date = isset($end_date) ? strtotime($end_date) : undefined;
 
-    $slug_data =Finder::active()                      
-    ->where('_id', intval($vendor_id))                                 
-    ->get(); 
-
-    $start_date = isset($start_date) ? strtotime($start_date) : 1413904497799;
-    $end_date = isset($end_date) ? strtotime($end_date) : undefined;
-    
-    $vendor_slug = $slug_data[0]['slug'];
-
-    $body = '{"size": 0,
+        $vendor_slug = $slug_data[0]['slug'];
+        $body = '{"size": 0,
     "query": {
       "filtered": {
         "query": {
@@ -152,8 +149,7 @@ class KYUController extends \BaseController
     }
   }
   ';
-
-  $body1 = '{
+        $body1 = '{
     "size": 0,
     "query": {
       "filtered": {
@@ -181,8 +177,7 @@ class KYUController extends \BaseController
       }
     }
   }';
-
-  $body2 = '{
+        $body2 = '{
     "size": 0,
     "query": {
       "filtered": {
@@ -202,57 +197,50 @@ class KYUController extends \BaseController
       }
     }
   }';
-
-  $request1 = array( 
-    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
-    'port' => 8060,
-    'method' => 'POST',
-    'postfields' => $body1
-    );
-
-  $request2 = array( 
-    'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
-    'port' => 8060,
-    'method' => 'POST',
-    'postfields' => $body2
-    );
-
-  $request = array( 
-    'url' => "http://fitternityelk:admin@52.74.67.151:8060/clicklogs/searchlogs/_search",
-    'port' => 8060,
-    'method' => 'POST',
-    'postfields' => $body
-    );
-
-
-  $search_results     =   es_curl_request($request);
-  $search_results_2   =   json_decode(es_curl_request($request2), true);
-  $count_2            =   $search_results_2['hits']['total'];
-
-  $search_results_1   =   json_decode(es_curl_request($request1), true);
-  $count_1            =   $search_results_1['hits']['total'];
-
-  $list = json_decode($search_results, true);  
-  $list2 = $list["aggregations"]["2"];
-
-  if(!empty($list2["buckets"]))
-  {
-    $list3 = $list2["buckets"][0];
-    $list3['doc_count'] = intval($list3['doc_count']) + intval($count_1) + intval($count_2);
-    $response       =   ['result' => $list3];
-    return Response::json($response);
-  }
-  else
-  {
-    $zeroresult = array();
-    $zeroresult = ['key' => $vendor_slug, "doc_count" => 0];
-    $response = ['result' => $zeroresult];
-    return Response::json($response);
-  }  
-}
+        $request1 = array(
+            'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+            'port' => 8060,
+            'method' => 'POST',
+            'postfields' => $body1
+        );
+        $request2 = array(
+            'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+            'port' => 8060,
+            'method' => 'POST',
+            'postfields' => $body2
+        );
+        $request = array(
+            'url' => "http://fitternityelk:admin@52.74.67.151:8060/clicklogs/searchlogs/_search",
+            'port' => 8060,
+            'method' => 'POST',
+            'postfields' => $body
+        );
+        $search_results     =   es_curl_request($request);
+        $search_results_2   =   json_decode(es_curl_request($request2), true);
+        $count_2            =   $search_results_2['hits']['total'];
+        $search_results_1   =   json_decode(es_curl_request($request1), true);
+        $count_1            =   $search_results_1['hits']['total'];
+        $list = json_decode($search_results, true);
+        $list2 = $list["aggregations"]["2"];
+        if(!empty($list2["buckets"]))
+        {
+            $list3 = $list2["buckets"][0];
+            $list3['doc_count'] = intval($list3['doc_count']) + intval($count_1) + intval($count_2);
+            $response       =   ['result' => $list3];
+            return Response::json($response);
+        }
+        else
+        {
+            $zeroresult = array();
+            $zeroresult = ['key' => $vendor_slug, "doc_count" => 0];
+            $response = ['result' => $zeroresult];
+            return Response::json($response);
+        }
+    }
 
 
-public function getcitywiseviews(){
+
+    public function getcitywiseviews(){
 
   $datefrom = Input::get('datefrom');
   $dateto = Input::get('dateto');
@@ -307,7 +295,7 @@ public function getcitywiseviews(){
     );
 
   $search_results1     =   es_curl_request($request);
-  $search_results = json_decode($search_results1, true);  
+  //return $search_results = json_decode($search_results1, true);
   $response = array();
   foreach ($search_results['aggregations']['cityname']['buckets'] as $agg) {
    array_push($response, array($agg['key'] => $agg['eventtype']['buckets']));

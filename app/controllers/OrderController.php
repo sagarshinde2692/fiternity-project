@@ -138,6 +138,8 @@ class OrderController extends \BaseController {
                 array_set($data, 'reward_info', $reward_info);
             }
 
+            
+
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
 
@@ -590,11 +592,23 @@ class OrderController extends \BaseController {
         if(empty($data['city_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
             return Response::json($resp,404);
+        }else{
+            $citydata 		=	City::find(intval($data['city_id']));
+            if(!$citydata){
+                $resp 	= 	array('status' => 404,'message' => "City does not exist");
+                return Response::json($resp,404);
+            }
         }
 
         if(empty($data['finder_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
             return Response::json($resp,404);
+        }else{
+            $finderdata 		=	Finder::find(intval($data['finder_id']));
+            if(!$finderdata) {
+                $resp = array('status' => 404, 'message' => "Finder does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['finder_name'])){
@@ -610,11 +624,25 @@ class OrderController extends \BaseController {
         if(empty($data['service_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
             return Response::json($resp,404);
+        }else{
+            $servicedata 		=	Service::find(intval($data['service_id']));
+            if(!$servicedata) {
+                $resp = array('status' => 404, 'message' => "Service does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['service_name'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
             return Response::json($resp,404);
+        }
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $ratecarddata 		=	Ratecard::find(intval($data['ratecard_id']));
+            if(!$ratecarddata) {
+                $resp = array('status' => 404, 'message' => "Ratecard does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['amount'])){
@@ -839,7 +867,15 @@ class OrderController extends \BaseController {
 
             $ratecard = Ratecard::find((int)$data['ratecard_id']);
 
+            if(isset($ratecard->remarks) && $ratecard->remarks){
+                
+                $data['ratecard_remarks']  = $ratecard->remarks;
+            }
+
             if($ratecard){
+
+                $data['duration'] = (isset($ratecard->duration)) ? $ratecard->duration : "";
+                $data['duration_type'] = (isset($ratecard->duration_type)) ? $ratecard->duration_type : "";
 
                 if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                     $data['amount_finder'] = $ratecard->special_price;
@@ -1410,7 +1446,7 @@ class OrderController extends \BaseController {
 
         if ($validator->fails()) {
 
-            return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+            return Response::json(array('status' => 401,'message' => $this->errorMessage($validator->errors())),401);
 
         }else{
 
@@ -1423,13 +1459,25 @@ class OrderController extends \BaseController {
             if(count($order) < 1){
 
                 $resp   =   array("status" => 401,"message" => "Order Does Not Exists");
-                return Response::json($resp);
+                return Response::json($resp,$resp["status"]);
             }
 
             if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
-                $resp   =   array("status" => 401,"message" => "Already Status Successfull");
-                return Response::json($resp);
+                $resp   =   array("status" => 401,"message" => "You have purchased this membership");
+                return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($order->cashback) && $order->cashback == true){
+
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
+                return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
+
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
+                return Response::json($resp,$resp["status"]);
             }
 
             $data['amount_finder'] = $order->amount_finder;
@@ -1489,7 +1537,7 @@ class OrderController extends \BaseController {
 
             if(isset($data['amount_finder'])){
 
-                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id);
+                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode']);
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];

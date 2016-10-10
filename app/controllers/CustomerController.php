@@ -2196,7 +2196,7 @@ public function getCustomerDetail(){
 
         if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
-        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+        	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores","aerobics");
 
         	$cache_tag = 'customer_home_by_city_2_5';
 
@@ -2208,14 +2208,33 @@ public function getCustomerDetail(){
 
         }
 
+
         if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
 
         	$category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
 
-        	$cache_tag = 'customer_home_by_city_2_5';
+        	$cat = array();
+
+        	$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+
+			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores","aerobics");
+
+			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
+
+			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
+
+			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios","crossfit","pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","personal-trainers","sport-nutrition-supliment-stores");
+
+			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios","crossfit","mma-and-kick-boxing","dance");
+
+			if(isset($cat[$city])){
+				$category_slug = $cat[$city];
+			}
+
+        	$cache_tag = 'customer_home_by_city_ios';
 
         }
-        
+
 		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
 
 		if(!$customer_home_by_city){
@@ -2499,6 +2518,45 @@ public function getCustomerDetail(){
 		$this->customersms->downloadApp($data);
 
 		return array('status' => 200,'message' =>"SMS Sent");
+
+	}
+
+	public function forceUpdate(){
+
+		$rules = [
+			'app_version' => 'numeric|required',
+			'device_type' => 'required'
+		];
+
+		$data = $_REQUEST;
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
+		}
+
+		$current_version_android = 2.6;
+		$current_version_ios = 2.0;
+
+		$result_android = array(
+			"title" => "Version ".$current_version_android." is available on Play Store",
+			"description" => "Version ".$current_version_android." is available on Play Store",
+			"force_update" => false,
+			"available_version" => $current_version_android,
+		);
+
+		$result_ios = array(
+			"title" => "Version ".$current_version_ios." is available on App Store",
+			"description" => "Version ".$current_version_ios." is available on App Store",
+			"force_update" => false,
+			"available_version" => $current_version_ios,
+		);
+
+		$result = ($data['device_type'] == 'android') ? $result_android : $result_ios;
+
+		return Response::json(array('status' => 200,'data' => $result),200);
 
 	}
 

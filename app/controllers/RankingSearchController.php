@@ -542,7 +542,7 @@ public function getRankedFinderResultsApp()
 
 
     $region = Input::json()->get('regions');
-
+    $locationCount = 0;
     if(count($region) == 1){
 
         $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
@@ -557,6 +557,7 @@ public function getRankedFinderResultsApp()
     }else{
         $lat = "";
         $lon = "";
+        $locationCount = count($region);
     }
     
     //return Input::json()->get('offset')['from'];
@@ -564,8 +565,8 @@ public function getRankedFinderResultsApp()
     $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
     $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
-    $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $regions_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $region_tags_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
     $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
     $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
@@ -597,8 +598,8 @@ public function getRankedFinderResultsApp()
 },';
 }
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter.$geo_location_filter,',');
-$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$regions_filter.$geo_location_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -725,6 +726,26 @@ public function getRankedFinderResultsAppv2()
     $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
     $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
 
+
+    $region = Input::json()->get('regions');
+    $locationCount = 0;
+    if(count($region) == 1){
+
+        $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
+
+        $locationCount = Location::where('slug',$region_slug)->count();
+
+        if($locationCount > 0){
+            $lat = "";
+            $lon = "";
+        }
+
+    }else{
+        $lat = "";
+        $lon = "";
+        $locationCount = count($region);
+    }
+
     // return $category;
     $offering_regex = $this->_getOfferingRegex($category);
 
@@ -739,12 +760,16 @@ public function getRankedFinderResultsAppv2()
                 "healthy tiffins",
                 "healthy snacks and beverages",
                 "sport nutrition supliment stores",
-                "dietitians and nutritionists"
+                "dietitians and nutritionists",
+                "personal trainers"
                 ]
             }
         }]
         ';
     }
+
+    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+
     $free_trial_enable = Input::json()->get('free_trial_enable');
     $trial_filter = '';
     if(intval($free_trial_enable) == 1){
@@ -757,8 +782,8 @@ public function getRankedFinderResultsAppv2()
     $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
     $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
     $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
-    $regions_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $region_tags_filter = Input::json()->get('regions') ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $regions_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+    $region_tags_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
     $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
     $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
     $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
@@ -837,9 +862,9 @@ if($all_nested_filters !== '')
 
 $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-$must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+$must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
 if($trials_day_filter !== ''){
-    $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+    $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
 }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
@@ -1405,9 +1430,9 @@ public function getRankedFinderResultsAppv3()
 
         $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-        $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_range_filter,',');
+        $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$geo_range_filter,',');
         if($trials_day_filter !== ''){
-            $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$regions_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter.$geo_range_filter,',');
+            $must_filtervalue = trim($vip_trial_filter.$trial_filter.$location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter.$geo_range_filter,',');
         }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
