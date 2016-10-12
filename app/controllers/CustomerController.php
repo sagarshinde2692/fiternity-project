@@ -2560,5 +2560,16 @@ public function getCustomerDetail(){
 
 	}
 
+	public function emailOpened(){
+
+		$data = $_REQUEST;
+
+		$emailTracking = new Emailtracking($data);
+		$emailTracking->save();
+
+		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
+
+	}
+
 
 }

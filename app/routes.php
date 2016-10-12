@@ -835,3 +835,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 #####################################################################################################
 
 Route::post('seourl', 'GlobalSearchController@seourl');
+
+Route::get('email/opened', 'CustomerController@emailOpened');
+
+
