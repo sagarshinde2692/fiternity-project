@@ -2564,6 +2564,8 @@ public function getCustomerDetail(){
 
 		$data = $_REQUEST;
 
+		Log::info('Customer Email Open : '.json_encode($data));
+
 		$emailTracking = new Emailtracking($data);
 		$emailTracking->save();
 
