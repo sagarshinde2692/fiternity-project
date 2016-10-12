@@ -413,10 +413,23 @@ class ServiceRankingSearchController extends \BaseController {
 
       $time_range_filter = ''; 
 
+      if($service_type != "workout_session"){
+        $price_range_filter = $price_range_above_100_filter = "";
+      }
+
       if($price !== ''){
 
-        $price_from = (isset($price['from']) && $price['from'] >= 100 ) ? $price['from'] : 100;
-        $price_to = (isset($price['to']) && $price['to'] >= 100) ? $price['to'] : 1000000;
+        if($service_type == "workout_session"){
+
+          $price_from = (isset($price['from']) && $price['from'] >= 100 ) ? $price['from'] : 100;
+          $price_to = (isset($price['to']) && $price['to'] >= 100) ? $price['to'] : 1000000;
+
+        }else{
+
+          $price_from = (isset($price['from'])) ? $price['from'] : 0;
+          $price_to = (isset($price['to'])) ? $price['to'] : 1000000;
+
+        }
 
         $price_range_filter = '{
           "range": {
