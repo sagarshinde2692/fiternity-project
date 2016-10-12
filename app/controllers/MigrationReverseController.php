@@ -956,6 +956,13 @@ class MigrationReverseController extends \BaseController {
 
             $data	=	DB::connection($this->fitapi)->table('vendorservices')->where('_id', intval($id))->first();
 
+            $insertData = [
+                'calorie_burn'	=>  [
+                    'avg' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["avg"]) ) ? intval($data['calorie_burn']["avg"]) : 0,
+                    'type' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["type"]) ) ? intval($data['calorie_burn']["type"]) : "kcal"
+                    ]
+            ];
+
             $insertData['finder_id'] = (int)$data['vendor_id'];
             $insertData['name'] = $data['name'];
             $insertData['servicecategory_id'] = (int)$data['category']['primary'];
@@ -968,6 +975,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['session_type'] = (isset($data['session_type'])) ? $data['session_type'] : "";
             $insertData['meal_type'] = (isset($data['meal_type'])) ? $data['meal_type'] : "";
             $insertData['workout_tags'] = (isset($data['workout_tags']) && !empty($data['workout_tags'])) ? $data['workout_tags'] : [];
+            $insertData['workout_results'] = (isset($data['workout_results']) && !empty($data['workout_results'])) ? $data['workout_results'] : [];
             $insertData['status'] = (isset($data['hidden']) && $data['hidden'] == true) ? '0' : '1';
             $insertData['deduct'] = (isset($data['trial_cashback_status'])  && $data['trial_cashback_status'] == true) ? '1' : '0';
             $insertData['rockbottom'] = (isset($data['rockbottom_price_status'])  && $data['rockbottom_price_status'] == true) ? '1' : '0';
@@ -978,6 +986,9 @@ class MigrationReverseController extends \BaseController {
             $insertData['address'] = ($data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['pincode'] == '' && $data['address']['landmark'] == '') ? '' : $data['address']['line1'].', '.$data['address']['line2'].', '.$data['address']['line3'].', '.$data['address']['landmark'].', '.$data['address']['pincode'];
             $insertData['what_i_should_carry'] = $data['what_i_should_carry'];
             $insertData['what_i_should_expect'] = $data['what_i_should_expect'];
+
+
+
 
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];

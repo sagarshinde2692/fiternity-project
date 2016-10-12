@@ -6,7 +6,17 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+if (!function_exists('decode_customer_token')) {
 
+    function decode_customer_token(){
+        $jwt_token              =   Request::header('Authorization');
+        $jwt_key                =   Config::get('app.jwt.key');
+        $jwt_alg                =   Config::get('app.jwt.alg');
+        $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        return $decodedToken;
+    }
+
+}
 
 if (!function_exists('sorting_array')) {
     function sorting_array($unOrderArr, $column, $orderIds, $columnIsInt = false){
@@ -461,10 +471,10 @@ if (!function_exists(('get_elastic_autosuggest_doc'))) {
 
         $data['lat'] = isset($data['lat']) ? floatval($data['lat']) : 0.0;
         $data['lon'] = isset($data['lon']) ? floatval($data['lon']) : 0.0;
-
+        $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25) ? ucwords($data['title']) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
         $postfields_data = array(
             'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
-            'autosuggestvalue'              =>       ucwords($data['title'])." in ".ucwords($data['location']['name']),
+            'autosuggestvalue'              =>       $data['autosuggestvalue'],
             'inputv2'                       =>      $info_service_list,//(isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",
             'inputv3'                       =>      (isset($data['offerings']) && !empty($data['offerings'])) ? array_values(array_unique(array_map('strtolower',array_pluck($data['offerings'],'name')))) : "",
             'inputv4'                       =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : "",

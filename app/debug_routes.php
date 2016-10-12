@@ -70,8 +70,8 @@ Route::get('checkfileons3', function (){
 
 Route::get('updatefinders', function(){
 
-    DB::connection('mongodb')->table('finders')->whereNotIn('city_id',[1])->update(['vip_trial' => '0']);
-    DB::connection('mongodb2')->table('vendors')->whereNotIn('city_id',[1])->update(['vip_trial' =>  false]);
+    DB::connection('mongodb')->table('services')->whereNotIn('city_id',[1])->update(['vip_trial' => '0']);
+    DB::connection('mongodb2')->table('vendorservices')->whereNotIn('city_id',[1])->update(['vip_trial' =>  false]);
 
 });
 

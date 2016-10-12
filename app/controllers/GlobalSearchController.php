@@ -831,6 +831,7 @@ public function newglobalsearch(){
             }                                           
         },';
     }
+
     // Boost to brand........
     $brandscript = '';
 //    if(isset($type) && $type == 'brand'){
