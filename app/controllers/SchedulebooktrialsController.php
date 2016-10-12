@@ -38,6 +38,7 @@ class SchedulebooktrialsController extends \BaseController {
     protected $utilities;
     protected $customerreward;
 	protected $jwtauth;
+    protected $service_category_id;
 
 
     public function __construct(
@@ -66,6 +67,7 @@ class SchedulebooktrialsController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward            =   $customerreward;
 		$this->jwtauth 	=	$jwtauth;
+        $this->service_category_id = array(2,19,65);
 
     }
     /**
@@ -142,18 +144,21 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules'))->toArray();
+        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules','servicecategory_id'))->toArray();
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
             $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
+
+            $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
 
             //slots exists
             if(count($weekdayslots['slots']) > 0){
@@ -182,7 +187,7 @@ class SchedulebooktrialsController extends \BaseController {
                     try{
 
                         $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_push($slots, $slot);
 
@@ -212,7 +217,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items                  =   Service::where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules'))->toArray();
+        $items                  =   Service::where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id'))->toArray();
 
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
@@ -220,12 +225,14 @@ class SchedulebooktrialsController extends \BaseController {
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
             $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
 
+            $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
 
             // echo "<br> count -- ".count($weekdayslots['slots']);
             $item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
@@ -276,7 +283,7 @@ class SchedulebooktrialsController extends \BaseController {
                     try{
 
                         $scheduleDateTime               =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_push($slots, $slot);
 
@@ -324,18 +331,21 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'))->toArray();
         if(!$items){
             return $this->responseNotFound('WorkoutSession Schedule does not exist');
         }
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
             $weekdayslots = head(array_where($item['workoutsessionschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
+
+            $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
 
             //slots exists
             if(count($weekdayslots['slots']) > 0){
@@ -356,10 +366,18 @@ class SchedulebooktrialsController extends \BaseController {
                     // array_set($slot, 'cancelcnt', $cancelcnt);
                     array_set($slot, 'status', $slot_status);
 
-                    $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
-                    array_set($slot, 'passed', $slot_datetime_pass_status);
-                    array_push($slots, $slot);
+                    try{
+
+                        $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_push($slots, $slot);
+
+                    }catch(Exception $e){
+
+                        Log::info("getWorkoutSessionSchedule Error : ".$date." ".$slot['start_time']);
+                    }
+        
                 }
 
                 $service['slots'] = $slots;
@@ -386,7 +404,10 @@ class SchedulebooktrialsController extends \BaseController {
 
         // $dobj = new DateTime;print_r($dobj);exit;
         $currentDateTime 	=	\Carbon\Carbon::now();
-        $item 		       =	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $item 		       =	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'))->toArray();
+
+        $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
+
         if(!$item){
             return $this->responseNotFound('Service Schedule does not exist');
         }
@@ -443,7 +464,7 @@ class SchedulebooktrialsController extends \BaseController {
                     try{
 
                         $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_push($slots, $slot);
 

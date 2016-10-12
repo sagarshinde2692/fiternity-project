@@ -10,10 +10,13 @@
 
 class ServiceController extends \BaseController {
 
+	protected $service_category_id;
 
 	public function __construct() {
 
-		parent::__construct();	
+		parent::__construct();
+
+		$this->service_category_id = array(2,19,65);	
 	}
 
 	public function getServiceCategorys(){
@@ -417,7 +420,9 @@ class ServiceController extends \BaseController {
 
         $date = date('d-m-Y',strtotime($date));
 
-        $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules'));
+        $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
+
+        $time_in_seconds = (in_array($item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
 
         $item = $item->toArray();
         $slots = array();
@@ -433,7 +438,7 @@ class ServiceController extends \BaseController {
         				try{
 
 	                        $scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
-		                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+		                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
 		                    array_set($slot, 'passed', $slot_datetime_pass_status);
 		                    array_push($slots, $slot);
 
