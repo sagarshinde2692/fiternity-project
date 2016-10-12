@@ -10,13 +10,9 @@
 
 class ServiceController extends \BaseController {
 
-	protected $service_category_id;
-
 	public function __construct() {
 
-		parent::__construct();
-
-		$this->service_category_id = array(2,19,65);	
+		parent::__construct();	
 	}
 
 	public function getServiceCategorys(){
@@ -422,7 +418,7 @@ class ServiceController extends \BaseController {
 
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
 
-        $time_in_seconds = (in_array((int)$item['servicecategory_id'],$this->service_category_id)) ? 15 : 90 ;
+        $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
         $item = $item->toArray();
         $slots = array();
