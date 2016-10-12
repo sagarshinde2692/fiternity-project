@@ -11,4 +11,9 @@ class Emailtracking extends  \Basemodel {
 	
 	protected $collection = "emailtrakings";
 
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = $value;
+	}
+
 }
