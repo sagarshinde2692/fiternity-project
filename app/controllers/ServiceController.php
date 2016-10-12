@@ -422,7 +422,7 @@ class ServiceController extends \BaseController {
 
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
 
-        $time_in_seconds = (in_array($item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
+        $time_in_seconds = (in_array((int)$item['servicecategory_id'],$this->service_category_id)) ? 15 : 90 ;
 
         $item = $item->toArray();
         $slots = array();

@@ -158,7 +158,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }));
 
-            $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
+            $time_in_seconds = (in_array((int)$item['servicecategory_id'],$this->service_category_id)) ? 15 : 90 ;
 
             //slots exists
             if(count($weekdayslots['slots']) > 0){
@@ -232,7 +232,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }));
 
-            $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
+            $time_in_seconds = (in_array((int)$item['servicecategory_id'],$this->service_category_id)) ? 15 : 90 ;
 
             // echo "<br> count -- ".count($weekdayslots['slots']);
             $item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
@@ -345,7 +345,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }));
 
-            $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
+            $time_in_seconds = (in_array((int)$item['servicecategory_id'],$this->service_category_id)) ? 15 : 90 ;
 
             //slots exists
             if(count($weekdayslots['slots']) > 0){
@@ -406,7 +406,7 @@ class SchedulebooktrialsController extends \BaseController {
         $currentDateTime 	=	\Carbon\Carbon::now();
         $item 		       =	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'))->toArray();
 
-        $time_in_seconds = (in_array((int)$item->servicecategory_id,$this->service_category_id)) ? 15 : 90 ;
+        $time_in_seconds = (in_array((int)$item['servicecategory_id'],$this->service_category_id)) ? 15 : 90 ;
 
         if(!$item){
             return $this->responseNotFound('Service Schedule does not exist');
