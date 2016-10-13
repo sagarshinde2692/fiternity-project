@@ -68,6 +68,18 @@ Route::get('checkfileons3', function (){
 
 
 
+Route::get('updatefindercategories', function(){
+
+    $rows   = Findercategory::where('defination','exists', true)->get();
+    foreach ($rows as $row){
+//        return $row['defination'];
+        DB::connection('mongodb2')->table('vendorcategories')->where('_id', intval($row['_id']))->update(['defination' => $row['defination']]);
+    }
+
+});
+
+
+
 Route::get('updatefinders', function(){
 
     DB::connection('mongodb')->table('services')->whereNotIn('city_id',[1])->update(['vip_trial' => '0']);
