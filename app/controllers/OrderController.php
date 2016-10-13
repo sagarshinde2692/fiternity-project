@@ -899,6 +899,27 @@ class OrderController extends \BaseController {
                         $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
                     }
                 }
+
+                if($data['type'] == 'memberships' || $data['type'] == 'healthytiffinmembership'){
+
+                    $duration = $ratecard->duration;
+                    $duration_type = $ratecard->duration_type;
+                    $validity = $ratecard->validity;
+                    $validity_type = $ratecard->validity_type;
+
+                    $service_duration =   "";
+
+                    $service_duration .= ($duration > 0) ? $service_duration .= $duration ." ".$duration_type : "";
+
+                    ($duration > 0 && $validity > 0) ? $service_duration .= " - " : $service_duration = "";
+                    
+                    ($validity == 1 && $validity_type == 'months') ? $validity_type = 'month' : null ;
+                    ($validity == 1 && $validity_type == 'days') ? $validity_type = 'day' : null ;
+
+                    ($validity > 0) ? $service_duration .=  $validity ." ".$validity_type : "";
+
+                    ($service_duration != "") ? $data['service_duration'] = $service_duration : null ;
+                }
                 
             }else{
 

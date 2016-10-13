@@ -267,15 +267,15 @@ Class CustomerReward {
         switch ($reward_category->reward_type) {
             case 'fitness_kit' : 
                 $data['label'] = "Reward-FitnessKit-Customer";
-                $myreward_capture->customer_email = $customerMailer->rewardClaim($data);
+                $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
                 break;
             case 'healthy_snacks' : 
                 $data['label'] = "Reward-HealthySnacksHamper-Customer";
-                $myreward_capture->customer_email = $customerMailer->rewardClaim($data);
+                $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
                 break;
             case 'personal_trainer_at_studio' : 
                 $data['label'] = "Reward-PersonalTrainer-AtStudio-Customer";
-                $myreward_capture->customer_email = $customerMailer->rewardClaim($data);
+                $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
                 break;
             default : break;
         }

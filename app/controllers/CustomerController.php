@@ -2267,11 +2267,6 @@ public function getCustomerDetail(){
 
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
 
-			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
-			if(!$homepage){
-				return $this->responseNotFound('homepage does not exist');
-			}
-
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
 			$homedata 				= 	array('categorytags' => $ordered_category,
@@ -2310,7 +2305,7 @@ public function getCustomerDetail(){
             $customer->update($customerData);
 
             $customer_address = "";
-            $customer_address .= (isset($data['customer_address']['line1']) && $data['customer_address']['line1'] != "") ? ", ".$data['customer_address']['line1'] : "";
+            $customer_address .= (isset($data['customer_address']['line1']) && $data['customer_address']['line1'] != "") ? $data['customer_address']['line1'] : "";
             $customer_address .= (isset($data['customer_address']['line2']) && $data['customer_address']['line2'] != "") ? ", ".$data['customer_address']['line2'] : "";
             $customer_address .= (isset($data['customer_address']['line3']) && $data['customer_address']['line3'] != "") ? ", ".$data['customer_address']['line3'] : "";
             $customer_address .= (isset($data['customer_address']['landmark']) && $data['customer_address']['landmark'] != "") ? ", ".$data['customer_address']['landmark'] : "";
