@@ -203,7 +203,7 @@ Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'Cus
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
-
+Route::get('app/config', array('as' => 'customer.appconfig','uses' => 'CustomerController@appConfig'));
 
 Route::group(array('before' => 'validatetoken'), function() {
 
