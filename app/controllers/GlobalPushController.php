@@ -110,7 +110,8 @@ class GlobalPushController extends \BaseController
               "filter": [
               "standard",
               "lowercase",                        
-              "ngram-filter"
+              "ngram-filter",
+              "titlesynfilter"
               ]
             }
           },
@@ -199,7 +200,7 @@ class GlobalPushController extends \BaseController
             "titlesynfilter":{
               "type": "synonym",
               "synonyms": [
-              "golds , gold",
+              "golds , gold , gold\'s",
               "talwalkars, talwalkar"
               ]
             }
