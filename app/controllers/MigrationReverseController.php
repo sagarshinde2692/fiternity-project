@@ -223,7 +223,8 @@ class MigrationReverseController extends \BaseController {
                 'slug' =>  trim($findercategory->slug),
                 'detail_rating' =>  $findercategory->detail_rating,
                 'cities' =>  (isset($findercategory->cities) && count($findercategory->cities) > 0) ? $findercategory->cities : [],
-                'seo' 	=>  [
+                'defination' =>  (isset($findercategory->defination) && count($findercategory->defination) > 0) ? $findercategory->defination : [],
+                'meta' 	=>  [
                     'title' 	=>  ($findercategory->meta['title']) ? strip_tags(trim($findercategory->meta['title'])) : "",
                     'description' 	=>  ($findercategory->meta['description']) ? strip_tags(trim($findercategory->meta['description'])) : "",
                     'keywords' 	=>  (isset($findercategory->meta['keywords']) && $findercategory->meta['keywords'] != "") ? strip_tags(trim($findercategory->meta['keywords'])) : ""
@@ -264,8 +265,8 @@ class MigrationReverseController extends \BaseController {
                 'updated_at' =>  $findercategory->updated_at
             ];
 
-            if($Findercategorytag && isset($Findercategorytag->_id)){
-                $entity = Findercategorytag::on($this->fitadmin)->find(intval($Findercategorytag->_id));
+            if($Findercategorytag && isset($Findercategorytag['_id'])){
+                $entity = Findercategorytag::on($this->fitadmin)->find(intval($Findercategorytag['_id']));
                 $entity->update($insertData);
             }else{
                 $lastcategorytagid  = 	DB::connection($this->fitadmin)->table('findercategorytags')->count();
