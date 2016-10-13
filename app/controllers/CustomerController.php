@@ -2547,12 +2547,20 @@ public function getCustomerDetail(){
 		$current_version_android = 2.6;
 		$current_version_ios = 2.0;
 
-		$result_android = array(
-			"title" => "Version ".$current_version_android." is available on Play Store",
-			"description" => "Version ".$current_version_android." is available on Play Store",
-			"force_update" => false,
-			"available_version" => $current_version_android,
-		);
+		if($data["device_type"] == "android"){
+
+			$result_android = array(
+				"message" => "Version ".$current_version_android." is available on Play Store",
+				"force_update" => false
+			);
+
+			if($data["app_version"] < $current_version_android){
+
+				$result_android['force_update'] = true;
+			}
+
+			return Response::json($result_android,200);
+		}
 
 		$result_ios = array(
 			"title" => "Version ".$current_version_ios." is available on App Store",
@@ -2561,9 +2569,34 @@ public function getCustomerDetail(){
 			"available_version" => $current_version_ios,
 		);
 
-		$result = ($data['device_type'] == 'android') ? $result_android : $result_ios;
+		return Response::json(array('status' => 200,'data' => $result_ios),200);
 
-		return Response::json(array('status' => 200,'data' => $result),200);
+	}
+
+	public function appConfig(){
+
+		$app_version = Request::header('app_version');
+		$device_type = Request::header('device_type');
+
+		$current_version_android = 2.6;
+		$current_version_ios = 2.0;
+
+		$rules = [
+			'app_version' => 'numeric|required',
+			'device_type' => 'required'
+		];
+
+		$data = $_REQUEST;
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
+		}
+
+		$data['city'] = 1476350961;
+		$data['home'] = 1476350961;
 
 	}
 
