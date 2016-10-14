@@ -322,6 +322,8 @@ Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'F
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
+Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
+
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
 

@@ -2136,7 +2136,7 @@ public function getCustomerDetail(){
 	    return array_multisort($sort_col, $dir, $arr);
 	}
 
-	public function home($city = 'mumbai',$cache = false){
+	public function home($city = 'mumbai',$cache = true){
 
 		$jwt_token = Request::header('Authorization');
 		$upcoming = array();
