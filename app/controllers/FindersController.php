@@ -1757,7 +1757,7 @@ class FindersController extends \BaseController {
             $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
         }
 
-        return Response::json($finderData);
+        return Response::json($finderData,$finderData['statusfinder']);
         
     }
 
