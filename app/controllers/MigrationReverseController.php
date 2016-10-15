@@ -987,9 +987,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['address'] = ($data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['line1'] == '' && $data['address']['pincode'] == '' && $data['address']['landmark'] == '') ? '' : $data['address']['line1'].', '.$data['address']['line2'].', '.$data['address']['line3'].', '.$data['address']['landmark'].', '.$data['address']['pincode'];
             $insertData['what_i_should_carry'] = $data['what_i_should_carry'];
             $insertData['what_i_should_expect'] = $data['what_i_should_expect'];
-
-
-
+            $insertData['photos']	=  (isset($data['gallery']) && count($data['gallery']) > 0) ? array_values($data['gallery']) : [];
 
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];
