@@ -416,6 +416,8 @@ class ServiceController extends \BaseController {
 
         $date = date('d-m-Y',strtotime($date));
 
+        		echo "<pre>";print_r($date);exit;
+
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
 
         $time_in_seconds = time_passed_check($item['servicecategory_id']);
@@ -556,42 +558,35 @@ class ServiceController extends \BaseController {
         }
     }
 
-    public function getServiceScheduleByType($request){
+   
+     public function getScheduleByFinderService($request = false,$count = 1){
 
-    	if(!isset($request)){
+    	if(!$request){
 
     		$request = $_REQUEST;
+    		$request['requested_date'] = $request['date'];
     	}
 
         $currentDateTime        =   time();
-        $service_id    			=   (int) $service_id;
-        $date         			=   (isset($request['date']) && $request['date'] != "") ? date("Y-m-d") : date('d-m-Y',strtotime($request['date']));
+        $date         			=   (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
         $timestamp    			=   strtotime($date);
         $weekday     			=   strtolower(date( "l", $timestamp));
+        $type 					= 	$request['type'];
 
-        $query = Service::active();
+        $query = Service::select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial');
 
-        (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('_id', '=', $finder_id) : null;
+        (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 
-        (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id', '=', $service_id) : null;
+        (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
 
-        $items = $query->get(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules'));
+        $items = $query->get();
 
-        if(count($items) > 0){
+        if(count($items) == 0){
 
-        	return $this->responseNotFound('TrialSchedule does not exist');
+        	return $this->responseNotFound('Schedule does not exist');
         }
 
         $schedules = array();
-
-        if($finder)
-
-        $item = Service::active()->where('_id', '=', $service_id)->get(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules'));
-
-        $time_in_seconds = time_passed_check($item['servicecategory_id']);
-
-        $item = $item->toArray();
-        $slots = array();
 
         switch ($type) {
 
@@ -600,42 +595,102 @@ class ServiceController extends \BaseController {
         	default: $type = 'trialschedules'; break;
         }
 
+        foreach ($items as $k => $item) {
 
-        if(count($item[$type]) > 0)
+        	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
+            $item['vip_trial'] = isset($item['vip_trial']) ? $item['vip_trial'] : "";
 
-	        foreach ($item[$type] as $key => $value) {
+            $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
+                if($value['weekday'] == $weekday){
+                    return $value;
+                }
+            }));
 
-	        	if($value['weekday'] == $weekday){
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
-	        		if(!empty($value['slots'])){
-	        			
-	        			foreach ($value['slots'] as $key => $slot) {
+            $service = array('service_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial']);
 
-	        				try{
+            $slots = array();
 
-		                        $scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
-			                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
-			                    array_set($slot, 'passed', $slot_datetime_pass_status);
-			                    array_push($slots, $slot);
+            if(count($weekdayslots['slots']) > 0){
 
-		                    }catch(Exception $e){
+                foreach ($weekdayslots['slots'] as $slot) {
 
-		                        Log::info("getServiceScheduleByType Error : ".$date." ".$slot['start_time']."------".$service_id);
-		                    }
-	        				
-	        			}
-	        		}
-	        		break;
-	        	}
-	        	
-	        }
+                    $slot_status 		= 	"available";
+                    
+                    array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
+                    array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
+                    array_set($slot, 'status', $slot_status);
 
-        $data['_id'] = (int)$service_id;
-        $data['name'] = $item['name'];
-        $data['finder_id'] = $item['finder_id'];
-        $data['slots'] = $slots;
-        $data['weekday'] = $weekday;
+                    $vip_trial_amount = 0;
 
-        return Response::json($data,200);
+                    if($item['vip_trial'] == "1"){
+
+                        $price = (int) $slot['price'];
+
+                        if($price >= 500){
+                            $vip_trial_amount = $price;
+                        }
+
+                        if($price < 500){
+                            $vip_trial_amount = $price+150;
+                        }
+
+                        if($price == 0){
+                            $vip_trial_amount = 199;
+                        }
+
+                    }
+
+                    array_set($slot, 'vip_trial_amount', $vip_trial_amount);
+
+                    try{
+
+                    	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
+                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_push($slots, $slot);
+
+                    }catch(Exception $e){
+
+                        Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
+                    }
+                     
+                }
+                
+            }
+
+            $service['slots'] = $slots;
+            array_push($schedules, $service);
+        }
+
+        $request['date'] = date("Y-m-d",strtotime($date." +1 days"));
+
+        $flag = false;
+
+        foreach ($schedules as $key => $value) {
+
+        	(count($value['slots']) > 0) ? $flag = true : null;
+        }
+
+        if(!$flag && $count < 7){
+
+        	$count += 1;
+
+        	return $this->getScheduleByFinderService($request,$count);
+
+        }else{
+
+        	$data['finder_id'] = $item['finder_id'];
+	        $data['schedules'] = $schedules;
+	        $data['weekday'] = $weekday;
+	        $data['available_date'] = $date;
+	        $data['count'] = $count;
+        	$data['todays_date'] = date("Y-m-d");
+        	$data['requested_date'] = $request['requested_date'];
+
+	        return Response::json($data,200);
+        }
+
     }
 }

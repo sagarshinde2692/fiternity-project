@@ -1470,8 +1470,6 @@ class FindersController extends \BaseController {
                     array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
                     array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
 
-                    $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
-
                     try{
 
                        $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
