@@ -555,4 +555,87 @@ class ServiceController extends \BaseController {
             return $key;
         }
     }
+
+    public function getServiceScheduleByType($request){
+
+    	if(!isset($request)){
+
+    		$request = $_REQUEST;
+    	}
+
+        $currentDateTime        =   time();
+        $service_id    			=   (int) $service_id;
+        $date         			=   (isset($request['date']) && $request['date'] != "") ? date("Y-m-d") : date('d-m-Y',strtotime($request['date']));
+        $timestamp    			=   strtotime($date);
+        $weekday     			=   strtolower(date( "l", $timestamp));
+
+        $query = Service::active();
+
+        (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('_id', '=', $finder_id) : null;
+
+        (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id', '=', $service_id) : null;
+
+        $items = $query->get(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules'));
+
+        if(count($items) > 0){
+
+        	return $this->responseNotFound('TrialSchedule does not exist');
+        }
+
+        $schedules = array();
+
+        if($finder)
+
+        $item = Service::active()->where('_id', '=', $service_id)->get(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules'));
+
+        $time_in_seconds = time_passed_check($item['servicecategory_id']);
+
+        $item = $item->toArray();
+        $slots = array();
+
+        switch ($type) {
+
+        	case 'workout_session': $type = 'workoutsessionschedules'; break;
+        	case 'trial': $type = 'trialschedules'; break;
+        	default: $type = 'trialschedules'; break;
+        }
+
+
+        if(count($item[$type]) > 0)
+
+	        foreach ($item[$type] as $key => $value) {
+
+	        	if($value['weekday'] == $weekday){
+
+	        		if(!empty($value['slots'])){
+	        			
+	        			foreach ($value['slots'] as $key => $slot) {
+
+	        				try{
+
+		                        $scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
+			                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+			                    array_set($slot, 'passed', $slot_datetime_pass_status);
+			                    array_push($slots, $slot);
+
+		                    }catch(Exception $e){
+
+		                        Log::info("getServiceScheduleByType Error : ".$date." ".$slot['start_time']."------".$service_id);
+		                    }
+	        				
+	        			}
+	        		}
+	        		break;
+	        	}
+	        	
+	        }
+
+        $data['_id'] = (int)$service_id;
+        $data['name'] = $item['name'];
+        $data['finder_id'] = $item['finder_id'];
+        $data['slots'] = $slots;
+        $data['weekday'] = $weekday;
+
+        return Response::json($data,200);
+    }
 }
