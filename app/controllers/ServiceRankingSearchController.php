@@ -330,6 +330,9 @@ class ServiceRankingSearchController extends \BaseController {
 
         $order         =           (Input::json()->get('sort')) ? strtolower(Input::json()->get('sort')['order']) : '';
 
+        $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
+
+
 
         /*****************************sort********************************************************************************************/
 
@@ -780,8 +783,10 @@ class ServiceRankingSearchController extends \BaseController {
       $searchresulteresponse->meta->from = intval($from);
       $searchresulteresponse->meta->sortfield = $orderfield;
       $searchresulteresponse->meta->sortorder = $order;
+      $searchresulteresponse = $this->responseHandler($searchresulteresponse, $keys);
 
-      $searchresulteresponse1 = json_encode($searchresulteresponse, true);
+
+        $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
       $response       =   json_decode($searchresulteresponse1,true);
 
@@ -795,6 +800,38 @@ class ServiceRankingSearchController extends \BaseController {
       throw $e;
 
     }
+  }
+
+  public function responseHandler($response, $keys) {
+
+    if(isset($keys) && count($keys) <= 0){
+      return $response;
+    }
+
+    $resultlist = $response->results->resultlist;
+    $responseaggregationlist = $response->results->aggregationlist;
+    $responsemeta = $response->meta;
+
+    $Response = array();
+    $ResultList = array();
+    $Record = array();
+
+    foreach ($resultlist as $res){
+      $res = $res->object;
+      $newObj = array();
+      foreach ($keys as $key){
+        isset($res->$key) ? $newObj[$key]=$res->$key : null;
+      }
+      $Record['object'] = $newObj;
+      array_push($ResultList,$Record);
+    }
+
+    $Response['results'] = array();
+    $Response['results']['resultlist'] = $ResultList;
+    $Response['results']['aggregationlist'] = $responseaggregationlist;
+    $Response['meta'] = $responsemeta;
+
+    return $Response;
   }
 
     public function searchSaleRatecards(){

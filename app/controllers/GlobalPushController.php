@@ -95,6 +95,15 @@ class GlobalPushController extends \BaseController
               ],
               "tokenizer": "my_ngram_tokenizer"
             },
+            "category_analyzer": {
+              "type": "custom",              
+              "tokenizer": "standard",
+              "filter": [
+              "standard",
+              "lowercase",
+              "categorysynfilter"
+              ]
+            },
             "index_analyzerV2": {
               "type": "custom",
               "filter": [
@@ -202,6 +211,15 @@ class GlobalPushController extends \BaseController
               "golds , gold",
               "talwalkars, talwalkar"
               ]
+            },"categorysynfilter":{
+              "type": "synonym",
+              "synonyms": [
+                "running clubs => marathon training",
+                "yoga trainer => personal trainer",
+                "yoga instructor => personal trainer",
+                "mixed martial arts => mma & kickboxing",
+                "aerobics => zumba"
+              ]
             }
           }
         }
@@ -288,7 +306,7 @@ class GlobalPushController extends \BaseController
             },
             "inputcat1":{
               "type": "string",
-              "index_analyzer": "index_analyzerV2"
+              "analyzer": "category_analyzer"
             },
             "inputservicecat":{
               "type": "string",
