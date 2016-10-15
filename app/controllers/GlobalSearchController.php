@@ -1337,6 +1337,8 @@ public function improvedkeywordSearch(){
         $brand    =         Input::json()->get('brand_id') ? Input::json()->get('brand_id') : array();
         $servicecategory =   Input::json()->get('servicecategory') ? Input::json()->get('servicecategory') : array();
         $sort_clause = '';
+        $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
+
 
         /*
 
@@ -1895,6 +1897,8 @@ $searchresulteresponse->meta->sortfield = $sort;
 $searchresulteresponse->meta->sortorder = $order;
 $searchresulteresponse->meta->categoryfilters = $category;
 $searchresulteresponse->meta->locationfilters = $location;
+$searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
+
 
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
@@ -1906,6 +1910,39 @@ catch(Exception $e){
    throw $e;
 }
 }
+
+public function CustomResponse($response, $keys) {
+
+    if(count($keys) <= 0){
+        return $response;
+    }
+
+    $resultlist = $response->results->resultlist;
+    $responseaggregationlist = $response->results->aggregationlist;
+    $responsemeta = $response->meta;
+
+    $newResponse = array();
+    $newResultList = array();
+    $newRecord = array();
+
+    foreach ($resultlist as $res){
+        $res = $res->object;
+        $newObj = array();
+        foreach ($keys as $key){
+            isset($res->$key) ? $newObj[$key]=$res->$key : null;
+        }
+        $newRecord['object'] = $newObj;
+        array_push($newResultList,$newRecord);
+    }
+
+    $newResponse['results'] = array();
+    $newResponse['results']['resultlist'] = $newResultList;
+    $newResponse['results']['aggregationlist'] = $responseaggregationlist;
+    $newResponse['meta'] = $responsemeta;
+
+    return $newResponse;
+}
+
 
 public function preparekeywordsearchcache(){
 
