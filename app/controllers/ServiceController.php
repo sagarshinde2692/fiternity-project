@@ -567,11 +567,16 @@ class ServiceController extends \BaseController {
     		$request['requested_date'] = $request['date'];
     	}
 
+    	if(!isset($request['finder_id']) && !isset($request['service_id'])){
+    		return Response::json(array('status'=>401,'message'=>'finder or service is required'),401);
+    	}
+
         $currentDateTime        =   time();
         $date         			=   (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
         $timestamp    			=   strtotime($date);
         $weekday     			=   strtolower(date( "l", $timestamp));
-        $type 					= 	$request['type'];
+        $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
+        $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "") ? $request['recursive'] : false ;
 
         $query = Service::select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial');
 
@@ -582,8 +587,7 @@ class ServiceController extends \BaseController {
         $items = $query->get();
 
         if(count($items) == 0){
-
-        	return $this->responseNotFound('Schedule does not exist');
+        	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
         }
 
         $schedules = array();
@@ -673,7 +677,7 @@ class ServiceController extends \BaseController {
         	(count($value['slots']) > 0) ? $flag = true : null;
         }
 
-        if(!$flag && $count < 7){
+        if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
 
