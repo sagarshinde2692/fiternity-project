@@ -181,6 +181,7 @@ Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgo
 Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpassword','uses' => 'CustomerController@forgotPassword'));
 Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
 Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp','uses' => 'CustomerController@validateOtp'));
+Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 
 Route::get('autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
