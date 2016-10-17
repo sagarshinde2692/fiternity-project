@@ -2716,10 +2716,10 @@ public function getCustomerDetail(){
 
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
 
-//			if($already_applied_promotion > 0){
-//				$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
-//				return  Response::json($resp, 400);
-//			}
+			if($already_applied_promotion > 0){
+				$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
+				return  Response::json($resp, 400);
+			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
 			if($customer_update){
