@@ -181,7 +181,7 @@ Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgo
 Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpassword','uses' => 'CustomerController@forgotPassword'));
 Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
 Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp','uses' => 'CustomerController@validateOtp'));
-Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
+
 
 
 Route::get('autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
@@ -224,6 +224,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customer/myrewards/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewards','uses' => 'MyrewardController@listMyRewards'));
 	Route::get('customer/myrewardsv1/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewardsv1','uses' => 'MyrewardController@listMyRewardsV1'));
 
+	Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 	// Wallet APIs...
 
 	Route::get('getwalletbalance',  array('as' => 'customer.getWalletBalance','uses' => 'CustomerController@getWalletBalance'));
