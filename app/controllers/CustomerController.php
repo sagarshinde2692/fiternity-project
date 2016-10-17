@@ -2625,4 +2625,78 @@ public function getCustomerDetail(){
 	}
 
 
+	public function applyPromotionCode(){
+
+		$valid_promotion_codes		=		['jcbfit'];
+		$data 						= 		Input::json()->all();
+		
+		if(empty(Request::header('Authorization'))){
+			$resp 	= 	array('status' => 400,'message' => "Customer Token Missing");
+			return  Response::json($resp, 400);
+		}
+
+		if(empty($data['code'])){
+			$resp 	= 	array('status' => 400,'message' => "Promotion Code Missing - code");
+			return  Response::json($resp, 400);
+		}
+
+		$code 			= 	trim(strtolower($data['code']));
+
+		if (!in_array($code, $valid_promotion_codes)) {
+			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+			return Response::json($resp,404);
+		}
+
+		if(Request::header('Authorization')){
+			$decoded          				=       decode_customer_token();
+			$customer_id 					= 		intval($decoded->customer->_id);
+
+			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
+
+			if($already_applied_promotion > 0){
+				$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
+				return  Response::json($resp, 400);
+			}
+
+			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+			if($customer_update){
+				$customer 	=	Customer::find($customer_id);				
+
+				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
+				if($customerwallet){
+					$customer_balance 	=	$customerwallet['balance'] + 200;				
+				}else{
+					$customer_balance 	=	 200;
+				}
+				$cashback_amount 	=	200;
+				$walletData = array(
+					"customer_id"=> $customer_id,
+					"amount"=> $cashback_amount,
+					"type"=>'CASHBACK',
+					"code"=>	$code,
+					"balance"=>	$customer_balance,
+					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
+					);
+
+				// return $walletData;
+
+				$wallet               	=   new CustomerWallet($walletData);
+				$last_insertion_id      =   CustomerWallet::max('_id');
+				$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
+				$wallet->_id          	=   ++ $last_insertion_id;
+				$wallet->save();
+
+				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
+
+				$resp 	= 	array('status' => 200,'message' => "Promotion code applied successfully", 'walletdata' => $wallet);
+				return  Response::json($resp, 200);	
+			}
+		}
+	}
+
+
+
+
+
+
 }
