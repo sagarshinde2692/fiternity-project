@@ -1175,7 +1175,7 @@ class CustomerController extends \BaseController {
 
 		$current_date = date('Y-m-d');
 
-		if($current_date <= $renewal_date){
+		if($current_date >= $renewal_date){
 			$renewal_flag = true;
 		}
 
