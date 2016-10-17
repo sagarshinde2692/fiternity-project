@@ -1113,11 +1113,54 @@ class CustomerController extends \BaseController {
 					$value['finder'] = $finderarr;
 				}
 			}
+
+			$value['renewal_flag'] = $this->checkRenewal($value);
+
 			array_push($orders, $value);
+
 		}
 
 		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
 		return Response::json($responseData, 200);
+	}
+
+	public function checkRenewal($order){
+
+		$validity = 0;
+
+		if(isset($order->ratecard_id) && $order->ratecard_id != ""){
+
+			$ratecard = Ratecard::find($order->ratecard_id);
+
+			if(isset($ratecard->validity) && $ratecard->validity != ""){
+				$validity = (int)$ratecard->validity;
+			}	
+		}
+
+		if(isset($order->duration_day) && $order->duration_day != ""){
+			
+			$validity = (int)$order->duration_day;
+		}
+
+		$renewal_flag = false;
+
+		if($validity >= 30 && $validity < 90){
+
+			$renewal_flag = true;
+		}
+
+		if($validity >= 90 && $validity < 180){
+
+			$renewal_flag = true;
+		}
+
+		if($validity >= 180){
+
+			$renewal_flag = true;
+		}
+
+		return $renewal_flag;
+
 	}
 
 	public function getBookmarksByEmail($customer_email){
