@@ -1142,20 +1142,40 @@ class CustomerController extends \BaseController {
 			$validity = (int)$order->duration_day;
 		}
 
+		if(isset($order->preferred_starting_date) && $order->preferred_starting_date != ""){
+						
+			$start_date = $order->preferred_starting_date;
+		}
+
+		if(isset($order->start_date) && $order->start_date != ""){
+			
+			$start_date = $order->start_date;
+		}
+
+		$start_date = date('Y-m-d', strtotime($start_date));
+
+		$renewal_date = "";
+
 		$renewal_flag = false;
 
 		if($validity >= 30 && $validity < 90){
 
-			$renewal_flag = true;
+			$renewal_date = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
 		}
 
 		if($validity >= 90 && $validity < 180){
 
-			$renewal_flag = true;
+			$renewal_date = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
 		}
 
 		if($validity >= 180){
 
+			$renewal_date = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
+		}
+
+		$current_date = date('Y-m-d');
+
+		if($current_date === $renewal_date){
 			$renewal_flag = true;
 		}
 
