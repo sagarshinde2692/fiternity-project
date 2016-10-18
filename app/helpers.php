@@ -1482,7 +1482,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'inputloc1' => strtolower($loc['name']),
                         'inputloc2' => $cluster,
                         'inputcat' => $catname,
-                        'inputcat1' => $catname,
+                        'inputcat1' => strtolower($catname),
                         'city' => $city,
                         'location' => (isset($loc['name']) && $loc['name'] != '') ? $loc['name'] : "",
                         'type' => 'categorylocation',

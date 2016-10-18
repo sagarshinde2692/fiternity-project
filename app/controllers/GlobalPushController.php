@@ -210,7 +210,7 @@ class GlobalPushController extends \BaseController
               "zumba,zumba fitness,zumba workout,zumba dance,zumba dance workout,zumba instructor,zumba weight loss,zumba training,aerobics",
               "crossfit, crossfit workouts, crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
               "pilates, pilates exercises, pilates weiht loss",
-              "MMA and Kick Boxing,kickboxing classes,mixed martial arts,mma and kick boxing, mma,kickboxing training",
+              "mma and kick boxing,MMA and Kick Boxing,kickboxing classes,mixed martial arts, mma,kickboxing training",
               "marathon training, marathon coach, marathon fitness, half marathon training, running clubs, marathon training clubs",
               "healthy tiffins, tiffins, tiffining, tiffing service,tiffing",
               "personal trainers, yoga instructor, yoga trainer"
@@ -345,15 +345,15 @@ class GlobalPushController extends \BaseController
     */
 
 
-    // $this->pushBrandOutlets($index_name);
+    $this->pushBrandOutlets($index_name);
     $this->pushcategorylocations($index_name);
-    // $this->pushcategorycity($index_name);
-    // $this->pushallfittnesslocation($index_name);
+    $this->pushcategorycity($index_name);
+    $this->pushallfittnesslocation($index_name);
     $this->pushservicecategorylocations($index_name);
-    // $this->pushservicecategorycity($index_name);
-    // foreach ($this->citylist as $key => $city) {
-    //   $this->pushfinders($index_name, $city);
-    // }
+    $this->pushservicecategorycity($index_name);
+    foreach ($this->citylist as $key => $city) {
+      $this->pushfinders($index_name, $city);
+    }
 
 
 //        $this->pushcategorywithfacilities($index_name);
