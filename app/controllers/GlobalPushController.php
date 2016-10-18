@@ -208,12 +208,12 @@ class GlobalPushController extends \BaseController
               "synonyms" : [
               "gyms,gymnasium, gym deals, gym workout",
               "zumba,zumba fitness,zumba workout,zumba dance,zumba dance workout,zumba instructor,zumba weight loss,zumba training,aerobics",
-              "crossfit, crossfit workouts, crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
-              "pilates, pilates exercises, pilates weiht loss",
-              "mma and kick boxing,MMA and Kick Boxing,kickboxing classes,mixed martial arts, mma,kickboxing training",
-              "marathon training, marathon coach, marathon fitness, half marathon training, running clubs, marathon training clubs",
-              "healthy tiffins, tiffins, tiffining, tiffing service,tiffing",
-              "personal trainers, yoga instructor, yoga trainer"
+              "crossfit,crossfit workouts,crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
+              "pilates,pilates exercises,pilates weiht loss",
+              "mma and kick boxing,kickboxing classes,mixed martial arts,mma,kickboxing training",
+              "marathon training,marathon coach,marathon fitness,half marathon training,running clubs,marathon training clubs",
+              "healthy tiffins,tiffins,tiffining,tiffing service,tiffing",
+              "personal trainers,yoga instructor,yoga trainer"
               ]
             },
             "titlesynfilter":{
