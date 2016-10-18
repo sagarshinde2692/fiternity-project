@@ -1113,11 +1113,73 @@ class CustomerController extends \BaseController {
 					$value['finder'] = $finderarr;
 				}
 			}
+
+			$value['renewal_flag'] = $this->checkRenewal($value);
+
 			array_push($orders, $value);
 		}
 
 		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
 		return Response::json($responseData, 200);
+	}
+
+	public function checkRenewal($order){
+
+		$validity = 0;
+
+		if(isset($order->ratecard_id) && $order->ratecard_id != ""){
+
+			$ratecard = Ratecard::find($order->ratecard_id);
+
+			if(isset($ratecard->validity) && $ratecard->validity != ""){
+				$validity = (int)$ratecard->validity;
+			}	
+		}
+
+		if(isset($order->duration_day) && $order->duration_day != ""){
+			
+			$validity = (int)$order->duration_day;
+		}
+
+		if(isset($order->preferred_starting_date) && $order->preferred_starting_date != ""){
+						
+			$start_date = $order->preferred_starting_date;
+		}
+
+		if(isset($order->start_date) && $order->start_date != ""){
+			
+			$start_date = $order->start_date;
+		}
+
+		$start_date = date('Y-m-d', strtotime($start_date));
+
+		$renewal_date = "";
+
+		$renewal_flag = false;
+
+		if($validity >= 30 && $validity < 90){
+
+			$renewal_date = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
+		}
+
+		if($validity >= 90 && $validity < 180){
+
+			$renewal_date = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
+		}
+
+		if($validity >= 180){
+
+			$renewal_date = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
+		}
+
+		$current_date = date('Y-m-d');
+
+		if($current_date >= $renewal_date){
+			$renewal_flag = true;
+		}
+
+		return $renewal_flag;
+
 	}
 
 	public function getBookmarksByEmail($customer_email){
@@ -2296,11 +2358,16 @@ class CustomerController extends \BaseController {
 
 		$data = Input::all();
 
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
-		$customer_id = $decoded->customer->_id;
+        if(!isset($data['customer_id'])){
 
-		$data['customer_id'] = $customer_id;
+            $jwt_token = Request::header('Authorization');
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+            $data['customer_id'] = $customer_id;
+
+        }else{
+            $customer_id = $data['customer_id'] ;
+        }
 
 		$customer = Customer::find((int)$customer_id);
 
@@ -2628,6 +2695,41 @@ class CustomerController extends \BaseController {
 				return  Response::json($resp, 200);	
 			}
 		}
+	}
+
+	public function emailOpened(){
+
+		$data = $_REQUEST;
+
+		Log::info('Customer Email Open : '.json_encode($data));
+
+		$emailTracking = false;
+
+		if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+
+			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
+		}
+
+		if(isset($data['order_id']) && $data['order_id'] != ""){
+
+			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
+		}
+
+
+		if($emailTracking){
+
+			$emailTracking->count = $emailTracking->count + 1;
+			$emailTracking->update();
+
+		}else{
+
+			$emailTracking = new Emailtracking($data);
+			$emailTracking->count = 1;
+			$emailTracking->save();
+		}
+
+		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
+
 	}
 
 
