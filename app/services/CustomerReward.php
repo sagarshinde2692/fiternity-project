@@ -199,7 +199,7 @@ Class CustomerReward {
                     $myreward->claimed = $myreward->quantity;
                 }
                 
-                if($myreward->quantity === $myreward->claimed){
+                if($myreward->quantity == $myreward->claimed){
                     $myreward->status = "1";
                 }
 
