@@ -251,13 +251,13 @@ return array(
 //	 	'default_type' 	=> 	'finder',
 //	 ),
 	//local
-	/*'es' =>array(
-		'url'		=> 			'localhost:9200',
-		'host'		=> 			'localhost',
-		'port'		=>			9200,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),*/
+	// 'es' =>array(
+	// 	'url'		=> 			'localhost:9200',
+	// 	'host'		=> 			'localhost',
+	// 	'port'		=>			9200,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
+	// ),
 
 
 	// 'es_host'		=> 			'localhost',

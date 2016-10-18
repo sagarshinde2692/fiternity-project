@@ -80,6 +80,12 @@ class GlobalPushController extends \BaseController
               "filter": ["standard", "locationsynfilter", "lowercase","delimiter-filter"],
               "tokenizer": "my_ngram_tokenizer"            
             },
+            "categoryanalyzer":{
+              "type": "custom",
+              "tokenizer": "standard",
+              "filter": ["standard", "categorysynfilter", "lowercase","delimiter-filter"],
+              "tokenizer": "my_ngram_tokenizer"            
+            },
             "search_analyzer": {
               "type": "custom",
               "filter": [
@@ -197,6 +203,19 @@ class GlobalPushController extends \BaseController
               "mazgaon,byculla"
               ]
             },
+            "categorysynfilter":{
+              "type": "synonym",
+              "synonyms" : [
+              "gyms,gymnasium, gym deals, gym workout",
+              "zumba,zumba fitness,zumba workout,zumba dance,zumba dance workout,zumba instructor,zumba weight loss,zumba training,aerobics",
+              "crossfit, crossfit workouts, crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
+              "pilates, pilates exercises, pilates weiht loss",
+              "MMA and Kick Boxing,kickboxing classes,mixed martial arts,mma and kick boxing, mma,kickboxing training",
+              "marathon training, marathon coach, marathon fitness, half marathon training, running clubs, marathon training clubs",
+              "healthy tiffins, tiffins, tiffining, tiffing service,tiffing",
+              "personal trainers, yoga instructor, yoga trainer"
+              ]
+            },
             "titlesynfilter":{
               "type": "synonym",
               "synonyms": [
@@ -289,7 +308,7 @@ class GlobalPushController extends \BaseController
             },
             "inputcat1":{
               "type": "string",
-              "index_analyzer": "index_analyzerV2"
+              "index_analyzer": "categoryanalyzer"
             },
             "inputservicecat":{
               "type": "string",
@@ -326,15 +345,15 @@ class GlobalPushController extends \BaseController
     */
 
 
-    $this->pushBrandOutlets($index_name);
+    // $this->pushBrandOutlets($index_name);
     $this->pushcategorylocations($index_name);
-    $this->pushcategorycity($index_name);
-    $this->pushallfittnesslocation($index_name);
+    // $this->pushcategorycity($index_name);
+    // $this->pushallfittnesslocation($index_name);
     $this->pushservicecategorylocations($index_name);
-    $this->pushservicecategorycity($index_name);
-    foreach ($this->citylist as $key => $city) {
-      $this->pushfinders($index_name, $city);
-    }
+    // $this->pushservicecategorycity($index_name);
+    // foreach ($this->citylist as $key => $city) {
+    //   $this->pushfinders($index_name, $city);
+    // }
 
 
 //        $this->pushcategorywithfacilities($index_name);
