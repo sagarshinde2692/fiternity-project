@@ -2354,11 +2354,17 @@ public function getCustomerDetail(){
 
 		$data = Input::all();
 
-		$jwt_token = Request::header('Authorization');
-		$decoded = $this->customerTokenDecode($jwt_token);
-		$customer_id = $decoded->customer->_id;
+        if(!isset($data['customer_id'])){
 
-		$data['customer_id'] = $customer_id;
+            $jwt_token = Request::header('Authorization');
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+            $data['customer_id'] = $customer_id;
+
+        }else{
+            $customer_id = $data['customer_id'] ;
+        }
+
 
 		$customer = Customer::find((int)$customer_id);
 

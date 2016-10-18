@@ -206,6 +206,9 @@ Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'C
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
 Route::get('app/config', array('as' => 'customer.appconfig','uses' => 'CustomerController@appConfig'));
 
+
+
+Route::post('admin/customer/capturemyreward', array('as' => 'customer.capturemyreward','uses' => 'CustomerController@captureMyReward'));
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
