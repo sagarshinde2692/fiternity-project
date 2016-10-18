@@ -1115,7 +1115,7 @@ class CustomerController extends \BaseController {
 			}
 
 			$value['renewal_flag'] = $this->checkRenewal($value);
-			
+
 			array_push($orders, $value);
 		}
 
@@ -2698,8 +2698,30 @@ class CustomerController extends \BaseController {
 
 		Log::info('Customer Email Open : '.json_encode($data));
 
-		$emailTracking = new Emailtracking($data);
-		$emailTracking->save();
+		$emailTracking = false;
+
+		if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+
+			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
+		}
+
+		if(isset($data['order_id']) && $data['order_id'] != ""){
+
+			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
+		}
+
+
+		if($emailTracking){
+
+			$emailTracking->count = $emailTracking->count + 1;
+			$emailTracking->update();
+
+		}else{
+
+			$emailTracking = new Emailtracking($data);
+			$emailTracking->count = 1;
+			$emailTracking->save();
+		}
 
 		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
 
