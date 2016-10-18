@@ -1490,7 +1490,7 @@ class GlobalPushController extends \BaseController
         $string = 'All Fitness options in '.ucwords($loc['name']);
         $postdata = get_elastic_autosuggest_allfitness_doc($loc, $cityname, $string);
         $postfields_data = json_encode($postdata);
-        $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
+        $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
         echo "<br> ---  ".es_curl_request($request);
       }
     }
