@@ -416,8 +416,6 @@ class ServiceController extends \BaseController {
 
         $date = date('d-m-Y',strtotime($date));
 
-        		echo "<pre>";print_r($date);exit;
-
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
 
         $time_in_seconds = time_passed_check($item['servicecategory_id']);
