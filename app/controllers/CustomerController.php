@@ -2667,11 +2667,13 @@ class CustomerController extends \BaseController {
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + 200;				
+					$customer_balance 	=	$customerwallet['balance'] + 2000;				
 				}else{
-					$customer_balance 	=	 200;
+					$customer_balance 	=	 2000;
 				}
-				$cashback_amount 	=	200;
+				
+				$cashback_amount 	=	2000;
+
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
@@ -2691,7 +2693,7 @@ class CustomerController extends \BaseController {
 
 				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
 
-				$resp 	= 	array('status' => 200,'message' => "Promotion code applied successfully", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs 2,000 has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
 				return  Response::json($resp, 200);	
 			}
 		}
