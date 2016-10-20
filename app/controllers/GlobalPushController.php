@@ -217,11 +217,12 @@ class GlobalPushController extends \BaseController
               ]
             },
             "titlesynfilter":{
-              "type": "synonym",
-              "synonyms": [
-              "golds , gold , gold\'s",
-              "talwalkars, talwalkar"
-              ]
+                "type": "synonym",
+                "synonyms": [
+                "golds , gold , gold\'s",
+                "talwalkars, talwalkar"
+                ]
+              } 
             }
           }
         }

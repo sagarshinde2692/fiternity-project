@@ -719,6 +719,9 @@ public function getRankedFinderResultsAppv2()
     $locat = Input::json()->get('location');
     $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
     $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
+    $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
+
+    $object_keys = array();
         //input filters
 
     $category = Input::json()->get('category');
@@ -1137,6 +1140,7 @@ $searchresulteresponse->meta->number_of_records = intval($size);
 $searchresulteresponse->meta->from = intval($from);
 $searchresulteresponse->meta->sortfield = $orderfield;
 $searchresulteresponse->meta->sortorder = $order;
+$searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
 
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
@@ -1144,6 +1148,38 @@ $response       =   json_decode($searchresulteresponse1,true);
 
 return Response::json($response);
 
+}
+
+public function CustomResponse($response, $keys) {
+
+    if(count($keys) <= 0){
+        return $response;
+    }
+
+    $resultlist = $response->results->resultlist;
+    $responseaggregationlist = $response->results->aggregationlist;
+    $responsemeta = $response->meta;
+
+    $newResponse = array();
+    $newResultList = array();
+    $newRecord = array();
+
+    foreach ($resultlist as $res){
+        $res = $res->object;
+        $newObj = array();
+        foreach ($keys as $key){
+            isset($res->$key) ? $newObj[$key]=$res->$key : null;
+        }
+        $newRecord['object'] = $newObj;
+        array_push($newResultList,$newRecord);
+    }
+
+    $newResponse['results'] = array();
+    $newResponse['results']['resultlist'] = $newResultList;
+    $newResponse['results']['aggregationlist'] = $responseaggregationlist;
+    $newResponse['meta'] = $responsemeta;
+
+    return $newResponse;
 }
 
 

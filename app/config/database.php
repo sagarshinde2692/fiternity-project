@@ -65,7 +65,6 @@ return array(
 			'database' => 'fitapi'
 			),
 
-
 		'mongodb3' => array(
 			'driver'   => 'mongodb',
 			'host'     => 'localhost',
