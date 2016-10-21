@@ -2566,7 +2566,7 @@ class CustomerController extends \BaseController {
 
 		$data = Input::json()->all();
 
-		$data['url'] = "https://play.google.com/store/apps/details?id=com.discover.fitternity";
+		$data['url'] = "https://www.fitternity.com/downloadapp";
 
 		$shorten_url = new ShortenUrl();
 

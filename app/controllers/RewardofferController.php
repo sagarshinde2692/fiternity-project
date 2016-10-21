@@ -189,21 +189,37 @@ class RewardofferController extends BaseController {
                         foreach ($rewards as $rewards_value){
                             if($rewards_value['reward_type'] == "fitness_kit" || $rewards_value['reward_type'] == "healthy_snacks"){
                                 switch(true){
-                                 case $amount < 3000 : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1000 : 650;
+                                 case $amount < 3000 :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1000 : 650;
+                                     $rewards_value['contents'] = ["Shaker", "Earphone Detangler"];
                                  break;
-                                 case (3000 < $amount && $amount < 5000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1000 : 1150;
+                                 case (3000 < $amount && $amount < 5000) :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1500 : 1150;
+                                     $rewards_value['contents'] = ["Shaker", "Earphone Detangler"];
                                  break;
-                                 case (5000 < $amount && $amount < 7500) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1500 : 1550;
+                                 case (5000 < $amount && $amount < 7500) :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1500 : 1550;
+                                     $rewards_value['contents'] = ["Shaker", "Earphone Detangler"];
                                  break;
-                                 case (7500 < $amount && $amount < 10000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3000 : 2150;
+                                 case (7500 < $amount && $amount < 10000) :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3000 : 2150;
+                                     $rewards_value['contents'] = ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Skipping Details"];
                                  break;
-                                 case (10000 < $amount && $amount < 15000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 3150;
+                                 case (10000 < $amount && $amount < 15000) :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 3150;
+                                     $rewards_value['contents'] = ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"];
                                  break;
-                                 case (15000 < $amount && $amount < 20000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 5000 : 4050;
+                                 case (15000 < $amount && $amount < 20000) :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 5000 : 4050;
+                                     $rewards_value['contents'] = ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"];
                                  break;
-                                 case (20000 < $amount && $amount < 25000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 6000 : 4550;
+                                 case (20000 < $amount && $amount < 25000) :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 6000 : 4550;
+                                     $rewards_value['contents'] = ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"];
                                  break;
-                                 case ($amount > 35000) : $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 8000 : 5150;
+                                 case ($amount > 35000) :
+                                     $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 8000 : 5150;
+                                     $rewards_value['contents'] = ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"];
                                  break;
                                 }
                             }
