@@ -105,6 +105,7 @@ Route::get('managehexcolor', function (){
 
         } //hexcolor
     }
+	return $finders;
 });
 
 
