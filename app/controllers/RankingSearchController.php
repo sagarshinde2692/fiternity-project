@@ -1140,10 +1140,10 @@ $searchresulteresponse->meta->number_of_records = intval($size);
 $searchresulteresponse->meta->from = intval($from);
 $searchresulteresponse->meta->sortfield = $orderfield;
 $searchresulteresponse->meta->sortorder = $order;
+$searchresulteresponse->meta->request = Input::all();
 $searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
 
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
-$searchresulteresponse1->request = Input::all();
 
 $response       =   json_decode($searchresulteresponse1,true);
 
