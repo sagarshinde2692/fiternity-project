@@ -1143,6 +1143,7 @@ $searchresulteresponse->meta->sortorder = $order;
 $searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
 
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
+$searchresulteresponse1->request = Input::all();
 
 $response       =   json_decode($searchresulteresponse1,true);
 
