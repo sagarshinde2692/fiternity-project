@@ -67,6 +67,47 @@ Route::get('checkfileons3', function (){
 });
 
 
+Route::get('inserthexcolor', function (){
+    $csvFileData = public_path()."/hex_code.csv";
+    $csvData = array_map('str_getcsv', file(public_path()."/hex_code.csv"));
+    foreach ($csvData as $data) {
+//        print_pretty($data);exit;
+        DB::connection('mongodb')->table('hexcodercolors')->insert(['image' => $data[0], 'color_code' => $data[1], 'type' => 'finder_cover']);
+    }
+});
+
+
+
+
+Route::get('managehexcolor', function (){
+
+    $finders = Finder::where('coverimage','exists', true)->where('coverimage','!=','')->get(['_id','coverimage'])->toArray();
+
+    foreach ($finders as $finder) {
+        $hexcolorRerocd  =  DB::connection('mongodb')->table('hexcodercolors')->where('image', $finder['coverimage'])->first();
+
+        if($hexcolorRerocd){
+            DB::connection('mongodb')->table('finders')->where('_id', intval($finder['_id']))->update(['finder_coverimage_color' => $hexcolorRerocd['color_code']]);
+            $vendor = DB::connection('mongodb2')->table('vendors')->where('_id', intval($finder['_id']))->first();
+
+            if($vendor){
+                $media = [
+                    'images' => [
+                        'cover' => ($vendor['media']['images']['cover']) ? $vendor['media']['images']['cover'] : "",
+                        'cover_color' => ($vendor['media']['images']['cover_color']) ? $hexcolorRerocd['color_code'] : "",
+                        'logo' => ($vendor['media']['images']['logo']) ? $vendor['media']['images']['logo'] : "",
+                        'gallery' => ($vendor['media']['images']['gallery']) ? $vendor['media']['images']['gallery'] : []
+                    ],
+                    'videos' => ($vendor['media']['videos']) ? $vendor['media']['videos'] : []
+                ];
+                DB::connection('mongodb2')->table('vendors')->where('_id', intval($finder['_id']))->update(['media' => $media]);
+            }//vendor
+
+        } //hexcolor
+    }
+});
+
+
 
 Route::get('updatefinders', function(){
 
