@@ -90,18 +90,18 @@ Route::get('managehexcolor', function (){
             DB::connection('mongodb')->table('finders')->where('_id', intval($finder['_id']))->update(['finder_coverimage_color' => $hexcolorRerocd['color_code']]);
             $vendor = DB::connection('mongodb2')->table('vendors')->where('_id', intval($finder['_id']))->first();
 
-            if($vendor){
-                $media = [
-                    'images' => [
-                        'cover' => ($vendor['media']['images']['cover']) ? $vendor['media']['images']['cover'] : "",
-                        'cover_color' => ($vendor['media']['images']['cover_color']) ? $hexcolorRerocd['color_code'] : "",
-                        'logo' => ($vendor['media']['images']['logo']) ? $vendor['media']['images']['logo'] : "",
-                        'gallery' => ($vendor['media']['images']['gallery']) ? $vendor['media']['images']['gallery'] : []
-                    ],
-                    'videos' => ($vendor['media']['videos']) ? $vendor['media']['videos'] : []
-                ];
-                DB::connection('mongodb2')->table('vendors')->where('_id', intval($finder['_id']))->update(['media' => $media]);
-            }//vendor
+            // if($vendor){
+            //     $media = [
+            //         'images' => [
+            //             'cover' => ($vendor['media']['images']['cover']) ? $vendor['media']['images']['cover'] : "",
+            //             'cover_color' => ($vendor['media']['images']['cover_color']) ? $hexcolorRerocd['color_code'] : "",
+            //             'logo' => ($vendor['media']['images']['logo']) ? $vendor['media']['images']['logo'] : "",
+            //             'gallery' => ($vendor['media']['images']['gallery']) ? $vendor['media']['images']['gallery'] : []
+            //         ],
+            //         'videos' => ($vendor['media']['videos']) ? $vendor['media']['videos'] : []
+            //     ];
+            //     DB::connection('mongodb2')->table('vendors')->where('_id', intval($finder['_id']))->update(['media' => $media]);
+            // }//vendor
 
         } //hexcolor
     }
