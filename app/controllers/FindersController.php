@@ -179,8 +179,8 @@ class FindersController extends \BaseController {
                     $finder['associate_finder'] = $associate_finder;
                 }
 
-                array_set($finder, 'finder_coverimage_webp', "http://www.gstatic.com/webp/gallery/1.webp");
-                array_set($finder, 'finder_coverimage_color', "#4286f4");
+                array_set($finder, 'finder_coverimage_webp', substr($finderarr['coverimage'], 0, -3)."webp");
+                // array_set($finder, 'finder_coverimage_color', "#4286f4");
                 array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
                 array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
                 array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
