@@ -594,7 +594,7 @@ class HomeController extends BaseController {
             $city_name 		= 	$citydata['name'];
             $city_id		= 	(int) $citydata['_id'];
 
-            $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+            $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
             $homedata 				= 	array('locations' => $locations );
 
             Cache::tags('location_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
