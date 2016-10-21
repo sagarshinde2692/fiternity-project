@@ -229,7 +229,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             // echo "<br> count -- ".count($weekdayslots['slots']);
             $item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
-            $item['vip_trial'] = isset($item['vip_trial']) ? $item['vip_trial'] : "";
+            $item['vip_trial'] = ""; //isset($item['vip_trial']) ? $item['vip_trial'] : "";
             $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial']);
 
             $slots = array();
