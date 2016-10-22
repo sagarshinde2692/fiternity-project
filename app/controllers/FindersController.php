@@ -1462,7 +1462,17 @@ class FindersController extends \BaseController {
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
             //slots exists
-            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday, 'ratecard' =>$item['serviceratecard']);
+
+            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday);
+            $service['ratecard'] = [];
+
+            if(count($item['serviceratecard']) > 0){
+                $ratecardArr = [];
+                foreach ($item['serviceratecard'] as $rateval){
+                    if($rateval['type'] == 'membership'){ array_push($ratecardArr, $rateval); }
+                }
+                $service['ratecard'] = $ratecardArr;
+            }
 
             $slots = array();
 
@@ -1479,11 +1489,9 @@ class FindersController extends \BaseController {
                         Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
                     }
                 }
-                $service['slots'] = $slots;
+                $service['slots'] = $slots[0];
             }
-
             array_push($scheduleservices, $service);
-
         }
 
         return $scheduleservices;
@@ -1508,7 +1516,7 @@ class FindersController extends \BaseController {
             ->with('facilities')
             ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
             ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-            ->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(2);}))
+            ->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
             ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info'));
 
             //echo "<pre>";print_r($finderarr);exit;
@@ -1608,10 +1616,9 @@ class FindersController extends \BaseController {
                 }
 
                 $finder['assured'] = [
-                ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-time booking"],
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-time booking"],
                     ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% service fulfilment"],
                     ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest price"]
-
                 ];
 
                 $finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
