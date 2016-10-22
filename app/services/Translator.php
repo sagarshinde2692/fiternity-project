@@ -564,6 +564,9 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->contact->phone = ''; //$result['contact']['phone'];
 				$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
 				$resultobject->coverimage = $result['coverimage'];
+				$resultobject->finder_coverimage_webp = $result['finder_coverimage_webp'];
+				$resultobject->finder_coverimage_color = $result['finder_coverimage_color'];
+
 				$resultobject->commercial_type = $result['commercial_type'];
 				$resultobject->finder_type = $result['finder_type'];
 				$resultobject->business_type = $result['business_type'];
@@ -590,6 +593,34 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
+
+				// Decide vendor type
+				$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages"){
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						$resultobject->vendor_type = "";
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+				if($result['category'] != "healthy tiffin"){
+					if( in_array('free trial',$result['facilities']) ){
+						$resultobject->booktrial_button_caption = "Book a free trial";
+					}else{
+						$resultobject->booktrial_button_caption = "Book a trial";
+					}
+				}else{
+					$resultobject->booktrial_button_caption = "Book a trial Meal";
+				}
 				$finder->object = $resultobject;
 				array_push($finderresult_response->results->resultlist, $finder);
 			}
