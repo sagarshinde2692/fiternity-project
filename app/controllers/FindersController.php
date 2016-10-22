@@ -1592,10 +1592,10 @@ class FindersController extends \BaseController {
                 }
 
                 array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
-                array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug') ));
-                array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name') ));
-                array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name') ));
-                array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name') ));
+                array_set($finder, 'categorytags', array_flatten(pluck( $finderarr['categorytags'] , array('name') )));
+                array_set($finder, 'locationtags', array_flatten(pluck( $finderarr['locationtags'] , array('name') )));
+                array_set($finder, 'offerings', array_flatten(pluck( $finderarr['offerings'] , array('name') )));
+                array_set($finder, 'facilities', array_flatten(pluck( $finderarr['facilities'] , array('name') )));
 
                 if(count($finder['services']) > 0 ){
                     $info_timing = $this->getInfoTiming($finder['services']);
@@ -1603,6 +1603,10 @@ class FindersController extends \BaseController {
                         $finder['info']['timing'] = $info_timing;
                     }
                     unset($finder['services']);
+                }
+
+                if(count($finder['reviews']) > 0){
+                    $finder['reviews'] = head($finder['reviews']);
                 }
 
                 if($finderarr['category_id'] == 5){
