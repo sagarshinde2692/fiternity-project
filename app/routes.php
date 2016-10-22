@@ -95,10 +95,6 @@ Route::group(array('before' => 'validatevendor'), function() {
 });
 
 
-
-
-
-
 /******************** VENDOR PANEL SECTION END HERE ********************/
 ##############################################################################
 
