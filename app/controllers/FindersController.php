@@ -1607,7 +1607,12 @@ class FindersController extends \BaseController {
                     $finder['type'] = "fitnessstudios";
                 }
 
-                $finder['assured'] = ["Real-time booking","100% service fulfilment", "Lowest price"];
+                $finder['assured'] = [
+                ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-time booking"],
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% service fulfilment"],
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest price"]
+
+                ];
 
                 $finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
                 $finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
