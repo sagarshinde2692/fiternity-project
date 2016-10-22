@@ -1496,7 +1496,7 @@ class FindersController extends \BaseController {
         return $scheduleservices;
     }
 
-    public function finderDetailApp($slug, $cache = true){
+    public function finderDetailApp($slug, $cache = false){
 
         $data   =  array();
         $tslug  = (string) strtolower($slug);
@@ -1506,35 +1506,31 @@ class FindersController extends \BaseController {
         if(!$finder_detail){
 
             $finderarr = Finder::active()->where('slug','=',$tslug)
-            //->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-            //->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-            //->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-            //->with('findercollections')
-            //->with('blogs')
-            //->with('categorytags')
-            //->with('locationtags')
+            ->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
+            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            ->with('categorytags')
+            ->with('locationtags')
             ->with('offerings')
             ->with('facilities')
             ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
             ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
             ->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(2);}))
-            ->first(array('_id','slug','title','category_id','offerings','facilities','coverimage','contact','average_rating','photos'));
+            ->first(array('_id','slug','title','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos'));
 
-                    //echo "<pre>";print_r($finderarr);exit;
+            //echo "<pre>";print_r($finderarr);exit;
 
             $finder = false;
 
             if($finderarr){
-                // $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
                 $finderarr = $finderarr->toArray();
 
-                // return  pluck( $finderarr['categorytags'] , array('name', '_id') );
-                $finder         =   array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
-                $coverimage     =   ($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
+                $finder         =   array_except($finderarr, array('finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
+                $coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
                 array_set($finder, 'coverimage', $coverimage);
 
-                //$finder['today_opening_hour'] =  null;
-                //$finder['today_closing_hour'] = null;
+                $finder['today_opening_hour'] =  null;
+                $finder['today_closing_hour'] = null;
 
                 /*if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
@@ -1586,61 +1582,21 @@ class FindersController extends \BaseController {
                     }
                 }*/
 
-
-                /*if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
-                    $finderarr['ozonetelno']['phone_number'] = '+'.$finderarr['ozonetelno']['phone_number'];
-                    $finderarr['contact']['phone'] = $finderarr['ozonetelno'];
-                    unset($finderarr['ozonetelno']);
-                }*/
-
-
-               /* $finder['associate_finder'] = null;
-                if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
-
-                    $associate_finder = array_map('intval',$finderarr['associate_finder']);
-                    $associate_finder = Finder::active()->whereIn('_id',$associate_finder)->get(array('_id','title','slug'))->toArray();
-                    $finder['associate_finder'] = $associate_finder;
-                }*/
-
-                array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
-                //array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
-                //array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name') ));
-                //array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
-                //array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
+                array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'serviceratecard']  ));
+                array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug') ));
+                array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name') ));
                 array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name') ));
                 array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name') ));
 
                 if(count($finder['services']) > 0 ){
-
                     $info_timing = $this->getInfoTiming($finder['services']);
-
                     if(isset($finder['info']) && $info_timing != ""){
                         $finder['info']['timing'] = $info_timing;
                     }
-                    
                 }
 
-
-                if(count($finder['offerings']) > 0 ){
-                    $tempoffering = [];
-                    $tempofferingname = [];
-                    foreach ($finder['offerings'] as $offering) {
-                        if(in_array(strtolower($offering["name"]),$tempofferingname)){
-
-                        }else{
-                            array_push($tempoffering,$offering);
-                            array_push($tempofferingname,strtolower($offering["name"]));
-                        }
-                    }
-                    $finder['offerings'] = $tempoffering;
-                    
-                }
-
-                unset($finder['services']);
-
-                $finder['review_count'] = Review::active()->where('finder_id',$finderarr['_id'])->count();
-
-                $finder['average_rating'] = (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
+                $finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
+                $finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
 
                 if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
                     $finder['ozonetelno']['phone_number'] = '+'.$finder['ozonetelno']['phone_number'];
@@ -1648,20 +1604,6 @@ class FindersController extends \BaseController {
                     unset($finder['ozonetelno']);
                     unset($finder['contact']['website']);
                 }
-
-
-                /*if(isset($finderarr['brand_id'])){
-
-                    $brand = Brand::find((int)$finderarr['brand_id']);
-
-                    $brandFinder = Finder::select('_id','title','slug','brand_id','location_id','city_id')->with(array('location'=>function($query){$query->select('_id','name','slug');}))->where("brand_id",(int)$finderarr['brand_id'])->where("_id","!=",(int)$finderarr['_id'])->where('city_id',(int)$finderarr['city_id'])->get();
-
-                    $finderarr['brand']['brand_detail'] = $brand;
-                    $finderarr['brand']['finder_detail'] = $brandFinder;
-                    $finder['brand'] = $finderarr['brand'];
-
-                }*/
-
                 $data['status']                         =       200;
                 $data['finder']                         =       $finder;
 
