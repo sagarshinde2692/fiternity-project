@@ -612,7 +612,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 
 				// Booktrial caption button
 				$resultobject->booktrial_button_caption = "";
-				if($result['category'] != "healthy tiffin"){
+				if($result['category'] != "healthy tiffins"){
 					if( in_array('free trial',$result['facilities']) ){
 						$resultobject->booktrial_button_caption = "Book a free trial";
 					}else{
