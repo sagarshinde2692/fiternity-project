@@ -1443,7 +1443,7 @@ class FindersController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches'))->toArray();
+        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
         
         if(!$items){
             return array();
@@ -1458,8 +1458,10 @@ class FindersController extends \BaseController {
             $extra_info[0] = array(
                 'title'=>'Description',
                 'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
-                'description'=>'Dance to the rhytm of salsa'
+                'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
             );
+
+            unset($items[$k]['short_description']);
 
             $extra_info[1] = array(
                 'title'=>'Avg. Calorie Burn',
