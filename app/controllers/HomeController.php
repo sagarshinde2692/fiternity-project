@@ -393,60 +393,60 @@ class HomeController extends BaseController {
                 case 'booktrial':
                     $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
                     $steps = [
-                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
-                        ['icon'=>$icon_path.'low-price','text'=>'Get lowest price guarantee to buy membership'],
-                        ['icon'=>$icon_path.'','text'=>'Choose exciting rewards when you buy'],
+                        ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
                     break;
                 case 'workoutsession':
                     $subline = "Your Workout Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
                     $steps = [
-                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
-                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'','text'=>'Flash the code at the studio to access your session'],
-                        ['icon'=>$icon_path.'','text'=>'Attend your workout'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'Attend your workout'],
                     ];
                     break;
                 case 'personaltrainer':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
                     $steps = [
-                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
-                        ['icon'=>$icon_path.'','text'=>'Fitternity will get in touch with you to book the appointment'],
-                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'','text'=>'You attend the trial with the trainer basis the appointment'],
-                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'attend-workout','text'=>'You attend the trial with the trainer basis the appointment'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     break;
                 case 'manualtrial':
                     $subline = "Your Trial Session at $finder_name has been scheduled";
                     $steps = [
-                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
-                        ['icon'=>$icon_path.'','text'=>'Fitternity will get in touch with you to book the appointment'],
-                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'','text'=>'You attend the trial basis the appointment'],
-                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'attend-workout','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     break;
                 case 'manualautotrial':
                     $subline = "Your Trial Session at $finder_name has been scheduled";
                     $steps = [
-                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
-                        ['icon'=>$icon_path.'','text'=>'Fitternity will get in touch with you to book the appointment'],
-                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'','text'=>'You attend the trial basis the appointment'],
-                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'attend-workout','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     break;
                 default : 
                     $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
                     $steps = [
-                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
-                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'','text'=>'Flash the code at the studio to access your session'],
-                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee to buy membership'],
-                        ['icon'=>$icon_path.'','text'=>'Choose exciting rewards when you buy'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
                     break; 
             }
