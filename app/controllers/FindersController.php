@@ -1482,7 +1482,16 @@ class FindersController extends \BaseController {
             $batches = array();
 
             if(isset($item['batches']) && count($item['batches']) > 0){
+
                 $batches = $item['batches'];
+
+                foreach ($batches as $batches_key => $batches_value) {
+
+                    foreach ($batches_value as $batches_value_key => $value) {
+
+                        $batches[$batches_key][$batches_value_key]['slots'] = $value['slots'][0];
+                    }
+                }
             }
 
             $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>[],'extra_info'=>$extra_info,'batches'=>$batches);
@@ -1571,6 +1580,7 @@ class FindersController extends \BaseController {
 
                 $finder['today_opening_hour']   =   null;
                 $finder['today_closing_hour']   =   null;
+                $finder['open_close_hour_for_week'] = null;
 
                 if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
@@ -1621,7 +1631,7 @@ class FindersController extends \BaseController {
                              }
                          }
 
-                          $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : [];
+                          $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : null;
 
                         }// trialschedules
 
@@ -1640,10 +1650,6 @@ class FindersController extends \BaseController {
                         $finder['info']['timing'] = $info_timing;
                     }
                     unset($finder['services']);
-                }
-
-                if(count($finder['reviews']) > 0){
-                    $finder['reviews'] = head($finder['reviews']);
                 }
 
                 if($finderarr['category_id'] == 5){
