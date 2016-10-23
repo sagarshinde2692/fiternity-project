@@ -1443,7 +1443,11 @@ class FindersController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
+        $membership_services = Ratecard::where('finder_id', $finder_id)->where('type','membership')->lists('service_id');
+
+        $membership_services = array_map('intval',$membership_services);
+
+        $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
         
         if(!$items){
             return array();
@@ -1489,8 +1493,6 @@ class FindersController extends \BaseController {
                     if($rateval['type'] == 'membership'){ array_push($ratecardArr, $rateval); }
                 }
                 $service['ratecard'] = $ratecardArr;
-            }else{
-                continue;
             }
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
@@ -1532,7 +1534,7 @@ class FindersController extends \BaseController {
         return $scheduleservices;
     }
 
-    public function finderDetailApp($slug, $cache = false){
+    public function finderDetailApp($slug, $cache = true){
 
         $data   =  array();
         $tslug  = (string) strtolower($slug);
