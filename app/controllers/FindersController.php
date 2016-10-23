@@ -1697,6 +1697,8 @@ class FindersController extends \BaseController {
 
                 $finderData['finder']['services'] = $this->getTrialSchedule($finder->_id);
                 $finderData['finder']['bookmark'] = false;
+                $finderData['trials_detials']              =      [];
+                $finderData['trials_booked_status']        =      false;
 
                 if(Request::header('Authorization')){
                     $decoded                            =       decode_customer_token();
@@ -1717,9 +1719,6 @@ class FindersController extends \BaseController {
 
                     $finderData['trials_detials']              =      $customer_trials_with_vendors;
                     $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
-                }else{
-                    $finderData['trials_detials']              =      [];
-                    $finderData['trials_booked_status']        =      false;
                 }
 
             }
