@@ -1435,15 +1435,15 @@ class FindersController extends \BaseController {
         return $decodedToken;
     }
 
-    public function getTrialSchedule($finderid){
+    public function getTrialSchedule($finder_id){
 
         $currentDateTime        =   date('Y-m-d');
-        $finderid               =   (int) $finderid;
+        $finder_id               =   (int) $finder_id;
         $date                   =   date('Y-m-d');
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
+        $items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
         
         if(!$items){
             return array();
@@ -1489,6 +1489,8 @@ class FindersController extends \BaseController {
                     if($rateval['type'] == 'membership'){ array_push($ratecardArr, $rateval); }
                 }
                 $service['ratecard'] = $ratecardArr;
+            }else{
+                continue;
             }
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
@@ -1530,7 +1532,7 @@ class FindersController extends \BaseController {
         return $scheduleservices;
     }
 
-    public function finderDetailApp($slug, $cache = true){
+    public function finderDetailApp($slug, $cache = false){
 
         $data   =  array();
         $tslug  = (string) strtolower($slug);
