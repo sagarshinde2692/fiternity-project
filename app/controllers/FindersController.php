@@ -1519,6 +1519,8 @@ class FindersController extends \BaseController {
 
                     if(count($slots) > 0){
                         $service['slots'] = $slots[0];
+                    }else{
+                        $service['slots'] = null;
                     }
                 }
             }

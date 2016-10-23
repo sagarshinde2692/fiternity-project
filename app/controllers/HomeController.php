@@ -378,92 +378,91 @@ class HomeController extends BaseController {
     public function getSuccessMsg($type, $id){
         $type       =   strtolower(trim($type));
         if($type != "" && $id != ""){
-            $item       =   [];
-            if($type == "booktrial") {
-                $booktrialData = Booktrial::with('finder')->find(intval($id))->toArray();
-                $item = array_except($booktrialData, ['finder']);
-                $finder_name = (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date = (isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($booktrialData['schedule_date'])) : "-";
-                $schedule_slot = (isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] != "") ? $booktrialData['schedule_slot'] : "-";
-                $header = "Congratulations!";
-                $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
-                $steps = [
-                    "You are Here",
-                    "Manage this booking through your User Profile",
-                    "Flash the code at the studio to access your session",
-                    "Get lowest price guarantee to buy membership",
-                    "Choose exciting rewards when you buy"
-                ];
-                $note = "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-            }elseif($type == "workoutsession") {
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Workout Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
-                $steps                  =   [
-                    "You are Here",
-                    "Manage this booking through your User Profile",
-                    "Flash the code at the studio to access your session",
-                    "Attend your workout"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-            }elseif($type == "personaltrainer") {
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Session is booked. Hope you and your buddy have great workout.";
-                $steps                  =   [
-                    "You are Here",
-                    "Fitternity will get in touch with you to book the appointment",
-                    "Manage your bookings through your User Profile",
-                    "You attend the trial with the trainer basis the appointment",
-                    "Get lowest price guarantee & Rewards on purchase"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-            }elseif($type == "manualtrial") {
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Trial Session at $finder_name has been scheduled";
-                $steps                  =   [
-                    "You are Here",
-                    "Fitternity will get in touch with you to book the appointment",
-                    "Manage your bookings through your User Profile",
-                    "You attend the trial basis the appointment",
-                    "Get lowest price guarantee & Rewards on purchase"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-            }elseif($type == "manualautotrial") {
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Trial Session at $finder_name has been scheduled";
-                $steps                  =   [
-                    "You are Here",
-                    "$finder_name will get in touch with you to book the appointment",
-                    "Manage your bookings through your User Profile",
-                    "You attend the trial basis the appointment",
-                    "Get lowest price guarantee & Rewards on purchase"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+
+            $booktrialData = Booktrial::with('finder')->find(intval($id))->toArray();
+            $item = array_except($booktrialData, ['finder']);
+            $finder_name = (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
+            $schedule_date = (isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($booktrialData['schedule_date'])) : "-";
+            $schedule_slot = (isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] != "") ? $booktrialData['schedule_slot'] : "-";
+            $header = "Congratulations!";
+            $note = "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            $icon_path = "https://b.fitn.in/iconsv1/success-pages/";
+
+            switch ($type) {
+
+                case 'booktrial':
+                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'low-price','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'','text'=>'Choose exciting rewards when you buy'],
+                    ];
+                    break;
+                case 'workoutsession':
+                    $subline = "Your Workout Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'','text'=>'Attend your workout'],
+                    ];
+                    break;
+                case 'personaltrainer':
+                    $subline = "Your Session is booked. Hope you and your buddy have great workout.";
+                    $steps = [
+                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'','text'=>'You attend the trial with the trainer basis the appointment'],
+                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                    ];
+                    break;
+                case 'manualtrial':
+                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                    ];
+                    break;
+                case 'manualautotrial':
+                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                    ];
+                    break;
+                default : 
+                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'trial-step1.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'','text'=>'Choose exciting rewards when you buy'],
+                    ];
+                    break; 
             }
+
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  $item,
-                'message'   =>   ['header'    =>  $header, 'subline'   =>  $subline, 'steps'     =>  $steps, 'note'      =>  $note  ]
+                'message'   =>   [
+                    'header'    =>  $header,
+                    'subline'   =>  $subline,
+                    'steps'     =>  $steps,
+                    'note'      =>  $note  
+                ]
             ];
+
             return Response::json($resp);
         }
     }
