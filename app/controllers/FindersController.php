@@ -1443,9 +1443,8 @@ class FindersController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id'))->toArray();
-
-//        var_dump($items);exit;
+        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches'))->toArray();
+        
         if(!$items){
             return array();
         }
@@ -1453,18 +1452,34 @@ class FindersController extends \BaseController {
         $scheduleservices = array();
 
         foreach ($items as $k => $item) {
-            $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
-                if($value['weekday'] == $weekday){
-                    return $value;
-                }
-            }));
 
-            $time_in_seconds = time_passed_check($item['servicecategory_id']);
+            $extra_info = array();
 
-            //slots exists
+            $extra_info[0] = array(
+                'title'=>'Description',
+                'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+                'description'=>'Dance to the rhytm of salsa'
+            );
 
-            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday);
-            $service['ratecard'] = [];
+            $extra_info[1] = array(
+                'title'=>'Avg. Calorie Burn',
+                'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+                'description'=>'750 Kcal'
+            );
+
+            $extra_info[2] = array(
+                'title'=>'Results',
+                'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+                'description'=>'Burn Fat | Super Cardio'
+            );
+
+            $batches = array();
+
+            if(isset($item['batches']) && count($item['batches']) > 0){
+                $batches = $item['batches'];
+            }
+
+            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>[],'extra_info'=>$extra_info,'batches'=>$batches);
 
             if(count($item['serviceratecard']) > 0){
                 $ratecardArr = [];
@@ -1474,22 +1489,36 @@ class FindersController extends \BaseController {
                 $service['ratecard'] = $ratecardArr;
             }
 
-            $slots = array();
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
-            if(count($weekdayslots['slots']) > 0){
-                foreach ($weekdayslots['slots'] as $slot) {
-                    array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
-                    array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
-                    try{
-                       $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
-                        if(($scheduleDateTimeUnix - time()) > $time_in_seconds){
-                            array_push($slots, $slot);
+            if(isset($item['trialschedules']) && count($item['trialschedules']) > 0){
+
+                $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
+                    if($value['weekday'] == $weekday){
+                        return $value;
+                    }
+                }));
+
+                $slots = array();
+
+                if(count($weekdayslots['slots']) > 0){
+                    foreach ($weekdayslots['slots'] as $slot) {
+                        array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
+                        array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
+                        try{
+                           $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
+                            if(($scheduleDateTimeUnix - time()) > $time_in_seconds){
+                                array_push($slots, $slot);
+                            }
+                        }catch(Exception $e){
+                            Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
                         }
-                    }catch(Exception $e){
-                        Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
+                    }
+
+                    if(count($slots) > 0){
+                        $service['slots'] = $slots[0];
                     }
                 }
-                $service['slots'] = $slots[0];
             }
             array_push($scheduleservices, $service);
         }
@@ -1592,10 +1621,10 @@ class FindersController extends \BaseController {
                 }
 
                 array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
-                array_set($finder, 'categorytags', array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))));
-                array_set($finder, 'locationtags', array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))));
-                array_set($finder, 'offerings', array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))));
-                array_set($finder, 'facilities', array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))));
+                array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
+                array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
+                array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
+                array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
 
                 if(count($finder['services']) > 0 ){
                     $info_timing = $this->getInfoTiming($finder['services']);
@@ -1620,9 +1649,9 @@ class FindersController extends \BaseController {
                 }
 
                 $finder['assured'] = [
-                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-time booking"],
-                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% service fulfilment"],
-                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest price"]
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
                 ];
 
                 $finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
