@@ -4363,6 +4363,9 @@ class SchedulebooktrialsController extends \BaseController {
             $resp 	= 	array('status' => 422,'message' => "We have already recieved input for this trial");
             return  Response::json($resp, 422);
         }
+
+        $data['confirm_by_vendor'] = "1";
+
         if($booktrial->update($data)){
 
             $booktrial = $booktrial->toArray();
