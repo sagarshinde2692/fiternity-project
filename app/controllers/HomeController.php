@@ -376,17 +376,20 @@ class HomeController extends BaseController {
 
 
     public function getSuccessMsg($type, $id){
+
         $type       =   strtolower(trim($type));
+
         if($type != "" && $id != ""){
 
-            $booktrialData = Booktrial::with('finder')->find(intval($id))->toArray();
-            $item = array_except($booktrialData, ['finder']);
-            $finder_name = (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-            $schedule_date = (isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($booktrialData['schedule_date'])) : "-";
-            $schedule_slot = (isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] != "") ? $booktrialData['schedule_slot'] : "-";
-            $header = "Congratulations!";
-            $note = "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-            $icon_path = "https://b.fitn.in/iconsv1/success-pages/";
+            $booktrialData  =   Booktrial::with('finder')->find(intval($id))->toArray();
+            $item           =   array_except($booktrialData, ['finder']);
+            $finder_name    =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
+            $schedule_date  =   (isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($booktrialData['schedule_date'])) : "-";
+            $schedule_slot  =   (isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] != "") ? $booktrialData['schedule_slot'] : "-";
+
+            $header     =   "Congratulations!";
+            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
 
             switch ($type) {
 
