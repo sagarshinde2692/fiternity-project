@@ -620,6 +620,12 @@ class OrderController extends \BaseController {
             $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_address");
             return Response::json($resp,404);
         }
+
+        if (!in_array($data['type'], $this->ordertypes)) {
+            $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
+            return Response::json($resp,404);
+        }
+
         if($data['type'] != "events"){
             if(empty($data['service_id'])){
                 $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
@@ -653,11 +659,6 @@ class OrderController extends \BaseController {
 
         if(empty($data['type'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing Order Type - type");
-            return Response::json($resp,404);
-        }
-
-        if (!in_array($data['type'], $this->ordertypes)) {
-            $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
             return Response::json($resp,404);
         }
 
