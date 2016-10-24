@@ -1544,7 +1544,7 @@ class FindersController extends \BaseController {
         return $scheduleservices;
     }
 
-    public function finderDetailApp($slug, $cache = true){
+    public function finderDetailApp($slug, $cache = false){
 
         $data   =  array();
         $tslug  = (string) strtolower($slug);
@@ -1581,7 +1581,7 @@ class FindersController extends \BaseController {
 
                 $finder['today_opening_hour']   =   null;
                 $finder['today_closing_hour']   =   null;
-                $finder['open_close_hour_for_week'] = null;
+                $finder['open_close_hour_for_week'] = [];
 
                 if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
@@ -1632,7 +1632,23 @@ class FindersController extends \BaseController {
                              }
                          }
 
-                          $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : null;
+                            //  $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : null;
+
+                            if(!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0){
+//                                var_dump($whole_week_open_close_hour_Arr);  exit;
+                                $weekWiseArr                    =   [];
+                                $whole_week_open_close_hour_Arr =   head($whole_week_open_close_hour_Arr);
+                                $weekdayDays                    =   ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+                                foreach ($weekdayDays as $day){
+                                    if (array_key_exists($day, $whole_week_open_close_hour_Arr)) {
+                                        $obj = ["day" => $day, "opening_hour" => $whole_week_open_close_hour_Arr[$day]["opening_hour"],  "closing_hour" => $whole_week_open_close_hour_Arr[$day]["closing_hour"]];
+                                        array_push($weekWiseArr, $obj);
+                                    }
+                                }
+                                $finder['open_close_hour_for_week'] = $weekWiseArr;
+                            }else{
+                                $finder['open_close_hour_for_week'] = [];
+                            }
 
                         }// trialschedules
 
