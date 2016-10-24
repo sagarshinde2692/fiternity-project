@@ -1262,8 +1262,8 @@ class SchedulebooktrialsController extends \BaseController {
         $order        = 	Order::findOrFail($orderid);
 
         $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
-
-        if($count > 0){
+        
+        if($count > 0 ){
             array_set($data, 'acquisition_type', 'renewal_direct');
         }else{
             array_set($data,'acquisition_type','direct_payment');
@@ -1271,19 +1271,73 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(Input::json()->get('status') == 'success') {
 
-//            echo "ih";exit();
-            $orderData = [];
-            array_set($orderData, 'status', '1');
-            array_set($orderData, 'order_action', 'bought');
-            $orderdata 	=	$order->update($orderData);
-            // Give Rewards / Cashback to customer based on selection, on purchase success......
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
-            //Send Instant (Email) To Customer & Finder
-            $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
-            $sndInstantSmsCustomer	       =	$this->customersms->healthyTiffinMembership($order->toArray());
-            $sndInstantEmailFinder	       = 	$this->findermailer->healthyTiffinMembership($order->toArray());
-            $sndInstantSmsFinder	       =	$this->findersms->healthyTiffinMembership($order->toArray());
+            if(isset($order->reward_ids) && !empty($order->reward_ids)){
+
+                $reward_detail = array();
+
+                $reward_ids = array_map('intval',$order->reward_ids);
+
+                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+                if(count($rewards) > 0){
+
+                    foreach ($rewards as $value) {
+
+                        $title = $value->title;
+
+                        if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+                            $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                        }
+
+                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+
+                    }
+
+                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                    array_set($data, 'reward_info', $reward_info);
+                }
+
+            }
+
+            if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
+
+                $reward_info = "Cashback";
+                
+                array_set($data, 'reward_info', $reward_info);
+            }
+
+            
+            array_set($data, 'status', '1');
+            array_set($data, 'order_action', 'bought');
+
+            $orderdata 	=	$order->update($data);
+
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                    $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
+                    $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
+                }
+
+            }else{
+                $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
+                $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
+            }
+
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                    $sndInstantEmailFinder         =    $this->findermailer->healthyTiffinMembership($order->toArray());
+                    $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
+                }
+
+            }else{
+                $sndInstantEmailFinder         =    $this->findermailer->healthyTiffinMembership($order->toArray());
+                $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
+            }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
