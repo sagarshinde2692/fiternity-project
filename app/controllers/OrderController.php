@@ -620,15 +620,16 @@ class OrderController extends \BaseController {
             $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_address");
             return Response::json($resp,404);
         }
-
-        if(empty($data['service_id'])){
-            $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
-            return Response::json($resp,404);
-        }else{
-            $servicedata 		=	Service::find(intval($data['service_id']));
-            if(!$servicedata) {
-                $resp = array('status' => 404, 'message' => "Service does not exist");
-                return Response::json($resp, 404);
+        if($data['type'] != "events"){
+            if(empty($data['service_id'])){
+                $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+                return Response::json($resp,404);
+            }else{
+                $servicedata 		=	Service::find(intval($data['service_id']));
+                if(!$servicedata) {
+                    $resp = array('status' => 404, 'message' => "Service does not exist");
+                    return Response::json($resp, 404);
+                }
             }
         }
 
