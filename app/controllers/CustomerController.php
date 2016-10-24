@@ -1305,7 +1305,7 @@ public function getAllReviews($offset = 0, $limit = 10){
 	$jwt_token = Request::header('Authorization');
 	$decoded = $this->customerTokenDecode($jwt_token);
 
-	$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('customer_id',$decoded->customer->_id)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+	$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage','average_rating');}))->active()->where('customer_id',$decoded->customer->_id)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 	$response 		= 	['status' => 200,'reviews' => $reviews,  'message' => 'List for reviews'];
 
