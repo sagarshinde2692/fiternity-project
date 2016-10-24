@@ -593,7 +593,7 @@ class EmailSmsApiController extends \BaseController {
 
 //        var_dump($responseData);exit;
 
-        $resp = array('status' => 200,'message' => "Recieved the Request" );
+        $resp = array('status' => 200,'message' => "Recieved the Request",'capture_id'=>$storecapture->_id);
 
         if(isset($responseData) && isset($responseData['data'])){
             $resp['data'] = $responseData['data'];
