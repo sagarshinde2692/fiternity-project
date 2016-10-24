@@ -1495,7 +1495,7 @@ class FindersController extends \BaseController {
                 }
             }
 
-            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>[],'extra_info'=>$extra_info,'batches'=>$batches);
+            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>null,'extra_info'=>$extra_info,'batches'=>$batches);
 
             if(count($item['serviceratecard']) > 0){
                 $ratecardArr = [];
@@ -1533,8 +1533,6 @@ class FindersController extends \BaseController {
 
                     if(count($slots) > 0){
                         $service['slots'] = $slots[0];
-                    }else{
-                        $service['slots'] = null;
                     }
                 }
             }
