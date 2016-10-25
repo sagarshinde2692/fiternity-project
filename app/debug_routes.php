@@ -68,6 +68,49 @@ Route::get('checkfileons3', function (){
 
 
 
+Route::get('finderallemails', function (){
+
+    ini_set('memory_limit', '500M');
+    set_time_limit(3000);
+
+    $finders = Finder::active()->where('finder_vcc_email','exists', true)->where('finder_vcc_email','!=','')
+                        ->with(array('category'=>function($query){$query->select('_id','name');}))
+                        ->with(array('location'=>function($query){$query->select('_id','name');}))
+                        ->with(array('city'=>function($query){$query->select('_id','name');}))
+                        ->get(['_id','title','finder_vcc_email','category','category_id','location','location_id','city','city_id']);
+
+    $file_name = "finder_info_email_ids";
+
+    $headers = [
+        'Content-type'        => 'application/csv'
+        ,   'Cache-Control'       => 'must-revalidate, post-check=0, pre-check=0'
+        ,   'Content-type'        => 'text/csv'
+        ,   'Content-Disposition' => 'attachment; filename='.$file_name.'.csv'
+        ,   'Expires'             => '0'
+        ,   'Pragma'              => 'public'
+    ];
+
+    $output = "ID, NAME, CATEGORY, LOCATION, CITY, COMMERCIAL, BUSINESS, EMAIL  \n";
+
+    foreach ($finders as $key => $value) {
+
+        $id 					                = 		(isset($value['_id']) && $value['_id'] !="") ? $value['_id'] : "-";
+        $title 					                = 		(isset($value['title']) && $value['title'] !="") ? $value['title'] : "-";
+        $city 			                        = 		(isset($value['city']) && isset($value['city']['name']) && $value['city']['name'] != "") ? $value['city']['name'] : "-";
+        $category 			                    = 		(isset($value['category']) && isset($value['category']['name']) && $value['category']['name'] != "") ? $value['category']['name'] : "-";
+        $location 			                    = 		(isset($value['location']) && isset($value['location']['name']) && $value['location']['name'] != "") ? $value['location']['name'] : "-";
+        $commercial_type_status 			    = 		(isset($value['commercial_type_status']) &&  $value['commercial_type_status'] != "") ? $value['commercial_type_status'] : "-";
+        $business_type_status 			        = 		(isset($value['business_type_status']) &&  $value['business_type_status'] != "") ? $value['business_type_status'] : "-";
+        $finder_vcc_email 			            = 		(isset($value['finder_vcc_email']) &&  $value['finder_vcc_email'] != "") ? str_replace(",", " ||  ",$value['finder_vcc_email']) : "-";
+
+        $output .= "$id, $title, $category, $location, $city, $commercial_type_status, $business_type_status, $finder_vcc_email \n";
+    }
+
+    return Response::make(rtrim($output, "\n"), 200, $headers);
+
+});
+
+
 Route::get('inserthexcolor', function (){
     $csvFileData = public_path()."/hex_code.csv";
     $csvData = array_map('str_getcsv', file(public_path()."/hex_code.csv"));
