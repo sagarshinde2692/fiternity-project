@@ -124,10 +124,6 @@ Route::get('landingcrushlocationclusterwise/{location_cluster}', 'HomeController
 Route::get('landinganytimefitnessfinders/', 'HomeController@landingAnytimeFitnessFinders');
 Route::get('landinganytimefitnessfinders/{cityid}', 'HomeController@landingAnytimeFitnessFindersCityWise');
 
-<<<<<<< HEAD
-
-=======
->>>>>>> servicevendorid
 Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
 
 // Power house gym
@@ -852,8 +848,3 @@ Route::group(array('before' => 'validatetoken'), function() {
 Route::post('seourl', 'GlobalSearchController@seourl');
 
 Route::get('email/opened', 'CustomerController@emailOpened');
-<<<<<<< HEAD
-
-
-=======
->>>>>>> servicevendorid
