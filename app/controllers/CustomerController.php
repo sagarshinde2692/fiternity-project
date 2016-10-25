@@ -2735,4 +2735,30 @@ class CustomerController extends \BaseController {
 	}
 
 
+	public function customerstatus(){
+		$data = Input::json()->all();
+		if(!isset($data['email']) || $data['email'] == ""){
+			return Response::json(array('status' => 400,'message' => 'Bad Request. Email Missing'),400);
+		}
+		$customer = Customer::where('email',$data['email'])->first();
+		if(isset($customer)){
+			if($customer['ishulluser'] != 0){
+				$resp = array('registered'=>false);
+				return Response::json(array('status' => 200,'data' => $resp),400);		
+			}else{
+				if($customer['account_link']['facebook'] == 1){
+					$resp = array('registered'=>true,'facebook'=>true);
+				}else{
+					$resp = array('registered'=>true);
+				}
+				return Response::json(array('status' => 200,'data' => $resp),400);
+			}
+		}else{
+			$resp = array('registered'=>false);
+			return Response::json(array('status' => 200,'data' => $resp),400);
+		}
+		return $customer;
+	}
+
+
 }
