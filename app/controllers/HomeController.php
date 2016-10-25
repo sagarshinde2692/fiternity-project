@@ -27,6 +27,157 @@ class HomeController extends BaseController {
 
     }
 
+
+    public function getSuccessMsg($type, $id){
+
+        $type       =   strtolower(trim($type));
+
+        if($type != "" && $id != ""){
+            $item       =   [];
+
+            if($type == "booktrial") {
+
+                $booktrialData = Booktrial::with('finder')->find(intval($id))->toArray();
+                $item = array_except($booktrialData, ['finder']);
+                $finder_name = (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
+                $schedule_date = (isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($booktrialData['schedule_date'])) : "-";
+                $schedule_slot = (isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] != "") ? $booktrialData['schedule_slot'] : "-";
+
+                $header = "Congratulations!";
+                $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                $steps = [
+                    "You are Here",
+                    "Manage this booking through your User Profile",
+                    "Flash the code at the studio to access your session",
+                    "Get lowest price guarantee to buy membership",
+                    "Choose exciting rewards when you buy"
+                ];
+                $note = "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+
+            }elseif($type == "workoutsession") {
+
+                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
+                $item                   =   array_except($booktrialData,['finder']);
+                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
+                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
+                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
+
+                $header                 =   "Congratulations!";
+                $subline                =   "Your Workout Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                $steps                  =   [
+                    "You are Here",
+                    "Manage this booking through your User Profile",
+                    "Flash the code at the studio to access your session",
+                    "Attend your workout"
+                ];
+                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+
+            }elseif($type == "personaltrainer") {
+
+                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
+                $item                   =   array_except($booktrialData,['finder']);
+                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
+                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
+                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
+
+                $header                 =   "Congratulations!";
+                $subline                =   "Your Session is booked. Hope you and your buddy have great workout.";
+                $steps                  =   [
+                    "You are Here",
+                    "Fitternity will get in touch with you to book the appointment",
+                    "Manage your bookings through your User Profile",
+                    "You attend the trial with the trainer basis the appointment",
+                    "Get lowest price guarantee & Rewards on purchase"
+                ];
+                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+
+            }elseif($type == "manualtrial") {
+                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
+                $item                   =   array_except($booktrialData,['finder']);
+                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
+                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
+                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
+
+                $header                 =   "Congratulations!";
+                $subline                =   "Your Trial Session at $finder_name has been scheduled";
+                $steps                  =   [
+                    "You are Here",
+                    "Fitternity will get in touch with you to book the appointment",
+                    "Manage your bookings through your User Profile",
+                    "You attend the trial basis the appointment",
+                    "Get lowest price guarantee & Rewards on purchase"
+                ];
+                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+
+            }elseif($type == "manualautotrial") {
+
+                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
+                $item                   =   array_except($booktrialData,['finder']);
+                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
+                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
+                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
+
+                $header                 =   "Congratulations!";
+                $subline                =   "Your Trial Session at $finder_name has been scheduled";
+                $steps                  =   [
+                    "You are Here",
+                    "$finder_name will get in touch with you to book the appointment",
+                    "Manage your bookings through your User Profile",
+                    "You attend the trial basis the appointment",
+                    "Get lowest price guarantee & Rewards on purchase"
+                ];
+                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            }
+
+            $resp = [
+                'status'    =>  200,
+                'item'      =>  $item,
+                'message'   =>   ['header'    =>  $header, 'subline'   =>  $subline, 'steps'     =>  $steps, 'note'      =>  $note  ]
+            ];
+            return Response::json($resp);
+
+        }
+    }
+
+    public function saveUtmData(){
+
+
+        $data   =   Input::json()->all();
+
+        if(empty($data['entity_id'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - entity_id");
+            return  Response::json($resp, 400);
+        }
+
+        if(empty($data['entity_type'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - entity_type");
+            return  Response::json($resp, 400);
+        }
+
+        if(empty($data['utm'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - utm");
+            return  Response::json($resp, 400);
+        }
+
+        $entity_id      =   trim($data['entity_id']);
+        $entity_type    =   $data['entity_type'];
+        $utm            =   $data['utm'];
+
+        if($entity_type != "" && $entity_id != ""){
+            if($entity_type == 'booktrial'){
+                $item       =   Booktrial::where('_id', intval($entity_id))->update(['utm' => $utm]);
+            }elseif($entity_type == 'capture'){
+                $item       =   Capture::where('_id', $entity_id)->update(['utm' => $utm]);
+            }elseif($entity_type == 'order'){
+                $item       =   Order::where('_id', intval($entity_id))->update(['utm' => $utm]);
+            }
+            $resp = array('status' => 200,'message' => "Added utm data");
+            return Response::json($resp);
+        }
+
+    }
+
+
     public function getHomePageDatav2($city = 'mumbai',$cache = true){
 
         $home_by_city = $cache ? Cache::tags('home_by_city')->has($city) : false;

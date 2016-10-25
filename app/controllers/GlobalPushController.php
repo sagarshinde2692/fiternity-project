@@ -68,162 +68,163 @@ class GlobalPushController extends \BaseController
     sleep(5);
 
     $settings = '{
-        "analysis": {
-          "analyzer": {
-            "synonymanalyzer":{
-              "tokenizer": "standard",
-              "filter": ["lowercase", "locationsynfilter"]
-            },          
-            "locationanalyzer":{
-              "type": "custom",
-              "tokenizer": "standard",
-              "filter": ["standard", "locationsynfilter", "lowercase","delimiter-filter"],
-              "tokenizer": "my_ngram_tokenizer"            
-            },
-            "search_analyzer": {
-              "type": "custom",
-              "filter": [
-              "lowercase"
-              ],
-              "tokenizer": "standard"
-            },
-            "index_analyzerV1": {
-              "type": "custom",
-              "filter": [
-              "standard",
-              "lowercase"
-              ],
-              "tokenizer": "my_ngram_tokenizer"
-            },
-            "category_analyzer": {
-              "type": "custom",              
-              "tokenizer": "standard",
-              "filter": [
-              "standard",
-              "lowercase",
-              "categorysynfilter"
-              ]
-            },
-            "index_analyzerV2": {
-              "type": "custom",
-              "filter": [
-              "standard",
-              "lowercase",
-              "ngram-filter"
-              ],
-              "tokenizer": "standard"
-            },
-            "input_analyzer": {
-              "type": "custom",
-              "tokenizer": "standard",
-              "filter": [
-              "standard",
-              "lowercase",                        
-              "ngram-filter"
-              ]
-            }
-          },
-          "tokenizer": {
-            "my_ngram_tokenizer": {
-              "type": "edgeNGram",
-              "min_gram": "3",
-              "max_gram": "20"
-            },
-            "input_ngram_tokenizer": {
-              "type": "edgeNGram",
-              "min_gram": "2",
-              "max_gram": "25"
-            }
-          },
-          "filter": {
-            "ngram-filter": {
-              "type": "edgeNGram",
-              "min_gram": "1",
-              "max_gram": "20"
-            },
-            "stop-filter": {
-              "type": "stop",
-              "stopwords": "_english_",
-              "ignore_case": "true"
-            },
-            "snowball-filter": {
-              "type": "snowball",
-              "language": "english"
-            },
-            "delimiter-filter": {
-              "type": "word_delimiter",
-              "preserve_original" : true
-            },
-            "locationsynfilter":{
-              "type": "synonym",
-              "synonyms" : [
-              "lokhandwala,andheri west",
-              "versova,andheri west",
-              "oshiwara,andheri west",
-              "chakala,andheri east",
-              "jb nagar,andheri east",
-              "marol,andheri east",
-              "sakinaka,andheri east",
-              "chandivali,powai",
-              "vidyavihar,ghatkopar",
-              "dharavi,sion",
-              "chunabatti,sion",
-              "deonar,chembur",
-              "govandi,chembur",
-              "anushakti nagar,chembur",
-              "charkop,kandivali",
-              "seven bungalows,andheri west",
-              "opera house,grant road",
-              "nana chowk,grant road",
-              "shivaji park,dadar",
-              "lalbaug,dadar",
-              "walkeshwar,malabar hill",
-              "tilak nagar,chembur",
-              "vashi,navi mumbai",
-              "sanpada,navi mumbai",
-              "juinagar,navi mumbai",
-              "nerul,navi mumbai",
-              "seawoods,navi mumbai",
-              "cbd belapur,navi mumbai",
-              "kharghar,navi mumbai",
-              "airoli,navi mumbai",
-              "kamothe,navi mumbai",
-              "kopar khairan,navi mumbai",
-              "gamdevi,hughes road",
-              "mazgaon,byculla",
-              "navi mumbai,vashi",
-              "navi mumbai,sanpada",
-              "navi mumbai,juinagar",
-              "navi mumbai,nerul",
-              "navi mumbai,seawoods",
-              "navi mumbai,cbd belapur",
-              "navi mumbai,kharghar",
-              "navi mumbai,airoli",
-              "navi mumbai,kamothe",
-              "navi mumbai,kopar khairan",
-              "gamdevi,hughes road",
-              "mazgaon,byculla"
-              ]
-            },
-            "titlesynfilter":{
-              "type": "synonym",
-              "synonyms": [
-              "golds , gold",
-              "talwalkars, talwalkar"
-              ]
-            },"categorysynfilter":{
-              "type": "synonym",
-              "synonyms": [
-                "running clubs => marathon training",
-                "yoga trainer => personal trainer",
-                "yoga instructor => personal trainer",
-                "mixed martial arts => mma & kickboxing",
-                "aerobics => zumba"
-              ]
-            }
-          }
-        }
-      }';
+	"analysis": {
+		"analyzer": {
+			"synonymanalyzer": {
+				"tokenizer": "standard",
+				"filter": ["lowercase", "locationsynfilter"]
+			},
+			"locationanalyzer": {
+				"type": "custom",
+				"filter": ["standard", "locationsynfilter", "lowercase", "delimiter-filter"],
+				"tokenizer": "my_ngram_tokenizer"
+			},
+			"categoryanalyzer": {
+				"type": "custom",
+				"filter": ["standard", "categorysynfilter", "lowercase", "delimiter-filter"],
+				"tokenizer": "my_ngram_tokenizer"
+			},
+			"search_analyzer": {
+				"type": "custom",
+				"filter": [
+					"lowercase"
+				],
+				"tokenizer": "standard"
+			},
+			"index_analyzerV1": {
+				"type": "custom",
+				"filter": [
+					"standard",
+					"lowercase"
+				],
+				"tokenizer": "my_ngram_tokenizer"
+			},
+			"index_analyzerV2": {
+				"type": "custom",
+				"filter": [
+					"standard",
+					"lowercase",
+					"ngram-filter"
+				],
+				"tokenizer": "standard"
+			},
+			"input_analyzer": {
+				"type": "custom",
+				"tokenizer": "standard",
+				"filter": [
+					"standard",
+					"lowercase",
+					"ngram-filter",
+					"titlesynfilter"
+				]
+			}
+		},
+		"tokenizer": {
+			"my_ngram_tokenizer": {
+				"type": "edgeNGram",
+				"min_gram": "3",
+				"max_gram": "20"
+			},
+			"input_ngram_tokenizer": {
+				"type": "edgeNGram",
+				"min_gram": "2",
+				"max_gram": "25"
+			}
+		},
+		"filter": {
+			"ngram-filter": {
+				"type": "edgeNGram",
+				"min_gram": "1",
+				"max_gram": "20"
+			},
+			"stop-filter": {
+				"type": "stop",
+				"stopwords": "_english_",
+				"ignore_case": "true"
+			},
+			"snowball-filter": {
+				"type": "snowball",
+				"language": "english"
+			},
+			"delimiter-filter": {
+				"type": "word_delimiter",
+				"preserve_original": true
+			},
+			"locationsynfilter": {
+				"type": "synonym",
+				"synonyms": [
+					"lokhandwala,andheri west",
+					"versova,andheri west",
+					"oshiwara,andheri west",
+					"chakala,andheri east",
+					"jb nagar,andheri east",
+					"marol,andheri east",
+					"sakinaka,andheri east",
+					"chandivali,powai",
+					"vidyavihar,ghatkopar",
+					"dharavi,sion",
+					"chunabatti,sion",
+					"deonar,chembur",
+					"govandi,chembur",
+					"anushakti nagar,chembur",
+					"charkop,kandivali",
+					"seven bungalows,andheri west",
+					"opera house,grant road",
+					"nana chowk,grant road",
+					"shivaji park,dadar",
+					"lalbaug,dadar",
+					"walkeshwar,malabar hill",
+					"tilak nagar,chembur",
+					"vashi,navi mumbai",
+					"sanpada,navi mumbai",
+					"juinagar,navi mumbai",
+					"nerul,navi mumbai",
+					"seawoods,navi mumbai",
+					"cbd belapur,navi mumbai",
+					"kharghar,navi mumbai",
+					"airoli,navi mumbai",
+					"kamothe,navi mumbai",
+					"kopar khairan,navi mumbai",
+					"gamdevi,hughes road",
+					"mazgaon,byculla",
+					"navi mumbai,vashi",
+					"navi mumbai,sanpada",
+					"navi mumbai,juinagar",
+					"navi mumbai,nerul",
+					"navi mumbai,seawoods",
+					"navi mumbai,cbd belapur",
+					"navi mumbai,kharghar",
+					"navi mumbai,airoli",
+					"navi mumbai,kamothe",
+					"navi mumbai,kopar khairan",
+					"gamdevi,hughes road",
+					"mazgaon,byculla"
+				]
+			},
+			"categorysynfilter": {
+				"type": "synonym",
+				"synonyms": [
+					"gyms,gymnasium, gym deals, gym workout",
+					"zumba,zumba fitness,zumba workout,zumba dance,zumba dance workout,zumba instructor,zumba weight loss,zumba training,aerobics",
+					"crossfit,crossfit workouts,crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
+					"pilates,pilates exercises,pilates weiht loss",
+					"mma and kick boxing,kickboxing classes,mixed martial arts,mma,kickboxing training",
+					"marathon training,marathon coach,marathon fitness,half marathon training,running clubs,marathon training clubs",
+					"healthy tiffins,tiffins,tiffining,tiffing service,tiffing",
+					"personal trainers,yoga instructor,yoga trainer"
+				]
+			},
+			"titlesynfilter": {
+				"type": "synonym",
+				"synonyms": [
+					"golds , gold, gold\'s",
+					"talwalkars, talwalkar"
+				]
+
+			}
+		}
+	}
+}';
 
     /*
     add setting to new index
@@ -306,7 +307,7 @@ class GlobalPushController extends \BaseController
             },
             "inputcat1":{
               "type": "string",
-              "analyzer": "category_analyzer"
+              "index_analyzer": "categoryanalyzer"
             },
             "inputservicecat":{
               "type": "string",
@@ -1488,7 +1489,7 @@ class GlobalPushController extends \BaseController
         $string = 'All Fitness options in '.ucwords($loc['name']);
         $postdata = get_elastic_autosuggest_allfitness_doc($loc, $cityname, $string);
         $postfields_data = json_encode($postdata);
-        $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
+        $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
         echo "<br> ---  ".es_curl_request($request);
       }
     }
