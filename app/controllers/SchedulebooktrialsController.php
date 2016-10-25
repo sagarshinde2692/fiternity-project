@@ -1262,7 +1262,7 @@ class SchedulebooktrialsController extends \BaseController {
         $order        = 	Order::findOrFail($orderid);
 
         $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
-        
+
         if($count > 0 ){
             array_set($data, 'acquisition_type', 'renewal_direct');
         }else{
@@ -1293,6 +1293,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                         $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
 
+                        array_set($data, 'reward_type', $value->reward_type);
+
                     }
 
                     $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
@@ -1307,6 +1309,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $reward_info = "Cashback";
                 
                 array_set($data, 'reward_info', $reward_info);
+                array_set($data, 'reward_type', 'cashback');
             }
 
             

@@ -122,11 +122,14 @@ class OrderController extends \BaseController {
 
                         $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
 
+                        array_set($data, 'reward_type', $value->reward_type);
+
                     }
 
                     $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
 
                     array_set($data, 'reward_info', $reward_info);
+                    
                 }
 
             }
@@ -136,6 +139,7 @@ class OrderController extends \BaseController {
                 $reward_info = "Cashback";
                 
                 array_set($data, 'reward_info', $reward_info);
+                array_set($data, 'reward_type', 'cashback');
             }
 
             
