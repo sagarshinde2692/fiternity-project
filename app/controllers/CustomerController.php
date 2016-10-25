@@ -2831,40 +2831,40 @@ class CustomerController extends \BaseController {
 	// 	}
 	// }
 
-	public function emailOpened(){
+	// public function emailOpened(){
 
-		$data = $_REQUEST;
+	// 	$data = $_REQUEST;
 
-		Log::info('Customer Email Open : '.json_encode($data));
+	// 	Log::info('Customer Email Open : '.json_encode($data));
 
-		$emailTracking = false;
+	// 	$emailTracking = false;
 
-		if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+	// 	if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
 
-			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
-		}
+	// 		$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
+	// 	}
 
-		if(isset($data['order_id']) && $data['order_id'] != ""){
+	// 	if(isset($data['order_id']) && $data['order_id'] != ""){
 
-			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
-		}
+	// 		$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
+	// 	}
 
 
-		if($emailTracking){
+	// 	if($emailTracking){
 
-			$emailTracking->count = $emailTracking->count + 1;
-			$emailTracking->update();
+	// 		$emailTracking->count = $emailTracking->count + 1;
+	// 		$emailTracking->update();
 
-		}else{
+	// 	}else{
 
-			$emailTracking = new Emailtracking($data);
-			$emailTracking->count = 1;
-			$emailTracking->save();
-		}
+	// 		$emailTracking = new Emailtracking($data);
+	// 		$emailTracking->count = 1;
+	// 		$emailTracking->save();
+	// 	}
 
-		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
+	// 	return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
 
-	}
+	// }
 
 
 	public function customerstatus(){
