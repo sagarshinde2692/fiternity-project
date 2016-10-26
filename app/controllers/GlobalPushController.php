@@ -484,7 +484,8 @@ class GlobalPushController extends \BaseController
           '$group' => array(
               '_id' => array(
                   'brand_id' => '$brand_id',
-                  'city_id' => '$city_id'
+                  'city_id' => '$city_id',
+                  'status' => '1'
               ),
               'count' => array(
                   '$sum' => 1

@@ -223,7 +223,7 @@ class FindersController extends \BaseController {
 
                     $brand = Brand::find((int)$finderarr['brand_id']);
 
-                    $brandFinder = Finder::select('_id','title','slug','brand_id','location_id','city_id')->with(array('location'=>function($query){$query->select('_id','name','slug');}))->where("brand_id",(int)$finderarr['brand_id'])->where("_id","!=",(int)$finderarr['_id'])->where('city_id',(int)$finderarr['city_id'])->get();
+                    $brandFinder = Finder::where("brand_id",(int)$finderarr['brand_id'])->active()->where("_id","!=",(int)$finderarr['_id'])->where('city_id',(int)$finderarr['city_id'])->select('_id','title','slug','brand_id','location_id','city_id')->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get();
 
                     $finderarr['brand']['brand_detail'] = $brand;
                     $finderarr['brand']['finder_detail'] = $brandFinder;
