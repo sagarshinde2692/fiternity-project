@@ -63,6 +63,29 @@ class OrderController extends \BaseController {
         return Response::json($resp,200);
     }
 
+    public function couponCode($customer_phone){
+        $data = Input::json()->all();
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            return Response::json($resp,400);
+        }
+        if(!isset($data['amount'])){
+            $resp = array("status"=> 400, "message" => "Amount field is missing");
+            return Response::json($resp,400);
+        }
+
+        
+        $amount = (int) $data['amount'];
+        if($data['coupon'] == "fitnow"){
+            $newamount = ($amount - 500);
+            $resp = array("status"=> "success", "amount" => $newamount);
+            
+        }else{
+            $resp = array("status"=> "failed", "amount" => $amount );
+        }
+        return Response::json($resp,200);
+    }
+
 
     //capture order status for customer used membership by
     public function captureOrderStatus($data = null){
