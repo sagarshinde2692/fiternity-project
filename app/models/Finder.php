@@ -36,12 +36,12 @@ class Finder extends  \Basemodel {
 	}
 
 
-
 	public function getFinderCoverimageAttribute(){
 
 		$finder_coverimage = (trim($this->coverimage) != '') ? trim($this->coverimage) : 'default/'.$this->category_id.'-'.rand(1, 19).'.jpg';
 		return $finder_coverimage;
 	}
+
 
 	public function getCommercialTypeStatusAttribute(){
 		

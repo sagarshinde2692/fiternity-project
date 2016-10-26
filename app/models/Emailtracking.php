@@ -9,7 +9,7 @@
 
 class Emailtracking extends  \Basemodel {
 	
-	protected $collection = "emailtrakings";
+	protected $collection = "emailtrackings";
 
 	public function setIdAttribute($value){
 		

@@ -63,6 +63,29 @@ class OrderController extends \BaseController {
         return Response::json($resp,200);
     }
 
+    public function couponCode($customer_phone){
+        $data = Input::json()->all();
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            return Response::json($resp,400);
+        }
+        if(!isset($data['amount'])){
+            $resp = array("status"=> 400, "message" => "Amount field is missing");
+            return Response::json($resp,400);
+        }
+
+        
+        $amount = (int) $data['amount'];
+        if($data['coupon'] == "fitnow"){
+            $newamount = ($amount - 500);
+            $resp = array("status"=> "success", "amount" => $newamount);
+            
+        }else{
+            $resp = array("status"=> "failed", "amount" => $amount );
+        }
+        return Response::json($resp,200);
+    }
+
 
     //capture order status for customer used membership by
     public function captureOrderStatus($data = null){
@@ -745,14 +768,16 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-
-
-        if(empty($data['service_id'])){
-            $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+        if (!in_array($data['type'], $this->ordertypes)) {
+            $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
             return Response::json($resp,404);
-        }else{
+        }
 
-            if($data['type'] != "events"){
+        if($data['type'] != "events"){
+            if(empty($data['service_id'])){
+                $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+                return Response::json($resp,404);
+            }else{
                 $servicedata 		=	Service::find(intval($data['service_id']));
                 if(!$servicedata) {
                     $resp = array('status' => 404, 'message' => "Service does not exist");
@@ -781,11 +806,6 @@ class OrderController extends \BaseController {
 
         if(empty($data['type'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing Order Type - type");
-            return Response::json($resp,404);
-        }
-
-        if (!in_array($data['type'], $this->ordertypes)) {
-            $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
             return Response::json($resp,404);
         }
 
