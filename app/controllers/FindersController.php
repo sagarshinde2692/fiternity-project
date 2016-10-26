@@ -943,8 +943,8 @@ class FindersController extends \BaseController {
         $reviewdata = [
         'finder_id' => intval($data['finder_id']),
         'customer_id' => intval($data['customer_id']),
-        'rating' => intval($data['rating']),
-        'detail_rating' => array_map('intval',$data['detail_rating']),
+        'rating' => floatval($data['rating']),
+        'detail_rating' => array_map('floatval',$data['detail_rating']),
         'description' => $data['description'],
         'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
         'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',

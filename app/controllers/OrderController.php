@@ -578,8 +578,8 @@ class OrderController extends \BaseController {
             'customer_email'=>'required|email',
             'customer_phone'=>'required',
             'customer_source'=>'required',
-            'ratecard_id'=>'required|integer|min:1',
-            'finder_id'=>'required|integer',
+            'finder_id'=>'required|integer|min:1',
+            'service_id'=>'required|integer|min:1',
             'type'=>'required',
             'amount'=>'required'
         );
@@ -605,12 +605,11 @@ class OrderController extends \BaseController {
             }
         }
 
-        $tiffin = array('healthytiffintrail','healthytiffinmembership');
+        $ht_trail = array('healthytiffintrail');
 
-        if(in_array($data['type'],$tiffin)){
+        if(in_array($data['type'],$ht_trail)){
             $rules = array(
                 'preferred_starting_date'=>'required',
-                'meal_contents'=>'required'
             );
 
             $validator = Validator::make($data,$rules);
@@ -618,13 +617,15 @@ class OrderController extends \BaseController {
             if ($validator->fails()) {
                 return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
             }
+
         }
 
-        $membership = array('memberships');
+        $membership = array('healthytiffinmembership','memberships');
 
         if(in_array($data['type'],$membership)){
             $rules = array(
-                'preferred_starting_date'=>'required'
+                'preferred_starting_date'=>'required',
+                'ratecard_id'=>'required|integer|min:1',
             );
 
             $validator = Validator::make($data,$rules);
@@ -632,19 +633,40 @@ class OrderController extends \BaseController {
             if ($validator->fails()) {
                 return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
             }
+
+        }
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != "" && $data['ratecard_id'] != 0){
+            
+            $ratecard = Ratecard::find($data['ratecard_id']);
+
+            if(!$ratecard){
+                return Response::json(array('status' => 404,'message' =>'Ratecard does not exists'),404);
+            }
+
+            $data['service_duration'] = $this->getServiceDuration($ratecard);
         }
 
         $finder = Finder::find($data['finder_id']);
 
-        $ratecard = Ratecard::with(array('service'=>function($query){$query->select('name');}))->find($data['ratecard_id']);
+        if(!$finder){
+            return Response::json(array('status' => 404,'message' =>'Vendor does not exists'),404);
+        }
 
         $data['city_id'] = (int)$finder['city_id'];
         $data['finder_address'] = $finder->contact->address;
         $data['finder_name'] = ucwords($finder->title);
-        $data['service_id'] = $ratecard['service_id'];
-        $data['service_name'] = ucwords($ratecard['service']['name']);
-        $data['service_duration'] = $this->getServiceDuration($ratecard);
-        
+
+        $service = Service::find($data['service_id']);
+
+        if(!$service){
+            return Response::json(array('status' => 404,'message' =>'Service does not exists'),404);
+        }
+
+        $data['service_name'] = ucwords($service['name']);
+        $data['meal_contents'] = ucwords($service['short_description']);
+
+
         return $this->generateTmpOrder($data);
 
     }
@@ -1003,6 +1025,22 @@ class OrderController extends \BaseController {
 
                 if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
                     $data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+                    break;
+                }
+            }
+        }
+
+        if(isset($data['batch']) && $data['batch'] != ""){
+            if(is_array($data['batch'])){
+                $data['batch'] = $data['batch'];
+            }else{
+                $data['batch'] = json_decode($data['batch'],true);
+            }
+
+            foreach ($data['batch'] as $key => $value) {
+
+                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+                    $data['batch_time'] = strtoupper($value['slots']['start_time']);
                     break;
                 }
             }
