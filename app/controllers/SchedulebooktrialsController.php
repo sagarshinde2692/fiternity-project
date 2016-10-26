@@ -112,6 +112,8 @@ class SchedulebooktrialsController extends \BaseController {
                 // $oneHourDiffInMin            =   $currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);
                 $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
                 array_set($slot, 'passed', $slot_datetime_pass_status);
+                array_set($slot, 'service_id', $item['_id']);
+                array_set($slot, 'finder_id', $item['finder_id']);
 
                 //echo "<br>finderid : $finderid  --- schedule_date : $date servicename : $item[name] -- slot_time : $slot[slot_time] --  booktrialslotcnt : $booktrialslotcnt";
                 array_push($slots, $slot);
@@ -186,6 +188,8 @@ class SchedulebooktrialsController extends \BaseController {
                         $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
                         $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -282,6 +286,8 @@ class SchedulebooktrialsController extends \BaseController {
                         $scheduleDateTime               =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
                         $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -368,6 +374,8 @@ class SchedulebooktrialsController extends \BaseController {
                         $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
                         $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -463,6 +471,8 @@ class SchedulebooktrialsController extends \BaseController {
                         $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
                         $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
