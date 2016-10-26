@@ -714,8 +714,6 @@ class OrderController extends \BaseController {
 
     public function generateTmpOrder($data = false){
 
-                echo "<pre>";print_r($data);exit;
-
         if(!$data){
 
             $postdata = Input::json()->all();
