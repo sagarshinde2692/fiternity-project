@@ -645,7 +645,23 @@ class OrderController extends \BaseController {
             }
 
             $data['service_duration'] = $this->getServiceDuration($ratecard);
+
+            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                $data['amount_finder'] = $ratecard->special_price;
+            }else{
+                $data['amount_finder'] = $ratecard->price;
+            }
         }
+
+        $service = Service::find($data['service_id']);
+
+        if(!$service){
+            return Response::json(array('status' => 404,'message' =>'Service does not exists'),404);
+        }
+
+        $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        $data['service_name'] = ucwords($service['name']);
+        $data['meal_contents'] = ucwords($service['short_description']);
 
         $finder = Finder::find($data['finder_id']);
 
@@ -654,18 +670,10 @@ class OrderController extends \BaseController {
         }
 
         $data['city_id'] = (int)$finder['city_id'];
-        $data['finder_address'] = $finder->contact->address;
+
+        (isset($finder['contact']['address']) && $finder['contact']['address'] != "" && $data['finder_address'] == "-") ? $data['finder_address'] = $finder['contact']['address'] : null;
+
         $data['finder_name'] = ucwords($finder->title);
-
-        $service = Service::find($data['service_id']);
-
-        if(!$service){
-            return Response::json(array('status' => 404,'message' =>'Service does not exists'),404);
-        }
-
-        $data['service_name'] = ucwords($service['name']);
-        $data['meal_contents'] = ucwords($service['short_description']);
-
 
         return $this->generateTmpOrder($data);
 
@@ -705,6 +713,8 @@ class OrderController extends \BaseController {
     }
 
     public function generateTmpOrder($data = false){
+
+                echo "<pre>";print_r($data);exit;
 
         if(!$data){
 
