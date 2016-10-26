@@ -2093,8 +2093,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(empty($data['service_name'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
-            return  Response::json($resp, 400);
+            $data['service_name'] = "-";
         }
 
         if(empty($data['schedule_date'])){
@@ -2291,6 +2290,9 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
                     $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
                 }
+
+                $data['service_name'] = $serviceArr['name'];
+
             }else{
                 $finder_location			       =	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
                 $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
