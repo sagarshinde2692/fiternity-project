@@ -95,10 +95,6 @@ Route::group(array('before' => 'validatevendor'), function() {
 });
 
 
-
-
-
-
 /******************** VENDOR PANEL SECTION END HERE ********************/
 ##############################################################################
 
@@ -106,7 +102,7 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
-
+Route::post('saveutmdata', array('as' => 'home.saveutmdata','uses' => 'HomeController@saveUtmData'));
 
 Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
 Route::get('getfindercountlocationwise/{city?}', 'HomeController@getFinderCountLocationwise');
@@ -127,7 +123,6 @@ Route::get('landingcrushfinders/', 'HomeController@landingcrushFinders');
 Route::get('landingcrushlocationclusterwise/{location_cluster}', 'HomeController@landingcrushLocationClusterWise');
 Route::get('landinganytimefitnessfinders/', 'HomeController@landingAnytimeFitnessFinders');
 Route::get('landinganytimefitnessfinders/{cityid}', 'HomeController@landingAnytimeFitnessFindersCityWise');
-
 
 Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
 
@@ -185,6 +180,8 @@ Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpass
 Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
 Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp','uses' => 'CustomerController@validateOtp'));
 
+Route::post('customerstatus', array('as' => 'customer.customerstatus','uses' => 'CustomerController@customerstatus'));
+
 
 
 Route::get('autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
@@ -212,6 +209,7 @@ Route::get('app/config', array('as' => 'customer.appconfig','uses' => 'CustomerC
 
 
 Route::post('admin/customer/capturemyreward', array('as' => 'customer.capturemyreward','uses' => 'CustomerController@captureMyReward'));
+
 Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('validatetoken', array('as' => 'customer.validatetoken','uses' => 'CustomerController@validateToken'));
@@ -231,7 +229,9 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customer/myrewardsv1/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewardsv1','uses' => 'MyrewardController@listMyRewardsV1'));
 
 	Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
+
 	// Wallet APIs...
+	Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 	Route::get('getwalletbalance',  array('as' => 'customer.getWalletBalance','uses' => 'CustomerController@getWalletBalance'));
 //	Route::post('wallettransaction',  array('as' => 'customer.walletTransaction','uses' => 'CustomerController@walletTransaction'));
@@ -280,6 +280,7 @@ Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'Or
 Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
+Route::post('generatetmporderpre',  array('as' => 'orders.generatetmporderpre','uses' => 'OrderController@generateTmpOrderPre'));
 
 Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
 Route::post('buylandingpagepurchase',  array('as' => 'orders.buylandingpagepurchase','uses' => 'OrderController@buyLandingpagePurchase'));
@@ -848,5 +849,3 @@ Route::group(array('before' => 'validatetoken'), function() {
 Route::post('seourl', 'GlobalSearchController@seourl');
 
 Route::get('email/opened', 'CustomerController@emailOpened');
-
-

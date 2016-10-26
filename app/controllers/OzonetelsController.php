@@ -435,7 +435,7 @@ class OzonetelsController extends \BaseController {
 
 			$ozonetel_capture->update();
 
-			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type)){
+			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
 				$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 			}
 
@@ -1279,7 +1279,7 @@ class OzonetelsController extends \BaseController {
 
 			$ozonetelmissedcallnos = Ozonetelmissedcallno::where('number','LIKE','%'.$ozonetel_missedcall->called_number.'%')->where('for','OrderRenewal')->first();
 
-			$order = Order::where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_renew_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
+			$order = Order::active()->where('customer_phone','LIKE','%'.substr($ozonetel_missedcall->customer_number, -8).'%')->where('missedcall_renew_batch',$ozonetelmissedcallnos->batch)->orderBy('_id','desc')->first();
 
 			$finder = Finder::find((int) $order->finder_id);
 

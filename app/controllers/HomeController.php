@@ -27,6 +27,46 @@ class HomeController extends BaseController {
 
     }
 
+
+    public function saveUtmData(){
+
+
+        $data   =   Input::json()->all();
+
+        if(empty($data['entity_id'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - entity_id");
+            return  Response::json($resp, 400);
+        }
+
+        if(empty($data['entity_type'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - entity_type");
+            return  Response::json($resp, 400);
+        }
+
+        if(empty($data['utm'])){
+            $resp 	= 	array('status' => 400,'message' => "Data Missing - utm");
+            return  Response::json($resp, 400);
+        }
+
+        $entity_id      =   trim($data['entity_id']);
+        $entity_type    =   $data['entity_type'];
+        $utm            =   $data['utm'];
+
+        if($entity_type != "" && $entity_id != ""){
+            if($entity_type == 'booktrial'){
+                $item       =   Booktrial::where('_id', intval($entity_id))->update(['utm' => $utm]);
+            }elseif($entity_type == 'capture'){
+                $item       =   Capture::where('_id', $entity_id)->update(['utm' => $utm]);
+            }elseif($entity_type == 'order'){
+                $item       =   Order::where('_id', intval($entity_id))->update(['utm' => $utm]);
+            }
+            $resp = array('status' => 200,'message' => "Added utm data");
+            return Response::json($resp);
+        }
+
+    }
+
+
     public function getHomePageDatav2($city = 'mumbai',$cache = true){
 
         $home_by_city = $cache ? Cache::tags('home_by_city')->has($city) : false;
