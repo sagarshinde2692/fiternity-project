@@ -602,7 +602,7 @@ class ServiceController extends \BaseController {
         foreach ($items as $k => $item) {
 
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
-            $item['vip_trial'] = isset($item['vip_trial']) ? $item['vip_trial'] : "";
+            $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 
             $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
