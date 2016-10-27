@@ -1465,7 +1465,7 @@ class FindersController extends \BaseController {
 
         $membership_services = array_map('intval',$membership_services);
 
-        $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
+        $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','gallery'))->toArray();
         
         if(!$items){
             return array();
