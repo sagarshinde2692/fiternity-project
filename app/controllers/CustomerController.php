@@ -2672,20 +2672,6 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function emailOpened(){
-
-		$data = $_REQUEST;
-
-		Log::info('Customer Email Open : '.json_encode($data));
-
-		$emailTracking = new Emailtracking($data);
-		$emailTracking->save();
-
-		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
-
-	}
-
-
 	public function applyPromotionCode(){
 
 		$valid_promotion_codes		=		['jcbfit'];
@@ -2704,8 +2690,8 @@ class CustomerController extends \BaseController {
 		$code 			= 	trim(strtolower($data['code']));
 
 		if (!in_array($code, $valid_promotion_codes)) {
-			$resp 	= 	array('status' => 400,'message' => "Invalid Promotion Code");
-			return Response::json($resp,400);
+			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+			return Response::json($resp,404);
 		}
 
 		if(Request::header('Authorization')){
@@ -2725,11 +2711,13 @@ class CustomerController extends \BaseController {
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + 200;				
+					$customer_balance 	=	$customerwallet['balance'] + 2000;				
 				}else{
-					$customer_balance 	=	 200;
+					$customer_balance 	=	 2000;
 				}
-				$cashback_amount 	=	200;
+				
+				$cashback_amount 	=	2000;
+
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
@@ -2749,122 +2737,46 @@ class CustomerController extends \BaseController {
 
 				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
 
-				$resp 	= 	array('status' => 200,'message' => "Promotion code applied successfully", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs 2,000 has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
 				return  Response::json($resp, 200);	
 			}
 		}
 	}
 
+	public function emailOpened(){
+
+		$data = $_REQUEST;
+
+		Log::info('Customer Email Open : '.json_encode($data));
+
+		$emailTracking = false;
+
+		if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+
+			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
+		}
+
+		if(isset($data['order_id']) && $data['order_id'] != ""){
+
+			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
+		}
 
 
+		if($emailTracking){
 
+			$emailTracking->count = $emailTracking->count + 1;
+			$emailTracking->update();
 
+		}else{
 
-	// public function applyPromotionCode(){
+			$emailTracking = new Emailtracking($data);
+			$emailTracking->count = 1;
+			$emailTracking->save();
+		}
 
-	// 	$valid_promotion_codes		=		['jcbfit'];
-	// 	$data 						= 		Input::json()->all();
-		
-	// 	if(empty(Request::header('Authorization'))){
-	// 		$resp 	= 	array('status' => 400,'message' => "Customer Token Missing");
-	// 		return  Response::json($resp, 400);
-	// 	}
+		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
 
-	// 	if(empty($data['code'])){
-	// 		$resp 	= 	array('status' => 400,'message' => "Promotion Code Missing - code");
-	// 		return  Response::json($resp, 400);
-	// 	}
-
-	// 	$code 			= 	trim(strtolower($data['code']));
-
-	// 	if (!in_array($code, $valid_promotion_codes)) {
-	// 		$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
-	// 		return Response::json($resp,404);
-	// 	}
-
-	// 	if(Request::header('Authorization')){
-	// 		$decoded          				=       decode_customer_token();
-	// 		$customer_id 					= 		intval($decoded->customer->_id);
-
-	// 		$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
-
-	// 		if($already_applied_promotion > 0){
-	// 			$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
-	// 			return  Response::json($resp, 400);
-	// 		}
-
-	// 		$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
-	// 		if($customer_update){
-	// 			$customer 	=	Customer::find($customer_id);				
-
-	// 			$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
-	// 			if($customerwallet){
-	// 				$customer_balance 	=	$customerwallet['balance'] + 2000;				
-	// 			}else{
-	// 				$customer_balance 	=	 2000;
-	// 			}
-				
-	// 			$cashback_amount 	=	2000;
-
-	// 			$walletData = array(
-	// 				"customer_id"=> $customer_id,
-	// 				"amount"=> $cashback_amount,
-	// 				"type"=>'CASHBACK',
-	// 				"code"=>	$code,
-	// 				"balance"=>	$customer_balance,
-	// 				"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
-	// 				);
-
-	// 			// return $walletData;
-
-	// 			$wallet               	=   new CustomerWallet($walletData);
-	// 			$last_insertion_id      =   CustomerWallet::max('_id');
-	// 			$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
-	// 			$wallet->_id          	=   ++ $last_insertion_id;
-	// 			$wallet->save();
-
-	// 			$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
-
-	// 			$resp 	= 	array('status' => 200,'message' => "Thank you. Rs 2,000 has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
-	// 			return  Response::json($resp, 200);	
-	// 		}
-	// 	}
-	// }
-
-	// public function emailOpened(){
-
-	// 	$data = $_REQUEST;
-
-	// 	Log::info('Customer Email Open : '.json_encode($data));
-
-	// 	$emailTracking = false;
-
-	// 	if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
-
-	// 		$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
-	// 	}
-
-	// 	if(isset($data['order_id']) && $data['order_id'] != ""){
-
-	// 		$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
-	// 	}
-
-
-	// 	if($emailTracking){
-
-	// 		$emailTracking->count = $emailTracking->count + 1;
-	// 		$emailTracking->update();
-
-	// 	}else{
-
-	// 		$emailTracking = new Emailtracking($data);
-	// 		$emailTracking->count = 1;
-	// 		$emailTracking->save();
-	// 	}
-
-	// 	return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
-
-	// }
+	}
 
 
 	public function customerstatus(){
