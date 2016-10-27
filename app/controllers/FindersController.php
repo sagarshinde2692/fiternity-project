@@ -322,7 +322,6 @@ class FindersController extends \BaseController {
                     $decoded                            =       decode_customer_token();
                     $customer_email                     =       $decoded->customer->email;
                     $customer_phone                     =       $decoded->customer->contact_no;
-                    $customer_id                        =       $decoded->customer->customer_id;
                     $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
                                                                     ->where('finder_id', '=', (int) $finderid)
                                                                     ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
