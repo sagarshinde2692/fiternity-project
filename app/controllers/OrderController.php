@@ -692,10 +692,68 @@ class OrderController extends \BaseController {
             $duration_day = $ratecard->validity;
         }
 
-        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity%30 == 0 && $ratecard->validity_type == "days"){
-            
-            $ratecard->validity = ($ratecard->validity/30);
-            $ratecard->validity_type = 'month';
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "days"){
+
+            $month = ($ratecard->validity/30);
+
+            if($month < 1){
+                $ratecard->validity_type = 'Days';
+            }
+
+            if($month == 1){
+                $ratecard->validity_type = 'Month';
+                $ratecard->validity = $month;
+            }
+
+            if($month > 1 && $month < 12){
+                $ratecard->validity_type = 'Months';
+                $ratecard->validity = $month;
+            }
+
+            if($month == 12){
+                $ratecard->validity_type = 'Year';
+                $ratecard->validity = 1;
+            }
+              
+        }
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "months"){
+
+            $year = ($ratecard->validity/12);
+
+            if($year < 1){
+
+                $ratecard->validity_type = 'Months';
+
+                if($ratecard->validity == 1){
+                    $ratecard->validity_type = 'Month';
+                }  
+            }
+
+            if($year == 1){
+                $ratecard->validity_type = 'Year';
+                $ratecard->validity = $year;
+            }
+
+            if($year > 1){
+                $ratecard->validity_type = 'Years';
+                $ratecard->validity = $year;
+            }
+              
+        }
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "year"){
+
+            $year = $ratecard->validity;
+
+            if($year == 1){
+                $ratecard->validity_type = 'Year';
+            }
+
+            if($year > 1){
+                $ratecard->validity_type = 'Years';
+            }
+              
         }
 
         $service_duration = "";
@@ -1083,8 +1141,17 @@ class OrderController extends \BaseController {
                 }
 
                 if(isset($ratecard->validity) && $ratecard->validity != ""){
-                    $duration_day = (int)$ratecard->validity;
-                    $data['duration_day'] = $duration_day;
+
+                    switch ($ratecard->validity_type){
+                        case 'days': 
+                            $data['duration_day'] = $duration_day = (int)$ratecard->validity;break;
+                        case 'months': 
+                            $data['duration_day'] = $duration_day = (int)($ratecard->validity * 30) ; break;
+                        case 'year': 
+                            $data['duration_day'] = $duration_day = (int)($ratecard->validity * 30 * 12); break;
+                        default : $data['duration_day'] = $duration_day =  $ratecard->validity; break;
+                    }
+
                     if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
                         $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
                     }
@@ -1101,18 +1168,7 @@ class OrderController extends \BaseController {
                     $validity = $ratecard->validity;
                     $validity_type = $ratecard->validity_type;
 
-                    $service_duration =   "";
-
-                    $service_duration .= ($duration > 0) ? $service_duration .= $duration ." ".$duration_type : "";
-
-                    ($duration > 0 && $validity > 0) ? $service_duration .= " - " : $service_duration = "";
-                    
-                    ($validity == 1 && $validity_type == 'months') ? $validity_type = 'month' : null ;
-                    ($validity == 1 && $validity_type == 'days') ? $validity_type = 'day' : null ;
-
-                    ($validity > 0) ? $service_duration .=  $validity ." ".$validity_type : "";
-
-                    ($service_duration != "") ? $data['service_duration'] = $service_duration : null ;
+                    $service_duration = $data['service_duration'] = $this->getServiceDuration($ratecard);
                 }
                 
             }else{
