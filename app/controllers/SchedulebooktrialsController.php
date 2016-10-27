@@ -38,8 +38,7 @@ class SchedulebooktrialsController extends \BaseController {
     protected $utilities;
     protected $customerreward;
 	protected $jwtauth;
-
-
+    
     public function __construct(
         CustomerMailer $customermailer,
         FinderMailer $findermailer,
@@ -113,6 +112,8 @@ class SchedulebooktrialsController extends \BaseController {
                 // $oneHourDiffInMin            =   $currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);
                 $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
                 array_set($slot, 'passed', $slot_datetime_pass_status);
+                array_set($slot, 'service_id', $item['_id']);
+                array_set($slot, 'finder_id', $item['finder_id']);
 
                 //echo "<br>finderid : $finderid  --- schedule_date : $date servicename : $item[name] -- slot_time : $slot[slot_time] --  booktrialslotcnt : $booktrialslotcnt";
                 array_push($slots, $slot);
@@ -142,18 +143,21 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules'))->toArray();
+        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules','servicecategory_id'))->toArray();
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
             $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
+
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
             //slots exists
             if(count($weekdayslots['slots']) > 0){
@@ -182,8 +186,10 @@ class SchedulebooktrialsController extends \BaseController {
                     try{
 
                         $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -212,7 +218,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items                  =   Service::where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules'))->toArray();
+        $items                  =   Service::where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id'))->toArray();
 
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
@@ -220,12 +226,14 @@ class SchedulebooktrialsController extends \BaseController {
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
             $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
 
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
             // echo "<br> count -- ".count($weekdayslots['slots']);
             $item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
@@ -276,8 +284,10 @@ class SchedulebooktrialsController extends \BaseController {
                     try{
 
                         $scheduleDateTime               =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -324,18 +334,21 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'))->toArray();
         if(!$items){
             return $this->responseNotFound('WorkoutSession Schedule does not exist');
         }
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
             $weekdayslots = head(array_where($item['workoutsessionschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
+
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
             //slots exists
             if(count($weekdayslots['slots']) > 0){
@@ -356,10 +369,20 @@ class SchedulebooktrialsController extends \BaseController {
                     // array_set($slot, 'cancelcnt', $cancelcnt);
                     array_set($slot, 'status', $slot_status);
 
-                    $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                    $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 180) ? false : true;
-                    array_set($slot, 'passed', $slot_datetime_pass_status);
-                    array_push($slots, $slot);
+                    try{
+
+                        $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
+                        array_push($slots, $slot);
+
+                    }catch(Exception $e){
+
+                        Log::info("getWorkoutSessionSchedule Error : ".$date." ".$slot['start_time']);
+                    }
+        
                 }
 
                 $service['slots'] = $slots;
@@ -386,7 +409,10 @@ class SchedulebooktrialsController extends \BaseController {
 
         // $dobj = new DateTime;print_r($dobj);exit;
         $currentDateTime 	=	\Carbon\Carbon::now();
-        $item 		       =	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules'))->toArray();
+        $item 		       =	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'))->toArray();
+
+        $time_in_seconds = time_passed_check($item['servicecategory_id']);
+
         if(!$item){
             return $this->responseNotFound('Service Schedule does not exist');
         }
@@ -443,8 +469,10 @@ class SchedulebooktrialsController extends \BaseController {
                     try{
 
                         $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'service_id', $item['_id']);
+                        array_set($slot, 'finder_id', $item['finder_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -1232,7 +1260,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
 
-        if($count > 0){
+        if($count > 0 ){
             array_set($data, 'acquisition_type', 'renewal_direct');
         }else{
             array_set($data,'acquisition_type','direct_payment');
@@ -1240,19 +1268,76 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(Input::json()->get('status') == 'success') {
 
-//            echo "ih";exit();
-            $orderData = [];
-            array_set($orderData, 'status', '1');
-            array_set($orderData, 'order_action', 'bought');
-            $orderdata 	=	$order->update($orderData);
-            // Give Rewards / Cashback to customer based on selection, on purchase success......
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
-            //Send Instant (Email) To Customer & Finder
-            $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
-            $sndInstantSmsCustomer	       =	$this->customersms->healthyTiffinMembership($order->toArray());
-            $sndInstantEmailFinder	       = 	$this->findermailer->healthyTiffinMembership($order->toArray());
-            $sndInstantSmsFinder	       =	$this->findersms->healthyTiffinMembership($order->toArray());
+            if(isset($order->reward_ids) && !empty($order->reward_ids)){
+
+                $reward_detail = array();
+
+                $reward_ids = array_map('intval',$order->reward_ids);
+
+                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+                if(count($rewards) > 0){
+
+                    foreach ($rewards as $value) {
+
+                        $title = $value->title;
+
+                        if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+                            $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                        }
+
+                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+
+                        array_set($data, 'reward_type', $value->reward_type);
+
+                    }
+
+                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                    array_set($data, 'reward_info', $reward_info);
+                }
+
+            }
+
+            if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
+
+                $reward_info = "Cashback";
+                
+                array_set($data, 'reward_info', $reward_info);
+                array_set($data, 'reward_type', 'cashback');
+            }
+
+            
+            array_set($data, 'status', '1');
+            array_set($data, 'order_action', 'bought');
+
+            $orderdata 	=	$order->update($data);
+
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                    $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
+                    $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
+                }
+
+            }else{
+                $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
+                $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
+            }
+
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                    $sndInstantEmailFinder         =    $this->findermailer->healthyTiffinMembership($order->toArray());
+                    $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
+                }
+
+            }else{
+                $sndInstantEmailFinder         =    $this->findermailer->healthyTiffinMembership($order->toArray());
+                $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
+            }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1724,7 +1809,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'appstg');
             $booktrial->update(array('redis_id'=>$redisid));
 
         }
@@ -2018,8 +2103,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(empty($data['service_name'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
-            return  Response::json($resp, 400);
+            $data['service_name'] = "-";
         }
 
         if(empty($data['schedule_date'])){
@@ -2216,6 +2300,9 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
                     $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
                 }
+
+                $data['service_name'] = $serviceArr['name'];
+
             }else{
                 $finder_location			       =	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
                 $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
@@ -2424,7 +2511,7 @@ class SchedulebooktrialsController extends \BaseController {
             //if vendor type is free special dont send communication
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'appstg');
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
@@ -2965,7 +3052,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
             );
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'appstg');
             $booktrial->update(array('reschedule_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -3318,7 +3405,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true ){
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'appstg');
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -3842,7 +3929,7 @@ class SchedulebooktrialsController extends \BaseController {
     
     public function booktrialdetail($captureid){
 
-        $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+        $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
 
         if(!$booktrial){
 
@@ -4558,7 +4645,7 @@ class SchedulebooktrialsController extends \BaseController {
         $store_id = $store->_id = Store::max('_id') + 1;
         $store->save();
 
-        $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),'booktrial');
+        $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),'appstg');
 
         $store->update(array('redis_id'=>$redisid));
 
@@ -4662,10 +4749,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if($order){
 
-                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$order->_id,'booktrialid'=>$data['_id']),'booktrial');
+                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$order->_id,'booktrialid'=>$data['_id']),'appstg');
                 }else{
 
-                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'booktrial');
+                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'appstg');
                 }
 
                 $result[] = $data['_id'];

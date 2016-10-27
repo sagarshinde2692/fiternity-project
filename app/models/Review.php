@@ -15,7 +15,7 @@ class Review extends  \Basemodel {
 	public static $rules = [
 	    'finder_id' => 'required|integer|numeric',
 	    'customer_id' => 'required|integer|numeric',
-	    'rating' => 'required|integer|numeric',
+	    'rating' => 'required|numeric',
 	    'detail_rating' => 'required',
 	    'description' => 'required'
 	];

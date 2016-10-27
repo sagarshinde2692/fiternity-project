@@ -1117,6 +1117,7 @@ class CustomerController extends \BaseController {
 			$value['renewal_flag'] = $this->checkRenewal($value);
 
 			array_push($orders, $value);
+
 		}
 
 		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
@@ -2311,8 +2312,8 @@ class CustomerController extends \BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
 
-			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
-
+			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
+			
 			$ordered_category = array();
 
 			foreach ($category_slug as $category_slug_key => $category_slug_value){
@@ -2327,12 +2328,7 @@ class CustomerController extends \BaseController {
 				}
 			}
 
-			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
-
-			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
-			if(!$homepage){
-				return $this->responseNotFound('homepage does not exist');
-			}
+			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
 
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
@@ -2607,23 +2603,85 @@ class CustomerController extends \BaseController {
 		$current_version_android = 2.6;
 		$current_version_ios = 2.0;
 
-		$result_android = array(
-			"title" => "Version ".$current_version_android." is available on Play Store",
-			"description" => "Version ".$current_version_android." is available on Play Store",
-			"force_update" => false,
-			"available_version" => $current_version_android,
+		if($data["device_type"] == "android"){
+
+			$result_android = array(
+				"message" => "Version ".$current_version_android." is available on Play Store",
+				"force_update" => false
 			);
+
+			if($data["app_version"] < $current_version_android){
+
+				$result_android['force_update'] = true;
+			}
+
+			return Response::json($result_android,200);
+		}
 
 		$result_ios = array(
 			"title" => "Version ".$current_version_ios." is available on App Store",
 			"description" => "Version ".$current_version_ios." is available on App Store",
 			"force_update" => false,
 			"available_version" => $current_version_ios,
+		);
+
+		return Response::json(array('status' => 200,'data' => $result_ios),200);
+
+	}
+
+	public function appConfig(){
+
+		$app_version = Request::header('App-Version');
+		$device_type = Request::header('Device-Type');
+
+		$current_version_android = 2.6;
+		$current_version_ios = 2.0;
+		$force_update_android = false;
+		$force_update_ios = false;
+		
+		$api['city'] = 1476350961;
+		$api['home'] = 1476350961;
+
+		if($device_type == "android"){
+
+			if($app_version < $current_version_android){
+
+				$force_update_android = true;
+			}
+		}
+
+		$result_android = array(
+			"title" => "Version ".$current_version_android." is available on Play Store",
+			"description" => "Version ".$current_version_android." is available on Play Store",
+			"force_update" => $force_update_android,
+			"available_version" => $current_version_android,
 			);
 
-		$result = ($data['device_type'] == 'android') ? $result_android : $result_ios;
+		$result_ios = array(
+			"title" => "Version ".$current_version_ios." is available on App Store",
+			"description" => "Version ".$current_version_ios." is available on App Store",
+			"force_update" => $force_update_ios,
+			"available_version" => $current_version_ios,
+			);
 
-		return Response::json(array('status' => 200,'data' => $result),200);
+		$data = ($device_type == 'ios') ? $result_ios : $result_android;
+
+		$data['api'] = $api;
+
+		return Response::json(array('status' => 200,'data' => $data),200);
+
+	}
+
+	public function emailOpened(){
+
+		$data = $_REQUEST;
+
+		Log::info('Customer Email Open : '.json_encode($data));
+
+		$emailTracking = new Emailtracking($data);
+		$emailTracking->save();
+
+		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
 
 	}
 
@@ -2646,8 +2704,8 @@ class CustomerController extends \BaseController {
 		$code 			= 	trim(strtolower($data['code']));
 
 		if (!in_array($code, $valid_promotion_codes)) {
-			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
-			return Response::json($resp,404);
+			$resp 	= 	array('status' => 400,'message' => "Invalid Promotion Code");
+			return Response::json($resp,400);
 		}
 
 		if(Request::header('Authorization')){
@@ -2667,13 +2725,11 @@ class CustomerController extends \BaseController {
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + 2000;				
+					$customer_balance 	=	$customerwallet['balance'] + 200;				
 				}else{
-					$customer_balance 	=	 2000;
+					$customer_balance 	=	 200;
 				}
-				
-				$cashback_amount 	=	2000;
-
+				$cashback_amount 	=	200;
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
@@ -2693,46 +2749,122 @@ class CustomerController extends \BaseController {
 
 				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
 
-				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs 2,000 has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Promotion code applied successfully", 'walletdata' => $wallet);
 				return  Response::json($resp, 200);	
 			}
 		}
 	}
 
-	public function emailOpened(){
-
-		$data = $_REQUEST;
-
-		Log::info('Customer Email Open : '.json_encode($data));
-
-		$emailTracking = false;
-
-		if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
-
-			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
-		}
-
-		if(isset($data['order_id']) && $data['order_id'] != ""){
-
-			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
-		}
 
 
-		if($emailTracking){
 
-			$emailTracking->count = $emailTracking->count + 1;
-			$emailTracking->update();
 
-		}else{
 
-			$emailTracking = new Emailtracking($data);
-			$emailTracking->count = 1;
-			$emailTracking->save();
-		}
+	// public function applyPromotionCode(){
 
-		return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
+	// 	$valid_promotion_codes		=		['jcbfit'];
+	// 	$data 						= 		Input::json()->all();
+		
+	// 	if(empty(Request::header('Authorization'))){
+	// 		$resp 	= 	array('status' => 400,'message' => "Customer Token Missing");
+	// 		return  Response::json($resp, 400);
+	// 	}
 
-	}
+	// 	if(empty($data['code'])){
+	// 		$resp 	= 	array('status' => 400,'message' => "Promotion Code Missing - code");
+	// 		return  Response::json($resp, 400);
+	// 	}
+
+	// 	$code 			= 	trim(strtolower($data['code']));
+
+	// 	if (!in_array($code, $valid_promotion_codes)) {
+	// 		$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+	// 		return Response::json($resp,404);
+	// 	}
+
+	// 	if(Request::header('Authorization')){
+	// 		$decoded          				=       decode_customer_token();
+	// 		$customer_id 					= 		intval($decoded->customer->_id);
+
+	// 		$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
+
+	// 		if($already_applied_promotion > 0){
+	// 			$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
+	// 			return  Response::json($resp, 400);
+	// 		}
+
+	// 		$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+	// 		if($customer_update){
+	// 			$customer 	=	Customer::find($customer_id);				
+
+	// 			$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
+	// 			if($customerwallet){
+	// 				$customer_balance 	=	$customerwallet['balance'] + 2000;				
+	// 			}else{
+	// 				$customer_balance 	=	 2000;
+	// 			}
+				
+	// 			$cashback_amount 	=	2000;
+
+	// 			$walletData = array(
+	// 				"customer_id"=> $customer_id,
+	// 				"amount"=> $cashback_amount,
+	// 				"type"=>'CASHBACK',
+	// 				"code"=>	$code,
+	// 				"balance"=>	$customer_balance,
+	// 				"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
+	// 				);
+
+	// 			// return $walletData;
+
+	// 			$wallet               	=   new CustomerWallet($walletData);
+	// 			$last_insertion_id      =   CustomerWallet::max('_id');
+	// 			$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
+	// 			$wallet->_id          	=   ++ $last_insertion_id;
+	// 			$wallet->save();
+
+	// 			$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
+
+	// 			$resp 	= 	array('status' => 200,'message' => "Thank you. Rs 2,000 has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
+	// 			return  Response::json($resp, 200);	
+	// 		}
+	// 	}
+	// }
+
+	// public function emailOpened(){
+
+	// 	$data = $_REQUEST;
+
+	// 	Log::info('Customer Email Open : '.json_encode($data));
+
+	// 	$emailTracking = false;
+
+	// 	if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+
+	// 		$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('booktrial_id',$data['booktrial_id'])->first();
+	// 	}
+
+	// 	if(isset($data['order_id']) && $data['order_id'] != ""){
+
+	// 		$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
+	// 	}
+
+
+	// 	if($emailTracking){
+
+	// 		$emailTracking->count = $emailTracking->count + 1;
+	// 		$emailTracking->update();
+
+	// 	}else{
+
+	// 		$emailTracking = new Emailtracking($data);
+	// 		$emailTracking->count = 1;
+	// 		$emailTracking->save();
+	// 	}
+
+	// 	return Response::json(array('status' => 200,'message' => 'Email Opened'),200);
+
+	// }
 
 
 	public function customerstatus(){

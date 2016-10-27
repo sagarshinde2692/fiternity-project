@@ -364,6 +364,8 @@ class ServiceRankingSearchController extends \BaseController {
 
         $vendor_filter = ( (null !== Input::json()->get('vendor')) &&(!empty(Input::json()->get('vendor')))) ? '{"terms" : {  "findername": ["'.strtolower(implode('","', Input::json()->get('vendor'))).'"],"_cache": true}},' : '';
 
+        $vendorId_filter = ( (null !== Input::json()->get('vendor_id')) &&(!empty(Input::json()->get('vendor_id')))) ? '{"terms" : {  "finder_id": ['.Input::json()->get('vendor_id').'],"_cache": true}},' : '';
+
         $service_filter = '';
         if((null !== Input::json()->get('campaign_id')) &&(!empty(Input::json()->get('campaign_id')))){
           $campaign_id = Input::json()->get('campaign_id');
@@ -493,7 +495,7 @@ class ServiceRankingSearchController extends \BaseController {
 
       /**********************************************************************************************/
       
-      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter.$service_type_filter, ',');
+      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter.$service_type_filter.$vendorId_filter, ',');
 
       $post_filter_query = 
       '{
@@ -520,6 +522,8 @@ class ServiceRankingSearchController extends \BaseController {
       $price_facets_filter = trim($city_filter.$vip_trial_filter.$price_range_above_100_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
 
       $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
+
+      $vendorId_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter.$vendorId_filter, ',');
 
 
 
@@ -549,6 +553,10 @@ class ServiceRankingSearchController extends \BaseController {
 
       $vendor_bool = '"filter": {
         "bool" : {"must":['.$vendor_facets_filter.'],"must_not": ['.$mustnot_filter.']}
+      }';
+
+      $vendorId_bool = '"filter": {
+        "bool" : {"must":['.$vendorId_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $region_tag_bool = '"filter": {
@@ -716,7 +724,21 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-            $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
+      $vendorId_facets = ' "filtered_vendorId": {
+        '.$vendorId_bool.',
+        "aggs": {
+          "vendors": {
+            "terms": {
+              "field": "vendor_id",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+            $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets.$vendorId_facets,',');
 
       
       /*******************************************Drilled Aggregations here ******************************************/
@@ -764,7 +786,7 @@ class ServiceRankingSearchController extends \BaseController {
 
 
       // var_dump($query);exit();
-   
+      // return $query;
 
       $request = array(
         'url' => $this->elasticsearch_host."/fitternity_vip_trials/service/_search",

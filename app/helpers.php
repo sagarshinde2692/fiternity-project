@@ -792,6 +792,8 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'service_category_snow'         =>      (isset($data['service_category_snow']) && !empty($data['service_category_snow'])) ? $data['service_category_snow'] : array(),
             'brand_id' => isset($data['brand_id']) ? $data['brand_id'] : '',
             'brand' => (isset($data['brand']) && isset($data['brand']['name'])) ? $data['brand']['name'] : '',
+            'finder_coverimage_webp' => (isset($data['coverimage']) && $data['coverimage'] != '') ? strtolower( substr($data['coverimage'], 0, -3)."webp"  ) : strtolower($data['finder_coverimage']),
+            'finder_coverimage_color' => (isset($data['finder_coverimage_color']) && $data['finder_coverimage_color'] != "") ? $data['finder_coverimage_color'] : "",
 
                 //'trialschedules'                =>      $trialdata,
             );
@@ -1124,6 +1126,8 @@ if (!function_exists('get_elastic_service_documentv2')) {
             'short_description' => (isset($data['short_description']) && $data['short_description'] != '') ? strtolower($data['short_description']) : "",
             'rating' => 0,
             'finder_coverimage' => (isset($finderdata['coverimage']) && $finderdata['coverimage'] != '') ? strtolower($finderdata['coverimage']) : strtolower($finderdata['finder_coverimage']),
+            'finder_coverimage_webp' => (isset($finderdata['coverimage']) && $finderdata['coverimage'] != '') ? strtolower( substr($finderdata['coverimage'], 0, -3)."webp"  ) : strtolower($finderdata['finder_coverimage']),
+            'finder_coverimage_color' => (isset($finderdata['finder_coverimage_color']) && $finderdata['finder_coverimage_color'] != "") ? $finderdata['finder_coverimage_color'] : "",
             'cluster' => $cluster,
             'durationheader' => $durationheader,
             'budgetheader' => intval($budgetheader),
@@ -2070,6 +2074,16 @@ if (!function_exists(('random_number_string'))){
         }
 
         return $result;
+    }
+}
+
+if (!function_exists(('time_passed_check'))){
+
+    function time_passed_check($servicecategory_id)
+    {      
+        $service_category_id = array(2,19,65);
+
+        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15 : 90 ;
     }
 }
 

@@ -183,6 +183,7 @@ Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp',
 Route::post('customerstatus', array('as' => 'customer.customerstatus','uses' => 'CustomerController@customerstatus'));
 
 
+
 Route::get('autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
 Route::get('reviews/{customerid}/{from?}/{size?}',  array('as' => 'customer.reviews','uses' => 'CustomerController@reviewListing'));
 Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderhistory','uses' => 'CustomerController@orderHistory'));
@@ -203,6 +204,8 @@ Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'Cus
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
+Route::get('app/config', array('as' => 'customer.appconfig','uses' => 'CustomerController@appConfig'));
+
 
 
 Route::post('admin/customer/capturemyreward', array('as' => 'customer.capturemyreward','uses' => 'CustomerController@captureMyReward'));
@@ -225,6 +228,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customer/myrewards/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewards','uses' => 'MyrewardController@listMyRewards'));
 	Route::get('customer/myrewardsv1/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewardsv1','uses' => 'MyrewardController@listMyRewardsV1'));
 
+	Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 	// Wallet APIs...
 	Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
@@ -276,6 +280,7 @@ Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'Or
 Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
+Route::post('generatetmporderpre',  array('as' => 'orders.generatetmporderpre','uses' => 'OrderController@generateTmpOrderPre'));
 
 Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
 Route::post('buylandingpagepurchase',  array('as' => 'orders.buylandingpagepurchase','uses' => 'OrderController@buyLandingpagePurchase'));
@@ -325,6 +330,8 @@ Route::post('addreview', array('as' => 'finders.addreview','uses' => 'FindersCon
 Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'FindersController@detailReview'));
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
+
+Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
 
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -435,6 +442,7 @@ Route::get('servicemarketfooterv1/{city?}', array('as' => 'service.servicemarket
 Route::get('service/getservicewithworkoutsession/{finder_id}', array('as' => 'service.getservicewithworkoutsession','uses' => 'ServiceController@getServiceWithWorkoutSession'));
 Route::get('service/getworkoutsessionschedulebyservice/{service_id}/{date?}', array('as' => 'service.getworkoutsessionschedulebyservice','uses' => 'ServiceController@getWorkoutSessionScheduleByService'));
 Route::get('getservicesbytype/{finder_id}/{type}', array('as' => 'service.getservicesbytype','uses' => 'ServiceController@getServicesByType'));
+Route::get('getschedulebyfinderservice', array('as' => 'service.getschedulebyfinderservice','uses' => 'ServiceController@getScheduleByFinderService'));
 
 
 

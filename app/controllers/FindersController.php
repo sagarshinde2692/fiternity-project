@@ -77,7 +77,6 @@ class FindersController extends \BaseController {
 
     public function finderdetail($slug, $cache = true){
 
-//        return Cache::tags('finder_detail')->get($slug);
         $data 	=  array();
         $tslug 	= (string) strtolower($slug);
 
@@ -180,6 +179,8 @@ class FindersController extends \BaseController {
                     $finder['associate_finder'] = $associate_finder;
                 }
 
+                array_set($finder, 'finder_coverimage_webp', substr($finderarr['coverimage'], 0, -3)."webp");
+                // array_set($finder, 'finder_coverimage_color', "#4286f4");
                 array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
                 array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
                 array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
@@ -223,7 +224,18 @@ class FindersController extends \BaseController {
 
                     $brand = Brand::find((int)$finderarr['brand_id']);
 
-                    $brandFinder = Finder::where("brand_id",(int)$finderarr['brand_id'])->active()->where("_id","!=",(int)$finderarr['_id'])->where('city_id',(int)$finderarr['city_id'])->select('_id','title','slug','brand_id','location_id','city_id')->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get();
+                    $brandFinder = Finder::where("brand_id",(int)$finderarr['brand_id'])
+                                    ->active()
+                                    ->where("_id","!=",(int)$finderarr['_id'])
+                                    ->where('city_id',(int)$finderarr['city_id'])
+                                    ->with('offerings')
+                                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                                    ->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage'])->toArray();
+                    
+                    foreach($brandFinder as $key => $finder1){
+                        array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+                    }
 
                     $finderarr['brand']['brand_detail'] = $brand;
                     $finderarr['brand']['finder_detail'] = $brandFinder;
@@ -273,11 +285,14 @@ class FindersController extends \BaseController {
                     ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
                     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
                     ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->with('offerings')
                     ->orderBy('finder_type', 'DESC')
                     ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'))
                     ->take(5)->toArray();
-
+                foreach($nearby_same_category as $key => $finder1){
+                    array_set($nearby_same_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+                }
 
                 $nearby_other_category 		= 	Finder::where('category_id','!=',$findercategoryid)
                     ->whereNotIn('category_id', $skip_categoryid_finders)
@@ -287,11 +302,14 @@ class FindersController extends \BaseController {
                     ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
                     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
                     ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->with('offerings')
                     ->orderBy('finder_type', 'DESC')
                     ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'))
                     ->take(5)->toArray();
-
+                foreach($nearby_other_category as $key => $finder1){
+                    array_set($nearby_other_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+                }
                 $data['statusfinder'] 					= 		200;
                 $data['finder']                         =       $finder;
                 $data['defination'] 					= 		['categorytags' => $categoryTagDefinationArr];
@@ -304,6 +322,7 @@ class FindersController extends \BaseController {
                     $decoded                            =       decode_customer_token();
                     $customer_email                     =       $decoded->customer->email;
                     $customer_phone                     =       $decoded->customer->contact_no;
+                    $customer_id                        =       $decoded->customer->customer_id;
                     $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
                                                                     ->where('finder_id', '=', (int) $finderid)
                                                                     ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
@@ -924,8 +943,8 @@ class FindersController extends \BaseController {
         $reviewdata = [
         'finder_id' => intval($data['finder_id']),
         'customer_id' => intval($data['customer_id']),
-        'rating' => intval($data['rating']),
-        'detail_rating' => array_map('intval',$data['detail_rating']),
+        'rating' => floatval($data['rating']),
+        'detail_rating' => array_map('floatval',$data['detail_rating']),
         'description' => $data['description'],
         'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
         'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
@@ -1432,6 +1451,327 @@ class FindersController extends \BaseController {
         $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
         return $decodedToken;
+    }
+
+    public function getTrialSchedule($finder_id,$category){
+
+        $currentDateTime        =   date('Y-m-d');
+        $finder_id               =   (int) $finder_id;
+        $date                   =   date('Y-m-d');
+        $timestamp              =   strtotime($date);
+        $weekday                =   strtolower(date( "l", $timestamp));
+        if($category->_id == 42){
+            $membership_services = Ratecard::where('finder_id', $finder_id)->lists('service_id');
+        }else{
+            $membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
+        }
+
+        $membership_services = array_map('intval',$membership_services);
+
+        $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos'))->toArray();
+        
+        if(!$items){
+            return array();
+        }
+
+        $scheduleservices = array();
+
+        foreach ($items as $k => $item) {
+
+            $extra_info = array();
+
+            $extra_info[0] = array(
+                'title'=>'Description',
+                'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+                'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
+            );
+
+            unset($items[$k]['short_description']);
+
+            $extra_info[1] = array(
+                'title'=>'Avg. Calorie Burn',
+                'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+                'description'=>'750 Kcal'
+            );
+
+            $extra_info[2] = array(
+                'title'=>'Results',
+                'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+                'description'=>'Burn Fat | Super Cardio'
+            );
+
+            $batches = array();
+
+            if(isset($item['batches']) && count($item['batches']) > 0){
+
+                $batches = $item['batches'];
+
+                foreach ($batches as $batches_key => $batches_value) {
+
+                    foreach ($batches_value as $batches_value_key => $value) {
+
+                        $batches[$batches_key][$batches_value_key]['slots'] = $value['slots'][0];
+                    }
+                }
+            }
+            $photo = null;
+            if(isset($item['photos']) && count($item['photos']) > 0){
+
+                $photo1 = $item['photos'][0];
+                if(isset($photo1['url'])){
+                    $photo = "https://b.fitn.in/s/g/thumbs/".$photo1['url'];
+                }
+            }
+            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>null,'extra_info'=>$extra_info,'batches'=>$batches,'image'=>$photo);
+
+            if(count($item['serviceratecard']) > 0){
+                $ratecardArr = [];
+                foreach ($item['serviceratecard'] as $rateval){
+                    if($category->_id == 42){
+                        array_push($ratecardArr, $rateval);
+                    }else{
+                        if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){ array_push($ratecardArr, $rateval); }
+                    }
+                }
+                $service['ratecard'] = $ratecardArr;
+            }
+
+            $time_in_seconds = time_passed_check($item['servicecategory_id']);
+
+            if(isset($item['trialschedules']) && count($item['trialschedules']) > 0){
+
+                $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
+                    if($value['weekday'] == $weekday){
+                        return $value;
+                    }
+                }));
+
+                $slots = array();
+
+                if(count($weekdayslots['slots']) > 0){
+                    foreach ($weekdayslots['slots'] as $slot) {
+                        array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
+                        array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
+                        try{
+                           $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
+                            if(($scheduleDateTimeUnix - time()) > $time_in_seconds){
+                                array_push($slots, $slot);
+                            }
+                        }catch(Exception $e){
+                            Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
+                        }
+                    }
+
+                    if(count($slots) > 0){
+                        $service['slots'] = $slots[0];
+                    }
+                }
+            }
+            array_push($scheduleservices, $service);
+        }
+
+        return $scheduleservices;
+    }
+
+    public function finderDetailApp($slug, $cache = true){
+
+        $data   =  array();
+        $tslug  = (string) strtolower($slug);
+
+        $finder_detail = $cache ? Cache::tags('finder_detail_app')->has($tslug) : false;
+
+        if(!$finder_detail){
+
+            $finderarr = Finder::active()->where('slug','=',$tslug)
+            ->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
+            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            ->with('categorytags')
+            ->with('locationtags')
+            ->with('offerings')
+            ->with('facilities')
+            ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+            ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+            ->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
+            ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable'));
+
+            //echo "<pre>";print_r($finderarr);exit;
+
+            $finder = false;
+
+            if($finderarr){
+                $finderarr = $finderarr->toArray();
+
+                $finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs'));
+                $coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
+                array_set($finder, 'coverimage', $coverimage);
+
+                $finder['info']              =   array_only($finderarr['info'], ['timing','delivery_timing']);
+
+                $finder['today_opening_hour']   =   null;
+                $finder['today_closing_hour']   =   null;
+                $finder['open_close_hour_for_week'] = [];
+
+                if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
+
+//                    return $finderarr['services'] ;
+//                    return pluck( $finderarr['services'] , ['_id', 'name', 'trialschedules']);
+
+                    if(isset($finderarr['services']) && count($finderarr['services']) > 0){
+                        //for servcie category gym
+                        $finder_gym_service  = [];
+                        $finder_gym_service = head(array_where($finderarr['services'], function($key, $value){
+                            if($value['category']['_id'] == 65){ return $value; }
+                        }));
+
+                        if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
+
+//                            var_dump($finder_gym_service['trialschedules']); exit;
+
+                            $all_weekdays                       =   $finder_gym_service['active_weekdays'];
+                            $today_weekday                      =   strtolower(date( "l", time()));
+
+                            foreach ($all_weekdays as $weekday){
+                                $whole_week_open_close_hour_Arr             =   [];
+                                $slots_start_time_24_hour_format_Arr        =   [];
+                                $slots_end_time_24_hour_format_Arr          =   [];
+
+                                $weekdayslots       =   head(array_where($finder_gym_service['trialschedules'], function($key, $value) use ($weekday){
+                                    if($value['weekday'] == $weekday){
+                                        return $value;
+                                    }
+                                }));// weekdayslots
+
+                                if(isset($weekdayslots['slots']) && count($weekdayslots['slots']) > 0){
+                                    foreach ($weekdayslots['slots'] as $key => $slot) {
+                                        array_push($slots_start_time_24_hour_format_Arr, intval($slot['start_time_24_hour_format']));
+                                        array_push($slots_end_time_24_hour_format_Arr, intval($slot['end_time_24_hour_format']));
+                                    }
+                                    if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
+                                        $opening_hour = min($slots_start_time_24_hour_format_Arr);
+                                        $closing_hour = max($slots_end_time_24_hour_format_Arr);
+                                        if($today_weekday == $weekday){
+                                         $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
+                                         $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                     }
+                                     $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
+                                     $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                     array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
+                                 }
+                             }
+                         }
+
+                            //  $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : null;
+
+                            if(!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0){
+//                                var_dump($whole_week_open_close_hour_Arr);  exit;
+                                $weekWiseArr                    =   [];
+                                $whole_week_open_close_hour_Arr =   head($whole_week_open_close_hour_Arr);
+                                $weekdayDays                    =   ["monday","tuesday","wednesday","thursday","friday","saturday","sunday"];
+                                foreach ($weekdayDays as $day){
+                                    if (array_key_exists($day, $whole_week_open_close_hour_Arr)) {
+                                        $obj = ["day" => $day, "opening_hour" => $whole_week_open_close_hour_Arr[$day]["opening_hour"],  "closing_hour" => $whole_week_open_close_hour_Arr[$day]["closing_hour"]];
+                                        array_push($weekWiseArr, $obj);
+                                    }
+                                }
+                                $finder['open_close_hour_for_week'] = $weekWiseArr;
+                            }else{
+                                $finder['open_close_hour_for_week'] = [];
+                            }
+
+                        }// trialschedules
+
+                    }
+                }
+
+                array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
+                array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
+                array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
+                array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
+                array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
+                
+                if(count($finder['services']) > 0 ){
+                    $info_timing = $this->getInfoTiming($finder['services']);
+                    if(isset($finder['info']) && $info_timing != ""){
+                        $finder['info']['timing'] = $info_timing;
+                    }
+                    unset($finder['services']);
+                }
+                if($finderarr['category_id'] == 5){
+                    $finder['type'] = "gyms";
+                }elseif($finderarr['category_id'] == 42 || $finderarr['category_id'] == 45){
+                    $finder['type'] = "healthytiffins";
+                }elseif($finderarr['category_id'] == 41){
+                    $finder['type'] = "personaltrainers";
+                }else{
+                    $finder['type'] = "fitnessstudios";
+                }
+
+                $finder['assured'] = [
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
+                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
+                ];
+
+                $finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
+                $finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
+
+                if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
+                    $finder['ozonetelno']['phone_number'] = '+'.$finder['ozonetelno']['phone_number'];
+                    $finder['contact']['phone'] = $finder['ozonetelno']['phone_number'];
+                    unset($finder['ozonetelno']);
+                    unset($finder['contact']['website']);
+                }
+                $data['status']                         =       200;
+                $data['finder']                         =       $finder;
+
+                $data = Cache::tags('finder_detail_app')->put($tslug, $data, Config::get('cache.cache_time'));
+               
+            }
+
+        }
+
+        $finderData = Cache::tags('finder_detail_app')->get($tslug);
+
+        if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
+
+             $finder = Finder::active()->where('slug','=',$tslug)->first();
+
+            if($finder){
+
+                $finderData['finder']['services'] = $this->getTrialSchedule($finder->_id,$finder->category);
+                $finderData['finder']['bookmark'] = false;
+                $finderData['trials_detials']              =      [];
+                $finderData['trials_booked_status']        =      false;
+
+                if(Request::header('Authorization')){
+                    $decoded                            =       decode_customer_token();
+                    $customer_email                     =       $decoded->customer->email;
+                    $customer_phone                     =       $decoded->customer->contact_no;
+                    $customer_id                        =       $decoded->customer->_id;
+
+                    $customer                           =       Customer::find((int)$customer_id);
+
+                    if(isset($customer->bookmarks) && is_array($customer->bookmarks) && in_array($finder->_id,$customer->bookmarks)){
+                        $finderData['finder']['bookmark'] = true;
+                    }
+
+                    $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+                                                                ->where('finder_id', '=', (int) $finder->_id)
+                                                                ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                                                                ->get(array('id'));
+
+                    $finderData['trials_detials']              =      $customer_trials_with_vendors;
+                    $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+                }
+
+            }
+        }else{
+            $finderData['status'] = 404;
+        }
+
+        return Response::json($finderData,$finderData['status']);
+        
     }
 
 }
