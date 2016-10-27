@@ -638,6 +638,8 @@ class OrderController extends \BaseController {
 
         $data['service_duration'] = "-";
 
+        $data['amount'] = ($data['amount'] != 0) ? $data['amount'] :  "-";
+
         if(isset($data['ratecard_id']) && $data['ratecard_id'] != "" && $data['ratecard_id'] != 0){
             
             $ratecard = Ratecard::find($data['ratecard_id']);
