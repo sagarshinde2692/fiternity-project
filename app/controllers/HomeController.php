@@ -421,11 +421,14 @@ class HomeController extends BaseController {
 
         if($type != "" && $id != ""){
 
-            $booktrialData  =   Booktrial::with('finder')->find(intval($id))->toArray();
-            $item           =   array_except($booktrialData, ['finder']);
-            $finder_name    =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-            $schedule_date  =   (isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($booktrialData['schedule_date'])) : "-";
-            $schedule_slot  =   (isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] != "") ? $booktrialData['schedule_slot'] : "-";
+            $itemData       =   Booktrial::with('finder')->find(intval($id))->toArray();
+
+            $itemData       =   Order::with('finder')->find(intval($id))->toArray();
+
+            $item           =   array_except($itemData, ['finder']);
+            $finder_name    =   (isset($itemData) && isset($itemData['finder']) && isset($itemData['finder']['title'])) ? ucwords($itemData['finder']['title']) : "";
+            $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "-";
+            $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "-";
 
             $header     =   "Congratulations!";
             $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
@@ -452,13 +455,13 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'Attend your workout'],
                     ];
                     break;
-                case 'personaltrainer':
+                case 'personaltrainertrial':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'attend-workout','text'=>'You attend the trial with the trainer basis the appointment'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial with the trainer basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     break;
@@ -468,7 +471,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'attend-workout','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     break;
@@ -478,8 +481,65 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
-                        ['icon'=>$icon_path.'attend-workout','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                    ];
+                    break;
+                case 'healthytiffintrial':
+                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription details are shared on an email to you'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
+                        ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
+                    ];
+                    break;
+                case 'membershipwithpg':
+                    $subline = "Your membership purchase at $finder_name is confirmed.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
+                    ];
+                    break;
+                case 'membershipwithoutpg':
+                    $subline = "Your membership purchase at $finder_name is confirmed.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Access your Profile on Fitternity to keep track of your membership'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
+                    ];
+                    break;
+                case 'manualmembership':
+                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Fitternity will get in touch with you to facilitate the membership purchase'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards on purchasing the membership'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'On purchase - Subscription code & membership details shared'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
+                    ];
+                    break;
+                case 'healthytiffinmembership':
+                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription details are shared on an email to you'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
+                        ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
+                    ];
+                    break;
+                case 'personaltrainermembership':
+                    $subline = "Your membership request with $finder_name is captured. ";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to facilitate the purchase'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'When you buy the membership details will be shared'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'On starting date the trainer will reach your location'],
                     ];
                     break;
                 default : 
