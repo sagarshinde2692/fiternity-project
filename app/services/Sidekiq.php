@@ -6,9 +6,9 @@ use \Log;
 
 Class Sidekiq {
     
-    //protected $base_uri = 'http://localhost:3000/';
-    //protected $base_uri = 'http://kick.fitn.in/';
-    protected $base_uri = 'http://nw.fitn.in/';
+    //protected $base_uri = 'http://localhost:3000/'; //local
+    protected $base_uri = 'http://kick.fitn.in/'; //stage
+    //protected $base_uri = 'http://nw.fitn.in/'; //live
     protected $debug = false;
     protected $client;
     protected $route_type;
