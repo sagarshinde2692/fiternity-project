@@ -1453,19 +1453,22 @@ class FindersController extends \BaseController {
         return $decodedToken;
     }
 
-    public function getTrialSchedule($finder_id){
+    public function getTrialSchedule($finder_id,$category){
 
         $currentDateTime        =   date('Y-m-d');
         $finder_id               =   (int) $finder_id;
         $date                   =   date('Y-m-d');
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
-
-        $membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
+        if($category->_id == 42){
+            $membership_services = Ratecard::where('finder_id', $finder_id)->lists('service_id');
+        }else{
+            $membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
+        }
 
         $membership_services = array_map('intval',$membership_services);
 
-        $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','gallery'))->toArray();
+        $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos'))->toArray();
         
         if(!$items){
             return array();
@@ -1511,8 +1514,12 @@ class FindersController extends \BaseController {
                     }
                 }
             }
+            $photo = "";
+            if(isset($item['photos']) && count($item['photos']) > 0){
 
-            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>null,'extra_info'=>$extra_info,'batches'=>$batches);
+                $photo = $item['photos'][0];
+            }
+            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>null,'extra_info'=>$extra_info,'batches'=>$batches,'image'=>$photo);
 
             if(count($item['serviceratecard']) > 0){
                 $ratecardArr = [];
@@ -1725,7 +1732,7 @@ class FindersController extends \BaseController {
 
             if($finder){
 
-                $finderData['finder']['services'] = $this->getTrialSchedule($finder->_id);
+                $finderData['finder']['services'] = $this->getTrialSchedule($finder->_id,$finder->category);
                 $finderData['finder']['bookmark'] = false;
                 $finderData['trials_detials']              =      [];
                 $finderData['trials_booked_status']        =      false;
