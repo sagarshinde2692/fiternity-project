@@ -1465,7 +1465,7 @@ class FindersController extends \BaseController {
 
         $membership_services = array_map('intval',$membership_services);
 
-        $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
+        return $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description'))->toArray();
         
         if(!$items){
             return array();
@@ -1517,7 +1517,7 @@ class FindersController extends \BaseController {
             if(count($item['serviceratecard']) > 0){
                 $ratecardArr = [];
                 foreach ($item['serviceratecard'] as $rateval){
-                    if($rateval['type'] == 'membership'){ array_push($ratecardArr, $rateval); }
+                    if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){ array_push($ratecardArr, $rateval); }
                 }
                 $service['ratecard'] = $ratecardArr;
             }
