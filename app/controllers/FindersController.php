@@ -1514,7 +1514,7 @@ class FindersController extends \BaseController {
                     }
                 }
             }
-            $photo = "";
+            $photo = null;
             if(isset($item['photos']) && count($item['photos']) > 0){
 
                 $photo = $item['photos'][0];
@@ -1524,7 +1524,11 @@ class FindersController extends \BaseController {
             if(count($item['serviceratecard']) > 0){
                 $ratecardArr = [];
                 foreach ($item['serviceratecard'] as $rateval){
-                    if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){ array_push($ratecardArr, $rateval); }
+                    if($category->_id == 42){
+                        array_push($ratecardArr, $rateval);
+                    }else{
+                        if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){ array_push($ratecardArr, $rateval); }
+                    }
                 }
                 $service['ratecard'] = $ratecardArr;
             }
