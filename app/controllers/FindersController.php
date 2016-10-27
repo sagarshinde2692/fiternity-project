@@ -943,8 +943,8 @@ class FindersController extends \BaseController {
         $reviewdata = [
         'finder_id' => intval($data['finder_id']),
         'customer_id' => intval($data['customer_id']),
-        'rating' => intval($data['rating']),
-        'detail_rating' => array_map('intval',$data['detail_rating']),
+        'rating' => floatval($data['rating']),
+        'detail_rating' => array_map('floatval',$data['detail_rating']),
         'description' => $data['description'],
         'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
         'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
@@ -1579,7 +1579,7 @@ class FindersController extends \BaseController {
             ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
             ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
             ->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
-            ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info'));
+            ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable'));
 
             //echo "<pre>";print_r($finderarr);exit;
 

@@ -569,12 +569,162 @@ class OrderController extends \BaseController {
      *	Service Duration can be (trial, workout session, months, session, etc).
      */
 
-    public function generateTmpOrder(){
+    public function generateTmpOrderPre(){
 
-        // $userdata	=	array_except(Input::all(), array());
+        $data = Input::json()->all();
 
-        $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
-        $postdata		=	Input::json()->all();
+        $rules = array(
+            'customer_name'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'customer_source'=>'required',
+            'finder_id'=>'required|integer|min:1',
+            'service_id'=>'required|integer|min:1',
+            'type'=>'required',
+            'amount'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+        }
+
+        $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
+
+        if(in_array($data['type'],$workout)){
+            $rules = array(
+                'schedule_date'=>'required',
+                'schedule_slot'=>'required'
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+        }
+
+        $ht_trail = array('healthytiffintrail');
+
+        if(in_array($data['type'],$ht_trail)){
+            $rules = array(
+                'preferred_starting_date'=>'required',
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+
+        }
+
+        $membership = array('healthytiffinmembership','memberships');
+
+        if(in_array($data['type'],$membership)){
+            $rules = array(
+                'preferred_starting_date'=>'required',
+                'ratecard_id'=>'required|integer|min:1',
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+
+        }
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != "" && $data['ratecard_id'] != 0){
+            
+            $ratecard = Ratecard::find($data['ratecard_id']);
+
+            if(!$ratecard){
+                return Response::json(array('status' => 404,'message' =>'Ratecard does not exists'),404);
+            }
+
+            $data['service_duration'] = $this->getServiceDuration($ratecard);
+
+            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                $data['amount_finder'] = $ratecard->special_price;
+            }else{
+                $data['amount_finder'] = $ratecard->price;
+            }
+        }
+
+        $service = Service::find($data['service_id']);
+
+        if(!$service){
+            return Response::json(array('status' => 404,'message' =>'Service does not exists'),404);
+        }
+
+        $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        $data['service_name'] = ucwords($service['name']);
+        $data['meal_contents'] = ucwords($service['short_description']);
+
+        $finder = Finder::find($data['finder_id']);
+
+        if(!$finder){
+            return Response::json(array('status' => 404,'message' =>'Vendor does not exists'),404);
+        }
+
+        $data['city_id'] = (int)$finder['city_id'];
+
+        (isset($finder['contact']['address']) && $finder['contact']['address'] != "" && $data['finder_address'] == "-") ? $data['finder_address'] = $finder['contact']['address'] : null;
+
+        $data['finder_name'] = ucwords($finder->title);
+
+        return $this->generateTmpOrder($data);
+
+    }
+
+    public function getServiceDuration($ratecard){
+
+        $duration_day = 1;
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity != 0){
+
+            $duration_day = $ratecard->validity;
+        }
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity%30 == 0 && $ratecard->validity_type == "days"){
+            
+            $ratecard->validity = ($ratecard->validity/30);
+            $ratecard->validity_type = 'month';
+        }
+
+        $service_duration = "";
+
+        if($ratecard->duration > 0){
+            $service_duration .= $ratecard->duration ." ".ucwords($ratecard->duration_type);
+        }
+        if($ratecard->duration > 0 && $ratecard->validity > 0){
+            $service_duration .= " - ";
+        }
+        if($ratecard->validity > 0){
+            $service_duration .=  $ratecard->validity ." ".ucwords($ratecard->validity_type);
+        }
+
+        ($service_duration == "") ? $service_duration = "-" : null;
+
+        return $service_duration;
+
+    }
+
+    public function generateTmpOrder($data = false){
+
+        if(!$data){
+
+            $postdata = Input::json()->all();
+            $data =	array_except(Input::json()->all(), array('preferred_starting_date'));
+            
+        }else{
+
+            $postdata = $data;
+            $data = array_except($data, array('preferred_starting_date'));
+        }
+        
 
         Log::info('Gnerate Tmp Order',$postdata);
 
@@ -596,10 +746,10 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if(empty($data['customer_identity'])){
+        /*if(empty($data['customer_identity'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
             return Response::json($resp,404);
-        }
+        }*/
 
         if(empty($data['customer_phone'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
@@ -611,10 +761,10 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if(empty($data['customer_location'])){
+        /*if(empty($data['customer_location'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
             return Response::json($resp,404);
-        }
+        }*/
 
         if(empty($data['city_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
@@ -883,6 +1033,22 @@ class OrderController extends \BaseController {
 
                 if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
                     $data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+                    break;
+                }
+            }
+        }
+
+        if(isset($data['batch']) && $data['batch'] != ""){
+            if(is_array($data['batch'])){
+                $data['batch'] = $data['batch'];
+            }else{
+                $data['batch'] = json_decode($data['batch'],true);
+            }
+
+            foreach ($data['batch'] as $key => $value) {
+
+                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+                    $data['batch_time'] = strtoupper($value['slots']['start_time']);
                     break;
                 }
             }
