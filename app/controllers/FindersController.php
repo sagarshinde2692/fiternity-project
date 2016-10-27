@@ -1519,7 +1519,7 @@ class FindersController extends \BaseController {
 
                 $photo1 = $item['photos'][0];
                 if(isset($photo1['url'])){
-                    $photo = "https://b.fitn.in/s/g/thumbs".$photo1['url'];
+                    $photo = "https://b.fitn.in/s/g/thumbs/".$photo1['url'];
                 }
             }
             $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'ratecard'=>[],'slots'=>null,'extra_info'=>$extra_info,'batches'=>$batches,'image'=>$photo);
