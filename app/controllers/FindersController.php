@@ -1461,7 +1461,7 @@ class FindersController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $membership_services = Ratecard::where('finder_id', $finder_id)->where('type','membership')->lists('service_id');
+        $membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 
         $membership_services = array_map('intval',$membership_services);
 
@@ -1675,7 +1675,7 @@ class FindersController extends \BaseController {
                 array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
                 array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
                 array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
-
+                
                 if(count($finder['services']) > 0 ){
                     $info_timing = $this->getInfoTiming($finder['services']);
                     if(isset($finder['info']) && $info_timing != ""){
@@ -1683,7 +1683,6 @@ class FindersController extends \BaseController {
                     }
                     unset($finder['services']);
                 }
-
                 if($finderarr['category_id'] == 5){
                     $finder['type'] = "gyms";
                 }elseif($finderarr['category_id'] == 42 || $finderarr['category_id'] == 45){
