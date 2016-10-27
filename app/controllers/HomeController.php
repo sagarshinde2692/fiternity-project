@@ -421,9 +421,17 @@ class HomeController extends BaseController {
 
         if($type != "" && $id != ""){
 
-            $itemData       =   Booktrial::with('finder')->find(intval($id))->toArray();
+            $booktrialItemArr   =   ["booktrial","workoutsession","personaltrainertrial","manualtrial","manualautotrial"];
+            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","manualmembership","healthytiffinmembership","personaltrainermembership"];
 
-            $itemData       =   Order::with('finder')->find(intval($id))->toArray();
+            $itemData           =   [];
+            if (in_array($type, $booktrialItemArr)){
+                $itemData       =   Booktrial::with('finder')->find(intval($id))->toArray();
+            }
+
+            if (in_array($type, $orderItemArr)) {
+                $itemData = Order::with('finder')->find(intval($id))->toArray();
+            }
 
             $item           =   array_except($itemData, ['finder']);
             $finder_name    =   (isset($itemData) && isset($itemData['finder']) && isset($itemData['finder']['title'])) ? ucwords($itemData['finder']['title']) : "";
