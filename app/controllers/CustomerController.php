@@ -2630,7 +2630,7 @@ class CustomerController extends \BaseController {
 
 	public function applyPromotionCode(){
 
-		$valid_promotion_codes		=		['jcbfit'];
+		$valid_promotion_codes		=		['jcbfit','fitrun','pataka10'];
 		$data 						= 		Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
@@ -2662,17 +2662,25 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+			$amounttobeadded = 0;
 			if($customer_update){
+				switch($code){
+					case "fitrun" :  $amounttobeadded = 600;
+					break;
+					case "jcbfit" :  $amounttobeadded = 2000;
+					break;
+					case "pataka10" : $amounttobeadded = 2000;
+				}
 				$customer 	=	Customer::find($customer_id);				
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + 2000;				
+					$customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;				
 				}else{
-					$customer_balance 	=	 2000;
+					$customer_balance 	=	 $amounttobeadded;
 				}
 				
-				$cashback_amount 	=	2000;
+				$cashback_amount 	=	$amounttobeadded;
 
 				$walletData = array(
 					"customer_id"=> $customer_id,
@@ -2693,7 +2701,7 @@ class CustomerController extends \BaseController {
 
 				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
 
-				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs 2,000 has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$amounttobeadded." has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
 				return  Response::json($resp, 200);	
 			}
 		}
