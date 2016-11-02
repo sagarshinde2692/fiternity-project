@@ -567,6 +567,9 @@ class HomeController extends BaseController {
                     break; 
             }
 
+            if(count($item) < 0){
+                $item = null;
+            }
 
             $resp = [
                 'status'    =>  200,
