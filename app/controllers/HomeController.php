@@ -423,6 +423,7 @@ class HomeController extends BaseController {
 
             $booktrialItemArr   =   ["booktrial","workoutsession","personaltrainertrial","manualtrial","manualautotrial"];
             $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","manualmembership","healthytiffinmembership","personaltrainermembership"];
+            $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
             if (in_array($type, $booktrialItemArr)){
@@ -431,6 +432,13 @@ class HomeController extends BaseController {
 
             if (in_array($type, $orderItemArr)) {
                 $itemData = Order::with('finder')->find(intval($id))->toArray();
+            }
+
+            if (in_array($type, $captureItemArr)) {
+
+                if(count($itemData) < 0){
+                    $itemData = Capture::with('finder')->find($id)->toArray();
+                }
             }
 
             $item           =   array_except($itemData, ['finder']);
