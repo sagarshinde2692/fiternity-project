@@ -113,6 +113,35 @@ class FindersController extends \BaseController {
                 $finder['today_opening_hour'] =  null;
                 $finder['today_closing_hour'] = null;
 
+                $detail_rating_array = array('detail_rating_summary_average','detail_rating_summary_count');
+
+                foreach ($detail_rating_array as $value){
+
+                    $finder[$value] =  [0,0,0,0,0];
+
+                    if(isset($finderarr[$value]) && $finderarr[$value] != "" && is_array($finderarr[$value])){
+
+                        $detail_rating_summary = array();
+
+                        for ($i=0; $i < 5; $i++) {
+
+                            $detail_rating_summary[$i] = 0;
+
+                            if(isset($finderarr[$value][$i])){
+
+                                $detail_rating_summary[$i] = $finderarr[$value][$i];
+
+                                if($finderarr[$value][$i] == null){
+                                    $detail_rating_summary[$i] = 0;
+                                }
+                            }
+                        }
+
+                        $finder[$value] = $detail_rating_summary;
+
+                    }
+                }
+
                 if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
                     if(isset($finderarr['services']) && count($finderarr['services']) > 0){
