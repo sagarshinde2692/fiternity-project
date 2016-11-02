@@ -1101,6 +1101,7 @@ class OrderController extends \BaseController {
         }
 
         if(isset($data['batch']) && $data['batch'] != ""){
+            
             if(is_array($data['batch'])){
                 $data['batch'] = $data['batch'];
             }else{
@@ -1111,6 +1112,11 @@ class OrderController extends \BaseController {
 
                 if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
                     $data['batch_time'] = strtoupper($value['slots']['start_time']);
+                    break;
+                }
+
+                if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+                    $data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
                     break;
                 }
             }
