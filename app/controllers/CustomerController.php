@@ -2305,9 +2305,13 @@ class CustomerController extends \BaseController {
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
 
 			if(!$citydata){
-				// return $this->responseNotFound('City does not exist');
-				$citydata['name'] 		= 	"mumbai";
-				$citydata['_id']		= 	1;
+				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
+					$citydata['name'] 		= 	"mumbai";
+					$citydata['_id']		= 	1;
+				}else{
+					return $this->responseNotFound('City does not exist');
+				}
+				
 			}
 
 			$city_name 		= 	$citydata['name'];
