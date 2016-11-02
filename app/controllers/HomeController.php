@@ -422,7 +422,7 @@ class HomeController extends BaseController {
         if($type != "" && $id != ""){
 
             $booktrialItemArr   =   ["booktrial","workoutsession","personaltrainertrial","manualtrial","manualautotrial"];
-            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","manualmembership","healthytiffinmembership","personaltrainermembership"];
+            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"];
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
@@ -435,10 +435,7 @@ class HomeController extends BaseController {
             }
 
             if (in_array($type, $captureItemArr)) {
-
-                if(count($itemData) < 0){
-                    $itemData = Capture::with('finder')->find($id)->toArray();
-                }
+                $itemData = Capture::with('finder')->find($id)->toArray();
             }
 
             $item           =   array_except($itemData, ['finder']);
@@ -530,7 +527,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualmembership':
-                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $subline = "Your membership request at $x has been received. Please expect a revert shortly.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Fitternity will get in touch with you to facilitate the membership purchase'],
