@@ -17,4 +17,13 @@ class Capture extends \Basemodel {
 		$this->attributes['capture_status'] = 'yet to connect';
 	}
 
+	public function setFinderIdAttribute($value){
+		
+		$this->attributes['finder_id'] = intval($value);
+	}
+	
+	public function finder(){
+		return $this->belongsTo('Finder');
+	}
+
 }
