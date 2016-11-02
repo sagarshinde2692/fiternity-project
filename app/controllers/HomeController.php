@@ -527,7 +527,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualmembership':
-                    $subline = "Your membership request at $x has been received. Please expect a revert shortly.";
+                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Fitternity will get in touch with you to facilitate the membership purchase'],
