@@ -252,7 +252,19 @@ class FindersController extends \BaseController {
 
                     $brand = Brand::find((int)$finderarr['brand_id']);
 
-                    $brandFinder = Finder::where("brand_id",(int)$finderarr['brand_id'])->active()->where("_id","!=",(int)$finderarr['_id'])->where('city_id',(int)$finderarr['city_id'])->select('_id','title','slug','brand_id','location_id','city_id')->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get();
+                    $brandFinder = Finder::where("brand_id",(int)$finderarr['brand_id'])
+                                    ->active()
+                                    ->where("_id","!=",(int)$finderarr['_id'])
+                                    ->where('city_id',(int)$finderarr['city_id'])
+                                    ->with('offerings')
+                                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                                    ->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage'])->toArray();
+                    
+                    foreach($brandFinder as $key => $finder1){
+                        array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+                    }
+
 
                     $finderarr['brand']['brand_detail'] = $brand;
                     $finderarr['brand']['finder_detail'] = $brandFinder;
@@ -302,10 +314,15 @@ class FindersController extends \BaseController {
                     ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
                     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
                     ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->with('offerings')
                     ->orderBy('finder_type', 'DESC')
                     ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'))
                     ->take(5)->toArray();
+                    foreach($nearby_same_category as $key => $finder1){
+                        array_set($nearby_same_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+                    }
+
 
 
                 $nearby_other_category 		= 	Finder::where('category_id','!=',$findercategoryid)
@@ -316,10 +333,14 @@ class FindersController extends \BaseController {
                     ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
                     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
                     ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->with('offerings')
                     ->orderBy('finder_type', 'DESC')
                     ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','coverimage'))
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'))
                     ->take(5)->toArray();
+                    foreach($nearby_other_category as $key => $finder1){
+                        array_set($nearby_other_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+                    }
 
                 $data['statusfinder'] 					= 		200;
                 $data['finder']                         =       $finder;
@@ -953,8 +974,8 @@ class FindersController extends \BaseController {
         $reviewdata = [
         'finder_id' => intval($data['finder_id']),
         'customer_id' => intval($data['customer_id']),
-        'rating' => intval($data['rating']),
-        'detail_rating' => array_map('intval',$data['detail_rating']),
+        'rating' => floatval($data['rating']),
+        'detail_rating' => array_map('floatval',$data['detail_rating']),
         'description' => $data['description'],
         'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
         'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',

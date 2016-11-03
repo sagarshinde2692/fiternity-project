@@ -591,6 +591,35 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
 				$finder->object = $resultobject;
+				$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages"){
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						$resultobject->vendor_type = "";
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+				$nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists'];
+				if(!in_array($result['category'],$nobooktrialCategories)){
+					if($result['category'] != "healthy tiffins"){
+						if( in_array('free trial',$result['facilities']) ){
+							$resultobject->booktrial_button_caption = "Book a free trial";
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial";
+						}
+					}else{
+						$resultobject->booktrial_button_caption = "Book a trial Meal";
+					}
+				}
 				array_push($finderresult_response->results->resultlist, $finder);
 			}
 		}
