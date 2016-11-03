@@ -63,7 +63,7 @@ class OrderController extends \BaseController {
         return Response::json($resp,200);
     }
 
-    public function couponCode($customer_phone){
+    public function couponCode(){
         $data = Input::json()->all();
         if(!isset($data['coupon'])){
             $resp = array("status"=> 400, "message" => "Coupon code missing");
