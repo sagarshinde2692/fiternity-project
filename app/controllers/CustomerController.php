@@ -417,7 +417,7 @@ class CustomerController extends \BaseController {
 			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
-				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser','==','1')->first();
+				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser',1)->first();
 				if(empty($ishullcustomer)){
 					$new_validator = Validator::make($data, Customer::$rules);
 					if ($new_validator->fails()) {
@@ -451,7 +451,7 @@ class CustomerController extends \BaseController {
 					}
 				}else{
 					$ishullcustomer->password = md5($data['password']);
-					$ishullcustomer->ishulluser = "0";
+					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
 					$this->customermailer->register($ishullcustomer);
