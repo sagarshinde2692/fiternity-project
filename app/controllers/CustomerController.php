@@ -454,7 +454,7 @@ class CustomerController extends \BaseController {
 					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
-					$this->customermailer->register($ishullcustomer);
+					// $this->customermailer->register($ishullcustomer);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
