@@ -2787,19 +2787,19 @@ class CustomerController extends \BaseController {
 		$customer = Customer::where('email',$data['email'])->first();
 		if(isset($customer)){
 			if($customer['ishulluser'] != 0){
-				$resp = array('registered'=>false);
-				return Response::json(array('status' => 200,'data' => $resp),400);		
+				$resp = array('registered'=>false,'name'=>$customer['name']);
+				return Response::json(array('status' => 200,'data' => $resp),200);		
 			}else{
 				if($customer['account_link']['facebook'] == 1){
-					$resp = array('registered'=>true,'facebook'=>true);
+					$resp = array('registered'=>true,'facebook'=>true,'name'=>$customer['name']);
 				}else{
-					$resp = array('registered'=>true);
+					$resp = array('registered'=>true,'name'=>$customer['name']);
 				}
-				return Response::json(array('status' => 200,'data' => $resp),400);
+				return Response::json(array('status' => 200,'data' => $resp),200);
 			}
 		}else{
 			$resp = array('registered'=>false);
-			return Response::json(array('status' => 200,'data' => $resp),400);
+			return Response::json(array('status' => 200,'data' => $resp),200);
 		}
 		return $customer;
 	}
