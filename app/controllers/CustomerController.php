@@ -2760,18 +2760,18 @@ class CustomerController extends \BaseController {
 		if(isset($customer)){
 			if($customer['ishulluser'] != 0){
 				$resp = array('registered'=>false);
-				return Response::json(array('status' => 200,'data' => $resp),400);		
+				return Response::json(array('status' => 200,'data' => $resp),200);		
 			}else{
 				if($customer['account_link']['facebook'] == 1){
 					$resp = array('registered'=>true,'facebook'=>true);
 				}else{
 					$resp = array('registered'=>true);
 				}
-				return Response::json(array('status' => 200,'data' => $resp),400);
+				return Response::json(array('status' => 200,'data' => $resp),200);
 			}
 		}else{
 			$resp = array('registered'=>false);
-			return Response::json(array('status' => 200,'data' => $resp),400);
+			return Response::json(array('status' => 200,'data' => $resp),200);
 		}
 		return $customer;
 	}
