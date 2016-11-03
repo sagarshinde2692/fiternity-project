@@ -417,35 +417,48 @@ class CustomerController extends \BaseController {
 			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
-				$new_validator = Validator::make($data, Customer::$rules);
-				if ($new_validator->fails()) {
-					return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
-				}else{
-					$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-					$account_link[$data['identity']] = 1;
-					$customer = new Customer();
-					$customer->_id = $inserted_id;
-					$customer->name = ucwords($data['name']) ;
-					$customer->email = $data['email'];
-					isset($data['dob']) ? $customer->dob = $data['dob'] : null;
-					isset($data['gender']) ? $customer->gender = $data['gender'] : null;
-					isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
-					$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-					$customer->password = md5($data['password']);
-					if(isset($data['contact_no'])){
-						$customer->contact_no = $data['contact_no'];
+				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser','==','1')->first();
+				if(empty($ishullcustomer)){
+					$new_validator = Validator::make($data, Customer::$rules);
+					if ($new_validator->fails()) {
+						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+					}else{
+						$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+						$account_link[$data['identity']] = 1;
+						$customer = new Customer();
+						$customer->_id = $inserted_id;
+						$customer->name = ucwords($data['name']) ;
+						$customer->email = $data['email'];
+						isset($data['dob']) ? $customer->dob = $data['dob'] : null;
+						isset($data['gender']) ? $customer->gender = $data['gender'] : null;
+						isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
+						$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+						$customer->password = md5($data['password']);
+						if(isset($data['contact_no'])){
+							$customer->contact_no = $data['contact_no'];
+						}
+						$customer->identity = $data['identity'];
+						$customer->account_link = $account_link;
+						$customer->status = "1";
+						$customer->save();
+
+						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+						$this->customermailer->register($customer_data);
+
+						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+
+						return Response::json($this->createToken($customer),200);
 					}
-					$customer->identity = $data['identity'];
-					$customer->account_link = $account_link;
-					$customer->status = "1";
-					$customer->save();
+				}else{
+					$ishullcustomer->password = md5($data['password']);
+					$ishullcustomer->ishulluser = "0";
+					$ishullcustomer->update();
+					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
+					$this->customermailer->register($ishullcustomer);
 
-					$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
-					$this->customermailer->register($customer_data);
+					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
-					Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-
-					return Response::json($this->createToken($customer),200);
+					return Response::json($this->createToken($ishullcustomer),200);
 				}	
 			}else{
 
