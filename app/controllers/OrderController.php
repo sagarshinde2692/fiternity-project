@@ -82,6 +82,7 @@ class OrderController extends \BaseController {
             
         }else{
             $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
+            return Response::json($resp,406);
         }
         return Response::json($resp,200);
     }
