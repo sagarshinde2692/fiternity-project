@@ -631,6 +631,7 @@ class OrderController extends \BaseController {
             $validator = Validator::make($data,$rules);
 
             if ($validator->fails()) {
+
                 return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
             }
 
@@ -1083,6 +1084,7 @@ class OrderController extends \BaseController {
 
         array_set($data, 'code', $code);
         array_set($data, 'batch_time', '');
+        array_set($data, 'source_of_membership', 'real time');
 
         if(isset($data['batches']) && $data['batches'] != ""){
             if(is_array($data['batches'])){
@@ -1258,6 +1260,14 @@ class OrderController extends \BaseController {
 
 	        $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
 	    }
+
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+
+            $schedule_slot = explode("-", $data['schedule_slot']);
+
+            $data['start_time'] = trim($schedule_slot[0]);
+            $data['end_time']= trim($schedule_slot[1]);
+        }
 
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
