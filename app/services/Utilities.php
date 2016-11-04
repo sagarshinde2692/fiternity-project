@@ -97,6 +97,8 @@ Class Utilities {
 
         $jwt_token = Request::header('Authorization');
 
+        Log::info('jwt-walletTransaction',$jwt_token);
+
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
