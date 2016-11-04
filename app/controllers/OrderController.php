@@ -76,12 +76,12 @@ class OrderController extends \BaseController {
 
         
         $amount = (int) $data['amount'];
-        if($data['coupon'] == "fitnow"){
+        if($amount > 600 && $data['coupon'] == "fitnow"){
             $newamount = ($amount - 500);
-            $resp = array("status"=> "success", "amount" => $newamount);
+            $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);
             
         }else{
-            $resp = array("status"=> "failed", "amount" => $amount );
+            $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
         }
         return Response::json($resp,200);
     }
