@@ -810,6 +810,8 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
+        $data['customer_email'] = strtolower($data['customer_email']);
+
         /*if(empty($data['customer_identity'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
             return Response::json($resp,404);
@@ -956,6 +958,8 @@ class OrderController extends \BaseController {
 
             $data['membership_duration_type'] = 'healthy_tiffin_snacks';
         }
+
+
 
 
         //Validation base on order type for sms body and email body  zumbathon','booiaka
