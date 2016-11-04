@@ -177,7 +177,7 @@ class OrderController extends \BaseController {
                 
                 array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',(int)$order->_id)->count();
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','!=',(int)$order->_id)->count();
 
                 if($count > 0){
                     array_set($data, 'acquisition_type', 'renewal_direct');
