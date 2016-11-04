@@ -171,17 +171,23 @@ class OrderController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
 
+            
+
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 
                 array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',(int)$order->_id)->count();
 
                 if($count > 0){
                     array_set($data, 'acquisition_type', 'renewal_direct');
+                    array_set($data, 'membership_type', 'renewal');
                 }else{
                     array_set($data,'acquisition_type','direct_payment');
+                    array_set($data, 'membership_type', 'new');
                 }
+
+                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
             if(isset($order->wallet_refund_sidekiq) && $order->wallet_refund_sidekiq != ''){
@@ -1303,6 +1309,8 @@ class OrderController extends \BaseController {
         (isset($data['duration_day']) && $data['duration_day'] >=30 && $data['duration_day'] <= 90) ? $data['membership_duration_type'] = 'short_term_membership' : null;
 
         (isset($data['duration_day']) && $data['duration_day'] >90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
+
+        $data['secondary_payment_mode'] = 'payment_gateway_tentative';
 
 
         $order 				= 	new Order($data);
