@@ -7,6 +7,7 @@ use Response;
 use Config;
 use JWT;
 use Finder;
+use Request;
 
 Class Utilities {
 
