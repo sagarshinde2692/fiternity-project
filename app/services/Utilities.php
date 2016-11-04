@@ -8,6 +8,7 @@ use Config;
 use JWT;
 use Finder;
 use Request;
+use Log;
 
 Class Utilities {
 
