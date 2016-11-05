@@ -985,6 +985,14 @@ class FindersController extends \BaseController {
 
         $reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
 
+        if(isset($data['agent_name'])){
+            $reviewdata['agent_name'] = $data['agent_name'];
+        }
+
+        if(isset($data['agent_email'])){
+            $reviewdata['agent_email'] = $data['agent_email'];
+        }
+
         $finderobj = Finder::where('_id', intval($data['finder_id']))->first();
         //$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
         //clear_cache($cacheurl);
