@@ -162,8 +162,6 @@ class OrderController extends \BaseController {
                 array_set($data, 'reward_info', $reward_info);
             }
 
-            
-
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
 
@@ -194,17 +192,11 @@ class OrderController extends \BaseController {
             //send welcome email to payment gateway customer
 
             $finder = Finder::find((int)$order->finder_id);
-
             try {
-
                 if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
-
                     $trial = Booktrial::find((int) $order->referal_trial_id);
-
                     if($trial){
-
                         $bookdata = array();
-
                         array_set($bookdata, 'going_status', 4);
                         array_set($bookdata, 'going_status_txt', 'purchased');
                         array_set($bookdata, 'booktrial_actions', '');
@@ -305,7 +297,6 @@ class OrderController extends \BaseController {
                 }
                 
             }
-
 
             if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
 
