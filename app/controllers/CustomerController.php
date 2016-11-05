@@ -2681,7 +2681,7 @@ class CustomerController extends \BaseController {
 				}
 				$customer 	=	Customer::find($customer_id);				
 
-				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->first();
+				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 				if($customerwallet){
 					$customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;				
 				}else{
