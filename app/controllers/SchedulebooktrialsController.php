@@ -1193,15 +1193,19 @@ class SchedulebooktrialsController extends \BaseController {
         $orderid 	=	(int) Input::json()->get('order_id');
         $order        = 	Order::findOrFail($orderid);
 
-        $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
 
-        if($count > 0){
-            array_set($data, 'acquisition_type', 'renewal_direct');
-        }else{
-            array_set($data,'acquisition_type','direct_payment');
-        }
 
         if(Input::json()->get('status') == 'success') {
+
+            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+
+            if($count > 0){
+                array_set($data, 'acquisition_type', 'renewal_direct');
+                array_set($data, 'membership_type', 'renewal');
+            }else{
+                array_set($data,'acquisition_type','direct_payment');
+                array_set($data, 'membership_type', 'new');
+            }
 
             $order_data = $order->toArray();
 
@@ -1219,6 +1223,13 @@ class SchedulebooktrialsController extends \BaseController {
             $orderData = [];
             array_set($orderData, 'status', '1');
             array_set($orderData, 'order_action', 'bought');
+
+            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+                if($order->customer_source != 'admin'){
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                }
+            }
+
             $orderdata 	=	$order->update($orderData);
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
@@ -1258,15 +1269,26 @@ class SchedulebooktrialsController extends \BaseController {
         $orderid 	=	(int) Input::json()->get('order_id');
         $order        = 	Order::findOrFail($orderid);
 
-        $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
 
-        if($count > 0 ){
-            array_set($data, 'acquisition_type', 'renewal_direct');
-        }else{
-            array_set($data,'acquisition_type','direct_payment');
-        }
 
         if(Input::json()->get('status') == 'success') {
+
+            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+
+    
+            if($count > 0){
+                array_set($data, 'acquisition_type', 'renewal_direct');
+                array_set($data, 'membership_type', 'renewal');
+            }else{
+                array_set($data,'acquisition_type','direct_payment');
+                array_set($data, 'membership_type', 'new');
+            }
+
+            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+                if($order->customer_source != 'admin'){
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                }
+            }
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
@@ -1872,6 +1894,13 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
             array_set($data, 'booktrial_id', (int)$booktrialid);
+
+            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+                if($order->customer_source != 'admin'){
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                }
+            }
+
             $orderdata 	=	$order->update($data);
 
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finer_sms_messageids  =  $customer_notification_messageids  =  array();

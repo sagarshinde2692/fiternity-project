@@ -187,7 +187,10 @@ class OrderController extends \BaseController {
                     array_set($data, 'membership_type', 'new');
                 }
 
-                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                if($order->customer_source != 'admin'){
+
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                }
             }
 
             if(isset($order->wallet_refund_sidekiq) && $order->wallet_refund_sidekiq != ''){
