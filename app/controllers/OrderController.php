@@ -1297,7 +1297,7 @@ class OrderController extends \BaseController {
             'healthytiffintrail'=>'trial',
             'healthytiffinmembership'=>'short_term_membership',
             'memberships'=>'short_term_membership',
-            'booktrials'=>'vip_trial',
+            'booktrials'=>'trial',
             'workout-session'=>'workout_session',
             '3daystrial'=>'trial',
             'vip_booktrials'=>'vip_trial',
