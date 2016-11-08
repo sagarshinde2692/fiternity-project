@@ -1149,6 +1149,9 @@ class HomeController extends BaseController {
 
     public function getcollecitonfinders($city, $slug, $cache = true){
 
+        $city = strtolower($city);
+        $slug = strtolower($slug);
+
         $finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
         if(!$finder_by_collection_list){
             $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
