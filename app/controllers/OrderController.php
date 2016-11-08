@@ -171,16 +171,25 @@ class OrderController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
 
+            
+
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 
                 array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->count();
 
                 if($count > 0){
                     array_set($data, 'acquisition_type', 'renewal_direct');
+                    array_set($data, 'membership_type', 'renewal');
                 }else{
                     array_set($data,'acquisition_type','direct_payment');
+                    array_set($data, 'membership_type', 'new');
+                }
+
+                if($order->customer_source != 'admin'){
+
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
                 }
             }
 
@@ -632,6 +641,7 @@ class OrderController extends \BaseController {
             $validator = Validator::make($data,$rules);
 
             if ($validator->fails()) {
+
                 return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
             }
 
@@ -809,6 +819,8 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
+        $data['customer_email'] = strtolower($data['customer_email']);
+
         /*if(empty($data['customer_identity'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
             return Response::json($resp,404);
@@ -957,6 +969,8 @@ class OrderController extends \BaseController {
         }
 
 
+
+
         //Validation base on order type for sms body and email body  zumbathon','booiaka
         if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon' || $data['type'] == 'eefashrof' ){
             if( empty($data['sms_body']) ){
@@ -1084,6 +1098,7 @@ class OrderController extends \BaseController {
 
         array_set($data, 'code', $code);
         array_set($data, 'batch_time', '');
+        array_set($data, 'source_of_membership', 'real time');
 
         if(isset($data['batches']) && $data['batches'] != ""){
             if(is_array($data['batches'])){
@@ -1259,6 +1274,47 @@ class OrderController extends \BaseController {
 
 	        $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
 	    }
+
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+
+            $schedule_slot = explode("-", $data['schedule_slot']);
+
+            $data['start_time'] = trim($schedule_slot[0]);
+            $data['end_time']= trim($schedule_slot[1]);
+        }
+
+        $set_vertical_type = array(
+            'healthytiffintrail'=>'tiffin',
+            'healthytiffinmembership'=>'tiffin',
+            'memberships'=>'workout',
+            'booktrials'=>'workout',
+            'workout-session'=>'workout',
+            '3daystrial'=>'workout',
+            'vip_booktrials'=>'workout',
+        );
+
+        $set_membership_duration_type = array(
+            'healthytiffintrail'=>'trial',
+            'healthytiffinmembership'=>'short_term_membership',
+            'memberships'=>'short_term_membership',
+            'booktrials'=>'trial',
+            'workout-session'=>'workout_session',
+            '3daystrial'=>'trial',
+            'vip_booktrials'=>'vip_trial',
+        );
+
+        (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
+
+        (isset($data['finder_category_id']) &&  $data['finder_category_id'] == 41) ? $data['vertical_type'] = 'trainer' : null;
+
+        (isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >=30 && $data['duration_day'] <= 90) ? $data['membership_duration_type'] = 'short_term_membership' : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
+
+        $data['secondary_payment_mode'] = 'payment_gateway_tentative';
+
 
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
@@ -1751,13 +1807,13 @@ class OrderController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->cashback) && $order->cashback == true){
+            if(isset($order->cashback) && $order->cashback == true && isset($order->status) && $order->status == "1"){
 
                 $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0 && isset($order->status) && $order->status == "1"){
 
                 $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);

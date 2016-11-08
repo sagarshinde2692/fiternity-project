@@ -7,6 +7,8 @@ use Response;
 use Config;
 use JWT;
 use Finder;
+use Request;
+use Log;
 
 Class Utilities {
 
@@ -92,6 +94,24 @@ Class Utilities {
 
     public function walletTransaction($request){
 
+        $customer_id = (int)$request['customer_id'];
+
+        Log::info('customer_id_1',array($customer_id));
+
+        $jwt_token = Request::header('Authorization');
+
+        Log::info('jwt-walletTransaction',array($jwt_token));
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+
+            Log::info('customer_id_2',array($customer_id));
+        }
+
+        Log::info('customer_id_final',array($customer_id));
+
         // Validate transaction request........
         $validator = Validator::make($request, Customerwallet::$rules);
 
@@ -119,7 +139,7 @@ Class Utilities {
         }
 
         // Get Customer wallet balance........
-        $wallet = Customer::where('_id',(int) $request['customer_id'])
+        $wallet = Customer::where('_id',$customer_id)
             ->first(array('balance'));
 
         !($wallet && isset($wallet['balance']))
@@ -143,7 +163,7 @@ Class Utilities {
         //echo $id;
         $max_id = (isset($id) && !empty($id)) ? $id : 0;
         $customerwallet->_id = $max_id + 1;
-        $customerwallet->customer_id = (int) $request['customer_id'];
+        $customerwallet->customer_id = $customer_id;
         $customerwallet->order_id = (int) $request['order_id'];
         $customerwallet->type = $request['type'];
         $customerwallet->amount = (int) $request['amount'];
@@ -152,7 +172,7 @@ Class Utilities {
         $customerwallet->save();
 
         // Update customer wallet balance........
-        Customer::where('_id', (int) $request['customer_id'])->update(array('balance' => (int) $request['balance']));
+        Customer::where('_id', $customer_id)->update(array('balance' => (int) $request['balance']));
 
         // Response........
         return Response::json(
