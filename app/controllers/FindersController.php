@@ -1742,6 +1742,22 @@ class FindersController extends \BaseController {
                 $finderData['finder']['bookmark'] = false;
                 $finderData['trials_detials']              =      [];
                 $finderData['trials_booked_status']        =      false;
+                $finderData['call_for_action_button']      =      "";
+
+                $category_id                                =   intval($finder['category']['_id']);
+                $bookTrialArr                               =   [5,6,12,43,32,36,7,35,13,10,11,47,45,14,25,46,9];
+
+//                return $finder['facilities'];
+
+
+                if(in_array($category_id, $bookTrialArr)){
+                    $finderData['call_for_action_button']      =      "Book a Trial";
+
+                    if(in_array( 27 , $finder['facilities'])){
+                        $finderData['call_for_action_button']      =      "Book a Free Trial";
+                    }
+                }
+
 
                 if(Request::header('Authorization')){
                     $decoded                            =       decode_customer_token();
@@ -1751,9 +1767,15 @@ class FindersController extends \BaseController {
 
                     $customer                           =       Customer::find((int)$customer_id);
 
-                    if(isset($customer->bookmarks) && is_array($customer->bookmarks) && in_array($finder->_id,$customer->bookmarks)){
+                    if($customer){
+                        $customer   = $customer->toArray();
+                    }
+
+                    if(isset($customer['bookmarks']) && is_array($customer['bookmarks']) && in_array($finder['_id'],$customer['bookmarks'])){
                         $finderData['finder']['bookmark'] = true;
                     }
+
+//                    var_dump($finderData['finder']['bookmark']);exit;
 
                     $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
                                                                 ->where('finder_id', '=', (int) $finder->_id)
