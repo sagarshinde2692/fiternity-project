@@ -564,8 +564,8 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->contact->phone = ''; //$result['contact']['phone'];
 				$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
 				$resultobject->coverimage = $result['coverimage'];
-				$resultobject->finder_coverimage_webp = isset($result['finder_coverimage_webp']) ? $result['finder_coverimage_webp'] : "";
-				$resultobject->finder_coverimage_color = isset($result['finder_coverimage_color']) ? $result['finder_coverimage_color'] : "";
+				$resultobject->finder_coverimage_webp = isset($result['finder_coverimage_webp']) ? (strpos($result['finder_coverimage_webp'],"default/") > -1 ? "" : $result['finder_coverimage_webp']) : "";
+				$resultobject->finder_coverimage_color = isset($result['finder_coverimage_color']) ? $result['finder_coverimage_color'] : "#FFC107";
 
 				$resultobject->commercial_type = $result['commercial_type'];
 				$resultobject->finder_type = $result['finder_type'];
