@@ -1138,10 +1138,6 @@ class OrderController extends \BaseController {
             }
         }
 
-        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
-            $data['membership_duration_type'] = 'workout_session';
-        }
-
         if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
 
             $ratecard = Ratecard::find((int)$data['ratecard_id']);
@@ -1281,6 +1277,18 @@ class OrderController extends \BaseController {
 
             $data['start_time'] = trim($schedule_slot[0]);
             $data['end_time']= trim($schedule_slot[1]);
+        }
+
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+
+            $date_arr = $data['schedule_date'];
+            $schedule_date = date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            array_set($data, 'start_date', $schedule_date);
+
+            array_set($data, 'end_date', $schedule_date);
+
+            $data['membership_duration_type'] = 'workout_session';
+
         }
 
         $set_vertical_type = array(
