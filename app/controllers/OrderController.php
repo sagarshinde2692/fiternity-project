@@ -202,6 +202,22 @@ class OrderController extends \BaseController {
                 }
             }
 
+            if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
+
+                if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                    $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                }else{
+                    $data['instantPurchaseCustomerTiggerCount']     =   1;
+                }
+
+                if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                    $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                }else{
+                    $data['instantPurchaseFinderTiggerCount']       =   1;
+                }
+
+            }
+
             $orderdata 	=	$order->update($data);
 
             //send welcome email to payment gateway customer
@@ -349,6 +365,8 @@ class OrderController extends \BaseController {
                 $order->update();
 
             }
+
+
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
