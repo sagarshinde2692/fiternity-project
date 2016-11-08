@@ -2638,7 +2638,7 @@ class CustomerController extends \BaseController {
 
 	public function applyPromotionCode(){
 
-		$valid_promotion_codes		=		['jcbfit','fitrun','livefit'];
+		$valid_promotion_codes		=		['jcbfit','fitrun','livfit'];
 		$data 						= 		Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
@@ -2677,7 +2677,7 @@ class CustomerController extends \BaseController {
 					break;
 					case "jcbfit" :  $amounttobeadded = 2000;
 					break;
-                    case "livefit" :  $amounttobeadded = 2000;
+                    case "livfit" :  $amounttobeadded = 2000;
                     break;
 				}
 				$customer 	=	Customer::find($customer_id);				
