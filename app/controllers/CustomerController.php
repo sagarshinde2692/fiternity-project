@@ -2677,7 +2677,6 @@ class CustomerController extends \BaseController {
 					break;
 					case "jcbfit" :  $amounttobeadded = 2000;
 					break;
-					case "pataka10" : $amounttobeadded = 2000;
 				}
 				$customer 	=	Customer::find($customer_id);				
 
