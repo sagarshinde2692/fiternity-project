@@ -1749,7 +1749,6 @@ class FindersController extends \BaseController {
 
 //                return $finder['facilities'];
 
-
                 if(in_array($category_id, $bookTrialArr)){
                     $finderData['call_for_action_button']      =      "Book a Trial";
 

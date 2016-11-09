@@ -103,6 +103,7 @@ Route::group(array('before' => 'validatevendor'), function() {
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
 Route::post('saveutmdata', array('as' => 'home.saveutmdata','uses' => 'HomeController@saveUtmData'));
+Route::post('gethashes', array('as' => 'home.gethashes','uses' => 'HomeController@getHashes'));
 
 Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
 Route::get('getfindercountlocationwise/{city?}', 'HomeController@getFinderCountLocationwise');

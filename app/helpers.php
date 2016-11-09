@@ -6,6 +6,20 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+if (!function_exists('checkNull')) {
+
+    function checkNull($value){
+        if ($value == null) {
+            return '';
+        } else {
+            return $value;
+        }
+    }
+
+}
+
+
+
 if (!function_exists('decode_customer_token')) {
 
     function decode_customer_token(){
