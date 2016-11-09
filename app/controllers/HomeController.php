@@ -1753,7 +1753,9 @@ class HomeController extends BaseController {
             $arr['check_isDomestic_hash']=$checkIsDomestic;
         }
 
-        return array('result'=>$arr);
+        $responsedata =  array('result'=>$arr);
+
+        return Response::json($responsedata, 200);
     }
 
 
