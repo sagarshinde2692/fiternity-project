@@ -307,6 +307,8 @@ class FindersController extends \BaseController {
 
                 $skip_categoryid_finders    = [41,42,45,25,46,10,26,40];
 
+                $nearby_same_category = array();
+
                 $nearby_same_category 		= 	Finder::where('category_id','=',$findercategoryid)
                     ->where('location_id','=',$finderlocationid)
                     ->where('_id','!=',$finderid)
@@ -317,13 +319,19 @@ class FindersController extends \BaseController {
                     ->with('offerings')
                     ->orderBy('finder_type', 'DESC')
                     ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'))
-                    ->take(5)->toArray();
+                    ->take(5)
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
+
+                if(count($nearby_same_category) > 0){
+
+                    $nearby_same_category->toArray();
+
                     foreach($nearby_same_category as $key => $finder1){
                         array_set($nearby_same_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
                     }
+                }
 
-
+                $nearby_other_category = array();    
 
                 $nearby_other_category 		= 	Finder::where('category_id','!=',$findercategoryid)
                     ->whereNotIn('category_id', $skip_categoryid_finders)
@@ -336,12 +344,18 @@ class FindersController extends \BaseController {
                     ->with('offerings')
                     ->orderBy('finder_type', 'DESC')
                     ->remember(Config::get('app.cachetime'))
-                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'))
-                    ->take(5)->toArray();
+                    ->take(5)
+                    ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
+
+                if(count($nearby_other_category) > 0){
+
+                    $nearby_other_category->toArray();
+
                     foreach($nearby_other_category as $key => $finder1){
                         array_set($nearby_other_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
                     }
-
+                }
+                
                 $data['statusfinder'] 					= 		200;
                 $data['finder']                         =       $finder;
                 $data['defination'] 					= 		['categorytags' => $categoryTagDefinationArr];
