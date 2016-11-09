@@ -1534,7 +1534,32 @@ class HomeController extends BaseController {
         }
         $city_name 		= 	$citydata['name'];
         $city_id		= 	(int) $citydata['_id'];
+
+        $categorytag_offerings = array();
+
         $categorytag_offerings = Findercategorytag::active()->with('offerings')->whereIn('cities', [$city_id])->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings'));
+
+        if(count($categorytag_offerings) > 0){
+
+            $categorytag_offerings = $categorytag_offerings->toArray();
+
+            foreach ($categorytag_offerings as $key => $value) {
+                
+                $offerings = array();
+
+                foreach ($value['offerings'] as $offerings_key => $offerings_value){
+
+                    $offerings_value['key'] = $offerings_value['name'];
+
+                    $offerings[] = $offerings_value;
+                    
+                }
+
+                $categorytag_offerings[$key]['key'] = $value['name'];
+                $categorytag_offerings[$key]['offerings'] = $offerings;
+
+            }
+        }
 
         $responsedata 	= ['categorytag_offerings' => $categorytag_offerings,  'message' => 'List for Finder categorytags'];
         return Response::json($responsedata, 200);
