@@ -1156,6 +1156,26 @@ class OrderController extends \BaseController {
             }
         }
 
+        if(!isset($data['ratecard_id'])){
+
+            if($data['type'] == 'booktrials'){
+                $ratecard  = Ratecard::active()->where('type','trial')->first();
+
+                if($ratecard){
+                    $data['ratecard_id'] = (int)$ratecard->_id;
+                }
+            }
+
+            if($data['type'] == 'workout-session'){
+                $ratecard  = Ratecard::active()->where('type','workout session')->first();
+
+                if($ratecard){
+                    $data['ratecard_id'] = (int)$ratecard->_id;
+                }
+            }
+
+        }
+
         if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
 
             $ratecard = Ratecard::find((int)$data['ratecard_id']);

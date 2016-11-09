@@ -2335,6 +2335,8 @@ class CustomerController extends \BaseController {
 
 					if($category_value['slug'] == $category_slug_value){
 
+						$category_value['name'] = ucwords($category_value['name']);
+
 						$ordered_category[] = $category_value;
 						break;
 					}
