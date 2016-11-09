@@ -4729,4 +4729,20 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
+    public function addExpityDate($id){
+
+        $booktrial = Booktrial::find((int) $id);
+
+        if(!empty($booktrial->customofferorder_id) && isset($booktrial->customofferorder_id)){
+
+            $customofferorder   =   Fitapicustomofferorder::find($booktrial->customofferorder_id);
+
+            if(isset($customofferorder->validity) && $customofferorder->validity != ""){
+
+                $booktrial->customofferorder_expiry_date =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($booktrial->schedule_date_time)));
+                $booktrial->update();
+            }
+        }
+    }
+
 }
