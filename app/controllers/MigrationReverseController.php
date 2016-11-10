@@ -490,7 +490,6 @@ class MigrationReverseController extends \BaseController {
                             $entity = Offering::on($this->fitadmin)->where('slug', trim($offering_slug) );
                             $entity->update($insertData);
                         }
-//                    exit();
 
                     }
 
@@ -992,6 +991,8 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];
             }
+            $insertData['trial']        = (isset($data['flags']) && isset($data['flags']['trial'])) ? $data['flags']['trial'] : "auto";
+            $insertData['membership']   = (isset($data['flags']) && isset($data['flags']['membership'])) ? $data['flags']['membership'] : "auto";
 
             $insertData['show_on']      =   "1";
             $insertData['created_at']   =   $data['created_at'];
