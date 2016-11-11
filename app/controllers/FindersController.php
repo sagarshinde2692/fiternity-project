@@ -75,7 +75,7 @@ class FindersController extends \BaseController {
 
 
 
-    public function finderdetail($slug, $cache = true){
+    public function finderdetail($slug, $cache = false){
 
 //        return Cache::tags('finder_detail')->get($slug);
         $data 	=  array();
@@ -144,12 +144,15 @@ class FindersController extends \BaseController {
 
                 if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
+//                    echo "ad";exit;
                     if(isset($finderarr['services']) && count($finderarr['services']) > 0){
                         //for servcie category gym
                         $finder_gym_service  = [];
                         $finder_gym_service = head(array_where($finderarr['services'], function($key, $value){
                             if($value['category']['_id'] == 65){ return $value; }
                         }));
+
+//                        return $finder_gym_service; exit;
 
                         if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
                             $all_weekdays                       =   $finder_gym_service['active_weekdays'];
@@ -168,21 +171,49 @@ class FindersController extends \BaseController {
 
                                 if(isset($weekdayslots['slots']) && count($weekdayslots['slots']) > 0){
                                     foreach ($weekdayslots['slots'] as $key => $slot) {
-                                        array_push($slots_start_time_24_hour_format_Arr, intval($slot['start_time_24_hour_format']));
-                                        array_push($slots_end_time_24_hour_format_Arr, intval($slot['end_time_24_hour_format']));
+//                                        return $slot;
+                                        $find       =   ["am","pm"];
+                                        $replace    =   [""];
+                                        $start_time_surfix_arr  =   explode(":", trim(str_replace($find, $replace, $slot['start_time'])) );
+                                        $start_time_surfix      =   (isset($start_time_surfix_arr[1])) ? $start_time_surfix_arr[1] : "";
+                                        $strart_time            =   floatval($slot['start_time_24_hour_format'].".".$start_time_surfix);
+
+                                        $end_time_surfix_arr  =   explode(":", trim(str_replace($find, $replace, $slot['end_time'])) );
+                                        $end_time_surfix      =   (isset($end_time_surfix_arr[1])) ? $end_time_surfix_arr[1] : "";
+                                        $end_time            =   floatval($slot['end_time_24_hour_format'].".".$end_time_surfix);
+
+                                        array_push($slots_start_time_24_hour_format_Arr, $strart_time);
+                                        array_push($slots_end_time_24_hour_format_Arr, $end_time);
                                     }
+
+//                                    return $slots_start_time_24_hour_format_Arr;
+
+
                                     if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
-                                        $opening_hour = min($slots_start_time_24_hour_format_Arr);
-                                        $closing_hour = max($slots_end_time_24_hour_format_Arr);
+                                        $opening_hour_arr       = explode(".",min($slots_start_time_24_hour_format_Arr));
+                                        $opening_hour_surfix    = "";
+                                        if(isset($opening_hour_arr[1])){
+                                            $opening_hour_surfix = (strlen($opening_hour_arr[1]) == 1) ? $opening_hour_arr[1]."0" : $opening_hour_arr[1];
+                                        }
+                                        $opening_hour     = $opening_hour_arr[0].":".$opening_hour_surfix;
+
+                                        $closing_hour_arr = explode(".",max($slots_end_time_24_hour_format_Arr));
+                                        $closing_hour_surfix    = "";
+                                        if(isset($closing_hour_arr[1])){
+                                            $closing_hour_surfix = (strlen($closing_hour_arr[1]) == 1) ? $closing_hour_arr[1]."0" : $closing_hour_arr[1];
+                                        }
+                                        $closing_hour     = $closing_hour_arr[0].":".$closing_hour_surfix;
+
+
                                         //   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
                                         //   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
                                         if($today_weekday == $weekday){
-                                         $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
-                                         $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                     }
-                                     $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
-                                     $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                     array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
+                                             $finder['today_opening_hour'] =  date("g:i A", strtotime(str_replace(".",":",$opening_hour)));
+                                             $finder['today_closing_hour'] = date("g:i A", strtotime(str_replace(".",":",$closing_hour)));
+                                         }
+                                         $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime(str_replace(".",":",$opening_hour)));
+                                         $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime(str_replace(".",":",$closing_hour)));
+                                         array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
                                  }
                              }
                          }
@@ -193,6 +224,8 @@ class FindersController extends \BaseController {
 
                     }
                 }
+
+//                return  $finder;
 
 
                 if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){

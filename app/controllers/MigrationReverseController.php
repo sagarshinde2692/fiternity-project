@@ -269,7 +269,7 @@ class MigrationReverseController extends \BaseController {
                 $entity = Findercategorytag::on($this->fitadmin)->find(intval($Findercategorytag['_id']));
                 $entity->update($insertData);
             }else{
-                $lastcategorytagid  = 	DB::connection($this->fitadmin)->table('findercategorytags')->count();
+                $lastcategorytagid  = 	DB::connection($this->fitadmin)->table('findercategorytags')->max('_id');
                 $categorytagid  	= 	intval($lastcategorytagid) + 1;
                 $entity 			=	new Findercategorytag($insertData);
                 $entity->setConnection($this->fitadmin);
