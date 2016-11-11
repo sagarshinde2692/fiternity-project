@@ -1664,7 +1664,17 @@ class SchedulebooktrialsController extends \BaseController {
             isset($order['reward_ids']) ? $booktrialdata['reward_ids'] = $order['reward_ids']:null;
             
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+
                 $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
+
+                $customofferorder   =   Fitapicustomofferorder::find($data['customofferorder_id']);
+
+                if(isset($customofferorder->validity) && $customofferorder->validity != ""){
+
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($schedule_date_time)));
+                    $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
+                }
+
             }
 
             if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
@@ -2358,7 +2368,16 @@ class SchedulebooktrialsController extends \BaseController {
             );
 
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+
                 $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
+
+                $customofferorder   =   Fitapicustomofferorder::find($data['customofferorder_id']);
+
+                if(isset($customofferorder->validity) && $customofferorder->validity != ""){
+
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($schedule_date_time)));
+                    $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
+                }
             }
 
             if(isset($data['myreward_id']) && $data['myreward_id'] != ""){

@@ -35,6 +35,7 @@ Route::get('latlonswap', 'DebugController@latLonSwap');
 Route::get('latlonswapapi', 'DebugController@latLonSwapApi');
 Route::get('latlonswapservice', 'DebugController@latLonSwapService');
 Route::get('latlonswapserviceapi', 'DebugController@latLonSwapServiceApi');
+Route::get('addexpirydate', 'DebugController@addExpiryDate');
 
 
 Route::get('checkfileons3', function (){
