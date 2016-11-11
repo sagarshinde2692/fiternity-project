@@ -204,18 +204,44 @@ class OrderController extends \BaseController {
 
             if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
-                if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
-                    $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+
+                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                        if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                            $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseCustomerTiggerCount']     =   1;
+                        }
+                    }
+
                 }else{
-                    $data['instantPurchaseCustomerTiggerCount']     =   1;
+                    if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                        $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseCustomerTiggerCount']     =   1;
+                    }
                 }
 
-                if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
-                    $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
-                }else{
-                    $data['instantPurchaseFinderTiggerCount']       =   1;
-                }
 
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                        if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                            $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseFinderTiggerCount']       =   1;
+                        }
+                    }
+
+                }else{
+                    if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                        $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseFinderTiggerCount']       =   1;
+                    }
+                }
+                
             }
 
             $orderdata 	=	$order->update($data);
@@ -283,8 +309,8 @@ class OrderController extends \BaseController {
                 //no email to Healthy Snacks Beverages and Healthy Tiffins
                 if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
                     
-                   if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                        if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
                             $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
                         }
