@@ -75,7 +75,7 @@ class FindersController extends \BaseController {
 
 
 
-    public function finderdetail($slug, $cache = false){
+    public function finderdetail($slug, $cache = true){
 
 //        return Cache::tags('finder_detail')->get($slug);
         $data 	=  array();
@@ -186,7 +186,7 @@ class FindersController extends \BaseController {
                                         array_push($slots_end_time_24_hour_format_Arr, $end_time);
                                     }
 
-//                                    return $slots_start_time_24_hour_format_Arr;
+//                                    return $slots_end_time_24_hour_format_Arr;
 
 
                                     if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
@@ -199,9 +199,14 @@ class FindersController extends \BaseController {
 
                                         $closing_hour_arr = explode(".",max($slots_end_time_24_hour_format_Arr));
                                         $closing_hour_surfix    = "";
+
                                         if(isset($closing_hour_arr[1])){
+                                            $closing_hour_surfix = (strlen($closing_hour_arr[1]) == 0) ? "00" : "00";
                                             $closing_hour_surfix = (strlen($closing_hour_arr[1]) == 1) ? $closing_hour_arr[1]."0" : $closing_hour_arr[1];
+                                        }else{
+                                            $closing_hour_surfix =  "00";
                                         }
+
                                         $closing_hour     = $closing_hour_arr[0].":".$closing_hour_surfix;
 
 
