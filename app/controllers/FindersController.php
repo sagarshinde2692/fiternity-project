@@ -1477,6 +1477,10 @@ class FindersController extends \BaseController {
 
         foreach ($items as $k => $item) {
 
+            if(empty($item['serviceratecard'])){
+                continue ;
+            }
+
             $extra_info = array();
 
             $extra_info[0] = array(
@@ -1533,10 +1537,6 @@ class FindersController extends \BaseController {
                     }
                 }
                 $service['ratecard'] = $ratecardArr;
-            }
-
-            if(empty($service['ratecard'])){
-                continue ;
             }
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
