@@ -225,7 +225,7 @@ class OrderController extends \BaseController {
 
 
                 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
                         if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
                             $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
