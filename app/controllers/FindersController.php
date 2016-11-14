@@ -1477,10 +1477,6 @@ class FindersController extends \BaseController {
 
         foreach ($items as $k => $item) {
 
-            if(empty($item['serviceratecard'])){
-                continue ;
-            }
-
             $extra_info = array();
 
             $extra_info[0] = array(
@@ -1570,6 +1566,11 @@ class FindersController extends \BaseController {
                     }
                 }
             }
+
+            if(empty($service['ratecard']) && empty($service['slots'])){
+                continue ;
+            }
+
             array_push($scheduleservices, $service);
         }
 
