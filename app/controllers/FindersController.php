@@ -1535,6 +1535,10 @@ class FindersController extends \BaseController {
                 $service['ratecard'] = $ratecardArr;
             }
 
+            if(empty($service['ratecard'])){
+                continue ;
+            }
+
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
             if(isset($item['trialschedules']) && count($item['trialschedules']) > 0){
