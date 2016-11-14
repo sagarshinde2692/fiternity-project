@@ -191,35 +191,35 @@ class RewardofferController extends BaseController {
                                 switch(true){
                                  case $amount < 3000 :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1000 : 650;
-                                     $rewards_value['contents'] = ["Shaker", "Earphone Detangler"];
+                                     $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Earphone Detangler"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
                                  break;
                                  case (3000 < $amount && $amount < 5000) :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1500 : 1150;
-                                     $rewards_value['contents'] = ["Shaker", "Earphone Detangler"];
+                                     $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["Shaker", "Earphone Detangler"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
                                  break;
                                  case (5000 < $amount && $amount < 7500) :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1500 : 1550;
-                                     $rewards_value['contents'] = ["Shaker", "Earphone Detangler"];
+                                     $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Earphone Detangler"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Jalapeno Peanuts 75gm", "5 Wholewheat Thins 100gm", "6 Seedy Crunchers 80gm", "7 Chocolate Chip Waffle 1 piece", "8 Okra & Sweet Potato Chips (Sea Salt) 30gm", "9 Rostaa – Healthy Mix 35gm" ];
                                  break;
                                  case (7500 < $amount && $amount < 10000) :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3000 : 2150;
-                                     $rewards_value['contents'] = ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Skipping Details"];
+                                     $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Skipping Details"] : ["Pop Mak – Roasted Flavoured Makhana 100gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar 2 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 200gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 30gm", "9 Rostaa – Trail Mix 35gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece"];
                                  break;
                                  case (10000 < $amount && $amount < 15000) :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 3150;
-                                     $rewards_value['contents'] = ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"];
+                                     $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana 100gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar 2 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 200gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 30gm", "9 Rostaa – Trail Mix 35gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece"];
                                  break;
                                  case (15000 < $amount && $amount < 20000) :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 5000 : 4050;
-                                     $rewards_value['contents'] = ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"];
+                                     $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana - 2 200gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar Box 6 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 100gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 80gm", "9 Rostaa – Healthy Mix 340gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "12 Mukhwas (Sugar Free, All seeds) 100gm", "13 Seedy Crunchers 80gm", "14 Jalapeno Peanuts 75gm", "15 Chocolate Chip Waffle 1 piece" ];
                                  break;
                                  case (20000 < $amount && $amount < 25000) :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 6000 : 4550;
-                                     $rewards_value['contents'] = ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"];
+                                     $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"] : ["Pop Mak – Roasted Flavoured Makhana - 2 200gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar Box 6 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 100gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 80gm", "9 Rostaa – Healthy Mix 340gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "12 Mukhwas (Sugar Free, All seeds) 100gm", "13 Seedy Crunchers 80gm", "14 Jalapeno Peanuts 75gm", "15 Chocolate Chip Waffle 1 piece" ];
                                  break;
                                  case ($amount > 35000) :
                                      $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 8000 : 5150;
-                                     $rewards_value['contents'] = ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"];
+                                     $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"] : ["Pop Mak – Roasted Flavoured Makhana - 2 200gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar Box 6 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 100gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 80gm", "9 Rostaa – Healthy Mix 340gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "12 Mukhwas (Sugar Free, All seeds) 100gm", "13 Seedy Crunchers 80gm", "14 Jalapeno Peanuts 75gm", "15 Chocolate Chip Waffle 1 piece" ];
                                  break;
                                 }
                             }
