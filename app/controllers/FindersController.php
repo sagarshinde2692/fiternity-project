@@ -1750,6 +1750,7 @@ class FindersController extends \BaseController {
                 $finderData['call_for_action_button']      =      "";
 
                 $category_id                                =   intval($finder['category']['_id']);
+                $commercial_type                            =   intval($finder['commercial_type']);
                 $bookTrialArr                               =   [5,6,12,42,43,32,36,7,35,13,10,11,47,14,25,9];
 
 //                return $finder['facilities'];
@@ -1764,7 +1765,10 @@ class FindersController extends \BaseController {
                     if($category_id == 42 ){
                         $finderData['call_for_action_button']      =      "Book a Meal";
                     }
+                }
 
+                if($commercial_type == 0){
+                    $finderData['call_for_action_button']      =      "";
                 }
 
 
