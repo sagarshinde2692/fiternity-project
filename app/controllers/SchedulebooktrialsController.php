@@ -1183,7 +1183,6 @@ class SchedulebooktrialsController extends \BaseController {
             $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
 
                 if($createMyRewardCapture['status'] !== 200){
-
                     return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
                 }
             }
@@ -1201,6 +1200,14 @@ class SchedulebooktrialsController extends \BaseController {
             $sndInstantSmsCustomer	       =	$this->customersms->healthyTiffinTrial($order->toArray());
             $sndInstantEmailFinder	       = 	$this->findermailer->healthyTiffinTrial($order->toArray());
             $sndInstantSmsFinder	       =	$this->findersms->healthyTiffinTrial($order->toArray());
+
+            //Send one before reminder email to vendor at 9:00 AM
+            if($order_data['preferred_starting_date']){
+                $slot_date 			            =	date('d-m-Y', strtotime('-1 day', strtotime($order_data['preferred_starting_date']) ));
+                $datetime_str 	                =	strtoupper($slot_date ." 09:00AM");
+                $reminderDateTime 		        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $datetime_str);
+                $sndReminderEmailFinder	        = 	$this->findermailer->healthyTiffinTrialReminder($order->toArray(),$reminderDateTime);
+            }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
