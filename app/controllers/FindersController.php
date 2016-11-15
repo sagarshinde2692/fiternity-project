@@ -1614,7 +1614,7 @@ class FindersController extends \BaseController {
 
                 $finder['today_opening_hour']           =   null;
                 $finder['today_closing_hour']           =   null;
-                $finder['open_close_status']            =   null;
+                $finder['open_now']                     =   false;
                 $finder['open_close_hour_for_week']     =   [];
 
                 if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
@@ -1720,11 +1720,10 @@ class FindersController extends \BaseController {
 
                 if($finder['today_opening_hour'] != NULL && $finder['today_closing_hour'] != NULL){
 
-//                     $finder['today_closing_hour'];
                     // current or user supplied UNIX timestamp
                     $timestamp = time();
                     // default status
-                    $status = 'closed';
+                    $status = false;
                     // get current time object
                     $currentTime = (new DateTime())->setTimestamp($timestamp);
 
@@ -1735,12 +1734,12 @@ class FindersController extends \BaseController {
 
                     // check if current time is within a range
                     if (($startTime < $currentTime) && ($currentTime < $endTime)) {
-                        $status = 'open';
+                        $status = true;
                     }
 //                    return $status;
 //                    var_dump($status);exit;
 
-                    array_set($finder, 'open_close_status', $status);
+                    array_set($finder, 'open_now', $status);
                 }
 
                 array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
