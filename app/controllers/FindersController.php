@@ -57,7 +57,7 @@ class FindersController extends \BaseController {
     }
 
 
-     public function cancelVendorMou($mouid){
+    public function cancelVendorMou($mouid){
 
 
         $vendormou = Vendormou::with(array('finder'=>function($query){$query->select('_id','title','slug');}))->find(intval($mouid));
@@ -85,19 +85,19 @@ class FindersController extends \BaseController {
         if(!$finder_detail){
 
             $finderarr = Finder::active()->where('slug','=',$tslug)
-            ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-            ->with('findercollections')
-            ->with('blogs')
-            ->with('categorytags')
-            ->with('locationtags')
-            ->with('offerings')
-            ->with('facilities')
-            ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-            ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-            ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
-            ->first();
+                ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+                ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                ->with('findercollections')
+                ->with('blogs')
+                ->with('categorytags')
+                ->with('locationtags')
+                ->with('offerings')
+                ->with('facilities')
+                ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+                ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+                ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
+                ->first();
 
 
             if($finderarr){
@@ -147,17 +147,17 @@ class FindersController extends \BaseController {
                                         //   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
                                         //   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
                                         if($today_weekday == $weekday){
-                                         $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
-                                         $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                     }
-                                     $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
-                                     $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                     array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
-                                 }
-                             }
-                         }
+                                            $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
+                                            $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                        }
+                                        $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
+                                        $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
+                                        array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
+                                    }
+                                }
+                            }
 
-                         $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : [];
+                            $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : [];
 
                         }// trialschedules
 
@@ -196,7 +196,7 @@ class FindersController extends \BaseController {
                     if(isset($finder['info']) && $info_timing != ""){
                         $finder['info']['timing'] = $info_timing;
                     }
-                    
+
                 }
                 if(count($finder['offerings']) > 0 ){
                     $tempoffering = [];
@@ -210,7 +210,7 @@ class FindersController extends \BaseController {
                         }
                     }
                     $finder['offerings'] = $tempoffering;
-                    
+
                 }
 
                 $fitmania_offer_cnt 	=	Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
@@ -225,14 +225,14 @@ class FindersController extends \BaseController {
                     $brand = Brand::find((int)$finderarr['brand_id']);
 
                     $brandFinder = Finder::where("brand_id",(int)$finderarr['brand_id'])
-                                    ->active()
-                                    ->where("_id","!=",(int)$finderarr['_id'])
-                                    ->where('city_id',(int)$finderarr['city_id'])
-                                    ->with('offerings')
-                                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                                    ->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage'])->toArray();
-                    
+                        ->active()
+                        ->where("_id","!=",(int)$finderarr['_id'])
+                        ->where('city_id',(int)$finderarr['city_id'])
+                        ->with('offerings')
+                        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                        ->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage'])->toArray();
+
                     foreach($brandFinder as $key => $finder1){
                         array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
                     }
@@ -251,7 +251,7 @@ class FindersController extends \BaseController {
             if($finder){
 
                 $categoryTagDefinationArr     =   [];
-                
+
                 // $Findercategory         =   Findercategory::find(intval($finderarr['category_id']));                
 
                 $findercategorytag_ids      =   array_pluck(pluck( $finderarr['categorytags'] , array('_id')), '_id');
@@ -323,9 +323,9 @@ class FindersController extends \BaseController {
                     $customer_email                     =       $decoded->customer->email;
                     $customer_phone                     =       $decoded->customer->contact_no;
                     $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-                                                                    ->where('finder_id', '=', (int) $finderid)
-                                                                    ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                                                                    ->get(array('id'));
+                        ->where('finder_id', '=', (int) $finderid)
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->get(array('id'));
                     $data['trials_detials']              =      $customer_trials_with_vendors;
                     $data['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
                 }else{
@@ -335,7 +335,7 @@ class FindersController extends \BaseController {
 
 
 
-                
+
 
                 return Response::json($data);
 
@@ -423,9 +423,9 @@ class FindersController extends \BaseController {
                 array("slug"=>"four","name" => "5000-7500"),
                 array("slug"=>"five" ,"name"=> "7500-15000"),
                 array("slug"=>"six","name"=> "15000 & above")
-                ),
+            ),
             'facilities' => Facility::active()->orderBy('name')->get(array('name','_id','slug'))
-            );
+        );
         return Response::json($data,200);
     }
 
@@ -435,16 +435,16 @@ class FindersController extends \BaseController {
 
         $tslug 		= 	(string) $slug;
         $finderarr 	= 	Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-        ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-        ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-        ->with('categorytags')
-        ->with('locationtags')
-        ->with('offerings')
-        ->with('facilities')
-        ->with('servicerates')
-        ->with('services')
-        ->where('slug','=',$tslug)
-        ->first();
+            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            ->with('categorytags')
+            ->with('locationtags')
+            ->with('offerings')
+            ->with('facilities')
+            ->with('servicerates')
+            ->with('services')
+            ->where('slug','=',$tslug)
+            ->first();
         $data 		= 	$finderarr->toArray();
         // print_pretty($data);exit;
         $postdata 	= 	get_elastic_finder_document($data);
@@ -454,7 +454,7 @@ class FindersController extends \BaseController {
             'port' => Config::get('app.es.port'),
             'method' => 'PUT',
             'postfields' => json_encode($postdata)
-            );
+        );
         //echo es_curl_request($request);exit;
         es_curl_request($request);
     }
@@ -493,7 +493,7 @@ class FindersController extends \BaseController {
                 'reciver_name' => 'Fitternity',
                 'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
                 'email_subject' => 'Review given for - ' .ucwords($finderslug)
-                );
+            );
             $email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
                 $message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
                 // $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
@@ -589,7 +589,7 @@ class FindersController extends \BaseController {
                             'service_name' => $value->service_name,
                             'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name,
                             'type' => $value->type,
-                            );
+                        );
                         array_push($trialdata, $trial);
                     }
 
@@ -610,7 +610,7 @@ class FindersController extends \BaseController {
                                 'service_name' => $value->service_name,
                                 'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name,
                                 'type' => $value->type,
-                                );
+                            );
                             array_push($todaytrialdata, $trial);
                         }
                     }
@@ -624,7 +624,7 @@ class FindersController extends \BaseController {
                         'finder_vcc_email'				=> $finder_vcc_email,
                         'scheduletrials' 				=> $trialdata,
                         'todaytrials' 					=> $todaytrialdata
-                        );
+                    );
 //                     echo "<pre>";print_r($scheduledata);exit();
 
                     $this->findermailer->sendBookTrialDaliySummary($scheduledata);
@@ -644,7 +644,7 @@ class FindersController extends \BaseController {
                 'message' => $e->getMessage(),
                 'file'    => $e->getFile(),
                 'line'    => $e->getLine(),
-                );
+            );
 
             $resp 	= 	array('status' => 400,'message' => $message);
             Log::info('Trial Daily Summary Cron : fial',$message);
@@ -711,7 +711,7 @@ class FindersController extends \BaseController {
                         'code' => $value->code,
                         'service_name' => $value->service_name,
                         'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
-                        );
+                    );
                     array_push($trialdata, $trial);
                 }
 
@@ -727,7 +727,7 @@ class FindersController extends \BaseController {
                             'code' => $value->code,
                             'service_name' => $value->service_name,
                             'finder_poc_for_customer_name' => $value->finder_poc_for_customer_name
-                            );
+                        );
                         array_push($todaytrialdata, $trial);
                     }
                 }
@@ -741,10 +741,10 @@ class FindersController extends \BaseController {
                     'finder_vcc_email'				=> $finder_vcc_email,
                     'scheduletrials' 				=> $trialdata,
                     'todaytrials' 					=> $todaytrialdata
-                    );
+                );
 //                echo "<pre>";print_r($scheduledata);
 
-                 $this->findermailer->sendBookTrialDaliySummary($scheduledata);
+                $this->findermailer->sendBookTrialDaliySummary($scheduledata);
             }
         }
 
@@ -766,74 +766,74 @@ class FindersController extends \BaseController {
 //        return "$startDateTime   $endDateTime";
 
         try{
-        $finders   =   Order::whereIn('type',['healthytiffinmembership','healthytiffintrail'])->where('status', '=', '1')
-                                    ->where('created_at', '>=', new DateTime($startDateTime))
-                                    ->where('created_at', '<=', new DateTime($endDateTime))
-                                    ->get()
-                                    ->groupBy('finder_id')->toArray();
+            $finders   =   Order::whereIn('type',['healthytiffinmembership','healthytiffintrail'])->where('status', '=', '1')
+                ->where('created_at', '>=', new DateTime($startDateTime))
+                ->where('created_at', '<=', new DateTime($endDateTime))
+                ->get()
+                ->groupBy('finder_id')->toArray();
 
 
-        foreach ($finders as $finderid => $trials) {
-            $finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
-            $finderarr 	= 	$finder->toArray();
+            foreach ($finders as $finderid => $trials) {
+                $finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval($finderid))->first();
+                $finderarr 	= 	$finder->toArray();
 
-            if($finder->finder_vcc_email != ""){
-                $finder_vcc_email = "";
-                $explode = explode(',', $finder->finder_vcc_email);
-                $valid_finder_email = [];
-                foreach ($explode as $email) {
-                    if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
-                        $valid_finder_email[] = $email;
+                if($finder->finder_vcc_email != ""){
+                    $finder_vcc_email = "";
+                    $explode = explode(',', $finder->finder_vcc_email);
+                    $valid_finder_email = [];
+                    foreach ($explode as $email) {
+                        if (!filter_var(trim($email), FILTER_VALIDATE_EMAIL) === false){
+                            $valid_finder_email[] = $email;
+                        }
                     }
-                }
-                if(!empty($valid_finder_email)){
-                    $finder_vcc_email = implode(",", $valid_finder_email);
-                }
-
-                // echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
-                // echo "<pre>";print_r($trials);
-
-                $finder_name_new					= 	(isset($finderarr['title']) && $finderarr['title'] != '') ? $finderarr['title'] : "";
-                $finder_location_new				=	(isset($finderarr['location']['name']) && $finderarr['location']['name'] != '') ? $finderarr['location']['name'] : "";
-                $finder_name_base_locationtags 		= 	(count($finderarr['locationtags']) > 1) ? $finder_name_new : $finder_name_new." ".$finder_location_new;
-
-                $trialsData = $purchasesData = array();
-                foreach ($trials as $key => $value) {
-                    $trial = ['customer_name' => $value->customer_name,
-                        'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
-                        'customer_email' => $value->customer_email,
-                        'preferred_starting_date' => date('d-m-Y', strtotime($value->preferred_starting_date) ),
-                        'code' => $value->code,
-                        'code' => $value->code,
-                        'service_name' => $value->service_name,
-                        'service_duration' => $value->service_duration,
-                        'meal_contents' => $value->meal_contents,
-                        'amount' => $value->amount
-                    ];
-
-                    if($value->type == "healthytiffintrail"){
-                        array_push($trialsData, $trial);
+                    if(!empty($valid_finder_email)){
+                        $finder_vcc_email = implode(",", $valid_finder_email);
                     }
 
-                    if($value->type == "healthytiffinmembership"){
-                        array_push($purchasesData, $trial);
-                    }
-                }
+                    // echo "<br>finderid  ---- $finder->_id <br>finder_vcc_email  ---- $finder->finder_vcc_email";
+                    // echo "<pre>";print_r($trials);
 
-                $scheduledata = array('user_name'	=> 'sanjay sahu',
-                    'user_email'					=> 'sanjay.id7@gmail',
-                    'finder_name'					=> $finder->title,
-                    'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
-                    'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
-                    'finder_vcc_email'				=> $finder_vcc_email,
-                    'trials' 				        => $trialsData,
-                    'purchases' 		            => $purchasesData
-                );
+                    $finder_name_new					= 	(isset($finderarr['title']) && $finderarr['title'] != '') ? $finderarr['title'] : "";
+                    $finder_location_new				=	(isset($finderarr['location']['name']) && $finderarr['location']['name'] != '') ? $finderarr['location']['name'] : "";
+                    $finder_name_base_locationtags 		= 	(count($finderarr['locationtags']) > 1) ? $finder_name_new : $finder_name_new." ".$finder_location_new;
+
+                    $trialsData = $purchasesData = array();
+                    foreach ($trials as $key => $value) {
+                        $trial = ['customer_name' => $value->customer_name,
+                            'customer_phone' => (isset($finderarr['share_customer_no']) && $finderarr['share_customer_no'] == '1') ? $value->customer_phone : '',
+                            'customer_email' => $value->customer_email,
+                            'preferred_starting_date' => date('d-m-Y', strtotime($value->preferred_starting_date) ),
+                            'code' => $value->code,
+                            'code' => $value->code,
+                            'service_name' => $value->service_name,
+                            'service_duration' => $value->service_duration,
+                            'meal_contents' => $value->meal_contents,
+                            'amount' => $value->amount
+                        ];
+
+                        if($value->type == "healthytiffintrail"){
+                            array_push($trialsData, $trial);
+                        }
+
+                        if($value->type == "healthytiffinmembership"){
+                            array_push($purchasesData, $trial);
+                        }
+                    }
+
+                    $scheduledata = array('user_name'	=> 'sanjay sahu',
+                        'user_email'					=> 'sanjay.id7@gmail',
+                        'finder_name'					=> $finder->title,
+                        'finder_name_base_locationtags'	=> $finder_name_base_locationtags,
+                        'finder_poc_for_customer_name'	=> $finder->finder_poc_for_customer_name,
+                        'finder_vcc_email'				=> $finder_vcc_email,
+                        'trials' 				        => $trialsData,
+                        'purchases' 		            => $purchasesData
+                    );
 //                echo "<pre>";print_r($scheduledata);
 
-                 $this->findermailer->sendDaliySummaryHealthyTiffin($scheduledata);
+                    $this->findermailer->sendDaliySummaryHealthyTiffin($scheduledata);
+                }
             }
-        }
 
             $message = 'Email Send';
             $resp 	= 	array('status' => 200,'message' => "Email Send");
@@ -940,15 +940,15 @@ class FindersController extends \BaseController {
         }
 
         $reviewdata = [
-        'finder_id' => intval($data['finder_id']),
-        'customer_id' => intval($data['customer_id']),
-        'rating' => floatval($data['rating']),
-        'detail_rating' => array_map('floatval',$data['detail_rating']),
-        'description' => $data['description'],
-        'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
-        'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
-        'source' => (isset($data['source'])) ? $data['source'] : 'customer',
-        'status' => '1'
+            'finder_id' => intval($data['finder_id']),
+            'customer_id' => intval($data['customer_id']),
+            'rating' => floatval($data['rating']),
+            'detail_rating' => array_map('floatval',$data['detail_rating']),
+            'description' => $data['description'],
+            'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
+            'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
+            'source' => (isset($data['source'])) ? $data['source'] : 'customer',
+            'status' => '1'
         ];
 
         $reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
@@ -1071,7 +1071,7 @@ class FindersController extends \BaseController {
                 'reciver_name' => 'Fitternity',
                 'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
                 'email_subject' => 'Review given for - ' .ucwords($finderslug)
-                );
+            );
             $email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
                 // $message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
                 $message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
@@ -1098,9 +1098,9 @@ class FindersController extends \BaseController {
 
                 $finder_id 	= (int) $finder_by_slug['_id'];
                 $reviews = Review::where('status', '!=', '1')
-                ->where('finder_id','=',$finder_id)
-                ->orderBy('_id', 'desc')
-                ->get(array('_id','finder_id','customer_id','customer','rating','detail_rating','description','updated_at','created_at'));
+                    ->where('finder_id','=',$finder_id)
+                    ->orderBy('_id', 'desc')
+                    ->get(array('_id','finder_id','customer_id','customer','rating','detail_rating','description','updated_at','created_at'));
 
                 $data = array('status' => 200,'data'=>$reviews);
 
@@ -1146,15 +1146,15 @@ class FindersController extends \BaseController {
 
         $item  =  (!is_array($review)) ? $review->toArray() : $review;
         $data = [
-        'finder_id' => $item['finder_id'],
-        'customer_id' => $item['customer_id'],
-        'rating' => $item['rating'],
-        'detail_rating' => $item['detail_rating'],
-        'description' => $item['description'],
-        'created_at' => $item['created_at'],
-        'updated_at' => $item['updated_at'],
-        'customer' => $item['customer'],
-        'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
+            'finder_id' => $item['finder_id'],
+            'customer_id' => $item['customer_id'],
+            'rating' => $item['rating'],
+            'detail_rating' => $item['detail_rating'],
+            'description' => $item['description'],
+            'created_at' => $item['created_at'],
+            'updated_at' => $item['updated_at'],
+            'customer' => $item['customer'],
+            'finder' =>  array_only($item['finder'], array('_id', 'title', 'slug'))
         ];
 
         return $data;
@@ -1171,9 +1171,9 @@ class FindersController extends \BaseController {
 
             try {
                 $finder = Finder::where('slug','=',(string)$slug)
-                ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                ->first(array('title','photos','city_id','location_id','info','contact','total_rating_count','detail_rating_summary_average','detail_rating_summary_count'));
+                    ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                    ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                    ->first(array('title','photos','city_id','location_id','info','contact','total_rating_count','detail_rating_summary_average','detail_rating_summary_count'));
             } catch (Exception $error) {
                 return $errorMessage = $this->errorMessage($error);
             }
@@ -1239,14 +1239,14 @@ class FindersController extends \BaseController {
 
 
             $finder_documents = Finder::with(array('country'=>function($query){$query->select('name');}))
-            ->with(array('city'=>function($query){$query->select('name');}))               
-            ->active()
-            ->orderBy('_id')
-            ->where('city_id', intval($city))
-            //->where('status', '=', '1')
-            ->take(50000)->skip(0)
-            ->timeout(400000000)
-            ->get(); 
+                ->with(array('city'=>function($query){$query->select('name');}))
+                ->active()
+                ->orderBy('_id')
+                ->where('city_id', intval($city))
+                //->where('status', '=', '1')
+                ->take(50000)->skip(0)
+                ->timeout(400000000)
+                ->get();
 
 
             foreach ($finder_documents as $finder) {
@@ -1259,30 +1259,30 @@ class FindersController extends \BaseController {
 
                     switch($ratecard['validity']){
                         case 30:
-                        $ratecard_count = $ratecard_count + 1;
-                        $ratecard_money = $ratecard_money + intval($ratecard['price']);
-                        break;
+                            $ratecard_count = $ratecard_count + 1;
+                            $ratecard_money = $ratecard_money + intval($ratecard['price']);
+                            break;
                         case 90:
-                        $ratecard_count = $ratecard_count + 1;
-                        $average_one_month = intval($ratecard['price'])/3;
-                        $ratecard_money = $ratecard_money + $average_one_month;
-                        break;
+                            $ratecard_count = $ratecard_count + 1;
+                            $average_one_month = intval($ratecard['price'])/3;
+                            $ratecard_money = $ratecard_money + $average_one_month;
+                            break;
                         case 120:
-                        $ratecard_count = $ratecard_count + 1;
-                        $average_one_month = intval($ratecard['price'])/4;
-                        $ratecard_money = $ratecard_money + $average_one_month;
-                        break;
+                            $ratecard_count = $ratecard_count + 1;
+                            $average_one_month = intval($ratecard['price'])/4;
+                            $ratecard_money = $ratecard_money + $average_one_month;
+                            break;
                         case 180:
-                        $ratecard_count = $ratecard_count + 1;
-                        $average_one_month = intval($ratecard['price'])/6;
-                        $ratecard_money = $ratecard_money + $average_one_month;
-                        break;
+                            $ratecard_count = $ratecard_count + 1;
+                            $average_one_month = intval($ratecard['price'])/6;
+                            $ratecard_money = $ratecard_money + $average_one_month;
+                            break;
                         case 360:
-                        $ratecard_count = $ratecard_count + 1;
-                        $average_one_month = intval($ratecard['price'])/12;
-                        $ratecard_money = $ratecard_money + $average_one_month;
-                        break;
-                    }  
+                            $ratecard_count = $ratecard_count + 1;
+                            $average_one_month = intval($ratecard['price'])/12;
+                            $ratecard_money = $ratecard_money + $average_one_month;
+                            break;
+                    }
 
                 }
 
@@ -1295,40 +1295,40 @@ class FindersController extends \BaseController {
 
                 switch($average_monthly){
                     case ($average_monthly < 1001):
-                    $average_monthly_tag = 'one';
-                    $rangeval = 1;
-                    break;
+                        $average_monthly_tag = 'one';
+                        $rangeval = 1;
+                        break;
 
                     case ($average_monthly > 1000 && $average_monthly < 2501):
-                    $average_monthly_tag = 'two';
-                    $rangeval = 2;
-                    break;
+                        $average_monthly_tag = 'two';
+                        $rangeval = 2;
+                        break;
 
                     case ($average_monthly > 2500 && $average_monthly < 5001):
-                    $average_monthly_tag = 'three';
-                    $rangeval = 3;
-                    break;
+                        $average_monthly_tag = 'three';
+                        $rangeval = 3;
+                        break;
 
                     case ($average_monthly > 5000 && $average_monthly < 7501):
-                    $average_monthly_tag = 'four';
-                    $rangeval = 4;
-                    break;
+                        $average_monthly_tag = 'four';
+                        $rangeval = 4;
+                        break;
 
                     case ($average_monthly > 7500 && $average_monthly < 15001):
-                    $average_monthly_tag = 'five';
-                    $rangeval = 5;
-                    break;
+                        $average_monthly_tag = 'five';
+                        $rangeval = 5;
+                        break;
 
                     case ($average_monthly > 15000):
-                    $average_monthly_tag = 'six';
-                    $rangeval = 6;
-                    break;
+                        $average_monthly_tag = 'six';
+                        $rangeval = 6;
+                        break;
                 }
-                
+
                 $finderData = [];
-            //Logo                
+                //Logo
                 $finderData['price_range']  = $average_monthly_tag;
-                 $finderData['budget']  = round($average_monthly);
+                $finderData['budget']  = round($average_monthly);
 
                 $response = $finder->update($finderData);
             }
@@ -1388,7 +1388,7 @@ class FindersController extends \BaseController {
                             if(isset($slot['weekday']) && isset($slot['slot_time'])){
                                 $result_weekday[ucwords($slot['weekday'])] = strtoupper($slot['slot_time']);
                             }
-                            
+
                         }else{
                             break;
                         }
@@ -1403,7 +1403,7 @@ class FindersController extends \BaseController {
         }
 
         return $result;
-            
+
     }
 
     public function getDupKeys($array) {
@@ -1411,7 +1411,7 @@ class FindersController extends \BaseController {
         $dups = array();
 
         foreach ($array as $k => $v) {
-                $dups[$v][] = $k;
+            $dups[$v][] = $k;
         }
 
         foreach($dups as $k => $v){
@@ -1468,7 +1468,7 @@ class FindersController extends \BaseController {
         $membership_services = array_map('intval',$membership_services);
 
         $items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos'))->toArray();
-        
+
         if(!$items){
             return array();
         }
@@ -1552,7 +1552,7 @@ class FindersController extends \BaseController {
                         array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
                         array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
                         try{
-                           $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
+                            $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
                             if(($scheduleDateTimeUnix - time()) > $time_in_seconds){
                                 array_push($slots, $slot);
                             }
@@ -1587,17 +1587,17 @@ class FindersController extends \BaseController {
         if(!$finder_detail){
 
             $finderarr = Finder::active()->where('slug','=',$tslug)
-            ->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
-            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-            ->with('categorytags')
-            ->with('locationtags')
-            ->with('offerings')
-            ->with('facilities')
-            ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-            ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-            ->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
-            ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type'));
+                ->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
+                ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+                ->with('categorytags')
+                ->with('locationtags')
+                ->with('offerings')
+                ->with('facilities')
+                ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+                ->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+                ->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
+                ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial'));
 
             //echo "<pre>";print_r($finderarr);exit;
 
@@ -1612,9 +1612,10 @@ class FindersController extends \BaseController {
 
                 $finder['info']              =   array_only($finderarr['info'], ['timing','delivery_timing']);
 
-                $finder['today_opening_hour']   =   null;
-                $finder['today_closing_hour']   =   null;
-                $finder['open_close_hour_for_week'] = [];
+                $finder['today_opening_hour']           =   null;
+                $finder['today_closing_hour']           =   null;
+                $finder['open_now']                     =   false;
+                $finder['open_close_hour_for_week']     =   [];
 
                 if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
@@ -1648,22 +1649,49 @@ class FindersController extends \BaseController {
 
                                 if(isset($weekdayslots['slots']) && count($weekdayslots['slots']) > 0){
                                     foreach ($weekdayslots['slots'] as $key => $slot) {
-                                        array_push($slots_start_time_24_hour_format_Arr, intval($slot['start_time_24_hour_format']));
-                                        array_push($slots_end_time_24_hour_format_Arr, intval($slot['end_time_24_hour_format']));
+//                                        return $slot;
+                                        $find       =   ["am","pm"];
+                                        $replace    =   [""];
+                                        $start_time_surfix_arr  =   explode(":", trim(str_replace($find, $replace, $slot['start_time'])) );
+                                        $start_time_surfix      =   (isset($start_time_surfix_arr[1])) ? $start_time_surfix_arr[1] : "";
+                                        $strart_time            =   floatval($slot['start_time_24_hour_format'].".".$start_time_surfix);
+                                        $end_time_surfix_arr  =   explode(":", trim(str_replace($find, $replace, $slot['end_time'])) );
+                                        $end_time_surfix      =   (isset($end_time_surfix_arr[1])) ? $end_time_surfix_arr[1] : "";
+                                        $end_time            =   floatval($slot['end_time_24_hour_format'].".".$end_time_surfix);
+                                        array_push($slots_start_time_24_hour_format_Arr, $strart_time);
+                                        array_push($slots_end_time_24_hour_format_Arr, $end_time);
+
                                     }
+
                                     if(!empty($slots_start_time_24_hour_format_Arr) && !empty($slots_end_time_24_hour_format_Arr)){
-                                        $opening_hour = min($slots_start_time_24_hour_format_Arr);
-                                        $closing_hour = max($slots_end_time_24_hour_format_Arr);
+                                        $opening_hour_arr       = explode(".",min($slots_start_time_24_hour_format_Arr));
+                                        $opening_hour_surfix    = "";
+                                        if(isset($opening_hour_arr[1])){
+                                            $opening_hour_surfix = (strlen($opening_hour_arr[1]) == 1) ? $opening_hour_arr[1]."0" : $opening_hour_arr[1];
+                                        }
+                                        $opening_hour     = $opening_hour_arr[0].":".$opening_hour_surfix;
+                                        $closing_hour_arr = explode(".",max($slots_end_time_24_hour_format_Arr));
+                                        $closing_hour_surfix    = "";
+                                        if(isset($closing_hour_arr[1])){
+                                            $closing_hour_surfix = (strlen($closing_hour_arr[1]) == 0) ? "00" : "00";
+                                            $closing_hour_surfix = (strlen($closing_hour_arr[1]) == 1) ? $closing_hour_arr[1]."0" : $closing_hour_arr[1];
+                                        }else{
+                                            $closing_hour_surfix =  "00";
+                                        }
+                                        $closing_hour     = $closing_hour_arr[0].":".$closing_hour_surfix;
+                                        //   $finder['opening_hour'] = min($slots_start_time_24_hour_format_Arr);
+                                        //   $finder['closing_hour'] = max($slots_end_time_24_hour_format_Arr)
                                         if($today_weekday == $weekday){
-                                         $finder['today_opening_hour'] =  date("g:i A", strtotime("$opening_hour:00"));
-                                         $finder['today_closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                     }
-                                     $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime("$opening_hour:00"));
-                                     $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime("$closing_hour:00"));
-                                     array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
-                                 }
-                             }
-                         }
+                                            $finder['today_opening_hour'] =  date("g:i A", strtotime(str_replace(".",":",$opening_hour)));
+                                            $finder['today_closing_hour'] = date("g:i A", strtotime(str_replace(".",":",$closing_hour)));
+                                        }
+                                        $whole_week_open_close_hour[$weekday]['opening_hour'] = date("g:i A", strtotime(str_replace(".",":",$opening_hour)));
+                                        $whole_week_open_close_hour[$weekday]['closing_hour'] = date("g:i A", strtotime(str_replace(".",":",$closing_hour)));
+                                        array_push($whole_week_open_close_hour_Arr, $whole_week_open_close_hour);
+                                    }
+
+                                }
+                            }
 
                             //  $finder['open_close_hour_for_week'] = (!empty($whole_week_open_close_hour_Arr) && count($whole_week_open_close_hour_Arr) > 0) ? head($whole_week_open_close_hour_Arr) : null;
 
@@ -1688,12 +1716,38 @@ class FindersController extends \BaseController {
                     }
                 }
 
+
+
+                if($finder['today_opening_hour'] != NULL && $finder['today_closing_hour'] != NULL){
+
+                    // current or user supplied UNIX timestamp
+                    $timestamp = time();
+                    // default status
+                    $status = false;
+                    // get current time object
+                    $currentTime = (new DateTime())->setTimestamp($timestamp);
+
+                    // create time objects from start/end times
+                    $startTime = DateTime::createFromFormat('h:i A', $finder['today_opening_hour']);
+                    $endTime   = DateTime::createFromFormat('h:i A', $finder['today_closing_hour']);
+
+
+                    // check if current time is within a range
+                    if (($startTime < $currentTime) && ($currentTime < $endTime)) {
+                        $status = true;
+                    }
+//                    return $status;
+//                    var_dump($status);exit;
+
+                    array_set($finder, 'open_now', $status);
+                }
+
                 array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type']  ));
                 array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
                 array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
                 array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
                 array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
-                
+
                 if(count($finder['services']) > 0 ){
                     $info_timing = $this->getInfoTiming($finder['services']);
                     if(isset($finder['info']) && $info_timing != ""){
@@ -1734,7 +1788,7 @@ class FindersController extends \BaseController {
                 $data['finder']                         =       $finder;
 
                 $data = Cache::tags('finder_detail_app')->put($tslug, $data, Config::get('cache.cache_time'));
-               
+
             }
 
         }
@@ -1743,7 +1797,7 @@ class FindersController extends \BaseController {
 
         if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
-             $finder = Finder::active()->where('slug','=',$tslug)->first();
+            $finder = Finder::active()->where('slug','=',$tslug)->first();
 
             if($finder){
 
@@ -1754,6 +1808,7 @@ class FindersController extends \BaseController {
                 $finderData['call_for_action_button']      =      "";
 
                 $category_id                                =   intval($finder['category']['_id']);
+                $commercial_type                            =   intval($finder['commercial_type']);
                 $bookTrialArr                               =   [5,6,12,42,43,32,36,7,35,13,10,11,47,14,25,9];
 
 //                return $finder['facilities'];
@@ -1768,7 +1823,10 @@ class FindersController extends \BaseController {
                     if($category_id == 42 ){
                         $finderData['call_for_action_button']      =      "Book a Meal";
                     }
+                }
 
+                if($commercial_type == 0){
+                    $finderData['call_for_action_button']      =      "";
                 }
 
 
@@ -1791,9 +1849,9 @@ class FindersController extends \BaseController {
 //                    var_dump($finderData['finder']['bookmark']);exit;
 
                     $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-                                                                ->where('finder_id', '=', (int) $finder->_id)
-                                                                ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                                                                ->get(array('id'));
+                        ->where('finder_id', '=', (int) $finder->_id)
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->get(array('id'));
 
                     $finderData['trials_detials']              =      $customer_trials_with_vendors;
                     $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
@@ -1805,7 +1863,7 @@ class FindersController extends \BaseController {
         }
 
         return Response::json($finderData,$finderData['status']);
-        
+
     }
 
 }
