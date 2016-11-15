@@ -1202,7 +1202,7 @@ class SchedulebooktrialsController extends \BaseController {
             $sndInstantSmsFinder	       =	$this->findersms->healthyTiffinTrial($order->toArray());
 
             //Send one before reminder email to vendor at 9:00 AM
-            if($order_data['preferred_starting_date']){
+            if(isset($order_data['preferred_starting_date'])){
                 $slot_date 			            =	date('d-m-Y', strtotime('-1 day', strtotime($order_data['preferred_starting_date']) ));
                 $datetime_str 	                =	strtoupper($slot_date ." 09:00AM");
                 $reminderDateTime 		        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $datetime_str);
