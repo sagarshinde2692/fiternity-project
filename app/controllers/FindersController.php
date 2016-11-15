@@ -1711,11 +1711,15 @@ class FindersController extends \BaseController {
                     $finder['type'] = "fitnessstudios";
                 }
 
-                $finder['assured'] = [
-                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
-                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
-                    ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
-                ];
+                $finder['assured'] = array();
+
+                if($finderarr['category_id'] != 46){
+                    $finder['assured'] = [
+                        ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
+                        ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
+                        ["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
+                    ];
+                }
 
                 $finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
                 $finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
