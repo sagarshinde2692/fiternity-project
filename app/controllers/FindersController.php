@@ -1763,6 +1763,8 @@ class FindersController extends \BaseController {
                     $finder['type'] = "personaltrainers";
                 }elseif($finderarr['category_id'] == 25){
                     $finder['type'] = "dietitians and nutritionists";
+                }elseif($finderarr['category_id'] == 46){
+                    $finder['type'] = "sport nutrition supliment stores";
                 }else{
                     $finder['type'] = "fitnessstudios";
                 }
