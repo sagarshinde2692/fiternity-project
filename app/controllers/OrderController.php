@@ -966,7 +966,7 @@ class OrderController extends \BaseController {
                 return Response::json($resp,404);
             }
 
-            if( empty($data['preferred_starting_date']) ){
+            if( empty($postdata['preferred_starting_date']) ){
                 $resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
                 return Response::json($resp,404);
             }
@@ -1034,7 +1034,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
 
         if($data['type'] == 'booktrials' ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'){
 
@@ -1095,8 +1095,8 @@ class OrderController extends \BaseController {
 
         if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
 
-            if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-                $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+            if(trim($postdata['preferred_starting_date']) != '-'){
+                $date_arr = explode('-', $postdata['preferred_starting_date']);
                 $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
                 array_set($data, 'start_date', $preferred_starting_date);
                 array_set($data, 'preferred_starting_date', $preferred_starting_date);
@@ -1235,7 +1235,7 @@ class OrderController extends \BaseController {
                     }
 
                     if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
+                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($postdata['preferred_starting_date']."+ ".$duration_day." days"));
                     }
 
                     if($duration_day <= 90){
@@ -1897,19 +1897,11 @@ class OrderController extends \BaseController {
             $customer_id = $this->autoRegisterCustomer($data);
 
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
-                if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-                    $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
+                if(trim($data['preferred_starting_date']) != '-'){
+                    $date_arr = explode('-', $data['preferred_starting_date']);
                     $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
                     array_set($data, 'start_date', $preferred_starting_date);
                     array_set($data, 'preferred_starting_date', $preferred_starting_date);
-                }
-            }
-
-            if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
-                if(trim(Input::json()->get('preferred_payment_date')) != '-'){
-                    $date_arr = explode('-', Input::json()->get('preferred_payment_date'));
-                    $preferred_payment_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
-                    array_set($data, 'preferred_payment_date', $preferred_payment_date);
                 }
             }
 
