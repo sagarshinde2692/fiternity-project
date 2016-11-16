@@ -421,8 +421,8 @@ class HomeController extends BaseController {
 
         if($type != "" && $id != ""){
 
-            $booktrialItemArr   =   ["booktrial","workoutsession","personaltrainertrial","manualtrial","manualautotrial"];
-            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"];
+            $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial"];
+            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession"];
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
