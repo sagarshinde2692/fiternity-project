@@ -613,8 +613,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				// Booktrial caption button
 				$resultobject->booktrial_button_caption = "";
 
-
-                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists'];
+                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
                 if(!in_array($result['category'],$nobooktrialCategories)){
                     if($result['category'] != "healthy tiffins"){
                         if( in_array('free trial',$result['facilities']) ){
