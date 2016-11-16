@@ -1225,9 +1225,7 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($orderData, 'order_action', 'bought');
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
-                if($order->customer_source != 'admin'){
-                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
-                }
+                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
             $orderdata 	=	$order->update($orderData);
@@ -1285,9 +1283,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
-                if($order->customer_source != 'admin'){
-                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
-                }
+                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
@@ -1334,6 +1330,10 @@ class SchedulebooktrialsController extends \BaseController {
             
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
+
+            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+            }
 
             $orderdata 	=	$order->update($data);
 
@@ -1831,7 +1831,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'appstg');
             $booktrial->update(array('redis_id'=>$redisid));
 
         }
@@ -1896,9 +1896,7 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($data, 'booktrial_id', (int)$booktrialid);
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
-                if($order->customer_source != 'admin'){
-                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
-                }
+                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
             $orderdata 	=	$order->update($data);
