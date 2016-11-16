@@ -506,7 +506,7 @@ class OrderController extends \BaseController {
         $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
         if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
             $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-            $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
             array_set($data, 'preferred_starting_date', $preferred_starting_date);
             array_set($data, 'start_date', $preferred_starting_date);
         }
@@ -1097,7 +1097,7 @@ class OrderController extends \BaseController {
 
             if(trim($postdata['preferred_starting_date']) != '-'){
                 $date_arr = explode('-', $postdata['preferred_starting_date']);
-                $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime($postdata['preferred_starting_date']));
                 array_set($data, 'start_date', $preferred_starting_date);
                 array_set($data, 'preferred_starting_date', $preferred_starting_date);
             }
@@ -1346,7 +1346,7 @@ class OrderController extends \BaseController {
         if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
 
             $date_arr = $data['schedule_date'];
-            $schedule_date = date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            $schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
             array_set($data, 'start_date', $schedule_date);
 
             array_set($data, 'end_date', $schedule_date);
@@ -1899,7 +1899,7 @@ class OrderController extends \BaseController {
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
                 if(trim($data['preferred_starting_date']) != '-'){
                     $date_arr = explode('-', $data['preferred_starting_date']);
-                    $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                    $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
                     array_set($data, 'start_date', $preferred_starting_date);
                     array_set($data, 'preferred_starting_date', $preferred_starting_date);
                 }
