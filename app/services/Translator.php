@@ -597,14 +597,21 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				// Decide vendor type
 				$resultobject->vendor_type = "";
 				if($result['category'] != "personal trainer"){
-					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages" && $result['category'] != "healthy tiffins"){
+
 						if($result['business_type'] == 0){
 							$resultobject->vendor_type = "Trainer";
 						}else{
 							$resultobject->vendor_type = "Outlet";
 						}
 					}else{
-						$resultobject->vendor_type = "";
+						if($result['category'] == "dietitians and nutritionists" ){
+							$resultobject->vendor_type = "";
+						}elseif($result['category'] == "healthy tiffins"){
+							$resultobject->vendor_type = "healthy tiffins";
+						}else{
+							$resultobject->vendor_type = "healthy snacks";
+						}
 					}
 				}else{
 					$resultobject->vendor_type = "Trainer";
