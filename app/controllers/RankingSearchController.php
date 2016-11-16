@@ -52,7 +52,7 @@ class RankingSearchController extends \BaseController
 
         $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
         $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
-        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';
         $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
         $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
         $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
@@ -82,11 +82,11 @@ class RankingSearchController extends \BaseController
             }}
         }
     },';
-}
+        }
 
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -146,12 +146,12 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
       }
   },';
 
-  $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
-  $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
+        $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+        $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
-  $body = '{
+        $body = '{
     "from": '.$from.',
     "size": '.$size.',
     "aggs": {'.$facetsvalue.'},
@@ -164,227 +164,227 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
     '.$sort.'
 }';
 
-$request = array(
-    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
-    'port' => Config::get('app.es.port'),
-    'method' => 'POST',
-    'postfields' => $body
-    );
+        $request = array(
+            'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+            'port' => Config::get('app.es.port'),
+            'method' => 'POST',
+            'postfields' => $body
+        );
 
-$search_results     =   es_curl_request($request);
+        $search_results     =   es_curl_request($request);
 
-$response       =   [
+        $response       =   [
 
-'search_results' => json_decode($search_results,true)];
+            'search_results' => json_decode($search_results,true)];
 
-return Response::json($response);
+        return Response::json($response);
 
-}
-
-public function CategoryAmenities()
-{
-    $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
-    $city     =  (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
-    $city_id = 0;
-    switch ($city) {
-        case 'mumbai':
-        $city_id = 1;
-        break;
-        case 'pune':
-        $city_id = 2;
-        break;
-        case 'bangalore':
-        $city_id = 3;
-        break;
-        case 'delhi':
-        $city_id = 4;
-        break;
-        case 'hyderabad':
-        $city_id = 5;
-        break;
-        case 'ahmedabad':
-        $city_id = 6;
-        break; 
-        case 'gurgaon':
-        $city_id = 8;
-        break;
-        case 'noida':
-        $city_id = 9;
-        break;           
-        default:                
-        break;
     }
-    
-    $categorytag_offerings = '';
-    if($category != '')
-    {
-        $categorytag_offerings = Findercategorytag::active()
-        ->where('slug', '=', url_slug(array($category)))
-        ->whereIn('cities',array($city_id))
-        ->with('offerings')
-        ->orderBy('ordering')
-        ->get(array('_id','name','offering_header','slug','status','offerings'));
-    } 
-    
 
-    $meta_title = $meta_description = $meta_keywords = '';
-    if($category != ''){
-        $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
-        $meta_title         = $findercategory['meta']['title'];
-        $meta_description   = $findercategory['meta']['description'];
-        $meta_keywords      = $findercategory['meta']['keywords'];
-    }                                 
-    $resp  =    array(
-        'meta_title' => $meta_title,
-        'meta_description' => $meta_description,
-        'meta_keywords' => $meta_keywords,                                        
-        'catoff' => $categorytag_offerings
+    public function CategoryAmenities()
+    {
+        $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
+        $city     =  (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+        $city_id = 0;
+        switch ($city) {
+            case 'mumbai':
+                $city_id = 1;
+                break;
+            case 'pune':
+                $city_id = 2;
+                break;
+            case 'bangalore':
+                $city_id = 3;
+                break;
+            case 'delhi':
+                $city_id = 4;
+                break;
+            case 'hyderabad':
+                $city_id = 5;
+                break;
+            case 'ahmedabad':
+                $city_id = 6;
+                break;
+            case 'gurgaon':
+                $city_id = 8;
+                break;
+            case 'noida':
+                $city_id = 9;
+                break;
+            default:
+                break;
+        }
+
+        $categorytag_offerings = '';
+        if($category != '')
+        {
+            $categorytag_offerings = Findercategorytag::active()
+                ->where('slug', '=', url_slug(array($category)))
+                ->whereIn('cities',array($city_id))
+                ->with('offerings')
+                ->orderBy('ordering')
+                ->get(array('_id','name','offering_header','slug','status','offerings'));
+        }
+
+
+        $meta_title = $meta_description = $meta_keywords = '';
+        if($category != ''){
+            $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
+            $meta_title         = $findercategory['meta']['title'];
+            $meta_description   = $findercategory['meta']['description'];
+            $meta_keywords      = $findercategory['meta']['keywords'];
+        }
+        $resp  =    array(
+            'meta_title' => $meta_title,
+            'meta_description' => $meta_description,
+            'meta_keywords' => $meta_keywords,
+            'catoff' => $categorytag_offerings
         );
         //return Response::json($search_results); exit;
-    return Response::json($resp);
-    
+        return Response::json($resp);
 
-}
 
-public function getcategories(){
-    
-    /*$city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
-    $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->get(array('name','_id','slug'));
+    }
 
-    return Response::json($categorytags);  */
+    public function getcategories(){
 
-    $city_id     =  (Input::json()->get('city_id')) ? (int)Input::json()->get('city_id') : 1;
+        /*$city_id     =  (Input::json()->get('city_id')) ? Input::json()->get('city_id') : 'mumbai';
+        $categorytags           =       Findercategorytag::active()->whereIn('cities',array($city_id))->orderBy('ordering')->get(array('name','_id','slug'));
 
-    $category_slug = array(
-        "gyms",
-        "yoga",
-        "zumba",
-        "cross-functional-training",
-        "pilates",
-        "crossfit",
-        "mma-and-kick-boxing",
-        "dance",
-        "fitness-studios",
-        "marathon-training",
-        "healthy-tiffins",
-        "personal-trainers",
-        "swimming",
-        "spinning-and-indoor-cycling",
-        "aerobics",
-       //"luxury-hotels",
-        "healthy-snacks-and-beverages",
-        "sport-nutrition-supliment-stores",
-        "kids-fitness",
-        "dietitians-and-nutritionists"
-    );
+        return Response::json($categorytags);  */
 
-    $category           =       Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
+        $city_id     =  (Input::json()->get('city_id')) ? (int)Input::json()->get('city_id') : 1;
 
-    $ordered_category = array();
+        $category_slug = array(
+            "gyms",
+            "yoga",
+            "zumba",
+            "cross-functional-training",
+            "pilates",
+            "crossfit",
+            "mma-and-kick-boxing",
+            "dance",
+            "fitness-studios",
+            "marathon-training",
+            "healthy-tiffins",
+            "personal-trainers",
+            "swimming",
+            "spinning-and-indoor-cycling",
+            "aerobics",
+            //"luxury-hotels",
+            "healthy-snacks-and-beverages",
+            "sport-nutrition-supliment-stores",
+            "kids-fitness",
+            "dietitians-and-nutritionists"
+        );
 
-    foreach ($category_slug as $category_slug_key => $category_slug_value){
+        $category           =       Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
 
-        foreach ($category as $category_key => $category_value){
+        $ordered_category = array();
 
-            if($category_value['slug'] == $category_slug_value){
+        foreach ($category_slug as $category_slug_key => $category_slug_value){
 
-                $ordered_category[] = $category_value;
-                break;
+            foreach ($category as $category_key => $category_value){
+
+                if($category_value['slug'] == $category_slug_value){
+
+                    $ordered_category[] = $category_value;
+                    break;
+                }
             }
         }
+
+        return Response::json($ordered_category);
     }
 
-    return Response::json($ordered_category); 
-}
+    public function getsearchmetadata(){
+        $category = (Input::json()->get('category')) ? Input::json()->get('category') : 'All-Fitness';
+        $meta_title = $meta_description = $meta_keywords = '';
+        if($category != ''){
+            $findercategory     =   Findercategory::where('slug', '=', url_slug(array($category)))->first(array('meta'));
+            $meta_title         = $findercategory['meta']['title'];
+            $meta_description   = $findercategory['meta']['description'];
+            $meta_keywords      = $findercategory['meta']['keywords'];
+        }
 
-public function getsearchmetadata(){
-    $category = (Input::json()->get('category')) ? Input::json()->get('category') : 'All-Fitness';
-    $meta_title = $meta_description = $meta_keywords = '';       
-    if($category != ''){
-        $findercategory     =   Findercategory::where('slug', '=', url_slug(array($category)))->first(array('meta'));
-        $meta_title         = $findercategory['meta']['title'];
-        $meta_description   = $findercategory['meta']['description'];
-        $meta_keywords      = $findercategory['meta']['keywords'];
-    } 
-
-    $resp  =    array(
-        'meta_title' => $meta_title,
-        'meta_description' => $meta_description,
-        'meta_keywords' => $meta_keywords           
+        $resp  =    array(
+            'meta_title' => $meta_title,
+            'meta_description' => $meta_description,
+            'meta_keywords' => $meta_keywords
         );
-    
-    return Response::json($resp);
-}
 
-public function CategoryAmenitiesv2()
-{
-    $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
-    $city_id     =  (Input::json()->get('city')) ? Input::json()->get('city') : 1;
+        return Response::json($resp);
+    }
 
-    $categorytag_offerings = '';
-    if($category != '')
+    public function CategoryAmenitiesv2()
     {
-        $categorytag_offerings = Findercategorytag::active()
-        ->where('slug', '=', url_slug(array($category)))
-        ->whereIn('cities',array($city_id))
-        ->with('offerings')
-        ->orderBy('ordering')
-        ->get(array('_id','name','offering_header','slug','status','offerings'));
-    } 
-    
-    
-    $meta_title = $meta_description = $meta_keywords = '';
-    if($category != ''){
-        $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
-        $meta_title         = $findercategory['meta']['title'];
-        $meta_description   = $findercategory['meta']['description'];
-        $meta_keywords      = $findercategory['meta']['keywords'];
-    }                                 
-    $resp  =    array(
-        'meta_title' => $meta_title,
-        'meta_description' => $meta_description,
-        'meta_keywords' => $meta_keywords,                                        
-        'catoff' => $categorytag_offerings
+        $category =  (Input::json()->get('category')) ? Input::json()->get('category') : '';
+        $city_id     =  (Input::json()->get('city')) ? Input::json()->get('city') : 1;
+
+        $categorytag_offerings = '';
+        if($category != '')
+        {
+            $categorytag_offerings = Findercategorytag::active()
+                ->where('slug', '=', url_slug(array($category)))
+                ->whereIn('cities',array($city_id))
+                ->with('offerings')
+                ->orderBy('ordering')
+                ->get(array('_id','name','offering_header','slug','status','offerings'));
+        }
+
+
+        $meta_title = $meta_description = $meta_keywords = '';
+        if($category != ''){
+            $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
+            $meta_title         = $findercategory['meta']['title'];
+            $meta_description   = $findercategory['meta']['description'];
+            $meta_keywords      = $findercategory['meta']['keywords'];
+        }
+        $resp  =    array(
+            'meta_title' => $meta_title,
+            'meta_description' => $meta_description,
+            'meta_keywords' => $meta_keywords,
+            'catoff' => $categorytag_offerings
         );
         //return Response::json($search_results); exit;
-    return Response::json($resp);
-    
-}
+        return Response::json($resp);
 
-public function getRankedFinderResultsMobile()
-{
-    $searchParams = array();
-    $facetssize =  $this->facetssize;
-    $rankField = 'rankv2';
-    $type = "finder";
-    $filters = "";
-    $from =  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
-    $size =  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;
-    $location = (Input::json()->get('location')) ? Input::json()->get('location') : 'mumbai';
-    $orderfield  = (Input::json()->get('sort')) ? Input::json()->get('sort') : '';
-    $order = (Input::json()->get('order')) ? Input::json()->get('order') : '';
-    $lat = (Input::json()->get('lat')) ? Input::json()->get('lat') : 0 ;
-    $lon = (Input::json()->get('lon')) ? Input::json()->get('lon') : 0 ; 
+    }
+
+    public function getRankedFinderResultsMobile()
+    {
+        $searchParams = array();
+        $facetssize =  $this->facetssize;
+        $rankField = 'rankv2';
+        $type = "finder";
+        $filters = "";
+        $from =  (Input::json()->get('from')) ? Input::json()->get('from') : 0;
+        $size =  (Input::json()->get('size')) ? Input::json()->get('size') : $this->limit;
+        $location = (Input::json()->get('location')) ? Input::json()->get('location') : 'mumbai';
+        $orderfield  = (Input::json()->get('sort')) ? Input::json()->get('sort') : '';
+        $order = (Input::json()->get('order')) ? Input::json()->get('order') : '';
+        $lat = (Input::json()->get('lat')) ? Input::json()->get('lat') : 0 ;
+        $lon = (Input::json()->get('lon')) ? Input::json()->get('lon') : 0 ;
         //input filters
-    $category = Input::json()->get('category');
+        $category = Input::json()->get('category');
 
-    $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
-    $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
+        $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
+        $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
 
 
 
-    $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
-    $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
-    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';        
-    $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
-    $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
-    $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
-    $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
-    $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.str_ireplace(',', '","',Input::json()->get('trialdays')).'"],"_cache": true}},'  : '';
+        $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+        $category_filter =  Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('category'))).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.str_ireplace(',', '","', strtolower(Input::json()->get('budget'))).'"],"_cache": true}},': '';
+        $regions_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "locationtags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+        $region_tags_filter = ((Input::json()->get('regions'))) ? '{"terms" : {  "region_tags": ["'.str_ireplace(',', '","',Input::json()->get('regions')).'"],"_cache": true}},'  : '';
+        $offerings_filter = ((Input::json()->get('offerings'))) ? '{"terms" : {  "offerings": ["'.str_ireplace(',', '","',Input::json()->get('offerings')).'"],"_cache": true}},'  : '';
+        $facilities_filter = ((Input::json()->get('facilities'))) ? '{"terms" : {  "facilities": ["'.str_ireplace(',', '","',Input::json()->get('facilities')).'"],"_cache": true}},'  : '';
+        $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.str_ireplace(',', '","',Input::json()->get('trialdays')).'"],"_cache": true}},'  : '';
 
-    $trial_range_filter = '';
-    if(($trial_time_from !== '')&&($trial_time_to !== '')){
-        $trial_range_filter = '  {
+        $trial_range_filter = '';
+        if(($trial_time_from !== '')&&($trial_time_to !== '')){
+            $trial_range_filter = '  {
             "nested": {
               "path": "trials",
               "query": {
@@ -406,10 +406,10 @@ public function getRankedFinderResultsMobile()
         }}
     }
 },';
-}
+        }
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -469,12 +469,12 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
       }
   },';
 
-  $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
-  $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
+        $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+        $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
-  $body = '{
+        $body = '{
     "fields": ["_source"],
     "script_fields":{
         "distance": {
@@ -497,84 +497,84 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
 '.$sort.'
 }';
 
-$request = array(
-    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
-    'port' => Config::get('app.es.port'),
-    'method' => 'POST',
-    'postfields' => $body
-    );
+        $request = array(
+            'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+            'port' => Config::get('app.es.port'),
+            'method' => 'POST',
+            'postfields' => $body
+        );
 
 
-$search_results     =   es_curl_request($request);
+        $search_results     =   es_curl_request($request);
 
-$response       =   [
+        $response       =   [
 
-'search_results' => json_decode($search_results,true)];
+            'search_results' => json_decode($search_results,true)];
 
-return Response::json($response);
+        return Response::json($response);
 
-}
+    }
 
-public function getRankedFinderResultsApp()
-{
-    // echo "yo";
-   // return Input::json()->all();
-    $searchParams = array();
-    $facetssize =  $this->facetssize;
-    $rankField = 'rankv2';
-    $type = "finder";
-    $filters = "";
-    $from    =         Input::json()->get('offset')['from'];
-    $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
-    //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
-    $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
-    $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
-    $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
-    $locat = Input::json()->get('location');
-    $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
-    $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
+    public function getRankedFinderResultsApp()
+    {
+        // echo "yo";
+        // return Input::json()->all();
+        $searchParams = array();
+        $facetssize =  $this->facetssize;
+        $rankField = 'rankv2';
+        $type = "finder";
+        $filters = "";
+        $from    =         Input::json()->get('offset')['from'];
+        $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+        //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+        $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
+        $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
+        $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+        $locat = Input::json()->get('location');
+        $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
+        $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
         //input filters
 
-    $category = Input::json()->get('category');
+        $category = Input::json()->get('category');
 
-    $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
-    $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
+        $trial_time_from = (Input::json()->get('trialfrom')) ? Input::json()->get('trialfrom') : '';
+        $trial_time_to = (Input::json()->get('trialto')) ? Input::json()->get('trialto') : '';
 
 
-    $region = Input::json()->get('regions');
-    $locationCount = 0;
-    if(count($region) == 1){
+        $region = Input::json()->get('regions');
+        $locationCount = 0;
+        if(count($region) == 1){
 
-        $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
+            $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
 
-        $locationCount = Location::where('slug',$region_slug)->count();
+            $locationCount = Location::where('slug',$region_slug)->count();
 
-        if($locationCount > 0){
+            if($locationCount > 0){
+                $lat = "";
+                $lon = "";
+            }
+
+        }else{
             $lat = "";
             $lon = "";
+            $locationCount = count($region);
         }
 
-    }else{
-        $lat = "";
-        $lon = "";
-        $locationCount = count($region);
-    }
-    
-    //return Input::json()->get('offset')['from'];
+        //return Input::json()->get('offset')['from'];
 
-    $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
-    $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
-    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
-    $regions_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $region_tags_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
-    $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
-    $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
-    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-    
-    $trial_range_filter = '';
-    if(($trial_time_from !== '')&&($trial_time_to !== '')){
-        $trial_range_filter = '  {
+        $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+        $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
+        $regions_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $region_tags_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
+        $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
+        $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+
+        $trial_range_filter = '';
+        if(($trial_time_from !== '')&&($trial_time_to !== '')){
+            $trial_range_filter = '  {
             "nested": {
               "path": "trials",
               "query": {
@@ -596,10 +596,10 @@ public function getRankedFinderResultsApp()
         }}
     }
 },';
-}
+        }
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
-$must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$regions_filter.$geo_location_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
+        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+        $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$category_filter.$regions_filter.$geo_location_filter.$budget_filter.$trials_day_filter.$trial_range_filter,',');
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
 
@@ -657,12 +657,12 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
       }
   },';
 
-  $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
-  $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facilities_facets = '"facilities": {"terms": {"field": "facilities","include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
-  $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
+        $location_facets = '"locations": {"terms": {"field": "locationtags","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+        $offerings_facets = '"offerings": {"terms": {"field": "offerings","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+        $facilities_facets = '"facilities": {"terms": {"field": "facilities","include" : "personal training|free trial|group classes|locker and shower facility|parking|sunday open","min_doc_count":0,"size":"500","order": {"_term": "asc"}}},';
+        $facetsvalue = trim($regions_facets.$location_facets.$offerings_facets.$facilities_facets.$budgets_facets,',');
 
-  $body = '{
+        $body = '{
     "from": '.$from.',
     "size": '.$size.',
     "aggs": {'.$facetsvalue.'},
@@ -675,88 +675,88 @@ $must_filtervalue = trim($location_filter.$offerings_filter.$facilities_filter.$
     '.$sort.'
 }';
 
-$request = array(
-    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
-    'port' => Config::get('app.es.port'),
-    'method' => 'POST',
-    'postfields' => $body
-    );
+        $request = array(
+            'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+            'port' => Config::get('app.es.port'),
+            'method' => 'POST',
+            'postfields' => $body
+        );
 
-$search_results     =   es_curl_request($request);
-$search_results1    =   json_decode($search_results, true);
+        $search_results     =   es_curl_request($request);
+        $search_results1    =   json_decode($search_results, true);
 
-$searchresulteresponse = Translator::translate_searchresults($search_results1);
-$searchresulteresponse->meta->number_of_records = $size;
-$searchresulteresponse->meta->from = $from;
-$searchresulteresponse->meta->sortfield = $orderfield;
-$searchresulteresponse->meta->sortorder = $order;
+        $searchresulteresponse = Translator::translate_searchresults($search_results1);
+        $searchresulteresponse->meta->number_of_records = $size;
+        $searchresulteresponse->meta->from = $from;
+        $searchresulteresponse->meta->sortfield = $orderfield;
+        $searchresulteresponse->meta->sortorder = $order;
 
-$searchresulteresponse1 = json_encode($searchresulteresponse, true);
+        $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
-$response       =   json_decode($searchresulteresponse1,true);
+        $response       =   json_decode($searchresulteresponse1,true);
 
-return Response::json($response);
+        return Response::json($response);
 
-}
-
-public function getRankedFinderResultsAppv2()
-{
-    // echo "yo";
-   // return Input::json()->all();
-    $searchParams = array();
-    $facetssize =  $this->facetssize;
-    $rankField = 'rankv2';
-    $type = "finder";
-    $filters = "";
-    $from    =         Input::json()->get('offset')['from'];
-    $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
-    //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
-    $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
-    $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
-    $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
-    $vip_trial    =         Input::json()->get('vip_trial') ? array(intval(Input::json()->get('vip_trial'))) : [1,0];
-    $vip_trial = implode($vip_trial,',');
-    $locat = Input::json()->get('location');
-    $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
-    $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
-    $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
-
-    $object_keys = array();
-        //input filters
-
-    $category = Input::json()->get('category');
-
-    $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
-    $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
-
-
-    $region = Input::json()->get('regions');
-    $locationCount = 0;
-    if(count($region) == 1){
-
-        $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
-
-        $locationCount = Location::where('slug',$region_slug)->count();
-
-        if($locationCount > 0){
-            $lat = "";
-            $lon = "";
-        }
-
-    }else{
-        $lat = "";
-        $lon = "";
-        $locationCount = count($region);
     }
 
-    // return $category;
-    $offering_regex = $this->_getOfferingRegex($category);
+    public function getRankedFinderResultsAppv2()
+    {
+        // echo "yo";
+        // return Input::json()->all();
+        $searchParams = array();
+        $facetssize =  $this->facetssize;
+        $rankField = 'rankv2';
+        $type = "finder";
+        $filters = "";
+        $from    =         Input::json()->get('offset')['from'];
+        $size    =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
+        //$location =        (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+        $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
+        $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
+        $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+        $vip_trial    =         Input::json()->get('vip_trial') ? array(intval(Input::json()->get('vip_trial'))) : [1,0];
+        $vip_trial = implode($vip_trial,',');
+        $locat = Input::json()->get('location');
+        $lat     =         (isset($locat['lat'])) ? $locat['lat']  : '';
+        $lon    =         (isset($locat['long'])) ? $locat['long']  : '';
+        $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
 
-    //return Input::json()->get('offset')['from'];
-    $must_not_filter = '';
-    
-    if($category === ''){
-        $must_not_filter = ',
+        $object_keys = array();
+        //input filters
+
+        $category = Input::json()->get('category');
+
+        $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
+        $trial_time_to = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
+
+
+        $region = Input::json()->get('regions');
+        $locationCount = 0;
+        if(count($region) == 1){
+
+            $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
+
+            $locationCount = Location::where('slug',$region_slug)->count();
+
+            if($locationCount > 0){
+                $lat = "";
+                $lon = "";
+            }
+
+        }else{
+            $lat = "";
+            $lon = "";
+            $locationCount = count($region);
+        }
+
+        // return $category;
+        $offering_regex = $this->_getOfferingRegex($category);
+
+        //return Input::json()->get('offset')['from'];
+        $must_not_filter = '';
+
+        if($category === ''){
+            $must_not_filter = ',
         "must_not": [{
             "terms": {
                 "categorytags": [
@@ -769,32 +769,32 @@ public function getRankedFinderResultsAppv2()
             }
         }]
         ';
-    }
+        }
 
-    $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
 
-    $free_trial_enable = Input::json()->get('free_trial_enable');
-    $trial_filter = '';
-    if(intval($free_trial_enable) == 1){
-        $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
+        $free_trial_enable = Input::json()->get('free_trial_enable');
+        $trial_filter = '';
+        if(intval($free_trial_enable) == 1){
+            $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
 
-    }
-    $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
+        }
+        $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
 //    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
-    $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
-    $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
-    $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
-    $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
-    $regions_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $region_tags_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
-    $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
-    $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
-    $trials_day_filterv2 = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "day": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
-    $trial_range_filter = '';
-    if(($trial_time_from !== '')&&($trial_time_to !== '')){
+        $location_filter =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
+        $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
+        $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+        $budget_filter = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
+        $regions_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $region_tags_filter = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $offerings_filter = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
+        $facilities_filter = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
+        $trials_day_filter = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+        $trials_day_filterv2 = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "day": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+        $trial_range_filter = '';
+        if(($trial_time_from !== '')&&($trial_time_to !== '')){
 
-        $trial_range_filter = '  {
+            $trial_range_filter = '  {
             "nested": {
               "path": "trials",
               "query": {
@@ -816,13 +816,13 @@ public function getRankedFinderResultsAppv2()
         }}
     }
 },';
-}
+        }
 
-$service_slots_filters = '';
+        $service_slots_filters = '';
 
-if(($trials_day_filter !== '')||($trial_time_from !== '')||($trial_time_to !== ''))
-{
-    $service_slots_filters = ' {"nested": {
+        if(($trials_day_filter !== '')||($trial_time_from !== '')||($trial_time_to !== ''))
+        {
+            $service_slots_filters = ' {"nested": {
       "path": "service_level_data.slots_nested",
       "query": {"filtered": {
         "filter": {"bool": {"must": [
@@ -832,26 +832,26 @@ if(($trials_day_filter !== '')||($trial_time_from !== '')||($trial_time_to !== '
 }
 }}
 }},';
-}
+        }
 
-$service_category_synonyms_filters = '';
+        $service_category_synonyms_filters = '';
 
-if(($category !== '')&&($category !== 'fitness studios'))
-{
-    $service_category_synonyms_filters = '{
+        if(($category !== '')&&($category !== 'fitness studios'))
+        {
+            $service_category_synonyms_filters = '{
       "term": {
         "service_category_synonyms": "'.$category.'"
     }
 },';
-}
+        }
 
-$all_nested_filters = trim($service_slots_filters.$service_category_synonyms_filters,',');
+        $all_nested_filters = trim($service_slots_filters.$service_category_synonyms_filters,',');
 
-$service_level_nested_filter = '';
+        $service_level_nested_filter = '';
 
-if($all_nested_filters !== '')
-{
-    $service_level_nested_filter = '{
+        if($all_nested_filters !== '')
+        {
+            $service_level_nested_filter = '{
   "nested": {
     "path": "service_level_data",
     "query": {"filtered": {
@@ -861,14 +861,14 @@ if($all_nested_filters !== '')
   }}
 }
 },';
-}
+        }
 
-$should_filtervalue = trim($regions_filter.$region_tags_filter,',');
+        $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-$must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
-if($trials_day_filter !== ''){
-    $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
-}
+        $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+        if($trials_day_filter !== ''){
+            $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+        }
 
         $shouldfilter = '"should": ['.$should_filtervalue.'],'; //used for location
         $mustfilter = '"must": ['.$must_filtervalue.']';        //used for offering and facilities
@@ -893,7 +893,7 @@ if($trials_day_filter !== ''){
 //                }}';
 //            }
 //            if($category_filter != '') {
-                $sort = '"sort":[{"rank":{"order":"'.$order.'"}}]';
+            $sort = '"sort":[{"rank":{"order":"'.$order.'"}}]';
 //            }
 //            else{
 //                $sort = '"sort":[{"rankv2":{"order":"'.$order.'"}}]';
@@ -911,10 +911,10 @@ if($trials_day_filter !== ''){
         }
 
         if($mustfilter != ''){
-         $filters_post = '"post_filter": {
+            $filters_post = '"post_filter": {
             "bool" : {'.$filtervalue_post.$must_not_filter.'
-        }},';            
-    }
+        }},';
+        }
 
         /*
 
@@ -990,7 +990,7 @@ if($trials_day_filter !== ''){
   },';
 
 
-  $locationtags_facets = ' "filtered_locationtags": {
+        $locationtags_facets = ' "filtered_locationtags": {
     '.$location_bool.',
     "aggs": {
         "offerings": {
@@ -1004,7 +1004,7 @@ if($trials_day_filter !== ''){
     }
 },';
 
-$facilities_facets = ' "filtered_facilities": {
+        $facilities_facets = ' "filtered_facilities": {
     '.$facilities_bool.',
     "aggs": {
         "facilities": {
@@ -1019,7 +1019,7 @@ $facilities_facets = ' "filtered_facilities": {
     }
 },';
 
-$offerings_facets = ' "filtered_offerings": {
+        $offerings_facets = ' "filtered_offerings": {
     '.$offering_bool.',
     "aggs": {
         "offerings": {
@@ -1034,7 +1034,7 @@ $offerings_facets = ' "filtered_offerings": {
     }
 },';
 
-$budgets_facets = ' "filtered_budgets": {
+        $budgets_facets = ' "filtered_budgets": {
     '.$budgets_bool.',
     "aggs": {
         "budgets": {
@@ -1048,7 +1048,7 @@ $budgets_facets = ' "filtered_budgets": {
     }
 },';
 
-$vip_trial_facets = ' "filtered_vip_trial": {
+        $vip_trial_facets = ' "filtered_vip_trial": {
     '.$vip_trial_bool.',
     "aggs": {
         "vip_trial": {
@@ -1062,7 +1062,7 @@ $vip_trial_facets = ' "filtered_vip_trial": {
     }
 },';
 
-$trialdays_facets = ' "filtered_trials": {
+        $trialdays_facets = ' "filtered_trials": {
     '.$trialdays_bool.',
     "aggs": {
    "level1": {
@@ -1103,11 +1103,11 @@ $trialdays_facets = ' "filtered_trials": {
 },';
 
 
-$category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
+        $category_facets = '"category": {"terms": {"field": "category","min_doc_count":1,"size":"500","order": {"_term": "asc"}}},';
 
-$facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets.$vip_trial_facets,',');
+        $facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets.$vip_trial_facets,',');
 
-$body = '{
+        $body = '{
     "from": '.$from.',
     "size": '.$size.',
     "aggs": {'.$facetsvalue.'},
@@ -1118,12 +1118,12 @@ $body = '{
 //    return $body;
 
 
-$request = array(
-    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
-    'port' => Config::get('app.es.port'),
-    'method' => 'POST',
-    'postfields' => $body
-    );
+        $request = array(
+            'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+            'port' => Config::get('app.es.port'),
+            'method' => 'POST',
+            'postfields' => $body
+        );
 
 // $request = array(
 //     'url' => "http://localhost:9200/"."fitternity_finder/finder/_search",
@@ -1131,62 +1131,62 @@ $request = array(
 //     'method' => 'POST',
 //     'postfields' => $body
 //     );
-     
-$search_results     =   es_curl_request($request);
 
-$search_results1    =   json_decode($search_results, true);
-$searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
-$searchresulteresponse->meta->number_of_records = intval($size);
-$searchresulteresponse->meta->from = intval($from);
-$searchresulteresponse->meta->sortfield = $orderfield;
-$searchresulteresponse->meta->sortorder = $order;
-$searchresulteresponse->meta->request = Input::all();
-$searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
+        $search_results     =   es_curl_request($request);
 
-$searchresulteresponse1 = json_encode($searchresulteresponse, true);
+        $search_results1    =   json_decode($search_results, true);
+        $searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
+        $searchresulteresponse->meta->number_of_records = intval($size);
+        $searchresulteresponse->meta->from = intval($from);
+        $searchresulteresponse->meta->sortfield = $orderfield;
+        $searchresulteresponse->meta->sortorder = $order;
+        $searchresulteresponse->meta->request = Input::all();
+        $searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
 
-$response       =   json_decode($searchresulteresponse1,true);
+        $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
-return Response::json($response);
+        $response       =   json_decode($searchresulteresponse1,true);
 
-}
+        return Response::json($response);
 
-public function CustomResponse($response, $keys) {
-
-    if(count($keys) <= 0){
-        return $response;
     }
 
-    $resultlist = $response->results->resultlist;
-    $responseaggregationlist = $response->results->aggregationlist;
-    $responsemeta = $response->meta;
+    public function CustomResponse($response, $keys) {
 
-    $newResponse = array();
-    $newResultList = array();
-    $newRecord = array();
-
-    foreach ($resultlist as $res){
-        $res = $res->object;
-        $newObj = array();
-        foreach ($keys as $key){
-            isset($res->$key) ? $newObj[$key]=$res->$key : null;
+        if(count($keys) <= 0){
+            return $response;
         }
-        $newRecord['object'] = $newObj;
-        array_push($newResultList,$newRecord);
+
+        $resultlist = $response->results->resultlist;
+        $responseaggregationlist = $response->results->aggregationlist;
+        $responsemeta = $response->meta;
+
+        $newResponse = array();
+        $newResultList = array();
+        $newRecord = array();
+
+        foreach ($resultlist as $res){
+            $res = $res->object;
+            $newObj = array();
+            foreach ($keys as $key){
+                isset($res->$key) ? $newObj[$key]=$res->$key : null;
+            }
+            $newRecord['object'] = $newObj;
+            array_push($newResultList,$newRecord);
+        }
+
+        $newResponse['results'] = array();
+        $newResponse['results']['resultlist'] = $newResultList;
+        $newResponse['results']['aggregationlist'] = $responseaggregationlist;
+        $newResponse['meta'] = $responsemeta;
+
+        return $newResponse;
     }
 
-    $newResponse['results'] = array();
-    $newResponse['results']['resultlist'] = $newResultList;
-    $newResponse['results']['aggregationlist'] = $responseaggregationlist;
-    $newResponse['meta'] = $responsemeta;
 
-    return $newResponse;
-}
+    /********************************************google places search api *************************************/
 
-
-/********************************************google places search api *************************************/
-
-public function getRankedFinderResultsAppv3()
+    public function getRankedFinderResultsAppv3()
     {
         // echo "yo";
         // return Input::json()->all();
@@ -1747,48 +1747,48 @@ public function getRankedFinderResultsAppv3()
 //     'postfields' => $body
 //     );
 
-    $search_results     =   es_curl_request($request);
+        $search_results     =   es_curl_request($request);
 //    return $search_results;
 
-$search_results1    =   json_decode($search_results, true);
-$searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
-$searchresulteresponse->meta->number_of_records = intval($size);
-$searchresulteresponse->meta->from = intval($from);
-$searchresulteresponse->meta->sortfield = $orderfield;
-$searchresulteresponse->meta->sortorder = $order;
+        $search_results1    =   json_decode($search_results, true);
+        $searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
+        $searchresulteresponse->meta->number_of_records = intval($size);
+        $searchresulteresponse->meta->from = intval($from);
+        $searchresulteresponse->meta->sortfield = $orderfield;
+        $searchresulteresponse->meta->sortorder = $order;
 
-$searchresulteresponse1 = json_encode($searchresulteresponse, true);
+        $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
-$response       =   json_decode($searchresulteresponse1,true);
+        $response       =   json_decode($searchresulteresponse1,true);
 
-return Response::json($response);
+        return Response::json($response);
 
-}
-
-
-public function searchDirectPaymentEnabled(){
-
-    $from = (Input::json()->get('from')) ? Input::json()->get('from') : 0;
-    $size = (Input::json()->get('size')) ? Input::json()->get('size') :10;
-    $city = (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
-    $category = (Input::json()->get('category')) ? Input::json()->get('category') : '';
-    $group_by_flag = (Input::json()->get('group_by_flag')) ? Input::json()->get('group_by_flag') : false;
-
-    $city_filter =  '{"term" : { "city" : "'.$city.'", "_cache": true }},';
-    $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
-    $region_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-    $direct_payment_filter = '{"term" : {  "direct_payment_enable": true,"_cache": true}},';
-
-    $post_filter = trim($direct_payment_filter.$category_filter.$city_filter.$region_filter,',');
+    }
 
 
+    public function searchDirectPaymentEnabled(){
 
-    $category_regex = $this->_getCategoryRegex($city);
-    //return json_decode($group_by_flag);
-    if($group_by_flag){
+        $from = (Input::json()->get('from')) ? Input::json()->get('from') : 0;
+        $size = (Input::json()->get('size')) ? Input::json()->get('size') :10;
+        $city = (Input::json()->get('city')) ? Input::json()->get('city') : 'mumbai';
+        $category = (Input::json()->get('category')) ? Input::json()->get('category') : '';
+        $group_by_flag = (Input::json()->get('group_by_flag')) ? Input::json()->get('group_by_flag') : false;
+
+        $city_filter =  '{"term" : { "city" : "'.$city.'", "_cache": true }},';
+        $category_filter = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+        $region_filter = Input::json()->get('regions') ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $direct_payment_filter = '{"term" : {  "direct_payment_enable": true,"_cache": true}},';
+
+        $post_filter = trim($direct_payment_filter.$category_filter.$city_filter.$region_filter,',');
 
 
-        $body = '{
+
+        $category_regex = $this->_getCategoryRegex($city);
+        //return json_decode($group_by_flag);
+        if($group_by_flag){
+
+
+            $body = '{
             "from": '.$from.',
             "size": '.$size.',
             "query": {
@@ -1830,23 +1830,23 @@ public function searchDirectPaymentEnabled(){
             }
         }';
 
-    }else{
+        }else{
 
 
-        $Post_filter_query = '
+            $Post_filter_query = '
         "bool": {"must": [
         '.$post_filter.'
         ]}
         ';
 
-        $query = '"query": {"filtered": {
+            $query = '"query": {"filtered": {
             "filter": {"bool": {"must": [
             '.trim($city_filter.$direct_payment_filter,',').'
             ]}}
         }},';
 
 
-        $location_tags_facets = '"filtered_cluster_locations_tags": {
+            $location_tags_facets = '"filtered_cluster_locations_tags": {
             "filter": {
                 "bool": {
                     "must": [
@@ -1876,7 +1876,7 @@ public function searchDirectPaymentEnabled(){
             }
         }';
 
-        $location_facets = '"filtered_location_tags": {
+            $location_facets = '"filtered_location_tags": {
             "filter": {
                 "bool": {
                     "must": [
@@ -1899,7 +1899,7 @@ public function searchDirectPaymentEnabled(){
         },
         ';
 
-        $category_aggregations = '"aggs": {
+            $category_aggregations = '"aggs": {
             "category_grouping": {
               "terms": {
                 "field": "categorytags",
@@ -1913,12 +1913,12 @@ public function searchDirectPaymentEnabled(){
 
 
 
-    $sort = '';
+            $sort = '';
 
-    if($category != '') {
+            if($category != '') {
 
-        $factor = evalBaseCategoryScore($category);
-        $sort = '"sort":
+                $factor = evalBaseCategoryScore($category);
+                $sort = '"sort":
         {"_script" : {
             "script" : "(doc[\'category\'].value == \'' . $category . '\' ? doc[\'rankv2\'].value + factor : doc[\'category\'].value == \'fitness studios\' ? doc[\'rank\'].value + factor + ' . $factor . ' : doc[\'rankv2\'].value + 0)",
             "type" : "number",
@@ -1929,14 +1929,14 @@ public function searchDirectPaymentEnabled(){
             },
             "order" : "desc"
         }}';
-    }
+            }
 
-    else{
-        $sort = '"sort":[{"rankv2":{"order":"desc"}}]';
-    }
+            else{
+                $sort = '"sort":[{"rankv2":{"order":"desc"}}]';
+            }
 
 
-    $body = '{
+            $body = '{
         "from": '.$from.',
         "size": '.$size.',
         '.$category_aggregations.'
@@ -1945,14 +1945,14 @@ public function searchDirectPaymentEnabled(){
         "post_filter" : {'.$Post_filter_query.'}
     }';
 
-}
+        }
 
-$request = array(
-    'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
-    'port' => Config::get('app.es.port'),
-    'method' => 'POST',
-    'postfields' => $body
-    );
+        $request = array(
+            'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
+            'port' => Config::get('app.es.port'),
+            'method' => 'POST',
+            'postfields' => $body
+        );
 
 
 
@@ -1963,133 +1963,133 @@ $request = array(
 //     'postfields' => $body
 //     );
 
-$search_results     =   es_curl_request($request);
+        $search_results     =   es_curl_request($request);
 
-$response       =   [
+        $response       =   [
 
-'search_results' => json_decode($search_results,true)];
+            'search_results' => json_decode($search_results,true)];
 
-return Response::json($response);
+        return Response::json($response);
 
-}
+    }
 
-private function _getOfferingRegex($category){
-    $regex = '';
-
-    switch($category)
-    {
-        case 'spinning and indoor cycling':
-        $regex = 'ac|gym|health bar|indoor|live dj|nutritional support|outdoor activities';
-        break;
-        case 'personal trainers' :
-        $regex = 'gender - female|mma & kickboxing|yoga|dietitian & nutritionist|pilates|zumba|aerobics|strength training|equipment-provided|certified trainer|gender - male|crossfit|free trial|functional training';
-        break;
-        case 'gyms':
-        $regex = 'steam and sauna|juice bar|cycling studio|swimming pool|nutritional support|free wifi|strength training equipment|spinning|strectching area|personal training|24 hour facility|get your own trainer|music and video entertainment|massages|physiotherapy|cardio equipment';
-        break;
-
-        case 'yoga':
-        $regex = 'ashtanga yoga|aerial yoga|hatha yoga|vinyassa yoga|power yoga|prenatal yoga|hot yoga|hot yoga|post natal yoga|iyengar yoga';
-        break;
-
-        case 'zumba':
-        $regex = 'aqua zumba|zumba classes';
-        break;
-
-        case 'cross functional training':
-        $regex = 'trampoline workout|les mills|calisthenics|cross training|group x training|TRX training|combine training';
-        break;
-
-        case 'dance':
-        $regex = 'belly dancing|krumping|locking and poppin|b boying|contemporary|hip hop|free style|rumba|zouk|kathak|bharatanatyam|odissi|ballroom|tango|ballet|jazz|salsa|bollywood|cha cha ch|waltz|bachata|masala bhangra|samba|paso doble|rock n roll|jive|';
-        break;
-
-        case 'fitness studios':
-        $regex = 'dance|aerobics|pilates|zumba|yoga|functional training|mma and kickboxing';
-        break;
-
-        case 'crossfit':
-        $regex = 'workshops|kettlebell training|olympic lifting|indoor|outdoor|open box|cardio equipment|personal training|tyres & ropes|gymnastic routines|group training';
-        break;
-
-        case 'kick boxing':
+    private function _getOfferingRegex($category){
         $regex = '';
-        break;
 
-        case 'pilates':
-        $regex = 'reformer or stott pilates|mat pilates';
-        break;
+        switch($category)
+        {
+            case 'spinning and indoor cycling':
+                $regex = 'ac|gym|health bar|indoor|live dj|nutritional support|outdoor activities';
+                break;
+            case 'personal trainers' :
+                $regex = 'gender - female|mma & kickboxing|yoga|dietitian & nutritionist|pilates|zumba|aerobics|strength training|equipment-provided|certified trainer|gender - male|crossfit|free trial|functional training';
+                break;
+            case 'gyms':
+                $regex = 'steam and sauna|juice bar|cycling studio|swimming pool|nutritional support|free wifi|strength training equipment|spinning|strectching area|personal training|24 hour facility|get your own trainer|music and video entertainment|massages|physiotherapy|cardio equipment';
+                break;
 
-        case 'mma and kick boxing':
-        $regex = 'muay thai|kick boxing|capoeira|judo|kung fu|kalaripayattu|krav maga|tai chi|mixed martial arts|taekwondo|karate|jujitsu';
-        break;
+            case 'yoga':
+                $regex = 'ashtanga yoga|aerial yoga|hatha yoga|vinyassa yoga|power yoga|prenatal yoga|hot yoga|hot yoga|post natal yoga|iyengar yoga';
+                break;
 
-        case 'healthy tiffins':
-        $regex = 'only non veg|salad|calorie counted|cuisine - international|cuisine - jain|meal type - dinner only|vegan meals|meal type - lunch only|veg and non veg|meal type - lunch and dinner|trial available|only veg|cuisine - indian';
-        break;
+            case 'zumba':
+                $regex = 'aqua zumba|zumba classes';
+                break;
 
-        case 'marathon training':
-        $regex = 'beach training|individual training|group training|road training';
-        break;
+            case 'cross functional training':
+                $regex = 'trampoline workout|les mills|calisthenics|cross training|group x training|TRX training|combine training';
+                break;
 
-        case 'swimming':
-        $regex = 'steam and sauna|jaccuzi|olympic pool|indoor pool|outdoor pool';
-        break;
+            case 'dance':
+                $regex = 'belly dancing|krumping|locking and poppin|b boying|contemporary|hip hop|free style|rumba|zouk|kathak|bharatanatyam|odissi|ballroom|tango|ballet|jazz|salsa|bollywood|cha cha ch|waltz|bachata|masala bhangra|samba|paso doble|rock n roll|jive|';
+                break;
 
-        case 'luxury hotels':
-        $regex = 'cardio equipment|weights section|stretching workout area|other fitness activities|group activities|steam and sauna|indoor swimming pool|outdoor swimming pool|jacuzzi|spa|personal training';
-        break;
+            case 'fitness studios':
+                $regex = 'dance|aerobics|pilates|zumba|yoga|functional training|mma and kickboxing';
+                break;
 
-        case 'dietitians and nutritionists':
-        $regex = 'meals provided|body fat analysis|child nutrition|pregnancy nutrition|medical or disorder related|telephonic  or  online consultation|weight management|sports nutrition';
-        break;
+            case 'crossfit':
+                $regex = 'workshops|kettlebell training|olympic lifting|indoor|outdoor|open box|cardio equipment|personal training|tyres & ropes|gymnastic routines|group training';
+                break;
 
-        case 'sport nutrition supliment stores':
-        $regex = 'Post Workout Supplements|pre workout Supplements|Accessories|Nutrition Bar|Protein Supplements|Energy & Endurance Supplements|Lean Muscle Gainer|Lean Mass Gainer|Weight Gainer|Fat Burners|Health & Wellness Supplements|Muscle Gainer|Soy Protein|Whey Protein|Fish Oil|Shakers|Mass Gainers|Food Supplements|';
-        break;
-        case '':
-        $regex  = ' ';
-        break;
+            case 'kick boxing':
+                $regex = '';
+                break;
 
-        default :
-        $regex = "nothing";
-        break;
+            case 'pilates':
+                $regex = 'reformer or stott pilates|mat pilates';
+                break;
+
+            case 'mma and kick boxing':
+                $regex = 'muay thai|kick boxing|capoeira|judo|kung fu|kalaripayattu|krav maga|tai chi|mixed martial arts|taekwondo|karate|jujitsu';
+                break;
+
+            case 'healthy tiffins':
+                $regex = 'only non veg|salad|calorie counted|cuisine - international|cuisine - jain|meal type - dinner only|vegan meals|meal type - lunch only|veg and non veg|meal type - lunch and dinner|trial available|only veg|cuisine - indian';
+                break;
+
+            case 'marathon training':
+                $regex = 'beach training|individual training|group training|road training';
+                break;
+
+            case 'swimming':
+                $regex = 'steam and sauna|jaccuzi|olympic pool|indoor pool|outdoor pool';
+                break;
+
+            case 'luxury hotels':
+                $regex = 'cardio equipment|weights section|stretching workout area|other fitness activities|group activities|steam and sauna|indoor swimming pool|outdoor swimming pool|jacuzzi|spa|personal training';
+                break;
+
+            case 'dietitians and nutritionists':
+                $regex = 'meals provided|body fat analysis|child nutrition|pregnancy nutrition|medical or disorder related|telephonic  or  online consultation|weight management|sports nutrition';
+                break;
+
+            case 'sport nutrition supliment stores':
+                $regex = 'Post Workout Supplements|pre workout Supplements|Accessories|Nutrition Bar|Protein Supplements|Energy & Endurance Supplements|Lean Muscle Gainer|Lean Mass Gainer|Weight Gainer|Fat Burners|Health & Wellness Supplements|Muscle Gainer|Soy Protein|Whey Protein|Fish Oil|Shakers|Mass Gainers|Food Supplements|';
+                break;
+            case '':
+                $regex  = ' ';
+                break;
+
+            default :
+                $regex = "nothing";
+                break;
+        }
+
+        return strtolower($regex);
     }
 
-    return strtolower($regex);
-}
+    private function _getCategoryRegex($city){
 
-private function _getCategoryRegex($city){
+        $regex = '';
+        switch ($city) {
+            case 'mumbai':
+                $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional training|mma And kick boxing|dance|marathon training|spinning and indoor cycling|personal trainers|healthy snacks and beverages|dietitians and nutritionists|swimming|sport nutrition supliment stores';
+                break;
+            case 'delhi':
+                $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+                break;
+            case 'bangalore':
+                $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional Training|mma And kick boxing|dance|spinning and indoor cycling';
+                break;
+            case 'pune':
+                $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+                break;
+            case 'gurgaon':
+                $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+                break;
+            case 'noida':
+                $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
+                break;
 
-    $regex = '';
-    switch ($city) {
-        case 'mumbai':
-        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional training|mma And kick boxing|dance|marathon training|spinning and indoor cycling|personal trainers|healthy snacks and beverages|dietitians and nutritionists|swimming|sport nutrition supliment stores';
-        break;
-        case 'delhi':
-        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
-        break;
-        case 'bangalore':
-        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|healthy tiffins|cross functional Training|mma And kick boxing|dance|spinning and indoor cycling';
-        break;
-        case 'pune':
-        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
-        break;
-        case 'gurgaon':
-        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
-        break;
-        case 'noida':
-        $regex = 'gyms|yoga|zumba|fitness studios|crossfit|pilates|cross functional training|mma And kick boxing|dance|spinning and indoor cycling';
-        break;
-        
-        default:
-            # code...
-        break;
+            default:
+                # code...
+                break;
+        }
+
+        return $regex;
+
     }
-
-    return $regex;
-
-}
 
 // public function 
 }
