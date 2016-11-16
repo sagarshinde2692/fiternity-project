@@ -1114,7 +1114,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
 		foreach ($ordersrs as $key => $value) {
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
