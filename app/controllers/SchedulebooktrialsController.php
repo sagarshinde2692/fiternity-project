@@ -1180,7 +1180,7 @@ class SchedulebooktrialsController extends \BaseController {
             $order_data['customer_id'] = (int)$this->autoRegisterCustomer($order_data);
 
             if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != ""){
-            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
+                $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
 
                 if($createMyRewardCapture['status'] !== 200){
                     return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
@@ -1518,6 +1518,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $google_pin		       =	$this->googlePin($finder_lat,$finder_lon);
 
+            $customer_profile_url     =   $this->customerProfileUrl($customer_email);
+
             $finder_photos	       = 	[];
             if(isset($finder['photos']) && count($finder['photos']) > 0){
                 foreach ($finder['photos'] as $key => $value) {
@@ -1588,6 +1590,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_name' 		       =>		$customer_name,
                 'customer_email' 		       =>		$customer_email,
                 'customer_phone' 		       =>		$customer_phone,
+                'customer_profile_url' 		   =>		$customer_profile_url,
                 'fitcard_user'			       =>		$fitcard_user,
                 'type'					       =>		$type,
 
@@ -3910,6 +3913,22 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         return $google_pin;
+    }
+
+
+    public function customerProfileUrl($email){
+
+        $profile_url = "https://fitternity.com/profile/".$email;
+
+        $shorten_url = new ShortenUrl();
+
+        $url = $shorten_url->getShortenUrl($profile_url);
+
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $profile_url = $url['url'];
+        }
+
+        return $profile_url;
     }
 
     public function booktrialAction($action,$trial_id){
