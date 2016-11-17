@@ -2358,8 +2358,9 @@ class CustomerController extends \BaseController {
 			Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
 		}
 
-		$result = Cache::tags($cache_tag)->get($city);
+		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
+
 //		$result['campaign'] = array(
 //			'image'=>'http://email.fitternity.com/277/in-app-banner.jpg',
 //			'link'=>'https://www.fitternity.com/dawnstepper',
@@ -2369,7 +2370,7 @@ class CustomerController extends \BaseController {
 //			'ratio'=>1/5
 //		);
 
-        $result['campaign'] =  new \stdClass();
+//        $result['campaign'] =  new \stdClass();
 
 		return Response::json($result);
 	}
