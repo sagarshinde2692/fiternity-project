@@ -959,7 +959,7 @@ class MigrationReverseController extends \BaseController {
             $insertData = [
                 'calorie_burn'	=>  [
                     'avg' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["avg"]) ) ? intval($data['calorie_burn']["avg"]) : 0,
-                    'type' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["type"]) ) ? intval($data['calorie_burn']["type"]) : "kcal"
+                    'type' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["type"]) ) ? $data['calorie_burn']["type"] : "kcal"
                     ]
             ];
 
