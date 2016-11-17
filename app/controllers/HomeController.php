@@ -421,8 +421,8 @@ class HomeController extends BaseController {
 
         if($type != "" && $id != ""){
 
-            $booktrialItemArr   =   ["booktrial","workoutsession","personaltrainertrial","manualtrial","manualautotrial"];
-            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"];
+            $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial","booktrialfree"];
+            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession"];
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
@@ -448,6 +448,17 @@ class HomeController extends BaseController {
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
 
             switch ($type) {
+
+                case 'booktrialfree':
+                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
+                    ];
+                    break;
 
                 case 'booktrial':
                     $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";

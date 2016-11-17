@@ -2360,14 +2360,16 @@ class CustomerController extends \BaseController {
 
 		$result = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
-		$result['campaign'] = array(
-			'image'=>'http://email.fitternity.com/277/in-app-banner.jpg',
-			'link'=>'https://www.fitternity.com/dawnstepper',
-			'title'=>'Dawn Stepper',
-			'height'=>1,
-			'width'=>5,
-			'ratio'=>1/5
-		);
+//		$result['campaign'] = array(
+//			'image'=>'http://email.fitternity.com/277/in-app-banner.jpg',
+//			'link'=>'https://www.fitternity.com/dawnstepper',
+//			'title'=>'Dawn Stepper',
+//			'height'=>1,
+//			'width'=>5,
+//			'ratio'=>1/5
+//		);
+
+        $result['campaign'] =  new \stdClass();
 
 		return Response::json($result);
 	}

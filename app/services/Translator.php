@@ -691,11 +691,14 @@ public static function translate_searchresultsv2($es_searchresult_response){
 		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 
 		$finderresult_response->results->aggregationlist->filters = array();
-		foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
-			$facval = new \stdClass();
-			$facval->key = $fac['key'];
-			$facval->count = $fac['doc_count'];
-			array_push($finderresult_response->results->aggregationlist->filters, $facval);
+		$noBasicFilterCategories = ['healthy snacks and beverages','healthy tiffins','dietitians and nutritionists','sport nutrition supliment stores'];
+        if(!in_array($result['category'],$noBasicFilterCategories)){
+			foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
+				$facval = new \stdClass();
+				$facval->key = $fac['key'];
+				$facval->count = $fac['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->filters, $facval);
+			}
 		}
 
 		$finderresult_response->results->aggregationlist->locationcluster = array();
