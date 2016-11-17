@@ -1225,7 +1225,7 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($orderData, 'order_action', 'bought');
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
-                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
             $orderdata 	=	$order->update($orderData);
