@@ -2915,5 +2915,81 @@ public function testEmail(){
 		return $services;
 	}
 
+	public function addExpiryDate(){
+
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 50;
+
+			/*$dates = array('customofferorder_expiry_date','customofferorder_validity','customofferorder_flag');
+
+			foreach ($dates as $key => $value) {
+
+				Booktrial::where('customofferorder_flag','exists',true)->unset($value);
+			}
+
+			exit;*/
+
+			//Booktrial::where('customofferorder_flag','exists',true)->unset('customofferorder_flag');
+
+			//exit;
+
+			$booktrials = $this->booktrialQuery($offset,$limit);
+
+			while(count($booktrials) != 0){
+
+				foreach ($booktrials as $key => $booktrial) {
+
+					$customofferorder   =   Fitapicustomofferorder::find($booktrial['customofferorder_id']);
+
+	                if(isset($customofferorder->validity) && $customofferorder->validity != ""){
+
+	                    $booktrial->customofferorder_expiry_date =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($booktrial->schedule_date_time)));
+	                    $booktrial->customofferorder_validity = $customofferorder->validity;
+	               
+	                }	
+
+	                $booktrial->customofferorder_flag = "1";
+
+					$booktrial->update();
+				}
+
+				$offset = $offset + 50;
+
+				$booktrials = $this->booktrialQuery($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		print_r($return);
+
+	}
+
+	public function booktrialQuery($offset,$limit){
+
+		$booktrials = Booktrial::where('customofferorder_id','exists',true)->where('customofferorder_flag','exists',false)->orderBy('update_at','desc')->skip($offset)->take($limit)->get(array("_id","customofferorder_id","customofferorder_expiry_date","schedule_date_time","customofferorder_flag"));
+
+		return $booktrials;
+	}
+
     
 }

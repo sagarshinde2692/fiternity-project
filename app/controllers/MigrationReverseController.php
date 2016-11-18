@@ -269,7 +269,7 @@ class MigrationReverseController extends \BaseController {
                 $entity = Findercategorytag::on($this->fitadmin)->find(intval($Findercategorytag['_id']));
                 $entity->update($insertData);
             }else{
-                $lastcategorytagid  = 	DB::connection($this->fitadmin)->table('findercategorytags')->count();
+                $lastcategorytagid  = 	DB::connection($this->fitadmin)->table('findercategorytags')->max('_id');
                 $categorytagid  	= 	intval($lastcategorytagid) + 1;
                 $entity 			=	new Findercategorytag($insertData);
                 $entity->setConnection($this->fitadmin);
@@ -490,7 +490,6 @@ class MigrationReverseController extends \BaseController {
                             $entity = Offering::on($this->fitadmin)->where('slug', trim($offering_slug) );
                             $entity->update($insertData);
                         }
-//                    exit();
 
                     }
 
@@ -600,8 +599,11 @@ class MigrationReverseController extends \BaseController {
             if(isset($Findercategory['detail_rating']) && !empty($Findercategory['detail_rating'])){
                 foreach ($Findercategory['detail_rating'] as $key => $value) {
                     if(isset($Finder->detail_rating[strtolower($value)])){
-                        array_push($detail_rating_summary_average, $Finder->detail_rating[strtolower($value)]["value"]);
-                        array_push($detail_rating_summary_count, $Finder->detail_rating[strtolower($value)]["count"]);
+                        array_push($detail_rating_summary_average, floatval($Finder->detail_rating[strtolower($value)]["value"]));
+                        array_push($detail_rating_summary_count, floatval($Finder->detail_rating[strtolower($value)]["count"]));
+                    }else{
+                        array_push($detail_rating_summary_average, 0);
+                        array_push($detail_rating_summary_count, 0);
                     }
                 }
             }
@@ -742,8 +744,8 @@ class MigrationReverseController extends \BaseController {
                 'peak_hours' 					        =>  (isset($Finder['peak_hours']) && count($Finder['peak_hours']) > 0) ? $Finder['peak_hours'] : [],
                 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
                 'total_rating_count' 					=>  (isset($Finder->rating['count'])) ? $Finder->rating['count'] : 0,
-                'detail_rating_summary_average' 		=>  $detail_rating_summary_average,
-                'detail_rating_summary_count' 			=>  $detail_rating_summary_count,
+//                'detail_rating_summary_average' 		=>  $detail_rating_summary_average,
+//                'detail_rating_summary_count' 			=>  $detail_rating_summary_count,
                 'what_i_should_carry' 					=>  (isset($Finder->what_i_should_carry)) ? $Finder->what_i_should_carry : "",
                 'what_i_should_expect' 					=>  (isset($Finder->what_i_should_expect)) ? $Finder->what_i_should_expect : "",
                 'business_type' 						=>  array_search($Finder->business['type'], $business_type_arr),
@@ -960,7 +962,7 @@ class MigrationReverseController extends \BaseController {
             $insertData = [
                 'calorie_burn'	=>  [
                     'avg' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["avg"]) ) ? intval($data['calorie_burn']["avg"]) : 0,
-                    'type' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["type"]) ) ? intval($data['calorie_burn']["type"]) : "kcal"
+                    'type' 	=>  (isset($data['calorie_burn']) && isset($data['calorie_burn']["type"]) ) ? $data['calorie_burn']["type"] : "kcal"
                     ]
             ];
 
@@ -992,6 +994,8 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];
             }
+            $insertData['trial']        = (isset($data['flags']) && isset($data['flags']['trial'])) ? $data['flags']['trial'] : "auto";
+            $insertData['membership']   = (isset($data['flags']) && isset($data['flags']['membership'])) ? $data['flags']['membership'] : "auto";
 
             $insertData['show_on']      =   "1";
             $insertData['created_at']   =   $data['created_at'];

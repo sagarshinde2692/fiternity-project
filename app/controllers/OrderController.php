@@ -88,6 +88,30 @@ class OrderController extends \BaseController {
     }
 
 
+    public function couponCode($customer_phone){
+        $data = Input::json()->all();
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            return Response::json($resp,400);
+        }
+        if(!isset($data['amount'])){
+            $resp = array("status"=> 400, "message" => "Amount field is missing");
+            return Response::json($resp,400);
+        }
+
+        
+        $amount = (int) $data['amount'];
+        if($data['coupon'] == "fitnow"){
+            $newamount = ($amount - 500);
+            $resp = array("status"=> "success", "amount" => $newamount);
+            
+        }else{
+            $resp = array("status"=> "failed", "amount" => $amount );
+        }
+        return Response::json($resp,200);
+    }
+
+
     //capture order status for customer used membership by
     public function captureOrderStatus($data = null){
 
@@ -165,8 +189,6 @@ class OrderController extends \BaseController {
                 array_set($data, 'reward_info', $reward_info);
                 array_set($data, 'reward_type', 'cashback');
             }
-
-            
 
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
@@ -249,17 +271,11 @@ class OrderController extends \BaseController {
             //send welcome email to payment gateway customer
 
             $finder = Finder::find((int)$order->finder_id);
-
             try {
-
                 if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
-
                     $trial = Booktrial::find((int) $order->referal_trial_id);
-
                     if($trial){
-
                         $bookdata = array();
-
                         array_set($bookdata, 'going_status', 4);
                         array_set($bookdata, 'going_status_txt', 'purchased');
                         array_set($bookdata, 'booktrial_actions', '');
@@ -360,7 +376,6 @@ class OrderController extends \BaseController {
                 }
                 
             }
-
 
             if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
 
@@ -1838,6 +1853,7 @@ class OrderController extends \BaseController {
 
         return (int) $delay;
     }
+
 
     public function orderUpdate(){
 

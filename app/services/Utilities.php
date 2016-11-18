@@ -96,22 +96,14 @@ Class Utilities {
 
         $customer_id = (int)$request['customer_id'];
 
-        Log::info('customer_id_1',array($customer_id));
-
         $jwt_token = Request::header('Authorization');
-
-        Log::info('jwt-walletTransaction',array($jwt_token));
 
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = $decoded->customer->_id;
-
-            Log::info('customer_id_2',array($customer_id));
+            $customer_id = (int)$decoded->customer->_id;
         }
-
-        Log::info('customer_id_final',array($customer_id));
-
+        
         // Validate transaction request........
         $validator = Validator::make($request, Customerwallet::$rules);
 

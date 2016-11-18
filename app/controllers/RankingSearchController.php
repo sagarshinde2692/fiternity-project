@@ -1142,7 +1142,6 @@ class RankingSearchController extends \BaseController
         $searchresulteresponse->meta->sortorder = $order;
         $searchresulteresponse->meta->request = Input::all();
         $searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
-
         $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
         $response       =   json_decode($searchresulteresponse1,true);

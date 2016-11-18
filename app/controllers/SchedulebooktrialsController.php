@@ -1222,10 +1222,9 @@ class SchedulebooktrialsController extends \BaseController {
             $order_data['customer_id'] = (int)$this->autoRegisterCustomer($order_data);
 
             if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != ""){
-            $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
+                $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
 
                 if($createMyRewardCapture['status'] !== 200){
-
                     return Response::json($createMyRewardCapture,$createMyRewardCapture['status']);
                 }
             }
@@ -1248,6 +1247,14 @@ class SchedulebooktrialsController extends \BaseController {
             $sndInstantSmsCustomer	       =	$this->customersms->healthyTiffinTrial($order->toArray());
             $sndInstantEmailFinder	       = 	$this->findermailer->healthyTiffinTrial($order->toArray());
             $sndInstantSmsFinder	       =	$this->findersms->healthyTiffinTrial($order->toArray());
+
+            //Send one before reminder email to vendor at 9:00 AM
+            if(isset($order_data['preferred_starting_date'])){
+                $slot_date 			            =	date('d-m-Y', strtotime('-1 day', strtotime($order_data['preferred_starting_date']) ));
+                $datetime_str 	                =	strtoupper($slot_date ." 09:00AM");
+                $reminderDateTime 		        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $datetime_str);
+                $sndReminderEmailFinder	        = 	$this->findermailer->healthyTiffinTrialReminder($order->toArray(),$reminderDateTime);
+            }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1628,6 +1635,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $google_pin		       =	$this->googlePin($finder_lat,$finder_lon);
 
+            $customer_profile_url     =   $this->customerProfileUrl($customer_email);
+
             $finder_photos	       = 	[];
             if(isset($finder['photos']) && count($finder['photos']) > 0){
                 foreach ($finder['photos'] as $key => $value) {
@@ -1698,6 +1707,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_name' 		       =>		$customer_name,
                 'customer_email' 		       =>		$customer_email,
                 'customer_phone' 		       =>		$customer_phone,
+                'customer_profile_url' 		   =>		$customer_profile_url,
                 'fitcard_user'			       =>		$fitcard_user,
                 'type'					       =>		$type,
 
@@ -1781,7 +1791,17 @@ class SchedulebooktrialsController extends \BaseController {
             isset($order['reward_ids']) ? $booktrialdata['reward_ids'] = $order['reward_ids']:null;
             
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+
                 $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
+
+                $customofferorder   =   Fitapicustomofferorder::find($data['customofferorder_id']);
+
+                if(isset($customofferorder->validity) && $customofferorder->validity != ""){
+
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($schedule_date_time)));
+                    $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
+                }
+
             }
 
             if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
@@ -2482,7 +2502,16 @@ class SchedulebooktrialsController extends \BaseController {
             );
 
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
+
                 $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
+
+                $customofferorder   =   Fitapicustomofferorder::find($data['customofferorder_id']);
+
+                if(isset($customofferorder->validity) && $customofferorder->validity != ""){
+
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($schedule_date_time)));
+                    $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
+                }
             }
 
             if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
@@ -4009,6 +4038,20 @@ class SchedulebooktrialsController extends \BaseController {
 
         return $google_pin;
     }
+
+
+    public function customerProfileUrl($email){
+
+        $profile_url    =   "https://fitternity.com/profile/".$email;
+        $shorten_url    =   new ShortenUrl();
+        $url            =   $shorten_url->getShortenUrl($profile_url);
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $profile_url = $url['url'];
+        }
+
+        return $profile_url;
+    }
+
 
     public function booktrialAction($action,$trial_id){
 
