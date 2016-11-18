@@ -79,7 +79,7 @@ return array(
 
 		'redis' => array(
 			'driver' => 'redis',
-			'queue'  => 'appstg',
+			'queue'  => 'booktrial',
 		),
 
 	),
