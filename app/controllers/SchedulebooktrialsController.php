@@ -143,10 +143,13 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules','servicecategory_id'))->toArray();
+        $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules','servicecategory_id'));
+
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
+
+        $items->toArray();
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
@@ -218,11 +221,13 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items                  =   Service::where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id'))->toArray();
+        $items                  =   Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id'));
 
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
         }
+
+        $items->toArray();
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
@@ -334,10 +339,13 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items = Service::where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'))->toArray();
+        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'));
+
         if(!$items){
             return $this->responseNotFound('WorkoutSession Schedule does not exist');
         }
+
+        $items->toArray();
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
@@ -409,13 +417,15 @@ class SchedulebooktrialsController extends \BaseController {
 
         // $dobj = new DateTime;print_r($dobj);exit;
         $currentDateTime 	=	\Carbon\Carbon::now();
-        $item 		       =	Service::where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'))->toArray();
-
-        $time_in_seconds = time_passed_check($item['servicecategory_id']);
+        $item 		       =	Service::active()->where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'));
 
         if(!$item){
             return $this->responseNotFound('Service Schedule does not exist');
         }
+
+        $item->toArray();
+
+        $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
         $finderid 	       = 	intval($item['finder_id']);
         $noofdays 	       =  	($noofdays == null) ? 1 : $noofdays;
