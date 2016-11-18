@@ -587,7 +587,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject = new FinderObject();
 				$resultobject->distance = isset($resultv1['fields']) ? $resultv1['fields']['distance'][0] : 0;
 				$resultobject->id = $result['_id'];
-				$resultobject->category = $result['category'];
+				$resultobject->category = isset($result['category']) ? $result['category'] : "";
 				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
 				$resultobject->location = $result['location'];
 				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
