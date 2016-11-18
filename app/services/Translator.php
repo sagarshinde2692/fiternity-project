@@ -295,17 +295,19 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 				$resultobject->booktrial_button_caption = "";
 
                 $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
-                if(!in_array($result['category'],$nobooktrialCategories)){
-                    if($result['category'] != "healthy tiffins"){
-                        if( in_array('free trial',$result['facilities']) ){
-                            $resultobject->booktrial_button_caption = "Book a free trial";
-                        }else{
-                            $resultobject->booktrial_button_caption = "Book a trial";
-                        }
-                    }else{
-                        $resultobject->booktrial_button_caption = "Book a trial Meal";
-                    }
-                }
+				if($resultobject->commercial_type != 0){
+					if(!in_array($result['category'],$nobooktrialCategories)){
+						if($result['category'] != "healthy tiffins"){
+							if( in_array('free trial',$result['facilities']) ){
+								$resultobject->booktrial_button_caption = "Book a free trial";
+							}else{
+								$resultobject->booktrial_button_caption = "Book a trial";
+							}
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial Meal";
+						}
+					}
+				}
 
 			array_push($finderresult_response->results->resultlist, $finder);			
 		}
@@ -665,17 +667,19 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->booktrial_button_caption = "";
 
                 $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
-                if(!in_array($result['category'],$nobooktrialCategories)){
-                    if($result['category'] != "healthy tiffins"){
-                        if( in_array('free trial',$result['facilities']) ){
-                            $resultobject->booktrial_button_caption = "Book a free trial";
-                        }else{
-                            $resultobject->booktrial_button_caption = "Book a trial";
-                        }
-                    }else{
-                        $resultobject->booktrial_button_caption = "Book a trial Meal";
-                    }
-                }
+				if($resultobject->commercial_type != 0){
+					if(!in_array($result['category'],$nobooktrialCategories)){
+						if($result['category'] != "healthy tiffins"){
+							if( in_array('free trial',$result['facilities']) ){
+								$resultobject->booktrial_button_caption = "Book a free trial";
+							}else{
+								$resultobject->booktrial_button_caption = "Book a trial";
+							}
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial Meal";
+						}
+					}
+				}
 				$finder->object = $resultobject;
 				array_push($finderresult_response->results->resultlist, $finder);
 			}
