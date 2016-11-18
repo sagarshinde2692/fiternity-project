@@ -1905,6 +1905,14 @@ class OrderController extends \BaseController {
                 }
             }
 
+            if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
+                if(trim(Input::json()->get('preferred_payment_date')) != '-'){
+                    $date_arr = explode('-', $data['preferred_payment_date']);
+                    $preferred_payment_date            =   date('Y-m-d 00:00:00', strtotime($data['preferred_payment_date']));
+                    array_set($data, 'preferred_payment_date', $preferred_payment_date);
+                }
+            }
+
             if(isset($order->ratecard_id) && $order->ratecard_id != ""){
 
                 $ratecard = Ratecard::find((int)$order->ratecard_id);
