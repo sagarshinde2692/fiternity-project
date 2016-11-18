@@ -108,6 +108,11 @@ Class CustomerReward {
 
         $utilities          =   new Utilities;
         $valid_ticket_ids   =   [99,100];
+        if($order){
+            $order = $order->toArray();
+        }
+//        var_dump($order);
+//        var_dump($order['type']);var_dump($order['customer_id']);var_dump($order['amount']);exit;
 
         try{
             // For Cashback.....
@@ -147,6 +152,37 @@ Class CustomerReward {
                 $order['order_id'] = $order['_id'];
                 $this->createMyReward($order);
 
+            }elseif(isset($order['type']) && $order['type'] == 'booktrials' && isset($order['customer_id']) && isset($order['amount']) ){
+//                var_dump($order);exit;
+                $amounttobeadded        =       intval($order['amount']);
+                $customer_id            =       intval($order['customer_id']);
+                $customerwallet 		= 		\Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
+                if($customerwallet){
+                    $customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;
+                }else{
+                    $customer_balance 	=	 $amounttobeadded;
+                }
+
+                $cashback_amount 	=	$amounttobeadded;
+
+                $walletData = array(
+                    "customer_id"=> $customer_id,
+                    "amount"=> $cashback_amount,
+                    "type"=>'CASHBACK',
+                    "balance"=>	$customer_balance,
+                    "description"=>'CASHBACK ON Paid Booktrial amount - '.$cashback_amount
+                );
+
+                // return $walletData;
+
+                $wallet               	=   new \CustomerWallet($walletData);
+                $last_insertion_id      =   \CustomerWallet::max('_id');
+                $last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
+                $wallet->_id          	=   ++ $last_insertion_id;
+                $wallet->save();
+
+                $customer_update 	=	\Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
+
             }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
 
                 $amounttobeadded        =       intval($order['amount']);
@@ -155,7 +191,7 @@ Class CustomerReward {
                 $customerwallet 		= 		\Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 
                 if($customerwallet){
-                    echo "asd".$customerwallet['balance'];
+//                    echo "asd".$customerwallet['balance'];
                     $customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;
                 }else{
                     $customer_balance 	=	 $amounttobeadded;
