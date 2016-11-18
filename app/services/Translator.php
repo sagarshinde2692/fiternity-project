@@ -268,6 +268,45 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : '';
 			$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : '';
 			$finder->object = $resultobject;
+
+			$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages" && $result['category'] != "healthy tiffins"){
+
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						if($result['category'] == "dietitians and nutritionists" ){
+							$resultobject->vendor_type = "";
+						}elseif($result['category'] == "healthy tiffins"){
+							$resultobject->vendor_type = "healthy tiffins";
+						}else{
+							$resultobject->vendor_type = "healthy snacks";
+						}
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+
+                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
+                if(!in_array($result['category'],$nobooktrialCategories)){
+                    if($result['category'] != "healthy tiffins"){
+                        if( in_array('free trial',$result['facilities']) ){
+                            $resultobject->booktrial_button_caption = "Book a free trial";
+                        }else{
+                            $resultobject->booktrial_button_caption = "Book a trial";
+                        }
+                    }else{
+                        $resultobject->booktrial_button_caption = "Book a trial Meal";
+                    }
+                }
+
 			array_push($finderresult_response->results->resultlist, $finder);			
 		}
 	}
