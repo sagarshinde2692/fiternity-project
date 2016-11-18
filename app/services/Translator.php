@@ -573,6 +573,10 @@ public static function translate_searchresultsv2($es_searchresult_response){
 		$finderresult_response = new FinderresultResponse();
 
 		$finderresult_response->results->aggregationlist = new \stdClass();
+
+
+		$resultCategory = [];
+
 		if(empty($es_searchresult_response['hits']['hits']))
 		{
 			$finderresult_response->results->resultlist = array();
@@ -587,7 +591,8 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject = new FinderObject();
 				$resultobject->distance = isset($resultv1['fields']) ? $resultv1['fields']['distance'][0] : 0;
 				$resultobject->id = $result['_id'];
-				$resultobject->category = isset($result['category']) ? $result['category'] : "";
+				$resultobject->category = $result['category'];
+				$resultCategory = $result['category'];
 				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
 				$resultobject->location = $result['location'];
 				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
@@ -731,7 +736,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 
 		$finderresult_response->results->aggregationlist->filters = array();
 		$noBasicFilterCategories = ['healthy snacks and beverages','healthy tiffins','dietitians and nutritionists','sport nutrition supliment stores'];
-        if(!in_array($result['category'],$noBasicFilterCategories)){
+        if(!in_array($resultCategory,$noBasicFilterCategories)){
 			foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
 				$facval = new \stdClass();
 				$facval->key = $fac['key'];
