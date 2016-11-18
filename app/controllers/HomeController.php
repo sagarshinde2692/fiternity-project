@@ -1708,17 +1708,17 @@ class HomeController extends BaseController {
 
 
         // For Production
-        if($env == 2){
-            $key = '0MQaQP';//'gtKFFx';
-            $salt = '13p0PXZk';//'eCwWELxi';
-        }else{
-            $key = '0MQaQP';
-            $salt = '13p0PXZk';
-        }
+//        if($env == 2){
+//            $key = '0MQaQP';//'gtKFFx';
+//            $salt = '13p0PXZk';//'eCwWELxi';
+//        }else{
+//            $key = '0MQaQP';
+//            $salt = '13p0PXZk';
+//        }
 
         // $firstname, $email can be "", i.e empty string if needed. Same should be sent to PayU server (in request params) also.
-//        $key = '0MQaQP';//'gtKFFx';
-//        $salt = '13p0PXZk';//'eCwWELxi';
+        $key = 'l80gyM';//'gtKFFx';
+        $salt = 'QBl78dtK';//'eCwWELxi';
 
         $payhash_str            =   $key . '|' . checkNull($txnid) . '|' .checkNull($amount)  . '|' .checkNull($productinfo)  . '|' . checkNull($firstname) . '|' . checkNull($email) . '|' . checkNull($udf1) . '|' . checkNull($udf2) . '|' . checkNull($udf3) . '|' . checkNull($udf4) . '|' . checkNull($udf5) . '||||||' . $salt;
         $paymentHash            =   strtolower(hash('sha512', $payhash_str));
