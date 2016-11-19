@@ -1547,7 +1547,7 @@ class SchedulebooktrialsController extends \BaseController {
             $city_id 					       =	(int) $finder['city_id'];
 
             $finder_commercial_type		       = 	(isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
-            $finder_category_id				       = 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
+            $finder_category_id				   = 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
             $final_lead_stage = '';
             $final_lead_status = '';
@@ -1611,7 +1611,6 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
 
-
                 if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
                     $finder_location			       =	$serviceArr['location']['name'];
                     $show_location_flag 		       =   true;
@@ -1633,9 +1632,14 @@ class SchedulebooktrialsController extends \BaseController {
             $finder_lat		       =	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
             $finder_lon		       =	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
 
-            $google_pin		       =	$this->googlePin($finder_lat,$finder_lon);
-
-            $customer_profile_url     =   $this->customerProfileUrl($customer_email);
+            $google_pin		            =	$this->googlePin($finder_lat,$finder_lon);
+            $customer_profile_url       =   $this->customerProfileUrl($customer_email);
+            $finder_url                 =   $this->vendorUrl($finder['slug']);
+            if(isset($serviceArr) && isset($serviceArr['category']) && $serviceArr['category']['_id'] != ''){
+                $calorie_burn           =   $this->getCalorieBurnByServiceCategoryId($serviceArr['category']['_id']);
+            }else{
+                $calorie_burn           =   300;
+            }
 
             $finder_photos	       = 	[];
             if(isset($finder['photos']) && count($finder['photos']) > 0){
@@ -1711,6 +1715,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'fitcard_user'			       =>		$fitcard_user,
                 'type'					       =>		$type,
 
+                'calorie_burn'                  =>      $calorie_burn,
+                'finder_url'                    =>      $finder_url,
                 'finder_id'                     =>      $finderid,
                 'finder_name'                   =>      $finder_name,
                 'finder_slug'                   =>      $finder_slug,
@@ -4039,6 +4045,17 @@ class SchedulebooktrialsController extends \BaseController {
         return $google_pin;
     }
 
+    public function vendorUrl($slug){
+
+        $vendor_url    =   "https://fitternity.com/".$slug;
+        $shorten_url    =   new ShortenUrl();
+        $url            =   $shorten_url->getShortenUrl($vendor_url);
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $vendor_url = $url['url'];
+        }
+
+        return $vendor_url;
+    }
 
     public function customerProfileUrl($email){
 
@@ -4895,5 +4912,38 @@ class SchedulebooktrialsController extends \BaseController {
         return Response::json($response, $response['status']);
 
     }
+
+
+
+    public function getCalorieBurnByServiceCategoryId($category_id){
+
+        $sericecategorysArr = [
+            65      => 600,
+            1       => 250,
+            2       => 450,
+            4       => 350,
+            5       => 450,
+            19      => 700,
+            86      => 450,
+            111     => 800,
+            114     => 400,
+            123     => 750,
+            152     => 450,
+            154     => 300,
+            3       => 450,
+            161     => 650,
+            184     => 400
+        ];
+
+        $category_calorie_burn = 300;
+
+        if(isset($sericecategorysArr[$category_id])){
+            $category_calorie_burn = $sericecategorysArr[$category_id];
+        }
+
+        return $category_calorie_burn;
+
+    }
+
 
 }
