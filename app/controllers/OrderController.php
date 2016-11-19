@@ -88,7 +88,7 @@ class OrderController extends \BaseController {
     }
 
 
-    public function couponCode($customer_phone){
+    /*public function couponCode($customer_phone){
         $data = Input::json()->all();
         if(!isset($data['coupon'])){
             $resp = array("status"=> 400, "message" => "Coupon code missing");
@@ -109,7 +109,7 @@ class OrderController extends \BaseController {
             $resp = array("status"=> "failed", "amount" => $amount );
         }
         return Response::json($resp,200);
-    }
+    }*/
 
 
     //capture order status for customer used membership by
