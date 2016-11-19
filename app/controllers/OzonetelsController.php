@@ -955,7 +955,15 @@ class OzonetelsController extends \BaseController {
 					}
 
 
-					$in_array = array('cancel','reschedule');
+                    if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
+                        try {
+                            $sidekiq->delete($booktrial->finder_smsqueuedids['before1hour']);
+                        }catch(\Exception $exception){
+                            Log::error($exception);
+                        }
+                    }
+
+                    $in_array = array('cancel','reschedule');
 
 					if(in_array($type,$in_array)){
 
@@ -987,14 +995,7 @@ class OzonetelsController extends \BaseController {
 							}
 						}
 
-						if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
 
-							try {
-								$sidekiq->delete($booktrial->finder_smsqueuedids['before1hour']);
-							}catch(\Exception $exception){
-								Log::error($exception);
-							}
-						}
 
 						if((isset($booktrial->customer_notification_messageids['before1hour']) && $booktrial->customer_notification_messageids['before1hour'] != '')){
 
