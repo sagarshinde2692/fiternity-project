@@ -955,9 +955,6 @@ class OzonetelsController extends \BaseController {
 					}
 
 
-
-					$in_array = array('cancel','reschedule');
-
                     if((isset($booktrial->finder_smsqueuedids['before1hour']) && $booktrial->finder_smsqueuedids['before1hour'] != '')){
                         try {
                             $sidekiq->delete($booktrial->finder_smsqueuedids['before1hour']);
@@ -965,6 +962,8 @@ class OzonetelsController extends \BaseController {
                             Log::error($exception);
                         }
                     }
+
+                    $in_array = array('cancel','reschedule');
 
 					if(in_array($type,$in_array)){
 
