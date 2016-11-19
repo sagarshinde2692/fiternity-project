@@ -268,6 +268,47 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : '';
 			$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : '';
 			$finder->object = $resultobject;
+
+			$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages" && $result['category'] != "healthy tiffins"){
+
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						if($result['category'] == "dietitians and nutritionists" ){
+							$resultobject->vendor_type = "";
+						}elseif($result['category'] == "healthy tiffins"){
+							$resultobject->vendor_type = "healthy tiffins";
+						}else{
+							$resultobject->vendor_type = "healthy snacks";
+						}
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+
+                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
+				if($resultobject->commercial_type != 0){
+					if(!in_array($result['category'],$nobooktrialCategories)){
+						if($result['category'] != "healthy tiffins"){
+							if( in_array('free trial',$result['facilities']) ){
+								$resultobject->booktrial_button_caption = "Book a free trial";
+							}else{
+								$resultobject->booktrial_button_caption = "Book a trial";
+							}
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial Meal";
+						}
+					}
+				}
+
 			array_push($finderresult_response->results->resultlist, $finder);			
 		}
 	}
@@ -534,6 +575,10 @@ public static function translate_searchresultsv2($es_searchresult_response){
 		$finderresult_response = new FinderresultResponse();
 
 		$finderresult_response->results->aggregationlist = new \stdClass();
+
+
+		$resultCategory = [];
+
 		if(empty($es_searchresult_response['hits']['hits']))
 		{
 			$finderresult_response->results->resultlist = array();
@@ -549,6 +594,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->distance = isset($resultv1['fields']) ? $resultv1['fields']['distance'][0] : 0;
 				$resultobject->id = $result['_id'];
 				$resultobject->category = $result['category'];
+				$resultCategory = $result['category'];
 				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
 				$resultobject->location = $result['location'];
 				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
@@ -564,6 +610,9 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->contact->phone = ''; //$result['contact']['phone'];
 				$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
 				$resultobject->coverimage = $result['coverimage'];
+				$resultobject->finder_coverimage_webp = isset($result['finder_coverimage_webp']) ? (strpos($result['finder_coverimage_webp'],"default/") > -1 ? "" : $result['finder_coverimage_webp']) : "";
+				$resultobject->finder_coverimage_color = isset($result['finder_coverimage_color']) && $result['finder_coverimage_color'] != "" ? $result['finder_coverimage_color'] : "#FFC107";
+
 				$resultobject->commercial_type = $result['commercial_type'];
 				$resultobject->finder_type = $result['finder_type'];
 				$resultobject->business_type = $result['business_type'];
@@ -590,6 +639,47 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
+
+				// Decide vendor type
+				$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages" && $result['category'] != "healthy tiffins"){
+
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						if($result['category'] == "dietitians and nutritionists" ){
+							$resultobject->vendor_type = "";
+						}elseif($result['category'] == "healthy tiffins"){
+							$resultobject->vendor_type = "healthy tiffins";
+						}else{
+							$resultobject->vendor_type = "healthy snacks";
+						}
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+
+                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
+				if($resultobject->commercial_type != 0){
+					if(!in_array($result['category'],$nobooktrialCategories)){
+						if($result['category'] != "healthy tiffins"){
+							if( in_array('free trial',$result['facilities']) ){
+								$resultobject->booktrial_button_caption = "Book a free trial";
+							}else{
+								$resultobject->booktrial_button_caption = "Book a trial";
+							}
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial Meal";
+						}
+					}
+				}
 				$finder->object = $resultobject;
 				$resultobject->vendor_type = "";
 				if($result['category'] != "personal trainer"){
@@ -678,11 +768,14 @@ public static function translate_searchresultsv2($es_searchresult_response){
 		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 
 		$finderresult_response->results->aggregationlist->filters = array();
-		foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
-			$facval = new \stdClass();
-			$facval->key = $fac['key'];
-			$facval->count = $fac['doc_count'];
-			array_push($finderresult_response->results->aggregationlist->filters, $facval);
+		$noBasicFilterCategories = ['healthy snacks and beverages','healthy tiffins','dietitians and nutritionists','sport nutrition supliment stores'];
+        if(!in_array($resultCategory,$noBasicFilterCategories)){
+			foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
+				$facval = new \stdClass();
+				$facval->key = $fac['key'];
+				$facval->count = $fac['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->filters, $facval);
+			}
 		}
 
 		$finderresult_response->results->aggregationlist->locationcluster = array();

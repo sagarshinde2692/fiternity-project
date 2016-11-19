@@ -417,35 +417,48 @@ class CustomerController extends \BaseController {
 			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
-				$new_validator = Validator::make($data, Customer::$rules);
-				if ($new_validator->fails()) {
-					return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
-				}else{
-					$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-					$account_link[$data['identity']] = 1;
-					$customer = new Customer();
-					$customer->_id = $inserted_id;
-					$customer->name = ucwords($data['name']) ;
-					$customer->email = $data['email'];
-					isset($data['dob']) ? $customer->dob = $data['dob'] : null;
-					isset($data['gender']) ? $customer->gender = $data['gender'] : null;
-					isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
-					$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-					$customer->password = md5($data['password']);
-					if(isset($data['contact_no'])){
-						$customer->contact_no = $data['contact_no'];
+				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser',1)->first();
+				if(empty($ishullcustomer)){
+					$new_validator = Validator::make($data, Customer::$rules);
+					if ($new_validator->fails()) {
+						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+					}else{
+						$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
+						$account_link[$data['identity']] = 1;
+						$customer = new Customer();
+						$customer->_id = $inserted_id;
+						$customer->name = ucwords($data['name']) ;
+						$customer->email = $data['email'];
+						isset($data['dob']) ? $customer->dob = $data['dob'] : null;
+						isset($data['gender']) ? $customer->gender = $data['gender'] : null;
+						isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
+						$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
+						$customer->password = md5($data['password']);
+						if(isset($data['contact_no'])){
+							$customer->contact_no = $data['contact_no'];
+						}
+						$customer->identity = $data['identity'];
+						$customer->account_link = $account_link;
+						$customer->status = "1";
+						$customer->save();
+
+						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+						$this->customermailer->register($customer_data);
+
+						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+
+						return Response::json($this->createToken($customer),200);
 					}
-					$customer->identity = $data['identity'];
-					$customer->account_link = $account_link;
-					$customer->status = "1";
-					$customer->save();
+				}else{
+					$ishullcustomer->password = md5($data['password']);
+					$ishullcustomer->ishulluser = 0;
+					$ishullcustomer->update();
+					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
+					// $this->customermailer->register($ishullcustomer);
 
-					$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
-					$this->customermailer->register($customer_data);
+					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
-					Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-
-					return Response::json($this->createToken($customer),200);
+					return Response::json($this->createToken($ishullcustomer),200);
 				}	
 			}else{
 
@@ -1101,7 +1114,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
 		foreach ($ordersrs as $key => $value) {
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
@@ -1117,6 +1130,7 @@ class CustomerController extends \BaseController {
 			$value['renewal_flag'] = $this->checkRenewal($value);
 
 			array_push($orders, $value);
+
 		}
 
 		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
@@ -2319,8 +2333,8 @@ class CustomerController extends \BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
 
-			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'))->toArray();
-
+			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
+			
 			$ordered_category = array();
 
 			foreach ($category_slug as $category_slug_key => $category_slug_value){
@@ -2329,18 +2343,15 @@ class CustomerController extends \BaseController {
 
 					if($category_value['slug'] == $category_slug_value){
 
+						$category_value['name'] = ucwords($category_value['name']);
+
 						$ordered_category[] = $category_value;
 						break;
 					}
 				}
 			}
 
-			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
-
-			$homepage 				= 		Homepage::where('city_id', '=', $city_id)->get()->first();			
-			if(!$homepage){
-				return $this->responseNotFound('homepage does not exist');
-			}
+			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
 
 			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
@@ -2355,8 +2366,19 @@ class CustomerController extends \BaseController {
 			Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
 		}
 
-		$result = Cache::tags($cache_tag)->get($city);
+		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
+
+//		$result['campaign'] = array(
+//			'image'=>'http://email.fitternity.com/277/in-app-banner.jpg',
+//			'link'=>'https://www.fitternity.com/dawnstepper',
+//			'title'=>'Dawn Stepper',
+//			'height'=>1,
+//			'width'=>5,
+//			'ratio'=>1/5
+//		);
+
+//        $result['campaign'] =  new \stdClass();
 
 		return Response::json($result);
 	}
@@ -2615,26 +2637,74 @@ class CustomerController extends \BaseController {
 		$current_version_android = 2.6;
 		$current_version_ios = 2.0;
 
-		$result_android = array(
-			"title" => "Version ".$current_version_android." is available on Play Store",
-			"description" => "Version ".$current_version_android." is available on Play Store",
-			"force_update" => false,
-			"available_version" => $current_version_android,
+		if($data["device_type"] == "android"){
+
+			$result_android = array(
+				"message" => "Version ".$current_version_android." is available on Play Store",
+				"force_update" => false
 			);
+
+			if($data["app_version"] < $current_version_android){
+
+				$result_android['force_update'] = true;
+			}
+
+			return Response::json($result_android,200);
+		}
 
 		$result_ios = array(
 			"title" => "Version ".$current_version_ios." is available on App Store",
 			"description" => "Version ".$current_version_ios." is available on App Store",
 			"force_update" => false,
 			"available_version" => $current_version_ios,
-			);
+		);
 
-		$result = ($data['device_type'] == 'android') ? $result_android : $result_ios;
-
-		return Response::json(array('status' => 200,'data' => $result),200);
+		return Response::json(array('status' => 200,'data' => $result_ios),200);
 
 	}
 
+	public function appConfig(){
+
+		$app_version = Request::header('App-Version');
+		$device_type = Request::header('Device-Type');
+
+		$current_version_android = 2.6;
+		$current_version_ios = 2.0;
+		$force_update_android = false;
+		$force_update_ios = false;
+		
+		$api['city'] = 1476350961;
+		$api['home'] = 1476350961;
+
+		if($device_type == "android"){
+
+			if($app_version < $current_version_android){
+
+				$force_update_android = true;
+			}
+		}
+
+		$result_android = array(
+			"title" => "Version ".$current_version_android." is available on Play Store",
+			"description" => "Version ".$current_version_android." is available on Play Store",
+			"force_update" => $force_update_android,
+			"available_version" => $current_version_android,
+			);
+
+		$result_ios = array(
+			"title" => "Version ".$current_version_ios." is available on App Store",
+			"description" => "Version ".$current_version_ios." is available on App Store",
+			"force_update" => $force_update_ios,
+			"available_version" => $current_version_ios,
+			);
+
+		$data = ($device_type == 'ios') ? $result_ios : $result_android;
+
+		$data['api'] = $api;
+
+		return Response::json(array('status' => 200,'data' => $data),200);
+
+	}
 
 	public function applyPromotionCode(){
 

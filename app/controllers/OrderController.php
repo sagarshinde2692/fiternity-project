@@ -63,6 +63,30 @@ class OrderController extends \BaseController {
         return Response::json($resp,200);
     }
 
+    public function couponCode(){
+        $data = Input::json()->all();
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            return Response::json($resp,400);
+        }
+        if(!isset($data['amount'])){
+            $resp = array("status"=> 400, "message" => "Amount field is missing");
+            return Response::json($resp,400);
+        }
+
+        
+        $amount = (int) $data['amount'];
+        if($amount > 600 && $data['coupon'] == "fitnow"){
+            $newamount = ($amount - 500);
+            $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);
+            
+        }else{
+            $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
+            return Response::json($resp,406);
+        }
+        return Response::json($resp,200);
+    }
+
 
     public function couponCode($customer_phone){
         $data = Input::json()->all();
@@ -146,11 +170,14 @@ class OrderController extends \BaseController {
 
                         $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
 
+                        array_set($data, 'reward_type', $value->reward_type);
+
                     }
 
                     $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
 
                     array_set($data, 'reward_info', $reward_info);
+                    
                 }
 
             }
@@ -160,21 +187,31 @@ class OrderController extends \BaseController {
                 $reward_info = "Cashback";
                 
                 array_set($data, 'reward_info', $reward_info);
+                array_set($data, 'reward_type', 'cashback');
             }
 
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
 
+            
+
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 
                 array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->count();
 
                 if($count > 0){
                     array_set($data, 'acquisition_type', 'renewal_direct');
+                    array_set($data, 'membership_type', 'renewal');
                 }else{
                     array_set($data,'acquisition_type','direct_payment');
+                    array_set($data, 'membership_type', 'new');
+                }
+
+                if($order->customer_source != 'admin'){
+
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
                 }
             }
 
@@ -185,6 +222,48 @@ class OrderController extends \BaseController {
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
+            }
+
+            if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
+
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+
+                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                        if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                            $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseCustomerTiggerCount']     =   1;
+                        }
+                    }
+
+                }else{
+                    if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                        $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseCustomerTiggerCount']     =   1;
+                    }
+                }
+
+
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                        if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                            $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseFinderTiggerCount']       =   1;
+                        }
+                    }
+
+                }else{
+                    if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                        $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseFinderTiggerCount']       =   1;
+                    }
+                }
+                
             }
 
             $orderdata 	=	$order->update($data);
@@ -246,8 +325,8 @@ class OrderController extends \BaseController {
                 //no email to Healthy Snacks Beverages and Healthy Tiffins
                 if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
                     
-                   if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                        if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
                             $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
                         }
@@ -327,6 +406,8 @@ class OrderController extends \BaseController {
                 $order->update();
 
             }
+
+
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -440,7 +521,7 @@ class OrderController extends \BaseController {
         $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
         if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
             $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-            $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
             array_set($data, 'preferred_starting_date', $preferred_starting_date);
             array_set($data, 'start_date', $preferred_starting_date);
         }
@@ -557,12 +638,225 @@ class OrderController extends \BaseController {
      *	Service Duration can be (trial, workout session, months, session, etc).
      */
 
-    public function generateTmpOrder(){
+    public function generateTmpOrderPre(){
 
-        // $userdata	=	array_except(Input::all(), array());
+        $data = Input::json()->all();
 
-        $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
-        $postdata		=	Input::json()->all();
+        $rules = array(
+            'customer_name'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'customer_source'=>'required',
+            'finder_id'=>'required|integer|min:1',
+            'service_id'=>'required|integer|min:1',
+            'type'=>'required',
+            'amount'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+        }
+
+        $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
+
+        if(in_array($data['type'],$workout)){
+            $rules = array(
+                'schedule_date'=>'required',
+                'schedule_slot'=>'required'
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+        }
+
+        $ht_trail = array('healthytiffintrail');
+
+        if(in_array($data['type'],$ht_trail)){
+            $rules = array(
+                'preferred_starting_date'=>'required',
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+
+        }
+
+        $membership = array('healthytiffinmembership','memberships');
+
+        if(in_array($data['type'],$membership)){
+            $rules = array(
+                'preferred_starting_date'=>'required',
+                'ratecard_id'=>'required|integer|min:1',
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+
+        }
+
+        $data['service_duration'] = "-";
+
+        $data['amount'] = ($data['amount'] != 0) ? $data['amount'] :  "-";
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != "" && $data['ratecard_id'] != 0){
+            
+            $ratecard = Ratecard::find($data['ratecard_id']);
+
+            if(!$ratecard){
+                return Response::json(array('status' => 404,'message' =>'Ratecard does not exists'),404);
+            }
+
+            $data['service_duration'] = $this->getServiceDuration($ratecard);
+
+            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                $data['amount_finder'] = $ratecard->special_price;
+            }else{
+                $data['amount_finder'] = $ratecard->price;
+            }
+        }
+
+        $service = Service::find($data['service_id']);
+
+        if(!$service){
+            return Response::json(array('status' => 404,'message' =>'Service does not exists'),404);
+        }
+
+        $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        $data['service_name'] = ucwords($service['name']);
+        $data['meal_contents'] = ucwords($service['short_description']);
+
+        $finder = Finder::find($data['finder_id']);
+
+        if(!$finder){
+            return Response::json(array('status' => 404,'message' =>'Vendor does not exists'),404);
+        }
+
+        $data['city_id'] = (int)$finder['city_id'];
+
+        (isset($finder['contact']['address']) && $finder['contact']['address'] != "" && $data['finder_address'] == "-") ? $data['finder_address'] = $finder['contact']['address'] : null;
+
+        $data['finder_name'] = ucwords($finder->title);
+
+        return $this->generateTmpOrder($data);
+
+    }
+
+    public function getServiceDuration($ratecard){
+
+        $duration_day = 1;
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity != 0){
+
+            $duration_day = $ratecard->validity;
+        }
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "days"){
+
+            $month = ($ratecard->validity/30);
+
+            if($month < 1){
+                $ratecard->validity_type = 'Days';
+            }
+
+            if($month == 1){
+                $ratecard->validity_type = 'Month';
+                $ratecard->validity = $month;
+            }
+
+            if($month > 1 && $month < 12){
+                $ratecard->validity_type = 'Months';
+                $ratecard->validity = $month;
+            }
+
+            if($month == 12){
+                $ratecard->validity_type = 'Year';
+                $ratecard->validity = 1;
+            }
+              
+        }
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "months"){
+
+            $year = ($ratecard->validity/12);
+
+            if($year < 1){
+
+                $ratecard->validity_type = 'Months';
+
+                if($ratecard->validity == 1){
+                    $ratecard->validity_type = 'Month';
+                }  
+            }
+
+            if($year == 1){
+                $ratecard->validity_type = 'Year';
+                $ratecard->validity = $year;
+            }
+
+            if($year > 1){
+                $ratecard->validity_type = 'Years';
+                $ratecard->validity = $year;
+            }
+              
+        }
+
+        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "year"){
+
+            $year = $ratecard->validity;
+
+            if($year == 1){
+                $ratecard->validity_type = 'Year';
+            }
+
+            if($year > 1){
+                $ratecard->validity_type = 'Years';
+            }
+              
+        }
+
+        $service_duration = "";
+
+        if($ratecard->duration > 0){
+            $service_duration .= $ratecard->duration ." ".ucwords($ratecard->duration_type);
+        }
+        if($ratecard->duration > 0 && $ratecard->validity > 0){
+            $service_duration .= " - ";
+        }
+        if($ratecard->validity > 0){
+            $service_duration .=  $ratecard->validity ." ".ucwords($ratecard->validity_type);
+        }
+
+        ($service_duration == "") ? $service_duration = "-" : null;
+
+        return $service_duration;
+
+    }
+
+    public function generateTmpOrder($data = false){
+
+        if(!$data){
+
+            $postdata = Input::json()->all();
+            $data =	array_except(Input::json()->all(), array('preferred_starting_date'));
+            
+        }else{
+
+            $postdata = $data;
+            $data = array_except($data, array('preferred_starting_date'));
+        }
+        
 
         Log::info('Gnerate Tmp Order',$postdata);
 
@@ -584,10 +878,12 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if(empty($data['customer_identity'])){
+        $data['customer_email'] = strtolower($data['customer_email']);
+
+        /*if(empty($data['customer_identity'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
             return Response::json($resp,404);
-        }
+        }*/
 
         if(empty($data['customer_phone'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
@@ -599,10 +895,10 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if(empty($data['customer_location'])){
+        /*if(empty($data['customer_location'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
             return Response::json($resp,404);
-        }
+        }*/
 
         if(empty($data['city_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
@@ -685,7 +981,7 @@ class OrderController extends \BaseController {
                 return Response::json($resp,404);
             }
 
-            if( empty($data['preferred_starting_date']) ){
+            if( empty($postdata['preferred_starting_date']) ){
                 $resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
                 return Response::json($resp,404);
             }
@@ -732,6 +1028,8 @@ class OrderController extends \BaseController {
         }
 
 
+
+
         //Validation base on order type for sms body and email body  zumbathon','booiaka
         if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon' || $data['type'] == 'eefashrof' ){
             if( empty($data['sms_body']) ){
@@ -751,7 +1049,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
 
         if($data['type'] == 'booktrials' ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'){
 
@@ -812,9 +1110,9 @@ class OrderController extends \BaseController {
 
         if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
 
-            if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-                $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-                $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            if(trim($postdata['preferred_starting_date']) != '-'){
+                $date_arr = explode('-', $postdata['preferred_starting_date']);
+                $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime($postdata['preferred_starting_date']));
                 array_set($data, 'start_date', $preferred_starting_date);
                 array_set($data, 'preferred_starting_date', $preferred_starting_date);
             }
@@ -859,6 +1157,7 @@ class OrderController extends \BaseController {
 
         array_set($data, 'code', $code);
         array_set($data, 'batch_time', '');
+        array_set($data, 'source_of_membership', 'real time');
 
         if(isset($data['batches']) && $data['batches'] != ""){
             if(is_array($data['batches'])){
@@ -876,8 +1175,46 @@ class OrderController extends \BaseController {
             }
         }
 
-        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
-            $data['membership_duration_type'] = 'workout_session';
+        if(isset($data['batch']) && $data['batch'] != ""){
+            
+            if(is_array($data['batch'])){
+                $data['batch'] = $data['batch'];
+            }else{
+                $data['batch'] = json_decode($data['batch'],true);
+            }
+
+            foreach ($data['batch'] as $key => $value) {
+
+                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+                    $data['batch_time'] = strtoupper($value['slots']['start_time']);
+                    break;
+                }
+
+                if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+                    $data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+                    break;
+                }
+            }
+        }
+
+        if(!isset($data['ratecard_id'])){
+
+            if($data['type'] == 'booktrials'){
+                $ratecard  = Ratecard::active()->where('type','trial')->first();
+
+                if($ratecard){
+                    $data['ratecard_id'] = (int)$ratecard->_id;
+                }
+            }
+
+            if($data['type'] == 'workout-session'){
+                $ratecard  = Ratecard::active()->where('type','workout session')->first();
+
+                if($ratecard){
+                    $data['ratecard_id'] = (int)$ratecard->_id;
+                }
+            }
+
         }
 
         if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
@@ -901,15 +1238,34 @@ class OrderController extends \BaseController {
                 }
 
                 if(isset($ratecard->validity) && $ratecard->validity != ""){
-                    $duration_day = (int)$ratecard->validity;
-                    $data['duration_day'] = $duration_day;
+
+                    switch ($ratecard->validity_type){
+                        case 'days': 
+                            $data['duration_day'] = $duration_day = (int)$ratecard->validity;break;
+                        case 'months': 
+                            $data['duration_day'] = $duration_day = (int)($ratecard->validity * 30) ; break;
+                        case 'year': 
+                            $data['duration_day'] = $duration_day = (int)($ratecard->validity * 30 * 12); break;
+                        default : $data['duration_day'] = $duration_day =  $ratecard->validity; break;
+                    }
+
                     if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
+                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($postdata['preferred_starting_date']."+ ".$duration_day." days"));
                     }
 
                     if($duration_day <= 90){
                         $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
                     }
+                }
+
+                if($data['type'] == 'memberships' || $data['type'] == 'healthytiffinmembership'){
+
+                    $duration = $ratecard->duration;
+                    $duration_type = $ratecard->duration_type;
+                    $validity = $ratecard->validity;
+                    $validity_type = $ratecard->validity_type;
+
+                    $service_duration = $data['service_duration'] = $this->getServiceDuration($ratecard);
                 }
                 
             }else{
@@ -993,6 +1349,59 @@ class OrderController extends \BaseController {
 
 	        $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
 	    }
+
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+
+            $schedule_slot = explode("-", $data['schedule_slot']);
+
+            $data['start_time'] = trim($schedule_slot[0]);
+            $data['end_time']= trim($schedule_slot[1]);
+        }
+
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+
+            $date_arr = $data['schedule_date'];
+            $schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+            array_set($data, 'start_date', $schedule_date);
+
+            array_set($data, 'end_date', $schedule_date);
+
+            $data['membership_duration_type'] = 'workout_session';
+
+        }
+
+        $set_vertical_type = array(
+            'healthytiffintrail'=>'tiffin',
+            'healthytiffinmembership'=>'tiffin',
+            'memberships'=>'workout',
+            'booktrials'=>'workout',
+            'workout-session'=>'workout',
+            '3daystrial'=>'workout',
+            'vip_booktrials'=>'workout',
+        );
+
+        $set_membership_duration_type = array(
+            'healthytiffintrail'=>'trial',
+            'healthytiffinmembership'=>'short_term_membership',
+            'memberships'=>'short_term_membership',
+            'booktrials'=>'trial',
+            'workout-session'=>'workout_session',
+            '3daystrial'=>'trial',
+            'vip_booktrials'=>'vip_trial',
+        );
+
+        (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
+
+        (isset($data['finder_category_id']) &&  $data['finder_category_id'] == 41) ? $data['vertical_type'] = 'trainer' : null;
+
+        (isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >=30 && $data['duration_day'] <= 90) ? $data['membership_duration_type'] = 'short_term_membership' : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
+
+        $data['secondary_payment_mode'] = 'payment_gateway_tentative';
+
 
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
@@ -1486,13 +1895,13 @@ class OrderController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->cashback) && $order->cashback == true){
+            if(isset($order->cashback) && $order->cashback == true && isset($order->status) && $order->status == "1"){
 
                 $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0 && isset($order->status) && $order->status == "1"){
 
                 $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);
@@ -1504,9 +1913,9 @@ class OrderController extends \BaseController {
             $customer_id = $this->autoRegisterCustomer($data);
 
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
-                if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-                    $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-                    $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                if(trim($data['preferred_starting_date']) != '-'){
+                    $date_arr = explode('-', $data['preferred_starting_date']);
+                    $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
                     array_set($data, 'start_date', $preferred_starting_date);
                     array_set($data, 'preferred_starting_date', $preferred_starting_date);
                 }
@@ -1514,8 +1923,8 @@ class OrderController extends \BaseController {
 
             if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
                 if(trim(Input::json()->get('preferred_payment_date')) != '-'){
-                    $date_arr = explode('-', Input::json()->get('preferred_payment_date'));
-                    $preferred_payment_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                    $date_arr = explode('-', $data['preferred_payment_date']);
+                    $preferred_payment_date            =   date('Y-m-d 00:00:00', strtotime($data['preferred_payment_date']));
                     array_set($data, 'preferred_payment_date', $preferred_payment_date);
                 }
             }

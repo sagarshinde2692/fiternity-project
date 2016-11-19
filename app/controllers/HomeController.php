@@ -28,117 +28,6 @@ class HomeController extends BaseController {
     }
 
 
-    public function getSuccessMsg($type, $id){
-
-        $type       =   strtolower(trim($type));
-
-        if($type != "" && $id != ""){
-            $item       =   [];
-
-            if($type == "booktrial") {
-
-                $booktrialData = Booktrial::with('finder')->find(intval($id))->toArray();
-                $item = array_except($booktrialData, ['finder']);
-                $finder_name = (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date = (isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($booktrialData['schedule_date'])) : "-";
-                $schedule_slot = (isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] != "") ? $booktrialData['schedule_slot'] : "-";
-
-                $header = "Congratulations!";
-                $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
-                $steps = [
-                    "You are Here",
-                    "Manage this booking through your User Profile",
-                    "Flash the code at the studio to access your session",
-                    "Get lowest price guarantee to buy membership",
-                    "Choose exciting rewards when you buy"
-                ];
-                $note = "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-
-            }elseif($type == "workoutsession") {
-
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Workout Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
-                $steps                  =   [
-                    "You are Here",
-                    "Manage this booking through your User Profile",
-                    "Flash the code at the studio to access your session",
-                    "Attend your workout"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-
-            }elseif($type == "personaltrainer") {
-
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Session is booked. Hope you and your buddy have great workout.";
-                $steps                  =   [
-                    "You are Here",
-                    "Fitternity will get in touch with you to book the appointment",
-                    "Manage your bookings through your User Profile",
-                    "You attend the trial with the trainer basis the appointment",
-                    "Get lowest price guarantee & Rewards on purchase"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-
-            }elseif($type == "manualtrial") {
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Trial Session at $finder_name has been scheduled";
-                $steps                  =   [
-                    "You are Here",
-                    "Fitternity will get in touch with you to book the appointment",
-                    "Manage your bookings through your User Profile",
-                    "You attend the trial basis the appointment",
-                    "Get lowest price guarantee & Rewards on purchase"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-
-            }elseif($type == "manualautotrial") {
-
-                $booktrialData          =   Booktrial::with('finder')->find(intval($id))->toArray();
-                $item                   =   array_except($booktrialData,['finder']);
-                $finder_name            =   (isset($booktrialData) && isset($booktrialData['finder']) && isset($booktrialData['finder']['title'])) ? ucwords($booktrialData['finder']['title']) : "";
-                $schedule_date 			= 	(isset($booktrialData['schedule_date']) && $booktrialData['schedule_date'] !="") ? $booktrialData['schedule_date'] : "-";
-                $schedule_slot 			= 	(isset($booktrialData['schedule_slot']) && $booktrialData['schedule_slot'] !="") ? $booktrialData['schedule_slot'] : "-";
-
-                $header                 =   "Congratulations!";
-                $subline                =   "Your Trial Session at $finder_name has been scheduled";
-                $steps                  =   [
-                    "You are Here",
-                    "$finder_name will get in touch with you to book the appointment",
-                    "Manage your bookings through your User Profile",
-                    "You attend the trial basis the appointment",
-                    "Get lowest price guarantee & Rewards on purchase"
-                ];
-                $note                   =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
-            }
-
-            $resp = [
-                'status'    =>  200,
-                'item'      =>  $item,
-                'message'   =>   ['header'    =>  $header, 'subline'   =>  $subline, 'steps'     =>  $steps, 'note'      =>  $note  ]
-            ];
-            return Response::json($resp);
-
-        }
-    }
-
     public function saveUtmData(){
 
 
@@ -526,6 +415,189 @@ class HomeController extends BaseController {
     }
 
 
+    public function getSuccessMsg($type, $id){
+
+        $type       =   strtolower(trim($type));
+
+        if($type != "" && $id != ""){
+
+            $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial","booktrialfree"];
+            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession"];
+            $captureItemArr     =   ["manualmembership"];
+
+            $itemData           =   [];
+            if (in_array($type, $booktrialItemArr)){
+                $itemData       =   Booktrial::with('finder')->find(intval($id))->toArray();
+            }
+
+            if (in_array($type, $orderItemArr)) {
+                $itemData = Order::with('finder')->find(intval($id))->toArray();
+            }
+
+            if (in_array($type, $captureItemArr)) {
+                $itemData = Capture::with('finder')->find($id)->toArray();
+            }
+
+            $item           =   array_except($itemData, ['finder']);
+            $finder_name    =   (isset($itemData) && isset($itemData['finder']) && isset($itemData['finder']['title'])) ? ucwords($itemData['finder']['title']) : "";
+            $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "-";
+            $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "-";
+
+            $header     =   "Congratulations!";
+            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
+
+            switch ($type) {
+
+                case 'booktrialfree':
+                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
+                    ];
+                    break;
+
+                case 'booktrial':
+                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
+                    ];
+                    break;
+                case 'workoutsession':
+                    $subline = "Your Workout Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'Attend your workout'],
+                    ];
+                    break;
+                case 'personaltrainertrial':
+                    $subline = "Your Session is booked. Hope you and your buddy have great workout.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial with the trainer basis the appointment'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                    ];
+                    break;
+                case 'manualtrial':
+                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                    ];
+                    break;
+                case 'manualautotrial':
+                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'$finder_name will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
+                    ];
+                    break;
+                case 'healthytiffintrial':
+                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription details are shared on an email to you'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
+                        ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
+                    ];
+                    break;
+                case 'membershipwithpg':
+                    $subline = "Your membership purchase at $finder_name is confirmed.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
+                    ];
+                    break;
+                case 'membershipwithoutpg':
+                    $subline = "Your membership purchase at $finder_name is confirmed.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Access your Profile on Fitternity to keep track of your membership'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
+                    ];
+                    break;
+                case 'manualmembership':
+                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Fitternity will get in touch with you to facilitate the membership purchase'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards on purchasing the membership'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'On purchase - Subscription code & membership details shared'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
+                    ];
+                    break;
+                case 'healthytiffinmembership':
+                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription details are shared on an email to you'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
+                        ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
+                        ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
+                    ];
+                    break;
+                case 'personaltrainermembership':
+                    $subline = "Your membership request with $finder_name is captured. ";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to facilitate the purchase'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'When you buy the membership details will be shared'],
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'On starting date the trainer will reach your location'],
+                    ];
+                    break;
+                default : 
+                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $steps = [
+                        ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
+                        ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
+                        ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
+                        ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
+                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
+                    ];
+                    break; 
+            }
+
+            if(count($item) < 0){
+                $item = null;
+            }
+
+            $resp = [
+                'status'    =>  200,
+                'item'      =>  $item,
+                'message'   =>   [
+                    'header'    =>  $header,
+                    'subline'   =>  $subline,
+                    'steps'     =>  $steps,
+                    'note'      =>  $note  
+                ]
+            ];
+
+            return Response::json($resp);
+        }
+    }
+
+
 
     public function getFinderCountLocationwise($city = 'mumbai', $cache = true){
 
@@ -745,7 +817,7 @@ class HomeController extends BaseController {
             $city_name 		= 	$citydata['name'];
             $city_id		= 	(int) $citydata['_id'];
 
-            $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->remember(Config::get('app.cachetime'))->get(array('name','_id','slug','location_group'));
+            $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
             $homedata 				= 	array('locations' => $locations );
 
             Cache::tags('location_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
@@ -1473,7 +1545,32 @@ class HomeController extends BaseController {
         }
         $city_name 		= 	$citydata['name'];
         $city_id		= 	(int) $citydata['_id'];
+
+        $categorytag_offerings = array();
+
         $categorytag_offerings = Findercategorytag::active()->with('offerings')->whereIn('cities', [$city_id])->orderBy('ordering')->get(array('_id','name','offering_header','slug','status','offerings'));
+
+        if(count($categorytag_offerings) > 0){
+
+            $categorytag_offerings = $categorytag_offerings->toArray();
+
+            foreach ($categorytag_offerings as $key => $value) {
+                
+                $offerings = array();
+
+                foreach ($value['offerings'] as $offerings_key => $offerings_value){
+
+                    $offerings_value['key'] = $offerings_value['name'];
+
+                    $offerings[] = $offerings_value;
+                    
+                }
+
+                $categorytag_offerings[$key]['key'] = $value['name'];
+                $categorytag_offerings[$key]['offerings'] = $offerings;
+
+            }
+        }
 
         $responsedata 	= ['categorytag_offerings' => $categorytag_offerings,  'message' => 'List for Finder categorytags'];
         return Response::json($responsedata, 200);
@@ -1587,6 +1684,115 @@ class HomeController extends BaseController {
 
     }
 
+
+
+
+    public function getHashes(){
+
+//        $data   =   Input::json()->all();
+
+        $env                    =       (Input::json()->get('env')) ? intval(Input::json()->get('env')) : 1;
+        $txnid                  =       (Input::json()->get('txnid')) ? Input::json()->get('txnid') : "";
+        $amount                 =       (Input::json()->get('amount')) ? Input::json()->get('amount') : "";
+        $productinfo            =       (Input::json()->get('productinfo')) ? Input::json()->get('productinfo') : "";
+        $firstname              =       (Input::json()->get('firstname')) ? Input::json()->get('firstname') : "";
+        $email                  =       (Input::json()->get('email')) ? Input::json()->get('email') : "";
+        $user_credentials       =       (Input::json()->get('user_credentials')) ? Input::json()->get('user_credentials') : "";
+        $udf1                   =       (Input::json()->get('udf1')) ? Input::json()->get('udf1') : "";
+        $udf2                   =       (Input::json()->get('udf2')) ? Input::json()->get('udf2') : "";
+        $udf3                   =       (Input::json()->get('udf3')) ? Input::json()->get('udf3') : "";
+        $udf4                   =       (Input::json()->get('udf4')) ? Input::json()->get('udf4') : "";
+        $udf5                   =       (Input::json()->get('udf5')) ? Input::json()->get('udf5') : "";
+        $offerKey               =       (Input::json()->get('offerKey')) ? Input::json()->get('offerKey') : "";
+        $cardBin                =       (Input::json()->get('cardBin')) ? Input::json()->get('cardBin') : "";
+
+
+        // For Production
+//        if($env == 2){
+//            $key = '0MQaQP';//'gtKFFx';
+//            $salt = '13p0PXZk';//'eCwWELxi';
+//        }else{
+//            $key = '0MQaQP';
+//            $salt = '13p0PXZk';
+//        }
+
+        // $firstname, $email can be "", i.e empty string if needed. Same should be sent to PayU server (in request params) also.
+        $key = 'l80gyM';//'gtKFFx';
+        $salt = 'QBl78dtK';//'eCwWELxi';
+
+        $payhash_str            =   $key . '|' . checkNull($txnid) . '|' .checkNull($amount)  . '|' .checkNull($productinfo)  . '|' . checkNull($firstname) . '|' . checkNull($email) . '|' . checkNull($udf1) . '|' . checkNull($udf2) . '|' . checkNull($udf3) . '|' . checkNull($udf4) . '|' . checkNull($udf5) . '||||||' . $salt;
+        $paymentHash            =   strtolower(hash('sha512', $payhash_str));
+        $arr['payment_hash']    =   $paymentHash;
+
+        $cmnNameMerchantCodes                   =   'get_merchant_ibibo_codes';
+        $merchantCodesHash_str                  =   $key . '|' . $cmnNameMerchantCodes . '|default|' . $salt ;
+        $merchantCodesHash                      =   strtolower(hash('sha512', $merchantCodesHash_str));
+        $arr['get_merchant_ibibo_codes_hash']   =   $merchantCodesHash;
+
+        $cmnMobileSdk                           =   'vas_for_mobile_sdk';
+        $mobileSdk_str                          =   $key . '|' . $cmnMobileSdk . '|default|' . $salt;
+        $mobileSdk                              =   strtolower(hash('sha512', $mobileSdk_str));
+        $arr['vas_for_mobile_sdk_hash']         =   $mobileSdk;
+
+        $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
+        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+        $detailsForMobileSdk1                               =   strtolower(hash('sha512', $detailsForMobileSdk_str1));
+        $arr['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
+
+        //used for verifying payment(optional)
+        $cmnVerifyPayment               =   'verify_payment';
+        $verifyPayment_str              =   $key . '|' . $cmnVerifyPayment . '|'.$txnid .'|' . $salt;
+        $verifyPayment                  =   strtolower(hash('sha512', $verifyPayment_str));
+        $arr['verify_payment_hash']     =   $verifyPayment;
+
+        if($user_credentials != NULL && $user_credentials != '')
+        {
+            $cmnNameDeleteCard              =   'delete_user_card';
+            $deleteHash_str                 =   $key  . '|' . $cmnNameDeleteCard . '|' . $user_credentials . '|' . $salt ;
+            $deleteHash                     =   strtolower(hash('sha512', $deleteHash_str));
+            $arr['delete_user_card_hash']   =   $deleteHash;
+
+            $cmnNameGetUserCard             =   'get_user_cards';
+            $getUserCardHash_str            =   $key  . '|' . $cmnNameGetUserCard . '|' . $user_credentials . '|' . $salt ;
+            $getUserCardHash                =   strtolower(hash('sha512', $getUserCardHash_str));
+            $arr['get_user_cards_hash']     =   $getUserCardHash;
+
+            $cmnNameEditUserCard = 'edit_user_card';
+            $editUserCardHash_str = $key  . '|' . $cmnNameEditUserCard . '|' . $user_credentials . '|' . $salt ;
+            $editUserCardHash = strtolower(hash('sha512', $editUserCardHash_str));
+            $arr['edit_user_card_hash'] = $editUserCardHash;
+
+            $cmnNameSaveUserCard = 'save_user_card';
+            $saveUserCardHash_str = $key  . '|' . $cmnNameSaveUserCard . '|' . $user_credentials . '|' . $salt ;
+            $saveUserCardHash = strtolower(hash('sha512', $saveUserCardHash_str));
+            $arr['save_user_card_hash'] = $saveUserCardHash;
+
+            $cmnPaymentRelatedDetailsForMobileSdk = 'payment_related_details_for_mobile_sdk';
+            $detailsForMobileSdk_str = $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk . '|' . $user_credentials . '|' . $salt ;
+            $detailsForMobileSdk = strtolower(hash('sha512', $detailsForMobileSdk_str));
+            $arr['payment_related_details_for_mobile_sdk_hash'] = $detailsForMobileSdk;
+        }
+
+
+        if ($offerKey!=NULL && !empty($offerKey)) {
+            $cmnCheckOfferStatus = 'check_offer_status';
+            $checkOfferStatus_str = $key  . '|' . $cmnCheckOfferStatus . '|' . $offerKey . '|' . $salt ;
+            $checkOfferStatus = strtolower(hash('sha512', $checkOfferStatus_str));
+            $arr['check_offer_status_hash']=$checkOfferStatus;
+        }
+
+
+        if ($cardBin!=NULL && !empty($cardBin)) {
+            $cmnCheckIsDomestic = 'check_isDomestic';
+            $checkIsDomestic_str = $key  . '|' . $cmnCheckIsDomestic . '|' . $cardBin . '|' . $salt ;
+            $checkIsDomestic = strtolower(hash('sha512', $checkIsDomestic_str));
+            $arr['check_isDomestic_hash']=$checkIsDomestic;
+        }
+
+        $responsedata =  array('result'=>$arr);
+
+        return Response::json($responsedata, 200);
+    }
 
 
 

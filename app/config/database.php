@@ -55,7 +55,7 @@ return array(
 		    // 'username' => 'fituser',
 		    // 'password' => '65e4d4c196aa6229cf2ad0ff252658c7',
 			'database' => 'fitadmin'
-			),
+		),
 
 		'mongodb2' => array(
 			'driver'   => 'mongodb',
@@ -63,7 +63,8 @@ return array(
 		      'host'     => '52.77.247.239',
 			'port'     => 27017,
 			'database' => 'fitapi'
-			),
+		),
+
 
 		'mongodb3' => array(
 			'driver'   => 'mongodb',
@@ -71,7 +72,7 @@ return array(
 //		     'host'     => '52.77.247.239',
 			'port'     => 27017,
 			'database' => 'fitadminnew'
-			),
+		),
 
 
 		/*'sqlite' => array(

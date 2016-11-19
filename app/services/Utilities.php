@@ -103,7 +103,7 @@ Class Utilities {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
-
+        
         // Validate transaction request........
         $validator = Validator::make($request, Customerwallet::$rules);
 

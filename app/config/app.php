@@ -29,7 +29,7 @@ return array(
 	*/
 
 	'url' => 'https://a1.fitternity.com',
-//	'url' => 'http://apistg.fitn.in/',
+	//'url' => 'http://appstg.fitn.in/',
 	//'url' => 'http://fitapi.com',
 
 	/*
@@ -243,13 +243,13 @@ return array(
 		'default_type' 	=> 	'finder',
 	),
 	//stage
-	//  'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
-	//  ),
+	/*'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),*/
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',

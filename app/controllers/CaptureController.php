@@ -189,6 +189,7 @@ public function postCapture(){
 	$storecapture = Capture::create($data);
 
 	if($storecapture){
+
 		if(Input::json()->get('capture_type') == 'pre-register-fitmania'){
 			$sndInstantSmsFinder	=	$this->customersms->fitmaniaPreRegister($data);
 		}
@@ -224,10 +225,13 @@ public function postCapture(){
 			$data['label'] = "Reward-PersonalTrainer-AtHome-Customer";
 
 			$this->customermailer->rewardClaim($data);
+			
+			return Response::json($createMyRewardCapture, $createMyRewardCapture['status']);
 		}
 
 
 	}
+
 	return Response::json($storecapture, 200);
 }
 

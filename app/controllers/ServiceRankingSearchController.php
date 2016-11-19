@@ -525,7 +525,6 @@ class ServiceRankingSearchController extends \BaseController {
 
       $vendorId_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter.$vendorId_filter, ',');
 
-
       $time_bool = '"filter": {
         "bool" : { "must":['.$time_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
@@ -723,24 +722,22 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-            $vendorId_facets = ' "filtered_vendorId": {
-            '.$vendorId_bool.',
-            "aggs": {
-              "vendors": {
-                "terms": {
-                  "field": "vendor_id",
-                  "min_doc_count": 1,
-                  "size": 500,
-                  "order":{"_count": "desc"}
-                }
-              }
+
+      $vendorId_facets = ' "filtered_vendorId": {
+      '.$vendorId_bool.',
+      "aggs": {
+          "vendors": {
+            "terms": {
+              "field": "vendor_id",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
             }
-          },';
+          }
+        }
+      },';
 
-                $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets.$vendorId_facets,',');
-
-
-
+      $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets.$vendorId_facets,',');
       
       /*******************************************Drilled Aggregations here ******************************************/
 
@@ -787,7 +784,7 @@ class ServiceRankingSearchController extends \BaseController {
 
 
       // var_dump($query);exit();
-   
+      // return $query;
 
       $request = array(
         'url' => $this->elasticsearch_host."/fitternity_vip_trials/service/_search",

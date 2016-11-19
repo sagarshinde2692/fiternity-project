@@ -486,6 +486,10 @@ class EmailSmsApiController extends \BaseController {
         array_set($data, 'date',date("h:i:sa"));
         array_set($data, 'ticket_number',random_numbers(5));
 
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+            $data['finder_id'] = (int)$data['finder_id'];
+        }
+
         $storecapture   = Capture::create($data);
 
         $emaildata = array(
