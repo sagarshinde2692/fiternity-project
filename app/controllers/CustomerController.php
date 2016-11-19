@@ -2216,9 +2216,7 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$upcoming = array();
-		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
-			$city = 'mumbai';
-		}
+		
 		$city = strtolower($city);
 
 		if($jwt_token != ""){

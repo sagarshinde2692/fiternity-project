@@ -75,7 +75,7 @@ class FindersController extends \BaseController {
 
 
 
-    public function finderdetail($slug, $cache = false){
+    public function finderdetail($slug, $cache = true){
 
 //        return Cache::tags('finder_detail')->get($slug);
         $data 	=  array();
