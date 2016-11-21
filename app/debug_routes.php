@@ -40,6 +40,18 @@ Route::get('addexpirydate', 'DebugController@addExpiryDate');
 
 Route::get('checkfileons3', function (){
 
+    $booktrial          = Booktrial::find(43208);
+    $schedule_date_time = strtotime($booktrial['schedule_date_time']);
+    $currentTime        = time();
+
+    if($currentTime < $schedule_date_time){
+        $schedule_passed_flag = "before";
+    }else{
+        $schedule_passed_flag = "after";
+    }
+
+    echo $schedule_passed_flag;
+    exit;
     $s3 = \AWS::get('s3');
 
     $objects = $s3->getIterator('ListObjects', array(

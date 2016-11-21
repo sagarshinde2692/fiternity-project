@@ -935,7 +935,18 @@ class OzonetelsController extends \BaseController {
 					$data['finder_vcc_mobile'] = $booktrial->finder_vcc_mobile;
 					$data['finder_category_id'] = (int)$booktrial->finder_category_id;
 
-					Log::info('Missedcall N-3 - '.$type);
+                    // set before after flag based schecdule time
+                    $schedule_date_time     =   strtotime($booktrial['schedule_date_time']);
+                    $currentTime            =   time();
+                    if($currentTime < $schedule_date_time){
+                        $schedule_time_passed_flag = "before";
+                    }else{
+                        $schedule_time_passed_flag = "after";
+                    }
+                    $data['schedule_time_passed_flag'] = $schedule_time_passed_flag;
+
+
+                    Log::info('Missedcall N-3 - '.$type);
 
                     $delayReminderTimeAfter2Hour		    =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A',strtotime($booktrial->schedule_date_time)))->addMinutes(60 * 2);
 
