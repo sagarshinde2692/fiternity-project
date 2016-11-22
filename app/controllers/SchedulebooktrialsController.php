@@ -4091,7 +4091,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function rebookTrialUrl($finder_slug,$service_id,$booktrial_id){
 
-        $input_url    =   Config::get('app.website')."booktrial/$finder_slug?serid=$service_id&bookid=$booktrial_id";
+        $input_url    =   Config::get('app.website')."booktrial/$finder_slug?serid=$service_id&bookid=$booktrial_id&source=fittransactionemail&medium=booktrail&button=rebooktiral";
         $shorten_url    =   new ShortenUrl();
         $url            =   $shorten_url->getShortenUrl($input_url);
         if(isset($url['status']) &&  $url['status'] == 200){
