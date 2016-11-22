@@ -32,6 +32,9 @@ return array(
 	'url' => 'http://appstg.fitn.in/',
 	//'url' => 'http://fitapi.com',
 
+
+    'website' => 'http://appstg.fitn.in:8555/',
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Timezone

@@ -1825,9 +1825,28 @@ class SchedulebooktrialsController extends \BaseController {
 //             return $booktrialdata;
 
             if(isset($order->booktrial_id)){
+
+                if(isset($order->finder_slug) && isset($order->service_id) && isset($order->booktrial_id) ){
+                    $finder_slug                        =   trim($order->finder_slug);
+                    $service_id                         =   intval($order->service_id);
+                    $booktrial_id                       =   intval($order->booktrial_id);
+                    $rebook_trial_url                   =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrial_id);
+                    $booktrialdata['rebook_trial_url']  =   $rebook_trial_url;
+                }
+
                 $booktrial = Booktrial::find((int)$order->booktrial_id);
                 $trialbooked = $booktrial->update($booktrialdata); 
             }else{
+
+
+                if(isset($finder_slug) && isset($service_id) && isset($booktrialid) ){
+                    $finder_slug                        =   trim($finder_slug);
+                    $service_id                         =   intval($service_id);
+                    $booktrial_id                       =   intval($booktrialid);
+                    $rebook_trial_url                   =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrial_id);
+                    $booktrialdata['rebook_trial_url']  =   $rebook_trial_url;
+                }
+
                 $booktrial = new Booktrial($booktrialdata);
                 $booktrial->_id = (int) $booktrialid;
                 $trialbooked = $booktrial->save();
@@ -4048,7 +4067,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function vendorUrl($slug){
 
-        $vendor_url    =   "https://fitternity.com/".$slug;
+        $vendor_url    =   Config::get('app.website').$slug;
         $shorten_url    =   new ShortenUrl();
         $url            =   $shorten_url->getShortenUrl($vendor_url);
         if(isset($url['status']) &&  $url['status'] == 200){
@@ -4060,7 +4079,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function customerProfileUrl($email){
 
-        $profile_url    =   "https://fitternity.com/profile/".$email;
+        $profile_url    =   Config::get('app.website')."profile/".$email;
         $shorten_url    =   new ShortenUrl();
         $url            =   $shorten_url->getShortenUrl($profile_url);
         if(isset($url['status']) &&  $url['status'] == 200){
@@ -4068,6 +4087,18 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         return $profile_url;
+    }
+
+    public function rebookTrialUrl($finder_slug,$service_id,$booktrial_id){
+
+        $input_url    =   Config::get('app.website')."booktrial/$finder_slug?serid=$service_id&bookid=$booktrial_id";
+        $shorten_url    =   new ShortenUrl();
+        $url            =   $shorten_url->getShortenUrl($input_url);
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $input_url = $url['url'];
+        }
+
+        return $input_url;
     }
 
 
