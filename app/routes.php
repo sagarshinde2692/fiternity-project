@@ -431,7 +431,6 @@ Route::post('search/searchsaleratecards/v1', 'ServiceRankingSearchController@sea
 
 
 
-
 ##############################################################################
 /******************** SERVICE SECTION START HERE ********************/
 
