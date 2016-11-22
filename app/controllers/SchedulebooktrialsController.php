@@ -1835,6 +1835,7 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info('$trialbooked : '.json_encode($trialbooked));
             }
 
+
             // Give Rewards / Cashback to customer based on selection, on purchase success......
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
