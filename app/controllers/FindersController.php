@@ -1061,7 +1061,7 @@ class FindersController extends \BaseController {
 			$oldreviewobj->update($reviewdata);
 			$review_id = $oldreview->_id;
 			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
-			$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
+			//$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
 			$response = array('status' => 200, 'message' => 'Review Updated Successfully.','id'=>$oldreview->_id,'review_detail'=>$review_detail);
 		}else{
 			$inserted_id = Review::max('_id') + 1;
@@ -1070,7 +1070,7 @@ class FindersController extends \BaseController {
 			$reviewobject = $review->save();
 			$review_detail = $this->updateFinderRatingV1($reviewdata);
 			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
-			$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
+			//$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
 			$review_id = $inserted_id;
 
 			Log::info('Customer Review : '.json_encode(array('review_details' => Review::findOrFail($inserted_id))));
