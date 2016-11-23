@@ -77,11 +77,7 @@ class FindersController extends \BaseController {
 
     public function finderdetail($slug, $cache = true){
 
-        print_pretty($_REQUEST);
-
-        var_dump(Request::header());
-
-        exit;
+        echo "finderdetail"; print_pretty($_REQUEST); var_dump(Request::header()); exit;
 
 
 //        return Cache::tags('finder_detail')->get($slug);
