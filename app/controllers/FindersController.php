@@ -441,8 +441,8 @@ class FindersController extends \BaseController {
             if(Request::header('Authorization')){
                 $decoded                            =       decode_customer_token();
                 var_dump($decoded);
-                $customer_email                     =       $decoded->customer['email'];
-                $customer_phone                     =       (isset($decoded->customer['contact_no'])) ? $decoded->customer['contact_no'] : "";
+                $customer_email                     =       $decoded->customer->email;
+                $customer_phone                     =       (isset($decoded->customer->contact_no)) ? $decoded->customer->contact_no : "";
                 if( $customer_phone != ""){
                     $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
                         ->where('finder_id', '=', (int) $finderData['finder']['_id'])
