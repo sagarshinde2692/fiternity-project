@@ -1417,6 +1417,8 @@ class SchedulebooktrialsController extends \BaseController {
         $data = Input::json()->all();
 //        return $data;
 
+       Log::info('bookTrialPaid',$data);
+
         if(!isset($data['customer_name']) || $data['customer_name'] == ''){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
             return  Response::json($resp, 400);
