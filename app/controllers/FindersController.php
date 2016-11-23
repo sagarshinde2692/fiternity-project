@@ -440,6 +440,7 @@ class FindersController extends \BaseController {
 
             if(Request::header('Authorization')){
                 $decoded                            =       decode_customer_token();
+                var_dump($decoded);
                 $customer_email                     =       $decoded->customer['email'];
                 $customer_phone                     =       (isset($decoded->customer['contact_no'])) ? $decoded->customer['contact_no'] : "";
                 if( $customer_phone != ""){
