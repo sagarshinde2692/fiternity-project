@@ -406,8 +406,12 @@ class FindersController extends \BaseController {
                 $data = Cache::tags('finder_detail')->get($tslug);
                 if(Request::header('Authorization')){
                     var_dump(Request::header('Authorization'));
-                    exit;
                     $decoded                            =       decode_customer_token();
+
+                    echo "=====================================";
+                    var_dump($decoded);
+                    exit;
+
                     $customer_email                     =       $decoded->customer->email;
                     $customer_phone                     =       $decoded->customer->contact_no;
                     $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
