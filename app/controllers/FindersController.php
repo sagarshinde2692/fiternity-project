@@ -77,6 +77,13 @@ class FindersController extends \BaseController {
 
     public function finderdetail($slug, $cache = true){
 
+        print_pretty($_REQUEST);
+
+        var_dump(Request::header());
+
+        exit;
+
+
 //        return Cache::tags('finder_detail')->get($slug);
         $data 	=  array();
         $tslug 	= (string) strtolower($slug);
@@ -405,7 +412,6 @@ class FindersController extends \BaseController {
                 $data = Cache::tags('finder_detail')->put($tslug,$data,Config::get('cache.cache_time'));
                 $data = Cache::tags('finder_detail')->get($tslug);
 
-                die(var_dump(Request::header()));
                 if(Request::header('Authorization')){
                     $decoded                            =       decode_customer_token();
                     $customer_email                     =       $decoded->customer->email;
