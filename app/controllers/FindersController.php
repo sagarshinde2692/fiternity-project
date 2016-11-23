@@ -460,6 +460,7 @@ class FindersController extends \BaseController {
 //                        ->get(array('id'));
 //                }
 
+                $customer_trials_with_vendors               =   [];
                 $finderData['trials_detials']              =      $customer_trials_with_vendors;
                 $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
             }else{
