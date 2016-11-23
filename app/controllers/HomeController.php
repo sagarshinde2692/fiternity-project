@@ -480,7 +480,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'personaltrainertrial':
-                    $subline = "Your Session is booked. Hope you and your buddy have great workout.";
+                    $subline = "Your trial request at $finder_name has been received by Fitternity";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -490,7 +490,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualtrial':
-                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $subline = "Your trial request for $finder_name has been received by Fitternity";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -500,7 +500,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualautotrial':
-                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $subline = "Your trial request has been sent to $finder_name";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'$finder_name will get in touch with you to book the appointment'],
