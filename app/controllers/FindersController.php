@@ -1060,7 +1060,7 @@ class FindersController extends \BaseController {
 			$oldreviewobj = Review::findOrFail(intval($oldreview->_id));
 			$oldreviewobj->update($reviewdata);
 			$review_id = $oldreview->_id;
-			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5);
+			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
 			$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
 			$response = array('status' => 200, 'message' => 'Review Updated Successfully.','id'=>$oldreview->_id,'review_detail'=>$review_detail);
 		}else{
@@ -1069,7 +1069,7 @@ class FindersController extends \BaseController {
 			$review->_id = $inserted_id;
 			$reviewobject = $review->save();
 			$review_detail = $this->updateFinderRatingV1($reviewdata);
-			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5);
+			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
 			$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
 			$review_id = $inserted_id;
 
@@ -1178,7 +1178,8 @@ class FindersController extends \BaseController {
 
 			//sending response
 			$rating  =  array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count);
-			$resp    =  array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
+			//$resp    =  array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
+			$resp    =  array('rating' => $rating);
 			return $resp ; //Response::json($resp);
 		}
 	}
