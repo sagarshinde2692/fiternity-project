@@ -405,6 +405,8 @@ class FindersController extends \BaseController {
                 $data = Cache::tags('finder_detail')->put($tslug,$data,Config::get('cache.cache_time'));
                 $data = Cache::tags('finder_detail')->get($tslug);
                 if(Request::header('Authorization')){
+                    var_dump(Request::header('Authorization'));
+                    exit;
                     $decoded                            =       decode_customer_token();
                     $customer_email                     =       $decoded->customer->email;
                     $customer_phone                     =       $decoded->customer->contact_no;
