@@ -480,7 +480,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'personaltrainertrial':
-                    $subline = "Your Session is booked. Hope you and your buddy have great workout.";
+                    $subline = "Your trial request at $finder_name has been received by Fitternity";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -490,7 +490,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualtrial':
-                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $subline = "Your trial request for $finder_name has been received by Fitternity";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -500,7 +500,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualautotrial':
-                    $subline = "Your Trial Session at $finder_name has been scheduled";
+                    $subline = "Your trial request has been sent to $finder_name";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'$finder_name will get in touch with you to book the appointment'],
@@ -566,7 +566,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'On starting date the trainer will reach your location'],
                     ];
                     break;
-                default : 
+                default :
                     $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
@@ -575,7 +575,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
-                    break; 
+                    break;
             }
 
             if(count($item) < 0){
@@ -589,7 +589,7 @@ class HomeController extends BaseController {
                     'header'    =>  $header,
                     'subline'   =>  $subline,
                     'steps'     =>  $steps,
-                    'note'      =>  $note  
+                    'note'      =>  $note
                 ]
             ];
 
@@ -1555,7 +1555,7 @@ class HomeController extends BaseController {
             $categorytag_offerings = $categorytag_offerings->toArray();
 
             foreach ($categorytag_offerings as $key => $value) {
-                
+
                 $offerings = array();
 
                 foreach ($value['offerings'] as $offerings_key => $offerings_value){
@@ -1563,7 +1563,7 @@ class HomeController extends BaseController {
                     $offerings_value['key'] = $offerings_value['name'];
 
                     $offerings[] = $offerings_value;
-                    
+
                 }
 
                 $categorytag_offerings[$key]['key'] = $value['name'];
