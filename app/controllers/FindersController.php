@@ -439,21 +439,26 @@ class FindersController extends \BaseController {
             $finderData = Cache::tags('finder_detail')->get($tslug);
 
             if(Request::header('Authorization')){
+
+                var_dump(Request::header('Authorization'));
+
                 $decoded                            =       decode_customer_token();
+
+                echo "=====================================";
                 var_dump($decoded);
-                $customer_email                     =       $decoded->customer->email;
-                $customer_phone                     =       (isset($decoded->customer->contact_no)) ? $decoded->customer->contact_no : "";
-                if( $customer_phone != ""){
-                    $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-                        ->where('finder_id', '=', (int) $finderData['finder']['_id'])
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                        ->get(array('id'));
-                }else{
-                    $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email) { $query->where('customer_email', $customer_email);})
-                        ->where('finder_id', '=', (int) $finderData['finder']['_id'])
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                        ->get(array('id'));
-                }
+//                $customer_email                     =       $decoded->customer->email;
+//                $customer_phone                     =       (isset($decoded->customer->contact_no)) ? $decoded->customer->contact_no : "";
+//                if( $customer_phone != ""){
+//                    $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+//                        ->where('finder_id', '=', (int) $finderData['finder']['_id'])
+//                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+//                        ->get(array('id'));
+//                }else{
+//                    $customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email) { $query->where('customer_email', $customer_email);})
+//                        ->where('finder_id', '=', (int) $finderData['finder']['_id'])
+//                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+//                        ->get(array('id'));
+//                }
 
                 $finderData['trials_detials']              =      $customer_trials_with_vendors;
                 $finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
