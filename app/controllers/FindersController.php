@@ -1056,21 +1056,25 @@ class FindersController extends \BaseController {
 		$oldreview = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
 
 		if($oldreview){
-			$updatefinder = $this->updateFinderRatingV1($reviewdata,$oldreview);
+			$review_detail = $this->updateFinderRatingV1($reviewdata,$oldreview);
 			$oldreviewobj = Review::findOrFail(intval($oldreview->_id));
 			$oldreviewobj->update($reviewdata);
 			$review_id = $oldreview->_id;
-			$response = array('status' => 200, 'message' => 'Review Updated Successfully.','id'=>$oldreview->_id);
+			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5);
+			$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
+			$response = array('status' => 200, 'message' => 'Review Updated Successfully.','id'=>$oldreview->_id,'review_detail'=>$review_detail);
 		}else{
 			$inserted_id = Review::max('_id') + 1;
 			$review = new Review($reviewdata);
 			$review->_id = $inserted_id;
 			$reviewobject = $review->save();
-			$updatefinder = $this->updateFinderRatingV1($reviewdata);
+			$review_detail = $this->updateFinderRatingV1($reviewdata);
+			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5);
+			$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
 			$review_id = $inserted_id;
 
 			Log::info('Customer Review : '.json_encode(array('review_details' => Review::findOrFail($inserted_id))));
-			$response = array('status' => 200, 'message' => 'Review Created Successfully.','id'=>$inserted_id);
+			$response = array('status' => 200, 'message' => 'Review Created Successfully.','id'=>$inserted_id,'review_detail'=>$review_detail);
 		}
 
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
@@ -1175,7 +1179,7 @@ class FindersController extends \BaseController {
 			//sending response
 			$rating  =  array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count);
 			$resp    =  array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
-			return Response::json($resp);
+			return $resp ; //Response::json($resp);
 		}
 	}
 
