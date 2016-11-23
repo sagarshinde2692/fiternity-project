@@ -241,6 +241,7 @@ class FindersController extends \BaseController {
 					$finder['ozonetelno'] = $finderarr['ozonetelno'];
 				}
 
+				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 
 				$finder['associate_finder'] = null;
 				if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
