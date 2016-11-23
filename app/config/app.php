@@ -32,6 +32,8 @@ return array(
 	//'url' => 'http://appstg.fitn.in/',
 	//'url' => 'http://fitapi.com',
 
+    'website' => 'https://www.fitternity.com',
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Timezone
