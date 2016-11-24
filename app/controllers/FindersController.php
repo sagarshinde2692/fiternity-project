@@ -1327,7 +1327,9 @@ class FindersController extends \BaseController {
 
 		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
-		$remaining_count    =   Review::active()->where('finder_id','=',$finder_id)->skip($from + $size)->orderBy('_id', 'desc')->count();
+		$remaining_count =  Review::active()->where('finder_id','=',$finder_id)->count() - ($from+$size);
+
+		$remaining_count    =   ($remaining_count > 0) ? $remaining_count : 0;
 
 		$responseData       =   ['reviews' => $reviews,'message' => 'List for reviews','remaining_count'=>$remaining_count];
 

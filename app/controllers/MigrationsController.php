@@ -1160,4 +1160,120 @@ class MigrationsController extends \BaseController {
 
 	}
 
+	public function bdResearch(){
+
+		$bdResearches	=	DB::table('finderbdresearchs')->orderBy('_id','asc')->get();
+
+		if($bdResearches){
+
+			foreach ($bdResearches as $key => $value) {
+
+				if(isset($value['bd_name']) && $value['bd_name'] != ""){
+
+					$insertData = [
+						'vendor_id' => (int) $value->finder_id,
+						'bd_name' => $value->bd_name,
+						'remark' => $value->remark,
+						'conversation_date' => date('Y-m-d h:i:s', strtotime($value->conversation_date)),
+						'hidden' =>  (isset($value->status) && $value->status == "1") ? false : true,
+						'created_at' =>  $value->created_at,
+						'updated_at' =>  $value->updated_at
+					];
+
+					$bdResearch = New BdResearch($insertData);
+					$bdResearch->save();
+				}
+
+			}
+		}
+		
+	}
+
+	public function outreachRm(){
+
+		$outreachRms	=	DB::table('finderoutreachrms')->orderBy('_id','asc')->get();
+
+		if($outreachRms){
+
+			foreach ($outreachRms as $key => $value) {
+
+				if(isset($value['rm_name']) && $value['rm_name'] != ""){
+
+					$insertData = [
+						'vendor_id' => (int) $value['finder_id'],
+						'rm_name' => $value['rm_name'],
+						'remark' => $value['remark'],
+						'conversation_date' => date('Y-m-d h:i:s', strtotime($value['conversation_date'])),
+						'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
+						'created_at' =>  $value['created_at'],
+						'updated_at' =>  $value['updated_at']
+					];
+
+					$outreachRm = New OutreachRm($insertData);
+					$outreachRm->save();
+				}
+			}
+		}
+		
+	}
+
+	public function commercial(){
+
+		$commercials	=	DB::table('findercommercials')->orderBy('_id','asc')->get();
+
+		if($commercials){
+
+			foreach ($commercials as $key => $value) {
+
+				$insertData = [
+				    "aquired_person" => $value["aquired_person"] ,
+				    "business_type" => $value["business_type"] ,
+				    "commercial_type" => $value["commercial_type"] ,
+				    "commision" => (int) preg_replace("/[^0-9.]/","",$value["commision"]),
+				    "contract_duration" => (int) preg_replace("/[^0-9.]/","",$value["contract_duration"]),
+				    "vendor_id" => $value["finder_id"] ,
+				    "listing_fee" => (int) preg_replace("/[^0-9.]/","",$value["listing_fee"]),
+				    "mou" => $value["mou"] ,
+				    "waiver" => $value["waiver"] ,
+				    "waiver_duration" => $value["waiver_duration"] ,
+					'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
+					'created_at' =>  $value['created_at'],
+					'updated_at' =>  $value['updated_at']
+				];
+
+				if(isset($value["aquired_date"]) && $value["aquired_date"] != ""){
+					$insertData['aquired_date'] = date('Y-m-d h:i:s', strtotime($value["aquired_date"]));
+				}
+
+				if(isset($value["contract_end_date"]) && $value["contract_end_date"] != ""){
+					$insertData['contract_end_date'] = date('Y-m-d h:i:s', strtotime($value["contract_end_date"]));
+				}
+
+				if(isset($value["contract_start_date"]) && $value["contract_start_date"] != ""){
+					$insertData['contract_start_date'] = date('Y-m-d h:i:s', strtotime($value["contract_start_date"]));
+				}
+
+				if(isset($value["on_board_date"]) && $value["on_board_date"] != ""){
+					$insertData['on_board_date'] = date('Y-m-d h:i:s', strtotime($value["on_board_date"]));
+				}
+
+				if(isset($value["payment_collection_date"]) && $value["payment_collection_date"] != ""){
+					$insertData['payment_collection_date'] = date('Y-m-d h:i:s', strtotime($value["payment_collection_date"]));
+				}
+
+				if(isset($value["waiver_end_date"]) && $value["waiver_end_date"] != ""){
+					$insertData['waiver_end_date'] = date('Y-m-d h:i:s', strtotime($value["waiver_end_date"]));
+				}
+
+				if(isset($value["waiver_start_date"]) && $value["waiver_start_date"] != ""){
+					$insertData['waiver_start_date'] = date('Y-m-d h:i:s', strtotime($value["waiver_start_date"]));
+				}
+
+				$commercial = New Commercial($insertData);
+				$commercial->save();
+			}
+		}
+		
+	}
+
 }

@@ -24,6 +24,13 @@ Route::get('deactivate/ozoneteldid', 'DebugController@deactivateOzonetelDid');
 Route::get('unset/viptrial', 'DebugController@unsetVipTrial');
 Route::get('removepersonaltrainerstudio', 'DebugController@removePersonalTrainerStudio');
 
+Route::get('migrations/bdresearch', 'MigrationsController@bdResearch');
+Route::get('migrations/outreachrm', 'MigrationsController@outreachRm');
+Route::get('migrations/commercial', 'MigrationsController@commercial');
+
+
+
+
 ############################################################################################
 /************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
 
