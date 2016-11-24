@@ -75,7 +75,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 
 //        return Cache::tags('finder_detail')->get($slug);
 		$data   =  array();
@@ -261,7 +261,39 @@ class FindersController extends \BaseController {
 
 				if(count($finder['services']) > 0 ){
 
-					$info_timing = $this->getInfoTiming($finder['services']);
+				    $serviceArr                             =   [];
+                    $sericecategorysCalorieArr              =   Config::get('app.calorie_burn_categorywise');
+                    $sericecategorysWorkoutResultArr        =   Config::get('app.workout_results_categorywise');
+
+                    foreach ($finder['services'] as $service){
+
+                        $service = $service;
+
+                        if(isset($service['category']) && isset($service['category']['_id'])){
+                            $category_id                =   intval($service['category']['_id']);
+
+                            //calorie_burn
+                            $category_calorie_burn      =   300;
+                            if(isset($sericecategorysCalorieArr[$category_id])){
+                                $category_calorie_burn = $sericecategorysCalorieArr[$category_id];
+                            }
+                            $service['calorie_burn']    = $category_calorie_burn;
+
+                            //workout_results
+                            $category_workout_result    =   [];
+                            if(isset($sericecategorysWorkoutResultArr[$category_id])){
+                                $category_workout_result = $sericecategorysWorkoutResultArr[$category_id];
+                            }
+                            $service['workout_results']    = $category_workout_result;
+
+                        }
+
+                        array_push($serviceArr, $service);
+                    }
+
+                    array_set($finder, 'services', $serviceArr);
+
+                    $info_timing = $this->getInfoTiming($finder['services']);
 
 					if(isset($finder['info']) && $info_timing != ""){
 						$finder['info']['timing'] = $info_timing;

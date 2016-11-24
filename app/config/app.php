@@ -357,22 +357,23 @@ return array(
         184     => 400
     ],
 
+
     'workout_results_categorywise'        =>   [
-        65      => 600,
-        1       => 250,
-        2       => 450,
-        4       => 350,
-        5       => 450,
-        19      => 700,
-        86      => 450,
-        111     => 800,
-        114     => 400,
-        123     => 750,
-        152     => 450,
-        154     => 300,
-        3       => 450,
-        161     => 650,
-        184     => 400
+        65      => ["tone up", "super cardio", "endurance", "muscle definition", "flat abs", "increase power"],
+        1       => ["flexibility", "feel centered & calm", "stress buster", "control breathing", "improve postures", "tone up"],
+        2       => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
+        4       => ["super strong core", "stability", "tone & rip", "flexibility", "improve postures", "strong abs"],
+        5       => ["burn fat", "work on all muscle", "chiseled body", "super strong core", "agility", "musclar endurance"],
+        19      => ["catch some sexy moves", "super cardio", "stress buster", "fat burn", "tone & shape legs, butt & hips", "flexibility"],
+        86      => ["burn fat", "super cardio", "increase leg strength", "tone & shape legs, butt & hips", "speed", "stress buster"],
+        111     => ["tone & rip", "increase sports performance", "increase power", "musclar endurance", "strong abs", "burn fat"],
+        114     => ["super cardio", "speed", "agility", "burn fat", "endurance", "lean legs"],
+        123     => ["super cardio", "speed", "agility", "burn fat", "tone & shape legs, butt & hips", "flexibility"],
+        152     => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
+        154     => ["super cardio", "speed", "agility", "co-ordination", "stability", "flexibility"],
+        3       => ["tone up", "co-ordination", "increase power", "work on all muscle", "stability", "increase sports performance"],
+        161     => ["burn fat", "endurance", "control breathing", "increase sports performance", "speed", "shape up"],
+        184     => ["burn fat","shape up","endurance","flat abs","flexibility","work on all muscle"]
     ],
 
 
