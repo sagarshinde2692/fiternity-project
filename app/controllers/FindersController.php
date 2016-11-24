@@ -1019,6 +1019,7 @@ class FindersController extends \BaseController {
 
 
 	public function addReview(){
+
 		// return Input::json()->all();
 		$validator = Validator::make($data = Input::json()->all(), Review::$rules);
 		if ($validator->fails()) {
@@ -1027,15 +1028,15 @@ class FindersController extends \BaseController {
 		}
 
 		$reviewdata = [
-		'finder_id' => intval($data['finder_id']),
-		'customer_id' => intval($data['customer_id']),
-		'rating' => floatval($data['rating']),
-		'detail_rating' => array_map('floatval',$data['detail_rating']),
-		'description' => $data['description'],
-		'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
-		'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
-		'source' => (isset($data['source'])) ? $data['source'] : 'customer',
-		'status' => '1'
+			'finder_id' => intval($data['finder_id']),
+			'customer_id' => intval($data['customer_id']),
+			'rating' => floatval($data['rating']),
+			'detail_rating' => array_map('floatval',$data['detail_rating']),
+			'description' => $data['description'],
+			'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
+			'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
+			'source' => (isset($data['source'])) ? $data['source'] : 'customer',
+			'status' => '1'
 		];
 
 		$reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
@@ -1048,44 +1049,100 @@ class FindersController extends \BaseController {
 			$reviewdata['agent_email'] = $data['agent_email'];
 		}
 
-		$finderobj = Finder::where('_id', intval($data['finder_id']))->first();
-		//$cacheurl = 'flushtagkey/finder_detail/'.$finderobj->slug;
-		//clear_cache($cacheurl);
+		$finder = Finder::find(intval($data['finder_id']));
 
-		//if exist then update
-		$oldreview = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
+		$review = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
 
-		if($oldreview){
-			$review_detail = $this->updateFinderRatingV1($reviewdata,$oldreview);
-			$oldreviewobj = Review::findOrFail(intval($oldreview->_id));
-			$oldreviewobj->update($reviewdata);
-			$review_id = $oldreview->_id;
-			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
-			//$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
-			$response = array('status' => 200, 'message' => 'Review Updated Successfully.','id'=>$oldreview->_id,'review_detail'=>$review_detail);
+		if($review){
+
+			$review->update($reviewdata);
+			$message = 'Review Updated Successfully';
+			$review_id = $review->_id;
+
 		}else{
+
 			$inserted_id = Review::max('_id') + 1;
 			$review = new Review($reviewdata);
-			$review->_id = $inserted_id;
-			$reviewobject = $review->save();
-			$review_detail = $this->updateFinderRatingV1($reviewdata);
-			$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
-			//$review_detail['review_count'] = Review::active()->where('finder_id',intval($data['finder_id']))->count();
-			$review_id = $inserted_id;
+			$review_id = $review->_id = $inserted_id;
+			$review->save();
 
-			Log::info('Customer Review : '.json_encode(array('review_details' => Review::findOrFail($inserted_id))));
-			$response = array('status' => 200, 'message' => 'Review Created Successfully.','id'=>$inserted_id,'review_detail'=>$review_detail);
+			$message = 'Review Created Successfully';
 		}
+
+		$this->updateFinderRatingV2($finder);
+
+		$review_detail = $this->updateFinderRatingV1($reviewdata);$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
+
+		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>$review_detail);
 
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
 			$booktrial_id   =   (int) $data['booktrialid'];
 			$trial          =   Booktrial::find($booktrial_id);
-			$trialdata  =   $trial->update(['review_id'=> intval($review_id), 'has_reviewed' => '1']);
+			$trial->update(['review_id'=> intval($review_id), 'has_reviewed' => '1']);
 		}
 
-		$this->cacheapi->flushTagKey('finder_detail',$finderobj->slug);
-		$this->cacheapi->flushTagKey('review_by_finder_list',$finderobj->slug);
+		$this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+		$this->cacheapi->flushTagKey('review_by_finder_list',$finder->slug);
+
 		return Response::json($response, 200);
+	}
+
+	public function updateFinderRatingV2($finder){
+
+		$review = Review::where('finder_id',$finder->_id)->get();
+
+        $detail_rating = array(array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0));
+        $rating = 0;
+        $rating_count = 0;
+        $average_rating = 0;
+
+        foreach ($review as $key => $value) {
+
+            if($value->rating >= 0){
+                $rating += (int) $value->rating;
+                $rating_count += 1;
+            }
+
+            foreach ($value->detail_rating as $dr_key => $dr_value) {
+
+                if($dr_value >= 1){
+
+                    $detail_rating[$dr_key]['rating'] += (int) $dr_value;
+                    $detail_rating[$dr_key]['count'] += 1;
+                }
+            }
+        }
+
+        foreach ($detail_rating as $dr_key => $dr_value) {
+
+            if($dr_value['count'] < 1 ){
+                $detail_rating[$dr_key]['rating'] = round($dr_value['rating'],2);
+            }else{
+                $detail_rating[$dr_key]['rating'] = round($dr_value['rating']/$dr_value['count'],2);
+            }
+
+            $detail_rating_summary_average[$dr_key] = $detail_rating[$dr_key]['rating'];
+            $detail_rating_summary_count[$dr_key] = $detail_rating[$dr_key]['count'];
+        }
+
+        if($rating_count == 0 || $rating == 0){
+            $average_rating = $rating;
+        }else{
+            $average_rating = round($rating/$rating_count,2);
+        }
+
+        $total_rating_count = $rating_count;
+
+        $finder->average_rating = $average_rating;
+        $finder->total_rating_count = $total_rating_count;
+        $finder->detail_rating_summary_count = $detail_rating_summary_count;
+        $finder->detail_rating_summary_average = $detail_rating_summary_average;
+        $finder->update();
+
+        $rating  =  array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count);
+
+		return array('rating' => $rating);
+
 	}
 
 	public function updateFinderRatingV1 ($review, $oldreview = NULL ){
@@ -1105,7 +1162,9 @@ class FindersController extends \BaseController {
 
 		//Detail rating summary count && Detail rating summary avg
 		if(isset($finder->detail_rating_summary_average) && !empty($finder->detail_rating_summary_average)){
+
 			if(isset($finder->detail_rating_summary_count) && !empty($finder->detail_rating_summary_count)){
+
 				$detail_rating_summary_average = $finder->detail_rating_summary_average;
 				$detail_rating_summary_count = $finder->detail_rating_summary_count;
 				if($oldreview == NULL){
@@ -1179,6 +1238,7 @@ class FindersController extends \BaseController {
 			//sending response
 			$rating  =  array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count);
 			//$resp    =  array('status' => 200, 'rating' => $rating, "message" => "Rating Updated Successful :)");
+
 			$resp    =  array('rating' => $rating);
 			return $resp ; //Response::json($resp);
 		}
