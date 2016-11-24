@@ -54,7 +54,7 @@ return array(
 			'port'     => 27017,
 		    // 'username' => 'fituser',
 		    // 'password' => '65e4d4c196aa6229cf2ad0ff252658c7',
-			'database' => 'fitadmin'
+			'database' => 'stagelocal'
 		),
 
 		'mongodb2' => array(

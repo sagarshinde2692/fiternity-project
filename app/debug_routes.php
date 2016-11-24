@@ -27,6 +27,8 @@ Route::get('removepersonaltrainerstudio', 'DebugController@removePersonalTrainer
 Route::get('migrations/bdresearch', 'MigrationsController@bdResearch');
 Route::get('migrations/outreachrm', 'MigrationsController@outreachRm');
 Route::get('migrations/commercial', 'MigrationsController@commercial');
+Route::get('migrations/onboard', 'MigrationsController@onboard');
+Route::get('migrations/feedback', 'MigrationsController@feedback');
 
 
 
