@@ -45,6 +45,15 @@ Route::get('latlonswapserviceapi', 'DebugController@latLonSwapServiceApi');
 Route::get('addexpirydate', 'DebugController@addExpiryDate');
 
 
+Route::get('deletetrans/{email}', function ($email){
+
+    DB::connection('mongodb')->table('booktrials')->where('customer_email', trim($email))->delete();
+    DB::connection('mongodb')->table('orders')->where('customer_email', trim($email))->delete();
+    DB::connection('mongodb')->table('captures')->where('email', trim($email))->delete();
+
+});
+
+
 Route::get('checkfileons3', function (){
 
     $booktrial          = Booktrial::find(43208);
