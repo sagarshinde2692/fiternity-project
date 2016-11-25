@@ -507,7 +507,7 @@ class HomeController extends BaseController {
                     $subline = "Your Trial Session request at $finder_name is recieved";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
-                        ['icon'=>$icon_path.'book-appointment.png','text'=>'$finder_name will get in touch with you to book the appointment'],
+                        ['icon'=>$icon_path.'book-appointment.png','text'=>"$finder_name will get in touch with you to book the appointment"],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
