@@ -2404,7 +2404,14 @@ class CustomerController extends \BaseController {
 			$customerData['address'] = $data['customer_address'];
 			$customer->update($customerData);
 
-			$data['customer_address'] = implode(",", array_values($data['customer_address']));
+			$customer_address = "";
+            $customer_address .= (isset($data['customer_address']['line1']) && $data['customer_address']['line1'] != "") ? $data['customer_address']['line1'] : "";
+            $customer_address .= (isset($data['customer_address']['line2']) && $data['customer_address']['line2'] != "") ? ", ".$data['customer_address']['line2'] : "";
+            $customer_address .= (isset($data['customer_address']['line3']) && $data['customer_address']['line3'] != "") ? ", ".$data['customer_address']['line3'] : "";
+            $customer_address .= (isset($data['customer_address']['landmark']) && $data['customer_address']['landmark'] != "") ? ", ".$data['customer_address']['landmark'] : "";
+            $customer_address .= (isset($data['customer_address']['pincode']) && $data['customer_address']['pincode'] != "") ? ", ".$data['customer_address']['pincode'] : "";
+
+            $data['customer_address'] = $customer_address;
 
 		}
 
