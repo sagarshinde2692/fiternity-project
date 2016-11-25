@@ -461,7 +461,18 @@ class EmailSmsApiController extends \BaseController {
 
     }
 
-
+    public function landingpagecallbacksave($capture_id){
+        $data = Input::json()->all();
+        if(isset($capture_id) && $capture_id != ""){
+            $capture = Capture::find($capture_id);
+            $capture['specialinstructions'] = $data["specialinstructions"];
+            $capture->save();
+            $resp = array('status' => 200,'message' => "Instructions saved successfully");
+            return Response::json($resp,$resp['status']);
+        }
+        $resp = array('status' => 400,'message' => "Bad request");
+        return Response::json($resp,$resp['status']);
+    }
     public function landingpagecallback(){
 
         $data = Input::json()->all();
