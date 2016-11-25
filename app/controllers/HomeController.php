@@ -427,15 +427,19 @@ class HomeController extends BaseController {
 
             $itemData           =   [];
             if (in_array($type, $booktrialItemArr)){
-                $itemData       =   Booktrial::with('finder')->find(intval($id))->toArray();
+                $itemData       =   Booktrial::with('finder')->find(intval($id));
             }
 
             if (in_array($type, $orderItemArr)) {
-                $itemData = Order::with('finder')->find(intval($id))->toArray();
+                $itemData = Order::with('finder')->find(intval($id));
             }
 
             if (in_array($type, $captureItemArr)) {
-                $itemData = Capture::with('finder')->find($id)->toArray();
+                $itemData = Capture::with('finder')->find($id);
+            }
+
+            if($itemData){
+                $itemData = $itemData->toArray();
             }
 
             $item           =   array_except($itemData, ['finder']);
