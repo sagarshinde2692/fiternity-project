@@ -485,7 +485,7 @@ if (!function_exists(('get_elastic_autosuggest_doc'))) {
 
         $data['lat'] = isset($data['lat']) ? floatval($data['lat']) : 0.0;
         $data['lon'] = isset($data['lon']) ? floatval($data['lon']) : 0.0;
-        $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25) ? ucwords($data['title']) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
+        $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25 || count($data['locationtags']) > 1) ? ucwords($data['title']) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
         $postfields_data = array(
             'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
             'autosuggestvalue'              =>       $data['autosuggestvalue'],
@@ -808,7 +808,7 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'brand' => (isset($data['brand']) && isset($data['brand']['name'])) ? $data['brand']['name'] : '',
             'finder_coverimage_webp' => (isset($data['coverimage']) && $data['coverimage'] != '') ? strtolower( substr($data['coverimage'], 0, -3)."webp"  ) : strtolower($data['finder_coverimage']),
             'finder_coverimage_color' => (isset($data['finder_coverimage_color']) && $data['finder_coverimage_color'] != "") ? $data['finder_coverimage_color'] : "",
-
+            'multiaddress'            => (isset($data['multiaddress'])) ? $data['multiaddress'] : []
                 //'trialschedules'                =>      $trialdata,
             );
 
