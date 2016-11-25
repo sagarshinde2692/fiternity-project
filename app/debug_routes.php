@@ -24,6 +24,15 @@ Route::get('deactivate/ozoneteldid', 'DebugController@deactivateOzonetelDid');
 Route::get('unset/viptrial', 'DebugController@unsetVipTrial');
 Route::get('removepersonaltrainerstudio', 'DebugController@removePersonalTrainerStudio');
 
+Route::get('migrations/bdresearch', 'MigrationsController@bdResearch');
+Route::get('migrations/outreachrm', 'MigrationsController@outreachRm');
+Route::get('migrations/commercial', 'MigrationsController@commercial');
+Route::get('migrations/onboard', 'MigrationsController@onboard');
+Route::get('migrations/feedback', 'MigrationsController@feedback');
+
+
+
+
 ############################################################################################
 /************************ REVERSE MIGRATIONS SECTION START HERE ***********************/
 
@@ -36,6 +45,28 @@ Route::get('latlonswapapi', 'DebugController@latLonSwapApi');
 Route::get('latlonswapservice', 'DebugController@latLonSwapService');
 Route::get('latlonswapserviceapi', 'DebugController@latLonSwapServiceApi');
 Route::get('addexpirydate', 'DebugController@addExpiryDate');
+
+
+// please dont merge in live or production environment
+Route::get('deletetrans/{email}', function ($email){
+
+    $emails = ["ankit13.kumar@gmail.com","sailismart@fitternity.com","amrita.ghosh.cipl@gmail.com","utkarshmehrotra@fitternity.com","amritaghosh@fitternity.com","sanjaysahu@fitternity.com","sanajy.id7@gmail.com","gauravravi@fitternity.com","gauravraviji@gmail.com","maheshjadhav@fitternity.com","ut.mehrotra@gmail.com"];
+
+    if(in_array($email, $emails)){
+
+        DB::connection('mongodb')->table('booktrials')->where('customer_email', trim($email))->delete();
+        DB::connection('mongodb')->table('orders')->where('customer_email', trim($email))->delete();
+        DB::connection('mongodb')->table('captures')->where('email', trim($email))->delete();
+        echo "valid email";
+
+    }else{
+
+        echo "invalid email";
+
+    }
+
+
+});
 
 
 Route::get('checkfileons3', function (){

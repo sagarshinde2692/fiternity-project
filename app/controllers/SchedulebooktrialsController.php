@@ -1417,6 +1417,8 @@ class SchedulebooktrialsController extends \BaseController {
         $data = Input::json()->all();
 //        return $data;
 
+       Log::info('bookTrialPaid',$data);
+
         if(!isset($data['customer_name']) || $data['customer_name'] == ''){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
             return  Response::json($resp, 400);
@@ -1887,7 +1889,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'appstg');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
             $booktrial->update(array('redis_id'=>$redisid));
 
         }
@@ -2107,7 +2109,6 @@ class SchedulebooktrialsController extends \BaseController {
 
                 }
             }
-
 
 
             //update queue ids for booktiral
@@ -2601,10 +2602,11 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             //if vendor type is free special dont send communication
-            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
-             if($finder['commercial_type'] != '2'){*/
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'appstg');
-            $booktrial->update(array('redis_id'=>$redisid));
+
+           /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
+            if($finder['commercial_type'] != '2'){*/
+                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+                $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
                 $customer_sms_free_special = $this->customersms->bookTrialFreeSpecial($booktrialdata);
@@ -3144,7 +3146,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
             );
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'appstg');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
             $booktrial->update(array('reschedule_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -3497,7 +3499,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true ){
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'appstg');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -3788,9 +3790,6 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-
-
-
         }catch(\Exception $exception){
 
             Log::error($exception);
@@ -4067,7 +4066,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function vendorUrl($slug){
 
-        $vendor_url    =   Config::get('app.website').$slug;
+        $vendor_url    =   Config::get('app.website')."/".$slug;
         $shorten_url    =   new ShortenUrl();
         $url            =   $shorten_url->getShortenUrl($vendor_url);
         if(isset($url['status']) &&  $url['status'] == 200){
@@ -4079,7 +4078,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function customerProfileUrl($email){
 
-        $profile_url    =   Config::get('app.website')."profile/".$email;
+        $profile_url    =   Config::get('app.website')."/profile/".$email;
         $shorten_url    =   new ShortenUrl();
         $url            =   $shorten_url->getShortenUrl($profile_url);
         if(isset($url['status']) &&  $url['status'] == 200){
@@ -4091,7 +4090,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function rebookTrialUrl($finder_slug,$service_id,$booktrial_id){
 
-        $input_url    =   Config::get('app.website')."booktrial/$finder_slug?serid=$service_id&bookid=$booktrial_id&source=fittransactionemail&medium=booktrail&button=rebooktiral";
+        $input_url    =   Config::get('app.website')."/booktrial/$finder_slug?serid=$service_id&bookid=$booktrial_id&source=fittransactionemail&medium=booktrail&button=rebooktiral";
         $shorten_url    =   new ShortenUrl();
         $url            =   $shorten_url->getShortenUrl($input_url);
         if(isset($url['status']) &&  $url['status'] == 200){
@@ -4774,7 +4773,7 @@ class SchedulebooktrialsController extends \BaseController {
         $store_id = $store->_id = Store::max('_id') + 1;
         $store->save();
 
-        $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),'appstg');
+        $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),'booktrial');
 
         $store->update(array('redis_id'=>$redisid));
 
@@ -4878,10 +4877,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if($order){
 
-                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$order->_id,'booktrialid'=>$data['_id']),'appstg');
+                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$order->_id,'booktrialid'=>$data['_id']),'booktrial');
                 }else{
 
-                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'appstg');
+                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'booktrial');
                 }
 
                 $result[] = $data['_id'];

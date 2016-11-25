@@ -438,6 +438,8 @@ class HomeController extends BaseController {
                 $itemData = Capture::with('finder')->find($id)->toArray();
             }
 
+
+
             $item           =   array_except($itemData, ['finder']);
             $finder_name    =   (isset($itemData) && isset($itemData['finder']) && isset($itemData['finder']['title'])) ? ucwords($itemData['finder']['title']) : "";
             $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "-";

@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => TRUE,
+	'debug' => FALSE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,11 +28,13 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a2.fitternity.com',
-	//'url' => 'http://appstg.fitn.in/',
+	'url' => 'https://a1.fitternity.com',
+	//'url' => 'http://appstg.fitn.in',
 	//'url' => 'http://fitapi.com',
 
+
     'website' => 'https://www.fitternity.com',
+    //'website' => 'http://appstg.fitn.in:8555',
 
 	/*
 	|--------------------------------------------------------------------------
@@ -237,21 +239,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
+	/*'es' =>array(
 		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
 		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
-	),
+	),*/
 	//stage
-	/*'es' =>array(
+	'es' =>array(
 	 	'url'		=> 			'139.59.16.74:1243',
 	 	'host'		=> 			'139.59.16.74',
 	 	'port'		=>			1243,
 	 	'default_index' => 	'fitternity',
 	 	'default_type' 	=> 	'finder',
-	),*/
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
@@ -335,7 +337,45 @@ return array(
 
 	'kraken_key'							=> '73dbf866dbe673867134dc90204ddf96',
 	'kraken_secret'							=> 'd206555b6c07d8e3eba3807402a183578471251e',
-	'manual_trial_auto_finderids' => []
+	'manual_trial_auto_finderids' => [],
+
+
+    'calorie_burn_categorywise'             =>   [
+        65      => 600,
+        1       => 250,
+        2       => 450,
+        4       => 350,
+        5       => 450,
+        19      => 700,
+        86      => 450,
+        111     => 800,
+        114     => 400,
+        123     => 750,
+        152     => 450,
+        154     => 300,
+        3       => 450,
+        161     => 650,
+        184     => 400
+    ],
+
+
+    'workout_results_categorywise'        =>   [
+        65      => ["tone up", "super cardio", "endurance", "muscle definition", "flat abs", "increase power"],
+        1       => ["flexibility", "feel centered & calm", "stress buster", "control breathing", "improve postures", "tone up"],
+        2       => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
+        4       => ["super strong core", "stability", "tone & rip", "flexibility", "improve postures", "strong abs"],
+        5       => ["burn fat", "work on all muscle", "chiseled body", "super strong core", "agility", "musclar endurance"],
+        19      => ["catch some sexy moves", "super cardio", "stress buster", "fat burn", "tone & shape legs, butt & hips", "flexibility"],
+        86      => ["burn fat", "super cardio", "increase leg strength", "tone & shape legs, butt & hips", "speed", "stress buster"],
+        111     => ["tone & rip", "increase sports performance", "increase power", "musclar endurance", "strong abs", "burn fat"],
+        114     => ["super cardio", "speed", "agility", "burn fat", "endurance", "lean legs"],
+        123     => ["super cardio", "speed", "agility", "burn fat", "tone & shape legs, butt & hips", "flexibility"],
+        152     => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
+        154     => ["super cardio", "speed", "agility", "co-ordination", "stability", "flexibility"],
+        3       => ["tone up", "co-ordination", "increase power", "work on all muscle", "stability", "increase sports performance"],
+        161     => ["burn fat", "endurance", "control breathing", "increase sports performance", "speed", "shape up"],
+        184     => ["burn fat","shape up","endurance","flat abs","flexibility","work on all muscle"]
+    ],
 
 
 );

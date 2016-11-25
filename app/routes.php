@@ -431,7 +431,6 @@ Route::post('search/searchsaleratecards/v1', 'ServiceRankingSearchController@sea
 
 
 
-
 ##############################################################################
 /******************** SERVICE SECTION START HERE ********************/
 
@@ -525,6 +524,7 @@ Route::post('fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitne
 Route::post('registerme', 'EmailSmsApiController@registerme');
 Route::post('landingpage/conversion', 'EmailSmsApiController@landingconversion');
 Route::post('landingpage/callback', 'EmailSmsApiController@landingpagecallback');
+Route::put('landingpage/callback/{capture_id}', 'EmailSmsApiController@landingpagecallbacksave');
 Route::post('landingpage/register', 'EmailSmsApiController@landingpageregister');
 Route::post('offeravailed', 'EmailSmsApiController@offeravailed');
 Route::post('fitcardbuy', 'EmailSmsApiController@fitcardbuy');

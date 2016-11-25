@@ -1160,4 +1160,232 @@ class MigrationsController extends \BaseController {
 
 	}
 
+	public function bdResearch(){
+
+		$bdResearches	=	DB::table('finderbdresearchs')->orderBy('_id','asc')->get();
+
+		if($bdResearches){
+
+			foreach ($bdResearches as $key => $value) {
+
+				try{
+
+					$insertData = [
+						'vendor_id' => (int) $value['finder_id'],
+						'bd_name' => (isset($value['bd_name'])) ? $value['bd_name'] : "",
+						'remark' => (isset($value['remark'])) ? $value['remark'] : "",
+						'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
+						'created_at' =>  $value['created_at'],
+						'updated_at' =>  $value['updated_at']
+					];
+
+					if(isset($value["conversation_date"]) && $value["conversation_date"] != ""){
+						$insertData['conversation_date'] = $value['conversation_date']; //date('Y-m-d h:i:s', strtotime($value['conversation_date']));
+					}
+
+					$bdResearch = New VendorBdResearch($insertData);
+					$bdResearch->save();
+
+				}catch(Exception $e) {
+
+					echo "<pre>";print_r($value['_id']);
+				}
+			}
+			
+		}
+
+		echo "<pre>";print_r('done');exit;
+		
+	}
+
+	public function outreachRm(){
+
+		$outreachRms	=	DB::table('finderoutreachrms')->orderBy('_id','asc')->get();
+
+		if($outreachRms){
+
+			foreach ($outreachRms as $key => $value) {
+
+				try{
+
+					$insertData = [
+						'vendor_id' => (int) $value['finder_id'],
+						'rm_name' => (isset($value['rm_name'])) ? $value['rm_name'] : "",
+						'remark' => (isset($value['remark'])) ? $value['remark'] : "",
+						'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
+						'created_at' =>  $value['created_at'],
+						'updated_at' =>  $value['updated_at']
+					];
+
+					if(isset($value["conversation_date"]) && $value["conversation_date"] != ""){
+						$insertData['conversation_date'] = date('Y-m-d h:i:s', strtotime($value['conversation_date']));
+					}
+
+					$outreachRm = New VendorOutreachRm($insertData);
+					$outreachRm->save();
+
+				}catch(Exception $e) {
+
+					echo "<pre>";print_r($value['_id']);
+
+				}
+			}
+		}
+
+		echo "<pre>";print_r('done');exit;
+		
+	}
+
+	public function commercial(){
+
+		$commercials	=	DB::table('findercommercials')->orderBy('_id','asc')->get();
+
+		if($commercials){
+
+			foreach ($commercials as $key => $value) {
+
+				try{
+
+					$insertData = [
+					    "aquired_person" => (isset($value["aquired_person"])) ? $value["aquired_person"] : "",
+					    "business_type" => (isset($value["business_type"])) ? $value["business_type"] : "",
+					    "commercial_type" => (isset($value["commercial_type"])) ? $value["commercial_type"] : "",
+					    "commision" => (isset($value["aquired_person"])) ? (int) preg_replace("/[^0-9.]/","",$value["commision"]) : "",
+					    "contract_duration" => (isset($value["aquired_person"])) ? (int) preg_replace("/[^0-9.]/","",$value["contract_duration"]) : "",
+					    "vendor_id" => (isset($value["finder_id"])) ? $value["finder_id"] : "",
+					    "listing_fee" => (isset($value["aquired_person"])) ? (int) preg_replace("/[^0-9.]/","",$value["listing_fee"]) : "",
+					    "mou" => (isset($value["mou"])) ? $value["mou"] : "",
+					    "waiver" => (isset($value["waiver"])) ? $value["waiver"] : "",
+					    "waiver_duration" => (isset($value["waiver_duration"])) ? $value["waiver_duration"] : "",
+						'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
+						'created_at' =>  $value['updated_at'],
+						'updated_at' =>  $value['updated_at']
+					];
+
+					if(isset($value["aquired_date"]) && $value["aquired_date"] != ""){
+						$insertData['aquired_date'] = date('Y-m-d h:i:s', strtotime($value["aquired_date"]));
+					}
+
+					if(isset($value["contract_end_date"]) && $value["contract_end_date"] != ""){
+						$insertData['contract_end_date'] = date('Y-m-d h:i:s', strtotime($value["contract_end_date"]));
+					}
+
+					if(isset($value["contract_start_date"]) && $value["contract_start_date"] != ""){
+						$insertData['contract_start_date'] = date('Y-m-d h:i:s', strtotime($value["contract_start_date"]));
+					}
+
+					if(isset($value["on_board_date"]) && $value["on_board_date"] != ""){
+						$insertData['on_board_date'] = date('Y-m-d h:i:s', strtotime($value["on_board_date"]));
+					}
+
+					if(isset($value["payment_collection_date"]) && $value["payment_collection_date"] != ""){
+						$insertData['payment_collection_date'] = date('Y-m-d h:i:s', strtotime($value["payment_collection_date"]));
+					}
+
+					if(isset($value["waiver_end_date"]) && $value["waiver_end_date"] != ""){
+						$insertData['waiver_end_date'] = date('Y-m-d h:i:s', strtotime($value["waiver_end_date"]));
+					}
+
+					if(isset($value["waiver_start_date"]) && $value["waiver_start_date"] != ""){
+						$insertData['waiver_start_date'] = date('Y-m-d h:i:s', strtotime($value["waiver_start_date"]));
+					}
+
+					$vendorCommercial = New VendorCommercial($insertData);
+					$vendorCommercial->save();
+
+				}catch(Exception $e) {
+
+					echo "<pre>";print_r($value['_id']);
+
+				}
+			}
+		}
+
+		echo "<pre>";print_r('done');exit;
+		
+	}
+
+	public function onboard(){
+
+		$onboards	=	DB::table('finderonboards')->orderBy('_id','asc')->get();
+
+		if($onboards){
+
+			foreach ($onboards as $key => $value) {
+
+				try{
+
+					$insertData = [
+						'vendor_id' => (int) $value['finder_id'],
+						'brand_usp' => (isset($value['brand_usp'])) ? $value['brand_usp'] : "",
+					    'current_marketing_initiatives' => (isset($value['current_marketing_initiatives'])) ? $value['current_marketing_initiatives'] : "",
+					    'discount_interested' => (isset($value['discount_interested'])) ? $value['discount_interested'] : "",
+					    'discount_upto' => (isset($value['discount_upto'])) ? (int) preg_replace("/[^0-9.]/","",$value["discount_upto"]) : "",
+					    'event_collaboration_interested' => (isset($value['event_collaboration_interested'])) ? $value['event_collaboration_interested'] : "",
+					    'offline_marketing_interested' => (isset($value['offline_marketing_interested'])) ? $value['offline_marketing_interested'] : "",
+					    'primary_aim' => (isset($value['primary_aim'])) ? $value['primary_aim'] : "",
+					    'remark' => (isset($value['remark'])) ? $value['remark'] : "",
+					    'target_age_group' => (isset($value['target_age_group'])) ? $value['target_age_group'] : "",
+					    'update_frequency' => (isset($value['update_frequency'])) ? (int)$value['update_frequency'] : "",
+						'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
+						'created_at' =>  $value['created_at'],
+						'updated_at' =>  $value['updated_at']
+					];
+
+					$VendorOnboard = New VendorOnboard($insertData);
+					$VendorOnboard->save();
+
+				}catch(Exception $e) {
+
+					echo "<pre>";print_r($value['_id']);
+
+				}
+			}
+			
+		}
+
+		echo "<pre>";print_r('done');exit;
+	}
+
+	public function feedback(){
+
+		$feedbacks	=	DB::table('finderfeedbacks')->orderBy('_id','asc')->get();
+
+		if($feedbacks){
+
+			foreach ($feedbacks as $key => $value) {
+
+				try{
+
+					$insertData = [
+						'vendor_id' => (int) $value['finder_id'],
+					    'feedback' => (isset($value['feedback'])) ? $value['feedback'] : "",
+					    'shared_with' => (isset($value['shared_with'])) ? $value['shared_with'] : "",
+					    'type' => (isset($value['type'])) ? $value['type'] : "",
+					    'value_generated' => (isset($value['value_generated'])) ? $value['value_generated'] : "",
+						'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
+						'created_at' =>  $value['created_at'],
+						'updated_at' =>  $value['updated_at']
+					];
+
+					if(isset($value["date"]) && $value["date"] != ""){
+						$insertData['date'] = date('Y-m-d h:i:s', strtotime($value["date"]));
+					}
+
+					$vendorFeedback = New VendorFeedback($insertData);
+					$vendorFeedback->save();
+
+				}catch(Exception $e) {
+
+					echo "<pre>";print_r($value['_id']);
+				}
+			}
+			
+		}
+
+		echo "<pre>";print_r('done');exit;
+	}
+
+
+
 }

@@ -576,9 +576,9 @@ class ServiceController extends \BaseController {
         $timestamp    			=   strtotime($date);
         $weekday     			=   strtolower(date( "l", $timestamp));
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
-        $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "") ? $request['recursive'] : false ;
+        $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-        $query = Service::select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial');
+        $query = Service::active()->select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial');
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 
