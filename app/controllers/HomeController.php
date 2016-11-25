@@ -442,8 +442,10 @@ class HomeController extends BaseController {
 
             $item           =   array_except($itemData, ['finder']);
             $finder_name    =   (isset($itemData) && isset($itemData['finder']) && isset($itemData['finder']['title'])) ? ucwords($itemData['finder']['title']) : "";
+            $service_name    =   (isset($itemData) && isset($itemData['service_name'])) ? ucwords($itemData['service_name']) : "";
             $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "-";
             $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "-";
+            $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
             $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
@@ -452,7 +454,7 @@ class HomeController extends BaseController {
             switch ($type) {
 
                 case 'booktrialfree':
-                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Your Trial Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -463,7 +465,7 @@ class HomeController extends BaseController {
                     break;
 
                 case 'booktrial':
-                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Your Trial Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -473,7 +475,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'workoutsession':
-                    $subline = "Your Workout Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -482,7 +484,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'personaltrainertrial':
-                    $subline = "Your trial request at $finder_name has been received by Fitternity";
+                    $subline = "Your Session is booked. Hope you and your buddy have great workout.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -492,7 +494,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualtrial':
-                    $subline = "Your trial request for $finder_name has been received by Fitternity";
+                    $subline = "Your Trial Session request at $finder_name is recieved";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -502,7 +504,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualautotrial':
-                    $subline = "Your trial request has been sent to $finder_name";
+                    $subline = "Your Trial Session request at $finder_name is recieved";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'$finder_name will get in touch with you to book the appointment'],
@@ -512,7 +514,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'healthytiffintrial':
-                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $subline = "Your Trial request at $finder_name has been received. Please expect a revert shortly.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription details are shared on an email to you'],
@@ -522,7 +524,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'membershipwithpg':
-                    $subline = "Your membership purchase at $finder_name is confirmed.";
+                    $subline = "Your Membership purchase at $finder_name for $service_name from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
@@ -531,7 +533,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'membershipwithoutpg':
-                    $subline = "Your membership purchase at $finder_name is confirmed.";
+                    $subline = "Your Membership purchase at $finder_name for $service_name from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
@@ -540,7 +542,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'manualmembership':
-                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $subline = "Your Membership request at $finder_name has been received. Please expect a revert shortly.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Fitternity will get in touch with you to facilitate the membership purchase'],
@@ -550,7 +552,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'healthytiffinmembership':
-                    $subline = "Your membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $subline = "Your Membership request at $finder_name for $service_name has been received. Please expect a revert shortly.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription details are shared on an email to you'],
@@ -560,7 +562,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 case 'personaltrainermembership':
-                    $subline = "Your membership request with $finder_name is captured. ";
+                    $subline = "Your Membership request with $finder_name is captured. ";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to facilitate the purchase'],
@@ -569,7 +571,7 @@ class HomeController extends BaseController {
                     ];
                     break;
                 default :
-                    $subline = "Your Trial Session at $finder_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Your Session has been scheduled";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
