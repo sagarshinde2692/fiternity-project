@@ -698,20 +698,6 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					$resultobject->vendor_type = "Trainer";
 				}
 
-				// Booktrial caption button
-				$resultobject->booktrial_button_caption = "";
-				$nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists'];
-				if(!in_array($result['category'],$nobooktrialCategories)){
-					if($result['category'] != "healthy tiffins"){
-						if( in_array('free trial',$result['facilities']) ){
-							$resultobject->booktrial_button_caption = "Book a free trial";
-						}else{
-							$resultobject->booktrial_button_caption = "Book a trial";
-						}
-					}else{
-						$resultobject->booktrial_button_caption = "Book a trial Meal";
-					}
-				}
 				array_push($finderresult_response->results->resultlist, $finder);
 			}
 		}
