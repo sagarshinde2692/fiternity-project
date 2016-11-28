@@ -108,11 +108,6 @@ Class CustomerReward {
 
         $utilities          =   new Utilities;
         $valid_ticket_ids   =   [99,100];
-        if($order){
-            $order = $order->toArray();
-        }
-//        var_dump($order);
-//        var_dump($order['type']);var_dump($order['customer_id']);var_dump($order['amount']);exit;
 
         try{
             // For Cashback.....
