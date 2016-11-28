@@ -1701,7 +1701,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'inputloc1' => $city,
                         'inputloc2' => "",
                         'inputcat' => $catname,
-                        'inputcat1' => strtolower($catname),
+                        'inputcat1' => strtolower($cat['name']),
                         'city' => $city,
                         'location' => strtolower($city),
                         'type' => 'categorycity',
