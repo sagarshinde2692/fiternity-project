@@ -419,46 +419,51 @@ class ServiceController extends \BaseController {
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
 
         $time_in_seconds = time_passed_check($item['servicecategory_id']);
+		if(count($item) > 0){
+			$item = $item->toArray();
+			$slots = array();
 
-        $item = $item->toArray();
-        $slots = array();
+			foreach ($item['workoutsessionschedules'] as $key => $value) {
 
-        foreach ($item['workoutsessionschedules'] as $key => $value) {
+				if($value['weekday'] == $weekday){
 
-        	if($value['weekday'] == $weekday){
+					if(!empty($value['slots'])){
+						
+						foreach ($value['slots'] as $key => $slot) {
 
-        		if(!empty($value['slots'])){
-        			
-        			foreach ($value['slots'] as $key => $slot) {
+							try{
 
-        				try{
+								$scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
+								$slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+								array_set($slot, 'passed', $slot_datetime_pass_status);
+								array_set($slot, 'service_id', $item['_id']);
+								array_set($slot, 'finder_id', $item['finder_id']);
+								array_push($slots, $slot);
 
-	                        $scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
-		                    $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
-		                    array_set($slot, 'passed', $slot_datetime_pass_status);
-		                    array_set($slot, 'service_id', $item['_id']);
-                        	array_set($slot, 'finder_id', $item['finder_id']);
-		                    array_push($slots, $slot);
+							}catch(Exception $e){
 
-	                    }catch(Exception $e){
+								Log::info("getWorkoutSessionScheduleByService Error : ".$date." ".$slot['start_time']);
+							}
+							
+						}
+					}
+					break;
+				}
+				
+			}
 
-	                        Log::info("getWorkoutSessionScheduleByService Error : ".$date." ".$slot['start_time']);
-	                    }
-        				
-        			}
-        		}
-        		break;
-        	}
-        	
-        }
+			$data['_id'] = (int)$service_id;
+			$data['name'] = $item['name'];
+			$data['finder_id'] = $item['finder_id'];
+			$data['slots'] = $slots;
+			$data['weekday'] = $weekday;
+			return Response::json($data,200);
+		}else{
+			$data = array();
+			return Response::json($data,200);
+		}
 
-        $data['_id'] = (int)$service_id;
-        $data['name'] = $item['name'];
-        $data['finder_id'] = $item['finder_id'];
-        $data['slots'] = $slots;
-        $data['weekday'] = $weekday;
-
-        return Response::json($data,200);
+        
     }
 
     public function getInfoTiming($services){
