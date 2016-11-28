@@ -445,7 +445,7 @@ class HomeController extends BaseController {
             $service_name    =   (isset($itemData) && isset($itemData['service_name'])) ? ucwords($itemData['service_name']) : "";
             $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "-";
             $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "-";
-            $service_duration = (isset($itemData['service_duration']) && $itemData['service_duration'] != "") ? $itemData['service_duration'] : "-";
+            $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "-";
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
