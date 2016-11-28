@@ -485,7 +485,7 @@ if (!function_exists(('get_elastic_autosuggest_doc'))) {
 
         $data['lat'] = isset($data['lat']) ? floatval($data['lat']) : 0.0;
         $data['lon'] = isset($data['lon']) ? floatval($data['lon']) : 0.0;
-        $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25 || count($data['locationtags']) > 1) ? ucwords($data['title']) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
+        $data['autosuggestvalue'] = ($data['category']['_id'] == 42 || $data['category']['_id'] == 45 || $data['category']['_id'] == 41 || $data['category']['_id'] == 46 || $data['category']['_id'] == 25 || count($data['locationtags']) > 1) ? ((count($data['locationtags']) > 1) ? ucwords($data['title'])." (".count($data['locationtags'])." locations)" : ucwords($data['title'])) : ucwords($data['title'])." in ".ucwords($data['location']['name']);
         $postfields_data = array(
             'input'                         =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] :"",
             'autosuggestvalue'              =>       $data['autosuggestvalue'],
