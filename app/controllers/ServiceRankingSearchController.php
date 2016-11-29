@@ -383,6 +383,13 @@ class ServiceRankingSearchController extends \BaseController {
 
         /***********************************Geo Range Filter*********************************/
 
+        $vendor_id = ((null !== Input::json()->get('vendor_id')) && (!empty(Input::json()->get('vendor_id')))) ? Input::json()->get('vendor_id') : "";
+
+        if($vendor_id != ""){ // if vendor dont search by lat lon
+          $lat = "";
+          $lon = "";
+        }
+
         $geo_distance_filter = '';
 
         if(($lat !== '')&&($lon !== '')){
