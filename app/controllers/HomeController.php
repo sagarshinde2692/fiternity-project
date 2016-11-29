@@ -52,7 +52,19 @@ class HomeController extends BaseController {
         $entity_type    =   $data['entity_type'];
         $utm            =   $data['utm'];
 
-        if($entity_type != "" && $entity_id != ""){
+        if($entity_type == 'booktrials'){
+            $item 		= 	Booktrial::findOrFail(intval($entity_id));
+        }
+
+        if($entity_type == 'order'){
+            $item 		= 	Order::findOrFail(intval($entity_id));
+        }
+
+        if($entity_type == 'captures') {
+            $item = Capture::findOrFail($entity_id);
+        }
+
+        if($entity_type != "" && $entity_id != "" && isset($item) && !isset($item['utm'])){
             if($entity_type == 'booktrial'){
                 $item       =   Booktrial::where('_id', intval($entity_id))->update(['utm' => $utm]);
             }elseif($entity_type == 'capture'){
