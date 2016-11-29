@@ -1971,7 +1971,7 @@ class FindersController extends \BaseController {
 
 				$not_assured = array(42,45,46);
 
-				if(!in_array($finderarr['category_id'], $not_assured)){
+				if(!in_array($finderarr['category_id'], $not_assured) && $finderarr['commercial_type'] != 0 ){
 
 					$finder['assured'] = [
 					["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
