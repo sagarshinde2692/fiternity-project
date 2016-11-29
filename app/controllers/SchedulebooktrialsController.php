@@ -2277,8 +2277,6 @@ class SchedulebooktrialsController extends \BaseController {
             $finder_commercial_type = (isset($finder['commercial_type']) && $finder['commercial_type'] != '') ? (int)$finder['commercial_type'] : "";
             $finder_category_id = (isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
-            $google_pin = $this->googlePin($finder_lat, $finder_lon);
-
             $referrer_booktrial_id = (isset($data['referrer_booktrial_id']) && $data['referrer_booktrial_id'] != '') ? intval($data['referrer_booktrial_id']) : "";
             $root_booktrial_id = "";
             $kit_enabled = false;
@@ -2441,6 +2439,14 @@ class SchedulebooktrialsController extends \BaseController {
             $source                   =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
             $physical_activity_detail = (isset($data['physical_activity_detail']) && $data['physical_activity_detail'] != '') ? $data['physical_activity_detail'] : "";
 
+            $google_pin = $this->googlePin($finder_lat, $finder_lon);
+            $customer_profile_url       =   $this->customerProfileUrl($customer_email);
+            $finder_url                 =   $this->vendorUrl($finder['slug']);
+            if(isset($serviceArr) && isset($serviceArr['category']) && $serviceArr['category']['_id'] != ''){
+                $calorie_burn           =   $this->getCalorieBurnByServiceCategoryId($serviceArr['category']['_id']);
+            }else{
+                $calorie_burn           =   300;
+            }
 
             $booktrialdata = array(
 
@@ -2524,7 +2530,10 @@ class SchedulebooktrialsController extends \BaseController {
                 'trial_count'               =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
                 'myreward_id' => $myreward_id,
-                'token'                         =>      random_number_string()
+                'token'                         =>      random_number_string(),
+                'customer_profile_url'         =>       $customer_profile_url,
+                'calorie_burn'                  =>      $calorie_burn,
+                'finder_url'                    =>      $finder_url
 
             );
 
