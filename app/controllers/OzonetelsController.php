@@ -934,6 +934,7 @@ class OzonetelsController extends \BaseController {
                     $data['customer_profile_url'] = $customer_profile_url;
 					$data['finder_vcc_mobile'] = $booktrial->finder_vcc_mobile;
 					$data['finder_category_id'] = (int)$booktrial->finder_category_id;
+					$data['code'] = $booktrial->code;
 
                     // set before after flag based schecdule time
                     $schedule_date_time     =   strtotime($booktrial['schedule_date_time']);
