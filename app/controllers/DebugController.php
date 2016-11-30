@@ -2991,5 +2991,16 @@ public function testEmail(){
 		return $booktrials;
 	}
 
+
+	public function getFromToValue($from,$to){
+		$months = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+		$range = array(array_search($from,$months),array_search($to,$months));
+
+	}
+
+	public function customertrials($from, $to){
+		return $range = $this->getFromToValue($from,$to);
+	}
+
     
 }
