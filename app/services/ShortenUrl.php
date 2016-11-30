@@ -57,8 +57,8 @@ Class ShortenUrl {
 
             $error = array('status'=>400,'reason'=>'Error');
 
-            return $error;*/
-        }
+            return $error;
+        }*/
 
     }
     
