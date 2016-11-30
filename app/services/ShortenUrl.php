@@ -28,9 +28,7 @@ Class ShortenUrl {
 
     public function getShortenUrl ($longUrl = false){
 
-        return array('url'=>$longUrl,'status'=>200);
-
-        /*if(!$longUrl){
+        if(!$longUrl){
             $error = array('status'=>400,'reason'=>'url is empty');
             return $error;
         }
@@ -58,7 +56,7 @@ Class ShortenUrl {
             $error = array('status'=>400,'reason'=>'Error');
 
             return $error;
-        }*/
+        }
 
     }
     
