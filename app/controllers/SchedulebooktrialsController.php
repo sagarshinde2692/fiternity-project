@@ -1952,7 +1952,7 @@ class SchedulebooktrialsController extends \BaseController {
             $oneHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $fiveHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $twelveHourDiffInMin 		       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
-            $threeHourDiffInMin                =    $currentDateTime->diffInHours($scheduleDateTime, false);
+            $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);
             $finderid 					       = 	(int) $data['finder_id'];
 
             $booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
@@ -2081,19 +2081,19 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
             }*/
-            //Send Reminder Notiication (Sms) Before 3 Hour To Customer
+            //Send Reminder Notiication (Sms) Before 3 Hour To Vendor
             if($threeHourDiffInMin >= 180){
 
                 $sndBefore3HourSmsFinder                   =    $this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                 $finer_sms_messageids['before1hour']        =   $sndBefore3HourSmsFinder;
 
-                if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
+                /*if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                     if ($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     } else {
                         $customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     }
-                }
+                }*/
 
             }
 
@@ -2678,6 +2678,7 @@ class SchedulebooktrialsController extends \BaseController {
             $currentDateTime 			       =	\Carbon\Carbon::now();
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
             $delayReminderTimeBefore1Min        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
+            $delayReminderTimeBefore3Hour        =  \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 3);
             $delayReminderTimeBefore1Hour        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
             $delayReminderTimeBefore5Hour       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
             $delayReminderTimeBefore12Hour       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
@@ -2689,6 +2690,7 @@ class SchedulebooktrialsController extends \BaseController {
             $oneHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $fiveHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $twelveHourDiffInMin 		       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
+            $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);
             $finderid 					       = 	(int) $data['finder_id'];
 
             $booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
@@ -2771,20 +2773,20 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            //Send Reminder Notiication (Sms) Before 1 Hour To Customer
-            if($oneHourDiffInMin >= 60){
+            //Send Reminder Notiication (Sms) Before 3 Hour To Vendor
+            if($threeHourDiffInMin >= 180){
 
-                $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+                $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                 $finer_sms_messageids['before1hour']        = 	$sndBefore1HourSmsFinder;
 
-                if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
+                /*if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
 
                     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     }else{
                         $customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     }
-                }
+                }*/
 
             }
 
@@ -3186,7 +3188,9 @@ class SchedulebooktrialsController extends \BaseController {
                 'old_going_status'=>$old_going_status,
                 'old_schedule_date'=>$old_schedule_date,
                 'old_schedule_slot_start_time'=>$old_schedule_slot_start_time,
-                'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
+                'old_schedule_slot_end_time'=>$old_schedule_slot_end_time,
+                'schedule_date' => $data['schedule_date'],
+                'schedule_slot' => $data['schedule_slot'],
             );
 
             $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
@@ -3207,6 +3211,19 @@ class SchedulebooktrialsController extends \BaseController {
         $job->delete();
 
         try{
+
+            $slot_times                        =    explode('-',$data['schedule_slot']);
+            $schedule_slot_start_time          =    $slot_times[0];
+            $schedule_slot_end_time            =    $slot_times[1];
+            $schedule_slot                     =    $schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+            $slot_date                         =    date('d-m-Y', strtotime($data['schedule_date']));
+            $schedule_date_starttime           =    strtoupper($slot_date ." ".$schedule_slot_start_time);
+            $currentDateTime                   =    \Carbon\Carbon::now();
+
+            $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 3);
+            $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);
+
 
             $booktrialid = (int) $data['booktrialid'];
             $send_alert = $data['send_alert'];
@@ -3416,16 +3433,16 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 //Send Reminder Notiication (Sms) Before 1 Hour To Customer
-                if($oneHourDiffInMin >= 60){
+                if($threeHourDiffInMin >= 180){
 
-                    $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+                    $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     $finer_sms_messageids['before1hour']        = 	$sndBefore1HourSmsFinder;
 
-                    if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                    /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     }else{
                         $customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-                    }
+                    }*/
 
                 }
 
