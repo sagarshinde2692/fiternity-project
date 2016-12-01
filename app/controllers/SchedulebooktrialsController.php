@@ -1592,7 +1592,7 @@ class SchedulebooktrialsController extends \BaseController {
             // $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
             // $show_location_flag 		       =   (count($finder['locationtags']) > 1) ? false : true;
 
-            $description =  $what_i_should_carry = $what_i_should_expect = '';
+            $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
             if($service_id != ''){
                 $serviceArr 				       = 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->find($service_id);
 
@@ -1609,6 +1609,22 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
                     if((isset($serviceArr['subcategory']['what_i_should_carry']) && $serviceArr['subcategory']['what_i_should_carry'] != '')){
                         $what_i_should_carry = $serviceArr['subcategory']['what_i_should_carry'];
+                    }
+                }
+
+                if((isset($serviceArr['category']['what_i_should_expect']) && $serviceArr['category']['what_i_should_expect'] != '')){
+                    $what_i_should_expect = $serviceArr['category']['what_i_should_expect'];
+                }else{
+                    if((isset($serviceArr['subcategory']['what_i_should_expect']) && $serviceArr['subcategory']['what_i_should_expect'] != '')){
+                        $what_i_should_expect = $serviceArr['subcategory']['what_i_should_expect'];
+                    }
+                }
+
+                if((isset($serviceArr['category']['name']) && $serviceArr['category']['name'] != '')){
+                    $service_category = $serviceArr['category']['name'];
+                }else{
+                    if((isset($serviceArr['subcategory']['name']) && $serviceArr['subcategory']['name'] != '')){
+                        $service_category = $serviceArr['subcategory']['name'];
                     }
                 }
 
@@ -1785,7 +1801,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'                   =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
-                'token'                         =>      random_number_string()
+                'token'                         =>      random_number_string(),
+                'service_category'              =>      $service_category
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2339,7 +2356,7 @@ class SchedulebooktrialsController extends \BaseController {
             // $finder_address                      =   (isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
             // $show_location_flag              =   (count($finder['locationtags']) > 1) ? false : true;
 
-            $description = $what_i_should_carry = $what_i_should_expect = '';
+            $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
             if ($service_id != '') {
                 $serviceArr = Service::with(array('location' => function ($query) {
                     $query->select('_id', 'name', 'slug');
@@ -2366,6 +2383,14 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
                     if((isset($serviceArr['subcategory']['what_i_should_expect']) && $serviceArr['subcategory']['what_i_should_expect'] != '')){
                         $what_i_should_expect = $serviceArr['subcategory']['what_i_should_expect'];
+                    }
+                }
+
+                if((isset($serviceArr['category']['name']) && $serviceArr['category']['name'] != '')){
+                    $service_category = $serviceArr['category']['name'];
+                }else{
+                    if((isset($serviceArr['subcategory']['name']) && $serviceArr['subcategory']['name'] != '')){
+                        $service_category = $serviceArr['subcategory']['name'];
                     }
                 }
 
@@ -2474,7 +2499,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'description'         =>      $description,
                 'what_i_should_carry' =>      $what_i_should_carry,
                 'what_i_should_expect'          =>      $what_i_should_expect,
-
+                'service_category'      =>      $service_category,
                 'city_id'             =>      $city_id,
                 'finder_vcc_email'    =>      $finder_vcc_email,
                 'finder_vcc_mobile'   =>      $finder_vcc_mobile,

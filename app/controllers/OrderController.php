@@ -749,6 +749,33 @@ class OrderController extends \BaseController {
 
         $data['finder_name'] = ucwords($finder->title);
 
+        $batch = array();
+
+        if(isset($data['batch']) && $data['batch'] != ""){
+            
+            if(is_array($data['batch'])){
+                $data['batch'] = $data['batch'];
+            }else{
+                $data['batch'] = json_decode($data['batch'],true);
+            }
+
+            foreach ($data['batch'] as $key => $value) {
+
+                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+
+                    $batch[$key]['weekday'] = $value['weekday'];
+                    $batch[$key]['slots'][0] = $value['slots'];
+                }
+
+                if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+                    $batch[$key] = $value;
+                }
+            }
+
+            $data['batch'] = $batch;
+
+        }
+
         return $this->generateTmpOrder($data);
 
     }
@@ -757,71 +784,73 @@ class OrderController extends \BaseController {
 
         $duration_day = 1;
 
-        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity != 0){
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity'] != 0){
 
-            $duration_day = $ratecard->validity;
+            $duration_day = $ratecard['validity'];
         }
 
-        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "days"){
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "days"){
 
-            $month = ($ratecard->validity/30);
+            $ratecard['validity_type'] = 'Days';
 
-            if($month < 1){
-                $ratecard->validity_type = 'Days';
-            }
+            if(($ratecard['validity'] % 30) == 0){
 
-            if($month == 1){
-                $ratecard->validity_type = 'Month';
-                $ratecard->validity = $month;
-            }
+                $month = ($ratecard['validity']/30);
 
-            if($month > 1 && $month < 12){
-                $ratecard->validity_type = 'Months';
-                $ratecard->validity = $month;
-            }
+                if($month == 1){
+                    $ratecard['validity_type'] = 'Month';
+                    $ratecard['validity'] = $month;
+                }
 
-            if($month == 12){
-                $ratecard->validity_type = 'Year';
-                $ratecard->validity = 1;
+                if($month > 1 && $month < 12){
+                    $ratecard['validity_type'] = 'Months';
+                    $ratecard['validity'] = $month;
+                }
+
+                if($month == 12){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = 1;
+                }
+
             }
               
         }
 
-        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "months"){
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "months"){
 
-            $year = ($ratecard->validity/12);
+            $ratecard['validity_type'] = 'Months';
 
-            if($year < 1){
-
-                $ratecard->validity_type = 'Months';
-
-                if($ratecard->validity == 1){
-                    $ratecard->validity_type = 'Month';
-                }  
+            if($ratecard['validity'] == 1){
+                $ratecard['validity_type'] = 'Month';
             }
 
-            if($year == 1){
-                $ratecard->validity_type = 'Year';
-                $ratecard->validity = $year;
-            }
+            if(($ratecard['validity'] % 12) == 0){
 
-            if($year > 1){
-                $ratecard->validity_type = 'Years';
-                $ratecard->validity = $year;
+                $year = ($ratecard['validity']/12);
+
+                if($year == 1){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = $year;
+                }
+
+                if($year > 1){
+                    $ratecard['validity_type'] = 'Years';
+                    $ratecard['validity'] = $year;
+                }
             }
               
         }
 
-        if(isset($ratecard->validity) && $ratecard->validity != '' && $ratecard->validity_type == "year"){
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "year"){
 
-            $year = $ratecard->validity;
+            $year = $ratecard['validity'];
 
             if($year == 1){
-                $ratecard->validity_type = 'Year';
+                $ratecard['validity_type'] = 'Year';
             }
 
             if($year > 1){
-                $ratecard->validity_type = 'Years';
+                $ratecard['validity_type'] = 'Years';
             }
               
         }
@@ -831,11 +860,11 @@ class OrderController extends \BaseController {
         if($ratecard->duration > 0){
             $service_duration .= $ratecard->duration ." ".ucwords($ratecard->duration_type);
         }
-        if($ratecard->duration > 0 && $ratecard->validity > 0){
+        if($ratecard->duration > 0 && $ratecard['validity'] > 0){
             $service_duration .= " - ";
         }
-        if($ratecard->validity > 0){
-            $service_duration .=  $ratecard->validity ." ".ucwords($ratecard->validity_type);
+        if($ratecard['validity'] > 0){
+            $service_duration .=  $ratecard['validity'] ." ".ucwords($ratecard['validity_type']);
         }
 
         ($service_duration == "") ? $service_duration = "-" : null;
@@ -1182,6 +1211,8 @@ class OrderController extends \BaseController {
             }else{
                 $data['batch'] = json_decode($data['batch'],true);
             }
+
+
 
             foreach ($data['batch'] as $key => $value) {
 
