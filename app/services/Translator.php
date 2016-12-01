@@ -648,15 +648,17 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					$found = false;
 					foreach($search_request['regions'] as $loc){
 						foreach($result['multiaddress'] as $regions){
-							if(in_array($loc,$regions['location'])){
+							if(in_array(strtolower($loc),$regions['location'])){
 								array_push($intersect,$regions);
 								$found = true;
 								break;	
 							}
 						}
 					}
+					$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
+				}else{
+					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
 				}
-				$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
 
 				// Decide vendor type
 				$resultobject->vendor_type = "";
