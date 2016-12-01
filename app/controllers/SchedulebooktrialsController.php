@@ -2972,7 +2972,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $finder_category_id			       = 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
-            $description =  $what_i_should_carry = $what_i_should_expect = '';
+            $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
+
             if($service_id != ''){
                 $serviceArr 				       = 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->where('_id','=', intval($service_id))->first()->toArray();
 
@@ -3000,6 +3001,13 @@ class SchedulebooktrialsController extends \BaseController {
                     }
                 }
 
+                if((isset($serviceArr['category']['name']) && $serviceArr['category']['name'] != '')){
+                    $service_category = $serviceArr['category']['name'];
+                }else{
+                    if((isset($serviceArr['subcategory']['name']) && $serviceArr['subcategory']['name'] != '')){
+                        $service_category = $serviceArr['subcategory']['name'];
+                    }
+                }
 
                 if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
                     $finder_location			       =	$serviceArr['location']['name'];
@@ -3142,7 +3150,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'reg_id'				       => 		$gcm_reg_id,
                 'device_type'			       => 		$device_type,
                 'google_pin'			       =>		$google_pin,
-                'note_to_trainer'               =>      $note_to_trainer
+                'note_to_trainer'               =>      $note_to_trainer,
+                'service_category'              =>      $service_category
             );
 
 

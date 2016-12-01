@@ -908,7 +908,7 @@ class OzonetelsController extends \BaseController {
 			        }
 
                     $customer_profile_url   = "";
-                    
+
                     if(isset($booktrial->customer_email) && $booktrial->customer_email != "" ){
 
                         $customer_profile_url   =   "https://www.fitternity.com/profile/".$booktrial->customer_email;
@@ -964,7 +964,7 @@ class OzonetelsController extends \BaseController {
                             break;
 						case 'reschedule':
                             $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);
-                            $this->findersms->rescheduleTrial($data);
+                            //$this->findersms->rescheduleTrial($data);
                             break;
 					}
 
