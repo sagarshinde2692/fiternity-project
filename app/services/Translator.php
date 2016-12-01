@@ -571,7 +571,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 }
 
 
-	public static function translate_searchresultsv3($es_searchresult_response){
+	public static function translate_searchresultsv3($es_searchresult_response,$search_request = array()){
 		$finderresult_response = new FinderresultResponse();
 
 		$finderresult_response->results->aggregationlist = new \stdClass();
@@ -640,7 +640,23 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
 				$result['facilities'] = (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
-				$resultobject->multiaddress = empty($result['multiaddress']) ? array() : $result['multiaddress'];
+
+				// Deciding which address to show
+				if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
+					$multiaddress_locations = array();
+					$intersect = array();
+					$found = false;
+					foreach($search_request['regions'] as $loc){
+						foreach($result['multiaddress'] as $regions){
+							if(in_array($loc,$regions['location'])){
+								array_push($intersect,$regions);
+								$found = true;
+								break;	
+							}
+						}
+					}
+				}
+				$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
 
 				// Decide vendor type
 				$resultobject->vendor_type = "";
