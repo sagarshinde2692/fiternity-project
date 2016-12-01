@@ -2555,4 +2555,14 @@ Route::get('addmanualtrialautoflagtoFinders', array('as'=> 'DebugController.addM
 
 
 
-Route::get('repeat/customertrials/{from}/{to}', 'DebugController@customertrials');
+Route::get('repeat/customertrials/{year}/{division}', 'DebugController@customertrials');
+Route::get('repeat/customertrialsrepeat/{year}/{division}', 'DebugController@customertrialsrepeat');
+
+Route::get('repeat/customerorders/{year}/{division}', 'DebugController@customerorders');
+Route::get('repeat/customerordersrepeat/{year}/{division}', 'DebugController@customerordersrepeat');
+
+
+
+Route::get('topBooktrial/{from}/{to}','DebugController@topBooktrial');
+
+Route::get('nehacustomertrials/{year}/{month}','DebugController@nehacustomertrials');

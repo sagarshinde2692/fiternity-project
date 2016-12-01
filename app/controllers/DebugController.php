@@ -2992,15 +2992,251 @@ public function testEmail(){
 	}
 
 
-	public function getFromToValue($from,$to){
-		$months = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
-		$range = array(array_search($from,$months),array_search($to,$months));
+	public function booktrialRaw($next_month,$start_month,$year,$removecustomers = [],$includeonlythese = []){
 
+		return $trialRequest = Booktrial::raw(function($collection) use ($next_month,$start_month,$year,$removecustomers,$includeonlythese){
+
+				$aggregate = [];
+				$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("1-".$start_month."-".$year))));
+				$match['$match']['created_at']['$gt'] = $from_date;
+
+				if($next_month != -1){
+					$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("30-".$next_month."-".$year))));
+					$match['$match']['created_at']['$lte'] = $to_date;
+				}
+				if(count($includeonlythese) > 0){
+					$match['$match']['customer_email']['$in'] = $includeonlythese;	
+				}
+				$match['$match']['customer_email']['$nin'] = $removecustomers;
+
+				$aggregate[] = $match;
+
+				$group = array(
+					'$group' => array(
+						'_id' => array(
+							'customer_email' => '$customer_email',
+							),
+						'count' => array(
+							'$sum' => 1
+							)
+						)
+					);
+
+				$aggregate[] = $group;
+				$aggregate[] = array('$sort' => array('count'=> -1));
+				return $collection->aggregate($aggregate);
+
+			});
 	}
 
-	public function customertrials($from, $to){
-		return $range = $this->getFromToValue($from,$to);
+
+
+
+
+	public function orderRaw($next_month,$start_month,$year,$removecustomers = [],$includeonlythese = []){
+
+		return $trialRequest = Order::raw(function($collection) use ($next_month,$start_month,$year,$removecustomers,$includeonlythese){
+
+				$aggregate = [];
+				$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("1-".$start_month."-".$year))));
+				$match['$match']['created_at']['$gt'] = $from_date;
+
+				if($next_month != -1){
+					$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("30-".$next_month."-".$year))));
+					$match['$match']['created_at']['$lte'] = $to_date;
+				}
+				if(count($includeonlythese) > 0){
+					$match['$match']['customer_email']['$in'] = $includeonlythese;	
+				}
+				$match['$match']['customer_email']['$nin'] = $removecustomers;
+
+				$aggregate[] = $match;
+
+				$group = array(
+					'$group' => array(
+						'_id' => array(
+							'customer_email' => '$customer_email',
+							),
+						'count' => array(
+							'$sum' => 1
+							)
+						)
+					);
+
+				$aggregate[] = $group;
+				$aggregate[] = array('$sort' => array('count'=> -1));
+				return $collection->aggregate($aggregate);
+
+			});
 	}
+
+
+	public function customertrials($year, $division){
+		$cycle = 12/$division;
+		$start_month = 1;
+		$monthwise = array();
+		for($i = 0; $i < $division; $i++){
+			$next_month = $start_month + ($cycle - 1);
+			// $customers = 
+			$trialRequest = $this->booktrialRaw($next_month,$start_month,$year);	
+				$start_month = $next_month+1;
+				array_push($monthwise,count($trialRequest['result']));
+		}
+		return $monthwise;
+	}
+
+
+	
+
+
+	public function customertrialsrepeat($year, $division){
+		$cycle = 12/$division;
+		$monthwise = array();
+		$avgwise = array();
+		$removecustomers = array();
+		$years = ["2015","2016"];
+		foreach($years as $year){
+			$start_month = 1;
+			for($i = 0; $i < $division; $i++){
+				$next_month = $start_month + ($cycle - 1);
+				// $customers = 
+				$trialRequest = $this->booktrialRaw($next_month,$start_month,$year,$removecustomers);	
+				
+				$customersinthissegment = array_fetch($trialRequest['result'],"_id.customer_email");
+				array_push($removecustomers,$customersinthissegment);
+				$thisCustomerSegment = $this->booktrialRaw(-1,$start_month,$year,array(),$customersinthissegment);
+				$thisCustomerSegment["start_date"] = "1-0".$start_month."-".$year;
+				$start_month = $next_month+1;
+				// array_push($monthwise,array_sum(array_fetch($thisCustomerSegment['result'],"count")));
+				$customersWithMoreThanOneTrial = 0;
+				$totalTrialCustomerForMoreThanOneTrial = 0;
+				foreach($thisCustomerSegment['result'] as $res){
+					if($res["count"] > 1){
+						$customersWithMoreThanOneTrial++;
+						$totalTrialCustomerForMoreThanOneTrial += $res["count"];
+					}
+				}
+				array_push($monthwise,$customersWithMoreThanOneTrial);
+				array_push($avgwise,($totalTrialCustomerForMoreThanOneTrial/$customersWithMoreThanOneTrial));
+			}
+		}
+		return array("monthwise" => $monthwise, "avgwise" => $avgwise);
+	}
+
+
+	public function customerorders($year, $division){
+		$cycle = 12/$division;
+		$monthwise = array();
+		$years = ["2015","2016"];
+		foreach($years as $year){
+			$start_month = 1;
+			
+		for($i = 0; $i < $division; $i++){
+				$next_month = $start_month + ($cycle - 1);
+				// $customers =
+				$trialRequest = $this->orderRaw($next_month,$start_month,$year); 
+				if($i == 1 && $year == "2016"){
+					return $trialRequest = $this->orderRaw($next_month,$start_month,$year);
+				exit;
+				}
+					// echo $start_month. " - ".$next_month." * ".$year. " ";
+					$start_month = $next_month+1;
+					array_push($monthwise,count($trialRequest['result']));
+			}
+		}
+		return $monthwise;
+	}
+
+
+	public function customerordersrepeat($year, $division){
+		$cycle = 12/$division;
+		$monthwise = array();
+		$avgwise = array();
+		$removecustomers = array();
+		$years = ["2015","2016"];
+		foreach($years as $year){
+			$start_month = 1;
+			for($i = 0; $i < $division; $i++){
+				$next_month = $start_month + ($cycle - 1);
+				// $customers = 
+				$trialRequest = $this->orderRaw($next_month,$start_month,$year,$removecustomers);	
+				return $trialRequest['result'];
+				exit;
+				$customersinthissegment = array_fetch($trialRequest['result'],"_id.customer_email");
+				array_push($removecustomers,$customersinthissegment);
+				$thisCustomerSegment = $this->orderRaw(-1,$start_month,$year,array(),$customersinthissegment);
+				
+				$thisCustomerSegment["start_date"] = "1-0".$start_month."-".$year;
+				$start_month = $next_month+1;
+				// array_push($monthwise,array_sum(array_fetch($thisCustomerSegment['result'],"count")));
+				$customersWithMoreThanOneTrial = 0;
+				$totalTrialCustomerForMoreThanOneTrial = 0;
+				foreach($thisCustomerSegment['result'] as $res){
+					if($res["count"] > 1){
+						$customersWithMoreThanOneTrial++;
+						$totalTrialCustomerForMoreThanOneTrial += $res["count"];
+					}
+				}
+				array_push($monthwise,$customersWithMoreThanOneTrial);
+				array_push($avgwise,($totalTrialCustomerForMoreThanOneTrial/$customersWithMoreThanOneTrial));
+			}
+		}
+		return array("monthwise" => $monthwise, "avgwise" => $avgwise);
+	}
+
+
+
+	public function topBooktrial($from,$to){
+
+		return $trialRequest = Booktrial::raw(function($collection) use ($to, $from){
+
+				$aggregate = [];
+				$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($from))));
+					$match['$match']['created_at']['$gt'] = $from_date;
+				$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($to))));
+					$match['$match']['created_at']['$lte'] = $to_date;
+
+				$aggregate[] = $match;
+
+				$group = array(
+					'$group' => array(
+						'_id' => array(
+							'finder_id' => '$finder_id',
+							'finder_name'	=> '$finder_name',
+							'city_id' => '$city_id'
+							),
+						'count' => array(
+							'$sum' => 1
+							)
+						)
+					);
+
+				$aggregate[] = $group;
+				$aggregate[] = array('$sort' => array('count'=> -1));
+
+				return $collection->aggregate($aggregate);
+
+			});
+	}
+
+
+
+	public function nehacustomertrials($year, $month){
+		$trials = array();
+		   $booktrial = Booktrial::where('schedule_slot', 'exists', true)
+            ->where('schedule_slot', '!=', "")
+            ->where('schedule_date_time',  '>=', new \DateTime( date("d-m-Y", strtotime( "1-".$month."-".$year )) ))
+            ->where('schedule_date_time',  '<=', new \DateTime( date("d-m-Y", strtotime( "31-".$month."-".$year )) ))->get(array("customer_email"))->toArray();
+		
+		$ht = Order::where("type","healthytiffintrail")->where("status","1")->get(array("customer_email"))->toArray();
+		$booktrial = array_fetch($booktrial,"customer_email");
+		$ht = array_fetch($ht,"customer_email");
+		$booktrial = array_merge($booktrial,$ht);
+		$unique = array_unique($booktrial);
+		return array("booktrial" => count($booktrial),"unique" =>count($unique));
+		
+	}
+
 
     
 }

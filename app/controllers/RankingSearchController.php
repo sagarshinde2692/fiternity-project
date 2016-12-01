@@ -1135,7 +1135,8 @@ class RankingSearchController extends \BaseController
         $search_results     =   es_curl_request($request);
 
         $search_results1    =   json_decode($search_results, true);
-        $searchresulteresponse = Translator::translate_searchresultsv3($search_results1);
+        $search_request     =   Input::all();
+        $searchresulteresponse = Translator::translate_searchresultsv3($search_results1,$search_request);
         $searchresulteresponse->meta->number_of_records = intval($size);
         $searchresulteresponse->meta->from = intval($from);
         $searchresulteresponse->meta->sortfield = $orderfield;
