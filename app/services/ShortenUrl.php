@@ -32,6 +32,8 @@ Class ShortenUrl {
             $error = array('status'=>400,'reason'=>'url is empty');
             return $error;
         }
+
+        $longUrl = rtrim($longUrl,'/').'/';
         
         $json = array('longUrl'=>$longUrl);
 

@@ -1595,7 +1595,7 @@ class SchedulebooktrialsController extends \BaseController {
             // $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
             // $show_location_flag 		       =   (count($finder['locationtags']) > 1) ? false : true;
 
-            $description =  $what_i_should_carry = $what_i_should_expect = '';
+            $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
             if($service_id != ''){
                 $serviceArr 				       = 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->find($service_id);
 
@@ -1612,6 +1612,22 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
                     if((isset($serviceArr['subcategory']['what_i_should_carry']) && $serviceArr['subcategory']['what_i_should_carry'] != '')){
                         $what_i_should_carry = $serviceArr['subcategory']['what_i_should_carry'];
+                    }
+                }
+
+                if((isset($serviceArr['category']['what_i_should_expect']) && $serviceArr['category']['what_i_should_expect'] != '')){
+                    $what_i_should_expect = $serviceArr['category']['what_i_should_expect'];
+                }else{
+                    if((isset($serviceArr['subcategory']['what_i_should_expect']) && $serviceArr['subcategory']['what_i_should_expect'] != '')){
+                        $what_i_should_expect = $serviceArr['subcategory']['what_i_should_expect'];
+                    }
+                }
+
+                if((isset($serviceArr['category']['name']) && $serviceArr['category']['name'] != '')){
+                    $service_category = $serviceArr['category']['name'];
+                }else{
+                    if((isset($serviceArr['subcategory']['name']) && $serviceArr['subcategory']['name'] != '')){
+                        $service_category = $serviceArr['subcategory']['name'];
                     }
                 }
 
@@ -1788,7 +1804,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'cleartrip_count'               =>      $cleartrip_count,
                 'trial_count'                   =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
-                'token'                         =>      random_number_string()
+                'token'                         =>      random_number_string(),
+                'service_category'              =>      $service_category
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -1938,7 +1955,7 @@ class SchedulebooktrialsController extends \BaseController {
             $oneHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $fiveHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $twelveHourDiffInMin 		       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
-            $threeHourDiffInMin                =    $currentDateTime->diffInHours($scheduleDateTime, false);
+            $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);
             $finderid 					       = 	(int) $data['finder_id'];
 
             $booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
@@ -2072,19 +2089,19 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
             }*/
-            //Send Reminder Notiication (Sms) Before 3 Hour To Customer
+            //Send Reminder Notiication (Sms) Before 3 Hour To Vendor
             if($threeHourDiffInMin >= 180){
 
                 $sndBefore3HourSmsFinder                   =    $this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                 $finer_sms_messageids['before1hour']        =   $sndBefore3HourSmsFinder;
 
-                if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
+                /*if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                     if ($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != '') {
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     } else {
                         $customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     }
-                }
+                }*/
 
             }
 
@@ -2347,7 +2364,7 @@ class SchedulebooktrialsController extends \BaseController {
             // $finder_address                      =   (isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
             // $show_location_flag              =   (count($finder['locationtags']) > 1) ? false : true;
 
-            $description = $what_i_should_carry = $what_i_should_expect = '';
+            $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
             if ($service_id != '') {
                 $serviceArr = Service::with(array('location' => function ($query) {
                     $query->select('_id', 'name', 'slug');
@@ -2374,6 +2391,14 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
                     if((isset($serviceArr['subcategory']['what_i_should_expect']) && $serviceArr['subcategory']['what_i_should_expect'] != '')){
                         $what_i_should_expect = $serviceArr['subcategory']['what_i_should_expect'];
+                    }
+                }
+
+                if((isset($serviceArr['category']['name']) && $serviceArr['category']['name'] != '')){
+                    $service_category = $serviceArr['category']['name'];
+                }else{
+                    if((isset($serviceArr['subcategory']['name']) && $serviceArr['subcategory']['name'] != '')){
+                        $service_category = $serviceArr['subcategory']['name'];
                     }
                 }
 
@@ -2482,7 +2507,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'description'         =>      $description,
                 'what_i_should_carry' =>      $what_i_should_carry,
                 'what_i_should_expect'          =>      $what_i_should_expect,
-
+                'service_category'      =>      $service_category,
                 'city_id'             =>      $city_id,
                 'finder_vcc_email'    =>      $finder_vcc_email,
                 'finder_vcc_mobile'   =>      $finder_vcc_mobile,
@@ -2661,6 +2686,7 @@ class SchedulebooktrialsController extends \BaseController {
             $currentDateTime 			       =	\Carbon\Carbon::now();
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
             $delayReminderTimeBefore1Min        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(1);
+            $delayReminderTimeBefore3Hour        =  \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 3);
             $delayReminderTimeBefore1Hour        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60);
             $delayReminderTimeBefore5Hour       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 5);
             $delayReminderTimeBefore12Hour       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 12);
@@ -2672,6 +2698,7 @@ class SchedulebooktrialsController extends \BaseController {
             $oneHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $fiveHourDiffInMin 			       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
             $twelveHourDiffInMin 		       = 	$currentDateTime->diffInMinutes($scheduleDateTime, false);
+            $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);
             $finderid 					       = 	(int) $data['finder_id'];
 
             $booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
@@ -2754,20 +2781,20 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            //Send Reminder Notiication (Sms) Before 1 Hour To Customer
-            if($oneHourDiffInMin >= 60){
+            //Send Reminder Notiication (Sms) Before 3 Hour To Vendor
+            if($threeHourDiffInMin >= 180){
 
-                $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+                $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                 $finer_sms_messageids['before1hour']        = 	$sndBefore1HourSmsFinder;
 
-                if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
+                /*if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
 
                     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     }else{
                         $customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     }
-                }
+                }*/
 
             }
 
@@ -2955,7 +2982,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $finder_category_id			       = 	(isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
 
-            $description =  $what_i_should_carry = $what_i_should_expect = '';
+            $description =  $what_i_should_carry = $what_i_should_expect = $service_category = '';
+
             if($service_id != ''){
                 $serviceArr 				       = 	Service::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('category')->with('subcategory')->where('_id','=', intval($service_id))->first()->toArray();
 
@@ -2983,6 +3011,13 @@ class SchedulebooktrialsController extends \BaseController {
                     }
                 }
 
+                if((isset($serviceArr['category']['name']) && $serviceArr['category']['name'] != '')){
+                    $service_category = $serviceArr['category']['name'];
+                }else{
+                    if((isset($serviceArr['subcategory']['name']) && $serviceArr['subcategory']['name'] != '')){
+                        $service_category = $serviceArr['subcategory']['name'];
+                    }
+                }
 
                 if((isset($serviceArr['location']['name']) && $serviceArr['location']['name'] != '')){
                     $finder_location			       =	$serviceArr['location']['name'];
@@ -3125,7 +3160,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'reg_id'				       => 		$gcm_reg_id,
                 'device_type'			       => 		$device_type,
                 'google_pin'			       =>		$google_pin,
-                'note_to_trainer'               =>      $note_to_trainer
+                'note_to_trainer'               =>      $note_to_trainer,
+                'service_category'              =>      $service_category
             );
 
 
@@ -3160,7 +3196,9 @@ class SchedulebooktrialsController extends \BaseController {
                 'old_going_status'=>$old_going_status,
                 'old_schedule_date'=>$old_schedule_date,
                 'old_schedule_slot_start_time'=>$old_schedule_slot_start_time,
-                'old_schedule_slot_end_time'=>$old_schedule_slot_end_time
+                'old_schedule_slot_end_time'=>$old_schedule_slot_end_time,
+                'schedule_date' => $data['schedule_date'],
+                'schedule_slot' => $data['schedule_slot'],
             );
 
             $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
@@ -3181,6 +3219,19 @@ class SchedulebooktrialsController extends \BaseController {
         $job->delete();
 
         try{
+
+            $slot_times                        =    explode('-',$data['schedule_slot']);
+            $schedule_slot_start_time          =    $slot_times[0];
+            $schedule_slot_end_time            =    $slot_times[1];
+            $schedule_slot                     =    $schedule_slot_start_time.'-'.$schedule_slot_end_time;
+
+            $slot_date                         =    date('d-m-Y', strtotime($data['schedule_date']));
+            $schedule_date_starttime           =    strtoupper($slot_date ." ".$schedule_slot_start_time);
+            $currentDateTime                   =    \Carbon\Carbon::now();
+
+            $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 3);
+            $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);
+
 
             $booktrialid = (int) $data['booktrialid'];
             $send_alert = $data['send_alert'];
@@ -3390,16 +3441,16 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 //Send Reminder Notiication (Sms) Before 1 Hour To Customer
-                if($oneHourDiffInMin >= 60){
+                if($threeHourDiffInMin >= 180){
 
-                    $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
+                    $sndBefore1HourSmsFinder			       =	$this->findersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     $finer_sms_messageids['before1hour']        = 	$sndBefore1HourSmsFinder;
 
-                    if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                    /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                         $customer_notification_messageids['before1hour'] = $this->customernotification->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
                     }else{
                         $customer_sms_messageids['before1hour'] = $this->customersms->bookTrialReminderBefore1Hour($booktrialdata, $delayReminderTimeBefore1Hour);
-                    }
+                    }*/
 
                 }
 

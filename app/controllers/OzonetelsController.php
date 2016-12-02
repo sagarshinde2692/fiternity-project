@@ -908,17 +908,18 @@ class OzonetelsController extends \BaseController {
 			        }
 
                     $customer_profile_url   = "";
+
                     if(isset($booktrial->customer_email) && $booktrial->customer_email != "" ){
 
                         $customer_profile_url   =   "https://www.fitternity.com/profile/".$booktrial->customer_email;
-//                        $customerurl            =   $shorten_url->getShortenUrl($customer_profile_url);
-//
-//                        if(isset($customerurl['status']) &&  $customerurl['status'] == 200){
-//                            $customer_profile_url = $customerurl['url'];
-//                        }
+
+                       	$customer_url            =   $shorten_url->getShortenUrl($customer_profile_url);
+
+                       	if(isset($customer_url['status']) &&  $customer_url['status'] == 200){
+                           $customer_profile_url = $customer_url['url'];
+                       	}
 
                     }
-
 
 
 					$sidekiq = new Sidekiq();
@@ -935,6 +936,7 @@ class OzonetelsController extends \BaseController {
 					$data['finder_vcc_mobile'] = $booktrial->finder_vcc_mobile;
 					$data['finder_category_id'] = (int)$booktrial->finder_category_id;
 					$data['code'] = $booktrial->code;
+					$data['finder_location'] = $booktrial->finder_location;
 
                     // set before after flag based schecdule time
                     $schedule_date_time     =   strtotime($booktrial['schedule_date_time']);
@@ -962,7 +964,7 @@ class OzonetelsController extends \BaseController {
                             break;
 						case 'reschedule':
                             $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);
-                            $this->findersms->rescheduleTrial($data);
+                            //$this->findersms->rescheduleTrial($data);
                             break;
 					}
 
