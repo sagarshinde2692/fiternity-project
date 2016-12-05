@@ -1207,7 +1207,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(Input::json()->get('status') == 'success') {
 
-            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
 
             if($count > 0){
                 array_set($data, 'acquisition_type', 'renewal_direct');
@@ -1288,7 +1288,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(Input::json()->get('status') == 'success') {
 
-            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
 
 
             if($count > 0){
@@ -1501,7 +1501,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $data['myreward_id'] = (int)$order_data['myreward_id'];
             }
 
-            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
 
             if($count > 0){
                 $order->update(array('acquisition_type'=>'renewal_direct'));

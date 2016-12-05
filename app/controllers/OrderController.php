@@ -199,7 +199,7 @@ class OrderController extends \BaseController {
                 
                 array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->count();
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->where('finder_id',$order->finder_id)->count();
 
                 if($count > 0){
                     array_set($data, 'acquisition_type', 'renewal_direct');
@@ -1433,6 +1433,20 @@ class OrderController extends \BaseController {
 
         $data['secondary_payment_mode'] = 'payment_gateway_tentative';
 
+        $countOrder = 0;
+        $countOrder  = NewOrder::where('customer_email',$data['customer_email'])->where('_id','!=',$orderid)->count();
+
+        $countTrial = 0;
+        $countTrial  = Booktrial::where('customer_email',$data['customer_email'])->count();
+
+        $countCapture = 0;
+        $countCapture  = Capture::where('customer_email',$data['customer_email'])->count();
+
+        array_set($data, 'repeat_customer', 'no');
+
+        if($countOrder > 0 || $countTrial > 0 || $countCapture > 0){
+            array_set($data, 'repeat_customer', 'yes');
+        }
 
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
