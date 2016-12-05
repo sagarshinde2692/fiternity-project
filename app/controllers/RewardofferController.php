@@ -270,7 +270,7 @@ class RewardofferController extends BaseController {
             'calculation'=>$calculation
         );
 
-        $renewal_cashback  = array('title'=>'Discount of 15% on Renewal');
+        $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;
 
         $data = array(
