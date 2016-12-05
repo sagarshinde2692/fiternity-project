@@ -38,22 +38,26 @@ class AnalyticsController extends \BaseController {
 
         $data_today = $this->getReviewsByDate($from_date_today,$to_date_today);
 
+        $array = array_keys($data_today);
+
 
         $from_date_yestarday = new DateTime(date('Y-m-d 00:00:00',strtotime("-1 days")));
         $to_date_yestarday = new DateTime(date('Y-m-d 23:59:59',strtotime("-1 days")));
 
         $data_yestarday = $this->getReviewsByDate($from_date_yestarday,$to_date_yestarday);
 
-        $header = ['Source','Yestarday','Today'];
+        $data = array();
 
-        $count = count($data_today) ;
+        foreach ($array as $key => $value) {
 
-        for ($i=0; $i < $count; $i++) { 
+            $result = array();
+            $result['source'] = ucwords($value);
+            $result['today'] = (string) $data_today[$value];
+            $result['yestarday'] =  (string) $data_yestarday[$value];
+            $result['difference'] = (string) ($data_today[$value] - $data_yestarday[$value]);
 
-            $data[$i] = [$data_today[$i][0],$data_yestarday[$i][1],$data_today[$i][1]];
+            $data[$value] = $result;
         }
-
-        array_unshift($data,$header);
 
         return Response::json(array('status' => 200,'data'=>$data),200);
     }
@@ -92,11 +96,11 @@ class AnalyticsController extends \BaseController {
 
     public function getReviewsByDate($from_date,$to_date){
 
-        $data[] = ['Total', Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->count()];
-        $data[] = ['Admin', Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where(function($query){$query->orWhere('source','exists',false)->orWhere('source','admin');})->count()];
-        $data[] = ['Website', Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','customer')->count()];
-        $data[] = ['Android', Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','android')->count()];
-        $data[] = ['Ios', Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','ios')->count()];
+        $data['total'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->count();
+        $data['admin'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where(function($query){$query->orWhere('source','exists',false)->orWhere('source','admin');})->count();
+        $data['website'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','customer')->count();
+        $data['android'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','android')->count();
+        $data['ios'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','ios')->count();
 
         return $data;
 
