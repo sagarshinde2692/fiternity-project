@@ -1434,7 +1434,7 @@ class OrderController extends \BaseController {
         $data['secondary_payment_mode'] = 'payment_gateway_tentative';
 
         $countOrder = 0;
-        $countOrder  = NewOrder::where('customer_email',$data['customer_email'])->where('_id','!=',$orderid)->count();
+        $countOrder  = Order::where('customer_email',$data['customer_email'])->where('_id','!=',$orderid)->count();
 
         $countTrial = 0;
         $countTrial  = Booktrial::where('customer_email',$data['customer_email'])->count();
