@@ -73,7 +73,10 @@ class ServiceRankingController extends \BaseController {
         $vip_trials_index = 'fitternity_vip_trials'.$timestamp;
         $sale_ratecard_index = 'fitternity_sale_ratecards'.$timestamp;
 
-        $items = Finder::with(array('country'=>function($query){$query->select('name');}))
+        $items = Finder::where("commercial_type","!=",0)
+        ->where('city_id', intval($city))
+        ->where('status', '=', '1')
+        ->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
         ->with(array('category'=>function($query){$query->select('name','meta');}))
         ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
@@ -82,9 +85,7 @@ class ServiceRankingController extends \BaseController {
         ->with('offerings')
         ->with('facilities')                            
         ->active()
-        ->orderBy('_id')                            
-        ->where('city_id', intval($city))
-        ->where('status', '=', '1')        
+        ->orderBy('_id')                                    
 //        ->take(500)->skip(0)
         ->take(50000)->skip(0)
         ->timeout(400000000)
