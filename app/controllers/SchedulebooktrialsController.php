@@ -4529,6 +4529,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 
         //Give 50% more cash back to booktrial customer on invites
+        $cashback_amount = 0;
+        $customer_balance = 0;
         if($BooktrialData){
 
             $booktrial_id   =   intval($req['booktrial_id']);
