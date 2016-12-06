@@ -2727,7 +2727,7 @@ class CustomerController extends \BaseController {
 
 	public function applyPromotionCode(){
 
-		$valid_promotion_codes		=		['instafit','fitrun','livfit'];
+		$valid_promotion_codes		=		['instafit','fitrun','livfit','socialfit'];
 		$data 						= 		Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
@@ -2763,6 +2763,8 @@ class CustomerController extends \BaseController {
 			if($customer_update){
 				switch($code){
 					case "fitrun" :  $amounttobeadded = 600;
+					break;
+					case "socialfit" :  $amounttobeadded = 500;
 					break;
 					case "instafit" :  $amounttobeadded = 2000;
 					break;
