@@ -98,11 +98,11 @@ class AnalyticsController extends \BaseController {
 
     public function getReviewsByDate($from_date,$to_date){
 
-        $data['Total'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->count();
         $data['Admin'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where(function($query){$query->orWhere('source','exists',false)->orWhere('source','admin');})->count();
         $data['Website'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','customer')->count();
         $data['Android'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','android')->count();
         $data['IOS'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','ios')->count();
+        $data['Total'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->count();
 
         return $data;
 
