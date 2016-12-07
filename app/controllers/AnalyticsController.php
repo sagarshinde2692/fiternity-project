@@ -40,26 +40,25 @@ class AnalyticsController extends \BaseController {
 
         $array = array_keys($data_today);
 
+        $from_date_yesterday = new DateTime(date('Y-m-d 00:00:00',strtotime("-1 days")));
+        $to_date_yesterday = new DateTime(date('Y-m-d 23:59:59',strtotime("-1 days")));
 
-        $from_date_yestarday = new DateTime(date('Y-m-d 00:00:00',strtotime("-1 days")));
-        $to_date_yestarday = new DateTime(date('Y-m-d 23:59:59',strtotime("-1 days")));
-
-        $data_yestarday = $this->getReviewsByDate($from_date_yestarday,$to_date_yestarday);
-
-        $data = array();
+        $data_yesterday = $this->getReviewsByDate($from_date_yesterday,$to_date_yesterday);
 
         foreach ($array as $key => $value) {
 
             $result = array();
-            $result['source'] = ucwords($value);
+            $result['source'] = $value;
+            $result['yesterday'] =  (string) $data_yesterday[$value];
             $result['today'] = (string) $data_today[$value];
-            $result['yestarday'] =  (string) $data_yestarday[$value];
-            $result['difference'] = (string) ($data_today[$value] - $data_yestarday[$value]);
+            $result['difference'] = ($data_today[$value] - $data_yesterday[$value]);
 
             $data[$value] = $result;
         }
 
-        return Response::json(array('status' => 200,'data'=>$data),200);
+        $header = array('Source','Yesterday','Today','Difference');
+
+        return Response::json(array('status' => 200,'data'=>$data,'header'=>$header),200);
     }
 
     public function reviewsDiffMonth(){
@@ -79,28 +78,31 @@ class AnalyticsController extends \BaseController {
 
         $data_last_month = $this->getReviewsByDate($from_last_month,$to_last_month);
 
-        $header = ['Source',$last_month,$current_month];
+        $array = array_keys($data_current_month);
 
-        $count = count($data_current_month) ;
+        $header = ['Source',$last_month,$current_month,'Difference'];
 
-        for ($i=0; $i < $count; $i++) { 
+        foreach ($array as $key => $value) {
 
-            $data[$i] = [$data_current_month[$i][0],$data_last_month[$i][1],$data_current_month[$i][1]];
+            $result = array();
+            $result['source'] = $value;
+            $result['last'] =  (string) $data_last_month[$value];
+            $result['current'] = (string) $data_current_month[$value];
+            $result['difference'] = ($data_current_month[$value] - $data_last_month[$value]);
+
+            $data[$value] = $result;
         }
 
-        array_unshift($data,$header);
-
-
-        return Response::json(array('status' => 200,'data'=>$data),200);
+        return Response::json(array('status' => 200,'data'=>$data,'header'=>$header),200);
     }
 
     public function getReviewsByDate($from_date,$to_date){
 
-        $data['total'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->count();
-        $data['admin'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where(function($query){$query->orWhere('source','exists',false)->orWhere('source','admin');})->count();
-        $data['website'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','customer')->count();
-        $data['android'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','android')->count();
-        $data['ios'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','ios')->count();
+        $data['Total'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->count();
+        $data['Admin'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where(function($query){$query->orWhere('source','exists',false)->orWhere('source','admin');})->count();
+        $data['Website'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','customer')->count();
+        $data['Android'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','android')->count();
+        $data['IOS'] = Review::active()->where('updated_at', '>=',$from_date)->where('updated_at', '<=',$to_date)->where('source','ios')->count();
 
         return $data;
 
@@ -115,24 +117,28 @@ class AnalyticsController extends \BaseController {
 
         $data_today = $this->getTrialsByDate($from_date_today,$to_date_today);
 
+        $from_date_yesterday = new DateTime(date('Y-m-d 00:00:00',strtotime("-1 days")));
+        $to_date_yesterday = new DateTime(date('Y-m-d 23:59:59',strtotime("-1 days")));
 
-        $from_date_yestarday = new DateTime(date('Y-m-d 00:00:00',strtotime("-1 days")));
-        $to_date_yestarday = new DateTime(date('Y-m-d 23:59:59',strtotime("-1 days")));
+        $data_yesterday = $this->getTrialsByDate($from_date_yesterday,$to_date_yesterday);
 
-        $data_yestarday = $this->getTrialsByDate($from_date_yestarday,$to_date_yestarday);
+        $array = array_keys($data_today);
 
-        $header = ['Type','Yestarday','Today'];
+        foreach ($array as $key => $value) {
 
-        $count = count($data_today) ;
+            $result = array();
+            $result['source'] = $value;
+            $result['yesterday'] =  (string) $data_yesterday[$value];
+            $result['today'] = (string) $data_today[$value];
+            $result['difference'] = ($data_today[$value] - $data_yesterday[$value]);
 
-        for ($i=0; $i < $count; $i++) { 
-
-            $data[$i] = [$data_today[$i][0],$data_yestarday[$i][1],$data_today[$i][1]];
+            $data[$value] = $result;
         }
 
-        array_unshift($data,$header);
+        $header = array('Source','Yesterday','Today','Difference');
 
-        return Response::json(array('status' => 200,'data'=>$data),200);
+        return Response::json(array('status' => 200,'data'=>$data,'header'=>$header),200);
+
     }
 
     public function trialsDiffMonth(){
@@ -152,27 +158,30 @@ class AnalyticsController extends \BaseController {
 
         $data_last_month = $this->getTrialsByDate($from_last_month,$to_last_month);
 
-        $header = ['Type',$last_month,$current_month];
+        $array = array_keys($data_current_month);
 
-        $count = count($data_current_month) ;
+        $header = ['Source',$last_month,$current_month,'Difference'];
 
-        for ($i=0; $i < $count; $i++) { 
+        foreach ($array as $key => $value) {
 
-            $data[$i] = [$data_current_month[$i][0],$data_last_month[$i][1],$data_current_month[$i][1]];
+            $result = array();
+            $result['source'] = $value;
+            $result['last'] =  (string) $data_last_month[$value];
+            $result['current'] = (string) $data_current_month[$value];
+            $result['difference'] = ($data_current_month[$value] - $data_last_month[$value]);
+
+            $data[$value] = $result;
         }
 
-        array_unshift($data,$header);
-
-
-        return Response::json(array('status' => 200,'data'=>$data),200);
+        return Response::json(array('status' => 200,'data'=>$data,'header'=>$header),200);
     }
 
     public function getTrialsByDate($from_date,$to_date){
 
-        $data[] = ['Requested', Booktrial::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->count()];
-        $data[] = ['Booked', Booktrial::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where('schedule_date_time', 'exists',true)->count()];
-        $data[] = ['Schedule', Booktrial::where('schedule_date_time', '>=',$from_date)->where('schedule_date_time', '<=',$to_date)->count()];
-        $data[] = ['Fake Buy', Capture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where('capture_type','FakeBuy')->count()];
+        $data['Requested'] = Booktrial::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->count();
+        $data['Booked'] = Booktrial::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where('schedule_date_time', 'exists',true)->count();
+        $data['Scheduled'] = Booktrial::where('schedule_date_time', '>=',$from_date)->where('schedule_date_time', '<=',$to_date)->count();
+        $data['Fake Buy'] =  Capture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where('capture_type','FakeBuy')->count();
 
         return $data;
 
@@ -188,23 +197,27 @@ class AnalyticsController extends \BaseController {
         $data_today = $this->getOzonetelCallsByDate($from_date_today,$to_date_today);
 
 
-        $from_date_yestarday = new DateTime(date('Y-m-d 00:00:00',strtotime("-1 days")));
-        $to_date_yestarday = new DateTime(date('Y-m-d 23:59:59',strtotime("-1 days")));
+        $from_date_yesterday = new DateTime(date('Y-m-d 00:00:00',strtotime("-1 days")));
+        $to_date_yesterday = new DateTime(date('Y-m-d 23:59:59',strtotime("-1 days")));
 
-        $data_yestarday = $this->getOzonetelCallsByDate($from_date_yestarday,$to_date_yestarday);
+        $data_yesterday = $this->getOzonetelCallsByDate($from_date_yesterday,$to_date_yesterday);
 
-        $header = ['Type','Yestarday','Today'];
+        $array = array_keys($data_today);
 
-        $count = count($data_today) ;
+        foreach ($array as $key => $value) {
 
-        for ($i=0; $i < $count; $i++) { 
+            $result = array();
+            $result['source'] = $value;
+            $result['yesterday'] =  (string) $data_yesterday[$value];
+            $result['today'] = (string) $data_today[$value];
+            $result['difference'] = ($data_today[$value] - $data_yesterday[$value]);
 
-            $data[$i] = [$data_today[$i][0],$data_yestarday[$i][1],$data_today[$i][1]];
+            $data[$value] = $result;
         }
 
-        array_unshift($data,$header);
+        $header = array('Source','Yesterday','Today','Difference');
 
-        return Response::json(array('status' => 200,'data'=>$data),200);
+        return Response::json(array('status' => 200,'data'=>$data,'header'=>$header),200);
     }
 
     public function ozonetelCallsDiffMonth(){
@@ -224,28 +237,31 @@ class AnalyticsController extends \BaseController {
 
         $data_last_month = $this->getOzonetelCallsByDate($from_last_month,$to_last_month);
 
-        $header = ['Type',$last_month,$current_month];
+        $array = array_keys($data_current_month);
 
-        $count = count($data_current_month) ;
+        $header = ['Source',$last_month,$current_month,'Difference'];
 
-        for ($i=0; $i < $count; $i++) { 
+        foreach ($array as $key => $value) {
 
-            $data[$i] = [$data_current_month[$i][0],$data_last_month[$i][1],$data_current_month[$i][1]];
+            $result = array();
+            $result['source'] = $value;
+            $result['last'] =  (string) $data_last_month[$value];
+            $result['current'] = (string) $data_current_month[$value];
+            $result['difference'] = ($data_current_month[$value] - $data_last_month[$value]);
+
+            $data[$value] = $result;
         }
 
-        array_unshift($data,$header);
-
-
-        return Response::json(array('status' => 200,'data'=>$data),200);
+        return Response::json(array('status' => 200,'data'=>$data,'header'=>$header),200);
     }
 
     public function getOzonetelCallsByDate($from_date,$to_date){
 
-        $data[] = ['Requested',Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->count()];
-        $data[] = ['Not Connected',Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where('finder_id', 'exists',false)->count()];
-        $data[] = ['Answered',Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where("call_status","answered")->where('finder_id', 'exists',true)->count()];
-        $data[] = ['Not Answered',Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where("call_status","called")->where('finder_id', 'exists',true)->count()];
-        $data[] = ['Disconnected',Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where("call_status","not_answered")->where('finder_id', 'exists',true)->count()];
+        $data['Requested'] = Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->count();
+        $data['Not Connected'] = Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where('finder_id', 'exists',false)->count();
+        $data['Answered'] = Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where("call_status","answered")->where('finder_id', 'exists',true)->count();
+        $data['Not Answered'] = Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where("call_status","called")->where('finder_id', 'exists',true)->count();
+        $data['Disconnected'] = Ozonetelcapture::where('created_at', '>=',$from_date)->where('created_at', '<=',$to_date)->where("call_status","not_answered")->where('finder_id', 'exists',true)->count();
 
         return $data;
 
