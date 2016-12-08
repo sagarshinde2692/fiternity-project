@@ -13,7 +13,6 @@ composer.lock
 Thumbs.db
 .idea
 /public/ozone/*
-/public/*.csv
 /public/.htaccess
 /app/config/database.php
 composer.lock

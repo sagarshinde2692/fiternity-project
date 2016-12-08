@@ -855,7 +855,7 @@ class MigrationsController extends \BaseController {
 
 	public function order(){
 
-		$services = Service::where('3days_trial','exists',true)->where('3days_trial','!=','')->get()->toArray();
+		/*$services = Service::where('3days_trial','exists',true)->where('3days_trial','!=','')->get()->toArray();
 
 		foreach ($services as $value) {
 
@@ -887,7 +887,9 @@ class MigrationsController extends \BaseController {
 		Order::where('order_action','exists',true)->where('order_action','tentative sale')->update(array('status'=>'2'));
 
 
-		exit;
+		exit;*/
+
+		ini_set('max_execution_time', 300);
 
 		$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date');
 
@@ -908,12 +910,19 @@ class MigrationsController extends \BaseController {
 
             foreach ($csv_to_array as $key => $value) {
 
+            	ini_set('set_time_limit', 30);
+
                 if($value['Duration Day'] != ""){
 
                 	$duration = (int)$value['Duration Day'];
                 	$id = (int)$value['Order ID'];
 
                 	$order = Order::find($id);
+
+                	if(!$order){
+                		continue;
+                	}
+
                 	$order->duration_day = $duration;
 
                 	$mod = $duration/30;
@@ -935,7 +944,7 @@ class MigrationsController extends \BaseController {
 
                 		if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
                 			$preferred_starting_date = date('d-m-Y g:i A',strtotime($order->preferred_starting_date));
-                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addDays($duration);
+                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $preferred_starting_date)->addDays($duration-1);
                 		}else{
                 			if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
                 				$order->preferred_starting_date = $order->start_date;
@@ -951,7 +960,7 @@ class MigrationsController extends \BaseController {
                 		
                 		if(isset($order->start_date) && $order->start_date != "" && $order->start_date != "-"){
                 			$start_date = date('d-m-Y g:i A',strtotime($order->start_date));
-                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
+                			$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration-1);
                 		}else{
                 			if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->preferred_starting_date != "-"){
                 				$order->start_date = $order->preferred_starting_date;
@@ -991,7 +1000,7 @@ class MigrationsController extends \BaseController {
 
 	                		$start_date = date('d-m-Y g:i A',strtotime($schedule_date_starttime));
 	                		$order->start_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date);
-	                		$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration);
+	                		$order->end_date = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $start_date)->addDays($duration-1);
 	                	}
 
 	                	
@@ -1010,6 +1019,8 @@ class MigrationsController extends \BaseController {
                 	$order->update();
 
                 	$hesh[] = $order->_id;
+
+                	Log::info('order_id  last -- '. $order->_id);
 
                 }
 
