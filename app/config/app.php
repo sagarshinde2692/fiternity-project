@@ -239,21 +239,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	/*'es' =>array(
+	'es' =>array(
 		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
 		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
-	),*/
+	),
 	//stage
-	'es' =>array(
+	/*'es' =>array(
 	 	'url'		=> 			'139.59.16.74:1243',
 	 	'host'		=> 			'139.59.16.74',
 	 	'port'		=>			1243,
 	 	'default_index' => 	'fitternity',
 	 	'default_type' 	=> 	'finder',
-	),
+	),*/
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
