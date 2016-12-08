@@ -311,6 +311,16 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
+    public function giveCashbackOnTrialOrderSuccessAndInvite($data){
+
+        $label = 'Give-Cashback-On-Trial-OrderSuccessAndInvite-Instant-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data);
+
+    }
+
 	public function healthyTiffinTrial($data){
 
 		$label = 'HealthyTiffinTrial-Instant-Customer';

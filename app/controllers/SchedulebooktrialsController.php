@@ -1243,10 +1243,13 @@ class SchedulebooktrialsController extends \BaseController {
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             //Send Instant (Email) To Customer & Finder
-            $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinTrial($order->toArray());
-            $sndInstantSmsCustomer	       =	$this->customersms->healthyTiffinTrial($order->toArray());
-            $sndInstantEmailFinder	       = 	$this->findermailer->healthyTiffinTrial($order->toArray());
-            $sndInstantSmsFinder	       =	$this->findersms->healthyTiffinTrial($order->toArray());
+            $sndInstantEmailCustomer                =   $this->customermailer->healthyTiffinTrial($order->toArray());
+            $sndInstantSmsCustomer	                =	$this->customersms->healthyTiffinTrial($order->toArray());
+            $sndInstantEmailFinder	                = 	$this->findermailer->healthyTiffinTrial($order->toArray());
+            $sndInstantSmsFinder	                =	$this->findersms->healthyTiffinTrial($order->toArray());
+
+            //send Cashback sms on Paid trial & Healthy tiffin trial
+            $sndInstantSmsCustomerForCashback        =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
 
             //Send one before reminder email to vendor at 9:00 AM
             if(isset($order_data['preferred_starting_date'])){
@@ -1906,7 +1909,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
+            $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$orderid,'booktrialid'=>$booktrialid),'booktrial');
             $booktrial->update(array('redis_id'=>$redisid));
 
         }
@@ -2002,6 +2005,11 @@ class SchedulebooktrialsController extends \BaseController {
                 // Send Email to Customer........
                 $customer_email_messageids['instant'] 	= 	$sndInstantEmailCustomer;
                 $customer_sms_messageids['instant'] 	= 	$sndInstantSmsCustomer;
+
+
+                //send Cashback sms on Paid trial & Healthy tiffin trial
+                $sndInstantSmsCustomerForCashback                   =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
+                $customer_sms_messageids['instant_cashback'] 	    =   $sndInstantSmsCustomerForCashback;
             }
 
             if(isset($booktrialdata['campaign'])) {
@@ -2639,7 +2647,7 @@ class SchedulebooktrialsController extends \BaseController {
 
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
+                $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$booktrialid), 'booktrial');
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
@@ -3193,7 +3201,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'schedule_slot' => $data['schedule_slot'],
             );
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
+            $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueRescheduledBookTrial',$payload, 'booktrial');
             $booktrial->update(array('reschedule_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -3559,7 +3567,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true ){
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+            $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -4519,10 +4527,57 @@ class SchedulebooktrialsController extends \BaseController {
             isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS($BooktrialData['type'], $templateData) : null;
         }
 
+
+        //Give 50% more cash back to booktrial customer on invites
+        $cashback_amount = 0;
+        $customer_balance = 0;
+        if($BooktrialData){
+
+            $booktrial_id   =   intval($req['booktrial_id']);
+            $order          =   Order::where('booktrial_id', $booktrial_id)->where('status','1')->first();
+
+            if($order && isset($order['customer_id']) && isset($order['amount'])){
+
+                $order_amount           =       (isset($order['amount'])) ? intval($order['amount']) : 0;
+                $amounttobeadded        =       intval((50/100) * $order_amount);   //50% of order amount
+                $customer_id            =       intval($order['customer_id']);
+
+                $customerwallet 		= 		\Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
+                if($customerwallet){
+                    $customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;
+                }else{
+                    $customer_balance 	=	 $amounttobeadded;
+                }
+
+                $cashback_amount 	=	$amounttobeadded;
+
+                $walletData = array(
+                    "customer_id"=> $customer_id,
+                    "amount"=> $cashback_amount,
+                    "type"=>'CASHBACK',
+                    "balance"=>	$customer_balance,
+                    "description"=>'CASHBACK ON Invite amount - '.$cashback_amount
+                );
+
+                // return $walletData;
+
+                $wallet               	=   new \CustomerWallet($walletData);
+                $last_insertion_id      =   \CustomerWallet::max('_id');
+                $last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
+                $wallet->_id          	=   ++ $last_insertion_id;
+                $wallet->save();
+
+                $customer_update 	=	\Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
+
+            }
+        }
+
         return Response::json(
             array(
                 'status' => 200,
-                'message' => 'Invitation has been sent successfully'
+                'message' => 'Invitation has been sent successfully',
+                'fitcash_added' => $cashback_amount,
+                'wallet_balance' => $customer_balance
             ),200
         );
     }
@@ -4833,7 +4888,7 @@ class SchedulebooktrialsController extends \BaseController {
         $store_id = $store->_id = Store::max('_id') + 1;
         $store->save();
 
-        $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),'booktrial');
+        $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),'booktrial');
 
         $store->update(array('redis_id'=>$redisid));
 
@@ -4937,10 +4992,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if($order){
 
-                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$order->_id,'booktrialid'=>$data['_id']),'booktrial');
+                    $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialPaid', array('data'=>$data,'orderid'=>$order->_id,'booktrialid'=>$data['_id']),'booktrial');
                 }else{
 
-                    $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'booktrial');
+                    $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialFree', array('data'=>$data,'booktrialid'=>$data['_id']), 'booktrial');
                 }
 
                 $result[] = $data['_id'];

@@ -147,7 +147,7 @@ Class CustomerReward {
                 $order['order_id'] = $order['_id'];
                 $this->createMyReward($order);
 
-            }elseif(isset($order['type']) && $order['type'] == 'booktrials' && isset($order['customer_id']) && isset($order['amount']) ){
+            }elseif(isset($order['type']) && in_array(trim($order['type']),['booktrials','healthytiffintrail']) && isset($order['customer_id']) && isset($order['amount']) ){
 //                var_dump($order);exit;
                 $amounttobeadded        =       intval($order['amount']);
                 $customer_id            =       intval($order['customer_id']);
