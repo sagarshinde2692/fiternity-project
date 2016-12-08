@@ -750,7 +750,7 @@ class MigrationReverseController extends \BaseController {
                 'what_i_should_expect' 					=>  (isset($Finder->what_i_should_expect)) ? $Finder->what_i_should_expect : "",
                 'business_type' 						=>  array_search($Finder->business['type'], $business_type_arr),
                 'commercial_type' 						=>  array_search($Finder->commercial['type'], $commercial_type_arr),
-                'share_customer_no' 					=>  (isset($Finder->commercial['type']['share_customer_number']) && $Finder->commercial['type']['share_customer_number'] === true) ? "1" : "0",
+                'share_customer_no' 					=>  (isset($Finder->commercial['share_customer_number']) && $Finder->commercial['share_customer_number'] === true) ? "1" : "0",
                 'finder_poc_for_customer_mobile' 		=>  implode(",", array_unique($finder_poc_for_customer_mobile_arr)),
                 'finder_poc_for_customer_name' 			=>  implode(",", array_unique($finder_poc_for_customer_name_arr)),
                 'finder_vcc_email' 						=>  implode(",", array_unique($finder_vcc_email_arr)),
