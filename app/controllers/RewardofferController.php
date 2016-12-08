@@ -103,7 +103,7 @@ class RewardofferController extends BaseController {
             'amount'=>'required',
             'ratecard_id'=>'required'
         );
-        $device = $data["device_type"];
+        $device = isset($data["device_type"]) ? $data["device_type"] : "";
 
         $validator = Validator::make($data,$rules);
 
@@ -150,18 +150,19 @@ class RewardofferController extends BaseController {
         }else{
 
             if($device == "website"){
+                // return $device;
                 $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                 ->where('amount_min','<', $amount)
                 ->where('amount_max','>=', $amount)
-                ->where('reward_type','!=','personal_trainer_at_home')
-                ->with('rewards')
+                // ->whereNotIn('reward_type',['personal_trainer_at_home'])
+                ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
+                // ->with('rewards')
                 ->orderBy('_id','desc')->first();
             }else{
                 $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                 ->where('amount_min','<', $amount)
                 ->where('amount_max','>=', $amount)
-                ->where('reward_type','!=','diet_plan')
-                ->with('rewards')
+                ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','diet_plan');}  ))
                 ->orderBy('_id','desc')->first();
             }
 
