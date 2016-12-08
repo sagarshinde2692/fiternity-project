@@ -98,12 +98,12 @@ class RewardofferController extends BaseController {
     public function getRewardOffers(){
 
         $data = Input::json()->all();
-
         $rules = array(
             'finder_id'=>'required',
             'amount'=>'required',
             'ratecard_id'=>'required'
         );
+        $device = isset($data["device_type"]) ? $data["device_type"] : "";
 
         $validator = Validator::make($data,$rules);
 
@@ -148,11 +148,23 @@ class RewardofferController extends BaseController {
         if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
             $rewards = array();
         }else{
-            $rewardoffer           =   Rewardoffer::where('findercategory_id', $findercategory_id)
-            ->where('amount_min','<', $amount)
-            ->where('amount_max','>=', $amount)
-            ->with('rewards')
-            ->orderBy('_id','desc')->first();
+
+            if($device == "website"){
+                // return $device;
+                $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+                ->where('amount_min','<', $amount)
+                ->where('amount_max','>=', $amount)
+                // ->whereNotIn('reward_type',['personal_trainer_at_home'])
+                ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
+                // ->with('rewards')
+                ->orderBy('_id','desc')->first();
+            }else{
+                $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+                ->where('amount_min','<', $amount)
+                ->where('amount_max','>=', $amount)
+                ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','diet_plan');}  ))
+                ->orderBy('_id','desc')->first();
+            }
 
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
