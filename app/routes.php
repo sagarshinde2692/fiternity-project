@@ -261,7 +261,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 Route::get('listrewardsapplicableonpurchase', array(
 	'as' => 'rewards.ListRewardsApplicableOnPurchase','uses' => 'RewardofferController@ListRewardsApplicableOnPurchase'
 ));
-Route::post('getrewardoffers/', array('as' => 'rewards.getRewardOffers','uses' => 'RewardofferController@getRewardOffers'));
+Route::post('getrewardoffers', array('as' => 'rewards.getRewardOffers','uses' => 'RewardofferController@getRewardOffers'));
 
 /******************** REWARDS SECTION END HERE ********************/
 ##############################################################################
