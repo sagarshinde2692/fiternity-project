@@ -161,6 +161,7 @@ Class CustomerReward {
                 $cashback_amount 	=	$amounttobeadded;
 
                 $walletData = array(
+                    "order_id"=>$order['_id'],
                     "customer_id"=> $customer_id,
                     "amount"=> $cashback_amount,
                     "type"=>'CASHBACK',

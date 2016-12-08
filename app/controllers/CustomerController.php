@@ -2060,12 +2060,26 @@ class CustomerController extends \BaseController {
 		$customer_id = $decoded->customer->_id;
 		$request['customer_id'] = $customer_id;
 
+		$wallet = array();
+
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
 		->where('amount','!=',0)
 		->orderBy('created_at', 'DESC')
 		->skip($limit)
 		->take($offset)
 		->get();
+
+		if(count($wallet) > 0){
+
+			$wallet = $wallet->toArray();
+
+			foreach ($wallet as $key => $value) {
+
+				if(!isset($value['order_id'])){
+					$wallet[$key]['order_id'] = 0;
+				}
+			}
+		}
 
 		return Response::json(
 			array(
@@ -2713,7 +2727,7 @@ class CustomerController extends \BaseController {
 
 	public function applyPromotionCode(){
 
-		$valid_promotion_codes		=		['instafit','fitrun','livfit'];
+		$valid_promotion_codes		=		['instafit','fitrun','livfit','socialfit'];
 		$data 						= 		Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
@@ -2749,6 +2763,8 @@ class CustomerController extends \BaseController {
 			if($customer_update){
 				switch($code){
 					case "fitrun" :  $amounttobeadded = 600;
+					break;
+					case "socialfit" :  $amounttobeadded = 500;
 					break;
 					case "instafit" :  $amounttobeadded = 2000;
 					break;
