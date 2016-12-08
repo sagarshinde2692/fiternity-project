@@ -47,6 +47,8 @@ Route::get('latlonswapserviceapi', 'DebugController@latLonSwapServiceApi');
 Route::get('addexpirydate', 'DebugController@addExpiryDate');
 
 
+
+
 // please dont merge in live or production environment
 Route::get('deletetrans/{email}', function ($email){
 
@@ -65,6 +67,17 @@ Route::get('deletetrans/{email}', function ($email){
 
     }
 
+
+});
+
+Route::get('syncsharecustomerno', function (){
+
+    $vendors = Vendor::where('commercial', 'exists', true )->get(['commercial']);
+    foreach ($vendors as $vendor){
+        $share_customer_no 					=  (isset($vendor['commercial']['share_customer_number']) && $vendor['commercial']['share_customer_number'] === true) ? "1" : "0";
+        DB::connection('mongodb2')->table('finders')->where('_id', intval($vendor['_id']))->update(['share_customer_no' => $share_customer_no]);
+    }
+    echo "done";
 
 });
 
