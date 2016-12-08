@@ -1249,7 +1249,7 @@ class SchedulebooktrialsController extends \BaseController {
             $sndInstantSmsFinder	                =	$this->findersms->healthyTiffinTrial($order->toArray());
 
             //send Cashback sms on Paid trial & Healthy tiffin trial
-            //$sndInstantSmsCustomerForCashback        =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+            $sndInstantSmsCustomerForCashback        =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
 
             //Send one before reminder email to vendor at 9:00 AM
             if(isset($order_data['preferred_starting_date'])){
@@ -2008,8 +2008,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 
                 //send Cashback sms on Paid trial & Healthy tiffin trial
-                //$sndInstantSmsCustomerForCashback                   =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
-                //$customer_sms_messageids['instant_cashback'] 	    =   $sndInstantSmsCustomerForCashback;
+                $sndInstantSmsCustomerForCashback                   =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
+                $customer_sms_messageids['instant_cashback'] 	    =   $sndInstantSmsCustomerForCashback;
             }
 
             if(isset($booktrialdata['campaign'])) {
@@ -4531,7 +4531,7 @@ class SchedulebooktrialsController extends \BaseController {
         //Give 50% more cash back to booktrial customer on invites
         $cashback_amount = 0;
         $customer_balance = 0;
-        /*if($BooktrialData){
+        if($BooktrialData){
 
             $booktrial_id   =   intval($req['booktrial_id']);
             $order          =   Order::where('booktrial_id', $booktrial_id)->where('status','1')->first();
@@ -4570,7 +4570,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $customer_update 	=	\Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
 
             }
-        }*/
+        }
 
         return Response::json(
             array(
