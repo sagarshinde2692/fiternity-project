@@ -245,6 +245,7 @@ class RankingController extends \BaseController {
                     "service_category_synonyms" : {"type": "string", "index":"not_analyzed"},
                     "service_category_exact" : {"type": "string", "index":"not_analyzed"},
                     "service_category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "offer_available" : {"type" : "string"}
                     "trials": {
                         "properties": {
                             "day" : {"type" : "string", "index" : "not_analyzed"},
@@ -359,7 +360,7 @@ class RankingController extends \BaseController {
                             //->whereIn('_id', array(579))
        ->where('city_id', $city_id)
        ->where('status', '=', '1')
-       // ->take(3)->skip(0)
+    //    ->take(30)->skip(0)
       ->take(50000)->skip(0)
        ->timeout(400000000)
                             // ->take(3000)->skip(0)

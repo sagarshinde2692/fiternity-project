@@ -2579,3 +2579,36 @@ Route::get('repeat/customerordersrepeat/{year}/{division}', 'DebugController@cus
 Route::get('topBooktrial/{from}/{to}','DebugController@topBooktrial');
 
 Route::get('nehacustomertrials/{year}/{month}','DebugController@nehacustomertrials');
+
+
+Route::get('updatefinderspecialoffertag', function (){
+ 
+    //  DB::connection('mongodb')->table('finders')->where('status', '1')->update(['special_offer' => false]);
+ 
+	$body["doc"]["offer_available"] = "true";
+	$postfields_data = json_encode($body);
+
+    $finder_ids = DB::connection('mongodb2')->table('offers')->where('hidden', false)
+                     ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+                     ->where('end_date', '>=', new DateTime( date("d-m-Y 23:59:59", time()) ))
+                     ->lists('vendor_id');
+					//  exit;
+	foreach($finder_ids as $finder){
+		$request = array(
+            'url' => Config::get('app.es.url')."/fitternity_finder/finder/".$finder."/_update",
+            'port' => Config::get('app.es.port'),
+            'method' => 'POST',
+            'postfields' => $postfields_data
+        );
+		// return $request;
+		$curl_response = es_curl_request($request);
+        echo $curl_response;
+	}
+ 
+	
+
+
+    //  DB::connection('mongodb')->table('finders')->whereIn('_id', $finder_ids)->update(['special_offer' => true]);
+ 
+    //  echo "done";
+ });
