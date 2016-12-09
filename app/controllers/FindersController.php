@@ -243,6 +243,8 @@ class FindersController extends \BaseController {
 
                 $finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 
+                $finder['offer_icon'] = "";
+
                 $finder['associate_finder'] = null;
                 if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
 
@@ -259,7 +261,7 @@ class FindersController extends \BaseController {
                 array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
                 array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
 
-               return $finderarr['services'];
+               //return $finderarr['services'];
 
                 if(count($finder['photos']) > 0 ){
                     $photoArr        =   [];
@@ -321,6 +323,8 @@ class FindersController extends \BaseController {
 
                         $service = $service;
 
+                        $service['offer_icon'] = "";
+
                         if(isset($service['category']) && isset($service['category']['_id'])){
                             $category_id                =   intval($service['category']['_id']);
 
@@ -342,6 +346,28 @@ class FindersController extends \BaseController {
 
                         }
 
+
+                        if(count($service['serviceratecard']) > 0){
+
+                            foreach ($item['serviceratecard'] as $rateval){
+
+                                if(!empty($rateval['_id']) && isset($rateval['_id'])){
+
+                                    $ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
+                                        ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+                                        ->where('end_date', '>=', new DateTime( date("d-m-Y 23:59:59", time()) ))
+                                        ->count();
+
+                                    if($ratecardoffersRecardsCount > 0){  
+
+                                        $service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+                                        $finder['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+                                    }
+                                }
+                            }
+                        }
+
+
                         array_push($serviceArr, $service);
                     }
 
@@ -352,6 +378,8 @@ class FindersController extends \BaseController {
                     if(isset($finder['info']) && $info_timing != ""){
                         $finder['info']['timing'] = $info_timing;
                     }
+
+
                 }
                 if(count($finder['offerings']) > 0 ){
                     $tempoffering = [];
@@ -1818,13 +1846,13 @@ class FindersController extends \BaseController {
                                 //echo "<pre>";print_r($ratecardoffersRecards);exit;
                         if(count($ratecardoffersRecards) > 0){  
 
-                            $service['offer_icon'] = "service-offer.png";
-                            $service['offer_icon_vendor'] = "finder-offer.png";
+                            $service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+                            $offer_icon_vendor = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 
                             foreach ($ratecardoffersRecards as $ratecardoffersRecard){
                                 $ratecardoffer                  =   $ratecardoffersRecard;
                                 $ratecardoffer['offer_text']    =   "";
-                                $ratecardoffer['offer_icon']    =   "special-offer.png";
+                                $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/special_offer_vendor.png";
 
                                 $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
                                 $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime($ratecardoffer['end_date'])) );
@@ -1833,7 +1861,7 @@ class FindersController extends \BaseController {
                                 if($difference->d < 5){
                                     $daytxt                         =   ($difference->d == 1) ? "day" : "days";
                                     $ratecardoffer['offer_text']    =   "Expires in ".$difference->d." ".$daytxt;
-                                    $ratecardoffer['offer_icon']    =   "hot-offer.png";
+                                    $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
                                 }
                                 array_push($ratecardoffers,$ratecardoffer);
                             }
@@ -1844,7 +1872,6 @@ class FindersController extends \BaseController {
 
                     if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
 
-                        $vendor = true;
                         $rateval['special_price'] = $ratecardoffers[0]['price'];
                     }
 

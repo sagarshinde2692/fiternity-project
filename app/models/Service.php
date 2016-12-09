@@ -160,8 +160,10 @@ class Service extends \Basemodel{
 		if($ratecardsarr){
 //            var_dump($ratecardsarr);
 
-            $ratecardoffers 	= 	[];
+            
             foreach ($ratecardsarr as $key => $value) {
+
+            	$ratecardoffers 	= 	[];
 
                 if(!empty($value['_id']) && isset($value['_id'])){
                     $ratecardoffersRecards 	= 	Offer::where('ratecard_id', intval($value['_id']))->where('hidden', false)->orderBy('order', 'asc')
@@ -173,7 +175,7 @@ class Service extends \Basemodel{
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
                         $ratecardoffer                  =   $ratecardoffersRecard;
                         $ratecardoffer['offer_text']    =   "";
-                        $ratecardoffer['offer_icon']    =   "";
+                        $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/special_offer_vendor.png";
 
                         $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
                         $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime($ratecardoffer['end_date'])) );
@@ -182,7 +184,7 @@ class Service extends \Basemodel{
                         if($difference->d < 5){
                             $daytxt                         =   ($difference->d == 1) ? "day" : "days";
                             $ratecardoffer['offer_text']    =   "Expires in ".$difference->d." ".$daytxt;
-                            $ratecardoffer['offer_icon']    =   "";
+                            $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
                         }
                         array_push($ratecardoffers,$ratecardoffer);
                     }
@@ -190,6 +192,11 @@ class Service extends \Basemodel{
 //                var_dump($ratecardoffers);exit;
 
                 $value['offers']  = $ratecardoffers;
+
+                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
+                	
+                    $value['special_price'] = $ratecardoffers[0]['price'];
+                }
 
 				if(intval($value['validity'])%360 == 0){
 					$value['validity']  = intval(intval($value['validity'])/360);
