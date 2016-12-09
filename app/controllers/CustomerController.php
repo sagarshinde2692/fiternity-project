@@ -65,7 +65,7 @@ class CustomerController extends \BaseController {
 					$avg_rating  = isset($finderarr['average_rating']) ? $finderarr['average_rating'] : 0;
 					array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 					array_set($trial, 'finder_location', ucwords($finderarr['location']['name']));
-					array_set($trial, 'average_rating', $finderarr['average_rating']);
+					array_set($trial, 'average_rating', $avg_rating);
 				}
 			}
 
