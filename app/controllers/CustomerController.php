@@ -62,6 +62,7 @@ class CustomerController extends \BaseController {
 				$finderarr = Finder::active()->with('offerings')->with('location')->where('_id','=', intval($trial['finder_id']))->first();
 				if ($finderarr) {
 					$finderarr = $finderarr->toArray();
+					$avg_rating  = isset($finderarr['average_rating']) ? $finderarr['average_rating'] : 0;
 					array_set($trial, 'finder_offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 					array_set($trial, 'finder_location', ucwords($finderarr['location']['name']));
 					array_set($trial, 'average_rating', $finderarr['average_rating']);
