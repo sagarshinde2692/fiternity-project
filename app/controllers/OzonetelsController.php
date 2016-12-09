@@ -964,7 +964,7 @@ class OzonetelsController extends \BaseController {
                             break;
 						case 'reschedule':
                             $booktrial->missedcall_sms = $this->customersms->rescheduleTrial($data);
-                            //$this->findersms->rescheduleTrial($data);
+                            $this->findersms->rescheduleTrial($data);
                             break;
 					}
 
