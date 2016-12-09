@@ -1660,6 +1660,7 @@ class FindersController extends \BaseController {
 		$date                   =   date('Y-m-d');
 		$timestamp              =   strtotime($date);
 		$weekday                =   strtolower(date( "l", $timestamp));
+
 		if($category->_id == 42){
 			$membership_services = Ratecard::where('finder_id', $finder_id)->lists('service_id');
 		}else{
@@ -1668,7 +1669,7 @@ class FindersController extends \BaseController {
 
 		$membership_services = array_map('intval',$membership_services);
 
-		$items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos'))->toArray();
+		$items = Service::active()->where('finder_id', $finder_id)->whereIn('_id', $membership_services)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','calorie_burn'))->toArray();
 
 		if(!$items){
 			return array();
@@ -1688,10 +1689,18 @@ class FindersController extends \BaseController {
 
 			unset($items[$k]['short_description']);
 
+            $sericecategorysCalorieArr = Config::get('app.calorie_burn_categorywise');
+            $category_calorie_burn = 300;
+            $service_category_id = (isset($item['servicecategory_id']) && $item['servicecategory_id'] != "") ? $item['servicecategory_id'] : 0;
+
+            if(isset($sericecategorysCalorieArr[$service_category_id])){
+                $category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
+            }
+            
 			$extra_info[1] = array(
 				'title'=>'Avg. Calorie Burn',
 				'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
-				'description'=>'750 Kcal'
+				'description'=>$category_calorie_burn.' Kcal'
 				);
 
 			$extra_info[2] = array(
