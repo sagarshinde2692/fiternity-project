@@ -2481,6 +2481,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $calorie_burn           =   300;
             }
 
+            $rebook_trial_url         =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrialid);
+
             $booktrialdata = array(
 
                 'booktrialid'         =>      $booktrialid,
@@ -2566,7 +2568,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'token'                         =>      random_number_string(),
                 'customer_profile_url'         =>       $customer_profile_url,
                 'calorie_burn'                  =>      $calorie_burn,
-                'finder_url'                    =>      $finder_url
+                'finder_url'                    =>      $finder_url,
+                'rebook_trial_url'              =>      $rebook_trial_url
 
             );
 
