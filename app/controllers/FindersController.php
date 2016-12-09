@@ -1883,7 +1883,7 @@ class FindersController extends \BaseController {
         return $scheduleservices;
     }
 
-    public function finderDetailApp($slug, $cache = false){
+    public function finderDetailApp($slug, $cache = true){
 
         $data   =  array();
         $tslug  = (string) strtolower($slug);
@@ -2069,6 +2069,7 @@ class FindersController extends \BaseController {
                         $servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
                         $photoObj                   =   array_except($photo,['servicetags']);
                         $photoObj['servicetags']    =   $servicetags;
+                        $photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
                         array_push($photoArr, $photoObj);
                     }
                     array_set($finder, 'photos', $photoArr);
