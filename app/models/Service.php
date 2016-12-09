@@ -18,8 +18,11 @@ class Service extends \Basemodel{
 		'servicesubcategory_id' => 'required'
 
 		);
-	
-	public static $withoutAppends = false;
+
+    protected $dates = array('start_date','end_date');
+
+
+    public static $withoutAppends = false;
 
 	protected function getArrayableAppends()
 	{
@@ -29,7 +32,8 @@ class Service extends \Basemodel{
 		return parent::getArrayableAppends();
 	}
 
-	protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard','servicebatches');
+//    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard','servicebatches');
+    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_trainer','serviceratecard','servicebatches');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
@@ -109,11 +113,17 @@ class Service extends \Basemodel{
 			foreach ($this->ratecards as $key => $value) {
 				$days = $sessions = '';
 
+
 				if(isset($value['duration']) && $value['duration'] != ''){
 					$durationObj 	=	Duration::active()->where('slug', url_slug(array($value['duration'])))->first();
 					$days 			=	(isset($durationObj->days)) ? $durationObj->days : "";
 					$sessions 		= 	(isset($durationObj->sessions)) ? $durationObj->sessions : "";
 				}
+
+                $offers  = [];
+
+
+
 
 				$ratecard = [
 				'order'=> (isset($value['order'])) ? $value['order'] : '0',
@@ -126,7 +136,8 @@ class Service extends \Basemodel{
 				'remarks'=> (isset($value['remarks'])) ? $value['remarks'] : '',
 				'show_on_fitmania'=> (isset($value['show_on_fitmania'])) ? $value['show_on_fitmania'] : '',
 				'direct_payment_enable'=> (isset($value['direct_payment_enable'])) ? $value['direct_payment_enable'] : '0',
-				'featured_offer'=> (isset($value['featured_offer'])) ? $value['featured_offer'] : '0'
+				'featured_offer'=> (isset($value['featured_offer'])) ? $value['featured_offer'] : '0',
+                 'cashback' => (isset($value['type']) && $value['type'] == 'trial' && isset($value['price']) && intval($value['price']) > 0)  ? "100%" : ''
 				];
 				// dd($ratecard);exit();
 
@@ -145,8 +156,40 @@ class Service extends \Basemodel{
 			$ratecardsarr 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
 		}
 
+
 		if($ratecardsarr){
-			foreach ($ratecardsarr as $key => $value) {
+//            var_dump($ratecardsarr);
+
+            $ratecardoffers 	= 	[];
+            foreach ($ratecardsarr as $key => $value) {
+
+                if(!empty($value['_id']) && isset($value['_id'])){
+                    $ratecardoffersRecards 	= 	Offer::where('ratecard_id', intval($value['_id']))->where('hidden', false)->orderBy('order', 'asc')
+                                                    ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+                                                    ->where('end_date', '>=', new DateTime( date("d-m-Y 23:59:59", time()) ))
+                                                    ->get(['start_date','end_date','price','type','allowed_qty','remarks'])
+                                                    ->toArray();
+
+                    foreach ($ratecardoffersRecards as $ratecardoffersRecard){
+                        $ratecardoffer                  =   $ratecardoffersRecard;
+                        $ratecardoffer['offer_text']    =   "";
+                        $ratecardoffer['offer_icon']    =   "";
+
+                        $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
+                        $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime($ratecardoffer['end_date'])) );
+                        $difference     =   $today_date->diff($end_date);
+
+                        if($difference->d < 5){
+                            $daytxt                         =   ($difference->d == 1) ? "day" : "days";
+                            $ratecardoffer['offer_text']    =   "Expires in ".$difference->d." ".$daytxt;
+                            $ratecardoffer['offer_icon']    =   "";
+                        }
+                        array_push($ratecardoffers,$ratecardoffer);
+                    }
+                }
+//                var_dump($ratecardoffers);exit;
+
+                $value['offers']  = $ratecardoffers;
 
 				if(intval($value['validity'])%360 == 0){
 					$value['validity']  = intval(intval($value['validity'])/360);
