@@ -1267,7 +1267,7 @@ class MigrationsController extends \BaseController {
 					    "listing_fee" => (isset($value["aquired_person"])) ? (int) preg_replace("/[^0-9.]/","",$value["listing_fee"]) : "",
 					    "mou" => (isset($value["mou"])) ? $value["mou"] : "",
 					    "waiver" => (isset($value["waiver"])) ? $value["waiver"] : "",
-					    "waiver_duration" => (isset($value["waiver_duration"])) ? $value["waiver_duration"] : "",
+					    "waiver_duration" => (isset($value["waiver_duration"])) ? (int)$value["waiver_duration"] : "",
 						'hidden' =>  (isset($value['status']) && $value['status'] == "1") ? false : true,
 						'created_at' =>  $value['updated_at'],
 						'updated_at' =>  $value['updated_at']
