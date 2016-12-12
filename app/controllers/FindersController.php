@@ -1839,7 +1839,7 @@ class FindersController extends \BaseController {
                     if(!empty($rateval['_id']) && isset($rateval['_id'])){
                         $ratecardoffersRecards 	= 	Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
                             ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-                            ->where('end_date', '>=', new DateTime( date("d-m-Y 23:59:59", time()) ))
+                            ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
                             ->get(['start_date','end_date','price','type','allowed_qty','remarks'])
                             ->toArray();
 

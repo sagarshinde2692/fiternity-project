@@ -375,7 +375,7 @@ Class CustomerReward {
         }*/
     }
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway"){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false){
 
         $wallet = 0;
 
@@ -402,8 +402,25 @@ Class CustomerReward {
         $commision = 10;
         if($findercommercial){
 
-            if(isset($findercommercial->contract_end_date) &&$findercommercial->contract_end_date != "" && strtotime($findercommercial->contract_end_date) > time() && isset($findercommercial->commision) &&$findercommercial->commision != ""){
-                $commision = (float) preg_replace("/[^0-9.]/","",$findercommercial->commision);
+            if($offer_id){
+                if(isset($findercommercial->campaign_end_date) && $findercommercial->campaign_end_date != "" && isset($findercommercial->campaign_cos) && $findercommercial->campaign_cos != ""){
+
+                    $campaign_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($findercommercial->campaign_end_date)));
+
+                    if($campaign_end_date > time()){
+                        $commision = (float) preg_replace("/[^0-9.]/","",$findercommercial->campaign_cos);
+                    }
+                }
+            }else{
+
+                if(isset($findercommercial->contract_end_date) && $findercommercial->contract_end_date != "" && isset($findercommercial->commision) && $findercommercial->commision != ""){
+
+                    $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($findercommercial->contract_end_date)));
+
+                    if($contract_end_date > time()){
+                        $commision = (float) preg_replace("/[^0-9.]/","",$findercommercial->commision);
+                    }
+                }
             }
         }
 

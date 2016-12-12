@@ -1248,6 +1248,7 @@ class OrderController extends \BaseController {
 
         }
 
+        $offer_id = false;
         if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
 
             $ratecard = Ratecard::find((int)$data['ratecard_id']);
@@ -1298,6 +1299,13 @@ class OrderController extends \BaseController {
 
                     $service_duration = $data['service_duration'] = $this->getServiceDuration($ratecard);
                 }
+
+                $offer = Offer::where('ratecard_id',$ratecard_id)->where('hidden', false)->where('end_date','<=',new DateTime(date("d-m-Y 00:00:00")))->first();
+
+                if($offer){
+                    $data['amount_finder'] = $offer->price;
+                    $offer_id = $offer->_id;
+                }
                 
             }else{
 
@@ -1332,7 +1340,7 @@ class OrderController extends \BaseController {
 
         if(isset($data['amount_finder'])){
 
-        	$data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id']);
+        	$data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id'],'paymentgateway',$offer_id);
 
             if(isset($data['wallet']) && $data['wallet'] == true){
                 $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
@@ -1974,6 +1982,8 @@ class OrderController extends \BaseController {
                 }
             }
 
+            $offer_id = false;
+
             if(isset($order->ratecard_id) && $order->ratecard_id != ""){
 
                 $ratecard = Ratecard::find((int)$order->ratecard_id);
@@ -1999,6 +2009,13 @@ class OrderController extends \BaseController {
                             $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
                         }
                     }
+
+                    $offer = Offer::where('ratecard_id',$ratecard_id)->where('hidden', false)->where('end_date','<=',new DateTime(date("d-m-Y 00:00:00")))->first();
+
+                    if($offer){
+                        $data['amount_finder'] = $offer->price;
+                        $offer_id = $offer->_id;
+                    }
                     
                 }else{
 
@@ -2007,9 +2024,10 @@ class OrderController extends \BaseController {
                 }
             }
 
+        
             if(isset($data['amount_finder'])){
 
-                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode']);
+                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode'],$offer_id);
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
@@ -2093,6 +2111,10 @@ class OrderController extends \BaseController {
 
             return Response::json($resp);
         }
+
+    }
+
+    public function getOfferId(){
 
     }
 
