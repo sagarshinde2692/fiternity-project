@@ -2047,6 +2047,19 @@ class RankingSearchController extends \BaseController
             case 'sport nutrition supliment stores':
                 $regex = 'Post Workout Supplements|pre workout Supplements|Accessories|Nutrition Bar|Protein Supplements|Energy & Endurance Supplements|Lean Muscle Gainer|Lean Mass Gainer|Weight Gainer|Fat Burners|Health & Wellness Supplements|Muscle Gainer|Soy Protein|Whey Protein|Fish Oil|Shakers|Mass Gainers|Food Supplements|';
                 break;
+
+            case 'pre natal classes':
+                $regex = 'Lamaze Class|Prenatal Yoga|';
+                break;
+
+            case 'aerial fitness':
+                $regex = 'Aerial Ring|Aerial Silk|Aerial Yoga|Nine Month Module';
+                break;
+
+            case 'bootcamp':
+                $regex = 'Indoor|Outdoor|';
+                break;
+
             case '':
                 $regex  = ' ';
                 break;
