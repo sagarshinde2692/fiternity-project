@@ -196,6 +196,10 @@ class Service extends \Basemodel{
                 if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
                 	
                     $value['special_price'] = $ratecardoffers[0]['price'];
+
+                    if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
+                    	$value['remarks'] = $ratecardoffers[0]['remarks'];
+                    }
                 }
 
 				if(intval($value['validity'])%360 == 0){

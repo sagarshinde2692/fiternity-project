@@ -128,6 +128,13 @@ class RewardofferController extends BaseController {
             $amount = $ratecard->price;
         }
 
+        $offer_id = false;
+        $offer = Offer::where('ratecard_id',$ratecard_id)->where('hidden', false)->where('end_date','<=',new DateTime(date("d-m-Y 00:00:00")))->first();
+        if($offer){
+            $offer_id = $offer->_id;
+            $amount = $offer->price;
+        }
+
         if(isset($data['order_id']) && $data['order_id'] != ""){
 
             $order_id = (int) $data['order_id'];
@@ -268,12 +275,6 @@ class RewardofferController extends BaseController {
         }
 
         $customerReward = new CustomerReward();
-
-        $offer_id = false;
-        $offer = Offer::where('ratecard_id',$ratecard_id)->where('hidden', false)->where('price',$amount)->where('end_date','<=',new DateTime(date("d-m-Y 00:00:00")))->first();
-        if($offer){
-            $offer_id = $offer->_id;
-        }
 
         $calculation = $customerReward->purchaseGame($amount,$finder_id,'paymentgateway',$offer_id);
 
