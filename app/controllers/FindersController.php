@@ -326,6 +326,8 @@ class FindersController extends \BaseController {
 
 					$brand = Brand::find((int)$finderarr['brand_id']);
 
+                    $brandFinder = array();
+
 					$brandFinder = Finder::where("brand_id",(int)$finderarr['brand_id'])
 					->active()
 					->where("_id","!=",(int)$finderarr['_id'])
@@ -333,12 +335,17 @@ class FindersController extends \BaseController {
 					->with('offerings')
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 					->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-					->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage'])->toArray();
-					
-					foreach($brandFinder as $key => $finder1){
-						array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
-					}
+					->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage']);
 
+                    if(count($brandFinder) > 0){
+
+                        $brandFinder = $brandFinder->toArray();
+                    
+    					foreach($brandFinder as $key => $finder1){
+    						array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+    					}
+
+                    }
 
 					$finderarr['brand']['brand_detail'] = $brand;
 					$finderarr['brand']['finder_detail'] = $brandFinder;
