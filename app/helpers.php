@@ -809,7 +809,6 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'finder_coverimage_webp' => (isset($data['coverimage']) && $data['coverimage'] != '') ? strtolower( substr($data['coverimage'], 0, -3)."webp"  ) : strtolower($data['finder_coverimage']),
             'finder_coverimage_color' => (isset($data['finder_coverimage_color']) && $data['finder_coverimage_color'] != "") ? $data['finder_coverimage_color'] : "",
             'multiaddress'            => (isset($data['multiaddress'])) ? $data['multiaddress'] : [],
-            'offer_available'                          =>      (isset($data['offer_available'])) ? $data['offer_available'] : '',
                 //'trialschedules'                =>      $trialdata,
             );
 

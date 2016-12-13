@@ -245,7 +245,6 @@ class RankingController extends \BaseController {
                     "service_category_synonyms" : {"type": "string", "index":"not_analyzed"},
                     "service_category_exact" : {"type": "string", "index":"not_analyzed"},
                     "service_category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
-                    "offer_available" : {"type" : "string"}
                     "trials": {
                         "properties": {
                             "day" : {"type" : "string", "index" : "not_analyzed"},
