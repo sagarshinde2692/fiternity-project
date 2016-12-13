@@ -641,6 +641,12 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
 				$result['facilities'] = (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
 
+				if(in_array($result['commercial_type'],["1","2","3"])){
+					$resultobject->offer_available = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+				}else{
+					$resultobject->offer_available = "";
+				}
+
 				// Deciding which address to show
 				if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
 					$multiaddress_locations = array();
