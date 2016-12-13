@@ -1860,7 +1860,7 @@ class FindersController extends \BaseController {
 
                                 if($difference->d < 5){
                                     $daytxt                         =   ($difference->d == 1) ? "day" : "days";
-                                    $ratecardoffer['offer_text']    =   "Expires in ".$difference->d." ".$daytxt;
+                                    $ratecardoffer['offer_text']    =   ($difference->d == 0) ? "Expires Today" : "Expires in ".$difference->d." ".$daytxt;
                                     $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
                                 }
                                 array_push($ratecardoffers,$ratecardoffer);
