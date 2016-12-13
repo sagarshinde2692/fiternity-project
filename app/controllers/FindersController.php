@@ -2223,9 +2223,14 @@ class FindersController extends \BaseController {
                 $finderData['trials_detials']              =      [];
                 $finderData['trials_booked_status']        =      false;
                 $finderData['call_for_action_button']      =      "";
-                $finderData['finder']['offer_icon'] =    $finderData['finder']['services']['offer_icon_vendor'];
 
-                unset($finderData['finder']['services']['offer_icon_vendor']);
+                $finderData['finder']['offer_icon'] = "";
+                if(isset($finderData['finder']['services']['offer_icon_vendor'])){
+
+                    $finderData['finder']['offer_icon'] = $finderData['finder']['services']['offer_icon_vendor'];
+
+                    unset($finderData['finder']['services']['offer_icon_vendor']);
+                }
 
                 $category_id                                =   intval($finder['category']['_id']);
                 $commercial_type                            =   intval($finder['commercial_type']);
