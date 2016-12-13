@@ -1790,6 +1790,11 @@ class OrderController extends \BaseController {
         // Update order status to failed........
         $data->update(['status' => '-1']);
 
+        if($data['amount'] >= 20000){
+            $order_data = $data->toArray();
+            $order_data['finder_vcc_email'] = "vinichellani@fitternity.com,maheshjadhav@fitternity.com";
+            $this->findermailer->orderFailureNotificationToLmd($order_data);
+        }
 
         // Refund wallet amount if deducted........
         if(isset($data['wallet_amount']) && ((int) $data['wallet_amount']) >= 0){
@@ -1803,7 +1808,6 @@ class OrderController extends \BaseController {
 
             $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
             $walletTransactionResponse = (array) $walletTransactionResponse;
-
 
             if($walletTransactionResponse['status'] != 200){
                 return $walletTransactionResponse;
