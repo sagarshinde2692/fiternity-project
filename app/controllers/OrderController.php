@@ -1792,7 +1792,7 @@ class OrderController extends \BaseController {
 
         if($data['amount'] >= 20000){
             $order_data = $data->toArray();
-            $order_data['finder_vcc_email'] = "vinichellani@fitternity.com,maheshjadhav@fitternity.com";
+            $order_data['finder_vcc_email'] = "vinichellani@fitternity.com";
             $this->findermailer->orderFailureNotificationToLmd($order_data);
         }
 
