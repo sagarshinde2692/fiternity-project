@@ -1855,7 +1855,7 @@ class FindersController extends \BaseController {
                                 $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/special_offer_vendor.png";
 
                                 $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
-                                $end_date       =   new DateTime( date("d-m-Y 23:59:59", strtotime($ratecardoffer['end_date'])) );
+                                $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
                                 $difference     =   $today_date->diff($end_date);
 
                                 if($difference->d <= 5){

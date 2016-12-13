@@ -178,12 +178,11 @@ class Service extends \Basemodel{
                         $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/special_offer_vendor.png";
 
                         $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
-                        $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime($ratecardoffer['end_date'])) );
+                        $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
                         $difference     =   $today_date->diff($end_date);
 
-                        if($difference->d < 5){
-                            $daytxt                         =   ($difference->d == 1) ? "day" : "days";
-                            $ratecardoffer['offer_text']    =   ($difference->d == 0) ? "Expires Today" : "Expires in ".$difference->d." ".$daytxt;
+                        if($difference->d <= 5){
+                            $ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->d." days";
                             $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
                         }
                         array_push($ratecardoffers,$ratecardoffer);
