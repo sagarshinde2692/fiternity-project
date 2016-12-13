@@ -191,6 +191,7 @@ class RewardofferController extends BaseController {
                         'sessions',
                         'healthy_snacks',
                         'personal_trainer_at_home',
+                        'diet_plan',
                         'healthy_tiffin',
                         'nutrition_store',
                         'fitternity_voucher'
