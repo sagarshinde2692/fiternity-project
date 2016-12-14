@@ -2257,7 +2257,7 @@ class FindersController extends \BaseController {
                 $pay_per_session_abandunt_catyegory = [41,42,45,25,46,10,26,40];
                 $service_count = Service::active()->where('finder_id',$finder['_id'])->count();
 
-                if($finder['manual_trial_enable'] = "1" || $service_count == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
+                if($finder['manual_trial_enable'] == "1" || $service_count == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
                     $finderData['finder']['pay_per_session'] = false;
                 }
 
