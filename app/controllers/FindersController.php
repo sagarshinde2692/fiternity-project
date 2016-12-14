@@ -2253,11 +2253,12 @@ class FindersController extends \BaseController {
                     $finderData['call_for_action_button']      =      "";
                 }
 
-                $finderData['pay_per_session'] = true;
+                $finderData['finder']['pay_per_session'] = true;
                 $pay_per_session_abandunt_catyegory = [41,42,45,25,46,10,26,40];
+                $service_count = Service::active()->where('finder_id',$finder->_id)->count();
 
-                if($finder['manual_trial_enable'] || count($finderData['finder']['services']) == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
-                    $finderData['pay_per_session'] = false;
+                if($finder['manual_trial_enable'] = "1" || $service_count == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
+                    $finderData['finder']['pay_per_session'] = false;
                 }
 
                 if(Request::header('Authorization')){
