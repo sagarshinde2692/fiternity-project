@@ -349,7 +349,7 @@ class FindersController extends \BaseController {
 
                         if(count($service['serviceratecard']) > 0){
 
-                            foreach ($item['serviceratecard'] as $rateval){
+                            foreach ($service['serviceratecard'] as $rateval){
 
                                 if(!empty($rateval['_id']) && isset($rateval['_id'])){
 
@@ -511,11 +511,11 @@ class FindersController extends \BaseController {
                 }
 
                 if( $finder['city_id'] == 10000 ){
-					$finder['city']['name'] = $finder['custom_city'];
-					$finder['location']['name'] = $finder['custom_location'];
-					$nearby_same_category = [];
-					$nearby_other_category = [];
-				}
+                    $finder['city']['name'] = $finder['custom_city'];
+                    $finder['location']['name'] = $finder['custom_location'];
+                    $nearby_same_category = [];
+                    $nearby_other_category = [];
+                }
 
                 $data['statusfinder']                   =       200;
                 $data['finder']                         =       $finder;
@@ -1132,7 +1132,6 @@ class FindersController extends \BaseController {
         }
 
     }
-
 
     public function addReview(){
 
@@ -1765,21 +1764,21 @@ class FindersController extends \BaseController {
 
             $extra_info = array();
 
-            $extra_info[0] = array(
+            /*$extra_info[0] = array(
                 'title'=>'Description',
                 'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
                 'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
-            );
+            );*/
 
             unset($items[$k]['short_description']);
 
-            $extra_info[1] = array(
+            $extra_info[0] = array(
                 'title'=>'Avg. Calorie Burn',
                 'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
                 'description'=>'750 Kcal'
             );
 
-            $extra_info[2] = array(
+            $extra_info[1] = array(
                 'title'=>'Results',
                 'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
                 'description'=>'Burn Fat | Super Cardio'
@@ -1844,11 +1843,11 @@ class FindersController extends \BaseController {
                             ->toArray();
 
                                 //echo "<pre>";print_r($ratecardoffersRecards);exit;
-                        if(count($ratecardoffersRecards) > 0){  
+                        if(count($ratecardoffersRecards) > 0){ 
 
                             $service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
                             $offer_icon_vendor = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
-
+                            
                             foreach ($ratecardoffersRecards as $ratecardoffersRecard){
                                 $ratecardoffer                  =   $ratecardoffersRecard;
                                 $ratecardoffer['offer_text']    =   "";
