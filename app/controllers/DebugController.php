@@ -2948,12 +2948,12 @@ public function testEmail(){
 
 	                if(isset($customofferorder->validity) && $customofferorder->validity != ""){
 
-	                    $booktrial->customofferorder_expiry_date =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($booktrial->schedule_date_time)));
+	                    $booktrial->customofferorder_expiry_date =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
 	                    $booktrial->customofferorder_validity = $customofferorder->validity;
 	               
 	                }	
 
-	                $booktrial->customofferorder_flag = "1";
+	                $booktrial->customofferorder_new_flag = "1";
 
 					$booktrial->update();
 				}
@@ -2986,7 +2986,7 @@ public function testEmail(){
 
 	public function booktrialQuery($offset,$limit){
 
-		$booktrials = Booktrial::where('customofferorder_id','exists',true)->where('customofferorder_flag','exists',false)->orderBy('update_at','desc')->skip($offset)->take($limit)->get(array("_id","customofferorder_id","customofferorder_expiry_date","schedule_date_time","customofferorder_flag"));
+		$booktrials = Booktrial::where('customofferorder_id','exists',true)->where('customofferorder_new_flag','exists',false)->orderBy('update_at','desc')->skip($offset)->take($limit)->get(array("_id","customofferorder_id","customofferorder_expiry_date","schedule_date_time","customofferorder_new_flag"));
 
 		return $booktrials;
 	}

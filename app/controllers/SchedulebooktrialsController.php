@@ -1826,7 +1826,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($customofferorder->validity) && $customofferorder->validity != ""){
 
-                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($schedule_date_time)));
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
                     $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
                 }
 
@@ -2581,7 +2581,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($customofferorder->validity) && $customofferorder->validity != ""){
 
-                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($schedule_date_time)));
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
                     $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
                 }
             }
