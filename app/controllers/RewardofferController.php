@@ -290,15 +290,16 @@ class RewardofferController extends BaseController {
 
         }
 
-        unset($calculation['description']);
-
         $cashback  = array(
             'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',
             'commision'=>$calculation['algo']['cashback'],
             'calculation'=>$calculation,
+            'info' => "\tYou can only pay upto 10% of the booking amount through FitCash.\n\n\tIt is calculated basis the amount, type and duration of the purchase.\n\n\tYour total FitCash balance is Rs. ".$calculation['current_wallet_balance']."\n\n\tFitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
             'description'=>$calculation['description']
         );
+
+        unset($cashback['calculation']['description']);
 
         $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;
