@@ -2393,6 +2393,10 @@ class CustomerController extends \BaseController {
 			'ratio'=>1/6
 		);
 
+		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
+			$result['campaign']['link'] = "";
+		}
+
 		return Response::json($result);
 	}
 
