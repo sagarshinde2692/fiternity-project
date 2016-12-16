@@ -2386,7 +2386,7 @@ class CustomerController extends \BaseController {
 
 		$result['campaign'] = array(
 			'image'=>'http://b.fitn.in/iconsv1/fitmania/banner_search.jpg',
-			'link'=>'https://www.fitternity.com/search/offer/true',
+			'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
 			'title'=>'FitStart 2017',
 			'height'=>1,
 			'width'=>6,
