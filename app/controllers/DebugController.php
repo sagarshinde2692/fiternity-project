@@ -3237,6 +3237,14 @@ public function testEmail(){
 		
 	}
 
+	public function unsetStartEndService(){
+
+		Service::where('start_date',"")->unset('start_date');
+
+		Service::where('end_date',"")->unset('end_date');
+
+	}
+
 
     
 }
