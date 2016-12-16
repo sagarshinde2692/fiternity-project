@@ -136,7 +136,22 @@ Class CustomerReward {
                 $utilities->walletTransaction($req);
                 $order->update(array('cashback_amount'=>$cashback_amount));
 
-            }elseif(isset($order['reward_ids']) && !empty($order['reward_ids'])){
+            }elseif(isset($order['reward_id']) && is_array($order['reward_id']) && !empty($order['reward_id'])){
+
+                $myReward = Myreward::where("order_id",(int)$order['_id'])->get();
+
+                if(count($myReward) > 0){
+                    return 'true';
+                }
+
+                $order['order_id'] = $order['_id'];
+                $order['reward_ids'] = $order['reward_id'];
+
+                $order->update(array('reward_ids'=>$order['reward_id']));
+                
+                $this->createMyReward($order);
+
+             }elseif(isset($order['reward_ids']) && !empty($order['reward_ids'])){
 
                 $myReward = Myreward::where("order_id",(int)$order['_id'])->get();
 
