@@ -610,7 +610,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->contact->phone = ''; //$result['contact']['phone'];
 				$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
 				$resultobject->coverimage = $result['coverimage'];
-				$resultobject->finder_coverimage_webp = isset($result['finder_coverimage_webp']) ? (strpos($result['finder_coverimage_webp'],"default/") > -1 ? "" : $result['finder_coverimage_webp']) : "";
+				$resultobject->finder_coverimage_webp = ""; //isset($result['finder_coverimage_webp']) ? (strpos($result['finder_coverimage_webp'],"default/") > -1 ? "" : $result['finder_coverimage_webp']) : "";
 				$resultobject->finder_coverimage_color = isset($result['finder_coverimage_color']) && $result['finder_coverimage_color'] != "" ? $result['finder_coverimage_color'] : "#FFC107";
 
 				$resultobject->commercial_type = $result['commercial_type'];
@@ -640,6 +640,12 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
 				$result['facilities'] = (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
+
+				if(in_array($result['commercial_type'],["1","2","3"])){
+					$resultobject->offer_available = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+				}else{
+					$resultobject->offer_available = "";
+				}
 
 				// Deciding which address to show
 				if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){

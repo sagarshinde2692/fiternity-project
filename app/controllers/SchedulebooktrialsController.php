@@ -221,7 +221,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items                  =   Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id'));
+        $items                  =   Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id','trial','membership'));
 
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
@@ -243,12 +243,24 @@ class SchedulebooktrialsController extends \BaseController {
             // echo "<br> count -- ".count($weekdayslots['slots']);
             $item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
             $item['vip_trial'] = ""; //isset($item['vip_trial']) ? $item['vip_trial'] : "";
-            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial']);
+            $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial'],'trial' => (isset($item['trial'])) ? $item['trial'] : "",'membership' => (isset($item['membership'])) ? $item['membership'] : "");
 
             $slots = array();
             //slots exists
             if(count($weekdayslots['slots']) > 0){
+
+                $check_cashback         =   true;
+                $cashback               =   "";
+
                 foreach ($weekdayslots['slots'] as $slot) {
+
+                    if($check_cashback){
+                        if($slot && isset($slot['price']) && intval($slot['price']) > 0){
+                            $cashback        =  "100%";
+                            $check_cashback  =  false;
+                        }
+                    }
+
                     // $totalbookcnt        = 	Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
                     // $goingcnt 	       = 	Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
                     // $cancelcnt 	       = 	Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
@@ -304,7 +316,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            $service['slots'] 			       =	$slots;
+            $service['cashback']                =   $cashback;
+            $service['slots'] 			        =	$slots;
             $service['trialschedules']['slots'] =	$slots;
             array_push($scheduleservices, $service);
 
@@ -339,7 +352,7 @@ class SchedulebooktrialsController extends \BaseController {
         $timestamp 		       = 	strtotime($date);
         $weekday 		       = 	strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'));
+        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id','trial','membership'));
 
         if(!$items){
             return $this->responseNotFound('WorkoutSession Schedule does not exist');
@@ -361,7 +374,7 @@ class SchedulebooktrialsController extends \BaseController {
             //slots exists
             if(count($weekdayslots['slots']) > 0){
                 // echo "<br> count -- ".count($weekdayslots['slots']);
-                $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday);
+                $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday,'trial' => (isset($item['trial'])) ? $item['trial'] : "",'membership' => (isset($item['membership'])) ? $item['membership'] : "");
                 $slots = array();
 
                 foreach ($weekdayslots['slots'] as $slot) {
@@ -1258,6 +1271,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $reminderDateTime 		        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $datetime_str);
                 $sndReminderEmailFinder	        = 	$this->findermailer->healthyTiffinTrialReminder($order->toArray(),$reminderDateTime);
             }
+
+            //send Cashback sms on Paid trial & Healthy tiffin trial
+            $sndInstantSmsCustomerForCashback        =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);

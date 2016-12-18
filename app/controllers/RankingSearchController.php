@@ -1147,6 +1147,15 @@ class RankingSearchController extends \BaseController
 
         $response       =   json_decode($searchresulteresponse1,true);
 
+        $response['campaign'] = array(
+            'image'=>'http://b.fitn.in/iconsv1/fitmania/banner_search.jpg',
+            'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
+            'title'=>'FitStart 2017',
+            'height'=>1,
+            'width'=>6,
+            'ratio'=>1/6
+        );
+
         return Response::json($response);
 
     }

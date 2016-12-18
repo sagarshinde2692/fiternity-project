@@ -359,7 +359,7 @@ class RankingController extends \BaseController {
                             //->whereIn('_id', array(579))
        ->where('city_id', $city_id)
        ->where('status', '=', '1')
-       // ->take(3)->skip(0)
+    //    ->take(30)->skip(0)
       ->take(50000)->skip(0)
        ->timeout(400000000)
                             // ->take(3000)->skip(0)
@@ -682,7 +682,7 @@ public function IndexFinderDocument($id){
    ->orderBy('_id')
    ->whereIn('_id',array(intval($id)))     
    ->where('status', '=', '1')
-   ->take(5000)->skip(0)
+   ->take(8000)->skip(0)
    ->timeout(400000000)                           
    ->get(); 
    

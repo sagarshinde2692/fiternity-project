@@ -2382,16 +2382,20 @@ class CustomerController extends \BaseController {
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
 
-//		$result['campaign'] = array(
-//			'image'=>'http://email.fitternity.com/277/in-app-banner.jpg',
-//			'link'=>'https://www.fitternity.com/dawnstepper',
-//			'title'=>'Dawn Stepper',
-//			'height'=>1,
-//			'width'=>5,
-//			'ratio'=>1/5
-//		);
+		$result['campaign'] =  new \stdClass();
 
-//        $result['campaign'] =  new \stdClass();
+		$result['campaign'] = array(
+			'image'=>'http://b.fitn.in/iconsv1/fitmania/banner_search.jpg',
+			'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
+			'title'=>'FitStart 2017',
+			'height'=>1,
+			'width'=>6,
+			'ratio'=>1/6
+		);
+
+		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
+			$result['campaign']['link'] = "";
+		}
 
 		return Response::json($result);
 	}

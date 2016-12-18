@@ -563,8 +563,8 @@ class ServiceController extends \BaseController {
         }
     }
 
-   
-     public function getScheduleByFinderService($request = false,$count = 1){
+  
+    public function getScheduleByFinderService($request = false,$count = 1){
 
     	if(!$request){
 
@@ -621,7 +621,13 @@ class ServiceController extends \BaseController {
 
             $slots = array();
 
-            if(count($weekdayslots['slots']) > 0){
+            switch ($type) {
+	        	case 'workoutsessionschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','workout session')->first(); break;
+	        	case 'trialschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
+	        	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
+	        }
+
+            if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
                 foreach ($weekdayslots['slots'] as $slot) {
 
@@ -660,6 +666,7 @@ class ServiceController extends \BaseController {
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
+                        array_set($slot, 'ratecard_id', $ratecard['_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
