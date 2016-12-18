@@ -599,6 +599,11 @@ class HomeController extends BaseController {
                 $item = null;
             }
 
+            $popup_message = "";
+            if($type == "booktrial" && isset($itemData['amount']) && $itemData['amount'] > 0){
+                $popup_message = "Rs ".$itemData['amount']." Fitcash has been added to your wallet";
+            }
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  $item,
@@ -607,7 +612,8 @@ class HomeController extends BaseController {
                     'subline'   =>  $subline,
                     'steps'     =>  $steps,
                     'note'      =>  $note
-                ]
+                ],
+                'popup_message' => $popup_message
             ];
 
             return Response::json($resp);

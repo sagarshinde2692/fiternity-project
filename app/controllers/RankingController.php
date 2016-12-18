@@ -682,7 +682,7 @@ public function IndexFinderDocument($id){
    ->orderBy('_id')
    ->whereIn('_id',array(intval($id)))     
    ->where('status', '=', '1')
-   ->take(5000)->skip(0)
+   ->take(8000)->skip(0)
    ->timeout(400000000)                           
    ->get(); 
    

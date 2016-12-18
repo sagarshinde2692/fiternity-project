@@ -1135,7 +1135,7 @@ class RankingSearchController extends \BaseController
         $search_results     =   es_curl_request($request);
 
         $search_results1    =   json_decode($search_results, true);
-        $search_request     =   Input::all();
+        $search_request     =   Input::json()->all();
         $searchresulteresponse = Translator::translate_searchresultsv3($search_results1,$search_request);
         $searchresulteresponse->meta->number_of_records = intval($size);
         $searchresulteresponse->meta->from = intval($from);
@@ -1146,6 +1146,15 @@ class RankingSearchController extends \BaseController
         $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
         $response       =   json_decode($searchresulteresponse1,true);
+
+        $response['campaign'] = array(
+            'image'=>'http://b.fitn.in/iconsv1/fitmania/banner_search.jpg',
+            'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
+            'title'=>'FitStart 2017',
+            'height'=>1,
+            'width'=>6,
+            'ratio'=>1/6
+        );
 
         return Response::json($response);
 

@@ -291,6 +291,11 @@ class RewardofferController extends BaseController {
 
                             if($rewards_value['reward_type'] == $reward_type_order_value){
 
+                                if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+                                    $rewards_value['contents'] = str_replace("<br>", "/n", $rewards_value['contents']);
+                                    $rewards_value['description'] = str_replace("<br>", "/n", $rewards_value['description']);
+                                }
+
                                 $reward_ordered[] = $rewards_value;
 
                                 break;

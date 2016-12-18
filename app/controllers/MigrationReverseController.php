@@ -764,7 +764,9 @@ class MigrationReverseController extends \BaseController {
                 'manual_trial_enable' 				    =>  (isset($Finder->manual_trial_enable) && $Finder->manual_trial_enable === true) ? "1" : "0",
                 'manual_trial_auto' 				    =>  (isset($Finder->manual_trial_auto) && $Finder->manual_trial_auto === true) ? "1" : "0",
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
-                'updated_at' 							=>  $Finder->updated_at
+                'updated_at' 							=>  $Finder->updated_at,
+                'custom_city'                           =>  isset($Finder->custom_city) ? $Finder->custom_city : "",
+                'custom_location'                       =>  isset($Finder->custom_location) ? $Finder->custom_location : ""
             ];
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
