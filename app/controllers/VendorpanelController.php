@@ -964,7 +964,7 @@ class VendorpanelController extends BaseController
         }
         $finder_id = intval($finder_id);
 
-        $data =  Findercommercial::where('finder_id', '=', $finder_id)
+        $data =  VendorCommercial::where('vendor_id',$finder_id)
             ->get(
                 array(
                     '_id','aquired_person','aquired_date','contract_start_date',

@@ -13,7 +13,7 @@ use Myrewardcapture;
 use Rewardcategory;
 use Request;
 use Customerwallet;
-use Findercommercial;
+use VendorCommercial;
 use Config;
 use JWT;
 use Finder;
@@ -412,28 +412,28 @@ Class CustomerReward {
 
         $wallet_percentage = 27 ;
 
-        $findercommercial = Findercommercial::where('finder_id',$finder_id)->orderBy('_id','desc')->first();
+        $vendorCommercial = VendorCommercial::where('vendor_id',$finder_id)->orderBy('_id','desc')->first();
 
         $commision = 10;
-        if($findercommercial){
+        if($vendorCommercial){
 
             if($offer_id){
-                if(isset($findercommercial->campaign_end_date) && $findercommercial->campaign_end_date != "" && isset($findercommercial->campaign_cos) && $findercommercial->campaign_cos != ""){
+                if(isset($vendorCommercial->campaign_end_date) && $vendorCommercial->campaign_end_date != "" && isset($vendorCommercial->campaign_cos) && $vendorCommercial->campaign_cos != ""){
 
-                    $campaign_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($findercommercial->campaign_end_date)));
+                    $campaign_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial->campaign_end_date)));
 
                     if($campaign_end_date > time()){
-                        $commision = (float) preg_replace("/[^0-9.]/","",$findercommercial->campaign_cos);
+                        $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial->campaign_cos);
                     }
                 }
             }else{
 
-                if(isset($findercommercial->contract_end_date) && $findercommercial->contract_end_date != "" && isset($findercommercial->commision) && $findercommercial->commision != ""){
+                if(isset($vendorCommercial->contract_end_date) && $vendorCommercial->contract_end_date != "" && isset($vendorCommercial->commision) && $vendorCommercial->commision != ""){
 
-                    $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($findercommercial->contract_end_date)));
+                    $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial->contract_end_date)));
 
                     if($contract_end_date > time()){
-                        $commision = (float) preg_replace("/[^0-9.]/","",$findercommercial->commision);
+                        $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial->commision);
                     }
                 }
             }
