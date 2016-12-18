@@ -355,13 +355,12 @@ class FindersController extends \BaseController {
 
 									$ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
 										->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-										->where('end_date', '>=', new DateTime( date("d-m-Y 23:59:59", time()) ))
+										->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 										->count();
 
 									if($ratecardoffersRecardsCount > 0){  
 
 										$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
-										$finder['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 									}
 								}
 							}
@@ -378,6 +377,8 @@ class FindersController extends \BaseController {
 					if(isset($finder['info']) && $info_timing != ""){
 						$finder['info']['timing'] = $info_timing;
 					}
+
+					$finder['offer_icon'] = ""; //((int)$finder['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
 					
 				}
 
@@ -1747,7 +1748,7 @@ class FindersController extends \BaseController {
 		$date                   =   date('Y-m-d');
 		$timestamp              =   strtotime($date);
 		$weekday                =   strtolower(date( "l", $timestamp));
-		$offer_icon_vendor      =   "";
+		//$offer_icon_vendor      =   "";
 
 
 		/*if($category->_id == 42){
@@ -1870,7 +1871,7 @@ class FindersController extends \BaseController {
 						if(count($ratecardoffersRecards) > 0){ 
 
 							$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
-							$offer_icon_vendor = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+							//$offer_icon_vendor = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 							
 							foreach ($ratecardoffersRecards as $ratecardoffersRecard){
 								$ratecardoffer                  =   $ratecardoffersRecard;
@@ -1952,7 +1953,7 @@ class FindersController extends \BaseController {
 			array_push($scheduleservices, $service);
 		}
 
-		$scheduleservices['offer_icon_vendor'] = $offer_icon_vendor;
+		//$scheduleservices['offer_icon_vendor'] = $offer_icon_vendor;
 
 		return $scheduleservices;
 	}
@@ -2245,15 +2246,15 @@ class FindersController extends \BaseController {
 				$finderData['trials_detials']              =        [];
 				$finderData['trials_booked_status']        =        false;
 				$finderData['call_for_action_button']      =        "";
-				$finderData['finder']['offer_icon']        =        "";
+				$finderData['finder']['offer_icon']        =        ""; //((int)$finder['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
 
 
-				if(isset($finderData['finder']['services']['offer_icon_vendor'])){
+				/*if(isset($finderData['finder']['services']['offer_icon_vendor'])){
 
 					$finderData['finder']['offer_icon'] = $finderData['finder']['services']['offer_icon_vendor'];
 
 					unset($finderData['finder']['services']['offer_icon_vendor']);
-				}
+				}*/
 
 				$category_id                                =   intval($finder['category']['_id']);
 				$commercial_type                            =   intval($finder['commercial_type']);
