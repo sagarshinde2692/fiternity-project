@@ -2888,6 +2888,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         $data = Input::json()->all();
 
+        Log::info('rescheduledBookTrial',$data);
+
         if(!isset($data['booktrial_id']) || $data['booktrial_id'] == ''){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - booktrial_id");
             return  Response::json($resp, 400);
@@ -2918,9 +2920,8 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        if(!isset($data['service_name']) || $data['service_name'] == ''){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - service_name");
-            return  Response::json($resp, 400);
+        if(empty($data['service_name'])){
+            $data['service_name'] = "-";
         }
 
         if(!isset($data['schedule_date']) || $data['schedule_date'] == ''){
@@ -2980,7 +2981,8 @@ class SchedulebooktrialsController extends \BaseController {
             $finderid 					       = 	(int) $data['finder_id'];
             $finder 					       = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
-            $customer_id 				       =	$data['customer_id'];
+            $customer_id = $data['customer_id'] = $this->autoRegisterCustomer($data);
+
             $customer_name 				       =	$data['customer_name'];
             $customer_email 			       =	$data['customer_email'];
             $customer_phone 			       =	preg_replace("/[^0-9]/", "",$data['customer_phone']);
@@ -3050,6 +3052,9 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
                     $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
                 }
+
+                $data['service_name'] = $serviceArr['name'];
+
             }else{
                 $finder_location			       =	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
                 $finder_address				       = 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
@@ -3104,7 +3109,7 @@ class SchedulebooktrialsController extends \BaseController {
             $amount						       =	(isset($data['amount']) && $data['amount'] != '') ? intval($data['amount']) : "";
             $amount_finder				       =	(isset($data['amount_finder']) && $data['amount_finder'] != '') ? intval($data['amount_finder']) : "";
             $paid_trial_amount			       =	(isset($data['paid_trial_amount']) && $data['paid_trial_amount'] != '') ? intval($data['paid_trial_amount']) : "";
-            $premium_session 			       =	(boolean) $data['premium_session'];
+            $premium_session                   =    (isset($data['premium_session'])) ? (boolean) $data['premium_session'] : false;
             $booktrial_actions 			       =	(isset($data['booktrial_actions']) && $data['booktrial_actions'] != '') ? $data['booktrial_actions'] : "";
             $person_followingup 		       =	(isset($data['person_followingup']) && $data['person_followingup'] != '') ? $data['person_followingup'] : "";
             $remarks 					       =	(isset($data['remarks']) && $data['remarks'] != '') ? $data['remarks'] : "";
