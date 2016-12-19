@@ -390,13 +390,22 @@ Class CustomerReward {
         }*/
     }
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
 
         $wallet = 0;
 
         $jwt_token = Request::header('Authorization');
 
         Log::info('jwt_token : '.$jwt_token);
+
+        if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" && $customer_id){
+
+            $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
+
+            if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
+                $wallet = $customer_wallet->balance;
+            }
+        }
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = $this->customerTokenDecode($jwt_token);
