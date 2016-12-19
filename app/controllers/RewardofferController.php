@@ -292,7 +292,10 @@ class RewardofferController extends BaseController {
 
                             if($rewards_value['reward_type'] == $reward_type_order_value){
 
-                                if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+                                $reward_type_array = ["fitness_kit","healthy_snacks"];
+
+                                if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && in_array($rewards_value['reward_type'], $reward_type_array)){
+                                   
                                     $rewards_value['contents'] = str_replace("<br>", "/n", $rewards_value['contents']);
                                     $rewards_value['description'] = str_replace("<br>", "/n", $rewards_value['description']);
                                 }
