@@ -175,7 +175,7 @@ class Service extends \Basemodel{
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
                         $ratecardoffer                  =   $ratecardoffersRecard;
                         $ratecardoffer['offer_text']    =   "";
-                        $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/special_offer_vendor.png";
+                        $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
 
                         $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
                         $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
@@ -183,7 +183,7 @@ class Service extends \Basemodel{
 
                         if($difference->d <= 5){
                             $ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->d." days";
-                            $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+
                         }
                         array_push($ratecardoffers,$ratecardoffer);
                     }

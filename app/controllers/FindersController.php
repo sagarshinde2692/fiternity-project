@@ -100,8 +100,10 @@ class FindersController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
 
+			$finder = null;	
 
 			if($finderarr){
+
 				// $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
 				$finderarr = $finderarr->toArray();
 
@@ -378,7 +380,7 @@ class FindersController extends \BaseController {
 						$finder['info']['timing'] = $info_timing;
 					}
 
-					$finder['offer_icon'] = ""; //((int)$finder['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
+					
 					
 				}
 
@@ -434,9 +436,9 @@ class FindersController extends \BaseController {
 
 				}
 
-			}else{
 
-				$finder = null;
+
+
 			}
 
 			if($finder){
@@ -457,7 +459,7 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				// return $categoryTagDefinationArr;
+
 
 
 
@@ -484,14 +486,14 @@ class FindersController extends \BaseController {
 				->take(5)
 				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
 
-				if(count($nearby_same_category) > 0){
+				/*if(count($nearby_same_category) > 0){
 
 					$nearby_same_category->toArray();
 
 					foreach($nearby_same_category as $key => $finder1){
 						array_set($nearby_same_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
 					}
-				}
+				}*/
 
 				$nearby_other_category = array();    
 
@@ -509,43 +511,43 @@ class FindersController extends \BaseController {
 				->take(5)
 				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
 
-				if(count($nearby_other_category) > 0){
+				/*if(count($nearby_other_category) > 0){
 
 					$nearby_other_category->toArray();
 
 					foreach($nearby_other_category as $key => $finder1){
 						array_set($nearby_other_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
 					}
-				}
+				}*/
 				
-				$data['statusfinder']                   =       200;
-				$data['finder']                         =       $finder;
-				$data['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
-				$data['nearby_same_category']           =       $nearby_same_category;
-				$data['nearby_other_category']          =       $nearby_other_category;
+				$response['statusfinder']                   =       200;
+				$response['finder']                         =       $finder;
+				$response['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
+				$response['nearby_same_category']           =       $nearby_same_category;
+				$response['nearby_other_category']          =       $nearby_other_category;
 
-				$data = Cache::tags('finder_detail')->put($tslug,$data,Config::get('cache.cache_time'));
-				$data = Cache::tags('finder_detail')->get($tslug);
-				if(Request::header('Authorization')){
-					$decoded                            =       decode_customer_token();
-					$customer_email                     =       $decoded->customer->email;
-					$customer_phone                     =       $decoded->customer->contact_no;
-					$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-					->where('finder_id', '=', (int) $finderid)
-					->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-					->get(array('id'));
-					$data['trials_detials']              =      $customer_trials_with_vendors;
-					$data['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
-				}else{
-					$data['trials_detials']              =      [];
-					$data['trials_booked_status']        =      false;
-				}
+				Cache::tags('finder_detail')->put($tslug,$response,Config::get('cache.cache_time'));
 
 
 
-				
 
-				return Response::json($data);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 			}else{
 
@@ -555,28 +557,31 @@ class FindersController extends \BaseController {
 
 				return Response::json($data);
 			}
+
 		}else{
 
-
-			$finderData = Cache::tags('finder_detail')->get($tslug);
-
-			if(Request::header('Authorization')){
-				$decoded                            =       decode_customer_token();
-				$customer_email                     =       $decoded->customer->email;
-				$customer_phone                     =       $decoded->customer->contact_no;
-				$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-				->where('finder_id', '=', (int) $finderData['finder']['_id'])
-				->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-				->get(array('id'));
-				$finderData['trials_detials']              =      $customer_trials_with_vendors;
-				$finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
-			}else{
-				$finderData['trials_detials']              =      [];
-				$finderData['trials_booked_status']        =      false;
-			}
-
-			return Response::json($finderData);
+			$response = Cache::tags('finder_detail')->get($tslug);
 		}
+
+		if(Request::header('Authorization')){
+			$decoded                            =       decode_customer_token();
+			$customer_email                     =       $decoded->customer->email;
+			$customer_phone                     =       $decoded->customer->contact_no;
+			$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+			->where('finder_id', '=', (int) $response['finder']['_id'])
+			->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+			->get(array('id'));
+			$response['trials_detials']              =      $customer_trials_with_vendors;
+			$response['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+		}else{
+			$response['trials_detials']              =      [];
+			$response['trials_booked_status']        =      false;
+		}
+
+		$response['finder']['offer_icon'] = ((int)$response['finder']['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
+
+		return Response::json($response);
+
 	}
 
 
@@ -1876,7 +1881,7 @@ class FindersController extends \BaseController {
 							foreach ($ratecardoffersRecards as $ratecardoffersRecard){
 								$ratecardoffer                  =   $ratecardoffersRecard;
 								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/special_offer_vendor.png";
+								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
 
 								$today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
 								$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
@@ -1884,7 +1889,7 @@ class FindersController extends \BaseController {
 
 								if($difference->d <= 5){
 									$ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->d." days";
-									$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+
 								}
 								array_push($ratecardoffers,$ratecardoffer);
 							}
@@ -2246,7 +2251,7 @@ class FindersController extends \BaseController {
 				$finderData['trials_detials']              =        [];
 				$finderData['trials_booked_status']        =        false;
 				$finderData['call_for_action_button']      =        "";
-				$finderData['finder']['offer_icon']        =        ""; //((int)$finder['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
+				$finderData['finder']['offer_icon']        =        ((int)$finder['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
 
 
 				/*if(isset($finderData['finder']['services']['offer_icon_vendor'])){
