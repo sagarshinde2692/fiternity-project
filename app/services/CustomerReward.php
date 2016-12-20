@@ -17,6 +17,7 @@ use VendorCommercial;
 use Config;
 use JWT;
 use Finder;
+use Input;
 
 
 Class CustomerReward {
@@ -398,7 +399,9 @@ Class CustomerReward {
 
         Log::info('jwt_token : '.$jwt_token);
 
-        if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" && $customer_id){
+        $iosdata = Input::json()->all();
+
+        if(isset($iosdata['customer_source']) && $iosdata['customer_source'] == "ios" && $customer_id){
 
             $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
 
