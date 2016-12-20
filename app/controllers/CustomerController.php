@@ -129,7 +129,7 @@ class CustomerController extends \BaseController {
 
 				if($time_diff <= $hour2){
 					$reschedule_enable = false;
-				}elseif(in_array($trial['going_status_txt'], $going_status_txt) || $trial['amount'] > 0){
+				}elseif(in_array($trial['going_status_txt'], $going_status_txt) || $trial['amount'] > 0  || $trial['type'] == 'workout-session'){
 					$reschedule_enable = false;
 				}else{
 					$reschedule_enable = true;

@@ -4140,7 +4140,7 @@ class SchedulebooktrialsController extends \BaseController {
         $scheduleDateTime 				=	Carbon::parse($booktrial['schedule_date_time']);
 		$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
 		$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
-		
+
 		$hour2 = 60*60*2;
 		$going_status_txt = ['rescheduled','cancel'];
 
@@ -4158,7 +4158,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($time_diff <= $hour2){
 			$reschedule_enable = false;
-		}elseif(in_array($booktrial['going_status_txt'], $going_status_txt) || $booktrial['amount'] > 0){
+		}elseif(in_array($booktrial['going_status_txt'], $going_status_txt) || $booktrial['amount'] > 0 || $booktrial['type'] == 'workout-session'){
 			$reschedule_enable = false;
 		}else{
 			$reschedule_enable = true;
