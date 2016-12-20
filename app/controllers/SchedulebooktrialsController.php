@@ -4143,18 +4143,18 @@ class SchedulebooktrialsController extends \BaseController {
 		$hour2 = 60*60*2;
 
 		if($time_diff <= $hour2){
-			$reschedule_trial = false;
+			$reschedule_enable = false;
 		}elseif(isset($booktrial['going_status_txt']) && ($booktrial['going_status_txt'] == "rescheduled" || $booktrial['going_status_txt'] == "cancel")){
-			$reschedule_trial = false;
+			$reschedule_enable = false;
 		}else{
-			$reschedule_trial = true;
+			$reschedule_enable = true;
 		}
 
 		if(!isset($booktrial['going_status_txt'])){
-			$reschedule_trial = false;
+			$reschedule_enable = false;
 		}
 	
-		array_set($booktrial, 'reschedule_trial', $reschedule_trial);
+		array_set($booktrial, 'reschedule_enable', $reschedule_enable);
 
         $responsedata   = ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
         return Response::json($responsedata, 200);
