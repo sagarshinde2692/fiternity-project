@@ -4136,6 +4136,26 @@ class SchedulebooktrialsController extends \BaseController {
             }
         }
 
+        $currentDateTime =	\Carbon\Carbon::now();
+        $scheduleDateTime 				=	Carbon::parse($booktrial['schedule_date_time']);
+		$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+		$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+		$hour2 = 60*60*2;
+
+		if($time_diff <= $hour2){
+			$reschedule_trial = false;
+		}elseif(isset($booktrial['going_status_txt']) && ($booktrial['going_status_txt'] == "rescheduled" || $booktrial['going_status_txt'] == "cancel")){
+			$reschedule_trial = false;
+		}else{
+			$reschedule_trial = true;
+		}
+
+		if(!isset($booktrial['going_status_txt'])){
+			$reschedule_trial = false;
+		}
+	
+		array_set($booktrial, 'reschedule_trial', $reschedule_trial);
+
         $responsedata   = ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
         return Response::json($responsedata, 200);
 

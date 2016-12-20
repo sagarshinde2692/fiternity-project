@@ -113,10 +113,14 @@ class CustomerController extends \BaseController {
 
 				if($time_diff <= $hour2){
 					$reschedule_trial = false;
-				}elseif($trial['going_status_txt'] == "rescheduled"){
+				}elseif(isset($trial['going_status_txt']) && ($trial['going_status_txt'] == "rescheduled" || $trial['going_status_txt'] == "cancel")){
 					$reschedule_trial = false;
 				}else{
 					$reschedule_trial = true;
+				}
+
+				if(!isset($trial['going_status_txt'])){
+					$reschedule_trial = false;
 				}
 
 				array_set($trial, 'message', $trial_message);
