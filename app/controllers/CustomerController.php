@@ -99,6 +99,7 @@ class CustomerController extends \BaseController {
 
 				$hour = 60*60;
 				$hour12 = 60*60*12;
+				$hour2 = 60*60*2;
 
 				$trial_message = '';
 
@@ -110,7 +111,17 @@ class CustomerController extends \BaseController {
 					$trial_message = nl2br("Hope you are ready for your session.\nContact person : ".ucwords($trial['finder']['finder_poc_for_customer_name'])."\nHave a great workout!");
 				}
 
+				if($time_diff <= $hour2){
+					$reschedule_trial = false;
+				}elseif($trial['going_status_txt'] == "rescheduled"){
+					$reschedule_trial = false;
+				}else{
+					$reschedule_trial = true;
+				}
+
 				array_set($trial, 'message', $trial_message);
+
+				array_set($trial, 'reschedule_trial', $reschedule_trial);
 
 				array_push($upcomingtrials, $trial);	
 			}

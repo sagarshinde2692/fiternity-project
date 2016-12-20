@@ -528,27 +528,6 @@ class FindersController extends \BaseController {
 
 				Cache::tags('finder_detail')->put($tslug,$response,Config::get('cache.cache_time'));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			}else{
 
 				$updatefindersulg       = Urlredirect::whereIn('oldslug',array($tslug))->firstOrFail();
