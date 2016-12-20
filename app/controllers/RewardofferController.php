@@ -167,11 +167,11 @@ class RewardofferController extends BaseController {
             return  Response::json($resp, 401);
         }
 
-        if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){
+        /*if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){
             $amount = $ratecard->special_price;
         }else{
             $amount = $ratecard->price;
-        }
+        }*/
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $order_id   = (int) $data['order_id'];
