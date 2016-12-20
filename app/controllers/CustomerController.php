@@ -111,9 +111,25 @@ class CustomerController extends \BaseController {
 					$trial_message = nl2br("Hope you are ready for your session.\nContact person : ".ucwords($trial['finder']['finder_poc_for_customer_name'])."\nHave a great workout!");
 				}
 
+				array_set($trial, 'message', $trial_message);
+
+				$going_status_txt = ['rescheduled','cancel'];
+
+				if(!isset($trial['going_status_txt'])){
+					$trial['going_status_txt'] = "-";
+				}
+
+				if(!isset($trial['amount'])){
+					$trial['amount'] = 0;
+				}
+
+				if(isset($trial['amount']) && $trial['amount'] == "-"){
+					$trial['amount'] = 0;
+				}
+
 				if($time_diff <= $hour2){
 					$reschedule_enable = false;
-				}elseif(isset($trial['going_status_txt']) && ($trial['going_status_txt'] == "rescheduled" || $trial['going_status_txt'] == "cancel")){
+				}elseif(in_array($trial['going_status_txt'], $going_status_txt) || $trial['amount'] > 0){
 					$reschedule_enable = false;
 				}else{
 					$reschedule_enable = true;
@@ -122,9 +138,7 @@ class CustomerController extends \BaseController {
 				if(!isset($trial['going_status_txt'])){
 					$reschedule_enable = false;
 				}
-
-				array_set($trial, 'message', $trial_message);
-
+			
 				array_set($trial, 'reschedule_enable', $reschedule_enable);
 
 				array_push($upcomingtrials, $trial);	
