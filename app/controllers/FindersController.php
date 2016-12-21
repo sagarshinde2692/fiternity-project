@@ -557,8 +557,13 @@ class FindersController extends \BaseController {
 			$response['trials_booked_status']        =      false;
 		}
 
-		$response['finder']['offer_icon'] = ((int)$response['finder']['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
+		$response['finder']['offer_icon']        =        "";
 
+		if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
+
+			$response['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+		}
+		
 		return Response::json($response);
 
 	}
@@ -2232,7 +2237,13 @@ class FindersController extends \BaseController {
 				$finderData['trials_detials']              =        [];
 				$finderData['trials_booked_status']        =        false;
 				$finderData['call_for_action_button']      =        "";
-				$finderData['finder']['offer_icon']        =        ((int)$finder['commercial_type'] != 0) ? "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png" : "";
+
+				$finderData['finder']['offer_icon']        =        "";
+
+				if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
+
+					$finderData['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+				}
 
 
 				/*if(isset($finderData['finder']['services']['offer_icon_vendor'])){
