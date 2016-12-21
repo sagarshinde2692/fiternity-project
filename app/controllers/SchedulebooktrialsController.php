@@ -246,6 +246,7 @@ class SchedulebooktrialsController extends \BaseController {
             $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday, 'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial'],'trial' => (isset($item['trial'])) ? $item['trial'] : "",'membership' => (isset($item['membership'])) ? $item['membership'] : "");
 
             $slots = array();
+            $cashback               =   "";
             //slots exists
             if(count($weekdayslots['slots']) > 0){
 

@@ -1797,6 +1797,19 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 
+			if($category->_id == 42 || $category->_id == 45){
+
+				$extra_info = [];
+
+				if(isset($item['short_description']) && $item['short_description'] != ""){
+					$extra_info[] = array(
+						'title'=>'Meal Contents',
+						'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+						'description'=> str_replace("&nbsp;", "", strip_tags($item['short_description'])) 
+					);
+				}
+			}
+
 			$batches = array();
 
 			if(isset($item['batches']) && count($item['batches']) > 0){
@@ -2340,7 +2353,7 @@ class FindersController extends \BaseController {
 								if($finderData['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
 									$ratecard['cashback_on_trial'] = "100% Cashback";
 								}
-								
+
 								array_push($ratecardArr, $ratecard);
 							}
 
