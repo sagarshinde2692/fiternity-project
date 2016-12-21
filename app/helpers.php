@@ -1794,7 +1794,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'inputcat' => '',
                         'inputcat1' => '',
                         'city' => $city,
-                        'location' => strtolower($city),
+                        'location' => strtolower($loc['name']),
                         'type' => 'allfitnesslocation',
                         'slug' => "",
                         'geolocation' => array('lat' => $lat, 'lon' => $lon),
