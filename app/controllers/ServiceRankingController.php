@@ -222,6 +222,7 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
                 'body' => $deleteQuery,
                 "method" => "DELETE",
             );
+            es_curl_request($request);
     foreach ($items as $finderdocument) {    
         try{
             $finderdata = $finderdocument->toArray();
