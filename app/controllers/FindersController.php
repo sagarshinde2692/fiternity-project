@@ -2330,9 +2330,17 @@ class FindersController extends \BaseController {
 							if($ratecard){
 								$ratecard = $ratecard->toArray();
 								$ratecard['offers'] = [];
-								if($finderData['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial'){
+
+								if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+				                    $ratecard_price = $ratecard['special_price'];
+				                }else{
+				                    $ratecard_price = $ratecard['price'];
+				                }
+
+								if($finderData['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
 									$ratecard['cashback_on_trial'] = "100% Cashback";
 								}
+								
 								array_push($ratecardArr, $ratecard);
 							}
 
