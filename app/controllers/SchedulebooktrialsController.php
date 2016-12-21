@@ -1253,7 +1253,7 @@ class SchedulebooktrialsController extends \BaseController {
             $orderdata 	=	$order->update($orderData);
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
-            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+            
 
             //Send Instant (Email) To Customer & Finder
             $sndInstantEmailCustomer                =   $this->customermailer->healthyTiffinTrial($order->toArray());
@@ -1261,8 +1261,12 @@ class SchedulebooktrialsController extends \BaseController {
             $sndInstantEmailFinder	                = 	$this->findermailer->healthyTiffinTrial($order->toArray());
             $sndInstantSmsFinder	                =	$this->findersms->healthyTiffinTrial($order->toArray());
 
-            //send Cashback sms on Paid trial & Healthy tiffin trial
-            $sndInstantSmsCustomerForCashback        =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+
+            if(isset($order['amount']) && $order['amount'] != "" && $order['amount'] > 0){
+
+            	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+            	$this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+            }
 
             //Send one before reminder email to vendor at 9:00 AM
             if(isset($order_data['preferred_starting_date'])){
@@ -1271,9 +1275,6 @@ class SchedulebooktrialsController extends \BaseController {
                 $reminderDateTime 		        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $datetime_str);
                 $sndReminderEmailFinder	        = 	$this->findermailer->healthyTiffinTrialReminder($order->toArray(),$reminderDateTime);
             }
-
-            //send Cashback sms on Paid trial & Healthy tiffin trial
-            $sndInstantSmsCustomerForCashback        =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1894,7 +1895,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
-            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+            
 
         } catch(ValidationException $e){
 
@@ -2024,8 +2025,11 @@ class SchedulebooktrialsController extends \BaseController {
 
 
                 //send Cashback sms on Paid trial & Healthy tiffin trial
-                $sndInstantSmsCustomerForCashback                   =   $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
-                $customer_sms_messageids['instant_cashback'] 	    =   $sndInstantSmsCustomerForCashback;
+                if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
+
+                	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+	                $customer_sms_messageids['instant_cashback'] =  $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
+	            }
             }
 
             if(isset($booktrialdata['campaign'])) {
@@ -4594,9 +4598,9 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial_id   =   intval($req['booktrial_id']);
             $order          =   Order::where('booktrial_id', $booktrial_id)->where('status','1')->first();
 
-            if($order && isset($order['customer_id']) && isset($order['amount'])){
+            if($order && isset($order['customer_id']) && isset($order['amount']) && $order['amount'] > 0 && $order['amount'] != ""){
 
-                $order_amount           =       (isset($order['amount'])) ? intval($order['amount']) : 0;
+                $order_amount           =       $order['amount'];
                 $amounttobeadded        =       intval((50/100) * $order_amount);   //50% of order amount
                 $customer_id            =       intval($order['customer_id']);
 
