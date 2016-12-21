@@ -1,4 +1,4 @@
-ServiceRankkingController.php
+
 <?php
 /**
  * Controller to generate rankings for finder docs
@@ -128,9 +128,9 @@ class ServiceRankingController extends \BaseController {
                     $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();                
                     $locationcluster->toArray(); 
 
-                    $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);
                     $postdata_workoutsession_schedules = get_elastic_service_workoutsession_schedules($servicedata, $finderdata, $locationcluster[0]['name']);
-                    $postdata_sale_ratecards = get_elastic_service_sale_ratecards($servicedata, $finderdata, $locationcluster[0]['name']);
+                    // $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);
+                    // $postdata_sale_ratecards = get_elastic_service_sale_ratecards($servicedata, $finderdata, $locationcluster[0]['name']);
 
 
                     /******************Index each vip trial session**************/
@@ -159,28 +159,28 @@ class ServiceRankingController extends \BaseController {
                     /*****************Index each vip trial session***************/
                         
                     /******************Index service for sale ratecard**************/
-                        if(isset($postdata_sale_ratecards)){
-                            $postdata_sale_ratecards['rank'] = $score;
-                            $catval = evalBaseCategoryScore($finderdata['category_id']);
-                            $postdata_sale_ratecards['rankv1'] = $catval;
-                            $monsoon_boost = (isset($postdata_sale_ratecards['monsoon_sale_enable']) && $postdata_sale_ratecards['monsoon_sale_enable'] == '1') ? 50 : 0;
-                            $postdata_sale_ratecards['rankv2'] = $score + $catval + $monsoon_boost;
-                            $postfields_data_sale_ratecard = json_encode($postdata_sale_ratecards);
-                            $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/service/'.$servicedata['_id'];
-                            $request_sale_ratecard = array('url' => $posturl_sale_ratecard, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_sale_ratecard);
-                            echo "<br>    ---  ".es_curl_request($request_sale_ratecard);
+                    //     if(isset($postdata_sale_ratecards)){
+                    //         $postdata_sale_ratecards['rank'] = $score;
+                    //         $catval = evalBaseCategoryScore($finderdata['category_id']);
+                    //         $postdata_sale_ratecards['rankv1'] = $catval;
+                    //         $monsoon_boost = (isset($postdata_sale_ratecards['monsoon_sale_enable']) && $postdata_sale_ratecards['monsoon_sale_enable'] == '1') ? 50 : 0;
+                    //         $postdata_sale_ratecards['rankv2'] = $score + $catval + $monsoon_boost;
+                    //         $postfields_data_sale_ratecard = json_encode($postdata_sale_ratecards);
+                    //         $posturl_sale_ratecard = 'http://'.$es_host.':'.$es_port.'/'.$sale_ratecard_index.'/service/'.$servicedata['_id'];
+                    //         $request_sale_ratecard = array('url' => $posturl_sale_ratecard, 'port' => $this->es_port, 'method' => 'POST', 'postfields' => $postfields_data_sale_ratecard);
+                    //         echo "<br>    ---  ".es_curl_request($request_sale_ratecard);
 
-                        }
-                    /*****************Index service for sale ratecard***************/
+                    //     }
+                    // /*****************Index service for sale ratecard***************/
 
-                    $postdata['rank'] = $score;
-                    $catval = evalBaseCategoryScore($finderdata['category_id']);
-                    $postdata['rankv1'] = $catval;
-                    $postdata['rankv2'] = $score + $catval;
-                    $postfields_data = json_encode($postdata);
-                    $posturl = 'http://'.$es_host.':'.$es_port.'/'.$index.'/service/'.$servicedata['_id'];
-                    $request = array('url' => $posturl, 'port' => $es_port, 'method' => 'PUT', 'postfields' => $postfields_data );
-                    es_curl_request($request);
+                    // $postdata['rank'] = $score;
+                    // $catval = evalBaseCategoryScore($finderdata['category_id']);
+                    // $postdata['rankv1'] = $catval;
+                    // $postdata['rankv2'] = $score + $catval;
+                    // $postfields_data = json_encode($postdata);
+                    // $posturl = 'http://'.$es_host.':'.$es_port.'/'.$index.'/service/'.$servicedata['_id'];
+                    // $request = array('url' => $posturl, 'port' => $es_port, 'method' => 'PUT', 'postfields' => $postfields_data );
+                    // es_curl_request($request);
 
 
                 }
@@ -192,6 +192,101 @@ class ServiceRankingController extends \BaseController {
        }
    }
 }
+
+
+public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
+    $finderid = intval($finderid);
+    $es_host = Config::get('app.es.host');
+    $es_port = Config::get('app.es.port');
+    $items = Finder::where("commercial_type","!=",0)
+        ->where('status', '=', '1')
+        ->where('_id',$finderid)
+        ->with(array('country'=>function($query){$query->select('name');}))
+        ->with(array('city'=>function($query){$query->select('name');}))
+        ->with(array('category'=>function($query){$query->select('name','meta');}))
+        ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+        ->with('categorytags')
+        ->with('locationtags')
+        ->with('offerings')
+        ->with('facilities')        
+        ->get(); 
+    $deleteQuery = '{
+        "query" : {
+            "finder_id" : '.$finderid.'
+        }
+    }';
+    $deleteQuery = json_encode(json_decode($deleteQuery,true));
+    $request = array(
+                "url" => $es_host . "/fitternity_vip_trials/service",
+                "port" => $es_port,
+                'body' => $deleteQuery,
+                "method" => "DELETE",
+            );
+    foreach ($items as $finderdocument) {    
+        try{
+            $finderdata = $finderdocument->toArray();
+            $score = $this->generateRank($finderdocument);                
+            $serviceitems = Service::with('category')
+            ->with('subcategory')
+            ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+            ->where('finder_id',$finderdata['_id'])                                    ->active()
+            ->latest()
+            ->get();
+
+            if(isset($serviceitems) && (!empty($serviceitems))){ 
+                foreach ($serviceitems as $servicedocument) {
+                    $servicedata = $servicedocument->toArray();
+                    $clusterid = '';             
+                    if(!isset($servicedata['location']['locationcluster_id']))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                    $clusterid  = $servicedata['location']['locationcluster_id'];
+                    }
+
+                    $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();                
+                    $locationcluster->toArray(); 
+
+                    $postdata_workoutsession_schedules = get_elastic_service_workoutsession_schedules($servicedata, $finderdata, $locationcluster[0]['name']);
+
+                    // $postdata = get_elastic_service_documentv2($servicedata, $finderdata, $locationcluster[0]['name']);
+                    // $postdata_sale_ratecards = get_elastic_service_sale_ratecards($servicedata, $finderdata, $locationcluster[0]['name']);
+
+                    /******************Index each vip trial session**************/
+                    if(isset($postdata_workoutsession_schedules)){
+
+                        foreach ($postdata_workoutsession_schedules as $workout_session) {
+
+                            if(intval($workout_session['workout_session_schedules_price']) !== 0){
+
+                            $workout_session['rank'] = $score;
+                            $catval = evalBaseCategoryScore($finderdata['category_id']);
+                            $workout_session['rankv1'] = $catval;
+                            $workout_session['rankv2'] = $score + $catval;
+
+                            $postfields_data_vip_trial = json_encode($workout_session);
+                            $posturl_vip_trial = 'http://'.$es_host.':'.$es_port.'/fitternity_vip_trials/service';
+
+                            $request_vip_trial = array('url' => $posturl_vip_trial, 'port' => $es_port, 'method' => 'POST', 'postfields' => $postfields_data_vip_trial);
+                            $x = es_curl_request($request_vip_trial);
+                            }
+                        }
+                    }
+                }
+            }
+            $data = array("message"=>"success");
+            return Response::json($data,200);
+        }catch(Exception $e){
+            Log::error($e);
+        }
+    }
+    $data = array("message"=>"Can't Find this vendor. Its disabled");
+    return Response::json($data,400);
+}
+
+
 
 public function generateRank($finderDocument = ''){
 
