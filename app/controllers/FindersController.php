@@ -2101,7 +2101,7 @@ class FindersController extends \BaseController {
 					if (time() >= strtotime($startTime) && time() <= strtotime($endTime)) {
 						$status = true;
 					}
-					
+
 					array_set($finder, 'open_now', $status);
 				}
 
@@ -2330,6 +2330,9 @@ class FindersController extends \BaseController {
 							if($ratecard){
 								$ratecard = $ratecard->toArray();
 								$ratecard['offers'] = [];
+								if($finderData['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial'){
+									$ratecard['cashback_on_trial'] = "100% Cashback";
+								}
 								array_push($ratecardArr, $ratecard);
 							}
 
