@@ -1797,6 +1797,19 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 
+			if($category->_id == 42 || $category->_id == 45){
+
+				$extra_info = [];
+
+				if(isset($item['short_description']) && $item['short_description'] != ""){
+					$extra_info[] = array(
+						'title'=>'Meal Contents',
+						'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+						'description'=> str_replace("&nbsp;", "", strip_tags($item['short_description'])) 
+					);
+				}
+			}
+
 			$batches = array();
 
 			if(isset($item['batches']) && count($item['batches']) > 0){
@@ -1947,7 +1960,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -2090,24 +2103,17 @@ class FindersController extends \BaseController {
 
 				if($finder['today_opening_hour'] != NULL && $finder['today_closing_hour'] != NULL){
 
-					// current or user supplied UNIX timestamp
-					$timestamp = time();
-					// default status
 					$status = false;
-					// get current time object
-					$currentTime = (new DateTime())->setTimestamp($timestamp);
+					$startTime = DateTime::createFromFormat('h:i A', $finder['today_opening_hour'])->format('Y-m-d H:i:s');
+					$endTime   = DateTime::createFromFormat('h:i A', $finder['today_closing_hour'])->format('Y-m-d H:i:s');
 
-					// create time objects from start/end times
-					$startTime = DateTime::createFromFormat('h:i A', $finder['today_opening_hour']);
-					$endTime   = DateTime::createFromFormat('h:i A', $finder['today_closing_hour']);
-
-
-					// check if current time is within a range
-					if (($startTime < $currentTime) && ($currentTime < $endTime)) {
-						$status = true;
+					if($finder['today_closing_hour'] == "12:00 AM"){
+						$endTime = date('Y-m-d H:i:s',strtotime('+1 days',strtotime($endTime)));
 					}
 
-
+					if (time() >= strtotime($startTime) && time() <= strtotime($endTime)) {
+						$status = true;
+					}
 
 					array_set($finder, 'open_now', $status);
 				}
@@ -2337,6 +2343,17 @@ class FindersController extends \BaseController {
 							if($ratecard){
 								$ratecard = $ratecard->toArray();
 								$ratecard['offers'] = [];
+
+								if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+				                    $ratecard_price = $ratecard['special_price'];
+				                }else{
+				                    $ratecard_price = $ratecard['price'];
+				                }
+
+								if($finderData['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
+									$ratecard['cashback_on_trial'] = "100% Cashback";
+								}
+
 								array_push($ratecardArr, $ratecard);
 							}
 
