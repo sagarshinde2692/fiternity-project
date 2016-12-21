@@ -2202,8 +2202,10 @@ class FindersController extends \BaseController {
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 				$finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
 
-				if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
-					$finder['ozonetelno']['phone_number'] = '+'.$finder['ozonetelno']['phone_number'];
+				if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != '' && isset($finder['contact']['phone']) && $finder['contact']['phone'] != ""){
+
+					$extension = (isset($finder['ozonetelno']['extension']) && $finder['ozonetelno']['extension'] != "") ? ",".$finder['ozonetelno']['extension'] : "";
+					$finder['ozonetelno']['phone_number'] = '+'.$finder['ozonetelno']['phone_number'].$extension;
 					$finder['contact']['phone'] = $finder['ozonetelno']['phone_number'];
 					unset($finder['ozonetelno']);
 					unset($finder['contact']['website']);
