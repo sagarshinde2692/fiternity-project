@@ -211,18 +211,31 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
         ->with('facilities')        
         ->get(); 
     $deleteQuery = '{
-        "query" : {
-            "finder_id" : '.$finderid.'
+        "query": {
+            "match": {
+            "finder_id": '.$finderid.'
+            }
         }
-    }';
+        }';
     $deleteQuery = json_encode(json_decode($deleteQuery,true));
-    $request = array(
-                "url" => $es_host . "/fitternity_vip_trials/service",
+            $request = array(
+                "url" => $es_host .":".$es_port. "/fitternity_vip_trials/service/_search",
                 "port" => $es_port,
                 'body' => $deleteQuery,
-                "method" => "DELETE",
+                "method" => "POST",
             );
+            // print_r($request);
+            $alldocs = json_decode(es_curl_request($request),true);
+            $onlyidstobedeleted = array_fetch($alldocs['hits']['hits'],'_id');
+            foreach($onlyidstobedeleted as $id){
+                $request = array(
+                    "url" => $es_host .":".$es_port. "/fitternity_vip_trials/service/".$id,
+                    "port" => $es_port,
+                    "method" => "DELETE",
+                );  
+            }
             es_curl_request($request);
+            // return array_fetch($alldocs['hits']['hits'],'_id');
     foreach ($items as $finderdocument) {    
         try{
             $finderdata = $finderdocument->toArray();
