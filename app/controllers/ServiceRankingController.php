@@ -233,8 +233,8 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
                     "port" => $es_port,
                     "method" => "DELETE",
                 );  
+                // return es_curl_request($request);
             }
-            es_curl_request($request);
             // return array_fetch($alldocs['hits']['hits'],'_id');
     foreach ($items as $finderdocument) {    
         try{
