@@ -450,8 +450,6 @@ class HomeController extends BaseController {
                 $itemData = Capture::with('finder')->find($id)->toArray();
             }
 
-
-
             $item           =   array_except($itemData, ['finder']);
             $finder_name    =   (isset($itemData) && isset($itemData['finder']) && isset($itemData['finder']['title'])) ? ucwords($itemData['finder']['title']) : "";
             $service_name    =   (isset($itemData) && isset($itemData['service_name'])) ? ucwords($itemData['service_name']) : "";
@@ -463,6 +461,7 @@ class HomeController extends BaseController {
             $header     =   "Congratulations!";
             $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
+            $show_invite = false;
 
             switch ($type) {
 
@@ -475,6 +474,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
+                    $show_invite = true;
                     break;
 
                 case 'booktrial':
@@ -486,6 +486,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
+                    $show_invite = true;
                     break;
                 case 'workoutsession':
                     $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
@@ -495,6 +496,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio to access your session'],
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'Attend your workout'],
                     ];
+                    $show_invite = true;
                     break;
                 case 'personaltrainertrial':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
@@ -604,6 +606,10 @@ class HomeController extends BaseController {
                 $popup_message = "Rs ".$itemData['amount']." Fitcash has been added to your wallet";
             }
 
+            if($type == 'workoutsession' && isset($item['amount']) && ($item['amount'] == 0 || $item['amount'] == "-")){
+                $show_invite = false;
+            }
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  $item,
@@ -613,7 +619,8 @@ class HomeController extends BaseController {
                     'steps'     =>  $steps,
                     'note'      =>  $note
                 ],
-                'popup_message' => $popup_message
+                'popup_message' => $popup_message,
+                'show_invite' => $show_invite
             ];
 
             return Response::json($resp);
