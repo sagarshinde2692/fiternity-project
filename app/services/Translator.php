@@ -643,7 +643,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 
 				$resultobject->offer_available = "";
 				if(in_array($result['commercial_type'],["1","2","3"])){
-					$resultobject->offer_available = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+					$resultobject->offer_available = "http://b.fitn.in/iconsv1/fitmania/offer_available_sale.png";
 				}else{
 					$resultobject->offer_available = "";
 				}

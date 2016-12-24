@@ -1181,6 +1181,7 @@ class RankingSearchController extends \BaseController
             foreach ($keys as $key){
                 isset($res->$key) ? $newObj[$key]=$res->$key : null;
             }
+            $newObj['offer_available'] = (isset($res['offer_available']) && $res['offer_available'] != "") ? $res['offer_available'] : "";
             $newRecord['object'] = $newObj;
             array_push($newResultList,$newRecord);
         }

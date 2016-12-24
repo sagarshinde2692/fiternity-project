@@ -1872,7 +1872,7 @@ class FindersController extends \BaseController {
 
 						if(count($ratecardoffersRecards) > 0){ 
 
-							$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+							$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
 							//$offer_icon_vendor = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 							
 							foreach ($ratecardoffersRecards as $ratecardoffersRecard){
