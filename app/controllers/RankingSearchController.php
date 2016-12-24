@@ -723,7 +723,7 @@ class RankingSearchController extends \BaseController
 
         $object_keys = array();
         //input filters
-
+        
         $category = Input::json()->get('category');
 
         $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
@@ -1146,16 +1146,17 @@ class RankingSearchController extends \BaseController
         $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
         $response       =   json_decode($searchresulteresponse1,true);
-
-        $response['campaign'] = array(
-            'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
-            // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
-            'link'=>'',
-            'title'=>'FitStart 2017',
-            'height'=>1,
-            'width'=>6,
-            'ratio'=>1/6
-        );
+        if($from == 0){
+            $response['campaign'] = array(
+                'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
+                // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
+                'link'=>'',
+                'title'=>'FitStart 2017',
+                'height'=>1,
+                'width'=>6,
+                'ratio'=>1/6
+            );
+        }
 
         return Response::json($response);
 
