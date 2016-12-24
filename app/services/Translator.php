@@ -646,6 +646,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				// }else{
 				// 	$resultobject->offer_available = "";
 				// }
+				$resultobject->offer_available = "";
 
 				// Deciding which address to show
 				if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
