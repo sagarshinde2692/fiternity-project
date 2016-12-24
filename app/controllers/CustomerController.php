@@ -2411,10 +2411,10 @@ class CustomerController extends \BaseController {
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
 
-		/*$result['campaign'] =  new \stdClass();
+		$result['campaign'] =  new \stdClass();
 
 		$result['campaign'] = array(
-			'image'=>'http://b.fitn.in/iconsv1/fitmania/banner_search.jpg',
+			'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
 			'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
 			'title'=>'FitStart 2017',
 			'height'=>1,
@@ -2424,7 +2424,7 @@ class CustomerController extends \BaseController {
 
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
 			$result['campaign']['link'] = "";
-		}*/
+		}
 
 		return Response::json($result);
 	}
