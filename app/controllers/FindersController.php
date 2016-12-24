@@ -2322,7 +2322,7 @@ class FindersController extends \BaseController {
 					$finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
 				}
 
-				if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
+				if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
 					
 					$finderservicesArr  =   [];
 					$finderservices     =   $finderData['finder']['services'];
