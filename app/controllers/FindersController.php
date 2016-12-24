@@ -559,7 +559,7 @@ class FindersController extends \BaseController {
 
 		$response['finder']['offer_icon']        =        "";
 
-		if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
+		if(time() >= strtotime(date('2016-12-25 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
 
 			$response['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 		}
