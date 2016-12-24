@@ -723,7 +723,9 @@ class RankingSearchController extends \BaseController
 
         $object_keys = array();
         //input filters
-
+        if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+            $size = 50;
+        }
         $category = Input::json()->get('category');
 
         $trial_time_from = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
