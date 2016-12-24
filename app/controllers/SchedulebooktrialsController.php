@@ -4142,9 +4142,14 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $currentDateTime =	\Carbon\Carbon::now();
-        $scheduleDateTime 				=	Carbon::parse($booktrial['schedule_date_time']);
-		$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
-		$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+        if(isset($booktrial['schedule_date_time'])){
+            $scheduleDateTime 				=	Carbon::parse($booktrial['schedule_date_time']);
+            $slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+            $time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+        }else{
+            $slot_datetime_pass_status = true;
+            $time_diff = 60*60*60*2;
+        }
 
 		$hour2 = 60*60*2;
 		$going_status_txt = ['rescheduled','cancel'];
