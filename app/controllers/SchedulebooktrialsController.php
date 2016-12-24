@@ -4168,7 +4168,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 		if($time_diff <= $hour2){
 			$reschedule_enable = false;
-		}elseif(in_array($booktrial['going_status_txt'], $going_status_txt) || $booktrial['amount'] > 0 || $booktrial['type'] == 'workout-session'){
+        }elseif(in_array($booktrial['going_status_txt'], $going_status_txt) || $booktrial['amount'] > 0 || !isset($booktrial['type']) || $booktrial['type'] == 'workout-session' ){
 			$reschedule_enable = false;
 		}else{
 			$reschedule_enable = true;
