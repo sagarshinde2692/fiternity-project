@@ -1872,7 +1872,7 @@ class FindersController extends \BaseController {
 
 						if(count($ratecardoffersRecards) > 0){ 
 
-							$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+							$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
 							//$offer_icon_vendor = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 							
 							foreach ($ratecardoffersRecards as $ratecardoffersRecard){
@@ -2248,7 +2248,7 @@ class FindersController extends \BaseController {
 
 				if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
 
-					$finderData['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+					$finderData['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 				}
 
 
