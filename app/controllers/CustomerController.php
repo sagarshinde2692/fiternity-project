@@ -2687,17 +2687,18 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 2.6;
+		$current_version_android = 3.2;
 		$current_version_ios = 2.0;
 
 		if($data["device_type"] == "android"){
 
 			$result_android = array(
-				"message" => "Version ".$current_version_android." is available on Play Store",
+				//"message" => "Version ".$current_version_android." is available on Play Store",
+				"message" => "Update is available on Play Store",
 				"force_update" => false
 			);
 
-			if($data["app_version"] < $current_version_android){
+			if(floatval($data["app_version"]) < $current_version_android){
 
 				$result_android['force_update'] = true;
 			}

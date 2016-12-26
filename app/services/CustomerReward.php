@@ -453,6 +453,32 @@ Class CustomerReward {
 
         $algo = array(
             array('min'=>0,'max'=>5,'cashback'=>2.5,'fitcash'=>2.5,'discount'=>0),
+            array('min'=>5,'max'=>10,'cashback'=>5,'fitcash'=>5,'discount'=>0),
+            array('min'=>10,'max'=>0,'cashback'=>10,'fitcash'=>10,'discount'=>0)
+        );
+
+        $setAlgo = array('cashback'=>10,'fitcash'=>10,'discount'=>0);
+
+        if($payment_mode != "paymentgateway"){
+            $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
+            $wallet = 0;
+        }else{
+
+            foreach ($algo as $key => $value) {
+
+                $min_flag = ($commision >= $value['min'] || $value['min'] == 0) ? true : false;
+                $max_flag = ($commision < $value['max'] || $value['max'] == 0) ? true : false;
+
+                if($min_flag && $max_flag){
+                    $setAlgo = $value;
+                    break;
+                }
+
+            }
+        }
+
+        /*$algo = array(
+            array('min'=>0,'max'=>5,'cashback'=>2.5,'fitcash'=>2.5,'discount'=>0),
             array('min'=>5,'max'=>10,'cashback'=>5,'fitcash'=>2.5,'discount'=>2.5),
             array('min'=>10,'max'=>0,'cashback'=>10,'fitcash'=>5,'discount'=>5)
         );
@@ -475,7 +501,7 @@ Class CustomerReward {
                 }
 
             }
-        }
+        }*/
 
         $original_amount = $amount;
 
@@ -499,7 +525,8 @@ Class CustomerReward {
         $data['wallet_amount'] = $wallet_amount;
         $data['algo'] = $setAlgo;
         $data['current_wallet_balance'] = round($wallet);
-        $data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+        //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+        $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
 
         Log::info('reward_calculation : ',$data);
 
