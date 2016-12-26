@@ -182,7 +182,6 @@ class OzonetelsController extends \BaseController {
 
 	}
 
-        
 	public function paidVendor(){	
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
@@ -249,6 +248,150 @@ class OzonetelsController extends \BaseController {
 	                    }
 
 	                }else{
+	                    
+	                    $this->ozonetelResponse->addHangup();
+	                }
+
+				}
+
+			}elseif(isset($_REQUEST['status']) && $_REQUEST['status'] == 'answered') {
+
+				$update_capture = $this->updateCapture($_REQUEST);
+				$this->ozonetelResponse->addHangup();
+		    	
+			}else{
+
+				$this->ozonetelResponse->addHangup();
+			}
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Hangup') {
+
+		    $update_capture = $this->updateCapture($_REQUEST);
+		    $this->ozonetelResponse->addHangup();
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Disconnect') {
+
+		    $update_capture = $this->updateCapture($_REQUEST);
+
+		}else {
+
+		    $this->ozonetelResponse->addHangup();
+		}
+		
+		$this->ozonetelResponse->send();
+
+	}
+
+        
+	public function paidVendorV1(){
+
+		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
+
+			$this->addCapture($_REQUEST);
+
+			$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+
+    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+
+			$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr(),3);
+
+		   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+
+		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
+
+	    	if (isset($_REQUEST['data']) && $_REQUEST['data'] != '') {
+
+	    		$extension = (int)$_REQUEST['data'];
+
+	    		$extension_array = [1,2];
+
+	    		if(in_array($extension,$extension_array)){
+
+    				$finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
+
+			    	if($finderDetails){
+
+			    		if($extension == 1){
+
+				    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person",3);
+
+				    		$phone = $finderDetails->finder->contact['phone'];
+				    		$phone = explode(',', $phone);
+				    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+				    		$this->ozonetelResponse->addDial($contact_no,"true");
+
+			                $this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension = false,$add_count = true);
+
+			            }else{
+
+			            	$this->ozonetelResponse->addPlayText("please hold while we transfer your call to Fitternity our exclusive online booking partner",3);
+
+					    	$call_jump = true;
+
+					    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+
+					    	$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension = false,$add_count = true, $call_jump);
+			            }
+
+			    	}else{
+
+			    		$this->ozonetelResponse->addHangup();
+			    	}
+	    			
+	    		}else{
+
+	    			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
+		    		$this->ozonetelCollectDtmf->addPlayText("You have dailed wrong extension number please dial correct extension number");
+		    		$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr(),3);
+		    		$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+	    		}
+
+	    	}else{
+
+	    		$this->ozonetelResponse->addHangup();
+	    	}
+
+    	}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'Dial') {
+
+			if (isset($_REQUEST['status']) && $_REQUEST['status'] == 'not_answered') {
+
+				$capture = $this->getCapture($_REQUEST['sid']);
+
+				if($capture->count > 1){
+
+					$this->ozonetelResponse->addHangup();
+
+				}else{
+
+					$finder = Finder::findOrFail((int) $capture->finder_id);
+
+					if($finder){
+
+						$this->ozonetelResponse->addPlayText("Call diverted to another number");
+
+						if(isset($capture->call_jump)){
+
+					    	$this->ozonetelResponse->addDial($this->jump_fitternity_no2, "true");
+
+					    	$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+
+		    			}else{
+
+		    				$phone = $finder->contact['phone'];
+                            $phone = explode(',', $phone);
+
+                            if(isset($phone[1]) && $phone[1] != ''){
+                                $contact_no = (string)trim($phone[1]);
+                                
+                                $this->ozonetelResponse->addDial($contact_no,"true");
+                                $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
+                            }else{
+                                $this->ozonetelResponse->addHangup();
+                            }
+		    				
+		    			}
+
+					}else{
 	                    
 	                    $this->ozonetelResponse->addHangup();
 	                }
@@ -671,6 +814,13 @@ class OzonetelsController extends \BaseController {
 				to reschedule or for any query,press 3,
 
 				to repeat,Press 4';
+
+		return $ivr;
+	}
+
+	public function ozonetelIvr(){
+
+		$ivr = 'thank you for calling. please press 1 for general enquiries, press 2 if you want to book a trial or purchase a membership';
 
 		return $ivr;
 	}
