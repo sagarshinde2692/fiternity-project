@@ -2761,7 +2761,7 @@ class CustomerController extends \BaseController {
 
 	public function applyPromotionCode(){
 
-		$valid_promotion_codes		=		['fitgift','in2017'];
+		$valid_promotion_codes		=		['fitgift','in2017','befit'];
 		$data 						= 		Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
