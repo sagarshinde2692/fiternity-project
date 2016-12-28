@@ -1174,13 +1174,24 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
         $servicedata = $data;
 
         $ratecards = $slots = array();
-
+        $ratecards = $servicedata['serviceratecard'];
         $durationheader = '';
         $budgetheader = '';
         $headerarray = array();
         $flag1 = false;
+        $ratecard_id_workout = "";
+        $ratecard_id_trial = "";
         $servicemarketflag = 'n';
-
+        if(isset($ratecards) && count($ratecards) > 0){
+            foreach($ratecards as $ratecard){
+                if($ratecard['type'] == "trial"){
+                    $ratecard_id_trial = $ratecard['_id'];
+                }
+                if($ratecard['type'] == "workout session"){
+                    $ratecard_id_workout = $ratecard['_id'];
+                }
+            }
+        }
         if (isset($data['lat']) && $data['lat'] != '' && isset($data['lon']) && $data['lon'] != '') {
             $geolocation = array('lat' => $data['lat'], 'lon' => $data['lon']);
 
@@ -1268,7 +1279,8 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
                             'finder_address' => (isset($finderdata['contact']) && isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
                             'service_address' => (isset($data['address'])) ? $data['address'] : '',
                             'city_id' => isset($finderdata['city_id']) ? intval($finderdata['city_id']) : 0,
-                            'service_type' => 'workout_session'
+                            'service_type' => 'workout_session',
+                            'ratecard_id' => $ratecard_id_workout
                         );
 
                         array_push($data_array, $postfields_data);
@@ -1340,7 +1352,8 @@ if (!function_exists('get_elastic_service_workoutsession_schedules')) {
                             'finder_address' => (isset($finderdata['contact'])&& isset($finderdata['contact']['address'])) ? $finderdata['contact']['address'] : '',
                             'service_address' => (isset($data['address'])) ? $data['address'] : '',
                             'city_id' => isset($finderdata['city_id']) ? intval($finderdata['city_id']) : 0,
-                            'service_type' => 'trial'
+                            'service_type' => 'trial',
+                            'ratecard_id' => $ratecard_id_trial
                             );
 
                         array_push($data_array, $postfields_data);
