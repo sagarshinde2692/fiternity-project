@@ -1965,8 +1965,21 @@ class FindersController extends \BaseController {
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
 
-		$finder_detail = $cache ? Cache::tags('finder_detail_app')->has($tslug) : false;
-		$finder_detail = false;
+		$cache_name = "finder_detail_app";
+
+		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
+			$cache_name = "finder_detail_android";
+		}
+
+		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2){
+			$cache_name = "finder_detail_android_3_2";
+		}
+
+		if(isset($_GET['device_type']) && $_GET['device_type'] != 'android'){
+			$cache_name = "finder_detail_ios";
+		}
+
+		$finder_detail = $cache ? Cache::tags($cache_name)->has($tslug) : false;
 
 		if(!$finder_detail){
 
@@ -1982,8 +1995,6 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
 				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type'));
-
-
 
 			$finder = false;
 
@@ -2133,7 +2144,6 @@ class FindersController extends \BaseController {
 				}
 
 
-
 				if(count($finder['photos']) > 0 ){
 					$photoArr        =   [];
 					foreach ($finder['photos'] as $photo) {
@@ -2225,76 +2235,162 @@ class FindersController extends \BaseController {
 				$data['status']                         =       200;
 				$data['finder']                         =       $finder;
 
-				$data = Cache::tags('finder_detail_app')->put($tslug, $data, Config::get('cache.cache_time'));
+				$finder = Finder::active()->where('slug','=',$tslug)->first();
+
+				if($finder){
+
+					$data['finder']['services']          =        $this->getTrialSchedule($finder->_id,$finder->category);
+					$data['finder']['bookmark']          =        false;
+					$data['trials_detials']              =        [];
+					$data['trials_booked_status']        =        false;
+					$data['call_for_action_button']      =        "";
+
+					$data['finder']['offer_icon']        =        "";
+
+					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
+
+						$data['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
+					}
+
+
+					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
+
+						$data['finder']['offer_icon'] = $data['finder']['services']['offer_icon_vendor'];
+
+						unset($data['finder']['services']['offer_icon_vendor']);
+					}*/
+
+					$category_id                                =   intval($finder['category']['_id']);
+					$commercial_type                            =   intval($finder['commercial_type']);
+					$bookTrialArr                               =   [5,6,12,42,43,32,36,7,35,13,10,11,47,14,25,9];
+
+
+
+					if(in_array($category_id, $bookTrialArr)){
+						$data['call_for_action_button']      =      "Book a Trial";
+
+						if(in_array( 27 , $finder['facilities'])){
+							$data['call_for_action_button']      =      "Book a Free Trial";
+						}
+
+						if($category_id == 42 ){
+							$data['call_for_action_button']      =      "Book a Meal";
+						}
+					}
+
+					if($commercial_type == 0){
+						$data['call_for_action_button']       =      "";
+					}
+
+					$data['finder']['pay_per_session']        =   true;
+					$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
+					$service_count                                  =   Service::active()->where('finder_id',$finder['_id'])->count();
+
+					if($finder['manual_trial_enable'] == "1" || $service_count == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
+						$data['finder']['pay_per_session'] = false;
+					}
+
+					$data['finder']['dispaly_map']        =   true;
+					$dispaly_map_abandunt_catyegory             =   [41,42,45,25];
+					if(in_array($finder['category_id'],$dispaly_map_abandunt_catyegory)){
+						$data['finder']['dispaly_map'] = false;
+					}
+
+					if(Request::header('Authorization')){
+						$decoded                            =       decode_customer_token();
+						$customer_email                     =       $decoded->customer->email;
+						$customer_phone                     =       $decoded->customer->contact_no;
+						$customer_id                        =       $decoded->customer->_id;
+
+						$customer                           =       Customer::find((int)$customer_id);
+
+						if($customer){
+							$customer   = $customer->toArray();
+						}
+
+						if(isset($customer['bookmarks']) && is_array($customer['bookmarks']) && in_array($finder['_id'],$customer['bookmarks'])){
+							$data['finder']['bookmark'] = true;
+						}
+
+
+
+						$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+							->where('finder_id', '=', (int) $finder->_id)
+							->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+							->get(array('id'));
+
+						$data['trials_detials']              =      $customer_trials_with_vendors;
+						$data['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+					}
+
+					if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
+						
+						$finderservicesArr  =   [];
+						$finderservices     =   $data['finder']['services'];
+
+						foreach ($finderservices as $finderservice){
+
+							$finderserviceObj   =   array_except($finderservice,['ratecard']);
+							$ratecardArr        =   [];
+
+							if(isset($finderservice['ratecard']) && count($finderservice['ratecard']) > 0){
+
+								//if trial exist the show work out else trial
+								if(isset($data['trials_booked_status']) && $data['trials_booked_status'] == true){
+									$ratecard = Ratecard::where('type','workout session')->where('finder_id', intval($finderarr['_id']))->where('service_id', intval($finderserviceObj['_id']))->first();
+								}else{
+									$ratecard = Ratecard::where('type','trial')->where('finder_id', intval($finderarr['_id']))->where('service_id', intval($finderserviceObj['_id']))->first();
+								}
+								if($ratecard){
+									$ratecard = $ratecard->toArray();
+									$ratecard['offers'] = [];
+
+									if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+					                    $ratecard_price = $ratecard['special_price'];
+					                }else{
+					                    $ratecard_price = $ratecard['price'];
+					                }
+
+									if($data['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
+										$ratecard['cashback_on_trial'] = "100% Cashback";
+									}
+
+									array_push($ratecardArr, $ratecard);
+								}
+
+								foreach ($finderservice['ratecard'] as $ratecard){
+									array_push($ratecardArr, $ratecard);
+								}
+
+							}else{
+								$finderserviceObj['ratecard'] = [];
+							}
+
+							$finderserviceObj['ratecard'] = $ratecardArr;
+							
+							array_push($finderservicesArr, $finderserviceObj);
+						}
+
+						$data['finder']['services'] = $finderservicesArr;
+
+					}
+
+				}
+
+				$data = Cache::tags($cache_name)->put($tslug, $data, Config::get('cache.cache_time'));
 
 			}
 
 		}
 
-		$finderData = Cache::tags('finder_detail_app')->get($tslug);
+		$finderData = Cache::tags($cache_name)->get($tslug);
 
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 			if($finder){
-				$finderData['finder']['services']          =        $this->getTrialSchedule($finder->_id,$finder->category);
-				$finderData['finder']['bookmark']          =        false;
-				$finderData['trials_detials']              =        [];
-				$finderData['trials_booked_status']        =        false;
-				$finderData['call_for_action_button']      =        "";
-
-				$finderData['finder']['offer_icon']        =        "";
-
-				if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
-
-					$finderData['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
-				}
-
-
-				/*if(isset($finderData['finder']['services']['offer_icon_vendor'])){
-
-					$finderData['finder']['offer_icon'] = $finderData['finder']['services']['offer_icon_vendor'];
-
-					unset($finderData['finder']['services']['offer_icon_vendor']);
-				}*/
-
-				$category_id                                =   intval($finder['category']['_id']);
-				$commercial_type                            =   intval($finder['commercial_type']);
-				$bookTrialArr                               =   [5,6,12,42,43,32,36,7,35,13,10,11,47,14,25,9];
-
-
-
-				if(in_array($category_id, $bookTrialArr)){
-					$finderData['call_for_action_button']      =      "Book a Trial";
-
-					if(in_array( 27 , $finder['facilities'])){
-						$finderData['call_for_action_button']      =      "Book a Free Trial";
-					}
-
-					if($category_id == 42 ){
-						$finderData['call_for_action_button']      =      "Book a Meal";
-					}
-				}
-
-				if($commercial_type == 0){
-					$finderData['call_for_action_button']       =      "";
-				}
-
-				$finderData['finder']['pay_per_session']        =   true;
-				$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
-				$service_count                                  =   Service::active()->where('finder_id',$finder['_id'])->count();
-
-				if($finder['manual_trial_enable'] == "1" || $service_count == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
-					$finderData['finder']['pay_per_session'] = false;
-				}
-
-				$finderData['finder']['dispaly_map']        =   true;
-				$dispaly_map_abandunt_catyegory             =   [41,42,45,25];
-				if(in_array($finder['category_id'],$dispaly_map_abandunt_catyegory)){
-					$finderData['finder']['dispaly_map'] = false;
-				}
-
+				
 				if(Request::header('Authorization')){
 					$decoded                            =       decode_customer_token();
 					$customer_email                     =       $decoded->customer->email;
@@ -2321,61 +2417,11 @@ class FindersController extends \BaseController {
 					$finderData['trials_detials']              =      $customer_trials_with_vendors;
 					$finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
 				}
-
-				if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
-					
-					$finderservicesArr  =   [];
-					$finderservices     =   $finderData['finder']['services'];
-
-					foreach ($finderservices as $finderservice){
-
-						$finderserviceObj   =   array_except($finderservice,['ratecard']);
-						$ratecardArr        =   [];
-
-						if(isset($finderservice['ratecard']) && count($finderservice['ratecard']) > 0){
-
-							//if trial exist the show work out else trial
-							if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
-								$ratecard = Ratecard::where('type','workout session')->where('finder_id', intval($finderarr['_id']))->where('service_id', intval($finderserviceObj['_id']))->first();
-							}else{
-								$ratecard = Ratecard::where('type','trial')->where('finder_id', intval($finderarr['_id']))->where('service_id', intval($finderserviceObj['_id']))->first();
-							}
-							if($ratecard){
-								$ratecard = $ratecard->toArray();
-								$ratecard['offers'] = [];
-
-								if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-				                    $ratecard_price = $ratecard['special_price'];
-				                }else{
-				                    $ratecard_price = $ratecard['price'];
-				                }
-
-								if($finderData['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
-									$ratecard['cashback_on_trial'] = "100% Cashback";
-								}
-
-								array_push($ratecardArr, $ratecard);
-							}
-
-							foreach ($finderservice['ratecard'] as $ratecard){
-								array_push($ratecardArr, $ratecard);
-							}
-
-						}else{
-							$finderserviceObj['ratecard'] = [];
-						}
-
-						$finderserviceObj['ratecard'] = $ratecardArr;
-						
-						array_push($finderservicesArr, $finderserviceObj);
-					}
-
-					$finderData['finder']['services'] = $finderservicesArr;
-
-				}
-
+			
 			}
+
 		}else{
+
 			$finderData['status'] = 404;
 		}
 
