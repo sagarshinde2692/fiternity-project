@@ -2296,33 +2296,6 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-					if(Request::header('Authorization')){
-						$decoded                            =       decode_customer_token();
-						$customer_email                     =       $decoded->customer->email;
-						$customer_phone                     =       $decoded->customer->contact_no;
-						$customer_id                        =       $decoded->customer->_id;
-
-						$customer                           =       Customer::find((int)$customer_id);
-
-						if($customer){
-							$customer   = $customer->toArray();
-						}
-
-						if(isset($customer['bookmarks']) && is_array($customer['bookmarks']) && in_array($finder['_id'],$customer['bookmarks'])){
-							$data['finder']['bookmark'] = true;
-						}
-
-
-
-						$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-							->where('finder_id', '=', (int) $finder->_id)
-							->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-							->get(array('id'));
-
-						$data['trials_detials']              =      $customer_trials_with_vendors;
-						$data['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
-					}
-
 					if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 						
 						$finderservicesArr  =   [];
