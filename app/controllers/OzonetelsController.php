@@ -324,7 +324,7 @@ class OzonetelsController extends \BaseController {
 
 			            }else{
 
-			            	$this->ozonetelResponse->addPlayText("please hold while we transfer your call to Fitternity our exclusive online booking partner",3);
+			            	$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person",3);
 
 					    	$call_jump = true;
 
@@ -820,7 +820,7 @@ class OzonetelsController extends \BaseController {
 
 	public function ozonetelIvr(){
 
-		$ivr = 'thank you for calling. please press 1 for general enquiries, press 2 if you want to book a trial or purchase a membership';
+		$ivr = 'thank you for calling. Please press 1 to inquire about membership packages , trials and offers, Press 2 if you are an existing member or have a general inquiry';
 
 		return $ivr;
 	}

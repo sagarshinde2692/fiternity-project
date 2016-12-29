@@ -1300,11 +1300,12 @@ class OrderController extends \BaseController {
                     $service_duration = $data['service_duration'] = $this->getServiceDuration($ratecard);
                 }
 
-                $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
 
                 if($offer){
                     $data['amount_finder'] = $offer->price;
                     $offer_id = $offer->_id;
+                    $data['offer_id'] = $offer->_id;
                 }
                 
             }else{
@@ -2014,11 +2015,12 @@ class OrderController extends \BaseController {
                         }
                     }
 
-                    $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+                    $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
 
                     if($offer){
                         $data['amount_finder'] = $offer->price;
                         $offer_id = $offer->_id;
+                        $data['offer_id'] = $offer->_id;
                     }
                     
                 }else{
