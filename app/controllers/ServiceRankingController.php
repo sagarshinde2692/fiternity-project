@@ -195,7 +195,7 @@ class ServiceRankingController extends \BaseController {
 
 
 public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
-    return true;
+    // return true;
     $finderid = intval($finderid);
     $es_host = Config::get('app.es.host');
     $es_port = Config::get('app.es.port');
@@ -214,28 +214,30 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
     $deleteQuery = '{
         "query": {
             "match": {
-            "finder_id": '.$finderid.'
+                "finder_id": '.$finderid.'
             }
         }
-        }';
+    }';
     $deleteQuery = json_encode(json_decode($deleteQuery,true));
             $request = array(
-                "url" => $es_host .":".$es_port. "/fitternity_vip_trials/service/_search",
+                "url" => $es_host .":".$es_port. "/fitternity_vip_trials/service/_delete",
                 "port" => $es_port,
-                'body' => $deleteQuery,
-                "method" => "POST",
+                'postfields' => $deleteQuery,
+                "method" => "DELETE",
             );
             // print_r($request);
             $alldocs = json_decode(es_curl_request($request),true);
-            $onlyidstobedeleted = array_fetch($alldocs['hits']['hits'],'_id');
-            foreach($onlyidstobedeleted as $id){
-                $request = array(
-                    "url" => $es_host .":".$es_port. "/fitternity_vip_trials/service/".$id,
-                    "port" => $es_port,
-                    "method" => "DELETE",
-                );  
-                // return es_curl_request($request);
-            }
+            // $onlyidstobedeleted = array_fetch($alldocs['hits']['hits'],'_id');
+            // foreach($onlyidstobedeleted as $id){
+            //     $request = array(
+            //         "url" => $es_host .":".$es_port. "/fitternity_vip_trials/service/".$id,
+            //         "port" => $es_port,
+            //         "method" => "DELETE",
+            //     );  
+            //     print_r($request);
+            //     exit;
+            //     // return es_curl_request($request);
+            // }
             // return array_fetch($alldocs['hits']['hits'],'_id');
     foreach ($items as $finderdocument) {    
         try{
@@ -245,7 +247,7 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
             ->with('subcategory')
             ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
             ->where('finder_id',$finderdata['_id'])                                    ->active()
-            ->latest()
+            // ->latest()
             ->get();
 
             if(isset($serviceitems) && (!empty($serviceitems))){ 
@@ -274,7 +276,7 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
 
                         foreach ($postdata_workoutsession_schedules as $workout_session) {
 
-                            if(intval($workout_session['workout_session_schedules_price']) !== 0){
+                            // if(intval($workout_session['workout_session_schedules_price']) !== 0){
 
                             $workout_session['rank'] = $score;
                             $catval = evalBaseCategoryScore($finderdata['category_id']);
@@ -286,7 +288,7 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
 
                             $request_vip_trial = array('url' => $posturl_vip_trial, 'port' => $es_port, 'method' => 'POST', 'postfields' => $postfields_data_vip_trial);
                             $x = es_curl_request($request_vip_trial);
-                            }
+                            // }
                         }
                     }
                 }
