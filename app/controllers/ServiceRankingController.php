@@ -195,7 +195,8 @@ class ServiceRankingController extends \BaseController {
 
 
 public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
-    // return true;
+    $data = array("message"=>"success");
+    return Response::json($data,200);
     $finderid = intval($finderid);
     $es_host = Config::get('app.es.host');
     $es_port = Config::get('app.es.port');
