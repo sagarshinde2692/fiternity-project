@@ -1897,7 +1897,11 @@ class FindersController extends \BaseController {
 
 					if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
 
-						$rateval['special_price'] = $ratecardoffers[0]['price'];
+						if($ratecardoffers[0]['price'] == $rateval['price']){
+							$rateval['price'] = $ratecardoffers[0]['price'];
+						}else{
+							$rateval['special_price'] = $ratecardoffers[0]['price'];
+						}
 
 						if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
 							$value['remarks'] = $ratecardoffers[0]['remarks'];
