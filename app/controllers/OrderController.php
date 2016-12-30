@@ -2020,6 +2020,7 @@ class OrderController extends \BaseController {
                     if($offer){
                         $data['amount_finder'] = $offer->price;
                         $offer_id = $offer->_id;
+                        $data['offer_id'] = $offer->_id;
                     }
                     
                 }else{

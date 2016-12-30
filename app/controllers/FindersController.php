@@ -1884,8 +1884,8 @@ class FindersController extends \BaseController {
 								$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
 								$difference     =   $today_date->diff($end_date);
 
-								if($difference->d <= 5){
-									$ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->d." days";
+								if($difference->days <= 5){
+									$ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
 
 								}
 								array_push($ratecardoffers,$ratecardoffer);
@@ -2297,55 +2297,10 @@ class FindersController extends \BaseController {
 					}
 
 					if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
+
+						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial');
+						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
 						
-						$finderservicesArr  =   [];
-						$finderservices     =   $data['finder']['services'];
-
-						foreach ($finderservices as $finderservice){
-
-							$finderserviceObj   =   array_except($finderservice,['ratecard']);
-							$ratecardArr        =   [];
-
-							if(isset($finderservice['ratecard']) && count($finderservice['ratecard']) > 0){
-
-								//if trial exist the show work out else trial
-								if(isset($data['trials_booked_status']) && $data['trials_booked_status'] == true){
-									$ratecard = Ratecard::where('type','workout session')->where('finder_id', intval($finderarr['_id']))->where('service_id', intval($finderserviceObj['_id']))->first();
-								}else{
-									$ratecard = Ratecard::where('type','trial')->where('finder_id', intval($finderarr['_id']))->where('service_id', intval($finderserviceObj['_id']))->first();
-								}
-								if($ratecard){
-									$ratecard = $ratecard->toArray();
-									$ratecard['offers'] = [];
-
-									if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-					                    $ratecard_price = $ratecard['special_price'];
-					                }else{
-					                    $ratecard_price = $ratecard['price'];
-					                }
-
-									if($data['finder']['type'] == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
-										$ratecard['cashback_on_trial'] = "100% Cashback";
-									}
-
-									array_push($ratecardArr, $ratecard);
-								}
-
-								foreach ($finderservice['ratecard'] as $ratecard){
-									array_push($ratecardArr, $ratecard);
-								}
-
-							}else{
-								$finderserviceObj['ratecard'] = [];
-							}
-
-							$finderserviceObj['ratecard'] = $ratecardArr;
-							
-							array_push($finderservicesArr, $finderserviceObj);
-						}
-
-						$data['finder']['services'] = $finderservicesArr;
-
 					}
 
 				}
@@ -2380,8 +2335,6 @@ class FindersController extends \BaseController {
 						$finderData['finder']['bookmark'] = true;
 					}
 
-
-
 					$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
 						->where('finder_id', '=', (int) $finder->_id)
 						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
@@ -2389,9 +2342,28 @@ class FindersController extends \BaseController {
 
 					$finderData['trials_detials']              =      $customer_trials_with_vendors;
 					$finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
+
 				}
 			
 			}
+
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
+
+				if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
+
+					$finderData['finder']['services'] = $finderData['finder']['services_workout'];
+
+				}else{
+
+					$finderData['finder']['services'] = $finderData['finder']['services_trial'];
+
+				}
+
+				unset($finderData['finder']['services_workout']);
+				unset($finderData['finder']['services_trial']);
+			}
+
+			
 
 		}else{
 
@@ -2399,6 +2371,56 @@ class FindersController extends \BaseController {
 		}
 
 		return Response::json($finderData,$finderData['status']);
+
+	}
+
+
+
+
+	public function getTrialWorkoutRatecard($finderservices,$findertype,$type){
+
+		$finderservicesArr  =   [];
+
+		foreach ($finderservices as $finderservice){
+
+			$finderserviceObj   =   array_except($finderservice,['ratecard']);
+			$ratecardArr        =   [];
+
+			if(isset($finderservice['ratecard']) && count($finderservice['ratecard']) > 0){
+
+				$ratecard = Ratecard::where('type',$type)->where('service_id', intval($finderserviceObj['_id']))->first();
+
+				if($ratecard){
+					$ratecard = $ratecard->toArray();
+					$ratecard['offers'] = [];
+
+					if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+	                    $ratecard_price = $ratecard['special_price'];
+	                }else{
+	                    $ratecard_price = $ratecard['price'];
+	                }
+
+					if($findertype == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
+						$ratecard['cashback_on_trial'] = "100% Cashback";
+					}
+
+					array_push($ratecardArr, $ratecard);
+				}
+
+				foreach ($finderservice['ratecard'] as $ratecard){
+					array_push($ratecardArr, $ratecard);
+				}
+
+			}else{
+				$finderserviceObj['ratecard'] = [];
+			}
+
+			$finderserviceObj['ratecard'] = $ratecardArr;
+			
+			array_push($finderservicesArr, $finderserviceObj);
+		}
+
+		return $finderservicesArr;
 
 	}
 

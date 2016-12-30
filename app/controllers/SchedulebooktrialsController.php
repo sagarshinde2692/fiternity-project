@@ -136,12 +136,17 @@ class SchedulebooktrialsController extends \BaseController {
     public function getTrialSchedule($finderid,$date = null){
 
         // $dobj = new DateTime;print_r($dobj);
+        // return "hello";
+        // exit(0);
 
         $currentDateTime        =   \Carbon\Carbon::now();
         $finderid               =   (int) $finderid;
         $date                   =   ($date == null) ? Carbon::now() : $date;
         $timestamp              =   strtotime($date);
         $weekday                =   strtolower(date( "l", $timestamp));
+
+        
+        
 
         $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules','servicecategory_id'));
 
@@ -150,6 +155,8 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $items->toArray();
+
+        
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
@@ -168,7 +175,12 @@ class SchedulebooktrialsController extends \BaseController {
                 $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday);
 
                 $slots = array();
-                foreach ($weekdayslots['slots'] as $slot) {
+                $date1 = Carbon::parse($date);
+                if($date1->day == 1){
+                    
+                }
+                else{
+                    foreach ($weekdayslots['slots'] as $slot) {
 
 
                     // $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
@@ -177,7 +189,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                     // $slot_status        =   ($slot['limit'] > $goingcnt) ? "available" : "full";
 
-                    $slot_status 		= 	"available";
+                    $slot_status        =   "available";
 
                     array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
                     array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
@@ -201,6 +213,8 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                 }
+                }
+                
 
                 $service['slots'] = $slots;
                 $service['trialschedules']['slots'] = $slots;
@@ -252,8 +266,12 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $check_cashback         =   true;
                 $cashback               =   "";
-
-                foreach ($weekdayslots['slots'] as $slot) {
+                $date1 = Carbon::parse($date);
+                if($date1->day == 1){
+                    
+                }
+                else{
+                    foreach ($weekdayslots['slots'] as $slot) {
 
                     if($check_cashback){
                         if($slot && isset($slot['price']) && intval($slot['price']) > 0){
@@ -262,13 +280,13 @@ class SchedulebooktrialsController extends \BaseController {
                         }
                     }
 
-                    // $totalbookcnt        = 	Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
-                    // $goingcnt 	       = 	Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
-                    // $cancelcnt 	       = 	Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
+                    // $totalbookcnt        =   Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
+                    // $goingcnt           =    Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
+                    // $cancelcnt          =    Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
 
-                    // $slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                    // $slot_status        =    ($slot['limit'] > $goingcnt) ? "available" : "full";
 
-                    $slot_status 		= 	"available";
+                    $slot_status        =   "available";
 
                     array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
                     array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
@@ -315,6 +333,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 
                 }
+                }
+                
             }
 
             $service['cashback']                =   $cashback;
@@ -377,14 +397,19 @@ class SchedulebooktrialsController extends \BaseController {
                 // echo "<br> count -- ".count($weekdayslots['slots']);
                 $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday,'trial' => (isset($item['trial'])) ? $item['trial'] : "",'membership' => (isset($item['membership'])) ? $item['membership'] : "");
                 $slots = array();
+                 $date1 = Carbon::parse($date);
+                if($date1->day == 1){
+                    
+                }
+                else{
 
-                foreach ($weekdayslots['slots'] as $slot) {
+                     foreach ($weekdayslots['slots'] as $slot) {
                     // $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
                     // $goingcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
                     // $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
-                    // $slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
+                    // $slot_status        =    ($slot['limit'] > $goingcnt) ? "available" : "full";
 
-                    $slot_status 		= 	"available";
+                    $slot_status        =   "available";
 
                     // array_set($slot, 'totalbookcnt', $totalbookcnt);
                     // array_set($slot, 'goingcnt', $goingcnt);
@@ -406,6 +431,8 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                 }
+                }
+               
 
                 $service['slots'] = $slots;
                 $service['workoutsessionschedules']['slots'] = $slots;
@@ -475,42 +502,49 @@ class SchedulebooktrialsController extends \BaseController {
             // sslots exists
             $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday, 'month' => date( "M", $timestamp), 'day' => date( "d", $timestamp));
             $slots = array();
-            if(count($weekdayslots['slots']) > 0){
-                foreach ($weekdayslots['slots'] as $slot) {
+            $date1 = Carbon::parse($date);
+            if($date1->day == 1){
+                
+            }
+            else{
+                if(count($weekdayslots['slots']) > 0){
+                    foreach ($weekdayslots['slots'] as $slot) {
 
-                    $totalbookcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
-                    $goingcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
-                    // $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
-                    //$slot_status        = 	($slot['limit'] > $goingcnt) ? "available" : "full";
-                    $slot_status        =   "available";
+                        $totalbookcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->count();
+                        $goingcnt = 0;//Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 1)->count();
+                        // $cancelcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($dt) )->where('schedule_slot', '=', $slot['slot_time'])->where('going_status', 2)->count();
+                        //$slot_status        =     ($slot['limit'] > $goingcnt) ? "available" : "full";
+                        $slot_status        =   "available";
 
-                    array_set($slot, 'totalbookcnt', $totalbookcnt);
-                    array_set($slot, 'goingcnt', $goingcnt);
-                    // array_set($slot, 'cancelcnt', $cancelcnt);
-                    array_set($slot, 'status', $slot_status);
+                        array_set($slot, 'totalbookcnt', $totalbookcnt);
+                        array_set($slot, 'goingcnt', $goingcnt);
+                        // array_set($slot, 'cancelcnt', $cancelcnt);
+                        array_set($slot, 'status', $slot_status);
 
 
-                    try{
+                        try{
 
-                        $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
-                        array_set($slot, 'passed', $slot_datetime_pass_status);
-                        array_set($slot, 'service_id', $item['_id']);
-                        array_set($slot, 'finder_id', $item['finder_id']);
-                        array_push($slots, $slot);
+                            $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
+                            $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+                            array_set($slot, 'passed', $slot_datetime_pass_status);
+                            array_set($slot, 'service_id', $item['_id']);
+                            array_set($slot, 'finder_id', $item['finder_id']);
+                            array_push($slots, $slot);
 
-                    }catch(Exception $e){
+                        }catch(Exception $e){
 
-                        Log::info("getServiceSchedule Error : ".$date." ".$slot['start_time']);
+                            Log::info("getServiceSchedule Error : ".$date." ".$slot['start_time']);
+                        }
+
+
+
+                        // $scheduleDateTime               =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
+                        // $scheduleDateTime               =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
+
                     }
-
-
-
-                    // $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
-                    // $scheduleDateTime 		       =	Carbon::createFromFormat('d-m-Y g:i A', strtoupper($dt." ".$slot['start_time']));
-
                 }
             }
+            
 
             $service['slots'] = $slots;
             array_push($serviceschedules, $service);

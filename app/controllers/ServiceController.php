@@ -422,34 +422,39 @@ class ServiceController extends \BaseController {
 		if(count($item) > 0){
 			$item = $item->toArray();
 			$slots = array();
+			$date1 = Carbon::parse($date);
+            if($date1->day == 1){
+                
+            }
+            else{
+				foreach ($item['workoutsessionschedules'] as $key => $value) {
 
-			foreach ($item['workoutsessionschedules'] as $key => $value) {
+					if($value['weekday'] == $weekday){
 
-				if($value['weekday'] == $weekday){
-
-					if(!empty($value['slots'])){
-						
-						foreach ($value['slots'] as $key => $slot) {
-
-							try{
-
-								$scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
-								$slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
-								array_set($slot, 'passed', $slot_datetime_pass_status);
-								array_set($slot, 'service_id', $item['_id']);
-								array_set($slot, 'finder_id', $item['finder_id']);
-								array_push($slots, $slot);
-
-							}catch(Exception $e){
-
-								Log::info("getWorkoutSessionScheduleByService Error : ".$date." ".$slot['start_time']);
-							}
+						if(!empty($value['slots'])){
 							
+							foreach ($value['slots'] as $key => $slot) {
+
+								try{
+
+									$scheduleDateTime     =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".strtoupper($slot['start_time'])));
+									$slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+									array_set($slot, 'passed', $slot_datetime_pass_status);
+									array_set($slot, 'service_id', $item['_id']);
+									array_set($slot, 'finder_id', $item['finder_id']);
+									array_push($slots, $slot);
+
+								}catch(Exception $e){
+
+									Log::info("getWorkoutSessionScheduleByService Error : ".$date." ".$slot['start_time']);
+								}
+								
+							}
 						}
+						break;
 					}
-					break;
+					
 				}
-				
 			}
 
 			$data['_id'] = (int)$service_id;
