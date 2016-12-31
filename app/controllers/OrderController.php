@@ -1307,6 +1307,11 @@ class OrderController extends \BaseController {
                     $offer_id = $offer->_id;
                     $data['offer_id'] = $offer->_id;
                 }
+
+                if(isset($offer->remarks) && $offer->remarks){
+                
+                    $data['ratecard_remarks']  = $offer->remarks;
+                }
                 
             }else{
 
