@@ -14,6 +14,8 @@ use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Bulksms as Bulksms;
 
+use \Pubnub\Pubnub as Pubnub;
+
 class DebugController extends \BaseController {
 
 	public function __construct(FinderMailer $findermailer) {
@@ -3246,5 +3248,19 @@ public function testEmail(){
 	}
 
 
+public function xyz(){
+	$pubnub = new Pubnub('demo', 'demo');
+	$pubnub->subscribe('hello_world', function ($envelope) {
+             print_r($envelope['message']);
+       });
+}
+
+
+public function yes($msg){
+	$pubnub = new Pubnub('demo', 'demo');
+	$publish_result = $pubnub->publish('hello_world',$msg);
+   
+	print_r($publish_result);
+}
     
 }

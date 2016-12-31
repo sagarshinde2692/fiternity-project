@@ -48,6 +48,10 @@ Route::get('addexpirydate', 'DebugController@addExpiryDate');
 Route::get('unsetstartendservice', 'DebugController@unsetStartEndService');
 
 
+Route::get('xyz','DebugController@xyz');
+Route::get('yes/{msg}','DebugController@yes');
+
+
 // please dont merge in live or production environment
 Route::get('deletetrans/{email}', function ($email){
 

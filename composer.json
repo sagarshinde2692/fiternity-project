@@ -18,7 +18,8 @@
 		"firebase/php-jwt": "2.1",
 		"guzzlehttp/guzzle": "6.0",
 		"anlutro/curl": "^0.6.2",
-		"iron-io/iron_worker": "1.*"
+		"iron-io/iron_worker": "1.*",
+		"pubnub/pubnub": "3.*"
 	},
 	"autoload": {
 		"classmap": [
