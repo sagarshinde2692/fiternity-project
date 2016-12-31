@@ -1253,7 +1253,7 @@ class OrderController extends \BaseController {
 
             $ratecard = Ratecard::find((int)$data['ratecard_id']);
 
-            if(isset($ratecard->remarks) && $ratecard->remarks){
+            if(isset($ratecard->remarks) && $ratecard->remarks != ""){
                 
                 $data['ratecard_remarks']  = $ratecard->remarks;
             }
@@ -1306,6 +1306,11 @@ class OrderController extends \BaseController {
                     $data['amount_finder'] = $offer->price;
                     $offer_id = $offer->_id;
                     $data['offer_id'] = $offer->_id;
+                }
+
+                if(isset($offer->remarks) && $offer->remarks != ""){
+                
+                    $data['ratecard_remarks']  = $offer->remarks;
                 }
                 
             }else{
@@ -1995,6 +2000,11 @@ class OrderController extends \BaseController {
 
                 if($ratecard){
 
+                    if(isset($ratecard->remarks) && $ratecard->remarks != ""){
+                
+                        $data['ratecard_remarks']  = $ratecard->remarks;
+                    }
+
                     if($data['payment_mode'] == "paymentgateway"){
                         if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                             $data['amount_finder'] = $ratecard->special_price;
@@ -2021,6 +2031,11 @@ class OrderController extends \BaseController {
                         $data['amount_finder'] = $offer->price;
                         $offer_id = $offer->_id;
                         $data['offer_id'] = $offer->_id;
+                    }
+
+                    if(isset($offer->remarks) && $offer->remarks != ""){
+                
+                        $data['ratecard_remarks']  = $offer->remarks;
                     }
                     
                 }else{
