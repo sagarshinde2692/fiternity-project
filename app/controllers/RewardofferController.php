@@ -329,7 +329,8 @@ class RewardofferController extends BaseController {
         }
 
         $cashback  = array(
-            'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
+            // 'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
+            'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',
             'commision'=>$calculation['algo']['cashback'],
             'calculation'=>$calculation,

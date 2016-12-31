@@ -526,8 +526,10 @@ Class CustomerReward {
         $data['algo'] = $setAlgo;
         $data['current_wallet_balance'] = round($wallet);
         //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
-        $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+        // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
 
+        $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
+        
         Log::info('reward_calculation : ',$data);
 
         return $data;

@@ -1146,7 +1146,7 @@ class RankingSearchController extends \BaseController
         $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
         $response       =   json_decode($searchresulteresponse1,true);
-        if($from == 0){
+        if($from == 0 && count(Input::json()->get('offerings')) == 0 && count(Input::json()->get('facilities')) == 0 && count(Input::json()->get('budget')) == 0){
             $response['campaign'] = array(
                 'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
                 // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
