@@ -329,6 +329,8 @@ class OzonetelsController extends \BaseController {
 
     				$finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
 
+    				$capture = $this->getCapture($_REQUEST['sid']);
+
 			    	if($finderDetails){
 
 			    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
@@ -340,7 +342,7 @@ class OzonetelsController extends \BaseController {
 
 					    	$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension = false,$add_count = true, $call_jump);
 
-					    	$this->pubNub($_REQUEST,$finderDetails->finder->_id,$finderDetails->_id);
+					    	$this->pubNub($_REQUEST,$finderDetails->finder->_id,$capture->_id);
 
 			            }else{
 
