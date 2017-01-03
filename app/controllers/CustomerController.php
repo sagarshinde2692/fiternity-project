@@ -2761,8 +2761,8 @@ class CustomerController extends \BaseController {
 	}
 
 	public function applyPromotionCode(){
-
-		$valid_promotion_codes		=		['fitgift','in2017','befit'];
+		
+		// $valid_promotion_codes		=		['fitgift','in2017','befit'];
 		$data 						= 		Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
@@ -2777,7 +2777,10 @@ class CustomerController extends \BaseController {
 
 		$code 			= 	trim(strtolower($data['code']));
 
-		if (!in_array($code, $valid_promotion_codes)) {
+		$fitcashcode  = Fitcashcoupon::where('code',$code)->first();
+
+
+		if (!isset($fitcashcode) || $fitcashcode == "") {
 			$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
 			return Response::json($resp,404);
 		}
@@ -2796,13 +2799,15 @@ class CustomerController extends \BaseController {
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
 			$amounttobeadded = 0;
 			if($customer_update){
-				switch($code){
-					case "fitgift" :  $amounttobeadded = 2000;
-					break;
-					case "in2017" :  $amounttobeadded = 2000;
-                    break;
-				}
+				// switch($code){
+				// 	case "fitgift" :  $amounttobeadded = 2000;
+				// 	break;
+				// 	case "in2017" :  $amounttobeadded = 2000;
+                //     break;
+				// }
+				$amounttobeadded = $fitcashcode['amount'];
 				$customer 	=	Customer::find($customer_id);				
+
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 				if($customerwallet){
@@ -2821,7 +2826,11 @@ class CustomerController extends \BaseController {
 					"balance"=>	$customer_balance,
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 					);
-
+				if($fitcashcode['type'] == "Restricted"){
+					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
+					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$amounttobeadded);
+					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
+				}
 				// return $walletData;
 
 				$wallet               	=   new CustomerWallet($walletData);
@@ -2829,7 +2838,6 @@ class CustomerController extends \BaseController {
 				$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
 				$wallet->_id          	=   ++ $last_insertion_id;
 				$wallet->save();
-
 				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
 
 				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$amounttobeadded." has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
