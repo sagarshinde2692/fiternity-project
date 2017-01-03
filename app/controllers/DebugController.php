@@ -3280,6 +3280,34 @@ public function yes($msg){
 
 		try{
 
+			$customer_email = [
+				"smart.saili@gmail.com",
+				"ut.mehrotra@gmail.com",
+				"gauravraviji@gmail.com",
+				"pranjalitanya@gmail.com",
+				"nishankiit@gmail.com"
+			];
+
+			$finder_id = [
+				3305,
+				6465,
+				6323,
+				6324,
+				6325,
+				6449,
+				6332,
+				6865,
+				9403
+			];
+
+			Order::whereIn('customer_email',$customer_email)->delete();
+
+			Order::where('customer_email', 'LIKE', '%fitternity.com%')->whereNotIn('customer_email',['neha@fitternity.com,jayamvora@fitternity.com'])->delete();
+
+			Order::whereIn('finder_id',$finder_id)->delete();
+
+			Order::where('customer_name', 'LIKE', '%test%')->delete();
+
 			ini_set('memory_limit', '-1');
         	ini_set('max_execution_time', 3000);
 
