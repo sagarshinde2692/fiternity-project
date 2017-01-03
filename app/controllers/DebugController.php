@@ -3262,5 +3262,180 @@ public function yes($msg){
    
 	print_r($publish_result);
 }
+
+	public function orderQuery($offset,$limit){
+
+		$orders = Order::where('vertical_type','exists',false)
+					->where('vertical_type','exists',false)
+					->where('migration_done','exists',false)
+					->orderBy('created_at','desc')
+					->skip($offset)
+					->take($limit)
+					->get();
+
+		return $orders;
+	}
+
+	public function newOrderMigration(){
+
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 50;
+
+			$orders = $this->orderQuery($offset,$limit);
+
+			while(count($orders) != 0){
+
+				foreach ($orders as $key => $order) {
+
+					try{
+
+						$set_vertical_type = array(
+							'healthytiffintrail'=>'tiffin',
+							'healthytiffinmembership'=>'tiffin',
+							'memberships'=>'workout',
+							'booktrials'=>'workout',
+							'workout-session'=>'workout',
+							'3daystrial'=>'workout',
+							'vip_booktrials'=>'workout',
+						);
+
+						$set_membership_duration_type = array(
+							'healthytiffintrail'=>'trial',
+							'healthytiffinmembership'=>'short_term_membership',
+							'memberships'=>'short_term_membership',
+							'booktrials'=>'trial',
+							'workout-session'=>'workout_session',
+							'3daystrial'=>'trial',
+							'vip_booktrials'=>'vip_trial',
+						);
+
+						if($order->customer_source != 'admin'){
+
+							if(!isset($order->vertical_type)){
+
+								(isset($set_vertical_type[$order->type])) ? $order->vertical_type = $set_vertical_type[$order->type] : null;
+
+								(isset($order->finder_category_id) &&  $order->finder_category_id == 41) ? $order->vertical_type = 'trainer' : null;
+							}
+
+							if(!isset($order->membership_duration_type)){
+
+								(isset($set_membership_duration_type[$order->type])) ? $order->membership_duration_type = $set_membership_duration_type[$order->type] : null;
+
+								(isset($order->duration_day) && $order->duration_day >=30 && $order->duration_day <= 90) ? $order->membership_duration_type = 'short_term_membership' : null;
+
+								(isset($order->duration_day) && $order->duration_day >90 ) ? $order->membership_duration_type = 'long_term_membership' : null;
+							}
+
+							if($order->status == "1"){
+
+								if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+									$order->secondary_payment_mode = 'payment_gateway_membership';
+								}		
+
+							}
+
+							if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+								$order->secondary_payment_mode = 'payment_gateway_tentative';
+							}
+
+						}
+
+						if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'cod'){
+							$order->secondary_payment_mode = 'cod_membership';
+						}
+
+						if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'at the studio'){
+							$order->secondary_payment_mode = 'at_vendor_pre';
+						}
+
+						if($order->status == "1"){
+
+							if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+								$order->secondary_payment_mode = 'payment_gateway_membership';
+							}		
+
+						}
+
+						if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+							$order->secondary_payment_mode = 'payment_gateway_tentative';
+						}
+
+						if(!isset($order->vertical_type)){
+
+							(isset($set_vertical_type[$order->type])) ? $order->vertical_type = $set_vertical_type[$order->type] : null;
+
+							(isset($order->finder_category_id) &&  $order->finder_category_id == 41) ? $order->vertical_type = 'trainer' : null;
+						}
+
+						if(isset($order->schedule_slot) && is_string($order->schedule_slot) && $order->schedule_slot != "" && $order->schedule_slot != "-"){
+
+							$schedule_slot = explode("-", $order->schedule_slot);
+
+							if(isset($schedule_slot[0]) && isset($schedule_slot[1])){
+								$order->start_time = trim($schedule_slot[0]);
+								$order->end_time = trim($schedule_slot[1]);
+							}
+						}
+
+						if($order->status != "1"){
+							$order->status = "0";
+						}
+
+						if(isset($order->customer_phone)  && $order->customer_phone != ""){
+							$order->customer_phone = str_replace(" ", "", $order->customer_phone);
+						}
+
+		                $order->migration_done = "1";
+
+						$order->update();
+
+					}catch(Exception $exception){
+
+						Log::error($order);
+
+						$message = array(
+			            	'type'    => get_class($exception),
+			               	'message' => $exception->getMessage(),
+			               	'file'    => $exception->getFile(),
+			                'line'    => $exception->getLine(),
+			            );
+
+			            Log::error($exception);
+
+						return array('status'=>'fail','error_message'=>$message);
+
+					}
+				}
+
+				$offset = $offset + 50;
+
+				$orders = $this->orderQuery($offset,$limit);
+
+			}
+
+			return array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			return array('status'=>'fail','error_message'=>$message);
+		}
+
+		print_r($return);
+	}
     
 }

@@ -615,8 +615,10 @@ class OzonetelsController extends \BaseController {
 
 			$ozonetel_capture->update();
 
-			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
-				$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+			if(!$call_jump){
+				if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
+					$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+				}
 			}
 
 			return $ozonetel_capture;
