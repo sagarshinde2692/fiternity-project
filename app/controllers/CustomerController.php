@@ -2826,7 +2826,7 @@ class CustomerController extends \BaseController {
 					"balance"=>	$customer_balance,
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 					);
-				if($fitcashcode['type'] == "Restricted"){
+				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$amounttobeadded);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
