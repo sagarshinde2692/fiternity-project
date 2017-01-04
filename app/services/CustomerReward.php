@@ -426,7 +426,7 @@ Class CustomerReward {
 
         $vendorCommercial = VendorCommercial::where('vendor_id',$finder_id)->orderBy('_id','desc')->first();
 
-        $commision = 10;
+        $commision = 15;
         if($vendorCommercial){
 
             if($offer_id){

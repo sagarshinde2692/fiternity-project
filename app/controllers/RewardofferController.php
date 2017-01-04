@@ -288,6 +288,10 @@ class RewardofferController extends BaseController {
                                         $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-6-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-4.jpg";
                                         break;
                                 }
+                                
+                            }else{
+
+                                $rewards_value['image'] = "https://b.fitn.in/gamification/reward/".$rewards_value['reward_type'].".jpg";
                             }
 
                             if($rewards_value['reward_type'] == $reward_type_order_value){
