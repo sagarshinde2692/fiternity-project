@@ -295,6 +295,8 @@ Class CustomerReward {
                     $myreward->customer_address = $data['customer_address'];
                 }
 
+                $myreward->success_date = date('Y-m-d h:i:s');
+
                 $myreward->update();
 
                 if(isset($myreward->finder_id) && $myreward->finder_id != ""){
