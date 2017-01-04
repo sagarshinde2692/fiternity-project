@@ -299,18 +299,18 @@ class OzonetelsController extends \BaseController {
                 $call_jump = false;
 
                 //OZONETEL JUMP LOGIC
-                if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
+                //if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
 
 		    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 					$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
 				   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 				   	$this->addCapture($_REQUEST,$finderDetails->finder->_id);
 
-                }else{
+                /*}else{
 
                     $this->ozonetelResponse->addDial($contact_no,"true");
                     $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
-                }
+                }*/
                 
 	    	}else{
 
@@ -389,7 +389,7 @@ class OzonetelsController extends \BaseController {
 
 					if($finder){
 
-						if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
+						//if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
 
 							if(isset($capture->call_jump)){
 
@@ -414,7 +414,7 @@ class OzonetelsController extends \BaseController {
 			    				
 			    			}
 
-	                    }else{
+	                    /*}else{
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -428,7 +428,7 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                    }
+	                    }*/
 
 					}else{
 	                    
