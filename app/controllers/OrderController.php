@@ -192,7 +192,7 @@ class OrderController extends \BaseController {
 
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
-            array_set($data, 'success_date', date('Y-m-d h:i:s',time()));
+            array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
             
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 

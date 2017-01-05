@@ -1280,7 +1280,7 @@ class SchedulebooktrialsController extends \BaseController {
             $orderData = [];
             array_set($orderData, 'status', '1');
             array_set($orderData, 'order_action', 'bought');
-            array_set($orderData, 'success_date', date('Y-m-d h:i:s',time()));
+            array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
@@ -1403,7 +1403,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
-            array_set($data, 'success_date', date('Y-m-d h:i:s',time()));
+            array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
@@ -1462,7 +1462,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function getBeforeThreeMonthTrialCount($finder_id){
 
-        $beforeThreeMonth =  \Carbon\Carbon::createFromFormat('Y-m-d h:i:s',date('Y-m-d h:i:s'))->subMonths(3);
+        $beforeThreeMonth =  \Carbon\Carbon::createFromFormat('Y-m-d H:i:s',date('Y-m-d H:i:s'))->subMonths(3);
 
         $count = Booktrial::where('finder_id',(int)$finder_id)->where('created_at', '>=', new DateTime($beforeThreeMonth))->count();
 
@@ -1880,7 +1880,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($customofferorder->validity) && $customofferorder->validity != ""){
 
-                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d H:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
                     $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
                 }
 
@@ -2026,7 +2026,7 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
             array_set($data, 'booktrial_id', (int)$booktrialid);
-            array_set($data, 'success_date', date('Y-m-d h:i:s',time()));
+            array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
@@ -2639,7 +2639,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($customofferorder->validity) && $customofferorder->validity != ""){
 
-                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
+                    $booktrialdata['customofferorder_expiry_date'] =   date("Y-m-d H:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
                     $booktrialdata['customofferorder_validity'] = $customofferorder->validity;
                 }
             }
@@ -5073,7 +5073,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $start_date_time = new DateTime(date("2016-08-02 00:20:00"));
         $end_date_time = new DateTime(date("2016-08-02 13:40:00"));
-        $current_date_time = new DateTime(date("Y-m-d h:i:s"));
+        $current_date_time = new DateTime(date("Y-m-d H:i:s"));
 
         $booktrials = Booktrial::where('created_at','>=',$start_date_time)
             ->where('created_at','<=',$end_date_time)

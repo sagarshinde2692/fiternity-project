@@ -267,7 +267,7 @@ Class CustomerReward {
 
         if($myreward){
 
-            $created_at = date('Y-m-d h:i:s',strtotime($myreward->created_at));
+            $created_at = date('Y-m-d H:i:s',strtotime($myreward->created_at));
 
             $validity_date_unix = strtotime($created_at . ' +'.(int)$myreward->validity_in_days.' days');
             $current_date_unix = time();
@@ -295,7 +295,7 @@ Class CustomerReward {
                     $myreward->customer_address = $data['customer_address'];
                 }
 
-                $myreward->success_date = date('Y-m-d h:i:s',time());
+                $myreward->success_date = date('Y-m-d H:i:s',time());
 
                 $myreward->update();
 
