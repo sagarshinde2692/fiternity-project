@@ -1280,7 +1280,7 @@ class SchedulebooktrialsController extends \BaseController {
             $orderData = [];
             array_set($orderData, 'status', '1');
             array_set($orderData, 'order_action', 'bought');
-            array_set($orderData, 'success_date', date('Y-m-d h:i:s'));
+            array_set($orderData, 'success_date', date('Y-m-d h:i:s',time()));
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
@@ -1403,7 +1403,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
-            array_set($data, 'success_date', date('Y-m-d h:i:s'));
+            array_set($data, 'success_date', date('Y-m-d h:i:s',time()));
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
@@ -2026,7 +2026,7 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
             array_set($data, 'booktrial_id', (int)$booktrialid);
-            array_set($data, 'success_date', date('Y-m-d h:i:s'));
+            array_set($data, 'success_date', date('Y-m-d h:i:s',time()));
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
