@@ -46,8 +46,8 @@ class OzonetelsController extends \BaseController {
         $this->jump_start_time 			=	strtotime( date("d-m-Y")." 09:00:00");
         $this->jump_end_time 			=	strtotime( date("d-m-Y")." 20:00:00");
         $this->current_date_time 		=	time();
-        $this->jump_fitternity_no 		=	"02261222242";
-        $this->jump_fitternity_no2 		=	"02261222209";
+        $this->jump_fitternity_no 		=	"02261222216";
+        $this->jump_fitternity_no2 		=	"02261222216";
 
 	}
 
