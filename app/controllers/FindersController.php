@@ -519,6 +519,13 @@ class FindersController extends \BaseController {
 						array_set($nearby_other_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
 					}
 				}*/
+
+				if($finder['city_id'] == 10000){
+					$finder['city']['name'] = $finder['custom_city'];
+					$finder['location']['name'] = $finder['custom_location'];
+					$nearby_same_category = [];
+					$nearby_other_category = [];
+				}
 				
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
