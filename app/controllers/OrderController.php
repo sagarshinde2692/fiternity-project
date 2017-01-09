@@ -1143,6 +1143,7 @@ class OrderController extends \BaseController {
             }
         }
 
+
         if(trim(Input::json()->get('finder_id')) != '' ){
 
             $finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval(Input::json()->get('finder_id')))->first()->toArray();
@@ -1178,6 +1179,45 @@ class OrderController extends \BaseController {
                 }
 
             }
+
+            if(isset($data['service_id']) && $data['service_id'] != ""){
+
+                $service = Service::find((int)$data['service_id']);
+
+                $trial_array = array('vip_booktrials','3daystrial','booktrials','workout-session','healthytiffintrail');
+                if(in_array($data['type'],$trial_array)){
+
+                    if(isset($service['trial']) && $service['trial'] == "disable"){
+
+                        $message = "Sorry, this class is not available. Kindly book a different slot";
+
+                        ($data['type'] == "healthytiffintrail") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                        $resp   =   array('status' => 400,'message' => $message);
+
+                        return Response::json($resp,400);
+                    }
+
+                }
+
+                $membership_array = array('healthytiffinmembership','memberships');
+                if(in_array($data['type'],$membership_array)){
+
+                    if(isset($service['membership']) && $service['membership'] == "disable"){
+
+                        $message = "Sorry, this membership purchase can't be fulfilled.";
+
+                        ($data['type'] == "healthytiffinmembership") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                        $resp   =   array('status' => 400,'message' => $message);
+
+                        return Response::json($resp,400);
+                    }
+
+                }
+
+            }
+
         
             $finder_city						=	(isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
             $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
