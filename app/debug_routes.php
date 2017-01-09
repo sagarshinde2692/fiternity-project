@@ -2615,3 +2615,43 @@ Route::get('updatefinderspecialoffertag', function (){
  
     //  echo "done";
  });
+
+ Route::get('/getsearchlogs', function(){
+	 $from = 0;
+	 $i = 0;
+	 for($i = 0; $i<100;$i++){
+		 $from = 1000 *$i;
+		 $query = '{
+			"from":'.$from.',
+			"size":2000,
+					"query": {
+						"match": {
+						"event_id": "globalsearch"
+						}
+					},
+					"sort": {
+						"timestamp": {
+						"order": "desc"
+						}
+					}
+					}';
+		$request = array(
+			'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+			'port' => 8060,
+			'method' => 'POST',
+			'postfields' => $query
+			);
+
+			// .strtolower(implode('","', $keylist)).
+		
+		$search_results     =   json_decode(es_curl_request($request),true);
+			$search_results['hits']['hits'];
+			$contents = file_get_contents("newfile.txt");
+		foreach($search_results['hits']['hits'] as $result){
+			echo $result['_source']['keyword']."<br>";
+			$contents .= $result['_source']['keyword']."\n";
+		}
+		file_put_contents("newfile.txt", $contents);
+		
+	 }
+ });

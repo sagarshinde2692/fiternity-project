@@ -2777,7 +2777,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function applyPromotionCode(){
-		
+		// return time();
 		// $valid_promotion_codes		=		['fitgift','in2017','befit'];
 		$data 						= 		Input::json()->all();
 		
@@ -2793,7 +2793,7 @@ class CustomerController extends \BaseController {
 
 		$code 			= 	trim(strtolower($data['code']));
 
-		$fitcashcode  = Fitcashcoupon::where('code',$code)->first();
+		$fitcashcode  = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
 
 
 		if (!isset($fitcashcode) || $fitcashcode == "") {
