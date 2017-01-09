@@ -1148,74 +1148,12 @@ class OrderController extends \BaseController {
 
             $finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval(Input::json()->get('finder_id')))->first()->toArray();
 
-            $trial_array = array('vip_booktrials','3daystrial','booktrials','workout-session','healthytiffintrail');
-            if(in_array($data['type'],$trial_array)){
 
-                if(isset($finder['trial']) && $finder['trial'] == "disable"){
+            $disableTrialMembership = $this->disableTrialMembership($data);
 
-                    $message = "Sorry, this class is not available. Kindly book a different slot";
+            if($disableTrialMembership['status'] != 200){
 
-                    ($data['type'] == "healthytiffintrail") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
-
-                    $resp   =   array('status' => 400,'message' => $message);
-
-                    return Response::json($resp,400);
-                }
-
-            }
-
-            $membership_array = array('healthytiffinmembership','memberships');
-            if(in_array($data['type'],$membership_array)){
-
-                if(isset($finder['membership']) && $finder['membership'] == "disable"){
-
-                    $message = "Sorry, this membership purchase can't be fulfilled.";
-
-                    ($data['type'] == "healthytiffinmembership") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
-
-                    $resp   =   array('status' => 400,'message' => $message);
-
-                    return Response::json($resp,400);
-                }
-
-            }
-
-            if(isset($data['service_id']) && $data['service_id'] != ""){
-
-                $service = Service::find((int)$data['service_id']);
-
-                $trial_array = array('vip_booktrials','3daystrial','booktrials','workout-session','healthytiffintrail');
-                if(in_array($data['type'],$trial_array)){
-
-                    if(isset($service['trial']) && $service['trial'] == "disable"){
-
-                        $message = "Sorry, this class is not available. Kindly book a different slot";
-
-                        ($data['type'] == "healthytiffintrail") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
-
-                        $resp   =   array('status' => 400,'message' => $message);
-
-                        return Response::json($resp,400);
-                    }
-
-                }
-
-                $membership_array = array('healthytiffinmembership','memberships');
-                if(in_array($data['type'],$membership_array)){
-
-                    if(isset($service['membership']) && $service['membership'] == "disable"){
-
-                        $message = "Sorry, this membership purchase can't be fulfilled.";
-
-                        ($data['type'] == "healthytiffinmembership") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
-
-                        $resp   =   array('status' => 400,'message' => $message);
-
-                        return Response::json($resp,400);
-                    }
-
-                }
-
+                return Response::json($disableTrialMembership,$disableTrialMembership['status']);
             }
 
         
@@ -1538,7 +1476,76 @@ class OrderController extends \BaseController {
 
     }
 
+    public function disableTrialMembership($data){
 
+        $finder     =   Finder::find(intval($data['finder_id']));
+
+        $trial_array = array('vip_booktrials','3daystrial','booktrials','workout-session','healthytiffintrail');
+        $membership_array = array('healthytiffinmembership','memberships');
+        
+        if(in_array($data['type'],$trial_array)){
+
+            if(isset($finder['trial']) && $finder['trial'] == "disable"){
+
+                $message = "Sorry, this class is not available. Kindly book a different slot";
+
+                ($data['type'] == "healthytiffintrail") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                return array('status' => 400,'message' => $message);
+            }
+
+        }
+
+        
+        if(in_array($data['type'],$membership_array)){
+
+            if(isset($finder['membership']) && $finder['membership'] == "disable"){
+
+                $message = "Sorry, this membership purchase can't be fulfilled.";
+
+                ($data['type'] == "healthytiffinmembership") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                return array('status' => 400,'message' => $message);
+            }
+
+        }
+
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+
+            $service = Service::find((int)$data['service_id']);
+
+            if(in_array($data['type'],$trial_array)){
+
+                if(isset($service['trial']) && $service['trial'] == "disable"){
+
+                    $message = "Sorry, this class is not available. Kindly book a different slot";
+
+                    ($data['type'] == "healthytiffintrail") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                    return array('status' => 400,'message' => $message);
+
+                }
+
+            }
+
+            if(in_array($data['type'],$membership_array)){
+
+                if(isset($service['membership']) && $service['membership'] == "disable"){
+
+                    $message = "Sorry, this membership purchase can't be fulfilled.";
+
+                    ($data['type'] == "healthytiffinmembership") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                    return array('status' => 400,'message' => $message);
+
+                }
+
+            }
+
+        }
+
+        return array('status' => 200,'message' => 'success');
+    }
 
 
     public function captureFailOrders(){
