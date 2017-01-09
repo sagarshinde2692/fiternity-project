@@ -622,7 +622,7 @@ class ServiceController extends \BaseController {
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
-            $service = array('service_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial']);
+            $service = array('service_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial'],'address' => $item['address']);
 
             $slots = array();
 
