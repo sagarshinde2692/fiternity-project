@@ -297,20 +297,21 @@ class OzonetelsController extends \BaseController {
 	    		$phone = explode(',', $phone);
 	    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);
                 $call_jump = false;
+                $city = [1,2];
 
                 //OZONETEL JUMP LOGIC
-                //if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
+                if(in_array($finderDetails->finder->city_id, $city)) {
 
 		    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 					$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
 				   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 				   	$this->addCapture($_REQUEST,$finderDetails->finder->_id);
 
-                /*}else{
+                }else{
 
                     $this->ozonetelResponse->addDial($contact_no,"true");
                     $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
-                }*/
+                }
                 
 	    	}else{
 
@@ -385,11 +386,13 @@ class OzonetelsController extends \BaseController {
 
 				}else{
 
-					$finder = Finder::findOrFail((int) $capture->finder_id);
+					$finder = Finder::find((int) $capture->finder_id);
+
+					$city = [1,2];
 
 					if($finder){
 
-						//if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time  && in_array($finder->_id, $this->jump_finder_ids)) {
+						if(in_array($finder->city_id, $city)) {
 
 							if(isset($capture->call_jump)){
 
@@ -414,7 +417,7 @@ class OzonetelsController extends \BaseController {
 			    				
 			    			}
 
-	                    /*}else{
+	                    }else{
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -428,7 +431,7 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                    }*/
+	                    }
 
 					}else{
 	                    
