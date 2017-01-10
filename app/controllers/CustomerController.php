@@ -2704,7 +2704,7 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 3.2;
-		$current_version_ios = 2.0;
+		$current_version_ios = 2.3;
 
 		if($data["device_type"] == "android"){
 
@@ -2729,6 +2729,11 @@ class CustomerController extends \BaseController {
 			"available_version" => $current_version_ios,
 		);
 
+		if(floatval($data["app_version"]) < $current_version_ios){
+
+			$result_ios['force_update'] = true;
+		}
+
 		return Response::json(array('status' => 200,'data' => $result_ios),200);
 
 	}
@@ -2738,8 +2743,8 @@ class CustomerController extends \BaseController {
 		$app_version = Request::header('App-Version');
 		$device_type = Request::header('Device-Type');
 
-		$current_version_android = 2.6;
-		$current_version_ios = 2.0;
+		$current_version_android = 3.2;
+		$current_version_ios = 2.3;
 		$force_update_android = false;
 		$force_update_ios = false;
 		
@@ -2760,6 +2765,14 @@ class CustomerController extends \BaseController {
 			"force_update" => $force_update_android,
 			"available_version" => $current_version_android,
 			);
+
+		if($device_type == "ios"){
+
+			if($app_version < $current_version_ios){
+
+				$force_update_ios = true;
+			}
+		}
 
 		$result_ios = array(
 			"title" => "Version ".$current_version_ios." is available on App Store",
