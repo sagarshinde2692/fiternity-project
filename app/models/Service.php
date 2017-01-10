@@ -196,6 +196,8 @@ class Service extends \Basemodel{
                 	
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
+                    ($value['price'] == $ratecardoffers[0]['price']) ? $value['special_price'] = 0 : null;
+
                     if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
                     	$value['remarks'] = $ratecardoffers[0]['remarks'];
                     }
