@@ -2703,7 +2703,7 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 3.2;
+		$current_version_android = 3.5;
 		$current_version_ios = 2.3;
 
 		if($data["device_type"] == "android"){
@@ -2743,7 +2743,7 @@ class CustomerController extends \BaseController {
 		$app_version = Request::header('App-Version');
 		$device_type = Request::header('Device-Type');
 
-		$current_version_android = 3.2;
+		$current_version_android = 3.5;
 		$current_version_ios = 2.3;
 		$force_update_android = false;
 		$force_update_ios = false;
