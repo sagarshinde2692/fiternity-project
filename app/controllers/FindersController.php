@@ -332,7 +332,7 @@ class FindersController extends \BaseController {
 
 							//calorie_burn
 							$category_calorie_burn      =   300;
-							if(isset($service['calorie_burn']) && $service['calorie_burn'] != 0){
+							if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
 								$category_calorie_burn = $service['calorie_burn']['avg'];
 							}else{
 								if(isset($sericecategorysCalorieArr[$category_id])){
@@ -1793,7 +1793,7 @@ class FindersController extends \BaseController {
 			$service_category_id = (isset($item['servicecategory_id']) && $item['servicecategory_id'] != "") ? $item['servicecategory_id'] : 0;
 
 
-			if(isset($service['calorie_burn']) && $service['calorie_burn'] != 0){
+			if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
 				$category_calorie_burn = $service['calorie_burn']['avg'];
 			}else{
 				if(isset($sericecategorysCalorieArr[$service_category_id])){
