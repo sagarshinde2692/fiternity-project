@@ -1716,7 +1716,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'inputcat' => $catname,
                         'inputcat1' => strtolower($cat['name']),
                         'city' => $city,
-                        'location' => strtolower($city),
+                        'location' => "",
                         'type' => 'categorycity',
                         'slug' => "",
                         'geolocation' => array('lat' => 0.0, 'lon' => 0.0)
@@ -1747,7 +1747,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'inputcat' => "",
                         'inputcat1' => "",
                         'city' => $city,
-                        'location' => strtolower($city),
+                        'location' => "",
                         'type' => 'servicecategorycity',
                         'slug' => "",
                         'geolocation' => array('lat' => 0.0, 'lon' => 0.0),
