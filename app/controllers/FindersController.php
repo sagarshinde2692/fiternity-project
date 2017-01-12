@@ -332,8 +332,12 @@ class FindersController extends \BaseController {
 
 							//calorie_burn
 							$category_calorie_burn      =   300;
-							if(isset($sericecategorysCalorieArr[$category_id])){
-								$category_calorie_burn = $sericecategorysCalorieArr[$category_id];
+							if(isset($service['calorie_burn']) && $service['calorie_burn'] != 0){
+								$category_calorie_burn = $service['calorie_burn']['avg'];
+							}else{
+								if(isset($sericecategorysCalorieArr[$category_id])){
+									$category_calorie_burn = $sericecategorysCalorieArr[$category_id];
+								}
 							}
 							$service['calorie_burn']    = $category_calorie_burn;
 
@@ -1788,8 +1792,13 @@ class FindersController extends \BaseController {
 			$category_calorie_burn = 300;
 			$service_category_id = (isset($item['servicecategory_id']) && $item['servicecategory_id'] != "") ? $item['servicecategory_id'] : 0;
 
-			if(isset($sericecategorysCalorieArr[$service_category_id])){
-				$category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
+
+			if(isset($service['calorie_burn']) && $service['calorie_burn'] != 0){
+				$category_calorie_burn = $service['calorie_burn']['avg'];
+			}else{
+				if(isset($sericecategorysCalorieArr[$service_category_id])){
+					$category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
+				}
 			}
 
 			$extra_info[0] = array(
