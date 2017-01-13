@@ -503,6 +503,14 @@ Class FinderMailer extends Mailer {
 
 	public function common($label,$data,$message_data,$delay = 0){
 
+		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
+			$delay = 0;
+			$data['label'] = $label;
+			$data['user_name'] = $message_data['user_name'];
+			$label = 'EmailFailureNotification-LMD';
+			$message_data['user_email'] = array('vinichellani@fitternity.com');
+		}
+
 		$template = \Template::where('label',$label)->first();
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
