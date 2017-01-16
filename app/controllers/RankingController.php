@@ -341,7 +341,7 @@ class RankingController extends \BaseController {
        $finder_count_incity = Finder::active()->count();
        $i_max = (int) $finder_count_incity/1000;
 
-       for($i = 0;$i<=$_max;$i++){
+       for($i = 0;$i<=$i_max;$i++){
            $skip = $i * 1000;
            $this->chunkIndex($index_name, $city_id,$skip,1000);
        }
