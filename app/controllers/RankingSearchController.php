@@ -2140,6 +2140,7 @@ public function getRankedFinderResultsAppv4()
         $trial_time_from    = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
         $trial_time_to      = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
         $region             = Input::json()->get('regions');
+        $offerings          = Input::json()->get('subcategories');
 
         $object_keys        = array();
 
@@ -2188,7 +2189,7 @@ public function getRankedFinderResultsAppv4()
         $budget_filter          = Input::json()->get('budget') ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', Input::json()->get('budget'))).'"],"_cache": true}},': '';
         $regions_filter         = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
         $region_tags_filter     = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-        $offerings_filter       = Input::json()->get('offerings') ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', Input::json()->get('offerings'))).'"],"_cache": true}},': '';
+        $offerings_filter       = $offerings ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', $offerings)).'"],"_cache": true}},': '';
         $facilities_filter      = Input::json()->get('facilities') ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', Input::json()->get('facilities'))).'"],"_cache": true}},': '';
         $trials_day_filter      = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
         $trials_day_filterv2    = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "day": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
@@ -2544,7 +2545,7 @@ public function getRankedFinderResultsAppv4()
         $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
         $response       =   json_decode($searchresulteresponse1,true);
-        if($from == 0 && count(Input::json()->get('offerings')) == 0 && count(Input::json()->get('facilities')) == 0 && count(Input::json()->get('budget')) == 0 && $locationCount == 0){
+        if($from == 0 && count($offerings) == 0 && count(Input::json()->get('facilities')) == 0 && count(Input::json()->get('budget')) == 0 && $locationCount == 0){
             $response['campaign'] = array(
                 'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
                 // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
