@@ -2534,11 +2534,12 @@ public function getRankedFinderResultsAppv4()
         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
         $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
-        $searchresulteresponse->meta->number_of_records = intval($size);
-        $searchresulteresponse->meta->from = intval($from);
-        $searchresulteresponse->meta->sortfield = $orderfield;
-        $searchresulteresponse->meta->sortorder = $order;
-        $searchresulteresponse->meta->request = Input::all();
+        $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
+        $searchresulteresponse->metadata['number_of_records'] = intval($size);
+        $searchresulteresponse->metadata['from'] = intval($from);
+        $searchresulteresponse->metadata['sortfield'] = $orderfield;
+        $searchresulteresponse->metadata['sortorder'] = $order;
+        $searchresulteresponse->metadata['request'] = Input::all();
         // $searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
         $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
@@ -2559,5 +2560,34 @@ public function getRankedFinderResultsAppv4()
 
     }
 
+
+ public function getOfferingHeader($category,$city){
+
+        $categorytag_offerings = '';
+
+
+        $meta_title = $meta_description = $meta_keywords = '';
+        if($category != ''){
+            $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
+            $findercategorytag     =   Findercategorytag::active()->where('slug', '=', url_slug(array($category)))->first(array('offering_header'));
+            $meta_title         = $findercategory['meta']['title'];
+            $meta_description   = $findercategory['meta']['description'];
+            $meta_keywords      = $findercategory['meta']['keywords'];
+            $categorytag_offerings    = $findercategorytag['offering_header'];
+        }
+        $resp  =    array(
+            'meta' => array(
+                'title' => str_replace("<city_name>", $city, $meta_title),
+                'description' => str_replace("<city_name>", $city, $meta_description),
+                'keywords' => $meta_keywords,
+            ),
+            'offering_header' =>$categorytag_offerings
+        );
+        
+        //return Response::json($search_results); exit;
+        return $resp;
+
+    
+}
 
 }
