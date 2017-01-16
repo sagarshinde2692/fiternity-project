@@ -142,10 +142,10 @@ class TransactionController extends \BaseController {
         $mobilehash = "";
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $txnid = "MFIT".$data['_id'];
-            $successurl = $data['customer_source'] == "android" ? "http://web.fitn.in:8020/paymentsuccessandroid" : "http://web.fitn.in:8020/paymentsuccessios";
+            $successurl = $data['customer_source'] == "android" ? "https://www.fitternity.com/paymentsuccessandroid" : "https://www.fitternity.com/paymentsuccessios";
         }else{
             $txnid = "SIT".$data['_id'];
-            $successurl = $data['type'] == "memberships" ? "http://web.fitn.in:8020/paymentsuccess" : "http://web.fitn.in:8020/paymentsuccesstrial";
+            $successurl = $data['type'] == "memberships" ? "https://www.fitternity.com/paymentsuccess" : "https://www.fitternity.com/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
         $hash = $this->getHash($data);
