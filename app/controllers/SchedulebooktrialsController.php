@@ -133,7 +133,7 @@ class SchedulebooktrialsController extends \BaseController {
      * @return Response
      */
 
-    public function getTrialSchedule($finderid,$date = null){
+        public function getTrialSchedule($finderid,$date = null){
 
         // $dobj = new DateTime;print_r($dobj);
         // return "hello";
@@ -149,6 +149,7 @@ class SchedulebooktrialsController extends \BaseController {
         
 
         $items = Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->get(array('_id','name','finder_id', 'trialschedules','servicecategory_id'));
+        
 
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
@@ -160,6 +161,10 @@ class SchedulebooktrialsController extends \BaseController {
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
+
+
+            $ratecard_id = Ratecard::where('finder_id',$finderid)->where('service_id',$item['_id'])->where('type', 'trial')->get(['id'])->first();
 
             $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
@@ -205,6 +210,7 @@ class SchedulebooktrialsController extends \BaseController {
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
+                        array_set($slot, 'ratecard_id', $ratecard_id['_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -215,27 +221,36 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 }
                 
-
+                $service['ratecard_id'] = $ratecard_id['id'];
                 $service['slots'] = $slots;
                 $service['trialschedules']['slots'] = $slots;
-                array_push($scheduleservices, $service);
+                if(isset($ratecard_id['id']) && $ratecard_id['id'] != null){
+                    array_push($scheduleservices, $service);
+                }
+                // array_push($scheduleservices, $service);
             }
         }
         return $scheduleservices;
     }
 
 
-    public function getTrialScheduleIfDontSoltsAlso($finderid,$date = null){
+    public function getTrialScheduleIfDontSoltsAlso($finderid,$date = null,$service_id = false){
 
         // $dobj = new DateTime;print_r($dobj);
 
-        $currentDateTime        =	\Carbon\Carbon::now();
-        $finderid 		       = 	(int) $finderid;
-        $date 			       =  	($date == null) ? Carbon::now() : $date;
-        $timestamp 		       = 	strtotime($date);
-        $weekday 		       = 	strtolower(date( "l", $timestamp));
+        $currentDateTime        =   \Carbon\Carbon::now();
+        $finderid              =    (int) $finderid;
+        $date                  =    ($date == null) ? Carbon::now() : $date;
+        $timestamp             =    strtotime($date);
+        $weekday               =    strtolower(date( "l", $timestamp));
 
-        $items                  =   Service::active()->where('finder_id', '=', $finderid)->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id','trial','membership'));
+        $query                  =   Service::active()->where('finder_id', '=', $finderid);
+
+        if($service_id){
+            $query->where('_id',(int)$service_id);
+        }
+
+        $items = $query->where('trialschedules', 'exists',true)->where('trialschedules', '!=',[])->where('status','1')->get(array('_id','three_day_trial','vip_trial','name','finder_id', 'trialschedules','servicecategory_id','trial','membership'));
 
         if(!$items){
             return $this->responseNotFound('TrialSchedule does not exist');
@@ -245,6 +260,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
+            $ratecard_id = Ratecard::where('finder_id',$finderid)->where('service_id',$item['_id'])->where('type', 'trial')->get(['id'])->first();
 
             $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
@@ -324,6 +341,7 @@ class SchedulebooktrialsController extends \BaseController {
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
+                        array_set($slot, 'ratecard_id', $ratecard_id['_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -338,9 +356,12 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $service['cashback']                =   $cashback;
-            $service['slots'] 			        =	$slots;
-            $service['trialschedules']['slots'] =	$slots;
-            array_push($scheduleservices, $service);
+            $service['slots']                   =   $slots;
+            $service['trialschedules']['slots'] =   $slots;
+            $service['ratecard_id'] = $ratecard_id['id'];
+            if(isset($ratecard_id['id']) && $ratecard_id['id'] != null){
+                array_push($scheduleservices, $service);
+            }
 
         }
 
@@ -364,16 +385,22 @@ class SchedulebooktrialsController extends \BaseController {
      * @return Response
      */
 
-    public function getWorkoutSessionSchedule($finderid,$date = null){
+    public function getWorkoutSessionSchedule($finderid,$date = null,$service_id = false){
         // $dobj = new DateTime;print_r($dobj);
 
-        $currentDateTime        =	\Carbon\Carbon::now();
-        $finderid 		       = 	(int) $finderid;
-        $date 			       =  	($date == null) ? Carbon::now() : $date;
-        $timestamp 		       = 	strtotime($date);
-        $weekday 		       = 	strtolower(date( "l", $timestamp));
+        $currentDateTime        =   \Carbon\Carbon::now();
+        $finderid              =    (int) $finderid;
+        $date                  =    ($date == null) ? Carbon::now() : $date;
+        $timestamp             =    strtotime($date);
+        $weekday               =    strtolower(date( "l", $timestamp));
 
-        $items = Service::active()->where('finder_id', '=', $finderid)->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id','trial','membership'));
+        $query = Service::active()->where('finder_id', '=', $finderid);
+
+        if($service_id){
+            $query->where('_id',(int)$service_id);
+        }
+
+        $items = $query->get(array('_id','name','finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id','trial','membership'));
 
         if(!$items){
             return $this->responseNotFound('WorkoutSession Schedule does not exist');
@@ -383,6 +410,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         $scheduleservices = array();
         foreach ($items as $k => $item) {
+
+            $ratecard_id = Ratecard::where('finder_id',$finderid)->where('service_id',$item['_id'])->where('type', 'workout session')->get(['id'])->first();
 
             $weekdayslots = head(array_where($item['workoutsessionschedules'], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
@@ -423,6 +452,7 @@ class SchedulebooktrialsController extends \BaseController {
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
+                        array_set($slot, 'ratecard_id', $ratecard_id['_id']);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
@@ -436,7 +466,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $service['slots'] = $slots;
                 $service['workoutsessionschedules']['slots'] = $slots;
-                array_push($scheduleservices, $service);
+                $service['ratecard_id'] = $ratecard_id['id'];
+                if(isset($ratecard_id['id']) && $ratecard_id['id'] != null){
+                    array_push($scheduleservices, $service);
+                }
             }
         }
         return $scheduleservices;
@@ -457,8 +490,9 @@ class SchedulebooktrialsController extends \BaseController {
 
 
         // $dobj = new DateTime;print_r($dobj);exit;
-        $currentDateTime 	=	\Carbon\Carbon::now();
-        $item 		       =	Service::active()->where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'));
+        $currentDateTime    =   \Carbon\Carbon::now();
+        $item              =    Service::active()->where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'));
+        $ratecard_id ="";
 
         if(!$item){
             return $this->responseNotFound('Service Schedule does not exist');
@@ -468,19 +502,21 @@ class SchedulebooktrialsController extends \BaseController {
 
         $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
-        $finderid 	       = 	intval($item['finder_id']);
-        $noofdays 	       =  	($noofdays == null) ? 1 : $noofdays;
-        $schedulesof        =  	($schedulesof == null) ? 'trialschedules' : $schedulesof;
-        $serviceschedules 	= 	array();
+        $finderid          =    intval($item['finder_id']);
+        $noofdays          =    ($noofdays == null) ? 1 : $noofdays;
+        $schedulesof        =   ($schedulesof == null) ? 'trialschedules' : $schedulesof;
+        $serviceschedules   =   array();
 
         for ($j = 0; $j < $noofdays; $j++) {
 
-            $dt 	       =	Carbon::createFromFormat('Y-m-d', date("Y-m-d", strtotime($date)) )->addDays(intval($j))->format('d-m-Y');
-            $timestamp        = 	strtotime($dt);
-            $weekday        = 	strtolower(date( "l", $timestamp));
+            $dt            =    Carbon::createFromFormat('Y-m-d', date("Y-m-d", strtotime($date)) )->addDays(intval($j))->format('d-m-Y');
+            $timestamp        =     strtotime($dt);
+            $weekday        =   strtolower(date( "l", $timestamp));
             // echo "$dt -- $weekday <br>";
 
             if($schedulesof == 'trialschedules'){
+
+                $ratecard_id = Ratecard::where('finder_id',$finderid)->where('service_id',$item['_id'])->where('type', 'trial')->get(['id'])->first();
 
                 $weekdayslots = head(array_where($item['trialschedules'], function($key, $value) use ($weekday){
                     if($value['weekday'] == $weekday){
@@ -489,6 +525,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }));
 
             }else{
+
+                $ratecard_id = Ratecard::where('finder_id',$finderid)->where('service_id',$item['_id'])->where('type', 'workout session')->get(['id'])->first();
 
                 $weekdayslots = head(array_where($item['workoutsessionschedules'], function($key, $value) use ($weekday){
                     if($value['weekday'] == $weekday){
@@ -529,6 +567,7 @@ class SchedulebooktrialsController extends \BaseController {
                             array_set($slot, 'passed', $slot_datetime_pass_status);
                             array_set($slot, 'service_id', $item['_id']);
                             array_set($slot, 'finder_id', $item['finder_id']);
+                            array_set($slot, 'ratecard_id', $ratecard_id['_id']);
                             array_push($slots, $slot);
 
                         }catch(Exception $e){
@@ -545,9 +584,11 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
             
-
+            $service['ratecard_id'] = $ratecard_id['id'];
             $service['slots'] = $slots;
-            array_push($serviceschedules, $service);
+            if(isset($ratecard_id['id']) && $ratecard_id['id'] != null){
+                array_push($scheduleservices, $service);
+            }
 
         }
 

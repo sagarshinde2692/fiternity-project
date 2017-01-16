@@ -294,6 +294,9 @@ Class CustomerMailer extends Mailer {
 			case 'vip_3days_booktrials':
 				$label = 'Invite-friend-for-vip-trial';
 				break;
+			case 'memberships':
+				$label = 'Invite-friend-for-membership';
+				break;
 			default:
 				$label = 'Invite-friend-for-trial';
 				break;

@@ -178,6 +178,7 @@ Route::post('captureorderpayment', array('as' => 'customer.storebooktrial','uses
 
 Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
 Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
+Route::post('customerloginotp', array('as' => 'customer.customerloginotp','uses' => 'CustomerController@customerLoginOtp'));
 Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgotpasswordemail','uses' => 'CustomerController@forgotPasswordEmail'));
 Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpassword','uses' => 'CustomerController@forgotPassword'));
 Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
@@ -292,6 +293,8 @@ Route::get('orderfailureaction/{order_id}', array('as' => 'orders.orderFailureAc
 Route::get('linkopenfororder/{order_id}',  array('as' => 'orders.linkOpenForOrder','uses' => 'OrderController@linkOpenForOrder'));
 
 Route::post('orderupdate', array('as' => 'orders.orderupdate','uses' => 'OrderController@orderUpdate'));
+
+Route::post('inviteformembership', array('as' => 'customer.inviteForMembership','uses' => 'OrderController@inviteForMembership'));
 
 
 
@@ -474,8 +477,8 @@ Route::get('finder/senddaliysummaryhealthytiffin/', array('as' => 'finders.sendd
 
 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
-Route::get('gettrialschedulev1/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialScheduleIfDontSoltsAlso'));
-Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
+Route::get('gettrialschedulev1/{finderid}/{date}/{service_id?}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialScheduleIfDontSoltsAlso'));
+Route::get('getworkoutsessionschedule/{finderid}/{date}/{service_id?}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}/{schedulesof?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
@@ -813,7 +816,7 @@ Route::post('temp/add', array('as' => 'temps.add','uses' => 'TempsController@add
 Route::get('temp/delete/{customer_phone}', array('as' => 'temps.delete','uses' => 'TempsController@delete'));
 
 Route::get('temp/verifynumber/{number}', array('as' => 'temps.verifynumber','uses' => 'TempsController@verifyNumber'));
-Route::get('temp/verifyotp/{temp_id}/{otp}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtp'));
+Route::get('temp/verifyotp/{temp_id}/{otp}/{email?}/{name?}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtp'));
 Route::get('temp/proceedwithoutotp/{temp_id}', array('as' => 'temps.proceedwithoutotp','uses' => 'TempsController@proceedWithoutOtp'));
 Route::get('temp/regenerateotp/{temp_id}', array('as' => 'temps.regenerateotp','uses' => 'TempsController@regenerateOtp'));
 
@@ -854,3 +857,5 @@ Route::group(array('before' => 'validatetoken'), function() {
 Route::post('seourl', 'GlobalSearchController@seourl');
 
 Route::get('email/opened', 'CustomerController@emailOpened');
+
+Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));

@@ -15,6 +15,7 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
+use App\Services\ShortenUrl as ShortenUrl;
 
 
 class OrderController extends \BaseController {
@@ -2209,6 +2210,245 @@ class OrderController extends \BaseController {
         }
 
     }
+
+    public function inviteForMembership(){
+
+        $req = Input::json()->all();
+        Log::info('inviteForMembership',$req);
+        // return $req;
+        // exit(0);
+
+
+        // Request Validations...........
+        $rules = [
+            'order_id' => 'required|integer|numeric',
+            'invitees' => 'required|array',
+            'source' => 'in:ANDROID,IOS,WEB',
+        ];
+
+        $validator = Validator::make($req, $rules);
+
+        if ($validator->fails()) {
+            return Response::json(
+                array(
+                    'status' => 400,
+                    'message' => $this->errorMessage($validator->errors()
+                    )),400
+            );
+        }
+
+        // Invitee info validations...........
+        $inviteesData = [];
+
+        foreach ($req['invitees'] as $value){
+
+            $inviteeData = ['name'=>$value['name']];
+
+            $rules = [
+                'name' => 'required|string',
+                'input' => 'required|string',
+            ];
+            $messages = [
+                'name' => 'invitee name is required',
+                'input' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+
+            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+                // valid address
+                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+            }
+            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+                )) != ''){
+                // valid phone
+                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+
+            }
+            array_push($inviteesData, $inviteeData);
+
+        }
+
+
+        foreach ($inviteesData as $value){
+
+            $rules = [
+                'name' => 'required|string',
+                'email' => 'required_without:phone|email',
+                'phone' => 'required_without:email',
+            ];
+            $messages = [
+                'email.required_without' => 'invitee email or phone is required',
+                'phone.required_without' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+        }
+
+        // Get Host Data an validate booktrial ID......
+        $orderData = Order::where('_id', $req['order_id'])
+            ->get(array(
+                'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
+                'type', 'finder_name', 'finder_location','finder_address', 'amount', 'service_duration', 'finder_slug', 'service_id', 'finder_city' , 'finder_category_id', 'batch', 'ratecard_remarks', 'finder_id'
+            ))
+            ->first();
+            //  Finder::$withoutAppends=true;
+            $locationSlug= Finder::where('_id', $orderData['finder_id'])->with(array('location'=>function($query){$query->select('slug');}))->get(['_id', 'location_id'])->first();
+           
+            $locationSlug = $locationSlug['location']['slug'];
+
+            // return $locationSlug;
+            // exit(0);
+
+        $finder_cat_slug = Findercategory::where('_id', intval($orderData['finder_category_id']))->get(['slug']);
+
+            // return $finder_cat_slug;
+            // exit(0);
+
+        $errorMessage = !isset($orderData)
+            ? 'Invalid Order ID'
+//            : count($BooktrialData['invites']) >= 0
+//                ? 'You have already invited your friends for this trial'
+            : null;
+        if($errorMessage){
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => $errorMessage
+                ),422
+            );
+        }
+
+        // Validate customer is not inviting himself/herself......
+        $emails = array_fetch($inviteesData, 'email');
+        $phones = array_fetch($inviteesData, 'phone');
+
+
+        if(array_where($emails, function ($key, $value) use($orderData)  {
+            if($value == $orderData['customer_email']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        if(array_where($phones, function ($key, $value) use($orderData)  {
+            if($value == $orderData['customer_phone']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        // Save Invite info..........
+        foreach ($inviteesData as $invitee){
+            $invite = new Invite();
+            $invite->_id = Invite::max('_id') + 1;
+            $invite->status = 'pending';
+            $invite->host_id = $orderData['customer_id'];
+            $invite->host_email = $orderData['customer_email'];
+            $invite->host_name = $orderData['customer_name'];
+            $invite->host_phone = $orderData['customer_phone'];
+            $invite->root_order_id =
+                isset($orderData['root_order_id'])
+                    ? $orderData['root_order_id']
+                    : $req['order_id'];
+            $invite->referrer_order_id = $req['order_id'];
+            $invite->source = $req['source'];
+            isset($invitee['name']) ? $invite->invitee_name = trim($invitee['name']): null;
+            isset($invitee['email']) ? $invite->invitee_email = trim($invitee['email']): null;
+            isset($invitee['phone']) ? $invite->invitee_phone = trim($invitee['phone']): null;
+            $invite->save();
+
+           // continue;
+
+            // Generate bitly for landing page with invite_id and booktrial_id
+            // 'www.fitternity.com/buy/'.$orderData['finder_slug'].'/'.$orderData['service_id']finder-slug/service_id
+            // 'www.fitternity.com/'.$orderData['finder_city'].'/'.$finder_cat_slug['slug']
+            $url = 'www.fitternity.com/buy/'.$orderData['finder_slug'].'/'.$orderData['service_id'];
+            $url2 = 'www.fitternity.com/'.$orderData['finder_city'].'/'.$finder_cat_slug[0]['slug'].'/'.$locationSlug;
+            $shorten_url = new ShortenUrl();
+            $url = $shorten_url->getShortenUrl($url);
+            $url2 = $shorten_url->getShortenUrl($url2);
+            if(!isset($url['status']) ||  $url['status'] != 200){
+                return Response::json(
+                    array(
+                        'status' => 422,
+                        'message' => 'Unable to Generate Shortren URL'
+                    ),422
+                );
+            }
+            if(!isset($url2['status']) ||  $url2['status'] != 200){
+                return Response::json(
+                    array(
+                        'status' => 422,
+                        'message' => 'Unable to Generate Shortren URL'
+                    ),422
+                );
+            }
+            $url = $url['url'];
+            $url2 = $url2['url'];
+
+            // Send email / SMS to invitees...
+            $templateData = array(
+                'invitee_name'=>$invite['invitee_name'],
+                'invitee_email'=>$invite['invitee_email'],
+                'invitee_phone'=>$invite['invitee_phone'],
+                'host_name' => $invite['host_name'],
+                'type'=> $orderData['type'],
+                'finder_name'=> $orderData['finder_name'],
+                'finder_location'=> $orderData['finder_location'],
+                'finder_address'=> $orderData['finder_address'],
+                'service_name'=> $orderData['service_name'],
+                'url' => $url,
+                'url2' => $url2,
+                'amount' => $orderData['amount'],
+                'service_duration' => $orderData['service_duration'],
+                'ratecard_remarks' => $orderData['ratecard_remarks'],
+                'batch' => $orderData['batch']
+            );
+
+//            return $this->customermailer->inviteEmail($BooktrialData['type'], $templateData);
+
+            isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($orderData['type'], $templateData) : null;
+            isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS($orderData['type'], $templateData) : null;
+        }
+
+        return Response::json(
+            array(
+                'status' => 200,
+                'message' => 'Invitation has been sent successfully'
+            ),200
+        );
+    }
+
 
 
 }

@@ -2936,5 +2936,41 @@ class CustomerController extends \BaseController {
 		return $customer;
 	}
 
+	public function customerLoginOtp(){
+		$data = Input::json()->all();
+		$customer = Customer::where("contact_no",$data['phone'])->first();
+		if(empty($customer)){
+			$otp = genericGenerateOtp();
+			$customerdata = array(
+                'customer_name' => "",
+                'customer_email' => "newregister@fitternity.com",
+                'customer_phone' => $data['phone'],
+				'action' => 'login',
+				'otp' => $otp
+            );
+			$temp = new Temp($customerdata);
+			$temp->verified = "N";
+			$temp->save();
+			$this->customersms->genericOtp($customerdata);
+			return Response::json(array('status' => 400,'message' => 'This number is not registered with us','temp_id'=>$temp->_id),200);
+		}else{
+			$otp = genericGenerateOtp();
+			$customer->lastOtp = $otp;
+			$customer->save();
+			$customerdata = array(
+                'customer_name' => $customer->name,
+                'customer_email' => $customer->email,
+                'customer_phone' => $customer->contact_no,
+				'action' => 'login',
+				'otp' => $otp
+            );
+			$temp = new Temp($customerdata);
+			$temp->verified = "N";
+			$temp->save();
+			$this->customersms->genericOtp($customerdata);
+			return $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id);
+		}
+	}
+
 
 }

@@ -119,7 +119,7 @@ class TempsController extends \BaseController {
 
     }
 
-    function verifyOtp($temp_id,$otp){
+    function verifyOtp($temp_id,$otp,$email="",$name=""){
 
         $otp = (int)$otp;
         $temp = Temp::find($temp_id);
@@ -130,14 +130,24 @@ class TempsController extends \BaseController {
             }else{
 
                 $verified = false;
-
+                $customerToken = "";
                 if($temp->otp == $otp){
                     $temp->verified = "Y";
+                    if($email != "" && $name != ""){
+                        $temp->customer_name = $name;
+                        $temp->customer_email = $email;
+                    }
                     $temp->save();
                     $verified = true;
+
+                    $data['customer_name'] = $temp['customer_name'];
+                    $data['customer_email'] = $temp['customer_email'];
+                    $data['customer_phone'] = $temp['customer_phone'];
+                    $data['customer_id'] = autoRegisterCustomer($data);
+                    $customerToken = createCustomerToken($data['customer_id']);
                 }
 
-                return Response::json(array('status' => 200,'verified' => $verified),200);
+                return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken),200);
             }
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);

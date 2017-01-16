@@ -224,10 +224,10 @@ class MigrationReverseController extends \BaseController {
                 'detail_rating' =>  $findercategory->detail_rating,
                 'cities' =>  (isset($findercategory->cities) && count($findercategory->cities) > 0) ? $findercategory->cities : [],
                 'defination' =>  (isset($findercategory->defination) && count($findercategory->defination) > 0) ? $findercategory->defination : [],
-                'meta' 	=>  [
-                    'title' 	=>  ($findercategory->meta['title']) ? strip_tags(trim($findercategory->meta['title'])) : "",
-                    'description' 	=>  ($findercategory->meta['description']) ? strip_tags(trim($findercategory->meta['description'])) : "",
-                    'keywords' 	=>  (isset($findercategory->meta['keywords']) && $findercategory->meta['keywords'] != "") ? strip_tags(trim($findercategory->meta['keywords'])) : ""
+                'meta'  =>  [
+                    'title'     =>  ($findercategory->seo['title']) ? (trim($findercategory->seo['title'])) : "",
+                    'description'   =>  ($findercategory->seo['description']) ? (trim($findercategory->seo['description'])) : "",
+                    'keywords'  =>  (isset($findercategory->seo['keywords']) && $findercategory->seo['keywords'] != "") ? (trim($findercategory->seo['keywords'])) : ""
                 ],
                 'ordering' =>  intval($findercategory->order),
                 'status' =>  (isset($findercategory->hidden) && $findercategory->hidden === false) ? "1" : "0",

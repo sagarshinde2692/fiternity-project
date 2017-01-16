@@ -1990,6 +1990,54 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
             }
 
+            if(!function_exists('createCustomerToken')){
+                function createCustomerToken($customer_id){
+                    $customer = Customer::find($customer_id);
+                    $customer = array_except($customer->toArray(), array('password'));
+
+                    $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
+                    $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
+                    $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
+                    $customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
+                    $customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+                    $customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                    $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                    $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                    $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+
+                    $data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],"contact_no"=>$customer['contact_no'],"location"=>$customer['location'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location'])); 
+
+                    $jwt_claim = array(
+                        "iat" => Config::get('app.jwt.iat'),
+                        "nbf" => Config::get('app.jwt.nbf'),
+                        "exp" => Config::get('app.jwt.exp'),
+                        "customer" => $data
+                        );
+                    
+                    $jwt_key = Config::get('app.jwt.key');
+                    $jwt_alg = Config::get('app.jwt.alg');
+
+                    $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+
+                    return $token;
+                }
+            }
+
+            if(!function_exists("genericGenerateOtp")){
+                function genericGenerateOtp($length = 4){
+                        $characters = '0123456789';
+                        $result = '';
+                        $charactersLength = strlen($characters);
+
+                        for ($p = 0; $p < $length; $p++)
+                        {
+                            $result .= $characters[rand(0, $charactersLength - 1)];
+                        }
+
+                        return $result;
+                }
+            }
+
             if (!function_exists('csv_to_array')) {
                 function csv_to_array($filename = '', $delimiter = ',')
                 {

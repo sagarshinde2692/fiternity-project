@@ -1989,8 +1989,6 @@ class FindersController extends \BaseController {
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
 
-		$cache_name = "finder_detail_app";
-
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 			$cache_name = "finder_detail_android";
 		}
@@ -1999,7 +1997,11 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_android_3_2";
 		}
 
-		if(isset($_GET['device_type']) && $_GET['device_type'] != 'android'){
+		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2){
+			$cache_name = "finder_detail_android_3_2";
+		}
+
+		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
 			$cache_name = "finder_detail_ios";
 		}
 
@@ -2320,7 +2322,9 @@ class FindersController extends \BaseController {
 						$data['finder']['dispaly_map'] = false;
 					}
 
-					if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
+					$device_type = ['ios','android'];
+
+					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 
 						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial');
 						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
@@ -2371,7 +2375,9 @@ class FindersController extends \BaseController {
 			
 			}
 
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
+			$device_type = ['ios','android'];
+
+			if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
 
 				if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
 
@@ -2424,7 +2430,9 @@ class FindersController extends \BaseController {
 	                    $ratecard_price = $ratecard['price'];
 	                }
 
-					if($findertype == "healthytiffins" && $ratecard['type'] == 'trial' && $ratecard_price > 0){
+	                $ratecard['cashback_on_trial'] = "";
+
+					if($ratecard_price > 0){
 						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
