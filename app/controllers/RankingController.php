@@ -338,7 +338,18 @@ class RankingController extends \BaseController {
 //       ini_set('memory_limit', '512M');
 
        $citykist      =    array(1,2,3,4,8,9);
-       $items = Finder::active()->with(array('country'=>function($query){$query->select('name');}))
+       $finder_count_incity = Finder::active()->count();
+       $i_max = (int) $finder_count_incity/1000;
+
+       for($i = 0;$i<=$_max;$i++){
+           $skip = $i * 1000;
+           $this->chunkIndex($index_name, $city_id,$skip,1000);
+       }
+}
+
+
+public function chunkIndex($index_name, $city_id,$skip,$take){
+        $items = Finder::active()->with(array('country'=>function($query){$query->select('name');}))
        ->with(array('city'=>function($query){$query->select('name');}))
        ->with(array('category'=>function($query){$query->select('name','meta');}))
        ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
@@ -360,7 +371,7 @@ class RankingController extends \BaseController {
        ->where('city_id', $city_id)
        ->where('status', '=', '1')
     //    ->take(30)->skip(0)
-      ->take(50000)->skip(0)
+      ->take($take)->skip($skip)
        ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
@@ -532,9 +543,9 @@ class RankingController extends \BaseController {
     Log::error($e);
 }
 }
-
-
 }
+
+
 public function generateRank($finderDocument = ''){
 
         //$finderCategory = $finderDocument['category'];
