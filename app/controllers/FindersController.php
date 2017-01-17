@@ -1989,6 +1989,8 @@ class FindersController extends \BaseController {
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
 
+		$cache_name = "finder_detail_app";
+
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 			$cache_name = "finder_detail_android";
 		}
@@ -2387,6 +2389,22 @@ class FindersController extends \BaseController {
 
 					$finderData['finder']['services'] = $finderData['finder']['services_trial'];
 
+				}
+
+				$disable_button = [];
+				foreach ($finderData['finder']['services'] as $key => $value) {
+
+					if(isset($value["trial"]) && $value["trial"] == "disable"){
+						$disable_button[] = "true";
+					}else{
+						$disable_button[] = "false";
+					}
+
+				}
+
+				if(!in_array("false", $disable_button)){
+					$finderData['call_for_action_button'] = "";
+					$finderData['finder']['pay_per_session'] = false;
 				}
 
 				unset($finderData['finder']['services_workout']);

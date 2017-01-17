@@ -533,7 +533,6 @@ class HomeController extends BaseController {
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription details are shared on an email to you'],
-                        ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
                         ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
