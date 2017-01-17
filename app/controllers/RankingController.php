@@ -340,7 +340,6 @@ class RankingController extends \BaseController {
        $citykist      =    array(1,2,3,4,8,9);
        $finder_count_incity = Finder::active()->where('city_id', $city_id)->count();
        $i_max = intval($finder_count_incity/1000);
-        Log::error($finder_count_incity."  - ".$i_max);
        for($i = 0;$i<=$i_max;$i++){
            $skip = $i * 1000;
            $this->chunkIndex($index_name, $city_id,$skip,1000);
@@ -380,6 +379,7 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
 
        foreach ($items as $finderdocument) {  
         try{
+            Log::error($finderdocument['title']);
             ini_set('max_execution_time', 300);
 
 //            var_dump($finderdocument->toArray());exit;
