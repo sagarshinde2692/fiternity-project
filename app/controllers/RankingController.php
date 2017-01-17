@@ -340,7 +340,7 @@ class RankingController extends \BaseController {
        $citykist      =    array(1,2,3,4,8,9);
        $finder_count_incity = Finder::active()->count();
        $i_max = (int) $finder_count_incity/1000;
-
+        Log::error($finder_count_incity."  - ".$i_max);
        for($i = 0;$i<=$_max;$i++){
            $skip = $i * 1000;
            $this->chunkIndex($index_name, $city_id,$skip,1000);
@@ -530,12 +530,12 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
 
       $postfields_data = json_encode($postdata);             
       $posturl = Config::get('app.es.url')."/".$index_name."/finder/" . $finderdocument['_id'];
-      $posturl1 = Config::get('app.es.url')."/fitternityv2/finder/" . $finderdocument['_id'];
+    //   $posturl1 = Config::get('app.es.url')."/fitternityv2/finder/" . $finderdocument['_id'];
        // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
       $request = array('url' => $posturl, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
-      $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+    //   $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
       $curl_response = es_curl_request($request);
-      $curl_response1 = es_curl_request($request1);
+    //   $curl_response1 = es_curl_request($request1);
         echo json_encode($curl_response);
 
   }
