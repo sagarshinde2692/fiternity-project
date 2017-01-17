@@ -2163,11 +2163,16 @@ class FindersController extends \BaseController {
 				array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
 				array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
 
-				if(isset($finder['info']['service']) && $finder['info']['service'] != ""){
-					
-					$info_service = str_replace("<ul><li>","",$finder['info']['service']);
-					$info_service = str_replace("</li></ul>","",$info_service);
-					$finder['offerings'] = explode("</li><li>", $info_service);
+				try {
+					if(isset($finder['info']['service']) && $finder['info']['service'] != ""){
+
+						$info_service = str_replace("<ul><li>","",$finder['info']['service']);
+						$info_service = str_replace("</li></ul>","",$info_service);
+						$finder['offerings'] = explode("</li><li>", $info_service);
+						
+					}
+				} catch (Exception $e) {
+					Log::info("info service Error");
 				}
 
 				if(count($finder['services']) > 0 ){
