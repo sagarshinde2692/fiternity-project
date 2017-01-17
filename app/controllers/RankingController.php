@@ -339,7 +339,7 @@ class RankingController extends \BaseController {
 
        $citykist      =    array(1,2,3,4,8,9);
        $finder_count_incity = Finder::active()->count();
-       $i_max = (int) $finder_count_incity/1000;
+       $i_max = intval($finder_count_incity/1000);
         Log::error($finder_count_incity."  - ".$i_max);
        for($i = 0;$i<=$i_max;$i++){
            $skip = $i * 1000;
