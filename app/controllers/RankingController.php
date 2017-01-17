@@ -334,7 +334,7 @@ class RankingController extends \BaseController {
 
     public function IndexRankMongo2Elastic($index_name, $city_id){
    
-       ini_set('max_execution_time', 30000);
+    //    ini_set('max_execution_time', 30000);
 //       ini_set('memory_limit', '512M');
 
        $citykist      =    array(1,2,3,4,8,9);
@@ -348,6 +348,8 @@ class RankingController extends \BaseController {
 
 
 public function chunkIndex($index_name, $city_id,$skip,$take){
+    ini_set('max_execution_time', 30000);
+    ini_set('memory_limit', '512M');
         $items = Finder::active()
        ->where('city_id', $city_id)
        ->where('status', '=', '1')
