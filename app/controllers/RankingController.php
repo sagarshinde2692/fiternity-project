@@ -83,7 +83,7 @@ class RankingController extends \BaseController {
         'method' => 'POST',
         );
 
-       echo es_curl_request($request); 
+       echo "creating an index".es_curl_request($request); 
        sleep(3);
 
         /*
@@ -96,7 +96,7 @@ class RankingController extends \BaseController {
         'method' => 'POST',
         );
 
-      echo es_curl_request($request);   
+      echo "closing an index".es_curl_request($request);   
       sleep(3);
 
       $settings = '{
@@ -207,7 +207,7 @@ class RankingController extends \BaseController {
             'method' => 'PUT',
             );
 
-        echo es_curl_request($request); 
+        echo "setting an index".es_curl_request($request); 
         sleep(3);
 
         /*
@@ -220,7 +220,7 @@ class RankingController extends \BaseController {
             'method' => 'POST',
             );
 
-        echo es_curl_request($request);   
+        echo "open new an index".es_curl_request($request);   
         sleep(3);
 
         $mapping = '{
@@ -289,7 +289,7 @@ class RankingController extends \BaseController {
             'method' => 'PUT',
             'postfields' => $postfields_data
             );      
-        echo es_curl_request($request);
+        echo "mapping update an index".es_curl_request($request);
         sleep(3);
 
         /*
@@ -376,7 +376,7 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
        ->get(); 
-
+        Log::info("got finders");
        foreach ($items as $finderdocument) {  
         try{
             Log::error($finderdocument['title']);
@@ -537,7 +537,7 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
     //   $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
       $curl_response = es_curl_request($request);
     //   $curl_response1 = es_curl_request($request1);
-        echo json_encode($curl_response);
+        echo "finder indexing ".$finderdocument['_id']." --- ".json_encode($curl_response);
 
   }
   catch(Exception $e){
