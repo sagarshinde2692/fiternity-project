@@ -157,7 +157,7 @@ class TransactionController extends \BaseController {
         $order = new Order($data);
         $order->_id = $order_id;
         $order->save();
-        
+
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
@@ -183,10 +183,6 @@ class TransactionController extends \BaseController {
         );
 
         return Response::json($resp);
-
-    }
-
-    public getSuccessUrl($data){
 
     }
 
