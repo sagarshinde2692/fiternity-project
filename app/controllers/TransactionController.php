@@ -142,10 +142,10 @@ class TransactionController extends \BaseController {
         $mobilehash = "";
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $txnid = "MFIT".$data['_id'];
-            $successurl = $data['customer_source'] == "android" ? "https://www.fitternity.com/paymentsuccessandroid" : "https://www.fitternity.com/paymentsuccessios";
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
             $txnid = "SIT".$data['_id'];
-            $successurl = $data['type'] == "memberships" ? "https://www.fitternity.com/paymentsuccess" : "https://www.fitternity.com/paymentsuccesstrial";
+            $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
         $hash = $this->getHash($data);
@@ -157,6 +157,7 @@ class TransactionController extends \BaseController {
         $order = new Order($data);
         $order->_id = $order_id;
         $order->save();
+        
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
@@ -182,6 +183,10 @@ class TransactionController extends \BaseController {
         );
 
         return Response::json($resp);
+
+    }
+
+    public getSuccessUrl($data){
 
     }
 
