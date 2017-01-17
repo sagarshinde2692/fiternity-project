@@ -338,7 +338,7 @@ class RankingController extends \BaseController {
 //       ini_set('memory_limit', '512M');
 
        $citykist      =    array(1,2,3,4,8,9);
-       $finder_count_incity = Finder::active()->count();
+       $finder_count_incity = Finder::active()->where('city_id', $city_id)->count();
        $i_max = intval($finder_count_incity/1000);
         Log::error($finder_count_incity."  - ".$i_max);
        for($i = 0;$i<=$i_max;$i++){
@@ -349,7 +349,10 @@ class RankingController extends \BaseController {
 
 
 public function chunkIndex($index_name, $city_id,$skip,$take){
-        $items = Finder::active()->with(array('country'=>function($query){$query->select('name');}))
+        $items = Finder::active()
+       ->where('city_id', $city_id)
+       ->where('status', '=', '1')
+        ->with(array('country'=>function($query){$query->select('name');}))
        ->with(array('city'=>function($query){$query->select('name');}))
        ->with(array('category'=>function($query){$query->select('name','meta');}))
        ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
@@ -368,8 +371,6 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
        ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
                             //->whereIn('_id', array(579))
-       ->where('city_id', $city_id)
-       ->where('status', '=', '1')
     //    ->take(30)->skip(0)
       ->take($take)->skip($skip)
        ->timeout(400000000)
