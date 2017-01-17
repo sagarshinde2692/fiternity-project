@@ -2033,7 +2033,7 @@ class FindersController extends \BaseController {
 				$coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
 
-				$finder['info']              =   array_only($finderarr['info'], ['timing','delivery_timing']);
+				$finder['info']              =   array_only($finderarr['info'], ['timing','delivery_timing','service']);
 
 				$finder['today_opening_hour']           =   null;
 				$finder['today_closing_hour']           =   null;
@@ -2383,28 +2383,40 @@ class FindersController extends \BaseController {
 
 				if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
 
-					$finderData['finder']['services'] = $finderData['finder']['services_workout'];
+					$finderData['finder']['services'] = [];
+					if(isset($finderData['finder']['services_workout'])){
+
+						$finderData['finder']['services'] = $finderData['finder']['services_workout'];
+					}
 
 				}else{
 
-					$finderData['finder']['services'] = $finderData['finder']['services_trial'];
+					$finderData['finder']['services'] = [];
+					if(isset($finderData['finder']['services_trial'])){
 
+						$finderData['finder']['services'] = $finderData['finder']['services_trial'];
+					}
 				}
 
-				$disable_button = [];
-				foreach ($finderData['finder']['services'] as $key => $value) {
 
-					if(isset($value["trial"]) && $value["trial"] == "disable"){
-						$disable_button[] = "true";
-					}else{
-						$disable_button[] = "false";
+				if(!empty($finderData['finder']['services'])){
+
+					$disable_button = [];
+					foreach ($finderData['finder']['services'] as $key => $value) {
+
+						if(isset($value["trial"]) && $value["trial"] == "disable"){
+							$disable_button[] = "true";
+						}else{
+							$disable_button[] = "false";
+						}
+
 					}
 
-				}
+					if(!in_array("false", $disable_button)){
+						$finderData['call_for_action_button'] = "";
+						$finderData['finder']['pay_per_session'] = false;
+					}
 
-				if(!in_array("false", $disable_button)){
-					$finderData['call_for_action_button'] = "";
-					$finderData['finder']['pay_per_session'] = false;
 				}
 
 				unset($finderData['finder']['services_workout']);
