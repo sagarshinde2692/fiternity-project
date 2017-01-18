@@ -6,7 +6,8 @@ class FinderresultResponse {
 		$this->results = new \stdClass();
 		$this->results->resultlist = array();
 		$this->results->aggregationlist = array();
-		$this->meta = new \stdClass();	
+		$this->meta = new \stdClass();
+		$this->metadata = new \stdClass();	
 	}
 	
 	public $results;

@@ -1109,10 +1109,10 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		if(empty($es_searchresult_response['hits']['hits']))
 		{
 			$finderresult_response->results->resultlist = array();
-			$finderresult_response->meta->total_records = 0;
+			$finderresult_response->metadata->total_records = 0;
 		}
 		else{
-			$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
+			$finderresult_response->metadata->total_records = $es_searchresult_response['hits']['total'];
 			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
 				$result 						= $resultv1['_source'];
 				$finder 						= new FinderResult();
@@ -1260,6 +1260,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				array_push($finderresult_response->results->resultlist, $finder);
 			}
 		}
+		unset($finderresult_response->meta);
 
 
 
