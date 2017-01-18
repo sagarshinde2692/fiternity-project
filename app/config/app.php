@@ -28,13 +28,16 @@ return array(
 	|
 	*/
 
+
 	'url' => 'http://apistage.fitn.in',
 	//'url' => 'http://appstg.fitn.in',
-	//'url' => 'http://fitapi.com',
+	'url' => 'http://fitapi.com',
+
 
 
     //'website' => 'https://www.fitternity.com',
     'website' => 'http://web.fitn.in:8020',
+
 
 	/*
 	|--------------------------------------------------------------------------

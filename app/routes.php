@@ -862,3 +862,9 @@ Route::post('seourl', 'GlobalSearchController@seourl');
 Route::get('email/opened', 'CustomerController@emailOpened');
 
 Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
+
+Route::get('cachefindercategorytags', 'DebugController@cacheFinderCategoryTags');
+
+Route::get('cachelocations', 'DebugController@cacheLocations');
+
+Route::get('cacheofferings', 'DebugController@cacheOfferings');
