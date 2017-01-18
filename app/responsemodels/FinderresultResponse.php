@@ -12,6 +12,7 @@ class FinderresultResponse {
 	
 	public $results;
 	public $meta;
+	public $metadata;
 
 }
 

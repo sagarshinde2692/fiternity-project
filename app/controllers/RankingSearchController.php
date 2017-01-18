@@ -2536,6 +2536,7 @@ public function getRankedFinderResultsAppv4()
         $search_request     =   Input::json()->all();
         $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
+        $searchresulteresponse->metadata['total_records'] = intval($search_results1['hits']['total']);
         $searchresulteresponse->metadata['number_of_records'] = intval($size);
         $searchresulteresponse->metadata['from'] = intval($from);
         $searchresulteresponse->metadata['sortfield'] = $orderfield;
