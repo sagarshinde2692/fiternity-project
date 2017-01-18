@@ -3465,5 +3465,23 @@ public function yes($msg){
 
 		print_r($return);
 	}
+
+	public function openLocations(){
+		$locationTags = Locationtag::where('status', "1")->get(['_id', 'name', 'slug']);
+		return $locationTags;
+
+	}
+
+	public function openFinderCategoryTags(){
+		$finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
+		return $finderCategoryTags;
+
+	}
+
+	public function openOfferings(){
+		$offerings = Offering::where('status', "1")->get(['_id', 'name', 'slug']);
+		return $offerings;
+
+	}
     
 }

@@ -859,3 +859,11 @@ Route::post('seourl', 'GlobalSearchController@seourl');
 Route::get('email/opened', 'CustomerController@emailOpened');
 
 Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
+
+Route::get('openlocations', 'DebugController@openLocations');
+
+Route::get('openfindercategorytags', 'DebugController@openFinderCategoryTags');
+
+Route::get('openlocations', 'DebugController@openLocations');
+
+Route::get('openofferings', 'DebugController@openOfferings');
