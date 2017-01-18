@@ -1,10 +1,10 @@
 <?PHP
 
 /**
- * ControllerName : OrderController.
- * Maintains a list of functions used for OrderController.
+ * ControllerName : TransactionController.
+ * Maintains a list of functions used for TransactionController
  *
- * @author Sanjay Sahu <sanjay.id7@gmail.com>
+ * @author Mahesh Jadhav <maheshjadhav@fitternity.com>
  */
 
 use App\Mailers\CustomerMailer as CustomerMailer;
@@ -142,10 +142,10 @@ class TransactionController extends \BaseController {
         $mobilehash = "";
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $txnid = "MFIT".$data['_id'];
-            $successurl = $data['customer_source'] == "android" ? "http://web.fitn.in:8020/paymentsuccessandroid" : "http://web.fitn.in:8020/paymentsuccessios";
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
             $txnid = "SIT".$data['_id'];
-            $successurl = $data['type'] == "memberships" ? "http://web.fitn.in:8020/paymentsuccess" : "http://web.fitn.in:8020/paymentsuccesstrial";
+            $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
         $hash = $this->getHash($data);
@@ -157,6 +157,7 @@ class TransactionController extends \BaseController {
         $order = new Order($data);
         $order->_id = $order_id;
         $order->save();
+
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
@@ -240,23 +241,18 @@ class TransactionController extends \BaseController {
 
     public function getCashbackRewardWallet($data){
 
-        $amount = $data['amount'];
-
-        $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
-
-        if(isset($data['cashback']) && $data['cashback'] == true){
-            $amount = $data['amount'] - $cashback_detail['amount_discounted'];
-        }
+        $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
 
         if(isset($data['wallet']) && $data['wallet'] == true){
+            $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+            $data['amount'] = $data['amount'] - $data['wallet_amount'];
+        }
 
-            $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
+        if(isset($data['cashback']) && $data['cashback'] == true){
+            $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
+        }
 
-            if(isset($data['cashback']) && $data['cashback'] == true){
-                $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
-            }
-
-            $amount = $data['amount'] - $wallet_amount;
+        if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
             $req = array(
                 'customer_id'=>$data['customer_id'],
@@ -265,7 +261,7 @@ class TransactionController extends \BaseController {
                 'type'=>'DEBIT',
                 'description'=>'Paid for Order ID: '.$data['order_id'],
             );
-            $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
+            $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
             $walletTransactionResponse = (array) $walletTransactionResponse;
 
             if($walletTransactionResponse['status'] != 200){
@@ -276,10 +272,9 @@ class TransactionController extends \BaseController {
             $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
             $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
             $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
         }
 
-        $data['amount'] = $amount;
-        
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }

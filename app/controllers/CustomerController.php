@@ -2779,6 +2779,7 @@ class CustomerController extends \BaseController {
 			"description" => "Version ".$current_version_ios." is available on App Store",
 			"force_update" => $force_update_ios,
 			"available_version" => $current_version_ios,
+			"share_message" => "Share With Friends"
 			);
 
 		$data = ($device_type == 'ios') ? $result_ios : $result_android;

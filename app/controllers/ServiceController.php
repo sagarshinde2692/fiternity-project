@@ -419,14 +419,17 @@ class ServiceController extends \BaseController {
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
 
         $time_in_seconds = time_passed_check($item['servicecategory_id']);
+
+        $data = array();
+
 		if(count($item) > 0){
+
+			$ratecard_id = Ratecard::where('finder_id',$item['finder_id'])->where('service_id',$item['_id'])->where('type', 'workout session')->get(['id'])->first();
 			$item = $item->toArray();
 			$slots = array();
-			$date1 = Carbon::parse($date);
-            if($date1->day == 1){
-                
-            }
-            else{
+
+			if($ratecard_id){
+
 				foreach ($item['workoutsessionschedules'] as $key => $value) {
 
 					if($value['weekday'] == $weekday){
@@ -442,6 +445,7 @@ class ServiceController extends \BaseController {
 									array_set($slot, 'passed', $slot_datetime_pass_status);
 									array_set($slot, 'service_id', $item['_id']);
 									array_set($slot, 'finder_id', $item['finder_id']);
+									array_set($slot, 'ratecard_id', $ratecard_id['id']);
 									array_push($slots, $slot);
 
 								}catch(Exception $e){
@@ -456,18 +460,16 @@ class ServiceController extends \BaseController {
 					
 				}
 			}
-
+			
 			$data['_id'] = (int)$service_id;
 			$data['name'] = $item['name'];
 			$data['finder_id'] = $item['finder_id'];
 			$data['slots'] = $slots;
 			$data['weekday'] = $weekday;
-			return Response::json($data,200);
-		}else{
-			$data = array();
-			return Response::json($data,200);
+			
 		}
 
+		return Response::json($data,200);
         
     }
 
