@@ -860,10 +860,8 @@ Route::get('email/opened', 'CustomerController@emailOpened');
 
 Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
 
-Route::get('openlocations', 'DebugController@openLocations');
+Route::get('cachefindercategorytags', 'DebugController@cacheFinderCategoryTags');
 
-Route::get('openfindercategorytags', 'DebugController@openFinderCategoryTags');
+Route::get('cachelocations', 'DebugController@cacheLocations');
 
-Route::get('openlocations', 'DebugController@openLocations');
-
-Route::get('openofferings', 'DebugController@openOfferings');
+Route::get('cacheofferings', 'DebugController@cacheOfferings');
