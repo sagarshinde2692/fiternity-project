@@ -34,7 +34,7 @@ return array(
 
 
     //'website' => 'https://www.fitternity.com',
-    'website' => 'http://appstg.fitn.in:8555',
+    'website' => 'http://web.fitn.in:8020',
 
 	/*
 	|--------------------------------------------------------------------------
