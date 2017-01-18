@@ -1320,6 +1320,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
 				$facval = new \stdClass();
 				$facval->key = $fac['key'];
+				$facval->slug = str_replace(' ', '-', $fac['key']);
 				$facval->count = $fac['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->filters, $facval);
 			}
@@ -1329,11 +1330,13 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
 			$clusterval = new \stdClass();
 			$clusterval->key = $cluster['key'];
+			$clusterval->slug = strtolower(str_replace(' ', '-', $cluster['key']));
 			$clusterval->count = $cluster['doc_count'];
 			$clusterval->regions = array();
 			foreach ($cluster['region']['buckets'] as $reg) {
 				$regval = new \stdClass();
 				$regval->key = $reg['key'];
+				$regval->slug = str_replace(' ', '-', $reg['key']);
 				$regval->count = $reg['doc_count'];
 				array_push($clusterval->regions, $regval);
 			}
@@ -1345,6 +1348,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		foreach ($aggs['filtered_offerings']['offerings']['buckets'] as $off){
 			$offval = new \stdClass();
 			$offval->key = $off['key'];
+			$offval->slug = str_replace(' ', '-', $off['key']);
 			$offval->count = $off['doc_count'];
 			array_push($finderresult_response->results->aggregationlist->subcategories, $offval);
 		}
@@ -1364,6 +1368,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 	foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
 		$offval = new \stdClass();
 		$offval->key = $off['key'];
+		$offval->slug = str_replace(' ', '-', $off['key']);
 		$offval->count = $off['doc_count'];
 		array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
 	}
@@ -1374,6 +1379,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
 				$offval = new \stdClass();
 				$offval->key = $off['key'];
+				$offval->slug = str_replace(' ', '-', $off['key']);
 				$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
 			}

@@ -161,7 +161,7 @@ class TransactionController extends \BaseController {
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
-        if(isset($data['myreward_id'])){
+        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
             $data['amount'] = 0;
         }
         $result['firstname'] = $data['customer_name'];
