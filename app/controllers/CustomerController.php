@@ -1175,6 +1175,10 @@ class CustomerController extends \BaseController {
 
 			$value['renewal_flag'] = $this->checkRenewal($value);
 
+			if(!isset($value['preferred_starting_date']) && isset($value['start_date'])){
+				$value['preferred_starting_date'] = $value['start_date']; 
+			}
+
 			array_push($orders, $value);
 
 		}
