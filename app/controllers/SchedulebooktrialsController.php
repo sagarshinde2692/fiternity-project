@@ -587,7 +587,7 @@ class SchedulebooktrialsController extends \BaseController {
             $service['ratecard_id'] = $ratecard_id['id'];
             $service['slots'] = $slots;
             if(isset($ratecard_id['id']) && $ratecard_id['id'] != null){
-                array_push($scheduleservices, $service);
+                array_push($serviceschedules, $service);
             }
 
         }
