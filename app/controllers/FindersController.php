@@ -530,7 +530,7 @@ class FindersController extends \BaseController {
 					$nearby_same_category = [];
 					$nearby_other_category = [];
 				}
-				
+				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
 				$response['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
@@ -2361,7 +2361,8 @@ class FindersController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 			if($finder){
-				
+				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
+				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
 				if(Request::header('Authorization')){
 					$decoded                            =       decode_customer_token();
 					$customer_email                     =       $decoded->customer->email;
