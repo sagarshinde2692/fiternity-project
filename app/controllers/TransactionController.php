@@ -388,6 +388,10 @@ class TransactionController extends \BaseController {
         if($offer){
             $data['amount_finder'] = $offer->price;
             $data['offer_id'] = $offer->_id;
+
+            if(isset($offer->remarks) && $offer->remarks != ""){
+                $data['ratecard_remarks'] = $offer->remarks;
+            }
         }
 
         $data['amount'] = $data['amount_finder'];
