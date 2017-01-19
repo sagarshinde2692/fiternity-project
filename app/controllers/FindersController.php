@@ -1999,13 +1999,14 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_android_3_2";
 		}
 
-		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2){
-			$cache_name = "finder_detail_android_3_2";
-		}
-
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
 			$cache_name = "finder_detail_ios";
 		}
+
+		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2){
+			$cache_name = "finder_detail_ios_3_2";
+		}
+
 
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($tslug) : false;
 
