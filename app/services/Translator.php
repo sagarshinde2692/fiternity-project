@@ -1348,7 +1348,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			array_push($finderresult_response->results->aggregationlist->subcategories, $offval);
 		}
 
-		$finderresult_response->results->aggregationlist->vip_trial = array();
+		// $finderresult_response->results->aggregationlist->vip_trial = array();
 
 		// foreach ($aggs['filtered_vip_trial']['vip_trial']['buckets'] as $off){
 		// 	$offval = new \stdClass();
@@ -1357,15 +1357,15 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		// 	array_push($finderresult_response->results->aggregationlist->vip_trial, $offval);
 		// }
 
-		$finderresult_response->results->aggregationlist->locationtags = array();
+	// 	$finderresult_response->results->aggregationlist->locationtags = array();
 
 	
-	foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
-		$offval = new \stdClass();
-		$offval->key = $off['key'];
-		$offval->count = $off['doc_count'];
-		array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
-	}
+	// foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
+	// 	$offval = new \stdClass();
+	// 	$offval->key = $off['key'];
+	// 	$offval->count = $off['doc_count'];
+	// 	array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
+	// }
 	
 	if(isset($aggs['filtered_trials']['level1'])){
 		$finderresult_response->results->aggregationlist->trialdays = array();
