@@ -45,6 +45,7 @@ class TransactionController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward       =   $customerreward;
         $this->ordertypes       =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
+        $this->appOfferDiscount 	= Config::get('app.app.discount');;
 
     }
 
@@ -372,6 +373,13 @@ class TransactionController extends \BaseController {
 
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
                 $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($duration_day-1)." days"));
+            }
+        }
+        if($data['type'] == "memberships" && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            if($ratecard['special_price'] > 0){
+                $ratecard['special_price'] = $ratecard['special_price'] - ($ratecard['special_price'] * ($this->appOfferDiscount/100));
+            }else{
+                $ratecard['price'] = $ratecard['price'] - ($ratecard['price'] * ($this->appOfferDiscount/100));
             }
         }
 
