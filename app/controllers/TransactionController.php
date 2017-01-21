@@ -144,7 +144,7 @@ class TransactionController extends \BaseController {
             $txnid = "MFIT".$data['_id'];
             $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
-            $txnid = "SIT".$data['_id'];
+            $txnid = "FIT".$data['_id'];
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
