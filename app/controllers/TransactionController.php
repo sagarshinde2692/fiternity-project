@@ -375,7 +375,7 @@ class TransactionController extends \BaseController {
                 $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($duration_day-1)." days"));
             }
         }
-        if($data['type'] == "memberships" && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
             if($ratecard['special_price'] > 0){
                 $ratecard['special_price'] = $ratecard['special_price'] - ($ratecard['special_price'] * ($this->appOfferDiscount/100));
             }else{
