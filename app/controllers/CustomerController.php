@@ -38,7 +38,7 @@ class CustomerController extends \BaseController {
 		->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 		->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
 		//->with('invite')
-		->orderBy('_id', 'desc')
+		->orderBy('_id', 'desc')->take(8)
 		->get($selectfields)->toArray();
 
 
@@ -153,7 +153,7 @@ class CustomerController extends \BaseController {
 			->orWhere(function($query){$query->where('status',"1")->where('order_action','bought')->where('amount','!=',0);})
 			->orWhere(function($query){$query->where('status',"0")->where('amount','exist',false);})
 			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-			->orderBy('_id', 'desc')
+			->orderBy('_id', 'desc')->take(8)
 			->get($ht_selectfields);
 
 			if(count($healthytiffintrail) > 0){
@@ -1174,6 +1174,10 @@ class CustomerController extends \BaseController {
 			}
 
 			$value['renewal_flag'] = $this->checkRenewal($value);
+
+			if(!isset($value['preferred_starting_date']) && isset($value['start_date'])){
+				$value['preferred_starting_date'] = $value['start_date']; 
+			}
 
 			array_push($orders, $value);
 

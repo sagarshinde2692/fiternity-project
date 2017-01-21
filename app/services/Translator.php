@@ -110,7 +110,7 @@ class Translator {
 			$resultobject->special_offer_title = $result['special_offer_title'];
 			$resultobject->slug = $result['slug'];
 			$resultobject->status = $result['status'];
-			$resultobject->title = $result['title'];
+			$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 			$resultobject->total_rating_count = $result['total_rating_count'];
 			$resultobject->views = $result['views'];
 			$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
@@ -256,7 +256,7 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->special_offer_title = $result['special_offer_title'];
 			$resultobject->slug = $result['slug'];
 			$resultobject->status = $result['status'];
-			$resultobject->title = $result['title'];
+			$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 			$resultobject->total_rating_count = $result['total_rating_count'];
 			$resultobject->views = $result['views'];
 			$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
@@ -448,7 +448,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 			$resultobject->special_offer_title = $result['special_offer_title'];
 			$resultobject->slug = $result['slug'];
 			$resultobject->status = $result['status'];
-			$resultobject->title = $result['title'];
+			$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 			$resultobject->total_rating_count = $result['total_rating_count'];
 			$resultobject->views = $result['views'];
 			$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
@@ -627,7 +627,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->special_offer_title = $result['special_offer_title'];
 				$resultobject->slug = $result['slug'];
 				$resultobject->status = $result['status'];
-				$resultobject->title = $result['title'];
+				$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 				$resultobject->total_rating_count = $result['total_rating_count'];
 				$resultobject->views = $result['views'];
 				$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];

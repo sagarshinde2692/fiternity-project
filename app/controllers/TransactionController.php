@@ -45,6 +45,7 @@ class TransactionController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward       =   $customerreward;
         $this->ordertypes       =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
+        $this->appOfferDiscount 	= Config::get('app.app.discount');;
 
     }
 
@@ -144,7 +145,7 @@ class TransactionController extends \BaseController {
             $txnid = "MFIT".$data['_id'];
             $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
-            $txnid = "SIT".$data['_id'];
+            $txnid = "FIT".$data['_id'];
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
@@ -374,6 +375,13 @@ class TransactionController extends \BaseController {
                 $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($duration_day-1)." days"));
             }
         }
+        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            if($ratecard['special_price'] > 0){
+                $ratecard['special_price'] = $ratecard['special_price'] - ($ratecard['special_price'] * ($this->appOfferDiscount/100));
+            }else{
+                $ratecard['price'] = $ratecard['price'] - ($ratecard['price'] * ($this->appOfferDiscount/100));
+            }
+        }
 
         if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
             $data['amount_finder'] = $ratecard['special_price'];
@@ -388,6 +396,10 @@ class TransactionController extends \BaseController {
         if($offer){
             $data['amount_finder'] = $offer->price;
             $data['offer_id'] = $offer->_id;
+
+            if(isset($offer->remarks) && $offer->remarks != ""){
+                $data['ratecard_remarks'] = $offer->remarks;
+            }
         }
 
         $data['amount'] = $data['amount_finder'];

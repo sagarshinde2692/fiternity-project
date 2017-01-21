@@ -367,6 +367,10 @@ Class CustomerReward {
                 $data['label'] = "Reward-PersonalTrainer-AtStudio-Customer";
                 $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
                 break;
+            case 'diet_plan' : 
+                $data['label'] = "Reward-DietPlan-Customer";
+                $myreward_capture->customer_sms_reward = $customerSms->rewardClaim($data);
+                break;
             default : break;
         }
 

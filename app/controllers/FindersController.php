@@ -36,6 +36,7 @@ class FindersController extends \BaseController {
 		$this->elasticsearch_default_index      =   Config::get('app.es.default_index');
 		$this->findermailer                     =   $findermailer;
 		$this->cacheapi                     =   $cacheapi;
+		$this->appOfferDiscount 				= Config::get('app.app.discount');;
 	}
 
 
@@ -530,7 +531,7 @@ class FindersController extends \BaseController {
 					$nearby_same_category = [];
 					$nearby_other_category = [];
 				}
-				
+				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
 				$response['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
@@ -1932,6 +1933,11 @@ class FindersController extends \BaseController {
 						array_push($ratecardArr, $rateval);
 					}else{*/
 						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
+							if($rateval['special_price'] > 0){
+								$rateval['special_price'] = $rateval['special_price'] - ($rateval['special_price'] * ($this->appOfferDiscount/100));
+							}else{
+								$rateval['price'] = $rateval['price'] - ($rateval['price'] * ($this->appOfferDiscount/100));
+							}
 							array_push($ratecardArr, $rateval);
 						}
 					//}
@@ -1999,13 +2005,14 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_android_3_2";
 		}
 
-		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2){
-			$cache_name = "finder_detail_android_3_2";
-		}
-
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
 			$cache_name = "finder_detail_ios";
 		}
+
+		if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2){
+			$cache_name = "finder_detail_ios_3_2";
+		}
+
 
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($tslug) : false;
 
@@ -2360,7 +2367,8 @@ class FindersController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 			if($finder){
-				
+				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
+				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
 				if(Request::header('Authorization')){
 					$decoded                            =       decode_customer_token();
 					$customer_email                     =       $decoded->customer->email;

@@ -85,7 +85,7 @@ return array(
         //
         'redis' => array(
             'driver' => 'redis',
-            'queue'  => 'booktrialv2',
+            'queue'  => 'booktrial',
         ),
 
 	),
