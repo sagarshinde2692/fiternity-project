@@ -686,6 +686,13 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp, 403);
         }
 
+        $disableTrial = $this->disableTrial($data);
+
+        if($disableTrial['status'] != 200){
+
+            return Response::json($disableTrial,$disableTrial['status']);
+        }
+
         // return $data	= Input::json()->all();
         $booktrialid 		       =	Booktrial::max('_id') + 1;
 
@@ -2373,6 +2380,13 @@ class SchedulebooktrialsController extends \BaseController {
                 return Response::json($resp, 403);
             }
 
+            $disableTrial = $this->disableTrial($data);
+
+            if($disableTrial['status'] != 200){
+
+                return Response::json($disableTrial,$disableTrial['status']);
+            }
+
             $myreward_id = "";
 
             if (isset($data['reward_id']) && $data['reward_id'] != "") {
@@ -3019,6 +3033,13 @@ class SchedulebooktrialsController extends \BaseController {
 
 
         try {
+
+            $disableTrial = $this->disableTrial($data);
+
+            if($disableTrial['status'] != 200){
+
+                return Response::json($disableTrial,$disableTrial['status']);
+            }
 
             $id        = 	(int) $data['booktrial_id'];
             $booktrial 	= 	Booktrial::findOrFail($id);
@@ -5235,6 +5256,32 @@ class SchedulebooktrialsController extends \BaseController {
 
         return $category_calorie_burn;
 
+    }
+
+    public function disableTrial($data){
+
+        $finder     =   Finder::find(intval($data['finder_id']));
+
+        if(isset($finder['trial']) && $finder['trial'] == "disable"){
+
+            $message = "Sorry, this class is not available. Kindly book a different slot";
+
+            return array('status' => 400,'message' => $message);
+        }
+
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+
+            $service = Service::find((int)$data['service_id']);
+
+            if(isset($service['trial']) && $service['trial'] == "disable"){
+
+                $message = "Sorry, this class is not available. Kindly book a different slot";
+
+                return array('status' => 400,'message' => $message);
+            }
+        }
+
+        return array('status' => 200,'message' => 'success');
     }
 
 
