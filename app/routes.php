@@ -859,3 +859,4 @@ Route::post('seourl', 'GlobalSearchController@seourl');
 Route::get('email/opened', 'CustomerController@emailOpened');
 
 Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
+Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));

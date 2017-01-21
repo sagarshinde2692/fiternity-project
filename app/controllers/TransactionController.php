@@ -710,4 +710,43 @@ class TransactionController extends \BaseController {
         return $data;
     }
 
+    public function pg(){
+
+        $data = Input::json()->all();
+
+        $rules = [
+            'order_id',
+            'pg_type'
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+
+        $order_id = $data['order_id'];
+
+        $order = Order::find((int) $order_id);
+
+        if(!$order){
+            return Response::json(array('status' => 404,'message' => 'Order not found'),404);
+        }
+
+        if($order->status == "1"){
+            return Response::json(array('status' => 404,'message' => 'Order already success'),404);
+        }
+
+        $order->pg_type = $data['pg_type'];
+        $order->pg_date = date('Y-m-d H:i:s',time());
+        $order->update();
+
+        $resp   =   array(
+            'status' => 200,
+            'message' => "PG Captured Sucessfully"
+        );
+
+        return Response::json($resp);
+    }
+
 }
