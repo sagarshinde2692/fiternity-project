@@ -46,6 +46,8 @@ if (!function_exists('sorting_array')) {
                 }));
             }else{
                 $arrItem  = head(array_where($unOrderArr, function($key, $value) use ($orderid, $columnname){
+                    print_r($value);
+                    Log::info("sdkjfhks ".$value[$columnname]);
                     if($value[$columnname] == $orderid){
                         return $value;
                     }

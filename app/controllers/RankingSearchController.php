@@ -2316,16 +2316,19 @@ public function getRankedFinderResultsAppv4()
 
         */
 
-        $nested_level1_filter = ($category_filter === '') ? '': '  {"nested": {
-          "path": "service_level_data",
-          "query": {"filtered": {
-            "filter": {"bool": {"must": [
-              {"term": {
-                "service_category_synonyms": "'.$category.'"
-              }}
-            ]}}
-          }}
-        }}';
+        // $nested_level1_filter = ($category_filter === '') ? '': '  {"nested": {
+        //   "path": "service_level_data",
+        //   "query": {"filtered": {
+        //     "filter": {"bool": {"must": [
+        //       {"term": {
+        //         "service_category_synonyms": "'.$category.'"
+        //       }}
+        //     ]}}
+        //   }}
+        // }}';
+
+        $nested_level1_filter = $category_filter === '' ? '{"terms" : {  "service_category_synonyms": "'.strtolower($category).'","_cache": true}},': '';
+        
 
         $nested_level2_filter = '';
 
@@ -2534,7 +2537,7 @@ public function getRankedFinderResultsAppv4()
 
         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
-        $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+        return $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
         $searchresulteresponse->metadata['number_of_records'] = intval($size);
         $searchresulteresponse->metadata['from'] = intval($from);

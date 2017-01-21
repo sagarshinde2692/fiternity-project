@@ -1376,6 +1376,10 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
 			}
+			$weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+			$trialdays = json_decode(json_encode($finderresult_response->results->aggregationlist->trialdays), true);
+			sorting_array($trialdays, "key", $weekdays, false);
+			$finderresult_response['results']['aggregationlist']['trialdays'] = $trialdays;
 		}
 		return $finderresult_response;
 	}
