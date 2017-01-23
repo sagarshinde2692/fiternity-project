@@ -36,6 +36,7 @@ class FindersController extends \BaseController {
 		$this->elasticsearch_default_index      =   Config::get('app.es.default_index');
 		$this->findermailer                     =   $findermailer;
 		$this->cacheapi                     =   $cacheapi;
+		$this->appOfferDiscount 				= Config::get('app.app.discount');;
 	}
 
 
@@ -1932,6 +1933,11 @@ class FindersController extends \BaseController {
 						array_push($ratecardArr, $rateval);
 					}else{*/
 						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
+							if($rateval['special_price'] > 0){
+								$rateval['special_price'] = $rateval['special_price'] - ($rateval['special_price'] * ($this->appOfferDiscount/100));
+							}else{
+								$rateval['price'] = $rateval['price'] - ($rateval['price'] * ($this->appOfferDiscount/100));
+							}
 							array_push($ratecardArr, $rateval);
 						}
 					//}
