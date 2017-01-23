@@ -1124,7 +1124,7 @@ class RankingSearchController extends \BaseController
             'method' => 'POST',
             'postfields' => $body
         );
-        return json_decode($body,true);
+        // return json_decode($body,true);
 // $request = array(
 //     'url' => "http://localhost:9200/"."fitternity_finder/finder/_search",
 //     'port' => 9200,
