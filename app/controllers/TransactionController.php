@@ -397,7 +397,7 @@ class TransactionController extends \BaseController {
 
         $data['amount'] = $data['amount_finder'];
         if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
-            $data['amount'] = $data['amount'] - ($data['amount'] * ($this->appOfferDiscount/100));
+            $data['amount'] = intval($data['amount'] - ($data['amount'] * ($this->appOfferDiscount/100)));
             $data['appOffer'] = $this->appOfferDiscount."% Off on purchases from android and iOS";
         }
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
