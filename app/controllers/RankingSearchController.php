@@ -2137,8 +2137,8 @@ public function getRankedFinderResultsAppv4()
         $lon                =         (isset($locat['long'])) ? $locat['long']  : '';
         $keys               =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
         $category           = Input::json()->get('category');
-        $trial_time_from    = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
-        $trial_time_to      = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
+        $trial_time_from    = Input::json()->get('session-start-time') !== null ? Input::json()->get('session-start-time') : '';
+        $trial_time_to      = Input::json()->get('session-end-time') !== null ? Input::json()->get('session-end-time') : '';
         $region             = Input::json()->get('regions');
         $offerings          = Input::json()->get('subcategories');
 
@@ -2537,7 +2537,7 @@ public function getRankedFinderResultsAppv4()
 
         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
-        return $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+        $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
         $searchresulteresponse->metadata['number_of_records'] = intval($size);
         $searchresulteresponse->metadata['from'] = intval($from);
@@ -2570,7 +2570,9 @@ public function getRankedFinderResultsAppv4()
         $categorytag_offerings = '';
 
 
-        $meta_title = $meta_description = $meta_keywords = '';
+        $meta_title = "Find fitness options near you in <city_name>";
+        $meta_description = "Find,try and buy fitness options near you in <city_name>";
+        $meta_keywords = '';
         if($category != ''){
             $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
             $findercategorytag     =   Findercategorytag::active()->where('slug', '=', url_slug(array($category)))->first(array('offering_header'));

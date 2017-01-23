@@ -1105,6 +1105,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		$finderresult_response 							 = new FinderresultResponse();
 		$finderresult_response->results->aggregationlist = new \stdClass();
 		$resultCategory 								 = [];
+		$currentcity 									 = "mumbai";
 		if(empty($es_searchresult_response['hits']['hits']))
 		{
 			$finderresult_response->results->resultlist = array();
@@ -1128,6 +1129,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				$resultobject->membership_discount = $result['membership_discount'];
 				$resultobject->country 			= $result['country'];
 				$resultobject->city 			= $result['city'];
+				$currentcity 					= $result['city'];
 				//$resultobject->city_id = $result['city_id'];
 				$resultobject->info_service 	= $result['info_service'];
 				$resultobject->info_service_list= array();//$result['info_service_list'];
@@ -1379,8 +1381,10 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			$weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 			$trialdays = json_decode(json_encode($finderresult_response->results->aggregationlist->trialdays), true);
 			sorting_array($trialdays, "key", $weekdays, false);
-			$finderresult_response['results']['aggregationlist']['trialdays'] = $trialdays;
+			$finderresult_response->results->aggregationlist->trialdays = json_decode(json_encode($trialdays),false);
 		}
+		$finderresult_response->results->aggregationlist->categories = array();
+		$finderresult_response->results->aggregationlist->categories = citywise_categories($currentcity);
 		return $finderresult_response;
 	}
 
