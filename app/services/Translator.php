@@ -1388,11 +1388,12 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			}
 			$weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 			$trialdays = json_decode(json_encode($finderresult_response->results->aggregationlist->trialdays), true);
-			sorting_array($trialdays, "key", $weekdays, false);
-			$finderresult_response->results->aggregationlist->trialdays = json_decode(json_encode($trialdays),false);
+			$trialdays = sorting_array($trialdays, "key", $weekdays, false);
+			$finderresult_response->results->aggregationlist->trialdays = $trialdays;
 		}
 		$finderresult_response->results->aggregationlist->categories = array();
 		$finderresult_response->results->aggregationlist->categories = citywise_categories($currentcity);
+		// print_r($finderresult_response);
 		return $finderresult_response;
 	}
 
