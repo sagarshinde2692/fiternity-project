@@ -504,7 +504,7 @@ class RankingSearchController extends \BaseController
             'postfields' => $body
         );
 
-
+        
         $search_results     =   es_curl_request($request);
 
         $response       =   [
@@ -1124,7 +1124,7 @@ class RankingSearchController extends \BaseController
             'method' => 'POST',
             'postfields' => $body
         );
-
+        return json_decode($body,true);
 // $request = array(
 //     'url' => "http://localhost:9200/"."fitternity_finder/finder/_search",
 //     'port' => 9200,
@@ -2245,7 +2245,6 @@ public function getRankedFinderResultsAppv4()
                 },';
         }
         $service_category_synonyms_filters = '';
-
         if(($category !== '')&&($category !== 'fitness studios'))
         {
             $service_category_synonyms_filters = '
@@ -2326,8 +2325,10 @@ public function getRankedFinderResultsAppv4()
         //     ]}}
         //   }}
         // }}';
-
-        $nested_level1_filter = $category_filter === '' ? '{"terms" : {  "service_category_synonyms": "'.strtolower($category).'","_cache": true}},': '';
+        $nested_level1_filter = "";
+        if($category != ""){
+            $nested_level1_filter = $category_filter === '' ? '{"terms" : {  "service_category_synonyms": "'.strtolower($category).'","_cache": true}},': '';
+        }
         
 
         $nested_level2_filter = '';
@@ -2516,7 +2517,7 @@ public function getRankedFinderResultsAppv4()
         }';
 
 
-//    return $body;
+//    return json_decode($body,true);
 
 
         $request = array(
