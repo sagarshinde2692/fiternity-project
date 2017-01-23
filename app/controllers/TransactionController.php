@@ -381,13 +381,6 @@ class TransactionController extends \BaseController {
         }else{
             $data['amount_finder'] = $ratecard['price'];
         }
-        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
-            if($ratecard['special_price'] > 0){
-                $ratecard['special_price'] = $ratecard['special_price'] - ($ratecard['special_price'] * ($this->appOfferDiscount/100));
-            }else{
-                $ratecard['price'] = $ratecard['price'] - ($ratecard['price'] * ($this->appOfferDiscount/100));
-            }
-        }
 
         $data['offer_id'] = false;
 
@@ -403,7 +396,9 @@ class TransactionController extends \BaseController {
         }
 
         $data['amount'] = $data['amount_finder'];
-
+        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            $data['amount'] = $data['amount'] - ($data['amount'] * ($this->appOfferDiscount/100));
+        }
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
 
