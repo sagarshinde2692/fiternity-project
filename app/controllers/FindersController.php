@@ -268,6 +268,7 @@ class FindersController extends \BaseController {
 
 				if(count($finder['photos']) > 0 ){
 					$photoArr        =   [];
+					usort($finder['photos'], "order");
 					foreach ($finder['photos'] as $photo) {
 						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
 						$photoObj                   =   array_except($photo,['servicetags']);
