@@ -1106,6 +1106,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		$finderresult_response 							 = new FinderresultResponse();
 		$finderresult_response->results->aggregationlist = new \stdClass();
 		$resultCategory 								 = [];
+		$currentcity 									 = "mumbai";
 		if(empty($es_searchresult_response['hits']['hits']))
 		{
 			$finderresult_response->results->resultlist = array();
@@ -1129,6 +1130,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				$resultobject->membership_discount = $result['membership_discount'];
 				$resultobject->country 			= $result['country'];
 				$resultobject->city 			= $result['city'];
+				$currentcity 					= $result['city'];
 				//$resultobject->city_id = $result['city_id'];
 				$resultobject->info_service 	= $result['info_service'];
 				$resultobject->info_service_list= array();//$result['info_service_list'];
@@ -1354,7 +1356,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			array_push($finderresult_response->results->aggregationlist->subcategories, $offval);
 		}
 
-		$finderresult_response->results->aggregationlist->vip_trial = array();
+		// $finderresult_response->results->aggregationlist->vip_trial = array();
 
 		// foreach ($aggs['filtered_vip_trial']['vip_trial']['buckets'] as $off){
 		// 	$offval = new \stdClass();
@@ -1363,16 +1365,16 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		// 	array_push($finderresult_response->results->aggregationlist->vip_trial, $offval);
 		// }
 
-		$finderresult_response->results->aggregationlist->locationtags = array();
+	// 	$finderresult_response->results->aggregationlist->locationtags = array();
 
 	
-	foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
-		$offval = new \stdClass();
-		$offval->key = $off['key'];
-		$offval->slug = str_replace(' ', '-', $off['key']);
-		$offval->count = $off['doc_count'];
-		array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
-	}
+	// foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
+	// 	$offval = new \stdClass();
+	// 	$offval->key = $off['key'];
+	// 	$offval->count = $off['doc_count'];
+	// 	array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
+	// }
+
 	
 	if(isset($aggs['filtered_trials']['level1'])){
 		$finderresult_response->results->aggregationlist->trialdays = array();
@@ -1384,7 +1386,13 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
 			}
+			$weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+			$trialdays = json_decode(json_encode($finderresult_response->results->aggregationlist->trialdays), true);
+			sorting_array($trialdays, "key", $weekdays, false);
+			$finderresult_response->results->aggregationlist->trialdays = json_decode(json_encode($trialdays),false);
 		}
+		$finderresult_response->results->aggregationlist->categories = array();
+		$finderresult_response->results->aggregationlist->categories = citywise_categories($currentcity);
 		return $finderresult_response;
 	}
 

@@ -2137,8 +2137,8 @@ public function getRankedFinderResultsAppv4()
         $lon                =         (isset($locat['long'])) ? $locat['long']  : '';
         $keys               =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
         $category           = Input::json()->get('category');
-        $trial_time_from    = Input::json()->get('trialfrom') !== null ? Input::json()->get('trialfrom') : '';
-        $trial_time_to      = Input::json()->get('trialto') !== null ? Input::json()->get('trialto') : '';
+        $trial_time_from    = Input::json()->get('session-start-time') !== null ? Input::json()->get('session-start-time') : '';
+        $trial_time_to      = Input::json()->get('session-end-time') !== null ? Input::json()->get('session-end-time') : '';
         $region             = Input::json()->get('regions');
         $offerings          = Input::json()->get('subcategories');
 
@@ -2316,16 +2316,19 @@ public function getRankedFinderResultsAppv4()
 
         */
 
-        $nested_level1_filter = ($category_filter === '') ? '': '  {"nested": {
-          "path": "service_level_data",
-          "query": {"filtered": {
-            "filter": {"bool": {"must": [
-              {"term": {
-                "service_category_synonyms": "'.$category.'"
-              }}
-            ]}}
-          }}
-        }}';
+        // $nested_level1_filter = ($category_filter === '') ? '': '  {"nested": {
+        //   "path": "service_level_data",
+        //   "query": {"filtered": {
+        //     "filter": {"bool": {"must": [
+        //       {"term": {
+        //         "service_category_synonyms": "'.$category.'"
+        //       }}
+        //     ]}}
+        //   }}
+        // }}';
+
+        $nested_level1_filter = $category_filter === '' ? '{"terms" : {  "service_category_synonyms": "'.strtolower($category).'","_cache": true}},': '';
+        
 
         $nested_level2_filter = '';
 
@@ -2568,7 +2571,9 @@ public function getRankedFinderResultsAppv4()
         $categorytag_offerings = '';
 
 
-        $meta_title = $meta_description = $meta_keywords = '';
+        $meta_title = "Find fitness options near you in <city_name>";
+        $meta_description = "Find,try and buy fitness options near you in <city_name>";
+        $meta_keywords = '';
         if($category != ''){
             $findercategory     =   Findercategory::active()->where('slug', '=', url_slug(array($category)))->first(array('meta'));
             $findercategorytag     =   Findercategorytag::active()->where('slug', '=', url_slug(array($category)))->first(array('offering_header'));
