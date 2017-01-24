@@ -189,22 +189,22 @@ class RewardofferController extends BaseController {
             $rewards = array();
         }else{
 
-            if($device == "website"){
-                // return $device;
-                $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
-                    ->where('amount_min','<', $amount)
-                    ->where('amount_max','>=', $amount)
-                    // ->whereNotIn('reward_type',['personal_trainer_at_home'])
-                    ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
-                    // ->with('rewards')
-                    ->orderBy('_id','desc')->first();
-            }else{
+            // if($device == "website"){
+            //     // return $device;
+            //     $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+            //         ->where('amount_min','<', $amount)
+            //         ->where('amount_max','>=', $amount)
+            //         // ->whereNotIn('reward_type',['personal_trainer_at_home'])
+            //         ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
+            //         // ->with('rewards')
+            //         ->orderBy('_id','desc')->first();
+            // }else{
+            // }
                 $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                     ->where('amount_min','<', $amount)
                     ->where('amount_max','>=', $amount)
                     ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','diet_plan');}  ))
                     ->orderBy('_id','desc')->first();
-            }
 
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
