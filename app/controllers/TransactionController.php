@@ -172,8 +172,8 @@ class TransactionController extends \BaseController {
         $result['orderid'] = $data['_id'];
         $result['txnid'] = $txnid;
         $result['amount'] = $data['amount'];
-        $result['productinfo'] = $data['service_name']." - ".$data['finder_name'];
-        $result['service_name'] = $data['service_name'];
+        $result['productinfo'] = $data['productinfo'];
+        $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
         $result['successurl'] = $successurl;
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
@@ -186,6 +186,61 @@ class TransactionController extends \BaseController {
         );
 
         return Response::json($resp);
+
+    }
+
+    public function update(){
+
+        $rules = array(
+            "customer_name"=>"required",
+            "customer_email"=>"email|required",
+            "customer_phone"=>"required",
+            "payment_mode"=>"required",
+            "order_id"=>"numeric|required"
+        );
+
+        $data = Input::json()->all();
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+
+            return Response::json(array('status' => 401,'message' => $this->errorMessage($validator->errors())),401);
+
+        }else{
+
+            $order_id = (int) $data['order_id'];
+
+            $order = array();
+
+            $order = Order::find($order_id);
+
+            if(count($order) < 1){
+
+                $resp   =   array("status" => 401,"message" => "Order Does Not Exists");
+                return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+
+                $resp   =   array("status" => 401,"message" => "You have purchased this membership");
+                return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($order->cashback) && $order->cashback == true && isset($order->status) && $order->status == "1"){
+
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
+                return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0 && isset($order->status) && $order->status == "1"){
+
+                $resp   =   array("status" => 401,"message" => "We have already received your request");
+                return Response::json($resp,$resp["status"]);
+            }
+
+
+        }
 
     }
 
@@ -357,6 +412,13 @@ class TransactionController extends \BaseController {
             $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
             $data['start_date'] = $preferred_starting_date;
             $data['preferred_starting_date'] = $preferred_starting_date;
+        }
+
+        if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != '' && $data['preferred_payment_date']  != '-'){
+
+            $preferred_payment_date = date('Y-m-d 00:00:00', strtotime($data['preferred_payment_date']));
+            $data['start_date'] = $preferred_payment_date;
+            $data['preferred_payment_date'] = $preferred_payment_date;
         }
 
         if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
@@ -679,6 +741,12 @@ class TransactionController extends \BaseController {
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
 
@@ -689,7 +757,7 @@ class TransactionController extends \BaseController {
 
         $txnid = $data['txnid'];
         $amount = $data['amount'];
-        $productinfo = $data['service_name']." - ".$data['finder_name'];
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
         $firstname = $data['customer_name'];
         $email = $data['customer_email'];
         $udf1 = "";
@@ -699,12 +767,14 @@ class TransactionController extends \BaseController {
         $udf5 = "";
 
         $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
-        // $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
-        Log::info($key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt);
+        
+        Log::info($payhash_str);
+
         $data['payment_hash'] = hash('sha512', $payhash_str);
 
         $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
-        $data['verify_hash'] = hash('sha512', $payhash_str);
+
+        $data['verify_hash'] = hash('sha512', $verify_str);
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
         $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;

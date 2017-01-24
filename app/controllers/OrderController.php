@@ -1997,6 +1997,12 @@ class OrderController extends \BaseController {
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
 
@@ -2007,7 +2013,7 @@ class OrderController extends \BaseController {
 
         $txnid = $data['txnid'];
         $amount = $data['amount'];
-        $productinfo = $data['service_name']." - ".$data['finder_name'];
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
         $firstname = $data['customer_name'];
         $email = $data['customer_email'];
         $udf1 = "";
@@ -2017,12 +2023,14 @@ class OrderController extends \BaseController {
         $udf5 = "";
 
         $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
-        // $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
-        Log::info($key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt);
+        
+        Log::info($payhash_str);
+
         $data['payment_hash'] = hash('sha512', $payhash_str);
 
         $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
-        $data['verify_hash'] = hash('sha512', $payhash_str);
+
+        $data['verify_hash'] = hash('sha512', $verify_str);
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
         $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
@@ -2256,8 +2264,8 @@ class OrderController extends \BaseController {
             $result['orderid'] = $order_id;
             $result['txnid'] = $txnid;
             $result['amount'] = $data['amount'];
-            $result['productinfo'] = $data['service_name']." - ".$data['finder_name'];
-            $result['service_name'] = $data['service_name'];
+            $result['productinfo'] = $data['productinfo'];
+            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
             $result['successurl'] = $successurl;
             $result['hash'] = $data['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
