@@ -1993,6 +1993,44 @@ class OrderController extends \BaseController {
         return (int) $delay;
     }
 
+    public function getHash($data){
+
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+
+        $txnid = $data['txnid'];
+        $amount = $data['amount'];
+        $productinfo = $data['service_name']." - ".$data['finder_name'];
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+        // $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+        Log::info($key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt);
+        $data['payment_hash'] = hash('sha512', $payhash_str);
+
+        $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        $data['verify_hash'] = hash('sha512', $payhash_str);
+
+        $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
+        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+        $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
+        $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
+        
+        return $data;
+    }
 
     public function orderUpdate(){
 
@@ -2048,6 +2086,8 @@ class OrderController extends \BaseController {
 
             $data['amount_finder'] = $order->amount_finder;
             $data['amount'] = $order->amount;
+            $data['finder_name'] = $order->finder_name;
+            $data['service_name'] = $order->service_name;
 
             $customer_id = $this->autoRegisterCustomer($data);
 
@@ -2197,14 +2237,41 @@ class OrderController extends \BaseController {
                 array_set($data, 'reward_info', $reward_info);
             }
 
+
+            $txnid = "FIT".$order_id;
+            $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
+            $mobilehash = "";
+           
+            $data['txnid'] = $txnid;
+            $hash = $this->getHash($data);
+
+            $data = array_merge($data,$hash);
+
             $order->update($data);
+
+            $result['firstname'] = $data['customer_name'];
+            $result['lastname'] = "";
+            $result['phone'] = $data['customer_phone'];
+            $result['email'] = $data['customer_email'];
+            $result['orderid'] = $order_id;
+            $result['txnid'] = $txnid;
+            $result['amount'] = $data['amount'];
+            $result['productinfo'] = $data['service_name']." - ".$data['finder_name'];
+            $result['service_name'] = $data['service_name'];
+            $result['successurl'] = $successurl;
+            $result['hash'] = $data['payment_hash'];
+            $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
 
             if($order->payment_mode == "at the studio" /*&& isset($data['reward_info'])*/){
                 $this->findermailer->orderUpdatePaymentAtVendor($order->toArray());
                 $this->customermailer->orderUpdatePaymentAtVendor($order->toArray());
             }
 
-            $resp   =   array("status" => 200, 'message' => "Order Updated Successfull",'order' => $order);
+            $resp   =   array(
+                'status' => 200,
+                'data' => $result,
+                'message' => "Order Updated Successfull"
+            );
 
             return Response::json($resp);
         }
