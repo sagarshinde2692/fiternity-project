@@ -36,6 +36,11 @@ return array(
     'website' => 'https://www.fitternity.com',
     //'website' => 'http://appstg.fitn.in:8555',
 
+
+	'app' =>array(
+		'discount'		=> 			5,
+	),
+
 	/*
 	|--------------------------------------------------------------------------
 	| Application Timezone

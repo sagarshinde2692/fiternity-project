@@ -45,6 +45,7 @@ class TransactionController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward       =   $customerreward;
         $this->ordertypes       =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
+        $this->appOfferDiscount 	= Config::get('app.app.discount');;
 
     }
 
@@ -395,7 +396,10 @@ class TransactionController extends \BaseController {
         }
 
         $data['amount'] = $data['amount_finder'];
-
+        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            $data['amount'] = intval($data['amount'] - ($data['amount'] * ($this->appOfferDiscount/100)));
+            $data['appOffer'] = $this->appOfferDiscount."% Off on purchases from android and iOS";
+        }
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
 
