@@ -72,12 +72,17 @@ class TempsController extends \BaseController {
 
             }else{
 
-            $temp = new Temp($data);
+                $temp = new Temp($data);
                 $temp->otp = $this->generateOtp();
                 $temp->attempt = 1;
                 $temp->verified = "N";
                 $temp->proceed_without_otp = "N";
-            $temp->save();
+
+                if(isset($data['finder_id']) && $data['finder_id'] != ""){
+                   $temp->finder_id = (int) $data['finder_id'];
+                }
+
+                $temp->save();
 
                 $data['otp'] = $temp->otp;
 
@@ -145,6 +150,22 @@ class TempsController extends \BaseController {
                     $data['customer_phone'] = $temp['customer_phone'];
                     $data['customer_id'] = autoRegisterCustomer($data);
                     $customerToken = createCustomerToken($data['customer_id']);
+                }
+
+                $customer_email = $temp->customer_email;
+                $customer_phone = $temp->customer_phone;
+
+                if(isset($temp->finder_id) && $temp->finder_id != ""){
+
+                    $booktrial_count = Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+                            ->where('finder_id', '=', (int)$temp->finder_id)
+                            ->where('type','booktrials')
+                            ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                            ->count();
+
+                    if($booktrial_count > 0){
+                        return Response::json(array('status' => 400,'message' => 'Already Booked Trial'),400);
+                    }
                 }
 
                 return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken),200);

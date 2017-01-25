@@ -576,7 +576,7 @@ class ServiceController extends \BaseController {
     	if(!$request){
 
     		$request = $_REQUEST;
-    		$request['requested_date'] = $request['date'];
+    		$request['requested_date'] = (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
     	}
 
     	if(!isset($request['finder_id']) && !isset($request['service_id'])){
@@ -624,7 +624,7 @@ class ServiceController extends \BaseController {
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
-            $service = array('service_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial'],'address' => $item['address']);
+            $service = array('service_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'service_name' => $item['name'], 'weekday' => $weekday,'three_day_trial' => $item['three_day_trial'],'vip_trial' => $item['vip_trial'],'address' => $item['address'],'available_date'=>"");
 
             $slots = array();
 
@@ -686,6 +686,18 @@ class ServiceController extends \BaseController {
             }
 
             $service['slots'] = $slots;
+
+            if(count($slots) > 0){
+
+            	$avaliable_request = [
+            		'service_id' => $item['_id'],
+            		'type' => $type,
+            		'date' => $date
+            	];
+
+            	$service['available_date'] = $this->getAvailableDateByService($avaliable_request);
+            }
+            
             array_push($schedules, $service);
         }
 
@@ -718,4 +730,48 @@ class ServiceController extends \BaseController {
         }
 
     }
+
+    public function getAvailableDateByService($request,$count = 1){
+
+        $currentDateTime        =   time();
+        $timestamp    			=   strtotime($request['date']);
+        $weekday     			=   strtolower(date( "l", $timestamp));
+        $type 					= 	$request['type'];
+
+        $service = Service::find((int)$request['service_id'],array('workoutsessionschedules','trialschedules'));
+
+        switch ($type) {
+        	case 'workoutsessionschedules': $ratecard = Ratecard::where('service_id',(int)$service['_id'])->where('type','workout session')->first(); break;
+        	case 'trialschedules': $ratecard = Ratecard::where('service_id',(int)$service['_id'])->where('type','trial')->first(); break;
+        	default: $ratecard = Ratecard::where('service_id',(int)$service['_id'])->where('type','trial')->first(); break;
+        }
+
+        $weekdayslots = head(array_where($service[$type], function($key, $value) use ($weekday){
+            if($value['weekday'] == $weekday){
+                return $value;
+            }
+        }));
+
+        if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
+
+        	return $request['date'];
+
+        }else{
+
+        	$request['date'] = date("Y-m-d",strtotime($date." +1 days"));
+
+        	if(!$flag && $count < 7){
+
+	        	$count += 1;
+
+	        	return $this->getAvailableDateByService($request,$count);
+
+	        }else{
+
+	        	return "";
+	        }
+        }
+
+    }
+
 }
