@@ -243,7 +243,9 @@ class RewardofferController extends BaseController {
                     );
 
                     foreach ($reward_type_order as $reward_type_order_value){
-
+                        if($amount < 2000){
+                            $rewards = [];        
+                        }
                         foreach ($rewards as $rewards_value){
                             if($rewards_value['reward_type'] == "fitness_kit" || $rewards_value['reward_type'] == "healthy_snacks"){
                                 switch(true){
@@ -252,8 +254,6 @@ class RewardofferController extends BaseController {
                                         // $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Badge"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
                                         // $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Badge" : $rewards_value['description'];
                                         // $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-1-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
-                                        $rewards = [];
-                                        break;
                                         break;
                                     case (2000 <= $amount && $amount < 5000) :
                                         $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 600 : 300;
