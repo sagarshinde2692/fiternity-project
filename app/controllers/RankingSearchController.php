@@ -2141,10 +2141,10 @@ public function getRankedFinderResultsAppv4()
         $trial_time_to      = Input::json()->get('session-end-time') !== null ? Input::json()->get('session-end-time') : '';
         $region             = Input::json()->get('regions');
         $offerings          = Input::json()->get('subcategories');
-        $facilities         = Input::json()->get('facilities');
+        $facilities         = Input::json()->get('facilities') == null ? [] : Input::json()->get('facilities');
         $budget             = Input::json()->get('budget');
-        $trialdays          = Input::json()->get('trialdays');
-        $other_filters          = Input::json()->get('other_filters');
+        $trialdays          = Input::json()->get('trialdays') == null ? [] : Input::json()->get('trialdays');
+        $other_filters          = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];
             $trialdays_filters = ["sunday open","monday open","tuesday open","wednesday open","friday open","saturday open"];
