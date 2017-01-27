@@ -2143,15 +2143,17 @@ public function getRankedFinderResultsAppv4()
         $offerings          = Input::json()->get('subcategories');
         $facilities         = Input::json()->get('facilities');
         $budget             = Input::json()->get('budget');
-
+        $trialdays          = Input::json()->get('trialdays');
         $other_filters          = Input::json()->get('other_filters');
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];
-            $trialdays_filters = ["sunday","monday","tuesday","wednesday","friday","saturday"];
-            if($filter)
+            $trialdays_filters = ["sunday open","monday open","tuesday open","wednesday open","friday open","saturday open"];
+            if(in_array($filter, $trialdays_filters)){
+                array_push(str_replace(" open","",$filter),$trialdays);
+            }else{
+                array_push($filter,$facilities);
+            }
         }
-        
-
         $object_keys        = array();
 
         $locationCount = 0;
@@ -2201,8 +2203,8 @@ public function getRankedFinderResultsAppv4()
         $region_tags_filter     = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
         $offerings_filter       = $offerings ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', $offerings)).'"],"_cache": true}},': '';
         $facilities_filter      = $facilities ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', $facilities)).'"],"_cache": true}},': '';
-        $trials_day_filter      = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
-        $trials_day_filterv2    = ((Input::json()->get('trialdays'))) ? '{"terms" : {  "day": ["'.strtolower(implode('","', Input::json()->get('trialdays'))).'"],"_cache": true}},'  : '';
+        $trials_day_filter      = (($trialdays)) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', $trialdays)).'"],"_cache": true}},'  : '';
+        $trials_day_filterv2    = (($trialdays)) ? '{"terms" : {  "day": ["'.strtolower(implode('","', $trialdays)).'"],"_cache": true}},'  : '';
         $trial_range_filter     = '';
 
         if(($trial_time_from !== '')&&($trial_time_to !== '')){
