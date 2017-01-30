@@ -187,6 +187,23 @@ class TempsController extends \BaseController {
                 $temp->proceed_without_otp = "Y";
                 $temp->save();
 
+                $customer_email = $temp->customer_email;
+                $customer_phone = $temp->customer_phone;
+
+                if(isset($temp->finder_id) && $temp->finder_id != ""){
+
+                    $booktrial_count = Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+                            ->where('finder_id', '=', (int)$temp->finder_id)
+                            ->where('type','booktrials')
+                            ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                            ->count();
+
+                    if($booktrial_count > 0){
+
+                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.'),200);
+                    }
+                }
+
                 return Response::json(array('status' => 200,'message' => 'Sucessfull'),200);
             }
         }else{
