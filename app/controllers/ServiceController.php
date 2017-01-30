@@ -590,7 +590,7 @@ class ServiceController extends \BaseController {
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-        $query = Service::active()->select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial','address');
+        $query = Service::active()->select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial','address','trial');
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 
@@ -616,6 +616,7 @@ class ServiceController extends \BaseController {
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 			$item['address'] = isset($item['address']) ? $item['address'] : "";
+			$item['trial_status'] = isset($item['trial']) ? $item['trial'] : "";
             $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
