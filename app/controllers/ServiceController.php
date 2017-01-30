@@ -698,7 +698,7 @@ class ServiceController extends \BaseController {
 
             $service['slots'] = $slots;
 
-            if(count($slots) > 0){
+            if(count($slots) <= 0){
 
             	$avaliable_request = [
             		'service_id' => $item['_id'],
@@ -744,6 +744,7 @@ class ServiceController extends \BaseController {
 
     public function getAvailableDateByService($request,$count = 1){
 
+    	$date 					= $request['date'];
         $currentDateTime        =   time();
         $timestamp    			=   strtotime($request['date']);
         $weekday     			=   strtolower(date( "l", $timestamp));
@@ -771,7 +772,7 @@ class ServiceController extends \BaseController {
 
         	$request['date'] = date("Y-m-d",strtotime($date." +1 days"));
 
-        	if(!$flag && $count < 7){
+        	if($count < 7){
 
 	        	$count += 1;
 
