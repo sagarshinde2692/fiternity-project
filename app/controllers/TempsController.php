@@ -88,7 +88,7 @@ class TempsController extends \BaseController {
 
                 $this->customersms->genericOtp($data);
 
-                $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id);
+                $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id,'sender_id'=>'FTRNTY');
             }
 
         }catch (Exception $e) {
@@ -164,7 +164,7 @@ class TempsController extends \BaseController {
                             ->count();
 
                     if($booktrial_count > 0){
-                        return Response::json(array('status' => 400,'message' => 'Already Booked Trial'),400);
+                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken),200);
                     }
                 }
 
@@ -209,7 +209,7 @@ class TempsController extends \BaseController {
                 $this->customersms->genericOtp($data);
             }
 
-            return Response::json(array('status' => 200,'attempt' => $temp->attempt),200);
+            return Response::json(array('status' => 200,'attempt' => $temp->attempt,'sender_id'=>'FTRNTY'),200);
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
