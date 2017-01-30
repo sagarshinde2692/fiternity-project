@@ -130,9 +130,9 @@ class TempsController extends \BaseController {
         $temp = Temp::find($temp_id);
 
         if($temp){
-            if($temp->verified == "Y"){
+            /*if($temp->verified == "Y"){
                 return Response::json(array('status' => 400,'message' => 'Already Verified'),400);
-            }else{
+            }else{*/
 
                 $verified = false;
                 $customerToken = "";
@@ -169,7 +169,7 @@ class TempsController extends \BaseController {
                 }
 
                 return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken),200);
-            }
+            //}
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
@@ -180,9 +180,9 @@ class TempsController extends \BaseController {
         $temp = Temp::find($temp_id);
 
         if($temp){
-            if($temp->proceed_without_otp == "Y"){
+            /*if($temp->proceed_without_otp == "Y"){
                 return Response::json(array('status' => 400,'message' => 'Already Done'),400);
-            }else{
+            }else{*/
 
                 $temp->proceed_without_otp = "Y";
                 $temp->save();
@@ -205,7 +205,7 @@ class TempsController extends \BaseController {
                 }
 
                 return Response::json(array('status' => 200,'message' => 'Sucessfull'),200);
-            }
+            //}
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
