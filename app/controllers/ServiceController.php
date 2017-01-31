@@ -635,7 +635,9 @@ class ServiceController extends \BaseController {
             	'address' => $item['address'],
             	'available_date'=>"",
             	'trial_status'=>$trial_status,
-            	'count'=>0
+            	'current_available_date_diff'=>0,
+            	'popup_message'=>'Slot available is beyond booking range. Select an earlier slot or get in touch with us at '.Config::get('app.contact_us_customer_number'),
+            	'available_message' => "No Slots Available"
             );
 
             $slots = array();
@@ -655,9 +657,8 @@ class ServiceController extends \BaseController {
                     array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
                     array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
                     array_set($slot, 'status', $slot_status);
-                    array_set($slot, 'vip_trial_amount', 0);
 
-                    /*$vip_trial_amount = 0;
+                    $vip_trial_amount = 0;
 
                     if($item['vip_trial'] == "1"){
 
@@ -677,7 +678,7 @@ class ServiceController extends \BaseController {
 
                     }
 
-                    array_set($slot, 'vip_trial_amount', $vip_trial_amount);*/
+                    array_set($slot, 'vip_trial_amount', $vip_trial_amount);
 
                     try{
 
@@ -708,10 +709,12 @@ class ServiceController extends \BaseController {
             		'date' => $date
             	];
 
-            	$getAvailableDateByService = $this->getAvailableDateByService($avaliable_request);
-            	$service['available_date'] = $getAvailableDateByService['available_date'];
-            	$service['count'] = $getAvailableDateByService['count'] - 1;
+            	$service['available_date'] = $this->getAvailableDateByService($avaliable_request);
 
+            	if($service['available_date'] != ""){
+            		$service['current_available_date_diff'] = $this->getDateDiff($service['available_date']);
+            		$service['available_message'] = "Next Slot is available on ".$service['available_date'];
+            	}
             }
             
             array_push($schedules, $service);
@@ -749,12 +752,11 @@ class ServiceController extends \BaseController {
 
     public function getAvailableDateByService($request,$count = 1){
 
-    	$date 					= 	$request['date'];
+    	$date 					= $request['date'];
         $currentDateTime        =   time();
         $timestamp    			=   strtotime($request['date']);
         $weekday     			=   strtolower(date( "l", $timestamp));
         $type 					= 	$request['type'];
-        $data 					= 	['available_date'=>$date,'count'=>$count];
 
         $service = Service::find((int)$request['service_id'],array('workoutsessionschedules','trialschedules'));
 
@@ -772,7 +774,7 @@ class ServiceController extends \BaseController {
 
         if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
-        	return $data;
+        	return $request['date'];
 
         }else{
 
@@ -786,10 +788,23 @@ class ServiceController extends \BaseController {
 
 	        }else{
 
-	        	return $data;
+	        	return "";
 	        }
         }
 
+    }
+
+
+    public function getDateDiff($requested_date){
+
+    	$diff = 0;
+
+    	$current_datetime = time();
+    	$requested_datetime = strtotime($requested_date);
+
+    	$diff = ceil(($requested_datetime - $current_datetime) / (60 * 60 * 24));
+
+    	return $diff;
     }
 
 }
