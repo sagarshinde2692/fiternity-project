@@ -713,7 +713,7 @@ class ServiceController extends \BaseController {
 
             	if($service['available_date'] != ""){
             		$service['current_available_date_diff'] = $this->getDateDiff($service['available_date']);
-            		$service['available_message'] = "Next Slot is available on ".$service['available_date'];
+            		$service['available_message'] = "Next Slot is available on ".date("jS F, Y",strtotime($service['available_date']));
             	}
             }
             
