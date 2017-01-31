@@ -1000,6 +1000,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['membership']   = (isset($data['flags']) && isset($data['flags']['membership'])) ? $data['flags']['membership'] : "auto";
 
             $insertData['show_on']      =   "1";
+            $insertData['trainers']     =   (isset($data['trainers']) && !empty($data['trainers'])) ? $data['trainers'] : [];
             $insertData['created_at']   =   $data['created_at'];
             $insertData['updated_at']   =   $data['updated_at'];
 
