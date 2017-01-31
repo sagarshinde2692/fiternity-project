@@ -634,7 +634,8 @@ class ServiceController extends \BaseController {
             	'vip_trial' => $item['vip_trial'],
             	'address' => $item['address'],
             	'available_date'=>"",
-            	'trial_status'=>$trial_status
+            	'trial_status'=>$trial_status,
+            	'count'=>0
             );
 
             $slots = array();
@@ -654,8 +655,9 @@ class ServiceController extends \BaseController {
                     array_set($slot, 'start_time_24_hour_format', (string) $slot['start_time_24_hour_format']);
                     array_set($slot, 'end_time_24_hour_format', (string) $slot['end_time_24_hour_format']);
                     array_set($slot, 'status', $slot_status);
+                    array_set($slot, 'vip_trial_amount', 0);
 
-                    $vip_trial_amount = 0;
+                    /*$vip_trial_amount = 0;
 
                     if($item['vip_trial'] == "1"){
 
@@ -675,7 +677,7 @@ class ServiceController extends \BaseController {
 
                     }
 
-                    array_set($slot, 'vip_trial_amount', $vip_trial_amount);
+                    array_set($slot, 'vip_trial_amount', $vip_trial_amount);*/
 
                     try{
 
@@ -706,7 +708,10 @@ class ServiceController extends \BaseController {
             		'date' => $date
             	];
 
-            	$service['available_date'] = $this->getAvailableDateByService($avaliable_request);
+            	$getAvailableDateByService = $this->getAvailableDateByService($avaliable_request);
+            	$service['available_date'] = $getAvailableDateByService['available_date'];
+            	$service['count'] = $getAvailableDateByService['count'] - 1;
+
             }
             
             array_push($schedules, $service);
@@ -744,11 +749,12 @@ class ServiceController extends \BaseController {
 
     public function getAvailableDateByService($request,$count = 1){
 
-    	$date 					= $request['date'];
+    	$date 					= 	$request['date'];
         $currentDateTime        =   time();
         $timestamp    			=   strtotime($request['date']);
         $weekday     			=   strtolower(date( "l", $timestamp));
         $type 					= 	$request['type'];
+        $data 					= 	['available_date'=>$date,'count'=>$count];
 
         $service = Service::find((int)$request['service_id'],array('workoutsessionschedules','trialschedules'));
 
@@ -766,7 +772,7 @@ class ServiceController extends \BaseController {
 
         if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
-        	return $request['date'];
+        	return $data;
 
         }else{
 
@@ -780,7 +786,7 @@ class ServiceController extends \BaseController {
 
 	        }else{
 
-	        	return "";
+	        	return $data;
 	        }
         }
 
