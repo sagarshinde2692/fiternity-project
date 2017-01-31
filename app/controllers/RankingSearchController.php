@@ -2147,11 +2147,11 @@ public function getRankedFinderResultsAppv4()
         $other_filters          = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];
-            $trialdays_filters = ["sunday open","monday open","tuesday open","wednesday open","friday open","saturday open"];
+            $trialdays_filters = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday","sunday open","monday open","tuesday open","wednesday open","thursday open","friday open","saturday open"];
             if(in_array($filter, $trialdays_filters)){
-                array_push(str_replace(" open","",$filter),$trialdays);
+                array_push($trialdays,str_replace(" open","",$filter));
             }else{
-                array_push($filter,$facilities);
+                array_push($facilities,$filter);
             }
         }
         $object_keys        = array();
