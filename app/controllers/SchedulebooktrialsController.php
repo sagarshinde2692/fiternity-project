@@ -180,11 +180,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday);
 
                 $slots = array();
-                $date1 = Carbon::parse($date);
-                if($date1->day == 1){
-                    
-                }
-                else{
+                
                     foreach ($weekdayslots['slots'] as $slot) {
 
 
@@ -219,7 +215,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                 }
-                }
+                
                 
                 $service['ratecard_id'] = $ratecard_id['id'];
                 $service['slots'] = $slots;
@@ -283,11 +279,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $check_cashback         =   true;
                 $cashback               =   "";
-                $date1 = Carbon::parse($date);
-                if($date1->day == 1){
-                    
-                }
-                else{
+                
                     foreach ($weekdayslots['slots'] as $slot) {
 
                     if($check_cashback){
@@ -351,7 +343,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
                 }
-                }
+                
                 
             }
 
@@ -426,11 +418,7 @@ class SchedulebooktrialsController extends \BaseController {
                 // echo "<br> count -- ".count($weekdayslots['slots']);
                 $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday,'trial' => (isset($item['trial'])) ? $item['trial'] : "",'membership' => (isset($item['membership'])) ? $item['membership'] : "");
                 $slots = array();
-                 $date1 = Carbon::parse($date);
-                if($date1->day == 1){
-                    
-                }
-                else{
+                 
 
                      foreach ($weekdayslots['slots'] as $slot) {
                     // $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
@@ -461,7 +449,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                 }
-                }
+                
                
 
                 $service['slots'] = $slots;
@@ -540,11 +528,7 @@ class SchedulebooktrialsController extends \BaseController {
             // sslots exists
             $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday, 'month' => date( "M", $timestamp), 'day' => date( "d", $timestamp));
             $slots = array();
-            $date1 = Carbon::parse($date);
-            if($date1->day == 1){
-                
-            }
-            else{
+            
                 if(count($weekdayslots['slots']) > 0){
                     foreach ($weekdayslots['slots'] as $slot) {
 
@@ -582,7 +566,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                     }
                 }
-            }
+            
             
             $service['ratecard_id'] = $ratecard_id['id'];
             $service['slots'] = $slots;
