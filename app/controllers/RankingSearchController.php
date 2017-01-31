@@ -2529,7 +2529,7 @@ public function getRankedFinderResultsAppv4()
         }';
 
 
-   return json_decode($body,true);
+//    return json_decode($body,true);
 
 
         $request = array(
