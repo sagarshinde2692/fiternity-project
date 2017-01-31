@@ -53,8 +53,8 @@ return array(
 			// 'host'     => '35.154.108.96',
 			// 'host'     => '52.77.247.239',
 			'port'     => 27017,
-		    // 'username' => 'fitadmin',
-		    // 'password' => 'fit1234',
+		    'username' => 'fitadmin',
+		    'password' => 'fit1234',
 			'database' => 'fitadmin'
 		),
 
@@ -64,8 +64,8 @@ return array(
 			// 'host'     => '52.77.247.239',
 			'port'     => 27017,
 			'database' => 'fitapi',
-			// 'username' => 'fitadmin',
-		    // 'password' => 'fit1234',
+			'username' => 'fitadmin',
+		    'password' => 'fit1234',
 		),
 
 
