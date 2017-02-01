@@ -1935,9 +1935,11 @@ class FindersController extends \BaseController {
 					}else{*/
 						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
 							if($rateval['special_price'] > 0){
-								$rateval['special_price'] = intval($rateval['special_price'] - ($rateval['special_price'] * ($this->appOfferDiscount/100)));
+								$app_discount_amount = intval($rateval['special_price'] * ($this->appOfferDiscount/100));
+								$rateval['special_price'] = $rateval['special_price'] - $app_discount_amount;
 							}else{
-								$rateval['price'] = intval($rateval['price'] - ($rateval['price'] * ($this->appOfferDiscount/100)));
+								$app_discount_amount = intval($rateval['price'] * ($this->appOfferDiscount/100));
+								$rateval['price'] = $rateval['price'] - $app_discount_amount;
 							}
 							array_push($ratecardArr, $rateval);
 						}
