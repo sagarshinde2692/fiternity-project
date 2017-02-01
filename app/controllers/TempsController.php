@@ -82,6 +82,10 @@ class TempsController extends \BaseController {
                    $temp->finder_id = (int) $data['finder_id'];
                 }
 
+                if(isset($data['service_id']) && $data['service_id'] != ""){
+                   $temp->service_id = (int) $data['service_id'];
+                }
+
                 $temp->save();
 
                 $data['otp'] = $temp->otp;
@@ -155,16 +159,33 @@ class TempsController extends \BaseController {
                 $customer_email = $temp->customer_email;
                 $customer_phone = $temp->customer_phone;
 
-                if(isset($temp->finder_id) && $temp->finder_id != ""){
+                if(isset($temp->service_id) && $temp->service_id != ""){
 
+                    $service = Service::active()->find($temp->service_id);
+                    $finder_id = (int)$service->finder_id;
+                    
                     $booktrial_count = Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-                            ->where('finder_id', '=', (int)$temp->finder_id)
+                            ->where('finder_id', '=',$finder_id)
                             ->where('type','booktrials')
                             ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                             ->count();
 
                     if($booktrial_count > 0){
-                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken),200);
+
+                        $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
+
+                        if($ratecard){
+
+                            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                                $amount = $ratecard->special_price;
+                            }else{
+                                $amount = $ratecard->price;
+                            }
+
+                            return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>$amount),200);
+                        }
+
+                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>"",'amount'=>""),200);
                     }
                 }
 
@@ -190,17 +211,33 @@ class TempsController extends \BaseController {
                 $customer_email = $temp->customer_email;
                 $customer_phone = $temp->customer_phone;
 
-                if(isset($temp->finder_id) && $temp->finder_id != ""){
+                if(isset($temp->service_id) && $temp->service_id != ""){
 
+                    $service = Service::active()->find($temp->service_id);
+                    $finder_id = (int)$service->finder_id;
+                    
                     $booktrial_count = Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
-                            ->where('finder_id', '=', (int)$temp->finder_id)
+                            ->where('finder_id', '=',$finder_id)
                             ->where('type','booktrials')
                             ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                             ->count();
 
                     if($booktrial_count > 0){
 
-                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.'),200);
+                        $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
+
+                        if($ratecard){
+
+                            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                                $amount = $ratecard->special_price;
+                            }else{
+                                $amount = $ratecard->price;
+                            }
+
+                            return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','ratecard_id'=>(int)$ratecard->_id,'amount'=>$amount),200);
+                        }
+
+                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','ratecard_id'=>"",'amount'=>""),200);
                     }
                 }
 
