@@ -299,7 +299,13 @@ class TransactionController extends \BaseController {
 
     public function getCashbackRewardWallet($data){
 
-        $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
+            $data['amount'] = $data['amount'] - $data['app_discount_amount'];
+            $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+        }else{
+            $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+        }
 
         if(isset($data['wallet']) && $data['wallet'] == true){
             $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
@@ -458,10 +464,7 @@ class TransactionController extends \BaseController {
         }
 
         $data['amount'] = $data['amount_finder'];
-        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
-            $data['amount'] = intval($data['amount'] - ($data['amount'] * ($this->appOfferDiscount/100)));
-            $data['appOffer'] = $this->appOfferDiscount."% Off on purchases from android and iOS";
-        }
+        
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
 
