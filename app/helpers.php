@@ -2158,7 +2158,7 @@ if (!function_exists(('time_passed_check'))){
     {      
         $service_category_id = array(2,19,65);
 
-        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15 : 90 ;
+        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
     }
 }
 
