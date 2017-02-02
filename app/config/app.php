@@ -32,7 +32,7 @@ return array(
 
 	'url' => 'http://apistage.fitn.in',
 	//'url' => 'http://appstg.fitn.in',
-	'url' => 'http://fitapi.com',
+	//'url' => 'http://fitapi.com',
 
 
 
