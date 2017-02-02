@@ -59,6 +59,7 @@ class OzonetelsController extends \BaseController {
 
 			$this->addCapture($_REQUEST);
 		    $this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+		    $this->ozonetelResponse->addGoto("http://apistage.fitn.in/ozonetel/freevendor?ivr=select_extension");
 		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    $this->ozonetelCollectDtmf->addPlayText("Please dial the extension number");
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
