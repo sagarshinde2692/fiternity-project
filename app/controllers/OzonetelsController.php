@@ -111,7 +111,7 @@ class OzonetelsController extends \BaseController {
 
 				    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
 
-				    		if($extension == 1){
+				    		if($extension == 2){
 
 						    	$call_jump = true;
 						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
@@ -509,7 +509,7 @@ class OzonetelsController extends \BaseController {
 
 			    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
 
-			    		if($extension == 1){
+			    		if($extension == 2){
 
 					    	$call_jump = true;
 					    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
@@ -1042,7 +1042,7 @@ class OzonetelsController extends \BaseController {
 
 	public function ozonetelIvr(){
 		
-		$ivr = 'Please press 1 to enquire about membership packages , trials and offers. Press 2 if you are an existing member or have a general enquiry';
+		$ivr = 'Thank you for calling. Please press 1 if you are an existing member, Press 2 if wish to join or inquire about offers, trial or membership packages';
 
 		return $ivr;
 	}
