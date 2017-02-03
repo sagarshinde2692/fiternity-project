@@ -84,11 +84,23 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($finderDetails){
 
-				    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
-							$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
-							$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?ivr=route_to_number");
-						   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
-						   	$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension);
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time){
+
+					    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+								$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
+								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?ivr=route_to_number");
+							   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+							   	$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension);
+
+							}else{
+
+								$phone = $finderDetails->finder->contact['phone'];
+					    		$phone = explode(',', $phone);
+					    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+					    		$this->ozonetelResponse->addDial($contact_no,"true");
+
+				                $this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true);
+							}
 				    		
 				    	}else{
 
@@ -111,38 +123,25 @@ class OzonetelsController extends \BaseController {
 
 				    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time){
+				    		if($extension == 2){
 
-					    		if($extension == 2){
+						    	$call_jump = true;
+						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
 
-							    	$call_jump = true;
-							    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+						    	$this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true, $call_jump);
 
-							    	$this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true, $call_jump);
+						    	$this->pubNub($_REQUEST,$finder->_id,$capture->_id);
 
-							    	$this->pubNub($_REQUEST,$finder->_id,$capture->_id);
+				            }else{
 
-					            }else{
-
-						    		$phone = $finder->contact['phone'];
-						    		$phone = explode(',', $phone);
-						    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
-						    		$this->ozonetelResponse->addDial($contact_no,"true");
-
-					                $this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true);
-
-					            }
-
-					        }else{
-
-					        	$phone = $finder->contact['phone'];
+					    		$phone = $finder->contact['phone'];
 					    		$phone = explode(',', $phone);
 					    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
 					    		$this->ozonetelResponse->addDial($contact_no,"true");
 
 				                $this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true);
 
-					        }
+				            }
 
 				    	}else{
 
