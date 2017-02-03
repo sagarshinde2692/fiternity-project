@@ -58,7 +58,7 @@ class OzonetelsController extends \BaseController {
 
 			$this->addCapture($_REQUEST);
 		    $this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
-		    $this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?ivr=select_extension");
+		    $this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
 		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    $this->ozonetelCollectDtmf->addPlayText("Please dial the extension number");
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
@@ -68,7 +68,7 @@ class OzonetelsController extends \BaseController {
 
 	    		$extension = (int)$_REQUEST['data'];
 
-	    		if(isset($_REQUEST['ivr']) && $_REQUEST['ivr'] == 'select_extension'){
+	    		if(isset($_REQUEST['fit_action']) && $_REQUEST['fit_action'] == 'select_extension'){
 
 		    		if($extension < 1 || $extension > 15){
 
@@ -88,7 +88,7 @@ class OzonetelsController extends \BaseController {
 
 					    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 								$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
-								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?ivr=route_to_number");
+								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
 							   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 							   	$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension);
 
@@ -97,6 +97,7 @@ class OzonetelsController extends \BaseController {
 								$phone = $finderDetails->finder->contact['phone'];
 					    		$phone = explode(',', $phone);
 					    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+					    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_1");
 					    		$this->ozonetelResponse->addDial($contact_no,"true");
 
 				                $this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension,$add_count = true);
@@ -109,7 +110,7 @@ class OzonetelsController extends \BaseController {
 				    	}
 		    		}
 
-		    	}elseif(isset($_REQUEST['ivr']) && $_REQUEST['ivr'] == 'route_to_number'){
+		    	}elseif(isset($_REQUEST['fit_action']) && $_REQUEST['fit_action'] == 'select_options'){
 
 		    		$extension_array = [1,2];
 
@@ -126,6 +127,7 @@ class OzonetelsController extends \BaseController {
 				    		if($extension == 2){
 
 						    	$call_jump = true;
+						    	$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_fitternity_1");
 						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
 
 						    	$this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true, $call_jump);
@@ -137,6 +139,7 @@ class OzonetelsController extends \BaseController {
 					    		$phone = $finder->contact['phone'];
 					    		$phone = explode(',', $phone);
 					    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+					    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_1");
 					    		$this->ozonetelResponse->addDial($contact_no,"true");
 
 				                $this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true);
@@ -180,6 +183,7 @@ class OzonetelsController extends \BaseController {
 						if(isset($capture->call_jump)){
 
 								$this->ozonetelResponse->addPlayText("Call diverted to another number");
+								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_fitternity_2");
 						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no2, "true");
 						    	$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
 						    	$this->pubNub($_REQUEST,$capture->finder_id,$capture->_id);
@@ -192,6 +196,7 @@ class OzonetelsController extends \BaseController {
                             if(isset($phone[1]) && $phone[1] != ''){
                                 $contact_no = (string)trim($phone[1]);
                                 $this->ozonetelResponse->addPlayText("Call diverted to another number");
+                                $this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_2");
                                 $this->ozonetelResponse->addDial($contact_no,"true");
                                 $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
                             }else{
@@ -803,18 +808,27 @@ class OzonetelsController extends \BaseController {
 				}
 			}
 
-			if(isset($data['ivr']) && $data['ivr'] != ''){
-				$ozonetel_capture->ivr = $data['ivr'];
+			if(isset($data['fit_action']) && $data['fit_action'] != ''){
+
+				$fit_action = [];
+
+				if(isset($ozonetel_capture->fit_action)){
+					$fit_action = $ozonetel_capture->fit_action;
+				}
+
+				array_push($fit_action, $data['fit_action']);
+
+				$ozonetel_capture->fit_action = $fit_action;
 			}
 
 			$ozonetel_capture->update();
 
 			//send sms on call to customer
-			/*if(!$call_jump){
+			if(!$call_jump){
 				if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
 					$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 				}
-			}*/
+			}
 
 			return $ozonetel_capture;
 
