@@ -303,10 +303,18 @@ class OzonetelsController extends \BaseController {
                 //OZONETEL JUMP LOGIC
                 if(in_array($finderDetails->finder->city_id, $city) || in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
 
-		    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
-					$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
-				   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
-				   	$this->addCapture($_REQUEST,$finderDetails->finder->_id);
+                	if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time){
+
+			    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+						$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
+					   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+					   	$this->addCapture($_REQUEST,$finderDetails->finder->_id);
+
+					}else{
+
+	                    $this->ozonetelResponse->addDial($contact_no,"true");
+	                    $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
+	                }
 
                 }else{
 
@@ -337,7 +345,7 @@ class OzonetelsController extends \BaseController {
 
 			    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
 
-			    		if($extension == 1){
+			    		if($extension == 2){
 
 					    	$call_jump = true;
 					    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
@@ -622,11 +630,11 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_capture->update();
 
 			//send sms on call to customer
-			/*if(!$call_jump){
+			if(!$call_jump){
 				if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
 					$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 				}
-			}*/
+			}
 
 			return $ozonetel_capture;
 
@@ -866,7 +874,7 @@ class OzonetelsController extends \BaseController {
 
 	public function ozonetelIvr(){
 		
-		$ivr = 'Please press 1 to enquire about membership packages , trials and offers. Press 2 if you are an existing member or have a general enquiry';
+		$ivr = 'Thank you for calling. Please press 1 if you are an existing member, Press 2 if wish to join or inquire about offers, trial or membership packages';
 
 		return $ivr;
 	}
