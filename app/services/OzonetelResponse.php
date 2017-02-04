@@ -44,7 +44,7 @@ class OzonetelResponse {
         $this->response->setAttribute("filler", $filler);
     }
 
-    public function addPlayText($text, $speed=5, $lang="EN", $quality="best") {// to play text
+    public function addPlayText($text, $speed=4, $lang="EN", $quality="best") {// to play text
         $play_text = $this->doc->createElement("playtext", $text);
         $play_text->setAttribute("lang", $lang);
 		//lang attribute currently supports English only attribute is lang="EN"
