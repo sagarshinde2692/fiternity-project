@@ -79,11 +79,11 @@ class TempsController extends \BaseController {
                 $temp->proceed_without_otp = "N";
 
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
-                   $temp->finder_id = (int) $data['finder_id'];
+                    $temp->finder_id = (int) $data['finder_id'];
                 }
 
                 if(isset($data['service_id']) && $data['service_id'] != ""){
-                   $temp->service_id = (int) $data['service_id'];
+                    $temp->service_id = (int) $data['service_id'];
                 }
 
                 $temp->save();
@@ -98,19 +98,79 @@ class TempsController extends \BaseController {
         }catch (Exception $e) {
 
             $message = array(
-                    'type'    => get_class($e),
-                    'message' => $e->getMessage(),
-                    'file'    => $e->getFile(),
-                    'line'    => $e->getLine(),
-                );
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
 
             $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
-            
-            Log::error($e);       
+
+            Log::error($e);
         }
 
-        return Response::json($response,$response['status']); 
-        
+        return Response::json($response,$response['status']);
+
+    }
+
+    public function addV1(){
+
+        try{
+
+            $data = Input::json()->all();
+
+            $rules = array(
+                'customer_phone' => 'required|max:15',
+                'action'   =>   'required'
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+
+                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+
+            }else{
+
+                $temp = new Temp($data);
+                $temp->otp = $this->generateOtp();
+                $temp->attempt = 1;
+                $temp->verified = "N";
+                $temp->proceed_without_otp = "N";
+
+                if(isset($data['finder_id']) && $data['finder_id'] != ""){
+                    $temp->finder_id = (int) $data['finder_id'];
+                }
+
+                if(isset($data['service_id']) && $data['service_id'] != ""){
+                    $temp->service_id = (int) $data['service_id'];
+                }
+
+                $temp->save();
+
+                $data['otp'] = $temp->otp;
+
+                $this->customersms->genericOtp($data);
+
+                $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id,'sender_id'=>'FTRNTY');
+            }
+
+        }catch (Exception $e) {
+
+            $message = array(
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+            $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+
+            Log::error($e);
+        }
+
+        return Response::json($response,$response['status']);
+
     }
 
 
@@ -196,6 +256,76 @@ class TempsController extends \BaseController {
         }
     }
 
+    function verifyOtpV1($temp_id,$otp){
+
+        $otp = (int)$otp;
+        $temp = Temp::find($temp_id);
+
+        if($temp){
+
+            $verified = false;
+            $customerToken = "";
+            $customer_data = [];
+
+            if($temp->otp == $otp){
+
+                $temp->verified = "Y";
+                $temp->save();
+                $verified = true;
+
+                $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
+
+                if($customer) {
+
+                    $customerToken = createCustomerToken((int)$customer->_id);
+
+                    $customer_data = $customer->toArray();
+
+                    $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                    $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                }
+
+                if(isset($temp->service_id) && $temp->service_id != ""){
+
+                    $customer_phone = $temp->customer_phone;
+                    $service = Service::active()->find($temp->service_id);
+                    $finder_id = (int)$service->finder_id;
+
+                    $booktrial_count = Booktrial::where('customer_phone', $customer_phone)
+                        ->where('finder_id', '=',$finder_id)
+                        ->where('type','booktrials')
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->count();
+
+                    if($booktrial_count > 0){
+
+                        $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
+
+                        if($ratecard){
+
+                            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                                $amount = $ratecard->special_price;
+                            }else{
+                                $amount = $ratecard->price;
+                            }
+
+                            return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>$amount),200);
+                        }
+
+                        return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>"",'amount'=>""),200);
+                    }
+                }
+
+                return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data),200);
+
+            }else{
+                return Response::json(array('status' => 400,'message' => 'Incorrect OTP'),400);
+            }
+        }else{
+            return Response::json(array('status' => 400,'message' => 'Not Found'),400);
+        }
+    }
+
     function proceedWithoutOtp($temp_id){
 
         $temp = Temp::find($temp_id);
@@ -243,6 +373,65 @@ class TempsController extends \BaseController {
 
                 return Response::json(array('status' => 200,'message' => 'Sucessfull'),200);
             //}
+        }else{
+            return Response::json(array('status' => 400,'message' => 'Not Found'),400);
+        }
+    }
+
+    function proceedWithoutOtpV1($temp_id){
+
+        $temp = Temp::find($temp_id);
+
+        if($temp){
+
+            $temp->proceed_without_otp = "Y";
+            $temp->save();
+
+            $customer_data = [];
+
+            $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
+
+            if($customer) {
+
+                $customer_data = $customer->toArray();
+
+                $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+            }
+
+            if(isset($temp->service_id) && $temp->service_id != ""){
+
+                $customer_phone = $temp->customer_phone;
+                $service = Service::active()->find($temp->service_id);
+                $finder_id = (int)$service->finder_id;
+
+                $booktrial_count = Booktrial::where('customer_phone', $customer_phone)
+                    ->where('finder_id', '=',$finder_id)
+                    ->where('type','booktrials')
+                    ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                    ->count();
+
+                if($booktrial_count > 0){
+
+                    $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
+
+                    if($ratecard){
+
+                        if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                            $amount = $ratecard->special_price;
+                        }else{
+                            $amount = $ratecard->price;
+                        }
+
+                        return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','ratecard_id'=>(int)$ratecard->_id,'amount'=>$amount),200);
+                    }
+
+                    return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','ratecard_id'=>"",'amount'=>""),200);
+                }
+            }
+
+            return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>false,'status' => 200,'message' => 'Sucessfull'),200);
+            
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
