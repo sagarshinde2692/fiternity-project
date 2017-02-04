@@ -29,6 +29,7 @@ class OzonetelsController extends \BaseController {
     protected $jump_end_time;
     protected $current_date_time;
     protected $jump_fitternity_no;
+    protected $sunday;
 
     protected   $jump_fitternity_no2;
 
@@ -48,6 +49,7 @@ class OzonetelsController extends \BaseController {
         $this->current_date_time 		=	time();
         $this->jump_fitternity_no 		=	"02261222216";
         $this->jump_fitternity_no2 		=	"02261222216";
+        $this->sunday 					=   date('l');
 
 	}
 
@@ -187,10 +189,10 @@ class OzonetelsController extends \BaseController {
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
 			$this->addCapture($_REQUEST);
-		    $this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+		    $this->ozonetelResponse->addPlayText("Please dial the extension number");
 		    $this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
 		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
-		    $this->ozonetelCollectDtmf->addPlayText("Please dial the extension number");
+		    
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
@@ -200,7 +202,7 @@ class OzonetelsController extends \BaseController {
 
 	    		if(isset($_REQUEST['fit_action']) && $_REQUEST['fit_action'] == 'select_extension'){
 
-		    		if($extension < 1 || $extension > 25){
+		    		if($extension < 1 || $extension > 15){
 
 		    			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 			    		$this->ozonetelCollectDtmf->addPlayText("You have dailed wrong extension number please dial correct extension number");
@@ -214,9 +216,10 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($finderDetails){
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time){
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $finderDetails->commercial_type == 2 && $this->sunday != "Sunday"){
 
 					    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+					    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
 								$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
 								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
 							   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
@@ -242,44 +245,56 @@ class OzonetelsController extends \BaseController {
 
 		    	}elseif(isset($_REQUEST['fit_action']) && $_REQUEST['fit_action'] == 'select_options'){
 
-		    		$extension_array = [1,2];
+		    		$extension_array = [1,2,3];
 
 		    		if(in_array($extension,$extension_array)){
 
-	    				$capture = $this->getCapture($_REQUEST['sid']);
+		    			if($extension == 3){
 
-	    				$finder = Finder::findOrFail((int) $capture->finder_id);
+		    				$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+							$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
+							$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
+						   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
-				    	if($finder){
+		    			}else{
 
-				    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
+		    				$capture = $this->getCapture($_REQUEST['sid']);
 
-				    		if($extension == 2){
+		    				$finder = Finder::findOrFail((int) $capture->finder_id);
 
-						    	$call_jump = true;
-						    	$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_fitternity_1");
-						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+					    	if($finder){
 
-						    	$this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true, $call_jump);
+					    		$this->ozonetelResponse->addPlayText("Please hold while we transfer your call to the concerned person");
 
-						    	$this->pubNub($_REQUEST,$finder->_id,$capture->_id);
+					    		$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
 
-				            }else{
+					    		if($extension == 2){
 
-					    		$phone = $finder->contact['phone'];
-					    		$phone = explode(',', $phone);
-					    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
-					    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_1");
-					    		$this->ozonetelResponse->addDial($contact_no,"true");
+							    	$call_jump = true;
+							    	$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_fitternity_1");
+							    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
 
-				                $this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true);
+							    	$this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true, $call_jump);
 
-				            }
+							    	$this->pubNub($_REQUEST,$finder->_id,$capture->_id);
 
-				    	}else{
+					            }else{
 
-				    		$this->ozonetelResponse->addHangup();
-				    	}
+						    		$phone = $finder->contact['phone'];
+						    		$phone = explode(',', $phone);
+						    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+						    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_1");
+						    		$this->ozonetelResponse->addDial($contact_no,"true");
+
+					                $this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true);
+
+					            }
+
+					    	}else{
+
+					    		$this->ozonetelResponse->addHangup();
+					    	}
+					    }
 		    			
 		    		}else{
 
@@ -479,8 +494,6 @@ class OzonetelsController extends \BaseController {
 
 			if($finderDetails){
 
-				$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
-
 	    		$phone = $finderDetails->finder->contact['phone'];
 	    		$phone = explode(',', $phone);
 	    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);
@@ -489,26 +502,29 @@ class OzonetelsController extends \BaseController {
 
                 
                 //OZONETEL JUMP LOGIC
-                if(in_array($finderDetails->finder->city_id, $city) || in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
+                //if(in_array($finderDetails->finder->city_id, $city) || in_array($finderDetails->finder->_id, $this->jump_finder_ids)) {
 
-                	if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time){
+                	if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday"){
 
 			    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+			    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
+			    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/paidvendor?fit_action=select_options");
 						$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
 					   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 					   	$this->addCapture($_REQUEST,$finderDetails->finder->_id);
 
 					}else{
 
+						$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/paidvendor?fit_action=route_to_vendor_1");
 	                    $this->ozonetelResponse->addDial($contact_no,"true");
 	                    $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
 	                }
 
-                }else{
+                /*}else{
 
                     $this->ozonetelResponse->addDial($contact_no,"true");
                     $this->addCapture($_REQUEST,$finderDetails->finder->_id,$add_count = true);
-                }
+                }*/
                 
 	    	}else{
 
@@ -521,42 +537,55 @@ class OzonetelsController extends \BaseController {
 
 	    		$extension = (int)$_REQUEST['data'];
 
-	    		$extension_array = [1,2];
+	    		$extension_array = [1,2,3];
 
 	    		if(in_array($extension,$extension_array)){
 
-    				$finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
+	    			if($extension == 3){
 
-    				$capture = $this->getCapture($_REQUEST['sid']);
+	    				$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+						$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
+						$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/paidvendor?fit_action=select_options");
+					   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
-			    	if($finderDetails){
+	    			}else{
 
-			    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
+	    				$finderDetails = $this->getFinderDetails($_REQUEST['called_number']);
 
-			    		if($extension == 2){
+	    				$capture = $this->getCapture($_REQUEST['sid']);
 
-					    	$call_jump = true;
-					    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+				    	if($finderDetails){
 
-					    	$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension = false,$add_count = true, $call_jump);
+				    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
+				    		$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
 
-					    	$this->pubNub($_REQUEST,$finderDetails->finder->_id,$capture->_id);
+				    		if($extension == 2){
 
-			            }else{
+						    	$call_jump = true;
+						    	$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/paidvendor?fit_action=route_to_fitternity_1");
+						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
 
-				    		$phone = $finderDetails->finder->contact['phone'];
-				    		$phone = explode(',', $phone);
-				    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
-				    		$this->ozonetelResponse->addDial($contact_no,"true");
+						    	$this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension = false,$add_count = true, $call_jump);
 
-			                $this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension = false,$add_count = true);
+						    	$this->pubNub($_REQUEST,$finderDetails->finder->_id,$capture->_id);
 
-			            }
+				            }else{
 
-			    	}else{
+					    		$phone = $finderDetails->finder->contact['phone'];
+					    		$phone = explode(',', $phone);
+					    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+					    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/paidvendor?fit_action=route_to_vendor_1");
+					    		$this->ozonetelResponse->addDial($contact_no,"true");
 
-			    		$this->ozonetelResponse->addHangup();
-			    	}
+				                $this->updateCapture($_REQUEST,$finderDetails->finder->_id,$extension = false,$add_count = true);
+
+				            }
+
+				    	}else{
+
+				    		$this->ozonetelResponse->addHangup();
+				    	}
+				    }
 	    			
 	    		}else{
 
@@ -589,11 +618,12 @@ class OzonetelsController extends \BaseController {
 
 					if($finder){
 
-						if(in_array($finder->city_id, $city) || in_array($finder->_id, $this->jump_finder_ids)) {
+						//if(in_array($finder->city_id, $city) || in_array($finder->_id, $this->jump_finder_ids)) {
 
 							if(isset($capture->call_jump)){
 
 								$this->ozonetelResponse->addPlayText("Call diverted to another number");
+								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/paidvendor?fit_action=route_to_fitternity_2");
 						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no2, "true");
 						    	$this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
 						    	$this->pubNub($_REQUEST,$capture->finder_id,$capture->_id);
@@ -606,6 +636,7 @@ class OzonetelsController extends \BaseController {
 	                            if(isset($phone[1]) && $phone[1] != ''){
 	                                $contact_no = (string)trim($phone[1]);
 	                                $this->ozonetelResponse->addPlayText("Call diverted to another number");
+	                                $this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/paidvendor?fit_action=route_to_vendor_2");
 	                                $this->ozonetelResponse->addDial($contact_no,"true");
 	                                $this->updateCapture($_REQUEST,$finder_id = false,$extension = false,$add_count = true);
 	                            }else{
@@ -614,7 +645,7 @@ class OzonetelsController extends \BaseController {
 			    				
 			    			}
 
-	                    }else{
+	                    /*}else{
 
                             $phone = $finder->contact['phone'];
                             $phone = explode(',', $phone);
@@ -628,7 +659,7 @@ class OzonetelsController extends \BaseController {
                                 $this->ozonetelResponse->addHangup();
                             }
 
-	                    }
+	                    }*/
 
 					}else{
 	                    
@@ -1075,7 +1106,7 @@ class OzonetelsController extends \BaseController {
 
 	public function ozonetelIvr(){
 		
-		$ivr = 'Thank you for calling. Please press 1 if you are an existing member, Press 2 if wish to join or inquire about offers, trial or membership packages';
+		$ivr = 'Please press 1 if you are an existing member, Press 2 if you have an enquiry about membership packages, Press 3 to here these options again';
 
 		return $ivr;
 	}

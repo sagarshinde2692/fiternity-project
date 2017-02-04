@@ -1814,7 +1814,7 @@ class LogFile {
 }
 
 
-Route::get('/', function() {  return "googledemo laravel 4.2 goes here...."; });
+Route::get('/', function() {  return date('l')." laravel 4.2 goes here...."; });
 
 
 
