@@ -1068,7 +1068,7 @@ class OzonetelsController extends \BaseController {
 
 	public function ozonetelIvr(){
 		
-		$ivr = 'Thank you for calling. Please press 1 if you are an existing member, Press 2 if wish to join or inquire about offers, trial or membership packages';
+		$ivr = 'Thank you for calling. Please press 1 if you are an existing member, Press 2 if you have an enquiry about membership packages';
 
 		return $ivr;
 	}
