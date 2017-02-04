@@ -825,7 +825,7 @@ Route::get('temp/regenerateotp/{temp_id}', array('as' => 'temps.regenerateotp','
 
 /**** Version 1 ****/
 Route::post('temp/addv1', array('as' => 'temps.add','uses' => 'TempsController@addV1'));
-Route::get('temp/verifyotpv1/{temp_id}/{otp}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtpV1'));
+Route::get('temp/verifyotpv1/{temp_id}/{otp}/{email?}/{name?}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtpV1'));
 Route::get('temp/proceedwithoutotpv1/{temp_id}', array('as' => 'temps.proceedwithoutotp','uses' => 'TempsController@proceedWithoutOtpV1'));
 
 
