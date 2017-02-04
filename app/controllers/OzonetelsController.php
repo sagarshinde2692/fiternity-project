@@ -60,7 +60,7 @@ class OzonetelsController extends \BaseController {
 		    $this->ozonetelResponse->addPlayText("Please dial the extension number");
 		    $this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
 		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
-		    $this->ozonetelCollectDtmf->addPlayText("This call is recorderd for quality purpose");
+		    
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
 		}elseif (isset($_REQUEST['event']) && $_REQUEST['event'] == 'GotDTMF') {
@@ -112,44 +112,56 @@ class OzonetelsController extends \BaseController {
 
 		    	}elseif(isset($_REQUEST['fit_action']) && $_REQUEST['fit_action'] == 'select_options'){
 
-		    		$extension_array = [1,2];
+		    		$extension_array = [1,2,3];
 
 		    		if(in_array($extension,$extension_array)){
 
-	    				$capture = $this->getCapture($_REQUEST['sid']);
+		    			if($extension == 3){
 
-	    				$finder = Finder::findOrFail((int) $capture->finder_id);
+		    				$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+							$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
+							$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
+						   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
-				    	if($finder){
+		    			}else{
 
-				    		$this->ozonetelResponse->addPlayText("please hold while we transfer your call to the concerned person");
+		    				$capture = $this->getCapture($_REQUEST['sid']);
 
-				    		if($extension == 2){
+		    				$finder = Finder::findOrFail((int) $capture->finder_id);
 
-						    	$call_jump = true;
-						    	$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_fitternity_1");
-						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+					    	if($finder){
 
-						    	$this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true, $call_jump);
+					    		$this->ozonetelResponse->addPlayText("Please hold while we transfer your call to the concerned person");
 
-						    	$this->pubNub($_REQUEST,$finder->_id,$capture->_id);
+					    		$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
 
-				            }else{
+					    		if($extension == 2){
 
-					    		$phone = $finder->contact['phone'];
-					    		$phone = explode(',', $phone);
-					    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
-					    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_1");
-					    		$this->ozonetelResponse->addDial($contact_no,"true");
+							    	$call_jump = true;
+							    	$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_fitternity_1");
+							    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
 
-				                $this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true);
+							    	$this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true, $call_jump);
 
-				            }
+							    	$this->pubNub($_REQUEST,$finder->_id,$capture->_id);
 
-				    	}else{
+					            }else{
 
-				    		$this->ozonetelResponse->addHangup();
-				    	}
+						    		$phone = $finder->contact['phone'];
+						    		$phone = explode(',', $phone);
+						    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+						    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_1");
+						    		$this->ozonetelResponse->addDial($contact_no,"true");
+
+					                $this->updateCapture($_REQUEST,$finder->_id,$extension = false,$add_count = true);
+
+					            }
+
+					    	}else{
+
+					    		$this->ozonetelResponse->addHangup();
+					    	}
+					    }
 		    			
 		    		}else{
 
