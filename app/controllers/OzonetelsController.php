@@ -87,6 +87,7 @@ class OzonetelsController extends \BaseController {
 				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time){
 
 					    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+					    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
 								$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
 								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
 							   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
@@ -1080,7 +1081,7 @@ class OzonetelsController extends \BaseController {
 
 	public function ozonetelIvr(){
 		
-		$ivr = 'Thank you for calling. Please press 1 if you are an existing member, Press 2 if you have an enquiry about membership packages, Press 3 to here these options again';
+		$ivr = 'Please press 1 if you are an existing member, Press 2 if you have an enquiry about membership packages, Press 3 to here these options again';
 
 		return $ivr;
 	}
