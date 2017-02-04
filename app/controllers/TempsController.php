@@ -285,7 +285,7 @@ class TempsController extends \BaseController {
                     $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
                 }
 
-                if(isset($temp->service_id) && $temp->service_id != ""){
+                if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrial"){
 
                     $customer_phone = $temp->customer_phone;
                     $service = Service::active()->find($temp->service_id);
@@ -315,13 +315,12 @@ class TempsController extends \BaseController {
                         return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>"",'amount'=>""),200);
                     }
                 }
-
-                return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data),200);
-
-            }else{
-                return Response::json(array('status' => 400,'message' => 'Incorrect OTP'),400);
             }
+
+            return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data),200);
+
         }else{
+
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
     }
@@ -399,7 +398,7 @@ class TempsController extends \BaseController {
                 $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
             }
 
-            if(isset($temp->service_id) && $temp->service_id != ""){
+           if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrial"){
 
                 $customer_phone = $temp->customer_phone;
                 $service = Service::active()->find($temp->service_id);
@@ -431,7 +430,7 @@ class TempsController extends \BaseController {
             }
 
             return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>false,'status' => 200,'message' => 'Sucessfull'),200);
-            
+
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
