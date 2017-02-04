@@ -256,7 +256,7 @@ class TempsController extends \BaseController {
         }
     }
 
-    function verifyOtpV1($temp_id,$otp){
+    function verifyOtpV1($temp_id,$otp,$email="",$name=""){
 
         $otp = (int)$otp;
         $temp = Temp::find($temp_id);
@@ -270,9 +270,24 @@ class TempsController extends \BaseController {
             if($temp->otp == $otp){
 
                 $temp->verified = "Y";
+
+                if($email != "" && $name != ""){
+
+                    $temp->customer_name = $name;
+                    $temp->customer_email = $email;
+
+                    $data['customer_name'] = $temp['customer_name'];
+                    $data['customer_email'] = $temp['customer_email'];
+                    $data['customer_phone'] = $temp['customer_phone'];
+                    $data['customer_id'] = autoRegisterCustomer($data);
+
+                    $temp->customer_id = $data['customer_id'];
+                }
+
                 $temp->save();
                 $verified = true;
 
+                Customer::$withoutAppends = true;
                 $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
 
                 if($customer) {
@@ -387,7 +402,8 @@ class TempsController extends \BaseController {
             $temp->save();
 
             $customer_data = [];
-
+            
+            Customer::$withoutAppends = true;
             $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
 
             if($customer) {

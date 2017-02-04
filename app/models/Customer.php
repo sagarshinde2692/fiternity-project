@@ -12,6 +12,16 @@ class Customer extends  \Basemodel {
 	protected $collection = "customers";
 	protected $dates = array('last_visited','birthday');
 	protected $appends = array('uber_trial','ttt_trial');
+
+	public static $withoutAppends = false;
+
+	protected function getArrayableAppends()
+	{
+		if(self::$withoutAppends){
+			return [];
+		}
+		return parent::getArrayableAppends();
+	}
 	
 	// Add your validation rules here
 	public static $rules = [
