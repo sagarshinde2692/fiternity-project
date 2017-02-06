@@ -61,21 +61,21 @@ if (!function_exists('sorting_array')) {
 
 if(!function_exists('citywise_category')){
     function citywise_categories($city){
-        $category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+        $category_slug = array("gyms","yoga","zumba","fitness-studios","crossfit","marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-supplement-stores");
 
 			$cat = array();
 
-			$cat['mumbai'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga"),array("name" => "Zumba","slug" => "zumba"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "CrossFit","slug" => "crossfit"),array("name" => "Pilates","slug" => "pilates"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Cross Functional Training","slug" => "cross-functional-training"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing"),array("name" => "Dance","slug" => "dance"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-and-indoor-cycling"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Dietitians And Nutritionists","slug" => "dietitians-and-nutritionists"),array("name" => "Swimming","slug" => "swimming"),array("name" => "Sport Nutrition Supliment Stores","slug" => "sport-nutrition-supliment-stores"),array("name" => "Luxury Hotels","slug" => "luxury-hotels"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness"));
+			$cat['mumbai'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Dietitians And Nutritionists","slug" => "dietitians"),array("name" => "Swimming","slug" => "swimming-pools"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Luxury Hotels","slug" => "luxury-hotels"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['pune'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga"),array("name" => "Zumba","slug" => "zumba"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Cross Functional Training","slug" => "cross-functional-training"),array("name" => "CrossFit","slug" => "crossfit"),array("name" => "Dance","slug" => "dance"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing"),array("name" => "Aerobics","slug" => "aerobics"),array("name" => "Pilates","slug" => "pilates"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-and-indoor-cycling"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supliment Stores","slug" => "sport-nutrition-supliment-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness"));
+			$cat['pune'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Aerobics","slug" => "aerobics"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['bangalore'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga"),array("name" => "Zumba","slug" => "zumba"),array("name" => "CrossFit","slug" => "crossfit"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing"),array("name" => "Cross Functional Training","slug" => "cross-functional-training"),array("name" => "Dance","slug" => "dance"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Pilates","slug" => "pilates"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-and-indoor-cycling"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supliment Stores","slug" => "sport-nutrition-supliment-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness"));
+			$cat['bangalore'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition SSupplementStores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['delhi'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga"),array("name" => "Zumba","slug" => "zumba"),array("name" => "Cross Functional Training","slug" => "cross-functional-training"),array("name" => "Dance","slug" => "dance"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "CrossFit","slug" => "crossfit"),array("name" => "Pilates","slug" => "pilates"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing"),array("name" => "Marathon Training","slug" => "Marathon Training"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-and-indoor-cycling"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supliment Stores","slug" => "sport-nutrition-supliment-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness"));
+			$cat['delhi'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Marathon Training","slug" => "Marathon Training"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['gurgaon'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga"),array("name" => "Zumba","slug" => "zumba"),array("name" => "Cross Functional Training","slug" => "cross-functional-training"),array("name" => "Dance","slug" => "dance"),array("name" => "CrossFit","slug" => "crossFit"),array("name" => "Pilates","slug" => "pilates"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Spinning","slug" => "Spinning"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supliment Stores","slug" => "sport-nutrition-supliment-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness"));
+			$cat['gurgaon'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "CrossFit","slug" => "crossFit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Spinning","slug" => "Spinning"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['noida'] = array(array("name" => "All Fitness Options","slug" => "All Fitness Options"),array("name" => "Gyms","slug" => "Gyms"),array("name" => "Yoga","slug" => "Yoga"),array("name" => "Fitness Studios","slug" => "Fitness Studios"),array("name" => "Zumba","slug" => "Zumba"),array("name" => "Dance","slug" => "Dance"),array("name" => "CrossFit","slug" => "crossfit"),array("name" => "Mma And Kick Boxing","slug" => "Mma And Kick Boxing"),array("name" => "Fitness Studios","slug" => "Fitness Studios"),array("name" => "Pre-natal Classes","slug" => "Pre-natal Classes"),array("name" => "Kids Fitness","slug" => "Kids Fitness"));
+			$cat['noida'] = array(array("name" => "All Fitness Options","slug" => "All Fitness Options"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
 			if(isset($cat[$city])){
 				$category_slug = $cat[$city];
@@ -2186,6 +2186,55 @@ if (!function_exists(('time_passed_check'))){
         $service_category_id = array(2,19,65);
 
         return (in_array((int)$servicecategory_id,$service_category_id)) ? 15 : 90 ;
+    }
+}
+
+
+if (!function_exists(('newcategorymapping'))){
+
+    function newcategorymapping($category)
+    {      
+        switch(true){
+            case $category == "kids fitness" || $category == "kids fitness classes" :
+                return $category == "kids fitness" ? "kids fitness classes" : "kids fitness";
+                break;
+            case $category == "zumba" || $category == "zumba classes" :
+                return $category == "zumba" ? "zumba classes" : "zumba";
+                break;
+            case $category == "yoga" || $category == "yoga classes" :
+                return $category == "yoga" ? "yoga classes" : "yoga";
+                break;
+            case $category == "cross functional training" || $category == "functional training" :
+                return $category == "cross functional training" ? "functional training" : "cross functional training";
+                break;
+            case $category == "dance" || $category == "dance classes" :
+                return $category == "dance" ? "dance classes" : "dance";
+                break;
+            case $category == "crossfit" || $category == "crossfit gym" :
+                return $category == "crossfit" ? "crossfit gym" : "crossfit";
+                break;
+            case $category == "pilates" || $category == "pilates classes" :
+                return $category == "pilates" ? "pilates classes" : "pilates";
+                break;
+            case $category == "mma and kick boxing" || $category == "mma and kick boxing classes" :
+                return $category == "mma and kick boxing" ? "mma and kick boxing classes" : "mma and kick boxing";
+                break;
+            case $category == "spinning and indoor cycling" || $category == "spinning classes" :
+                return $category == "spinning and indoor cycling" ? "spinning classes" : "spinning and indoor cycling";
+                break;
+            case $category == "swimming" || $category == "swimming pools" :
+                return $category == "swimming" ? "swimming pools" : "swimming";
+                break;
+            case $category == "dietitians and nutritionists" || $category == "dietitians" :
+                return $category == "dietitians and nutritionists" ? "dietitians" : "dietitians and nutritionists";
+                break;
+            case $category == "sport nutrition and supliment stores" || $category == "sport supliment stores" :
+                return $category == "sport nutrition and supliment stores" ? "sport supliment stores" : "sport nutrition and supliment stores";
+                break;
+            default: 
+                return $category;
+
+        }
     }
 }
 
