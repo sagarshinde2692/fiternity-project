@@ -1381,7 +1381,14 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			$weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 			$trialdays = json_decode(json_encode($finderresult_response->results->aggregationlist->trialdays), true);
 			$trialdays = sorting_array($trialdays, "key", $weekdays, false);
-			$finderresult_response->results->aggregationlist->trialdays = $trialdays;
+			$finaltrialdays = array();
+			foreach($trialdays as $day){
+			 	$day["key"] = $day["key"]." open";
+				//  print_r($days["key"]);
+				// exit;
+				array_push($finaltrialdays, $day);
+			}
+			$finderresult_response->results->aggregationlist->trialdays = $finaltrialdays;
 		}
 		$finderresult_response->results->aggregationlist->categories = array();
 		$finderresult_response->results->aggregationlist->categories = citywise_categories($currentcity);

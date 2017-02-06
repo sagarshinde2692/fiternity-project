@@ -2136,7 +2136,7 @@ public function getRankedFinderResultsAppv4()
         $lat                =         (isset($locat['lat'])) ? $locat['lat']  : '';
         $lon                =         (isset($locat['long'])) ? $locat['long']  : '';
         $keys               =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
-        $category           = Input::json()->get('category');
+        $category           = newcategorymapping(Input::json()->get('category'));
         $trial_time_from    = Input::json()->get('session-start-time') !== null ? Input::json()->get('session-start-time') : '';
         $trial_time_to      = Input::json()->get('session-end-time') !== null ? Input::json()->get('session-end-time') : '';
         $region             = Input::json()->get('regions');
@@ -2149,10 +2149,11 @@ public function getRankedFinderResultsAppv4()
             // $budget_filters = ["one","two","three","four","five","six"];
             $trialdays_filters = ["sunday open","monday open","tuesday open","wednesday open","friday open","saturday open"];
             if(in_array($filter, $trialdays_filters)){
-                array_push(str_replace(" open","",$filter),$trialdays);
-            }else{
-                array_push($filter,$facilities);
+                array_push($trialdays,str_replace(" open","",$filter));
             }
+            // else{
+            //     array_push($filter,$facilities);
+            // }
         }
         $object_keys        = array();
 
