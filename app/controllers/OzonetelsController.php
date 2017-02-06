@@ -216,7 +216,7 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($finderDetails){
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $finderDetails->commercial_type == 2 && $this->sunday != "Sunday"){
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $finderDetails->finder->commercial_type == 2 && $this->sunday != "Sunday"){
 
 					    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 					    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
