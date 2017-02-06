@@ -56,9 +56,12 @@ class OzonetelsController extends \BaseController {
 
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
+			
 			$this->addCapture($_REQUEST);
-		    $this->ozonetelResponse->addPlayText("Please dial the extension number");
-		    $this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
+
+			$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
+
+		    $this->ozonetelCollectDtmf->addPlayText("Please dial the extension number");
 		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
