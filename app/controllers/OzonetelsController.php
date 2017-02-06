@@ -57,7 +57,9 @@ class OzonetelsController extends \BaseController {
 		if (isset($_REQUEST['event']) && $_REQUEST['event'] == 'NewCall') {
 
 			$this->addCapture($_REQUEST);
-			
+
+			$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+
 			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    $this->ozonetelCollectDtmf->addPlayText("Please dial the extension number");
 
