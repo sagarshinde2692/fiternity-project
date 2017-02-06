@@ -61,8 +61,8 @@ class OzonetelsController extends \BaseController {
 
 			$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
 
+			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    $this->ozonetelCollectDtmf->addPlayText("Please dial the extension number");
-		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
