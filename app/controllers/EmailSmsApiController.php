@@ -587,9 +587,11 @@ class EmailSmsApiController extends \BaseController {
         $responseData = [];
         try {
 
-            $responseData = $this->cloudagent->requestToCallBack($data);
+//            $responseData = $this->cloudagent->requestToCallBack($data);
             $responseData = $this->addReminderMessage($storecapture);
-            
+
+
+
         }catch (Exception $e) {
 
             $message = array(
