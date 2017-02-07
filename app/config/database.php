@@ -52,8 +52,8 @@ return array(
 			'host'     => 'localhost',
 			// 'host'     => '52.77.247.239',
 			'port'     => 27017,
-		    // 'username' => 'fitadmin',
-		    // 'password' => 'fit1234',
+		    'username' => 'fitadmin',
+		    'password' => 'fit1234',
 			'database' => 'fitadmin'
 		),
 
