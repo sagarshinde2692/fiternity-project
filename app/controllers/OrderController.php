@@ -2176,6 +2176,11 @@ class OrderController extends \BaseController {
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
+                }
+
+                if(isset($data['cashback']) && $data['cashback'] == true){
+                    $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
                 }
             }
 
@@ -2192,7 +2197,8 @@ class OrderController extends \BaseController {
                 $walletTransactionResponse = (array) $walletTransactionResponse;
 
                 if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
+
+                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
                 }
 
                 // Schedule Check orderfailure and refund wallet amount in that case....
