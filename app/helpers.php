@@ -2185,6 +2185,7 @@ if (!function_exists(('getReversehash'))){
         $txnid = $data['txnid'];
         $amount = $data['amount'].".00";
         $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $productinfo = substr($productinfo,100);
         $firstname = $data['customer_name'];
         $email = $data['customer_email'];
         $udf1 = "";
