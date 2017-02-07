@@ -234,7 +234,7 @@ class TempsController extends \BaseController {
 
                         $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
 
-                        if($ratecard){
+                        if($ratecard && count($service->workoutsessionschedules) > 0){
 
                             if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                                 $amount = $ratecard->special_price;
@@ -245,7 +245,7 @@ class TempsController extends \BaseController {
                             return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>$amount),200);
                         }
 
-                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>"",'amount'=>""),200);
+                        return Response::json(array('status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0),200);
                     }
                 }
 
@@ -316,7 +316,7 @@ class TempsController extends \BaseController {
 
                         $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
 
-                        if($ratecard){
+                        if($ratecard && count($service->workoutsessionschedules) > 0){
 
                             if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                                 $amount = $ratecard->special_price;
@@ -324,10 +324,10 @@ class TempsController extends \BaseController {
                                 $amount = $ratecard->price;
                             }
 
-                            return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>$amount),200);
+                            return Response::json(array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount),200);
                         }
 
-                        return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>"",'amount'=>""),200);
+                        return Response::json(array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0),200);
                     }
                 }
             }
@@ -430,7 +430,7 @@ class TempsController extends \BaseController {
 
                     $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
 
-                    if($ratecard){
+                    if($ratecard && count($service->workoutsessionschedules) > 0){
 
                         if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                             $amount = $ratecard->special_price;
@@ -438,10 +438,10 @@ class TempsController extends \BaseController {
                             $amount = $ratecard->price;
                         }
 
-                        return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','ratecard_id'=>(int)$ratecard->_id,'amount'=>$amount),200);
+                        return Response::json(array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount),200);
                     }
 
-                    return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs 300.','ratecard_id'=>"",'amount'=>""),200);
+                    return Response::json(array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','ratecard_id'=>0,'amount'=>0),200);
                 }
             }
 
