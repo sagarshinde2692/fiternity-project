@@ -15,6 +15,7 @@ class TempsController extends \BaseController {
     public function __construct(CustomerSms $customersms) {
         //parent::__construct();
         $this->customersms              =   $customersms;
+        $this->contact_us_customer_number = Config::get('app.contact_us_customer_number');
     }
 
     public function errorMessage($errors){
@@ -260,6 +261,7 @@ class TempsController extends \BaseController {
 
         $otp = (int)$otp;
         $temp = Temp::find($temp_id);
+        $fitternity_no = $this->contact_us_customer_number;
 
         if($temp){
 
@@ -350,15 +352,15 @@ class TempsController extends \BaseController {
                                 $amount = $ratecard->price;
                             }
 
-                            return Response::json(array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount),200);
+                            return Response::json(array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no),200);
                         }
 
-                        return Response::json(array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0),200);
+                        return Response::json(array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no),200);
                     }
                 }
             }
 
-            return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data),200);
+            return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no),200);
 
         }else{
 
@@ -419,6 +421,8 @@ class TempsController extends \BaseController {
     }
 
     function proceedWithoutOtpV1($temp_id){
+
+        $fitternity_no = $this->contact_us_customer_number;
 
         $temp = Temp::find($temp_id);
 
@@ -487,14 +491,14 @@ class TempsController extends \BaseController {
                             $amount = $ratecard->price;
                         }
 
-                        return Response::json(array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount),200);
+                        return Response::json(array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no),200);
                     }
 
-                    return Response::json(array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','ratecard_id'=>0,'amount'=>0),200);
+                    return Response::json(array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no),200);
                 }
             }
 
-            return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>false,'status' => 200,'message' => 'Sucessfull'),200);
+            return Response::json(array('customer_data'=>$customer_data,'trial_booked'=>false,'status' => 200,'message' => 'Sucessfull','fitternity_no'=>$fitternity_no),200);
 
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
