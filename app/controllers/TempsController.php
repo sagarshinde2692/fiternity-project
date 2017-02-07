@@ -265,7 +265,7 @@ class TempsController extends \BaseController {
 
             $verified = false;
             $customerToken = "";
-            $customer_data = [];
+            $customer_data = null;
 
             if($temp->otp == $otp){
 
@@ -299,12 +299,9 @@ class TempsController extends \BaseController {
                     $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                     $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
 
-                }else{
-
-                    $customer_data = null;
                 }
 
-                if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrial"){
+                if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
 
                     $customer_phone = $temp->customer_phone;
                     $service = Service::active()->find($temp->service_id);
@@ -405,7 +402,7 @@ class TempsController extends \BaseController {
             $temp->proceed_without_otp = "Y";
             $temp->save();
 
-            $customer_data = [];
+            $customer_data = null;
             
             Customer::$withoutAppends = true;
             $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
@@ -417,12 +414,9 @@ class TempsController extends \BaseController {
                 $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                 $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
 
-            }else{
-
-                $customer_data = null;
             }
-
-            if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrial"){
+            
+            if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
 
                 $customer_phone = $temp->customer_phone;
                 $service = Service::active()->find($temp->service_id);
