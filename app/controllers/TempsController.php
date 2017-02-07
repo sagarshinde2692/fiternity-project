@@ -335,6 +335,7 @@ class TempsController extends \BaseController {
 
                                 $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                                 $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                                $customer_data['contact_no'] = $customer_phone;
 
                             }
                         }
@@ -472,7 +473,7 @@ class TempsController extends \BaseController {
 
                             $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                             $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
-
+                            $customer_data['contact_no'] = $customer_phone;
                         }
                     }
 
