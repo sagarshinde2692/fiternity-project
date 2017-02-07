@@ -1273,47 +1273,52 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		$budval3 = new \stdClass();
 		$budval4 = new \stdClass();
 		$budval5 = new \stdClass();
-		foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
-			switch ($bud['key']) {
-				case 'one':
-					$budval0->key = 'less than 1000';
-					$budval0->count = $bud['doc_count'];
+		// print_r($aggs['filtered_budgets']['budgets']['buckets']);
+		// exit;
+		if(count($aggs['filtered_budgets']['budgets']['buckets']) > 0){
+			
+			foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
+				switch ($bud['key']) {
+					case 'one':
+						$budval0->key = 'less than 1000';
+						$budval0->count = $bud['doc_count'];
 
-					break;
-				case 'two':
-					$budval1->key = '1000-2500';
-					$budval1->count = $bud['doc_count'];
+						break;
+					case 'two':
+						$budval1->key = '1000-2500';
+						$budval1->count = $bud['doc_count'];
 
-					break;
-				case 'three':
-					$budval2->key = '2500-5000';
-					$budval2->count = $bud['doc_count'];
+						break;
+					case 'three':
+						$budval2->key = '2500-5000';
+						$budval2->count = $bud['doc_count'];
 
-					break;
-				case 'four':
-					$budval3->key = '5000-7500';
-					$budval3->count = $bud['doc_count'];
+						break;
+					case 'four':
+						$budval3->key = '5000-7500';
+						$budval3->count = $bud['doc_count'];
 
-					break;
-				case 'five':
-					$budval4->key = '7500-15000';
-					$budval4->count = $bud['doc_count'];
+						break;
+					case 'five':
+						$budval4->key = '7500-15000';
+						$budval4->count = $bud['doc_count'];
 
-					break;
-				case 'six':
-					$budval5->key = '15000 & Above';
-					$budval5->count = $bud['doc_count'];
-					break;
-				default:
-					break;
+						break;
+					case 'six':
+						$budval5->key = '15000 & Above';
+						$budval5->count = $bud['doc_count'];
+						break;
+					default:
+						break;
+				}
 			}
+			array_push($finderresult_response->results->aggregationlist->budget, $budval0);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval1);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval2);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval3);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval4);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 		}
-		array_push($finderresult_response->results->aggregationlist->budget, $budval0);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval1);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval2);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval3);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval4);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 
 		$finderresult_response->results->aggregationlist->filters = array();
 		$noBasicFilterCategories = ['healthy snacks and beverages','healthy tiffins','dietitians and nutritionists','sport nutrition supliment stores'];
@@ -1383,10 +1388,12 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			$trialdays = sorting_array($trialdays, "key", $weekdays, false);
 			$finaltrialdays = array();
 			foreach($trialdays as $day){
-			 	$day["key"] = $day["key"]." open";
+				if($day["key"] != ""){
+					$day["key"] = $day["key"]." open";
+					array_push($finaltrialdays, $day);
+				}
 				//  print_r($days["key"]);
 				// exit;
-				array_push($finaltrialdays, $day);
 			}
 			$finderresult_response->results->aggregationlist->trialdays = $finaltrialdays;
 		}
