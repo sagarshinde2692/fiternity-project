@@ -108,9 +108,13 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($slot, 'booked', $booktrialslotcnt);
                 array_set($slot, 'status', $slot_status);
 
-                $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']))->subMinutes(1);
+                /*$scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']))->subMinutes(1);
                 // $oneHourDiffInMin            =   $currentDateTime->diffInMinutes($delayReminderTimeBefore1Hour, false);
-                $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;
+                $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > 60) ? false : true;*/
+
+                $scheduleDateTimeUnix           =  strtotime(strtoupper($date." ".$slot['start_time']));
+                $slot_datetime_pass_status      =  (($scheduleDateTimeUnix - time()) > 60*60) ? false : true;
+
                 array_set($slot, 'passed', $slot_datetime_pass_status);
                 array_set($slot, 'service_id', $item['_id']);
                 array_set($slot, 'finder_id', $item['finder_id']);
@@ -180,11 +184,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday);
 
                 $slots = array();
-                $date1 = Carbon::parse($date);
-                if($date1->day == 1){
-                    
-                }
-                else{
+                
                     foreach ($weekdayslots['slots'] as $slot) {
 
 
@@ -205,8 +205,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                     try{
 
-                        $scheduleDateTime               =   Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+                        $scheduleDateTimeUnix           =  strtotime(strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
@@ -219,7 +219,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                 }
-                }
+                
                 
                 $service['ratecard_id'] = $ratecard_id['id'];
                 $service['slots'] = $slots;
@@ -283,11 +283,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $check_cashback         =   true;
                 $cashback               =   "";
-                $date1 = Carbon::parse($date);
-                if($date1->day == 1){
-                    
-                }
-                else{
+                
                     foreach ($weekdayslots['slots'] as $slot) {
 
                     if($check_cashback){
@@ -336,8 +332,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                     try{
 
-                        $scheduleDateTime               =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+                        $scheduleDateTimeUnix           =  strtotime(strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
@@ -351,7 +347,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
                 }
-                }
+                
                 
             }
 
@@ -426,11 +422,7 @@ class SchedulebooktrialsController extends \BaseController {
                 // echo "<br> count -- ".count($weekdayslots['slots']);
                 $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'weekday' => $weekday,'trial' => (isset($item['trial'])) ? $item['trial'] : "",'membership' => (isset($item['membership'])) ? $item['membership'] : "");
                 $slots = array();
-                 $date1 = Carbon::parse($date);
-                if($date1->day == 1){
-                    
-                }
-                else{
+                 
 
                      foreach ($weekdayslots['slots'] as $slot) {
                     // $totalbookcnt = Booktrial::where('finder_id', '=', $finderid)->where('service_name', '=', $item['name'])->where('schedule_date', '=', new DateTime($date) )->where('schedule_slot', '=', $slot['slot_time'])->count();
@@ -447,8 +439,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                     try{
 
-                        $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+                        $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
+                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
@@ -461,7 +453,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                 }
-                }
+                
                
 
                 $service['slots'] = $slots;
@@ -493,6 +485,7 @@ class SchedulebooktrialsController extends \BaseController {
         $currentDateTime    =   \Carbon\Carbon::now();
         $item              =    Service::active()->where('_id', (int) $serviceid)->first(array('name', 'finder_id', 'trialschedules', 'workoutsessionschedules','servicecategory_id'));
         $ratecard_id ="";
+        $date =   ($date == null) ? Carbon::now() : $date;
 
         if(!$item){
             return $this->responseNotFound('Service Schedule does not exist');
@@ -540,11 +533,7 @@ class SchedulebooktrialsController extends \BaseController {
             // sslots exists
             $service = array('_id' => $item['_id'], 'finder_id' => $item['finder_id'], 'name' => $item['name'], 'date' => $dt, 'weekday' => $weekday, 'month' => date( "M", $timestamp), 'day' => date( "d", $timestamp));
             $slots = array();
-            $date1 = Carbon::parse($date);
-            if($date1->day == 1){
-                
-            }
-            else{
+            
                 if(count($weekdayslots['slots']) > 0){
                     foreach ($weekdayslots['slots'] as $slot) {
 
@@ -562,8 +551,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                         try{
 
-                            $scheduleDateTime              =    Carbon::createFromFormat('d-m-Y g:i A', date("d-m-Y g:i A", strtotime(strtoupper($dt." ".$slot['start_time']))) );
-                            $slot_datetime_pass_status      =   ($currentDateTime->diffInMinutes($scheduleDateTime, false) > $time_in_seconds) ? false : true;
+                            $scheduleDateTimeUnix               =  strtotime(strtoupper($dt." ".$slot['start_time']));
+                            $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
                             array_set($slot, 'passed', $slot_datetime_pass_status);
                             array_set($slot, 'service_id', $item['_id']);
                             array_set($slot, 'finder_id', $item['finder_id']);
@@ -582,7 +571,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                     }
                 }
-            }
+            
             
             $service['ratecard_id'] = $ratecard_id['id'];
             $service['slots'] = $slots;
@@ -684,6 +673,13 @@ class SchedulebooktrialsController extends \BaseController {
         if (count($alreadyBookedTrials) > 0) {
             $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
             return Response::json($resp, 403);
+        }
+
+        $disableTrial = $this->disableTrial($data);
+
+        if($disableTrial['status'] != 200){
+
+            return Response::json($disableTrial,$disableTrial['status']);
         }
 
         // return $data	= Input::json()->all();
@@ -1293,7 +1289,19 @@ class SchedulebooktrialsController extends \BaseController {
         $order        = 	Order::findOrFail($orderid);
 
 
-
+        $hashreverse = getReversehash($order);
+            Log::info($data["verify_hash"]);
+            Log::info($hashreverse['reverse_hash']);
+            if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                $hash_verified = true;
+            }else{
+                $hash_verified = false;
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                return  Response::json($resp, 400);
+            }
         if(Input::json()->get('status') == 'success') {
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -1382,7 +1390,19 @@ class SchedulebooktrialsController extends \BaseController {
         $order        = 	Order::findOrFail($orderid);
 
 
-
+        $hashreverse = getReversehash($order);
+            Log::info($data["verify_hash"]);
+            Log::info($hashreverse['reverse_hash']);
+            if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                $hash_verified = true;
+            }else{
+                $hash_verified = false;
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                return  Response::json($resp, 400);
+            }
         if(Input::json()->get('status') == 'success') {
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -1607,6 +1627,20 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($data,'acquisition_type','direct_payment');
             }
 
+
+            $hashreverse = getReversehash($order);
+            Log::info($data["verify_hash"]);
+            Log::info($hashreverse['reverse_hash']);
+            if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                $hash_verified = true;
+            }else{
+                $hash_verified = false;
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                return  Response::json($resp, 400);
+            }
             $source                             =   (isset($order->customer_source) && $order->customer_source != '') ? trim($order->customer_source) : "website";
 
             $service_id	 				       =	(isset($order->service_id) && $order->service_id != '') ? intval($order->service_id) : "";
@@ -2373,6 +2407,13 @@ class SchedulebooktrialsController extends \BaseController {
                 return Response::json($resp, 403);
             }
 
+            $disableTrial = $this->disableTrial($data);
+
+            if($disableTrial['status'] != 200){
+
+                return Response::json($disableTrial,$disableTrial['status']);
+            }
+
             $myreward_id = "";
 
             if (isset($data['reward_id']) && $data['reward_id'] != "") {
@@ -3019,6 +3060,13 @@ class SchedulebooktrialsController extends \BaseController {
 
 
         try {
+
+            $disableTrial = $this->disableTrial($data);
+
+            if($disableTrial['status'] != 200){
+
+                return Response::json($disableTrial,$disableTrial['status']);
+            }
 
             $id        = 	(int) $data['booktrial_id'];
             $booktrial 	= 	Booktrial::findOrFail($id);
@@ -5235,6 +5283,32 @@ class SchedulebooktrialsController extends \BaseController {
 
         return $category_calorie_burn;
 
+    }
+
+    public function disableTrial($data){
+
+        $finder     =   Finder::find(intval($data['finder_id']));
+
+        if(isset($finder['trial']) && $finder['trial'] == "disable"){
+
+            $message = "Sorry, this class is not available. Kindly book a different slot";
+
+            return array('status' => 400,'message' => $message);
+        }
+
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+
+            $service = Service::find((int)$data['service_id']);
+
+            if(isset($service['trial']) && $service['trial'] == "disable"){
+
+                $message = "Sorry, this class is not available. Kindly book a different slot";
+
+                return array('status' => 400,'message' => $message);
+            }
+        }
+
+        return array('status' => 200,'message' => 'success');
     }
 
 

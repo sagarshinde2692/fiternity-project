@@ -2187,7 +2187,7 @@ if (!function_exists(('time_passed_check'))){
     {      
         $service_category_id = array(2,19,65);
 
-        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15 : 90 ;
+        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
     }
 }
 
@@ -2239,5 +2239,47 @@ if (!function_exists(('newcategorymapping'))){
         }
     }
 }
+
+if (!function_exists(('getReversehash'))){
+     function getReversehash($data){
+
+        $data['env'] == 1;
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+
+        $txnid = $data['txnid'];
+        $amount = $data['amount'].".00";
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+//    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        
+        Log::info($payhash_str);
+        $data['reverse_hash'] = hash('sha512', $payhash_str);        
+        Log::info($data['reverse_hash']);
+        return $data;
+    }
+}
+
 
 ?>

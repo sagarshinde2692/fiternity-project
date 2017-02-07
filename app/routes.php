@@ -873,3 +873,6 @@ Route::get('cachefindercategorytags', 'DebugController@cacheFinderCategoryTags')
 Route::get('cachelocations', 'DebugController@cacheLocations');
 
 Route::get('cacheofferings', 'DebugController@cacheOfferings');
+
+Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
+
