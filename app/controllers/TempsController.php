@@ -265,7 +265,8 @@ class TempsController extends \BaseController {
 
             $verified = false;
             $customerToken = "";
-            $customer_data = [];
+            
+            $customer_data = new \stdClass();
 
             if($temp->otp == $otp){
 
@@ -401,7 +402,7 @@ class TempsController extends \BaseController {
             $temp->proceed_without_otp = "Y";
             $temp->save();
 
-            $customer_data = [];
+            $customer_data = new \stdClass();
             
             Customer::$withoutAppends = true;
             $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
