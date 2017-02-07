@@ -1635,7 +1635,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $hash_verified = true;
             }else{
                 $hash_verified = false;
-                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder 		= 	Order::findOrFail($order_id);
                 $Oldorder["hash_verified"] = false;
                 $Oldorder->update();
                 $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
