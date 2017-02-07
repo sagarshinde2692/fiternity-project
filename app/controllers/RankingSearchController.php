@@ -2198,7 +2198,7 @@ public function getRankedFinderResultsAppv4()
 //    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
         $location_filter        =  '{"term" : { "city" : "'.$location.'", "_cache": true }},';
         $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
-        $category_filter        = Input::json()->get('category') ? '{"terms" : {  "categorytags": ["'.strtolower(Input::json()->get('category')).'"],"_cache": true}},': '';
+        $category_filter        = $category ? '{"terms" : {  "categorytags": ["'.strtolower($category).'"],"_cache": true}},': '';
         $budget_filter          = $budget ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', $budget)).'"],"_cache": true}},': '';
         $regions_filter         = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
         $region_tags_filter     = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
