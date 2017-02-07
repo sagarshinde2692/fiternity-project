@@ -3473,7 +3473,8 @@ public function yes($msg){
 	}
 
 	public function cacheFinderCategoryTags(){
-		$finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
+		// $finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
+		$finderCategoryTags = citywise_categories("all");
 		return $finderCategoryTags;
 
 	}

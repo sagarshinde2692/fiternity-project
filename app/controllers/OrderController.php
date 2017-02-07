@@ -145,10 +145,16 @@ class OrderController extends \BaseController {
             $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "Status should be Bought");
             return Response::json($resp,401);
         }
-
-        if($data['status'] == 'success'){
+        $hashreverse = getReversehash($order);
+        Log::info($data["verify_hash"]);
+        Log::info($hashreverse['reverse_hash']);
+        if($data["verify_hash"] == $hashreverse['reverse_hash']){
+            $hash_verified = true;
+        }else{
+            $hash_verified = false;
+        }
+        if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
-
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -411,6 +417,14 @@ class OrderController extends \BaseController {
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
+        }else{
+            if($hash_verified == false){
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+                return Response::json($resp);
+            }
         }
 
         $orderdata 		=	$order->update($data);
@@ -1993,6 +2007,51 @@ class OrderController extends \BaseController {
         return (int) $delay;
     }
 
+    public function getHash($data){
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+
+        $txnid = $data['txnid'];
+        $amount = $data['amount'];
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+        
+        Log::info($payhash_str);
+
+        $data['payment_hash'] = hash('sha512', $payhash_str);
+
+        $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+
+        $data['verify_hash'] = hash('sha512', $verify_str);
+
+        $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
+        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+        $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
+        $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
+        
+        return $data;
+    }
 
     public function orderUpdate(){
 
@@ -2048,6 +2107,8 @@ class OrderController extends \BaseController {
 
             $data['amount_finder'] = $order->amount_finder;
             $data['amount'] = $order->amount;
+            $data['finder_name'] = $order->finder_name;
+            $data['service_name'] = $order->service_name;
 
             $customer_id = $this->autoRegisterCustomer($data);
 
@@ -2197,14 +2258,41 @@ class OrderController extends \BaseController {
                 array_set($data, 'reward_info', $reward_info);
             }
 
+
+            $txnid = "FIT".$order_id;
+            $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
+            $mobilehash = "";
+           
+            $data['txnid'] = $txnid;
+            $hash = $this->getHash($data);
+
+            $data = array_merge($data,$hash);
+
             $order->update($data);
+
+            $result['firstname'] = $data['customer_name'];
+            $result['lastname'] = "";
+            $result['phone'] = $data['customer_phone'];
+            $result['email'] = $data['customer_email'];
+            $result['orderid'] = $order_id;
+            $result['txnid'] = $txnid;
+            $result['amount'] = $data['amount'];
+            $result['productinfo'] = $data['productinfo'];
+            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+            $result['successurl'] = $successurl;
+            $result['hash'] = $data['payment_hash'];
+            $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
 
             if($order->payment_mode == "at the studio" /*&& isset($data['reward_info'])*/){
                 $this->findermailer->orderUpdatePaymentAtVendor($order->toArray());
                 $this->customermailer->orderUpdatePaymentAtVendor($order->toArray());
             }
 
-            $resp   =   array("status" => 200, 'message' => "Order Updated Successfull",'order' => $order);
+            $resp   =   array(
+                'status' => 200,
+                'data' => $result,
+                'message' => "Order Updated Successfull"
+            );
 
             return Response::json($resp);
         }
@@ -2449,6 +2537,46 @@ class OrderController extends \BaseController {
         );
     }
 
+
+
+    public function getReversehash($data){
+
+        $data['env'] == 1;
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+
+        $txnid = $data['txnid'];
+        $amount = $data['amount'].".00";
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+//    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        
+        Log::info($payhash_str);
+        $data['reverse_hash'] = hash('sha512', $payhash_str);        
+        Log::info($data['reverse_hash']);
+        return $data;
+    }
 
 
 }

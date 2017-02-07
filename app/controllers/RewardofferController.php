@@ -189,22 +189,30 @@ class RewardofferController extends BaseController {
             $rewards = array();
         }else{
 
-            if($device == "website"){
-                // return $device;
-                $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+            // if($device == "website"){
+            //     // return $device;
+            //     $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+            //         ->where('amount_min','<', $amount)
+            //         ->where('amount_max','>=', $amount)
+            //         // ->whereNotIn('reward_type',['personal_trainer_at_home'])
+            //         ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
+            //         // ->with('rewards')
+            //         ->orderBy('_id','desc')->first();
+            // }else{
+            //     $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+            //         ->where('amount_min','<', $amount)
+            //         ->where('amount_max','>=', $amount)
+            //         ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','diet_plan');}  ))
+            //         ->orderBy('_id','desc')->first();
+            // }
+
+            $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                     ->where('amount_min','<', $amount)
                     ->where('amount_max','>=', $amount)
                     // ->whereNotIn('reward_type',['personal_trainer_at_home'])
                     ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
                     // ->with('rewards')
                     ->orderBy('_id','desc')->first();
-            }else{
-                $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
-                    ->where('amount_min','<', $amount)
-                    ->where('amount_max','>=', $amount)
-                    ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','diet_plan');}  ))
-                    ->orderBy('_id','desc')->first();
-            }
 
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
@@ -235,57 +243,65 @@ class RewardofferController extends BaseController {
                     );
 
                     foreach ($reward_type_order as $reward_type_order_value){
-
+                        if($amount < 2000){
+                            $rewards = [];        
+                        }
                         foreach ($rewards as $rewards_value){
                             if($rewards_value['reward_type'] == "fitness_kit" || $rewards_value['reward_type'] == "healthy_snacks"){
                                 switch(true){
-                                    case $amount < 3000 :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 750 : 650;
-                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Badge"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Badge" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-1-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-1.jpg";
+                                    case $amount < 2000 :
+                                        // $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 750 : 650;
+                                        // $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Badge"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
+                                        // $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Badge" : $rewards_value['description'];
+                                        // $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-1-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
-                                    case (3000 <= $amount && $amount < 5000) :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1250 : 1150;
-                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["Shaker", "Earphone Detangler","Cloth Bag"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Earphone Detangler <br> - Cloth Bag" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-2-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-1.jpg";
+                                    case (2000 <= $amount && $amount < 5000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 600 : 300;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["Shaker", "Cloth Bag"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Cloth Bag" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-2-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
                                     case (5000 <= $amount && $amount < 7500) :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 2000 : 1550;
-                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Earphone Detangler","T-shirt"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Jalapeno Peanuts 75gm", "5 Wholewheat Thins 100gm", "6 Seedy Crunchers 80gm", "7 Chocolate Chip Waffle 1 piece", "8 Okra & Sweet Potato Chips (Sea Salt) 30gm", "9 Rostaa – Healthy Mix 35gm" ];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Earphone Detangler <br> - T-shirt" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-3-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1100: 510;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "T-shirt"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice","Baked Pizza Stick Dippers"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - T-shirt" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice <br> - Baked Pizza Stick Dippers";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-3-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
                                     case (7500 <= $amount && $amount < 10000) :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3000 : 2150;
-                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Skipping Rope"] : ["Pop Mak – Roasted Flavoured Makhana 100gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar 2 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 200gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 30gm", "9 Rostaa – Trail Mix 35gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece"];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Skipping Rope" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-4-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1200 : 700;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["T-shirt", "Shaker", "Cloth Bag"] : ["2 Pop Mak – Roasted Flavoured Makhana (small)", "Honey Chew Pouch (5 flavours)","2 Good Juicery (Sugar Free Sparkling) Juice","Baked Pizza Stick Dippers"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Cloth Bag <br> - T-shirt" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - 2 Pop Mak – Roasted Flavoured Makhana (small) <br> - Honey Chew Pouch (5 flavours) <br> - 2 Good Juicery (Sugar Free Sparkling) Juice <br> - Baked Pizza Stick Dippers";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-4-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
                                     case (10000 <= $amount && $amount < 15000) :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 3150;
-                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana 100gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar 2 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 200gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 30gm", "9 Rostaa – Trail Mix 35gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece"];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Resistance Band <br> - Coaster <br> - Notebook" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-5-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-3.jpg";
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1050 : 1600;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Shaker", "Earphone Detangler", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "Honey Chew Pouch (5 flavours)","Baked Pizza Stick Dippers","Pop Mak – Roasted Flavoured Makhana (big)","Colonel & Co. Nachos with Dip", "Roasted Mexican Chickpeas"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - T-shirt <br> - Earphone Detangler <br> - Notebook" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - Honey Chew Pouch (5 flavours) <br> - Baked Pizza Stick Dippers <br> - Pop Mak – Roasted Flavoured Makhana (big) <br> - Colonel & Co. Nachos with Dip <br> - Roasted Mexican Chickpeas";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-5-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
                                     case (15000 <= $amount && $amount < 20000) :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 4050;
-                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Mug", "Resistance Band", "Coaster", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana - 2 200gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar Box 6 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 100gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 80gm", "9 Rostaa – Healthy Mix 340gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "12 Mukhwas (Sugar Free, All seeds) 100gm", "13 Seedy Crunchers 80gm", "14 Jalapeno Peanuts 75gm", "15 Chocolate Chip Waffle 1 piece" ];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Resistance Band <br> - Coaster <br> - Notebook" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-5-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-3.jpg";
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 2500 : 1600;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice","Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "3 Roasted Mexican Chickpeas","Wholewheat Thins"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Resistance Band <br> - Coaster <br> - Notebook" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice <br> - Baked Pizza Stick Dippers <br> - Colonel & Co. Nachos with Dip <br> - 3 Roasted Mexican Chickpeas <br> - Wholewheat Thins";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-6-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
                                     case (20000 <= $amount && $amount < 25000) :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 7500 : 4550;
-                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"] : ["Pop Mak – Roasted Flavoured Makhana - 2 200gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar Box 6 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 100gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 80gm", "9 Rostaa – Healthy Mix 340gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "12 Mukhwas (Sugar Free, All seeds) 100gm", "13 Seedy Crunchers 80gm", "14 Jalapeno Peanuts 75gm", "15 Chocolate Chip Waffle 1 piece" ];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Resistance Band <br> - Coaster <br> - Notebook <br> - Skipping Rope <br> - Alarm Clock" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-6-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-4.jpg";
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3000 : 2020;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook","Mug","Cloth Bag"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice","2 Pop Mak – Roasted Flavoured Makhana (big)", "Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "2 Roasted Mexican Chickpeas","Wholewheat Thins"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Notebook <br> - Cloth Bag" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small)<br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice<br> - 2 Pop Mak – Roasted Flavoured Makhana (big)<br> - Baked Pizza Stick Dippers<br> - Colonel & Co. Nachos with Dip<br> - 2 Roasted Mexican Chickpeas<br> - Wholewheat Thins";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-7-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
-                                    case ($amount >= 25000) :
-                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 7500 : 5150;
-                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Shaker", "Gym bag", "Earphone Detangler", "Resistance Band", "Badge", "Mug", "Notebook", "Coaster", "Skipping Rope", "Alarm Clock"] : ["Pop Mak – Roasted Flavoured Makhana - 2 200gm", "2 Honey Chew Pouch (5 flavours) - 3 60gm", "3 Vegan Protein Bar Box 6 pieces", "4 Baked Bhakarwadi 85gm", "5 Wholewheat Thins 100gm", "6 Jackfruit Chips 30gm", "7 French & Vanilla Granola Crunchers 200gm", "8 Okra & Sweet Potato Chips (Sea Salt) 80gm", "9 Rostaa – Healthy Mix 340gm", "10 Rostaa – Mix Berries 75gm", "11 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "12 Mukhwas (Sugar Free, All seeds) 100gm", "13 Seedy Crunchers 80gm", "14 Jalapeno Peanuts 75gm", "15 Chocolate Chip Waffle 1 piece" ];
-                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Resistance Band <br> - Coaster <br> - Notebook <br> - Skipping Rope <br> - Alarm Clock" : $rewards_value['description'];
-                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-6-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-4.jpg";
+                                    case (25000 <= $amount && $amount < 30000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3500 : 2200;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook","Mug","Cloth Bag", "Coaster", "Skipping Rope"] : ["Pop Mak – Roasted Flavoured Makhana ", "2 Honey Chew Pouch (5 flavours)","2 Good Juicery (Sugar Free Sparkling) Juice", "2 Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "Banana & Chia Granola Crunchers","Wholewheat Thins"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Notebook <br> - Cloth Bag <br> - Coaster <br> - Skipping Rope " : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana <br> - 2 Honey Chew Pouch (5 flavours)<br> - 2 Good Juicery (Sugar Free Sparkling) Juice <br> - 2 Baked Pizza Stick Dippers <br> - Colonel & Co. Nachos with Dip <br> - Banana & Chia Granola Crunchers <br> - Wholewheat Thins";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-8-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (30000 <= $amount) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 2600;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook","Mug","Cloth Bag", "Coaster", "Skipping Rope", "Resistance Bands"] : ["Pop Mak – Roasted Flavoured Makhana ", "2 Honey Chew Pouch (5 flavours)","2 Good Juicery (Sugar Free Sparkling) Juice", "2 Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "Banana & Chia Granola Crunchers","Wholewheat Thins","2 Pop Mak – Roasted Flavoured Makhana"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Notebook <br> - Cloth Bag <br> - Coaster <br> - Skipping Rope <br> - Resistance Bands" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana<br> - 2 Honey Chew Pouch (5 flavours)<br> -2 Good Juicery (Sugar Free Sparkling) Juice<br> - 2 Baked Pizza Stick Dippers<br> -Colonel & Co. Nachos with Dip<br> - Banana & Chia Granola Crunchers<br> -Wholewheat Thins<br> -2 Pop Mak – Roasted Flavoured Makhana";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-9-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
                                 }
                                 
