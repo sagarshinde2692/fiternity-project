@@ -416,13 +416,13 @@ class TempsController extends \BaseController {
 
                 $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                 $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
-                
+
             }else{
 
                 $customer_data = null;
             }
 
-           if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrial"){
+            if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrial"){
 
                 $customer_phone = $temp->customer_phone;
                 $service = Service::active()->find($temp->service_id);
