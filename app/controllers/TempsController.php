@@ -315,6 +315,30 @@ class TempsController extends \BaseController {
 
                     if($booktrial_count > 0){
 
+                        if($customer_data == null){
+
+                            $booktrial = Booktrial::where('customer_phone', $customer_phone)
+                                ->where('finder_id', '=',$finder_id)
+                                ->where('type','booktrials')
+                                ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                                ->orderBy('_id','desc')
+                                ->first();
+
+                            Customer::$withoutAppends = true;
+                            $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+
+                            if($customer) {
+
+                                $customerToken = createCustomerToken((int)$customer->_id);
+
+                                $customer_data = $customer->toArray();
+
+                                $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                                $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+
+                            }
+                        }
+
                         $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
 
                         if($ratecard && count($service->workoutsessionschedules) > 0){
@@ -429,6 +453,28 @@ class TempsController extends \BaseController {
                     ->count();
 
                 if($booktrial_count > 0){
+
+                    if($customer_data == null){
+
+                        $booktrial = Booktrial::where('customer_phone', $customer_phone)
+                            ->where('finder_id', '=',$finder_id)
+                            ->where('type','booktrials')
+                            ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                            ->orderBy('_id','desc')
+                            ->first();
+
+                        Customer::$withoutAppends = true;
+                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+
+                        if($customer) {
+
+                            $customer_data = $customer->toArray();
+
+                            $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                            $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+
+                        }
+                    }
 
                     $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
 
