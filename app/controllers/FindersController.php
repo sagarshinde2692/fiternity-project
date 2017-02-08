@@ -532,12 +532,14 @@ class FindersController extends \BaseController {
 					$nearby_same_category = [];
 					$nearby_other_category = [];
 				}
+
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
 				$response['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
+				$response['show_reward_banner'] = true;
 
 				Cache::tags('finder_detail')->put($tslug,$response,Config::get('cache.cache_time'));
 
@@ -2357,7 +2359,7 @@ class FindersController extends \BaseController {
 					}
 
 				}
-
+				$data['show_reward_banner']        =   true;
 				$data = Cache::tags($cache_name)->put($tslug, $data, Config::get('cache.cache_time'));
 
 			}
@@ -2447,7 +2449,7 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['services_trial']);
 			}
 
-			
+			// $finderData['show_reward_banner'] = true;
 
 		}else{
 
