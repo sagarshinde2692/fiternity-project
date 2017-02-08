@@ -877,4 +877,10 @@ Route::get('getsubcategories', 'DebugController@cacheOfferings');
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
 
 
+
 Route::post('displayemi','CustomerController@displayEmi');
+
+Route::get('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+Route::group(array('before' => 'validatetoken'), function() {
+	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
+});

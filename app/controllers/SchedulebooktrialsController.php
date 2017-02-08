@@ -1629,8 +1629,8 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             $hashreverse = getReversehash($order);
-            // Log::info($data["verify_hash"]);
-            Log::info($hashreverse['reverse_hash']);
+            Log::info("Yo");
+            Log::info($data["verify_hash"]);
             if(isset($data["verify_hash"]) && $data["verify_hash"] == $hashreverse['reverse_hash']){
                 $hash_verified = true;
             }else{
@@ -1638,9 +1638,11 @@ class SchedulebooktrialsController extends \BaseController {
                 $Oldorder 		= 	Order::findOrFail($order_id);
                 $Oldorder["hash_verified"] = false;
                 $Oldorder->update();
+                Log::info($order_id."False");
                 $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
                 return  Response::json($resp, 400);
             }
+            Log::info($hash_verified);
             $source                             =   (isset($order->customer_source) && $order->customer_source != '') ? trim($order->customer_source) : "website";
 
             $service_id	 				       =	(isset($order->service_id) && $order->service_id != '') ? intval($order->service_id) : "";
