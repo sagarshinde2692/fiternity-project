@@ -3472,9 +3472,9 @@ public function yes($msg){
 
 	}
 
-	public function cacheFinderCategoryTags($city){
+	public function cacheFinderCategoryTags($city="mumbai"){
 		// $finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
-		if(isset($city) && $city != ""){
+		if($city != "all"){
 			$finderCategoryTags = citywise_categories($city);
 		}else{
 			$finderCategoryTags = citywise_categories("all");
