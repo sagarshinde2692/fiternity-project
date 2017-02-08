@@ -42,6 +42,7 @@ return array(
     'website' => 'http://web.fitn.in:8020',
 
 
+
 	'app' =>array(
 		'discount'		=> 			5,
 	),
