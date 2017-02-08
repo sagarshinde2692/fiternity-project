@@ -2259,7 +2259,13 @@ if (!function_exists(('getReversehash'))){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
         }
-
+        if($data['txnid'] == ""){
+            if($data["customer_source"] == "android" || $data["customer_source"] == "ios"){
+                $data['txnid'] = "MFIT".$data["_id"];
+            }else{
+                $data['txnid'] = "FIT".$data["_id"];
+            }
+        }
         $txnid = $data['txnid'];
         $amount = $data['amount'].".00";
         $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;

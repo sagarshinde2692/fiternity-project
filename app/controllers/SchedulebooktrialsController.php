@@ -1628,7 +1628,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
 
-            $hashreverse = getReversehash($order);
+            $hashreverse = getReversehash($order_data);
             Log::info("Yo");
             Log::info($data["verify_hash"]);
             if(isset($data["verify_hash"]) && $data["verify_hash"] == $hashreverse['reverse_hash']){
