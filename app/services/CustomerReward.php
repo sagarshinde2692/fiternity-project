@@ -542,6 +542,67 @@ Class CustomerReward {
 
     }
 
+    public function fitternityDietVendor($amount){
+
+        $finder = Finder::where('title','Fitternity Diet Vendor')->first();
+
+        $finder_id = (int) $finder->_id;
+
+        $service = \Service::where('finder_id',$finder_id)->get();
+
+        $data = [];
+
+        if(count($service) > 0){
+
+            foreach ($service as $service_value) {
+
+                $service_data = [];
+                $service_id = (int) $service_value->_id;
+                $service_data['service_name'] = ucwords($service_value->name);
+                $service_data['service_id'] = $service_id;
+                $service_data['ratecard'] = [];
+
+                $ratecard = \Ratecard::where('service_id',$service_id)->where('finder_id',$finder_id)->get();
+
+                if(count($ratecard) > 0){
+
+                    foreach ($ratecard as $ratecard_value) {
+
+                        $ratecard_data = [];
+
+                        $ratecard_id = $ratecard_value->_id;
+
+                        $ratecard_data['ratecard_id'] = $ratecard_id;
+
+                        if(isset($ratecard_value['special_price']) && $ratecard_value['special_price'] != 0){
+                            $ratecard_data['amount'] = $ratecard_value['special_price'];
+                        }else{
+                            $ratecard_data['amount'] = $ratecard_value['price'];
+                        }
+
+                        if($ratecard_data['amount'] <= 0){
+                            continue;
+                        }
+
+                        $ratecard_data['service_id'] = $service_id;
+
+                        $service_data['ratecard'][] = $ratecard_data;
+
+                    }
+
+                    $data[] = $service_data;
+
+                }else{
+                    continue;
+                }
+
+            }
+        }
+
+        return $data;
+
+    }
+
     public function customerTokenDecode($token){
 
         $jwt_token = $token;
