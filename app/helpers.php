@@ -2280,7 +2280,7 @@ if (!function_exists(('getReversehash'))){
         $udf4 = "";
         $udf5 = "";
 
-        if($data['type'] == "booktrials"){
+        if($data['type'] == "booktrials" || $data['type'] == "workout-session"){
             $udf1 = $service_name;
             $udf2 = $data['schedule_date'];
             $udf3 = $data['schedule_slot'];
