@@ -1641,6 +1641,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
                 return  Response::json($resp, 400);
             }
+            Log::info($hash_verified);
             $source                             =   (isset($order->customer_source) && $order->customer_source != '') ? trim($order->customer_source) : "website";
 
             $service_id	 				       =	(isset($order->service_id) && $order->service_id != '') ? intval($order->service_id) : "";
