@@ -2979,7 +2979,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function displayEmi(){
-
+		$bankNames=array();
 	 	$emiStruct = Config::get('app.emi_struct');
 		$data = Input::json()->all();
 		$response = array();
@@ -3008,6 +3008,12 @@ class CustomerController extends \BaseController {
 						$emiData['rate'] = (string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
 						array_push($response, $emiData);
+					}elseif($emi['bankName'] == $data['bank']){
+						$emiData = array();
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response, $emiData);
+						break;
 					}
 			}elseif(isset($data['amount']) && !(isset($data['bank']))){
 				if($data['amount']>=$emi['minval']){
@@ -3020,6 +3026,15 @@ class CustomerController extends \BaseController {
 					$emiData['rate'] = (string)$emi['rate'];
 					$emiData['minval'] = (string)$emi['minval'];
 					array_push($response, $emiData);
+				}else{
+					$key = array_search($emi['bankName'], $bankNames);
+					if(!is_int($key)){
+						array_push($bankNames, $emi['bankName']);
+						$emiData = array();
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response, $emiData);
+					}
 				}
 			}else{
 				Log::info("inside4");
