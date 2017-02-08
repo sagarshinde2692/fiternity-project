@@ -860,3 +860,8 @@ Route::get('email/opened', 'CustomerController@emailOpened');
 
 Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
+
+Route::get('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+Route::group(array('before' => 'validatetoken'), function() {
+	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
+});
