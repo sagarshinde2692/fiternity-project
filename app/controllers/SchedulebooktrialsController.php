@@ -1638,6 +1638,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $Oldorder 		= 	Order::findOrFail($order_id);
                 $Oldorder["hash_verified"] = false;
                 $Oldorder->update();
+                Log::info($order_id."False");
                 $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
                 return  Response::json($resp, 400);
             }
