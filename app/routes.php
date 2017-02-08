@@ -868,11 +868,11 @@ Route::get('email/opened', 'CustomerController@emailOpened');
 
 Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
 
-Route::get('cachefindercategorytags', 'DebugController@cacheFinderCategoryTags');
+Route::get('getfindercategories/{city?}', 'DebugController@cacheFinderCategoryTags');
 
-Route::get('cachelocations', 'DebugController@cacheLocations');
+Route::get('getfinderlocations', 'DebugController@cacheLocations');
 
-Route::get('cacheofferings', 'DebugController@cacheOfferings');
+Route::get('getsubcategories', 'DebugController@cacheOfferings');
 
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
 

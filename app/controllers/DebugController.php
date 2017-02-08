@@ -3467,14 +3467,18 @@ public function yes($msg){
 	}
 
 	public function cacheLocations(){
-		$locationTags = Locationtag::where('status', "1")->get(['_id', 'name', 'slug']);
+		$locationTags = Locationtag::where('status', "1")->get(['_id', 'name', 'slug','location_group','lat','lon']);
 		return $locationTags;
 
 	}
 
-	public function cacheFinderCategoryTags(){
+	public function cacheFinderCategoryTags($city){
 		// $finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
-		$finderCategoryTags = citywise_categories("all");
+		if(isset($city) && $city != ""){
+			$finderCategoryTags = citywise_categories($city);
+		}else{
+			$finderCategoryTags = citywise_categories("all");
+		}
 		return $finderCategoryTags;
 
 	}

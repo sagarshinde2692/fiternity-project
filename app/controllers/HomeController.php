@@ -837,16 +837,20 @@ class HomeController extends BaseController {
         $location_by_city = $cache ? Cache::tags('location_by_city')->has($city) : false;
         if(!$location_by_city){
             $categorytags = $locations  =	array();
-            $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+            if($city != "all"){
+                $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+                if(!$citydata){
+                    return $this->responseNotFound('City does not exist');
+                }
 
-            if(!$citydata){
-                return $this->responseNotFound('City does not exist');
+                $city_name 		= 	$citydata['name'];
+                $city_id		= 	(int) $citydata['_id'];
+
+                $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
+            }else{
+                $locations				= 	Location::active()->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
             }
 
-            $city_name 		= 	$citydata['name'];
-            $city_id		= 	(int) $citydata['_id'];
-
-            $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
             $homedata 				= 	array('locations' => $locations );
 
             Cache::tags('location_by_city')->put($city,$homedata,Config::get('cache.cache_time'));
