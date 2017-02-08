@@ -2242,6 +2242,7 @@ if (!function_exists(('newcategorymapping'))){
 
 if (!function_exists(('getReversehash'))){
      function getReversehash($data){
+         Log::info($data);
 
         $data['env'] == 1;
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
