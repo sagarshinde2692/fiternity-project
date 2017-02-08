@@ -532,12 +532,14 @@ class FindersController extends \BaseController {
 					$nearby_same_category = [];
 					$nearby_other_category = [];
 				}
+
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
 				$response['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
+				$response['show_reward_banner'] = true;
 
 				Cache::tags('finder_detail')->put($tslug,$response,Config::get('cache.cache_time'));
 
@@ -2196,6 +2198,7 @@ class FindersController extends \BaseController {
 
 				if(count($finder['photos']) > 0 ){
 					$photoArr        =   [];
+					usort($finder['photos'], "sort_by_order");
 					foreach ($finder['photos'] as $photo) {
 						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
 						$photoObj                   =   array_except($photo,['servicetags']);
@@ -2356,7 +2359,7 @@ class FindersController extends \BaseController {
 					}
 
 				}
-
+				$data['show_reward_banner']        =   true;
 				$data = Cache::tags($cache_name)->put($tslug, $data, Config::get('cache.cache_time'));
 
 			}
@@ -2446,7 +2449,7 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['services_trial']);
 			}
 
-			
+			// $finderData['show_reward_banner'] = true;
 
 		}else{
 

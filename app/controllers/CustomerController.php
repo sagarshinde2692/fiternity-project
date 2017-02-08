@@ -13,6 +13,7 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\ShortenUrl as ShortenUrl;
+use App\Services\Emi as Emi;
 
 class CustomerController extends \BaseController {
 
@@ -2975,6 +2976,65 @@ class CustomerController extends \BaseController {
 			$this->customersms->genericOtp($customerdata);
 			return $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id);
 		}
+	}
+
+	public function displayEmi(){
+
+	 	$emiStruct = Config::get('app.emi_struct');
+		$data = Input::json()->all();
+		$response = array();
+		foreach ($emiStruct as $emi) {
+			if(isset($data['bank']) && !isset($data['amount'])){
+				if($emi['bankName'] == $data['bank']){
+					Log::info("inside1");
+					$emiData = array();
+						$emiData['total_amount'] =  "";
+						$emiData['emi'] ="";
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['rate'] = (string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+					array_push($response, $emiData);
+				}
+			
+			}elseif(isset($data['bank'])&&isset($data['amount'])){
+					if($emi['bankName'] == $data['bank'] && $data['amount']>=$emi['minval']){
+						Log::info("inside2");
+						$emiData = array();
+						$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
+						$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['rate'] = (string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response, $emiData);
+					}
+			}elseif(isset($data['amount']) && !(isset($data['bank']))){
+				if($data['amount']>=$emi['minval']){
+					Log::info("inside3");
+					$emiData = array();
+					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
+					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+					$emiData['months'] = (string)$emi['bankTitle'];
+					$emiData['bankName'] = $emi['bankName'];
+					$emiData['rate'] = (string)$emi['rate'];
+					$emiData['minval'] = (string)$emi['minval'];
+					array_push($response, $emiData);
+				}
+			}else{
+				Log::info("inside4");
+				$emiData = array();
+						$emiData['total_amount'] =  "";
+						$emiData['emi'] ="";
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['rate'] = (string)(string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+				array_push($response, $emiData);
+			}
+		}
+
+	    return $response;
 	}
 
 
