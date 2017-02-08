@@ -148,6 +148,22 @@ class OrderController extends \BaseController {
 
         if($data['status'] == 'success'){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
+            $finder_id = $order['finder_id'];
+            $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
+
+            $sales_count_last_30_days = Order::active()->where('finder_id',$finder_id)->where('created_at', '>=', new DateTime($start_date_last_30_days))->count();
+
+            if($sales_count_last_30_days == 0){
+            $mailData=array();
+            $mailData['finder_name']=$order['finder_name'];
+            $mailData['finder_id']=$order['finder_id'];
+            $mailData['finder_city']=$order['finder_city'];
+            $mailData['finder_location']=$order['finder_location'];
+            $mailData['customer_name']=$order['customer_name'];
+            $mailData['customer_email']=$order['customer_email'];
+
+                $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
+            }
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
@@ -406,6 +422,10 @@ class OrderController extends \BaseController {
                 $order->update();
 
             }
+
+
+
+
 
 
 
