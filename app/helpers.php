@@ -2164,8 +2164,9 @@ if (!function_exists(('time_passed_check'))){
 
 if (!function_exists(('getReversehash'))){
      function getReversehash($data){
+Log::info($data);
 
-        $data['env'] == 1;
+        $data['env'] = 1;
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
         $data['service_name'] = trim($data['service_name']);
@@ -2181,11 +2182,18 @@ if (!function_exists(('getReversehash'))){
             $key = 'l80gyM';
             $salt = 'QBl78dtK';
         }
-
+        if($data['txnid'] == ""){
+            if($data["customer_source"] == "android" || $data["customer_source"] == "ios"){
+                $data['txnid'] = "MFIT".$data["_id"];
+            }else{
+                $data['txnid'] = "FIT".$data["_id"];
+            }
+        }
+        
         $txnid = $data['txnid'];
         $amount = $data['amount'].".00";
         $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
-        $productinfo = substr($productinfo,100);
+        $productinfo = substr($productinfo,0,100);
         $firstname = $data['customer_name'];
         $email = $data['customer_email'];
         $udf1 = "";
@@ -2193,6 +2201,13 @@ if (!function_exists(('getReversehash'))){
         $udf3 = "";
         $udf4 = "";
         $udf5 = "";
+
+        if(($data['type'] == "booktrials" || $data['type'] == "workout-session") && $data['customer_source'] == "website"){
+            $udf1 = $service_name;
+            // $udf2 = $data['schedule_date'];
+            // $udf3 = $data['schedule_slot'];
+            $udf4 = $data['finder_id'];
+        }
 
         $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
 //    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
