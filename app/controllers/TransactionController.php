@@ -244,6 +244,317 @@ class TransactionController extends \BaseController {
 
     }
 
+    public function success(){
+
+        $data = Input::json()->all();
+
+        return $this->successCommon($data);
+
+    }
+
+    public function successCommon($data){
+
+        $rules = array(
+            'order_id'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+        
+        $order_id   =   (int) $data['order_id'];
+        $order      =   Order::findOrFail($order_id);
+
+        //If Already Status Successfull Just Send Response
+        /*if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+
+            $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "Already Status Successfull");
+            return Response::json($resp,401);
+
+        }elseif(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && isset($order->status) && $order->status != '1' && isset($order->order_action) && $order->order_action != 'bought'){
+
+            $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "Status should be Bought");
+            return Response::json($resp,401);
+        }*/
+
+        $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+
+        if(isset($order->reward_ids) && !empty($order->reward_ids)){
+
+            $reward_detail = array();
+
+            $reward_ids = array_map('intval',$order->reward_ids);
+
+            $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+            if(count($rewards) > 0){
+
+                foreach ($rewards as $value) {
+
+                    $title = $value->title;
+
+                    if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+                        $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                    }
+
+                    $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+
+                    array_set($data, 'reward_type', $value->reward_type);
+
+                }
+
+                $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                array_set($data, 'reward_info', $reward_info);
+                
+            }
+
+        }
+
+        if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
+
+            $reward_info = "Cashback";
+            
+            array_set($data, 'reward_info', $reward_info);
+            array_set($data, 'reward_type', 'cashback');
+        }
+
+        array_set($data, 'status', '1');
+        array_set($data, 'order_action', 'bought');
+        array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
+            
+        if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+            
+            array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
+
+            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->where('finder_id',$order->finder_id)->count();
+
+            if($count > 0){
+                array_set($data, 'acquisition_type', 'renewal_direct');
+                array_set($data, 'membership_type', 'renewal');
+            }else{
+                array_set($data,'acquisition_type','direct_payment');
+                array_set($data, 'membership_type', 'new');
+            }
+
+            if($order->customer_source != 'admin'){
+
+                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+            }
+        }
+
+        if(isset($order->wallet_refund_sidekiq) && $order->wallet_refund_sidekiq != ''){
+
+            try {
+                $this->sidekiq->delete($order->wallet_refund_sidekiq);
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
+
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+
+                if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                    if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                        $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseCustomerTiggerCount']     =   1;
+                    }
+                }
+
+            }else{
+                if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                    $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                }else{
+                    $data['instantPurchaseCustomerTiggerCount']     =   1;
+                }
+            }
+
+
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                    if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                        $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseFinderTiggerCount']       =   1;
+                    }
+                }
+
+            }else{
+                if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                    $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                }else{
+                    $data['instantPurchaseFinderTiggerCount']       =   1;
+                }
+            }
+            
+        }
+
+        $order->update($data);
+
+        //send welcome email to payment gateway customer
+
+        $finder = Finder::find((int)$order->finder_id);
+        try {
+            if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
+                $trial = Booktrial::find((int) $order->referal_trial_id);
+                if($trial){
+                    $bookdata = array();
+                    array_set($bookdata, 'going_status', 4);
+                    array_set($bookdata, 'going_status_txt', 'purchased');
+                    array_set($bookdata, 'booktrial_actions', '');
+                    array_set($bookdata, 'followup_date', '');
+                    array_set($bookdata, 'followup_date_time', '');
+
+                    $trial->update($bookdata);
+                }
+            }
+
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+        }
+
+        $abundant_category = array(42,45);
+
+        if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+            $order->update(['email_not_sent'=>'captureOrderStatus']);
+        }else{
+
+            if(!in_array($finder->category_id, $abundant_category)){
+                $emailData      =   [];
+                $emailData      =   $order->toArray();
+                if($emailData['type'] == 'events'){
+                    if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+                        $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+                    }
+                    if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+                        $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+                    }
+                }
+
+                //print_pretty($emailData);exit;
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                        $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                    }
+
+                }else{
+                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                }
+            }
+
+            //no email to Healthy Snacks Beverages and Healthy Tiffins
+            if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+                
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                        $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                    }
+                    
+                }else{
+                    $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                }
+
+            }
+        }
+
+        //SEND payment gateway SMS TO CUSTOMER and vendor
+        if(!in_array($finder->category_id, $abundant_category)){
+            $emailData      =   [];
+            $emailData      =   $order->toArray();
+            if($emailData['type'] == 'events'){
+                if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+                    $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+                }
+                if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+                    $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+                }
+            }
+            
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                    $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+                }
+
+            }else{
+                $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+            }
+        }
+
+        //no sms to Healthy Snacks Beverages and Healthy Tiffins
+        if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+            
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                    $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+                }
+                
+            }else{
+                $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+            }
+            
+        }
+
+        if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+
+            $preferred_starting_date = $order->preferred_starting_date;
+            $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
+            $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+
+            $category_slug = "no_category";
+
+            if(isset($order->finder_category_id) && $order->finder_category_id != ""){
+
+                $finder_category_id = $order->finder_category_id;
+
+                $category = Findercategory::find((int)$finder_category_id);
+
+                if($category){
+                    $category_slug = $category->slug;
+                }
+            }
+
+            $order_data = $order->toArray();
+
+            $order_data['category_array'] = $this->getCategoryImage($category_slug);
+
+            $order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
+            $order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
+
+            $order->update();
+
+        }
+
+        if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
+
+            $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
+
+            if($generaterDietPlanOrder['status'] != 200){
+                return Response::json($generaterDietPlanOrder,$generaterDietPlanOrder['status']);
+            }
+
+            $order->diet_plan_order_id = $generaterDietPlanOrder['order_id'];
+
+            $order->update();
+        }
+
+        $resp   =   array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+
+        return Response::json($resp);
+    }
+
     public function unsetData($data){
 
         $array = array('preferred_starting_date','start_date','start_date_starttime','end_date','preferred_payment_date');
@@ -546,6 +857,7 @@ class TransactionController extends \BaseController {
             'workout-session'=>'workout',
             '3daystrial'=>'workout',
             'vip_booktrials'=>'workout',
+            'diet_plan'=>'diet_plan'
         );
 
         $set_membership_duration_type = array(
@@ -556,6 +868,7 @@ class TransactionController extends \BaseController {
             'workout-session'=>'workout_session',
             '3daystrial'=>'trial',
             'vip_booktrials'=>'vip_trial',
+            'diet_plan'=>'short_term_membership',
         );
 
         (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
@@ -851,6 +1164,116 @@ class TransactionController extends \BaseController {
         }
 
         return array('status' => 200,'amount' => $amount);
+    }
+
+    public function generaterDietPlanOrder($order){
+
+        $data = [];
+
+        $data['type'] = "diet_plan";
+        $data['ratecard_id'] = $order['diet_plan_ratecard_id'];
+        $data['referal_order_id'] = $order['_id'];
+        $data['customer_name'] = $order['customer_name'];
+        $data['customer_email'] = $order['customer_email'];
+        $data['customer_phone'] = $order['customer_phone'];
+        $data['customer_source'] = $order['customer_source'];
+
+        array_set($data, 'status', '1');
+        array_set($data, 'order_action', 'bought');
+        array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
+
+        $customerDetail = $this->getCustomerDetail($data);
+
+        if($customerDetail['status'] != 200){
+            return $customerDetail;
+        }
+
+        $data = array_merge($data,$customerDetail['data']); 
+          
+        $ratecardDetail = $this->getRatecardDetail($data);
+
+        if($ratecardDetail['status'] != 200){
+            return $ratecardDetail;
+        }
+
+        $data = array_merge($data,$ratecardDetail['data']);
+
+        $ratecard_id = (int) $data['ratecard_id'];
+        $finder_id = (int) $data['finder_id'];
+        $service_id = (int) $data['service_id'];
+
+        $finderDetail = $this->getFinderDetail($finder_id);
+
+        if($finderDetail['status'] != 200){
+            return $finderDetail;
+        }
+
+        $data = array_merge($data,$finderDetail['data']);
+
+        $serviceDetail = $this->getServiceDetail($service_id);
+
+        if($serviceDetail['status'] != 200){
+            return $serviceDetail;
+        }
+
+        $data = array_merge($data,$serviceDetail['data']);
+
+        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+
+        $data = $this->unsetData($data);
+
+        $data['status'] = "1";
+        $data['order_action'] = "bought";
+        $data['success_date'] = date('Y-m-d H:i:s',time());
+
+        $order = new Order($data);
+        $order->_id = $order_id;
+        $order->save();
+
+        //$redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),'booktrial');
+        //$order->update(array('redis_id'=>$redisid));
+
+        return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
+    }
+
+
+    public  function sendCommunication($job,$data){
+
+        $job->delete();
+
+        try {
+
+            $order_id = (int)$data['order_id'];
+
+            $order = Order::find($order_id)->toArray();
+
+
+            
+        } catch (Exception $e) {
+            
+        }
+
+    }
+
+    public function getCategoryImage($category = "no_category"){
+
+        $category_array['gyms'] = array('personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
+        $category_array['zumba'] = array('gyms'=>'http://email.fitternity.com/229/gym.jpg','dance'=>'http://email.fitternity.com/229/dance.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg');
+        $category_array['yoga'] = array('pilates'=>'http://email.fitternity.com/229/pilates.jpg','personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','marathon-training'=>'http://email.fitternity.com/229/marathon.jpg');
+        $category_array['pilates'] = array('yoga'=>'http://email.fitternity.com/229/yoga.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg','marathon-training'=>'http://email.fitternity.com/229/marathon.jpg');
+        $category_array['cross-functional-training'] = array('sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg','personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg');
+        $category_array['crossfit'] = array('yoga'=>'http://email.fitternity.com/229/yoga.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg','sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg');
+        $category_array['dance'] = array('zumba'=>'http://email.fitternity.com/229/zumba.jpg','mma-and-kick-boxing'=>'http://email.fitternity.com/229/mma&kickboxing.jpg','spinning-and-indoor-cycling'=>'http://email.fitternity.com/229/spinning.jpg');
+        $category_array['mma-and-kick-boxing'] = array('personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg','cross-functional-training'=>'http://email.fitternity.com/229/cross-functional.jpg');
+        $category_array['spinning-and-indoor-cycling'] = array('gyms'=>'http://email.fitternity.com/229/gym.jpg','dietitians-and-nutritionists'=>'http://email.fitternity.com/229/dietitians.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
+        $category_array['marathon-training'] = array('dietitians-and-nutritionists'=>'http://email.fitternity.com/229/dietitians.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg','cross-functional-training'=>'http://email.fitternity.com/229/cross-functional.jpg');
+
+        if(array_key_exists($category,$category_array)){
+            return $category_array[$category];
+        }else{
+            return array('gyms'=>'http://email.fitternity.com/229/gym.jpg','dance'=>'http://email.fitternity.com/229/dance.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
+        }
+
     }
 
 }

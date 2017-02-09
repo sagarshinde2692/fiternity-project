@@ -20,7 +20,8 @@ class TrainerController extends \BaseController {
 
 		$rules = array(
             'date'=>'required',
-            'customer_id'=>'required'
+            'customer_id'=>'required',
+            'order_id'=>'order_id'
         );
 
         $validator = Validator::make($request,$rules);
@@ -31,16 +32,19 @@ class TrainerController extends \BaseController {
 
 		$date = $request['date'];
 		$customer_id = (int)$request['customer_id'];
+		$order_id = (int)$request['order_id'];
+		$call_for = "first";
 
 		$weekday =   strtolower(date( "l",strtotime($date)));
 
-		$oldTrainerSlotBooking = TrainerSlotBooking::where('hidden',false)->where('customer_id',$customer_id)->orderBy('_id','desc')->first();
+		$oldTrainerSlotBooking = TrainerSlotBooking::where('hidden',false)->where('customer_id',$customer_id)->where('order_id',$order_id)->orderBy('_id','desc')->first();
 
 		$schedules_query = Schedule::where('trainer_id','exists',true)->where('day',$weekday);
 
 		if($oldTrainerSlotBooking){
 
 			$schedules_query->where('trainer_id',$oldTrainerSlotBooking->trainer_id);
+			$call_for = "followup";
 
 		}
 
@@ -105,7 +109,9 @@ class TrainerController extends \BaseController {
 		$response['available_slots'] = (!empty($data)) ? $data[0]['available_slots'] : 0;
 		$response['unavailable_slots'] = (!empty($data)) ? $data[0]['unavailable_slots'] : 0;
 		$response['weekday'] = $weekday;
-		$response['date'] = $date;	
+		$response['date'] = $date;
+		$resopnse['order_id'] = $order_id;
+		$resopnse['call_for'] = $call_for;	
 
 		return Response::json($response,200);
 
@@ -120,6 +126,7 @@ class TrainerController extends \BaseController {
 			'date' => 'required',
 			'slot' => 'required',
 			'trainer_id' => 'required',
+			'order_id' => 'required'
 		];
 
 		$validator = Validator::make($data, $rules);
@@ -140,11 +147,22 @@ class TrainerController extends \BaseController {
 			$data['customer_phone'] = $decoded->customer->contact_no;
 			$data['customer_id'] = $decoded->customer->_id;
 
+			
+			$data['call_for'] = "first";
+
 			$date = $data['date'] = date('d-m-Y',strtotime($data['date']));
         	$weekday =   strtolower(date( "l",strtotime($date)));
         	$slot = $data['slot'];
         	$slot_explode = explode("-",$data['slot']);
 
+        	$oldTrainerSlotBooking = TrainerSlotBooking::where('hidden',false)
+				->where('order_id',$data['order_id'])
+				->first();
+
+			if($oldTrainerSlotBooking){
+
+				$data['call_for'] = "followup";
+			}
 
 			$trainerSlotBooking = TrainerSlotBooking::where('hidden',false)
 				->where('trainer_id',$data['trainer_id'])
@@ -183,6 +201,24 @@ class TrainerController extends \BaseController {
         }
 
 	}
+
+	public  function sendCommunication($job,$data){
+
+        $job->delete();
+
+        try {
+
+            $order_id = (int)$data['order_id'];
+
+            $order = Order::find($order_id)->toArray();
+
+
+            
+        } catch (Exception $e) {
+            
+        }
+
+    }
 
 	
 	

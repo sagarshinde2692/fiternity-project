@@ -234,6 +234,8 @@ abstract Class VersionNextSms {
 
     public function sendToWorker($to, $message, $label = 'label', $delay = 0){
 
+        return true;
+
         $sidekiq = new Sidekiq();
 
         if(is_array($delay))
