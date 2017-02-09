@@ -164,6 +164,8 @@ Class CustomerReward {
                 $this->createMyReward($order);
 
             }elseif(isset($order['type']) && in_array(trim($order['type']),['booktrials','healthytiffintrail']) && isset($order['customer_id']) && isset($order['amount']) ){
+
+                Log::info("---------------------------inside if cashback----------------------------");
 //                var_dump($order);exit;
                 $amounttobeadded        =       intval($order['amount']);
                 $customer_id            =       intval($order['customer_id']);

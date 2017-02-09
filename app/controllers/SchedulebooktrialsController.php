@@ -2142,6 +2142,8 @@ class SchedulebooktrialsController extends \BaseController {
                 //send Cashback sms on Paid trial & Healthy tiffin trial
                 if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
 
+                    Log::info("---------------------------inside if paidbooktrial queue------------------");
+
                 	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 	                $customer_sms_messageids['instant_cashback'] =  $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
 	            }
