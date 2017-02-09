@@ -2233,8 +2233,8 @@ if (!function_exists(('newcategorymapping'))){
             case $category == "sport nutrition and supliment stores" || $category == "sport supliment stores" :
                 return $category == "sport nutrition and supliment stores" ? "sport supliment stores" : "sport nutrition and supliment stores";
                 break;
-            case $category == "pre natal yoga":
-                return $category == "pre-natal yoga";
+            case $category == "pre natal classes":
+                return $category == "pre-natal classes";
                 break;
             default: 
                 return $category;
