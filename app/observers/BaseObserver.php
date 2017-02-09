@@ -108,7 +108,7 @@ class BaseObserver {
                 
                 if(isset($model->$field)){
                     if(!(strcmp($field, 'schedule_date_time')) || !(strcmp($field, 'schedule_date'))){
-                        $transaction->reference_id = $model->$field;
+                        $transaction->reference_id =  new Mongodate($model->$field->timestamp);
                         continue;
                     }                   
 
