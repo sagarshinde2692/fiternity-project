@@ -13,7 +13,7 @@ class CouponsController extends \BaseController {
 	}
 
 	public function getCouponInfo($couponCode, $ticketID) {
-		$couponInfo = Coupon::where('code', $couponCode)->whereIn('tickets', [intval($ticketID)])->get();
+		$couponInfo = Coupon::where('code', strtolower($couponCode))->whereIn('tickets', [intval($ticketID)])->get();
 		return $couponInfo;
 	}
 }
