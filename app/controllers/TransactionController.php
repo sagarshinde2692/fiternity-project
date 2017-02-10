@@ -536,6 +536,7 @@ class TransactionController extends \BaseController {
             'workout-session'=>'workout',
             '3daystrial'=>'workout',
             'vip_booktrials'=>'workout',
+            'events'=>'event'
         );
 
         $set_membership_duration_type = array(
@@ -546,6 +547,7 @@ class TransactionController extends \BaseController {
             'workout-session'=>'workout_session',
             '3daystrial'=>'trial',
             'vip_booktrials'=>'vip_trial',
+            'events'=>'event'
         );
 
         (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
