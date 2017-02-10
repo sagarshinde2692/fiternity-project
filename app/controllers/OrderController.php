@@ -1504,10 +1504,12 @@ class OrderController extends \BaseController {
         if($countOrder > 0 || $countTrial > 0 || $countCapture > 0){
             array_set($data, 'repeat_customer', 'yes');
         }
-
+        Log::info("Here before create");
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
+        Log::info("Here after create".$order->_id);
         $orderstatus   		= 	$order->save();
+        Log::info("Here after save");
         $resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp order :)");
         return Response::json($resp);
 
