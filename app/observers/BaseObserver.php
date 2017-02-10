@@ -2,6 +2,7 @@
 
 use Log,Session;
 use Transaction;
+use Mongodate;
 
 class BaseObserver {
 
@@ -30,13 +31,6 @@ class BaseObserver {
         $this->updateTransaction($model,'deleted');
     }
 
-
-    public function add($model,$activity){
-
-        
-
-    }
-
     public function updateTransaction($model, $activity){
         if(!(strcmp($activity,'created'))){
             Log::info("Inside");
@@ -59,6 +53,7 @@ class BaseObserver {
     }
 
     public function getTransactionData($transaction, $model){
+        Log::info("modelll".get_class($model));
         $transaction->transaction_type = get_class($model);
         
         $fields = array(
@@ -108,7 +103,7 @@ class BaseObserver {
                 
                 if(isset($model->$field)){
                     if(!(strcmp($field, 'schedule_date_time')) || !(strcmp($field, 'schedule_date'))){
-                        $transaction->reference_id =  new Mongodate($model->$field->timestamp);
+                        $transaction->reference_id =  ($model->$field->timestamp);
                         continue;
                     }                   
 
