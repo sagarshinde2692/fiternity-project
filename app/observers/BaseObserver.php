@@ -102,7 +102,7 @@ class BaseObserver {
             foreach($fields as $field){
                 
                 if(isset($model->$field)){
-                    if(!(strcmp($field, 'schedule_date_time')) || !(strcmp($field, 'schedule_date'))){
+                    if(!(strcmp($field, 'schedule_date_time')) ){
                         $transaction->$field =  ($model->$field->timestamp);
                         continue;
                     }                   
