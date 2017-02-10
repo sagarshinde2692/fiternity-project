@@ -9,7 +9,7 @@ class BaseObserver {
     public function created($model)
     {
         $field="_id";
-        Log::info(get_class($model).' created111 for '.$model->$field);
+        Log::info(get_class($model).' created for '.$model->$field);
 
         $this->updateTransaction($model,'created');
 
@@ -53,7 +53,7 @@ class BaseObserver {
     }
 
     public function getTransactionData($transaction, $model){
-        Log::info("modelll".get_class($model));
+        // Log::info("modelll".get_class($model));
         $transaction->transaction_type = get_class($model);
         
         $fields = array(
