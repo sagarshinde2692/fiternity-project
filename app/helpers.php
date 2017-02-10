@@ -2253,8 +2253,8 @@ if (!function_exists(('getReversehash'))){
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
-        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
-        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
