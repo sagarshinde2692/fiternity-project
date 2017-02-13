@@ -9,28 +9,28 @@
 
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
-use App\Mailers\FinderMailer as FinderMailer;
-use App\Sms\FinderSms as FinderSms;
+use App\Mailers\TrainerMailer as TrainerMailer;
+use App\Sms\TrainerSms as TrainerSms;
 
 
 class TrainerController extends \BaseController {
 
 	protected $customermailer;
     protected $customersms;
-	protected $findermailer;
-    protected $findersms;
+	protected $trainermailer;
+    protected $trainersms;
 
 	public function __construct(
 		CustomerMailer $customermailer,
         CustomerSms $customersms,
-		FinderMailer $findermailer,
-        FinderSms $findersms
+		TrainerMailer $trainermailer,
+        TrainerSms $trainersms
 	) {
 		parent::__construct();
         $this->customermailer       =   $customermailer;
         $this->customersms          =   $customersms;
- 		$this->findermailer         =   $findermailer;
-        $this->findersms            =   $findersms;
+ 		$this->trainermailer         =   $trainermailer;
+        $this->trainersms            =   $trainersms;
 	}
 
 	public function getAvailableSlots(){
@@ -237,13 +237,10 @@ class TrainerController extends \BaseController {
 
             $trainerSlotBookingArray = $trainerSlotBooking->toArray();
 
-            $trainerSlotBooking['sms']['customer']['instantSlolBookingTrainer'] = $this->customersms->instantSlolBookingTrainer($trainerSlotBookingArray);
-            $trainerSlotBooking['sms']['trainer']['instantSlolBookingTrainer'] = $this->findersms->instantSlolBookingTrainer($trainerSlotBookingArray);
-            $trainerSlotBooking['email']['customer']['instantSlolBookingTrainer'] = $this->customermailer->instantSlolBookingTrainer($trainerSlotBookingArray);
-            $trainerSlotBooking['email']['trainer']['instantSlolBookingTrainer'] = $this->findermailer->instantSlolBookingTrainer($trainerSlotBookingArray);
-
-
-
+            $trainerSlotBooking['sms']['customer']['instantSlolBooking'] = $this->customersms->instantSlolBooking($trainerSlotBookingArray);
+            $trainerSlotBooking['sms']['trainer']['instantSlolBooking'] = $this->trainersms->instantSlolBooking($trainerSlotBookingArray);
+            //$trainerSlotBooking['email']['customer']['instantSlolBookingTrainer'] = $this->customermailer->instantSlolBookingTrainer($trainerSlotBookingArray);
+            //$trainerSlotBooking['email']['trainer']['instantSlolBookingTrainer'] = $this->trainermailer->instantSlolBookingTrainer($trainerSlotBookingArray);
 
             
         } catch (Exception $e) {

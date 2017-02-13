@@ -315,6 +315,8 @@ return array(
 	'contact_us_customer_email' => 'support@fitternity.com',
 	'contact_us_vendor_number' => '+912261222233',
 	'contact_us_customer_number' => '+912261222222',
+	'diet_plan_customer_email' => 'nutrition@fitternity.com',
+	'diet_plan_customer_number' => '+912261222230',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
