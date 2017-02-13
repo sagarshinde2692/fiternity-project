@@ -173,6 +173,7 @@ class TrainerController extends \BaseController {
         	$weekday =   strtolower(date( "l",strtotime($date)));
         	$slot = $data['slot'];
         	$slot_explode = explode("-",$data['slot']);
+        	$order_id = (int)$data['order_id'];
 
         	$oldTrainerSlotBooking = TrainerSlotBooking::where('hidden',false)
 				->where('order_id',$data['order_id'])
@@ -198,6 +199,7 @@ class TrainerController extends \BaseController {
 			$trainer = Trainer::find($data['trainer_id']);
 
 			$data['trainer_name'] = $trainer->name;
+			$data['trainer_slug'] = $trainer->slug;
 			$data['trainer_email'] = $trainer->contact['email'];
 			$data['trainer_mobile'] = $trainer->contact['phone']['mobile'];
 			$data['trainer_landline'] = $trainer->contact['phone']['landline'];
@@ -205,9 +207,19 @@ class TrainerController extends \BaseController {
         	$data['dateunix'] = strtotime($date.$slot_explode[0]);
         	$data['datetime'] = date('Y-m-d H:i:00',$data['dateunix']);
         	$data['hidden'] = false;
+        	$data['user_profile_link'] = Config::get('app.website')."/".$data['customer_email']."/profile";
+        	$data['trainer_page_link'] = Config::get('app.website')."/".$data['trainer_slug'];
 
         	$trainerSlotBooking = new TrainerSlotBooking($data);
 	        $trainerSlotBooking->save();
+
+	        /*$order = Order::find($order_id);
+
+	        if($data['call_for'] == "first"){
+	        	$order->dietplan_start_date = date('Y-m-d H:i:00',$data['dateunix']);
+	        }*/
+
+	        $order->update();
 
         	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),'booktrial');
         	$trainerSlotBooking->update(array('redis_id'=>$redisid));
@@ -235,12 +247,25 @@ class TrainerController extends \BaseController {
 
             $trainerSlotBooking = TrainerSlotBooking::find($trainer_slot_booking_id);
 
+            $delayReminderTimeBefore3Hour = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $trainerSlotBooking->datetime)->subMinutes(60 * 3);
+
             $trainerSlotBookingArray = $trainerSlotBooking->toArray();
 
-            $trainerSlotBooking['sms']['customer']['instantSlolBooking'] = $this->customersms->instantSlolBooking($trainerSlotBookingArray);
-            $trainerSlotBooking['sms']['trainer']['instantSlolBooking'] = $this->trainersms->instantSlolBooking($trainerSlotBookingArray);
-            //$trainerSlotBooking['email']['customer']['instantSlolBookingTrainer'] = $this->customermailer->instantSlolBookingTrainer($trainerSlotBookingArray);
-            //$trainerSlotBooking['email']['trainer']['instantSlolBookingTrainer'] = $this->trainermailer->instantSlolBookingTrainer($trainerSlotBookingArray);
+            $trainerSlotBooking['sms']['customer']['instantSlotBooking'] = $this->customersms->instantSlotBooking($trainerSlotBookingArray);
+            $trainerSlotBooking['sms']['trainer']['instantSlotBooking'] = $this->trainersms->instantSlotBooking($trainerSlotBookingArray);
+
+            //$trainerSlotBooking['email']['customer']['instantSlotBooking'] = $this->customermailer->instantSlotBooking($trainerSlotBookingArray);
+            //$trainerSlotBooking['email']['trainer']['instantSlotBooking'] = $this->trainermailer->instantSlotBooking($trainerSlotBookingArray);
+
+
+            $trainerSlotBooking['sms']['customer']['before3HourSlotBooking'] = $this->customersms->before3HourSlotBooking($trainerSlotBookingArray,$delayReminderTimeBefore3Hour);
+            $trainerSlotBooking['sms']['trainer']['before3HourSlotBooking'] = $this->trainersms->before3HourSlotBooking($trainerSlotBookingArray,$delayReminderTimeBefore3Hour);
+
+
+            if($trainerSlotBooking->call_for == "first"){
+
+            }
+
 
             
         } catch (Exception $e) {

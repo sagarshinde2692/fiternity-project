@@ -491,6 +491,26 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
+	public function instantSlotBooking($data){
+
+		$label = 'DietPlan-InstantSlotBooking-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function before3HourSlotBooking($data,$delay){
+
+		$label = 'DietPlan-Before3HourSlotBooking-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
