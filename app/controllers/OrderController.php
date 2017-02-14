@@ -298,7 +298,7 @@ class OrderController extends \BaseController {
                 $order->update(['email_not_sent'=>'captureOrderStatus']);
             }else{
 
-                if(!in_array($finder->category_id, $abundant_category)){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "fittinabox" ){
                     $emailData      =   [];
                     $emailData      =   $order->toArray();
                     if($emailData['type'] == 'events'){
