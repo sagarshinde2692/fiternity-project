@@ -45,7 +45,7 @@ class OrderController extends \BaseController {
         $this->findersms 			=	$findersms;
         $this->utilities 			=	$utilities;
         $this->customerreward 		=	$customerreward;
-        $this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
+        $this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events','fittinabox');
 
     }
 
@@ -323,7 +323,7 @@ class OrderController extends \BaseController {
                 }
 
                 //no email to Healthy Snacks Beverages and Healthy Tiffins
-                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "fittinabox" && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
                     
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -363,7 +363,7 @@ class OrderController extends \BaseController {
             }
 
             //no sms to Healthy Snacks Beverages and Healthy Tiffins
-            if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+            if(!in_array($finder->category_id, $abundant_category) && $order->type != "fittinabox" && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
                 
                 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                     if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
