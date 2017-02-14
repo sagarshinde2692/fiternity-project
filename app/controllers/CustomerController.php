@@ -2146,23 +2146,23 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 
-		$data = Customer::where('_id',$customer_id)
-		->get(array('balance'));
-		$data = $data[0];
+		$customer = Customer::find('_id',$customer_id);
+
+		$balance = (isset($customer['balance']) && $customer['balance'] != "") ? (int) $customer['balance'] : 0 ;
+		$balance_fitcash_plus = (isset($customer['balance_fitcash_plus']) && $customer['balance_fitcash_plus'] != "") ? (int) $customer['balance_fitcash_plus'] : 0 ;
+
+		$customer_balance = $balance + $balance_fitcash_plus;
 
 		// balance and transaction_allowed are same at this time........
-		return Response::json(
-			array(
-				'status' => 200,
-				'balance' => isset($data['balance']) ? $data['balance'] : $data['balance'] = 0,
-				'transaction_allowed' => isset($data['balance']) ? $data['balance'] : $data['balance'] = 0
-				),200
-
-			);
+		return 	Response::json(
+					array(
+						'status' => 200,
+						'balance' => $customer_balance,
+						'transaction_allowed' => $customer_balance
+					),200
+				);
 	}
-
 	
-
 	public function getExistingTrialWithFinder(){
 
 		$jwt_token = Request::header('Authorization');
