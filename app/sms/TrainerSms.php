@@ -22,6 +22,24 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function dietPlanAfter15DaysReviewSlotConfirm ($data){
+
+		$to = explode(',', $data['trainer_mobile']);
+
+		$label = 'DietPlan-After15DaysReview-SlotConfirm-Trainer';
+
+		return $this->common($label,$to,$data);
+	}
+
+	public function dietPlanAfter15DaysFollowupSlotConfirm ($data){
+
+		$to = explode(',', $data['trainer_mobile']);
+
+		$label = 'DietPlan-After15DaysFollowup-SlotConfirm-Trainer';
+
+		return $this->common($label,$to,$data);
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();
