@@ -188,9 +188,7 @@ class TrainerController extends \BaseController {
 	        if(isset($order->dietplan_end_date) && $order->dietplan_end_date != "" && strtotime($order->dietplan_end_date) < time()){
 	        	$data['call_for'] = "review";
 	        }
-
-	        $order->update();
-
+	        
 			$trainerSlotBooking = TrainerSlotBooking::where('hidden',false)
 				->where('trainer_id',$data['trainer_id'])
 				->where('date',$date)
@@ -223,7 +221,13 @@ class TrainerController extends \BaseController {
         	$trainerSlotBooking = new TrainerSlotBooking($data);
 	        $trainerSlotBooking->save();
 
-	        
+	        $order->trainer_id = (int)$data['trainer_id'];
+	        $order->trainer_name = $trainer->name;
+			$order->trainer_slug = $trainer->slug;
+			$order->trainer_email = $trainer->contact['email'];
+			$order->trainer_mobile = $trainer->contact['phone']['mobile'];
+			$order->trainer_landline = $trainer->contact['phone']['landline'];
+	        $order->update();
 
         	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),'booktrial');
         	$trainerSlotBooking->update(array('redis_id'=>$redisid));
