@@ -44,6 +44,7 @@ return array(
 
 
 
+
 	'app' =>array(
 		'discount'		=> 			5,
 	),
@@ -258,7 +259,6 @@ return array(
 	// 	'default_index' => 	'fitternity',
 	// 	'default_type' 	=> 	'finder',
 	// ),
-
 	//stage
 	'es' =>array(
 	 	'url'		=> 			'139.59.16.74:1243',
