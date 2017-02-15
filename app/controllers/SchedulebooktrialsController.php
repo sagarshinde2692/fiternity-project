@@ -1472,6 +1472,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
             }
 
+            $this->utilities->setRedundant($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }

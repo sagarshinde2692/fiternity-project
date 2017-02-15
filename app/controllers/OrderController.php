@@ -407,7 +407,7 @@ class OrderController extends \BaseController {
 
             }
 
-            $this->setRedundant($order);
+            $this->utilities->setRedundant($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -416,33 +416,6 @@ class OrderController extends \BaseController {
         $orderdata 		=	$order->update($data);
         $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
         return Response::json($resp);
-    }
-
-    public function setRedundant($order){
-
-        $allOrders = Order::where('status','!=','1')
-                        ->where('type','memberships')
-                        ->where('service_id',(int)$order->service_id)
-                        ->where('finder_id',(int)$order->finder_id)
-                        ->where('customer_email',(int)$order->customer_email)
-                        ->where('created_at', '>=', new DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
-                        ->where('created_at', '<=', new DateTime( date("d-m-Y 23:59:59", strtotime("-44 days"))))
-                        ->where('paymentLinkEmailCustomerTiggerCount','exists',true)
-                        ->where('paymentLinkEmailCustomerTiggerCount','>',0)
-                        ->where('redundant_order','exists',false)
-                        ->orderBy('_id','desc')
-                        ->get();
-
-        if(count($allOrders) > 0){
-
-            foreach ($allOrders as $orderData) {
-
-                $orderData->update(array('redundant_order'=>'1'));
-            }
-        }
-
-        return true;
-
     }
     
     //create cod order for customer
