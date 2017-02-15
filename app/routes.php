@@ -319,7 +319,7 @@ Route::get('/author/{username}', 'UsersController@getAuthor');
 ##############################################################################
 /******************** FINDERS SECTION START HERE ***********************/
 //Route::get('getallfinder/', array('as' => 'finders.getallfinder','uses' => 'FindersController@getallfinder'));
-Route::get('finderdetail/{slug}/{category_slug?}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail'));
+Route::get('finderdetail/{slug}', array('as' => 'finders.finderdetail','uses' => 'FindersController@finderdetail'));
 Route::get('finderservices/{finderid}', array('as' => 'finders.finderservices','uses' => 'FindersController@finderServices'));
 // Route::get('ratecards/{finderid}', array('as' => 'finders.ratecards','uses' => 'FindersController@ratecards'));
 Route::get('ratecarddetail/{id}', array('as' => 'finders.ratecarddetail','uses' => 'FindersController@ratecarddetail'));

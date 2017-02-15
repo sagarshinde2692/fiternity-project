@@ -76,20 +76,23 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $category_slug = null, $cache = true){
+	public function finderdetail($slug, $cache = true){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
 		$cache_key = $tslug;
 		
-		if($category_slug){
+		$category_slug = null;
+		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
+			Log::info("Category exists");
+			$category_slug = $_GET['category_slug'];
 			$cache_key  = $tslug.'-'.$category_slug;
 		}
 
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
 
 		if(!$finder_detail){
-			Log::info("Not cached");
+			Log::info("Not cached in detail");
 
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
@@ -2032,8 +2035,19 @@ class FindersController extends \BaseController {
 
 	public function finderDetailApp($slug, $cache = true){
 
-		$data   =  array();
+		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
+		$cache_key = $tslug;
+
+		$category_slug = null;
+		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
+			Log::info("Category exists");
+			$category_slug = $_GET['category_slug'];
+			$cache_key  = $tslug.'-'.$category_slug;
+		}
+
+		Log::info($tslug);
+
 
 		$cache_name = "finder_detail_app";
 
@@ -2054,9 +2068,10 @@ class FindersController extends \BaseController {
 		}
 
 
-		$finder_detail = $cache ? Cache::tags($cache_name)->has($tslug) : false;
+		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
 		if(!$finder_detail){
+			Log::info("Not Cached in app");
 
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
@@ -2070,6 +2085,7 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
 				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type'));
+
 
 			$finder = false;
 
@@ -2203,6 +2219,32 @@ class FindersController extends \BaseController {
 
 					array_set($finder, 'open_now', $status);
 				}
+
+				$category_slug_services = array();
+				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+							if($value['category']['slug'] == $category_slug)
+								{
+								 return $value; 
+								}
+						});
+
+				$non_category_slug_services = array();
+				$non_category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+							if($value['category']['slug'] != $category_slug)
+								{
+								 return $value; 
+								}
+						});
+
+				function cmp($a, $b)
+	            {
+	            	return $a['traction']['sales'] < $b['traction']['sales'];
+	            }
+
+	        	usort($category_slug_services, "cmp");
+	        	usort($non_category_slug_services, "cmp");
+	        	
+	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
 
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership']  ));
 				array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
@@ -2395,13 +2437,13 @@ class FindersController extends \BaseController {
 
 				}
 
-				$data = Cache::tags($cache_name)->put($tslug, $data, Config::get('cache.cache_time'));
+				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
 
 		}
 
-		$finderData = Cache::tags($cache_name)->get($tslug);
+		$finderData = Cache::tags($cache_name)->get($cache_key);
 
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
