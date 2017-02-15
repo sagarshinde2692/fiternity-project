@@ -1514,6 +1514,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
             }
 
+            $this->utilities->setRedundant($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }
@@ -3406,6 +3408,7 @@ class SchedulebooktrialsController extends \BaseController {
             $slot_date                         =    date('d-m-Y', strtotime($data['schedule_date']));
             $schedule_date_starttime           =    strtoupper($slot_date ." ".$schedule_slot_start_time);
             $currentDateTime                   =    \Carbon\Carbon::now();
+            $scheduleDateTime                  =    \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime);
 
             $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->subMinutes(60 * 3);
             $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);

@@ -402,6 +402,7 @@ Class CustomerReward {
     public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
 
         $wallet = 0;
+        $wallet_fitcash_plus = 0;
 
         $jwt_token = Request::header('Authorization');
 
@@ -416,6 +417,10 @@ Class CustomerReward {
             if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
                 $wallet = $customer_wallet->balance;
             }
+
+            if($customer_wallet && isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
+                $wallet_fitcash_plus = $customer_wallet->balance_fitcash_plus;
+            }
         }
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
@@ -426,6 +431,10 @@ Class CustomerReward {
 
             if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
                 $wallet = $customer_wallet->balance;
+            }
+
+            if($customer_wallet && isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
+                $wallet_fitcash_plus = $customer_wallet->balance_fitcash_plus;
             }
 
         }
@@ -519,28 +528,94 @@ Class CustomerReward {
 
         $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
 
-        $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
 
-        $final_amount_discount_only = $original_amount - $amount_discounted;
+            $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
 
-        $final_amount_discount_and_wallet = $original_amount - $amount_discounted - $amount_deducted_from_wallet;
+            $final_amount_discount_only = $original_amount - $amount_discounted;
 
-        $data['original_amount'] = $original_amount;
-        $data['amount_discounted'] = $amount_discounted;
-        $data['amount_deducted_from_wallet'] = $amount_deducted_from_wallet;
-        $data['final_amount_discount_only'] = $final_amount_discount_only;
-        $data['final_amount_discount_and_wallet'] = $final_amount_discount_and_wallet;
-        $data['wallet_amount'] = $wallet_amount;
-        $data['algo'] = $setAlgo;
-        $data['current_wallet_balance'] = round($wallet);
-        //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
-        // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+            $final_amount_discount_and_wallet = $original_amount - $amount_discounted - $amount_deducted_from_wallet;
 
-        $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
-        
-        Log::info('reward_calculation : ',$data);
+            $data['original_amount'] = $original_amount;
+            $data['amount_discounted'] = $amount_discounted;
+            $data['amount_deducted_from_wallet'] = $amount_deducted_from_wallet;
+            $data['final_amount_discount_only'] = $final_amount_discount_only;
+            $data['final_amount_discount_and_wallet'] = $final_amount_discount_and_wallet;
+            $data['wallet_amount'] = $wallet_amount;
+            $data['algo'] = $setAlgo;
+            $data['current_wallet_balance'] = round($wallet);
+            //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+            // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
 
-        return $data;
+            $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
+            
+            Log::info('reward_calculation : ',$data);
+
+            return $data;
+
+        }else{
+
+            //fitcash plus
+            $deduct_fitcash_plus = $original_amount;
+            $deduct_fitcash = 0;
+
+            if($wallet_fitcash_plus < $original_amount){
+
+                $deduct_fitcash_plus = $wallet_fitcash_plus;
+
+                $deduct_fitcash = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
+
+                $balance = $original_amount - $deduct_fitcash_plus;
+
+                if($balance < $deduct_fitcash){
+                    $deduct_fitcash = 0;
+                }
+            }
+
+            $data['only_wallet'] = [
+                "fitcash" => $deduct_fitcash,
+                "fitcash_plus" => $deduct_fitcash_plus
+            ];
+
+            $data['discount_and_wallet'] = [
+                "fitcash" => $deduct_fitcash,
+                "fitcash_plus" => $deduct_fitcash_plus
+            ];
+
+            $amount_deducted_from_wallet = $deduct_fitcash_plus + $deduct_fitcash;
+
+            if($amount_deducted_from_wallet > ($original_amount - $amount_discounted)){
+
+                $balance = $amount_deducted_from_wallet - ($original_amount - $amount_discounted);
+
+                if($balance < $deduct_fitcash){
+                    $data['discount_and_wallet']['fitcash'] = $deduct_fitcash - $balance;
+                }elseif($balance < $deduct_fitcash_plus){
+                    $data['discount_and_wallet']['fitcash_plus'] = $deduct_fitcash_plus - $balance;
+                }
+            }
+
+            $final_amount_discount_only = $original_amount - $amount_discounted;
+
+            $final_amount_discount_and_wallet = $original_amount - $amount_discounted - ($data['discount_and_wallet']['fitcash'] + $data['discount_and_wallet']['fitcash_plus']);
+
+            $data['original_amount'] = $original_amount;
+            $data['amount_discounted'] = $amount_discounted;
+            $data['amount_deducted_from_wallet'] = $amount_deducted_from_wallet;
+            $data['final_amount_discount_only'] = $final_amount_discount_only;
+            $data['final_amount_discount_and_wallet'] = $final_amount_discount_and_wallet;
+            $data['wallet_amount'] = $wallet_amount;
+            $data['algo'] = $setAlgo;
+            $data['current_wallet_balance'] = round($wallet + $wallet_fitcash_plus);
+            //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+            // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+
+            $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
+            
+            Log::info('reward_calculation : ',$data);
+
+            return $data;
+        }
 
     }
 

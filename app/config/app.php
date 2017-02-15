@@ -39,7 +39,8 @@ return array(
 
 
     //'website' => 'https://www.fitternity.com',
-    'website' => 'http://web.fitn.in:8020',
+    'website' => 'http://apistage.fitn.in:1122',
+
 
 
 
@@ -258,7 +259,6 @@ return array(
 	// 	'default_index' => 	'fitternity',
 	// 	'default_type' 	=> 	'finder',
 	// ),
-
 	//stage
 	'es' =>array(
 	 	'url'		=> 			'139.59.16.74:1243',
