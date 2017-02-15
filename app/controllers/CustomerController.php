@@ -1163,6 +1163,7 @@ class CustomerController extends \BaseController {
 		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
 		foreach ($ordersrs as $key => $value) {
+
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
 				$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
@@ -1177,6 +1178,10 @@ class CustomerController extends \BaseController {
 
 			if(!isset($value['preferred_starting_date']) && isset($value['start_date'])){
 				$value['preferred_starting_date'] = $value['start_date']; 
+			}
+
+			if(!isset($value['amount_finder']) && $value['amount_finder'] != 0){
+				$value['amount'] = $value['amount_finder'];
 			}
 
 			array_push($orders, $value);
