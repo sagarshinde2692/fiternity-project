@@ -1181,7 +1181,7 @@ class CustomerController extends \BaseController {
 				$value['preferred_starting_date'] = $value['start_date']; 
 			}
 
-			if(!isset($value['amount_customer']) && $value['amount_customer'] != 0){
+			if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
 				$value['amount'] = $value['amount_customer'];
 			}
 
