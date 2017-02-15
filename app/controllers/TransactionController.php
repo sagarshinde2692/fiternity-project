@@ -301,11 +301,11 @@ class TransactionController extends \BaseController {
 
     public function getCashbackRewardWallet($data){
 
-        $amount = $data['amount'];
+        $amount = $data['amount_customer'] = $data['amount'];
 
         if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
             $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-            $data['amount'] = $data['amount'] - $data['app_discount_amount'];
+            $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
         }else{
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
