@@ -600,4 +600,31 @@ Class Utilities {
 
     }
 
+    public function setRedundant($order){
+
+        $allOrders = Order::where('status','!=','1')
+                        ->whereIn('type',['memberships','healthytiffinmembership'])
+                        ->where('service_id',(int)$order->service_id)
+                        ->where('finder_id',(int)$order->finder_id)
+                        ->where('customer_email',(int)$order->customer_email)
+                        ->where('created_at', '>=', new DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
+                        ->where('created_at', '<=', new DateTime( date("d-m-Y 23:59:59", strtotime("-44 days"))))
+                        ->where('paymentLinkEmailCustomerTiggerCount','exists',true)
+                        ->where('paymentLinkEmailCustomerTiggerCount','>',0)
+                        ->where('redundant_order','exists',false)
+                        ->orderBy('_id','desc')
+                        ->get();
+
+        if(count($allOrders) > 0){
+
+            foreach ($allOrders as $orderData) {
+
+                $orderData->update(array('redundant_order'=>'1'));
+            }
+        }
+
+        return true;
+
+    }
+
 }

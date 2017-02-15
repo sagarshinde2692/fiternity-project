@@ -418,7 +418,7 @@ class OrderController extends \BaseController {
 
             }
 
-
+            $this->utilities->setRedundant($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -428,9 +428,7 @@ class OrderController extends \BaseController {
         $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
         return Response::json($resp);
     }
-
-
-
+    
     //create cod order for customer
     public function generateCodOrder(){
 
