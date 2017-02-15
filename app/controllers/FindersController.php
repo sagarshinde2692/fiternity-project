@@ -76,14 +76,20 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
-
+	public function finderdetail($slug, $category_slug = null, $cache = true){
+		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
+		$cache_key = $tslug;
+		
+		if($category_slug){
+			$cache_key  = $tslug.'-'.$category_slug;
+		}
 
-		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
+		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
 
 		if(!$finder_detail){
+			Log::info("Not cached");
 
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
@@ -100,7 +106,7 @@ class FindersController extends \BaseController {
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC')->limit(5);}))
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
-
+		
 			$finder = null;	
 
 			if($finderarr){
@@ -111,6 +117,7 @@ class FindersController extends \BaseController {
 
 				// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
 				$finder         =   array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
+
 				$coverimage     =   ($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
 
@@ -156,7 +163,9 @@ class FindersController extends \BaseController {
 							if($value['category']['_id'] == 65){ return $value; }
 						}));
 
-//                        return $finder_gym_service; exit;
+
+
+                       // return $finder_gym_service; exit;
 
 						if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
 							$all_weekdays                       =   $finder_gym_service['active_weekdays'];
@@ -255,6 +264,34 @@ class FindersController extends \BaseController {
 					$associate_finder = Finder::active()->whereIn('_id',$associate_finder)->get(array('_id','title','slug'))->toArray();
 					$finder['associate_finder'] = $associate_finder;
 				}
+
+
+				$category_slug_services = array();
+				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+							if($value['category']['slug'] == $category_slug)
+								{
+								 return $value; 
+								}
+						});
+
+				$non_category_slug_services = array();
+				$non_category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+							if($value['category']['slug'] != $category_slug)
+								{
+								 return $value; 
+								}
+						});
+
+				function cmp($a, $b)
+	            {
+	            	return $a['traction']['sales'] < $b['traction']['sales'];
+	            }
+
+	        	usort($category_slug_services, "cmp");
+	        	usort($non_category_slug_services, "cmp");
+	        	
+	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
+
 
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
@@ -539,7 +576,7 @@ class FindersController extends \BaseController {
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
 
-				Cache::tags('finder_detail')->put($tslug,$response,Config::get('cache.cache_time'));
+				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
 			}else{
 
@@ -552,7 +589,7 @@ class FindersController extends \BaseController {
 
 		}else{
 
-			$response = Cache::tags('finder_detail')->get($tslug);
+			$response = Cache::tags('finder_detail')->get($cache_key);
 		}
 
 		if(Request::header('Authorization')){
