@@ -177,6 +177,7 @@ class TransactionController extends \BaseController {
         $result['successurl'] = $successurl;
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+        $result['full_payment_wallet'] = $data['full_payment_wallet'];
 
 
         $resp   =   array(
@@ -382,7 +383,11 @@ class TransactionController extends \BaseController {
 
             $data['amount'] = $amount;
         }
-
+        if($data['amount'] == 0){
+            $data['full_payment_wallet'] = true;
+        }else{
+            $data['full_payment_wallet'] = false;
+        }
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }
