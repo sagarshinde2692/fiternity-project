@@ -39,7 +39,7 @@ return array(
 
 
     //'website' => 'https://www.fitternity.com',
-    'website' => 'http://web.fitn.in:8020',
+    'website' => 'http://apistage.fitn.in:1122',
 
 
 
