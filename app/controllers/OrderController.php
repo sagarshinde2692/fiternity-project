@@ -149,27 +149,29 @@ class OrderController extends \BaseController {
         if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
             $hash_verified = true;
         }else{
-            $hashreverse = getReversehash($order);
-            Log::info($data["verify_hash"]);
-            Log::info($hashreverse['reverse_hash']);
-            if($data["verify_hash"] == $hashreverse['reverse_hash']){
-                $hash_verified = true;
+
+            // If amount is zero check for wallet amount
+            if($data['amount'] == 0){
+                if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
+                    $hash_verified = true;
+                }else{
+                    $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
+                    return Response::json($resp,401);
+                }
             }else{
-                $hash_verified = false;
+                $hashreverse = getReversehash($order);
+                Log::info($data["verify_hash"]);
+                Log::info($hashreverse['reverse_hash']);
+                if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                    $hash_verified = true;
+                }else{
+                    $hash_verified = false;
+                }
             }
         }
         
         if($data['status'] == 'success' && $hash_verified){
 
-            // If amount is zero check for wallet amount
-            if($data['amount'] == 0){
-                if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
-
-                }else{
-                    $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
-                    return Response::json($resp,401);
-                }
-            }
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
