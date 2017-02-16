@@ -12,6 +12,7 @@ Use \App\Responsemodels\saleRatecardResponse;
 Use \App\Responsemodels\saleRatecardResult;
 Use \App\Responsemodels\saleRatecardObject;
 use \Input;
+use Log, Config;
 
 // Translator methods to model API responses for client
 
@@ -21,7 +22,7 @@ class Translator {
 		//empty constructor
 	}
 
-	public static function translate_autocomplete($es_autocomplete_response = array(), $city){
+	public static function translate_autocomplete($es_autocomplete_response = array(), $city, $customer_email){
 		$autcomplete_response = new AutocompleteResponse();
 		if(isset($es_autocomplete_response['error'])){
 			$autcomplete_response->status = 500;
@@ -30,8 +31,14 @@ class Translator {
 		else{	
 
 			$autcomplete_response->meta = new \stdClass();			
-			$autcomplete_response->meta->total_records = $es_autocomplete_response['hits']['total'];			
+			$autcomplete_response->meta->total_records = $es_autocomplete_response['hits']['total'];
 			foreach ($es_autocomplete_response['hits']['hits'] as $value) {
+				if(in_array($value['fields']['slug'][0], Config::get('app.test_vendors'))){
+					if(!in_array($customer_email, Config::get('app.test_page_users'))){
+						$autcomplete_response->meta->total_records--;
+						continue;
+					}
+				}
 				$area = '';
 				if($value['fields']['location'][0] === ""){
 					$area = $city;
@@ -39,7 +46,7 @@ class Translator {
 				else{
 					$area = $value['fields']['location'][0];
 				}
-
+				Log::info($value['fields']['slug'][0]);
                 $automodel = new AutocompleteResult();
                 $automodel->keyword = $value['fields']['autosuggestvalue'][0];
                 $automodel->object->id = $value['_id'];
@@ -571,7 +578,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 }
 
 
-	public static function translate_searchresultsv3($es_searchresult_response,$search_request = array()){
+	public static function translate_searchresultsv3($es_searchresult_response,$search_request = array(), $customer_email){
 		$finderresult_response = new FinderresultResponse();
 
 		$finderresult_response->results->aggregationlist = new \stdClass();
@@ -587,6 +594,12 @@ public static function translate_searchresultsv2($es_searchresult_response){
 		else{
 			$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
 			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+				if(in_array($resultv1['_source']['slug'], Config::get('app.test_vendors'))){
+					if(!in_array($customer_email, Config::get('app.test_page_users'))){
+						$finderresult_response->meta->total_records--;
+						continue;
+					}
+				}
 				$result = $resultv1['_source'];
 				$finder = new FinderResult();
 				$finder->object_type = 'vendor';

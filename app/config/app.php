@@ -658,8 +658,9 @@ return array(
                 "rate"=>14
             )
         ),
-    'test_page_users' => ['dhruvsarawagi@fitternity.com','utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com' ],
-    'test_vendors' => ['fitternity-test-page-bandra-west']
+    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com'],
+    'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
 
 
 );
+// 
