@@ -2021,6 +2021,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
             if(!function_exists('createCustomerToken')){
                 function createCustomerToken($customer_id){
+                    
                     $customer = Customer::find($customer_id);
                     $customer = array_except($customer->toArray(), array('password'));
 
@@ -2033,8 +2034,24 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
                     $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
                     $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                    $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
 
-                    $data = array('_id'=>$customer['_id'],'name'=>$customer['name'],"email"=>$customer['email'],"picture"=>$customer['picture'],'facebook_id'=>$customer['facebook_id'],"identity"=>$customer['identity'],"address"=>$customer['address'],"contact_no"=>$customer['contact_no'],"location"=>$customer['location'],'extra'=>array('mob'=>$customer['extra']['mob'],'location'=>$customer['extra']['location'])); 
+                    $data = array(
+                                '_id'=>$customer['_id'],
+                                'name'=>$customer['name'],
+                                "email"=>$customer['email'],
+                                "picture"=>$customer['picture'],
+                                'facebook_id'=>$customer['facebook_id'],
+                                "identity"=>$customer['identity'],
+                                "address"=>$customer['address'],
+                                "contact_no"=>$customer['contact_no'],
+                                "location"=>$customer['location'],
+                                'gender'=>$customer['gender'],
+                                'extra'=>array(
+                                    'mob'=>$customer['extra']['mob'],
+                                    'location'=>$customer['extra']['location']
+                                )
+                            ); 
 
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
