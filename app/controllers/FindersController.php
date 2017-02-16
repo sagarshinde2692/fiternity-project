@@ -83,19 +83,21 @@ class FindersController extends \BaseController {
 
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
-
+		$customer_email = null;
 		if(in_array($tslug, Config::get('app.test_vendors'))){
 			$jwt_token = Request::header('Authorization');
 			if($jwt_token){
 				$decoded = $this->customerTokenDecode($jwt_token);
-				$customer_email = $decoded->customer->email;
+				if($decoded){
+					$customer_email = $decoded->customer->email;
+				}
 				if(!in_array($customer_email, Config::get('app.test_page_users'))){
 
-					return Response::json("not found");
+					return Response::json("not found", 404);
 				}
 			}else{
 
-				return Response::json("not found");
+				return Response::json("not found", 404);
 			}
 		}
 
@@ -1750,17 +1752,6 @@ class FindersController extends \BaseController {
 	}
 
 
-
-	public function customerTokenDecode($token){
-
-		$jwt_token = $token;
-		$jwt_key = Config::get('app.jwt.key');
-		$jwt_alg = Config::get('app.jwt.alg');
-		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-
-		return $decodedToken;
-	}
-
 	public function getTrialSchedule($finder_id,$category){
 
 		$currentDateTime        =   date('Y-m-d');
@@ -2016,11 +2007,14 @@ class FindersController extends \BaseController {
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
 
+		$customer_email = null;
 		if(in_array($tslug, Config::get('app.test_vendors'))){
 			$jwt_token = Request::header('Authorization');
 			if($jwt_token){
 				$decoded = $this->customerTokenDecode($jwt_token);
-				$customer_email = $decoded->customer->email;
+				if($decoded){
+					$customer_email = $decoded->customer->email;
+				}
 				if(!in_array($customer_email, Config::get('app.test_page_users'))){
 
 					return Response::json(array("status"=>404), 404);
@@ -2542,5 +2536,23 @@ class FindersController extends \BaseController {
 		return $finderservicesArr;
 
 	}
+
+	public function customerTokenDecode($token){
+
+        $jwt_token = $token;
+
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+        try {
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        }catch (Exception $e) {
+            Log::info($e);
+            return null;
+        }
+        
+        return $decodedToken;
+    }
+
 
 }
