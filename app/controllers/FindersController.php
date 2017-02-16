@@ -74,6 +74,8 @@ class FindersController extends \BaseController {
 
 	}
 
+	
+
 
 
 	public function finderdetail($slug, $cache = true){
@@ -89,7 +91,22 @@ class FindersController extends \BaseController {
 			$cache_key  = $tslug.'-'.$category_slug;
 		}
 
-		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
+		if(in_array($tslug, Config::get('app.test_vendors'))){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token){
+				$decoded = $this->customerTokenDecode($jwt_token);
+				$customer_email = $decoded->customer->email;
+				if(!in_array($customer_email, Config::get('app.test_page_users'))){
+
+					return Response::json("not found");
+				}
+			}else{
+
+				return Response::json("not found");
+			}
+		}
+
+		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
 
 		if(!$finder_detail){
 			Log::info("Not cached in detail");
@@ -2050,6 +2067,21 @@ class FindersController extends \BaseController {
 
 		Log::info($tslug);
 
+
+		if(in_array($tslug, Config::get('app.test_vendors'))){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token){
+				$decoded = $this->customerTokenDecode($jwt_token);
+				$customer_email = $decoded->customer->email;
+				if(!in_array($customer_email, Config::get('app.test_page_users'))){
+
+					return Response::json(array("status"=>404), 404);
+				}
+			}else{
+
+				return Response::json(array("status"=>404), 404);
+			}
+		}
 
 		$cache_name = "finder_detail_app";
 
