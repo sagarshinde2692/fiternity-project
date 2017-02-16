@@ -657,7 +657,7 @@ return array(
                 "minval"=> 2500,
                 "rate"=>14
             )
-        )
+        ),
     'test_page_users' => ['dhruvsarawagi@fitternity.com'],
     'test_vendors' => ['fitternity-test-page-bandra-west']
 
