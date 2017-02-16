@@ -146,20 +146,31 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
-        if(!isset($data["order_success_flag"])){
+        if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+            $hash_verified = true;
+        }else{
+            // If amount is zero check for wallet amount
             if($data['amount'] == 0){
                 if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
-
+                    $hash_verified = true;
                 }else{
                     $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
                     return Response::json($resp,401);
                 }
+            }else{
+                $hashreverse = getReversehash($order);
+                Log::info($data["verify_hash"]);
+                Log::info($hashreverse['reverse_hash']);
+                if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                    $hash_verified = true;
+                }else{
+                    $hash_verified = false;
+                }
             }
         }
-
-        if($data['status'] == 'success'){
+        
+        if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
-
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -422,6 +433,14 @@ class OrderController extends \BaseController {
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
+        }else{
+            if($hash_verified == false){
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+                return Response::json($resp);
+            }
         }
 
         $orderdata 		=	$order->update($data);
@@ -2036,7 +2055,6 @@ class OrderController extends \BaseController {
     }
 
     public function getHash($data){
-
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
         $data['service_name'] = trim($data['service_name']);
@@ -2571,6 +2589,46 @@ class OrderController extends \BaseController {
         );
     }
 
+
+
+    public function getReversehash($data){
+
+        $data['env'] == 1;
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+
+        $txnid = $data['txnid'];
+        $amount = $data['amount'].".00";
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+//    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        
+        Log::info($payhash_str);
+        $data['reverse_hash'] = hash('sha512', $payhash_str);        
+        Log::info($data['reverse_hash']);
+        return $data;
+    }
 
 
 }

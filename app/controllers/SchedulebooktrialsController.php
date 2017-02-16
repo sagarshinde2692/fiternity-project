@@ -1289,7 +1289,19 @@ class SchedulebooktrialsController extends \BaseController {
         $order        = 	Order::findOrFail($orderid);
 
 
-
+        $hashreverse = getReversehash($order);
+            Log::info($data["verify_hash"]);
+            Log::info($hashreverse['reverse_hash']);
+            if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                $hash_verified = true;
+            }else{
+                $hash_verified = false;
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                return  Response::json($resp, 400);
+            }
         if(Input::json()->get('status') == 'success') {
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -1378,7 +1390,19 @@ class SchedulebooktrialsController extends \BaseController {
         $order        = 	Order::findOrFail($orderid);
 
 
-
+        $hashreverse = getReversehash($order);
+            Log::info($data["verify_hash"]);
+            Log::info($hashreverse['reverse_hash']);
+            if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                $hash_verified = true;
+            }else{
+                $hash_verified = false;
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                return  Response::json($resp, 400);
+            }
         if(Input::json()->get('status') == 'success') {
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -1595,6 +1619,22 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 $data['myreward_id'] = (int)$order_data['myreward_id'];
+            }else{
+                $hashreverse = getReversehash($order);
+                if(isset($data["verify_hash"]) && $data["verify_hash"] == $hashreverse['reverse_hash']){
+                    $hash_verified = true;
+                    Log::info($data["verify_hash"]);
+                    Log::info($hashreverse['reverse_hash']);
+                }else{
+                    $hash_verified = false;
+                    $Oldorder 		= 	Order::findOrFail($order_id);
+                    $Oldorder["hash_verified"] = false;
+                    $Oldorder->update();
+                    $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                    Log::info($data["verify_hash"]);
+                    Log::info($hashreverse['reverse_hash']);
+                    return  Response::json($resp, 400);
+                }
             }
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -1604,6 +1644,7 @@ class SchedulebooktrialsController extends \BaseController {
             }else{
                 array_set($data,'acquisition_type','direct_payment');
             }
+
 
             $source                             =   (isset($order->customer_source) && $order->customer_source != '') ? trim($order->customer_source) : "website";
 
