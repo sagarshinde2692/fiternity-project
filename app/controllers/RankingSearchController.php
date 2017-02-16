@@ -703,6 +703,16 @@ class RankingSearchController extends \BaseController
     {
         // echo "yo";
         // return Input::json()->all();
+        $customer_email = null;
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token){
+            Log::info("inside");
+            $decoded = $this->customerTokenDecode($jwt_token);
+            if($decoded){
+                $customer_email = $decoded->customer->email;
+            }
+            
+        }
         $searchParams = array();
         $facetssize =  $this->facetssize;
         $rankField = 'rankv2';
@@ -1136,7 +1146,7 @@ class RankingSearchController extends \BaseController
 
         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
-        $searchresulteresponse = Translator::translate_searchresultsv3($search_results1,$search_request);
+        $searchresulteresponse = Translator::translate_searchresultsv3($search_results1,$search_request, $customer_email);
         $searchresulteresponse->meta->number_of_records = intval($size);
         $searchresulteresponse->meta->from = intval($from);
         $searchresulteresponse->meta->sortfield = $orderfield;
@@ -2114,6 +2124,23 @@ class RankingSearchController extends \BaseController
 
         return $regex;
 
+    }
+
+    public function customerTokenDecode($token){
+
+        $jwt_token = $token;
+
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+        try {
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        }catch (Exception $e) {
+            Log::info($e);
+            return null;
+        }
+        
+        return $decodedToken;
     }
 
 // public function 

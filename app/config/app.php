@@ -382,8 +382,9 @@ return array(
         184     => ["burn fat","shape up","endurance","flat abs","flexibility","work on all muscle"]
     ],
 
-    'test_page_users' => ['dhruvsarawagi@fitternity.com'],
-    'test_vendors' => ['fitternity-test-page-bandra-west']
+    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com'],
+    'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
 
 
 );
+// 
