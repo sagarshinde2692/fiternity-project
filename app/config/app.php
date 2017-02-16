@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,13 +28,13 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
+	// 'url' => 'https://a1.fitternity.com',
 	//'url' => 'http://appstg.fitn.in',
-	//'url' => 'http://fitapi.com',
+	'url' => 'http://fitapi.com',
 
 
-    'website' => 'https://www.fitternity.com',
-    //'website' => 'http://appstg.fitn.in:8555',
+    // 'website' => 'https://www.fitternity.com',
+    'website' => 'http://appstg.fitn.in:8555',
 
 
 	'app' =>array(
@@ -381,6 +381,9 @@ return array(
         161     => ["burn fat", "endurance", "control breathing", "increase sports performance", "speed", "shape up"],
         184     => ["burn fat","shape up","endurance","flat abs","flexibility","work on all muscle"]
     ],
+
+    'test_page_users' => ['dhruvsarawagi@fitternity.com'],
+    'test_vendors' => ['fitternity-test-page-bandra-west']
 
 
 );

@@ -74,12 +74,30 @@ class FindersController extends \BaseController {
 
 	}
 
+	
+
 
 
 	public function finderdetail($slug, $cache = true){
+		
 
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
+
+		if(in_array($tslug, Config::get('app.test_vendors'))){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token){
+				$decoded = $this->customerTokenDecode($jwt_token);
+				$customer_email = $decoded->customer->email;
+				if(!in_array($customer_email, Config::get('app.test_page_users'))){
+
+					return Response::json("not found");
+				}
+			}else{
+
+				return Response::json("not found");
+			}
+		}
 
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
 
@@ -1997,6 +2015,21 @@ class FindersController extends \BaseController {
 
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
+
+		if(in_array($tslug, Config::get('app.test_vendors'))){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token){
+				$decoded = $this->customerTokenDecode($jwt_token);
+				$customer_email = $decoded->customer->email;
+				if(!in_array($customer_email, Config::get('app.test_page_users'))){
+
+					return Response::json(array("status"=>404), 404);
+				}
+			}else{
+
+				return Response::json(array("status"=>404), 404);
+			}
+		}
 
 		$cache_name = "finder_detail_app";
 
