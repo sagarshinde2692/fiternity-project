@@ -377,7 +377,7 @@ class OrderController extends \BaseController {
                 
             }
 
-            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+            /*if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
 
                 $preferred_starting_date = $order->preferred_starting_date;
                 $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
@@ -405,7 +405,7 @@ class OrderController extends \BaseController {
 
                 $order->update();
 
-            }
+            }*/
 
             $this->utilities->setRedundant($order);
 
