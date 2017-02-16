@@ -146,16 +146,16 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
-        // If amount is zero check for wallet amount
-        if($data['amount'] == 0){
-            if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
+        if(!isset($data["order_success_flag"])){
+            if($data['amount'] == 0){
+                if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
 
-            }else{
-                $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
-                return Response::json($resp,401);
+                }else{
+                    $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
+                    return Response::json($resp,401);
+                }
             }
         }
-
 
         if($data['status'] == 'success'){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
