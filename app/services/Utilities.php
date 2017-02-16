@@ -602,7 +602,7 @@ Class Utilities {
 
     public function setRedundant($order){
 
-        $allOrders = Order::where('status','!=','1')
+        $allOrders = \Order::where('status','!=','1')
                         ->whereIn('type',['memberships','healthytiffinmembership'])
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
