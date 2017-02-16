@@ -1163,6 +1163,7 @@ class CustomerController extends \BaseController {
 		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
 		foreach ($ordersrs as $key => $value) {
+
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
 				$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
@@ -1177,6 +1178,10 @@ class CustomerController extends \BaseController {
 
 			if(!isset($value['preferred_starting_date']) && isset($value['start_date'])){
 				$value['preferred_starting_date'] = $value['start_date']; 
+			}
+
+			if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
+				$value['amount'] = $value['amount_customer'];
 			}
 
 			array_push($orders, $value);
@@ -2144,25 +2149,24 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
-		$customer_id = $decoded->customer->_id;
+		$customer_id = intval($decoded->customer->_id);
 
-		$data = Customer::where('_id',$customer_id)
-		->get(array('balance'));
-		$data = $data[0];
+		$customer = Customer::find($customer_id);
+		$balance = (isset($customer['balance']) && $customer['balance'] != "") ? (int) $customer['balance'] : 0 ;
+		$balance_fitcash_plus = (isset($customer['balance_fitcash_plus']) && $customer['balance_fitcash_plus'] != "") ? (int) $customer['balance_fitcash_plus'] : 0 ;
+
+		$customer_balance = $balance + $balance_fitcash_plus;
 
 		// balance and transaction_allowed are same at this time........
-		return Response::json(
-			array(
-				'status' => 200,
-				'balance' => isset($data['balance']) ? $data['balance'] : $data['balance'] = 0,
-				'transaction_allowed' => isset($data['balance']) ? $data['balance'] : $data['balance'] = 0
-				),200
-
-			);
+		return 	Response::json(
+					array(
+						'status' => 200,
+						'balance' => $customer_balance,
+						'transaction_allowed' => $customer_balance
+					),200
+				);
 	}
-
 	
-
 	public function getExistingTrialWithFinder(){
 
 		$jwt_token = Request::header('Authorization');
