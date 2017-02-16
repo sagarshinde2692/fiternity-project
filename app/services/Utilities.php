@@ -467,9 +467,7 @@ Class Utilities {
     public function setRedundant($order){
 
         try {
-
-            asdf;
-            
+  
             $allOrders = \Order::where('status','!=','1')
                         ->whereIn('type',['memberships','healthytiffinmembership'])
                         ->where('service_id',(int)$order->service_id)
@@ -491,17 +489,15 @@ Class Utilities {
                 }
             }
 
-            return true;
+            return "success";
 
         } catch (Exception $e) {
 
             Log::error($e);
 
-            return false;
+            return "error";
             
         }
-
-        
 
     }
 
