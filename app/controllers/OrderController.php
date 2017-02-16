@@ -146,33 +146,7 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
-        if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-            $hash_verified = true;
-        }else{
-
-            // If amount is zero check for wallet amount
-            if($data['amount'] == 0){
-                if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
-                    $hash_verified = true;
-                }else{
-                    $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
-                    return Response::json($resp,401);
-                }
-            }else{
-                $hashreverse = getReversehash($order);
-                Log::info($data["verify_hash"]);
-                Log::info($hashreverse['reverse_hash']);
-                if($data["verify_hash"] == $hashreverse['reverse_hash']){
-                    $hash_verified = true;
-                }else{
-                    $hash_verified = false;
-                }
-            }
-        }
-        
-        if($data['status'] == 'success' && $hash_verified){
-
-
+        if($data['status'] == 'success'){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
@@ -403,7 +377,7 @@ class OrderController extends \BaseController {
                 
             }
 
-            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+            /*if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
 
                 $preferred_starting_date = $order->preferred_starting_date;
                 $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
@@ -431,39 +405,16 @@ class OrderController extends \BaseController {
 
                 $order->update();
 
-            }
+            }*/
 
-            $this->utilities->setRedundant($order);
-
-
-
-            $finder_id = $order['finder_id'];
-            $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
-
-            $sales_count_last_30_days = Order::active()->where('finder_id',$finder_id)->where('created_at', '>=', new DateTime($start_date_last_30_days))->count();
-
-            if($sales_count_last_30_days == 0){
-            $mailData=array();
-            $mailData['finder_name']=$order['finder_name'];
-            $mailData['finder_id']=$order['finder_id'];
-            $mailData['finder_city']=$order['finder_city'];
-            $mailData['finder_location']=$order['finder_location'];
-            $mailData['customer_name']=$order['customer_name'];
-            $mailData['customer_email']=$order['customer_email'];
-
-                $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
+            try {
+                $this->utilities->setRedundant($order);
+            } catch (Exception $e) {
+                Log::error($e);
             }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
-        }else{
-            if($hash_verified == false){
-                $Oldorder 		= 	Order::findOrFail($orderid);
-                $Oldorder["hash_verified"] = false;
-                $Oldorder->update();
-                $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
-                return Response::json($resp);
-            }
         }
 
         $orderdata 		=	$order->update($data);
@@ -1402,76 +1353,40 @@ class OrderController extends \BaseController {
             array_set($data, 'reward_ids', $rewardoffers);
         }
 
-        $orderid = Order::max('_id') + 1;
+        if(isset($data['amount_finder'])){
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
+            $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id'],'paymentgateway',$offer_id,$customer_id);
 
-            if(isset($data['amount_finder'])){
+            if(isset($data['wallet']) && $data['wallet'] == true){
+                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+            }
+        }
 
-                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id'],'paymentgateway',$offer_id,$customer_id);
+        // Deduct wallet balance if applicable and feasible....
+        $orderid 			=	Order::max('_id') + 1;
 
-                if(isset($data['wallet']) && $data['wallet'] == true){
-                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                }
+
+        if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+            $req = array(
+                'customer_id'=>$customer_id,
+                'order_id'=>$orderid,
+                'amount'=>$data['wallet_amount'],
+                'type'=>'DEBIT',
+                'description'=>'Paid for Order ID: '.$orderid,
+            );
+            $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
+            $walletTransactionResponse = (array) $walletTransactionResponse;
+
+            if($walletTransactionResponse['status'] != 200){
+                return $walletTransactionResponse;
             }
 
-            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+            // Schedule Check orderfailure and refund wallet amount in that case....
+	        $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
+	        $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+	        $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
 
-                $req = array(
-                    'customer_id'=>$customer_id,
-                    'order_id'=>$orderid,
-                    'amount'=>$data['wallet_amount'],
-                    'type'=>'DEBIT',
-                    'description'=>'Paid for Order ID: '.$orderid,
-                );
-                $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                $walletTransactionResponse = (array) $walletTransactionResponse;
-
-                if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
-                }
-
-                // Schedule Check orderfailure and refund wallet amount in that case....
-                $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
-                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
-
-            }
-
-        }else{
-
-            if(isset($data['amount_finder'])){
-
-                if(isset($data['wallet']) && $data['wallet'] == true){
-
-                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id'],'paymentgateway',$offer_id,$customer_id);
-
-                    $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
-
-                    if(isset($data['cashback']) && $data['cashback'] == true){
-                        $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
-                    }
-
-                    $req = array(
-                        'customer_id'=>$customer_id,
-                        'order_id'=>$orderid,
-                        'amount'=>$wallet_amount,
-                        'type'=>'DEBIT',
-                        'description'=>'Paid for Order ID: '.$orderid,
-                    );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
-
-                    if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
-                    }
-
-                    // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
-                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
-                }
-            }
         }
 
         if(isset($data['address']) && $data['address'] != ''){
@@ -1555,12 +1470,10 @@ class OrderController extends \BaseController {
         if($countOrder > 0 || $countTrial > 0 || $countCapture > 0){
             array_set($data, 'repeat_customer', 'yes');
         }
-        Log::info("Here before create");
+
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
-        Log::info("Here after create".$order->_id);
         $orderstatus   		= 	$order->save();
-        Log::info("Here after save");
         $resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp order :)");
         return Response::json($resp);
 
@@ -1952,9 +1865,11 @@ class OrderController extends \BaseController {
 
     public function orderFailureAction($order_id){
 
-        $order = Order::where('_id',(int) $order_id)->where('status',"0")->first();
+        $data = Order::where('_id',(int) $order_id)
+            ->where('status',"0")
+            ->first();
 
-        if($order == ''){
+        if($data == ''){
             return Response::json(
                 array(
                     'status' => 200,
@@ -1965,25 +1880,25 @@ class OrderController extends \BaseController {
         }
 
         // Update order status to failed........
-        $order->update(['status' => '-1']);
+        $data->update(['status' => '-1']);
 
-        if($order['amount'] >= 15000){
-            $order_data = $order->toArray();
+        if($data['amount'] >= 15000){
+            $order_data = $data->toArray();
             $order_data['finder_vcc_email'] = "vinichellani@fitternity.com";
             $this->findermailer->orderFailureNotificationToLmd($order_data);
         }
 
         // Refund wallet amount if deducted........
-        if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) >= 0){
+        if(isset($data['wallet_amount']) && ((int) $data['wallet_amount']) >= 0){
             $req = array(
-                'customer_id'=>$order['customer_id'],
+                'customer_id'=>$data['customer_id'],
                 'order_id'=>$order_id,
-                'amount'=>$order['wallet_amount'],
+                'amount'=>$data['wallet_amount'],
                 'type'=>'REFUND',
                 'description'=>'Refund for Order ID: '.$order_id,
             );
 
-            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray())->getData();
+            $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
             $walletTransactionResponse = (array) $walletTransactionResponse;
 
             if($walletTransactionResponse['status'] != 200){
@@ -2007,6 +1922,7 @@ class OrderController extends \BaseController {
 
             );
         }
+
 
     }
 
@@ -2080,6 +1996,7 @@ class OrderController extends \BaseController {
     }
 
     public function getHash($data){
+
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
         $data['service_name'] = trim($data['service_name']);
@@ -2254,42 +2171,43 @@ class OrderController extends \BaseController {
                 }
             }
 
+        
             if(isset($data['amount_finder'])){
 
-                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode'],$offer_id);
+                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode'],$offer_id);
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
-
-                    $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
-
-                    if(isset($data['cashback']) && $data['cashback'] == true){
-                        $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
-                    }
-
+                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
                     $data['amount'] = $data['amount'] - $data['wallet_amount'];
+                }
 
-                    $req = array(
-                        'customer_id'=>$customer_id,
-                        'order_id'=>$order_id,
-                        'amount'=>$wallet_amount,
-                        'type'=>'DEBIT',
-                        'description'=>'Paid for Order ID: '.$order_id,
-                    );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
-
-                    if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
-                    }
-
-                    // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$order_id;
-                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
-
-                }elseif(isset($data['cashback']) && $data['cashback'] == true){
+                if(isset($data['cashback']) && $data['cashback'] == true){
                     $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
                 }
+            }
+
+            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+                $req = array(
+                    'customer_id'=>$customer_id,
+                    'order_id'=>$order_id,
+                    'amount'=>$data['wallet_amount'],
+                    'type'=>'DEBIT',
+                    'description'=>'Paid for Order ID: '.$order_id,
+                );
+                $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
+                $walletTransactionResponse = (array) $walletTransactionResponse;
+
+                if($walletTransactionResponse['status'] != 200){
+
+                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                }
+
+                // Schedule Check orderfailure and refund wallet amount in that case....
+                $url = Config::get('app.url').'/orderfailureaction/'.$order_id;
+                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
             }
 
             if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
@@ -2614,46 +2532,6 @@ class OrderController extends \BaseController {
         );
     }
 
-
-
-    public function getReversehash($data){
-
-        $data['env'] == 1;
-        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
-
-        $data['service_name'] = trim($data['service_name']);
-        $data['finder_name'] = trim($data['finder_name']);
-
-        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
-        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
-
-        $key = 'gtKFFx';
-        $salt = 'eCwWELxi';
-
-        if($env == "production"){
-            $key = 'l80gyM';
-            $salt = 'QBl78dtK';
-        }
-
-        $txnid = $data['txnid'];
-        $amount = $data['amount'].".00";
-        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
-        $firstname = $data['customer_name'];
-        $email = $data['customer_email'];
-        $udf1 = "";
-        $udf2 = "";
-        $udf3 = "";
-        $udf4 = "";
-        $udf5 = "";
-
-        $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
-//    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
-        
-        Log::info($payhash_str);
-        $data['reverse_hash'] = hash('sha512', $payhash_str);        
-        Log::info($data['reverse_hash']);
-        return $data;
-    }
 
 
 }

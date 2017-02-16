@@ -602,7 +602,9 @@ Class Utilities {
 
     public function setRedundant($order){
 
-        $allOrders = \Order::where('status','!=','1')
+        try {
+
+            $allOrders = \Order::where('status','!=','1')
                         ->whereIn('type',['memberships','healthytiffinmembership'])
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
@@ -614,16 +616,24 @@ Class Utilities {
                         ->orderBy('_id','desc')
                         ->get();
 
-        if(count($allOrders) > 0){
+            if(count($allOrder) > 0){
 
-            foreach ($allOrders as $orderData) {
+                foreach ($allOrders as $orderData) {
 
-                $orderData->redundant_order = "1";
-                $orderData->update();
+                    $orderData->redundant_order = "1";
+                    $orderData->update();
+                }
             }
-        }
 
-        return true;
+            return "Success";
+
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+            return "Error";
+            
+        }
 
     }
 
