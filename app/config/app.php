@@ -29,7 +29,6 @@ return array(
 	*/
 
 
-
 	'url' => 'http://apistage.fitn.in',
 	// 'url' => 'https://a1.fitternity.com',
 	//'url' => 'http://appstg.fitn.in',
@@ -659,6 +658,8 @@ return array(
                 "rate"=>14
             )
         )
+    'test_page_users' => ['dhruvsarawagi@fitternity.com'],
+    'test_vendors' => ['fitternity-test-page-bandra-west']
 
 
 );
