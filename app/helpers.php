@@ -2202,9 +2202,9 @@ Log::info($data);
         $udf4 = "";
         $udf5 = "";
 
-        if(($data['type'] == "booktrials" || $data['type'] == "workout-session") && $data['customer_source'] == "website"){
+        if(($data['type'] == "booktrials" || $data['type'] == "workout-session" || $data['type'] == "healthytiffintrail") && $data['customer_source'] == "website"){
             $udf1 = $service_name;
-            // $udf2 = $data['schedule_date'];
+            // $udf2 = $data['type'] == "healthytiffintrail" ? $data['schedule_date'] : "";
             // $udf3 = $data['schedule_slot'];
             $udf4 = $data['finder_id'];
         }

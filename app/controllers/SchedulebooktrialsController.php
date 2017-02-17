@@ -1302,9 +1302,9 @@ class SchedulebooktrialsController extends \BaseController {
         //         $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
         //         return  Response::json($resp, 400);
         //     }
-        $hash_verified = $this->$utilities->verifyOrder($data,$order);
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
                 if(!$hash_verified){
-                    $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                    $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
                 }
         if(Input::json()->get('status') == 'success') {
@@ -1408,9 +1408,9 @@ class SchedulebooktrialsController extends \BaseController {
         //         $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
         //         return  Response::json($resp, 400);
         //     }
-        $hash_verified = $this->$utilities->verifyOrder($data,$order);
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
                 if(!$hash_verified){
-                    $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                    $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 401);
                 }
         if(Input::json()->get('status') == 'success') {
@@ -1645,9 +1645,9 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-                $hash_verified = $this->$utilities->verifyOrder($data,$order);
+                $hash_verified = $this->utilities->verifyOrder($data,$order);
                 if(!$hash_verified){
-                    $resp 	= 	array('status' => 401, 'order' => $Oldorder, 'message' => "Trial not booked.");
+                    $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
                 }
             }
