@@ -2250,7 +2250,7 @@ Log::info($data);
         
         Log::info($payhash_str);
         $data['reverse_hash'] = hash('sha512', $payhash_str);        
-        Log::info($data['reverse_hash']);
+        Log::info($data['paytm_hash']);
         return $data;
     }
 }
