@@ -130,6 +130,8 @@ class TransactionController extends \BaseController {
 
         $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
 
+        $data['code'] = $data['order_id'].str_random(8);
+
         $cashbackRewardWallet =$this->getCashbackRewardWallet($data);
 
         if($cashbackRewardWallet['status'] != 200){
