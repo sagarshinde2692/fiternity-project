@@ -259,6 +259,14 @@ class TempsController extends \BaseController {
 
     function verifyOtpV1($temp_id,$otp,$email="",$name=""){
 
+        $customerToken = "";
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+            $decoded = decode_customer_token();
+            $customerToken = $jwt_token;
+        }
+
         $otp = (int)$otp;
         $temp = Temp::find($temp_id);
         $fitternity_no = $this->contact_us_customer_number;
@@ -266,7 +274,7 @@ class TempsController extends \BaseController {
         if($temp){
 
             $verified = false;
-            $customerToken = "";
+            
             $customer_data = null;
 
             if($temp->otp == $otp){
@@ -294,7 +302,10 @@ class TempsController extends \BaseController {
 
                 if($customer) {
 
-                    $customerToken = createCustomerToken((int)$customer->_id);
+                    if($customerToken != ""){
+
+                        $customerToken = createCustomerToken((int)$customer->_id);
+                    }
 
                     $customer_data = $customer->toArray();
 
@@ -331,7 +342,10 @@ class TempsController extends \BaseController {
 
                             if($customer) {
 
-                                $customerToken = createCustomerToken((int)$customer->_id);
+                                if($customerToken != ""){
+
+                                    $customerToken = createCustomerToken((int)$customer->_id);
+                                }
 
                                 $customer_data = $customer->toArray();
 
