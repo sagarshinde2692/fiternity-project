@@ -396,7 +396,7 @@ return array(
                 "bankName"=> "AXIS",
                 "bankTitle"=>3,
                 "pgId"=> "8",
-                "minval"=> 2500,
+                "minval"=> 500,
                 "rate"=>12
             ),
             array(
@@ -404,7 +404,7 @@ return array(
                 "bankName"=> "AXIS",
                 "bankTitle"=>6,
                 "pgId"=> "8",
-                "minval"=> 2500,
+                "minval"=> 500,
                 "rate"=>12
             ),
             array(
@@ -412,7 +412,7 @@ return array(
                 "bankName"=> "AXIS",
                 "bankTitle"=>9,
                 "pgId"=> "8",
-                "minval"=> 2500,
+                "minval"=> 500,
                 "rate"=>13
             ),
             array(
@@ -420,7 +420,7 @@ return array(
                 "bankName"=> "AXIS",
                 "bankTitle"=> 12,
                 "pgId"=> "8",
-                "minval"=> 2500,
+                "minval"=> 500,
                 "rate"=>13
             ),
             
@@ -456,22 +456,6 @@ return array(
                 "pgId"=> "8",
                 "minval"=> 3000,
                 "rate"=>13
-            ),
-            array(
-                "bankCode"=> "EMI12",
-                "bankName"=> "HDFC",
-                "bankTitle"=> 18,
-                "pgId"=> "8",
-                "minval"=> 3000,
-                "rate"=>15
-            ),
-            array(
-                "bankCode"=> "EMI12",
-                "bankName"=> "HDFC",
-                "bankTitle"=> 24,
-                "pgId"=> "8",
-                "minval"=> 3000,
-                "rate"=>15
             ),
             array(
                 "bankCode"=> "EMIHS03",
