@@ -3004,6 +3004,7 @@ class CustomerController extends \BaseController {
 						$emiData['emi'] ="";
 						$emiData['months'] = (string)$emi['bankTitle'];
 						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
 						$emiData['rate'] = (string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
 					array_push($response['emiData'], $emiData);
@@ -3020,12 +3021,14 @@ class CustomerController extends \BaseController {
 						$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
 						$emiData['months'] = (string)$emi['bankTitle'];
 						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
 						$emiData['rate'] = (string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
 						array_push($response['emiData'], $emiData);
 					}elseif($emi['bankName'] == $data['bankName']){
 						$emiData = array();
 						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
 						$emiData['minval'] = (string)$emi['minval'];
 						array_push($response['higerMinVal'], $emiData);
 						break;
@@ -3041,6 +3044,7 @@ class CustomerController extends \BaseController {
 					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
 					$emiData['months'] = (string)$emi['bankTitle'];
 					$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
 					$emiData['rate'] = (string)$emi['rate'];
 					$emiData['minval'] = (string)$emi['minval'];
 					array_push($response['emiData'], $emiData);
@@ -3050,6 +3054,7 @@ class CustomerController extends \BaseController {
 						array_push($bankNames, $emi['bankName']);
 						$emiData = array();
 						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
 						$emiData['minval'] = (string)$emi['minval'];
 						array_push($response['higerMinVal'], $emiData);
 					}
@@ -3064,6 +3069,7 @@ class CustomerController extends \BaseController {
 						$emiData['emi'] ="";
 						$emiData['months'] = (string)$emi['bankTitle'];
 						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
 						$emiData['rate'] = (string)(string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
 				array_push($response['emiData'], $emiData);
