@@ -2980,12 +2980,20 @@ class CustomerController extends \BaseController {
 
 	public function displayEmi(){
 		$bankNames=array();
+		$bankList= array();
 	 	$emiStruct = Config::get('app.emi_struct');
 		$data = Input::json()->all();
-		$response = array();
+		$response = array(
+			"bankList"=>array(),
+			"emiData"=>array(),
+			"higerMinVal" => array()
+			);
 		foreach ($emiStruct as $emi) {
-			if(isset($data['bank']) && !isset($data['amount'])){
-				if($emi['bankName'] == $data['bank']){
+			if(isset($data['bankName']) && !isset($data['amount'])){
+				if($emi['bankName'] == $data['bankName']){
+					if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
 					Log::info("inside1");
 					$emiData = array();
 						$emiData['total_amount'] =  "";
@@ -2994,29 +3002,35 @@ class CustomerController extends \BaseController {
 						$emiData['bankName'] = $emi['bankName'];
 						$emiData['rate'] = (string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
-					array_push($response, $emiData);
+					array_push($response['emiData'], $emiData);
 				}
 			
-			}elseif(isset($data['bank'])&&isset($data['amount'])){
-					if($emi['bankName'] == $data['bank'] && $data['amount']>=$emi['minval']){
+			}elseif(isset($data['bankName'])&&isset($data['amount'])){
+					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
 						Log::info("inside2");
 						$emiData = array();
+						if(!in_array($emi['bankName'], $bankList)){
+							array_push($bankList, $emi['bankName']);
+						}
 						$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
 						$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
 						$emiData['months'] = (string)$emi['bankTitle'];
 						$emiData['bankName'] = $emi['bankName'];
 						$emiData['rate'] = (string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response, $emiData);
-					}elseif($emi['bankName'] == $data['bank']){
+						array_push($response['emiData'], $emiData);
+					}elseif($emi['bankName'] == $data['bankName']){
 						$emiData = array();
 						$emiData['bankName'] = $emi['bankName'];
 						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response, $emiData);
+						array_push($response['higerMinVal'], $emiData);
 						break;
 					}
-			}elseif(isset($data['amount']) && !(isset($data['bank']))){
+			}elseif(isset($data['amount']) && !(isset($data['bankName']))){
 				if($data['amount']>=$emi['minval']){
+					if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
 					Log::info("inside3");
 					$emiData = array();
 					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
@@ -3025,7 +3039,7 @@ class CustomerController extends \BaseController {
 					$emiData['bankName'] = $emi['bankName'];
 					$emiData['rate'] = (string)$emi['rate'];
 					$emiData['minval'] = (string)$emi['minval'];
-					array_push($response, $emiData);
+					array_push($response['emiData'], $emiData);
 				}else{
 					$key = array_search($emi['bankName'], $bankNames);
 					if(!is_int($key)){
@@ -3033,10 +3047,13 @@ class CustomerController extends \BaseController {
 						$emiData = array();
 						$emiData['bankName'] = $emi['bankName'];
 						$emiData['minval'] = (string)$emi['minval'];
-						array_push($response, $emiData);
+						array_push($response['higerMinVal'], $emiData);
 					}
 				}
 			}else{
+				if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
 				Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
@@ -3045,10 +3062,10 @@ class CustomerController extends \BaseController {
 						$emiData['bankName'] = $emi['bankName'];
 						$emiData['rate'] = (string)(string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
-				array_push($response, $emiData);
+				array_push($response['emiData'], $emiData);
 			}
 		}
-
+		$response['bankList'] = $bankList;
 	    return $response;
 	}
 
