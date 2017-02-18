@@ -2203,7 +2203,7 @@ Log::info($data);
         $udf5 = "";
 
         if(($data['type'] == "booktrials" || $data['type'] == "workout-session" || $data['type'] == "healthytiffintrail") && $data['customer_source'] == "website"){
-            $udf1 = $service_name;
+            $udf1 = $data['service_name'];
             // $udf2 = $data['type'] == "healthytiffintrail" ? $data['schedule_date'] : "";
             // $udf3 = $data['schedule_slot'];
             $udf4 = $data['finder_id'];
