@@ -532,7 +532,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       $locationtags = Location::where('cities', $city)
@@ -568,7 +568,7 @@ class GlobalPushController extends \BaseController
 
     }
 
-    Log::info("done servicecategorylocations.......");
+    Log::info("done findercategorylocations.......");
 
   }
 
@@ -655,7 +655,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       foreach ($categorytags as $cat) {
@@ -679,7 +679,7 @@ class GlobalPushController extends \BaseController
           ->whereIn('cities',array($city))
           ->with('offerings')
           ->orderBy('ordering')
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
 
       foreach ($categorytag_offerings as $cat) {
@@ -814,7 +814,7 @@ class GlobalPushController extends \BaseController
           ->whereIn('cities',array($city))
           ->with('offerings')
           ->orderBy('ordering')
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           //->whereIn('_id',array(32))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
 
@@ -945,7 +945,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       foreach ($categorytags as $cat) {
@@ -972,7 +972,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       foreach ($categorytags as $cat) {
