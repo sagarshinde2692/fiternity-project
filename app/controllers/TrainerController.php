@@ -205,7 +205,7 @@ class TrainerController extends \BaseController {
 
 			$trainer = Trainer::find($data['trainer_id']);
 
-			$data['trainer_name'] = $trainer->name;
+			$data['trainer_name'] = ucwords($trainer->name);
 			$data['trainer_slug'] = $trainer->slug;
 			$data['trainer_email'] = $trainer->contact['email'];
 			$data['trainer_mobile'] = $trainer->contact['phone']['mobile'];
@@ -217,6 +217,8 @@ class TrainerController extends \BaseController {
         	$data['user_profile_link'] = Config::get('app.website')."/".$data['customer_email']."/profile";
         	$data['trainer_page_link'] = Config::get('app.website')."/".$data['trainer_slug'];
         	$data['healthy_tiffin_link'] = Config::get('app.website')."/mumbai/healthy-tiffins";
+        	$data['amount'] = $order->amount;
+        	$data['diet_plan_type'] = ucwords($order->service_name);
 
         	$trainerSlotBooking = new TrainerSlotBooking($data);
 	        $trainerSlotBooking->save();
@@ -263,10 +265,10 @@ class TrainerController extends \BaseController {
             if($trainerSlotBooking->call_for == "first"){
 
 	            $trainerSlotBooking['sms']['customer']['instantSlotBooking'] = $this->customersms->instantSlotBooking($trainerSlotBookingArray);
-	            //$trainerSlotBooking['email']['customer']['instantSlotBooking'] = $this->customermailer->instantSlotBooking($trainerSlotBookingArray);
+	            $trainerSlotBooking['email']['customer']['instantSlotBooking'] = $this->customermailer->instantSlotBooking($trainerSlotBookingArray);
 
 	            $trainerSlotBooking['sms']['trainer']['instantSlotBooking'] = $this->trainersms->instantSlotBooking($trainerSlotBookingArray);
-	            //$trainerSlotBooking['email']['trainer']['instantSlotBooking'] = $this->trainermailer->instantSlotBooking($trainerSlotBookingArray);
+	            $trainerSlotBooking['email']['trainer']['instantSlotBooking'] = $this->trainermailer->instantSlotBooking($trainerSlotBookingArray);
 	        }
 
 	        if($trainerSlotBooking->call_for == "review"){
