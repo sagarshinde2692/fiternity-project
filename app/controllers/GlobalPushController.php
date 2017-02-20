@@ -1021,6 +1021,8 @@ class GlobalPushController extends \BaseController
       $finders = Finder::active()->where('city_id', (int) $city)->lists('_id');
 
       $services = Service::active()
+          ->whereNotIn('servicecategory_id', array(111))
+          ->whereNotIn('servicesubcategory_id', array(112))
           ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
           ->where('city_id', (int) $city)
