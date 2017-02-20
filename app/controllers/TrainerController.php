@@ -223,13 +223,15 @@ class TrainerController extends \BaseController {
         	$trainerSlotBooking = new TrainerSlotBooking($data);
 	        $trainerSlotBooking->save();
 
-	        $order->trainer_id = (int)$data['trainer_id'];
-	        $order->trainer_name = $trainer->name;
-			$order->trainer_slug = $trainer->slug;
-			$order->trainer_email = $trainer->contact['email'];
-			$order->trainer_mobile = $trainer->contact['phone']['mobile'];
-			$order->trainer_landline = $trainer->contact['phone']['landline'];
-	        $order->update();
+	        if(!isset($order->trainer_id)){
+		        $order->trainer_id = (int)$data['trainer_id'];
+		        $order->trainer_name = $trainer->name;
+				$order->trainer_slug = $trainer->slug;
+				$order->trainer_email = $trainer->contact['email'];
+				$order->trainer_mobile = $trainer->contact['phone']['mobile'];
+				$order->trainer_landline = $trainer->contact['phone']['landline'];
+		        $order->update();
+		    }
 
         	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),'booktrial');
         	$trainerSlotBooking->update(array('redis_id'=>$redisid));
