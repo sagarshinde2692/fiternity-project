@@ -302,7 +302,7 @@ class TempsController extends \BaseController {
 
                 if($customer) {
 
-                    if($customerToken != ""){
+                    if($customerToken == ""){
 
                         $customerToken = createCustomerToken((int)$customer->_id);
                     }
@@ -342,7 +342,7 @@ class TempsController extends \BaseController {
 
                             if($customer) {
 
-                                if($customerToken != ""){
+                                if($customerToken == ""){
 
                                     $customerToken = createCustomerToken((int)$customer->_id);
                                 }
