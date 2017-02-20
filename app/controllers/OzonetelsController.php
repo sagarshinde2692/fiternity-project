@@ -863,17 +863,21 @@ class OzonetelsController extends \BaseController {
 			//send sms on call to customer
 			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
 
-				if($call_jump){
+				if(!isset($ozonetel_capture->ozonetel_capture_sms)){
 
-					if($ozonetel_capture->call_status != 'answered'){
-						$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+					if($call_jump){
+
+						if($ozonetel_capture->call_status != 'answered'){
+							$ozonetel_capture->ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+						}
+						
+					}else{
+
+						$ozonetel_capture->ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 					}
-					
-				}else{
 
-					$this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+					$ozonetel_capture->update();
 				}
-				
 			}
 
 			return $ozonetel_capture;
