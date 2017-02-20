@@ -1389,6 +1389,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			$finaltrialdays = array();
 			foreach($trialdays as $day){
 				if($day["key"] != ""){
+					$day["slug"] = $day["key"]."-open";
 					$day["key"] = $day["key"]." open";
 					array_push($finaltrialdays, $day);
 				}
