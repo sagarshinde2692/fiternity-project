@@ -107,8 +107,8 @@ class ServiceRankingController extends \BaseController {
                 $score = $this->generateRank($finderdocument);                
                 $serviceitems = Service::active()
                 ->where('finder_id',$finderdata['_id'])
-                ->whereNotIn('category', array(111))
-                ->whereNotIn('subcategory', array(112))
+                ->whereNotIn('servicecategory_id', array(111))
+                ->whereNotIn('servicesubcategory_id', array(112))
                 ->with('category')
                 ->with('subcategory')
                 ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
