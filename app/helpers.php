@@ -71,11 +71,11 @@ if(!function_exists('citywise_category')){
 
 			$cat['bangalore'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['delhi'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Marathon Training","slug" => "Marathon Training"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
+			$cat['delhi'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['gurgaon'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
+			$cat['gurgaon'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-			$cat['noida'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
+			$cat['noida'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
             $cat['all'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "CrossFit","slug" => "crossfit-gym"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Aerobics","slug" => "aerobics"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Dietitians And Nutritionists","slug" => "dietitians"),array("name" => "Swimming","slug" => "swimming-pools"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-supplement-stores"),array("name" => "Luxury Hotels","slug" => "luxury-hotels"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
@@ -2019,6 +2019,71 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
             }
 
+            if(!function_exists('createCustomerToken')){
+                function createCustomerToken($customer_id){
+                    
+                    $customer = Customer::find($customer_id);
+                    $customer = array_except($customer->toArray(), array('password'));
+
+                    $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
+                    $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
+                    $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
+                    $customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
+                    $customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+                    $customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                    $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                    $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
+                    $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                    $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
+
+                    $data = array(
+                                '_id'=>$customer['_id'],
+                                'name'=>$customer['name'],
+                                "email"=>$customer['email'],
+                                "picture"=>$customer['picture'],
+                                'facebook_id'=>$customer['facebook_id'],
+                                "identity"=>$customer['identity'],
+                                "address"=>$customer['address'],
+                                "contact_no"=>$customer['contact_no'],
+                                "location"=>$customer['location'],
+                                'gender'=>$customer['gender'],
+                                'extra'=>array(
+                                    'mob'=>$customer['extra']['mob'],
+                                    'location'=>$customer['extra']['location']
+                                )
+                            ); 
+
+                    $jwt_claim = array(
+                        "iat" => Config::get('app.jwt.iat'),
+                        "nbf" => Config::get('app.jwt.nbf'),
+                        "exp" => Config::get('app.jwt.exp'),
+                        "customer" => $data
+                        );
+                    
+                    $jwt_key = Config::get('app.jwt.key');
+                    $jwt_alg = Config::get('app.jwt.alg');
+
+                    $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+
+                    return $token;
+                }
+            }
+
+            if(!function_exists("genericGenerateOtp")){
+                function genericGenerateOtp($length = 4){
+                        $characters = '0123456789';
+                        $result = '';
+                        $charactersLength = strlen($characters);
+
+                        for ($p = 0; $p < $length; $p++)
+                        {
+                            $result .= $characters[rand(0, $charactersLength - 1)];
+                        }
+
+                        return $result;
+                }
+            }
+
             if (!function_exists('csv_to_array')) {
                 function csv_to_array($filename = '', $delimiter = ',')
                 {
@@ -2139,7 +2204,7 @@ if (!function_exists(('time_passed_check'))){
     {      
         $service_category_id = array(2,19,65);
 
-        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15 : 90 ;
+        return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
     }
 }
 
@@ -2185,8 +2250,8 @@ if (!function_exists(('newcategorymapping'))){
             case $category == "sport nutrition and supliment stores" || $category == "sport supliment stores" :
                 return $category == "sport nutrition and supliment stores" ? "sport supliment stores" : "sport nutrition and supliment stores";
                 break;
-            case $category == "pre natal yoga":
-                return $category == "pre-natal yoga";
+            case $category == "pre natal classes":
+                return $category == "pre-natal classes";
                 break;
             default: 
                 return $category;
@@ -2194,5 +2259,63 @@ if (!function_exists(('newcategorymapping'))){
         }
     }
 }
+
+if (!function_exists(('getReversehash'))){
+     function getReversehash($data){
+
+         Log::info($data);
+        $data['env'] = 1;
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+        if($data['txnid'] == ""){
+            if($data["customer_source"] == "android" || $data["customer_source"] == "ios"){
+                $data['txnid'] = "MFIT".$data["_id"];
+            }else{
+                $data['txnid'] = "FIT".$data["_id"];
+            }
+        }
+        
+        $txnid = $data['txnid'];
+        $amount = $data['amount'].".00";
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $productinfo = substr($productinfo,0,100);
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        if(($data['type'] == "booktrials" || $data['type'] == "workout-session") && $data['customer_source'] == "website"){
+            $udf1 = $service_name;
+            // $udf2 = $data['schedule_date'];
+            // $udf3 = $data['schedule_slot'];
+            $udf4 = $data['finder_id'];
+        }
+
+        $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+//    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        
+        Log::info($payhash_str);
+        $data['reverse_hash'] = hash('sha512', $payhash_str);        
+        Log::info($data['reverse_hash']);
+        return $data;
+    }
+}
+
 
 ?>
