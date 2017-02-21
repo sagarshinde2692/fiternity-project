@@ -219,7 +219,7 @@ class TrainerController extends \BaseController {
         	$data['dateunix'] = strtotime($date.$slot_explode[0]);
         	$data['datetime'] = date('Y-m-d H:i:00',$data['dateunix']);
         	$data['hidden'] = false;
-        	$data['user_profile_link'] = Config::get('app.website')."/".$data['customer_email']."/profile";
+        	$data['user_profile_link'] = Config::get('app.website')."/profile/".$data['customer_email'];
         	$data['trainer_page_link'] = Config::get('app.website')."/".$data['trainer_slug'];
         	$data['healthy_tiffin_link'] = Config::get('app.website')."/mumbai/healthy-tiffins";
         	$data['amount'] = $order->amount;
