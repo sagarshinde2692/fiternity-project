@@ -2,25 +2,19 @@
 
 use Config,Mail;
 
-Class FinderMailer extends Mailer {
+Class TrainerMailer extends Mailer {
 
+	public function instantSlotBooking ($data){
 
-	public function bookTrial ($data){
+		$label = 'DietPlan-InstantSlotBooking-Trainer';
 
-		$label = 'AutoTrial-Instant-Vendor';
-
-		if(isset($data['type']) && ($data['type'] == "vip_booktrials" || $data['type'] == "vip_booktrials_rewarded" || $data['type'] == "vip_booktrials_invited" )){
-
-			$label = 'VipTrial-Instant-Vendor';
-		}
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		if($data['trainer_email'] != ''){
+			$user_email 	=  	explode(',', $data['trainer_email']);
 		}else{
 			$user_email 	= 	array(Config::get('mail.to_mailus'));
 		}
 
-		$user_name = ucwords($data['finder_name']);
+		$user_name = ucwords($data['trainer_name']);
 		
 		$message_data 	= array(
 			'user_email' => $user_email,
@@ -30,79 +24,58 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function bookYogaDayTrial ($data){
+	public function before3HourSlotBooking ($data,$delay){
 
-		$label = 'YogaDay-AutoTrial-Instant-Vendor';
+		$label = 'DietPlan-Before3HourSlotBooking-Trainer';
 
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		if($data['trainer_email'] != ''){
+			$user_email 	=  	explode(',', $data['trainer_email']);
 		}else{
 			$user_email 	= 	array(Config::get('mail.to_mailus'));
 		}
 
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-	public function rescheduledBookTrial ($data){
-
-		$label = 'RescheduleTrial-Instant-Vendor';
+		$user_name = ucwords($data['trainer_name']);
 		
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  $user_name,
 		);
 
-		return $this->common($label,$data,$message_data);
+		return $this->common($label,$data,$message_data,$delay);
 	}
 
-	public function sendBookTrialDaliySummary ($data){
+	public function dietPlanAfter15DaysReviewSlotConfirm ($data){
 
-		$label = 'BookTrialDaliySummary-Vendor';
+		$label = 'DietPlan-After15DaysReview-SlotConfirm-Trainer';
+
+		if($data['trainer_email'] != ''){
+			$user_email 	=  	explode(',', $data['trainer_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['trainer_name']);
 		
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  $user_name,
 		);
 
 		return $this->common($label,$data,$message_data);
-
 	}
 
-	public function cancelBookTrial ($data){
+	public function dietPlanAfter15DaysFollowupSlotConfirm ($data){
+
+		$label = 'DietPlan-After15DaysFollowup-SlotConfirm-Trainer';
+
+		if($data['trainer_email'] != ''){
+			$user_email 	=  	explode(',', $data['trainer_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['trainer_name']);
 		
-		$label = 'Cancel-Trial-Vendor';
-		
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  $user_name,
@@ -111,405 +84,17 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function cancelBookTrialByVendor ($data){
-
-		$label = 'Vendor-trial-cancellation-email-to-vendor';
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-	public function VendorEmailOnProfileEditRequest ($data){
-
-		$label = 'Vendor-email-on-profile-edit-request';
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-//		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-//			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-	public function RMEmailOnProfileEditRequest ($data){
-
-		$label = 'RM-email-on-profile-edit-request';
-
-		$user_email = array('pranjalisalvi@fitternity.com','sailismart@fitternity.com','harshitagupta@fitternity.com');
-
-		$message_data 	= array(
-			'user_email' => $user_email
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-	public function sendPgOrderMail ($data){
-
-		$label = 'Order-PG-Vendor';
-
-		switch ($data['payment_mode']) {
-			case 'cod': $label = 'Order-COD-Vendor'; break;
-			case 'paymentgateway': $label = 'Order-PG-Vendor'; break;
-			case 'at the studio': $label = 'Order-At-Finder-Vendor'; break;
-			default: break;
-		}
-
-		switch ($data['type']) {
-			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Vendor';
-			default: break;
-		}
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-	public function sendCodOrderMail ($data){
-
-		$label = 'Order-COD-Vendor';
-		
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-
-
-	public function healthyTiffinTrial($data){
-
-		$label = 'HealthyTiffinTrial-Instant-Vendor';
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-    public function healthyTiffinTrialReminder($data){
-
-        $label = 'HealthyTiffinTrial-Reminder-Vendor';
-
-        if($data['finder_vcc_email'] != ''){
-            $user_email 	=  	explode(',', $data['finder_vcc_email']);
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-
-        $user_name = ucwords($data['finder_name']);
-
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-
-        return $this->common($label,$data,$message_data);
-    }
-
-
-
-    public function healthyTiffinMembership($data){
-
-		$label = 'HealthyTiffinMembership-Instant-Vendor';
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-
-    public function sendDaliySummaryHealthyTiffin ($data){
-
-        $label = 'BookTriaMembershiplDaliySummary-HealthyTiffinVendor';
-
-        if($data['finder_vcc_email'] != ''){
-            $user_email 	=  	explode(',', $data['finder_vcc_email']);
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-
-        $user_name = ucwords($data['finder_name']);
-
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-
-        return $this->common($label,$data,$message_data);
-
-    }
-
-    public function cleartrip ($data){
-
-        $label = 'Cleartrip-Vendor';
-
-        if($data['finder_vcc_email'] != ''){
-            $user_email 	=  	explode(',', $data['finder_vcc_email']);
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-
-        $user_name = ucwords($data['title']);
-
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-
-        return $this->common($label,$data,$message_data);
-
-    }
-
-    public function monsoonSale($data){
-
-        $label = 'MonsoonSale-Vendor';
-
-        if($data['finder_vcc_email'] != ''){
-            $user_email 	=  	explode(',', $data['finder_vcc_email']);
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-
-        $user_name = ucwords($data['title']);
-
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-
-        return $this->common($label,$data,$message_data);
-
-    }
-
-    public function firstTrial($data){
-
-        $label = 'First-Autotrial-Fitternity';
-
-        $user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com');
-
-        $user_name = 'Fitternity Team';
-
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-
-        return $this->common($label,$data,$message_data);
-
-    }
-
-    public function nutritionStore($data){
-
-        $label = 'NutritionStore-Vendor';
-
-        if($data['finder_vcc_email'] != ''){
-            $user_email 	=  	explode(',', $data['finder_vcc_email']);
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-
-        $user_name = ucwords($data['finder_name']);
-
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-
-        return $this->common($label,$data,$message_data);
-
-    }
-
-
-    public function acceptVendorMou ($data){
-        $label = 'AcceptVendorMou-Paid-Cash-Cheque-Vendor';
-        if($data['contract_type'] == 'premium'){
-            $label = 'AcceptVendorMou-Cos-Vendor';
-        }elseif(($data['contract_type'] == 'platinum' || $data['contract_type'] == 'launch plan' ) && $data['payment_mode'] == 'online'){
-            $label = 'AcceptVendorMou-Paid-Online-Vendor';
-        }
-        // var_dump($label);exit();
-
-        if($data['rm_email'] != ''){
-            $user_email 	=  	[$data['rm_email']];
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-        $user_name = ucwords($data['rm_name']);
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-        return $this->common($label,$data,$message_data);
-    }
-
-    public function cancelVendorMou ($data){
-        $label = 'CancelVendorMou-Vendor';
-        if($data['rm_email'] != ''){
-            $user_email 	=  	[$data['rm_email']];
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-        $user_name = ucwords($data['rm_name']);
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-        return $this->common($label,$data,$message_data);
-    }
-
-	public function rewardClaim($data){
-
-        $label = $data['label'];
-        
-        if($data['finder_vcc_email'] != ''){
-            $user_email 	=  	explode(',', $data['finder_vcc_email']);
-        }else{
-            $user_email 	= 	array(Config::get('mail.to_mailus'));
-        }
-
-        $user_name = ucwords($data['title']);
-
-        $message_data 	= array(
-            'user_email' => $user_email,
-            'user_name' =>  $user_name,
-        );
-
-        return $this->common($label,$data,$message_data);
-
-    }
-
-	public function manualTrialAuto ($data){
-
-		$label = 'ManualTrialAuto-Finder';
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' => $data['customer_name']
-		);
-
-		return $this->common($label,$data,$message_data);
-
-	}
-
-	public function orderUpdatePaymentAtVendor($data){
-
-		$label = 'OrderUpdatePaymentAtVendor-Vendor';
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
-	public function orderFailureNotificationToLmd($data){
-
-		$label = 'OrderFailureNotification-LMD';
-
-		if($data['finder_vcc_email'] != ''){
-			$user_email 	=  	explode(',', $data['finder_vcc_email']);
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['finder_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-	}
-
+	
 
 	public function common($label,$data,$message_data,$delay = 0){
 
-		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
+		/*if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
 			$delay = 0;
 			$data['label'] = $label;
 			$data['user_name'] = $message_data['user_name'];
 			$label = 'EmailFailureNotification-LMD';
 			$message_data['user_email'] = array('vinichellani@fitternity.com');
-		}
+		}*/
 
 		$template = \Template::where('label',$label)->first();
 

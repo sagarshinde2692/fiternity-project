@@ -2,7 +2,7 @@
 
 use Config;
 
-Class FinderSms extends VersionNextSms{
+Class TrainerSms extends VersionNextSms{
 
 	public function instantSlotBooking ($data){
 
@@ -13,13 +13,13 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function before3HourSlotBooking ($data){
+	public function before3HourSlotBooking ($data,$delay){
 
 		$to = explode(',', $data['trainer_mobile']);
 
 		$label = 'DietPlan-Before3HourSlotBooking-Trainer';
 
-		return $this->common($label,$to,$data);
+		return $this->common($label,$to,$data,$delay);
 	}
 
 	public function dietPlanAfter15DaysReviewSlotConfirm ($data){

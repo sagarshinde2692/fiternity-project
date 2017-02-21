@@ -35,12 +35,12 @@ class TrainerController extends \BaseController {
 
 	public function getAvailableSlots(){
 
-		$request = $_REQUEST;
+		$request = Input::json()->all();
 
 		$rules = array(
             'date'=>'required',
             'customer_id'=>'required',
-            'order_id'=>'order_id'
+            'order_id'=>'required'
         );
 
         $validator = Validator::make($request,$rules);
@@ -71,16 +71,19 @@ class TrainerController extends \BaseController {
 
 		$data = [];
 
+
+
 		if(!empty($schedules)){
 
-			
+			$schedules = $schedules->toArray();
+
 			$schedule_data = [];
 
 			foreach ($schedules as $schedule) {
 
 				$slots = [];
 
-				foreach ($schedule->slots as $duration) {
+				foreach ($schedule['slots'] as $duration) {
 
 					$slots[] = ['slot' => $duration['duration'],'available' => true];
 				}
@@ -88,7 +91,7 @@ class TrainerController extends \BaseController {
 				$unavailable_slots = 0;
 				$total_slots = count($schedule['slots']);
 
-				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule->trainer_id)->where('hidden',false)->where('date',$date)->where('day',$weekday)->orderBy('_id','desc')->get();
+				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('day',$weekday)->orderBy('_id','desc')->get();
 
 				if(!empty($trainerSlotBooking)){
 
@@ -116,6 +119,7 @@ class TrainerController extends \BaseController {
 					'total_slots'=>$total_slots,
 					'available_slots'=>$available_slots,
 					'unavailable_slots'=>$unavailable_slots,
+					'trainer_id'=>$schedule['trainer_id']
 				];
 			}
 
@@ -127,10 +131,11 @@ class TrainerController extends \BaseController {
 		$response['total_slots'] = (!empty($data)) ? $data[0]['total_slots'] : 0;
 		$response['available_slots'] = (!empty($data)) ? $data[0]['available_slots'] : 0;
 		$response['unavailable_slots'] = (!empty($data)) ? $data[0]['unavailable_slots'] : 0;
+		$response['trainer_id'] = (!empty($data)) ? $data[0]['trainer_id'] : "";
 		$response['weekday'] = $weekday;
 		$response['date'] = $date;
-		$resopnse['order_id'] = $order_id;
-		$resopnse['call_for'] = $call_for;	
+		$response['order_id'] = $order_id;
+		$response['call_for'] = $call_for;	
 
 		return Response::json($response,200);
 
@@ -255,53 +260,65 @@ class TrainerController extends \BaseController {
 
         try {
 
-            $trainer_slot_booking_id = (int)$data['trainer_slot_booking_id'];
+            $trainer_slot_booking_id = $data['trainer_slot_booking_id'];
 
             $trainerSlotBooking = TrainerSlotBooking::find($trainer_slot_booking_id);
 
-            $delayReminderTimeBefore3Hour = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $trainerSlotBooking->datetime)->subMinutes(60 * 3);
+            $delayReminderTimeBefore3Hour = \Carbon\Carbon::createFromFormat('Y-m-d H:i:00', $trainerSlotBooking->datetime)->subMinutes(60 * 3);
+
+            Log::info('date : '.$delayReminderTimeBefore3Hour);
 
             $trainerSlotBookingArray = $trainerSlotBooking->toArray();
 
+            $communication = [];
 
             if($trainerSlotBooking->call_for == "first"){
 
-	            $trainerSlotBooking['sms']['customer']['instantSlotBooking'] = $this->customersms->instantSlotBooking($trainerSlotBookingArray);
-	            $trainerSlotBooking['email']['customer']['instantSlotBooking'] = $this->customermailer->instantSlotBooking($trainerSlotBookingArray);
+	            $communication['sms']['customer']['instantSlotBooking'] = $this->customersms->instantSlotBooking($trainerSlotBookingArray);
+	            $communication['email']['customer']['instantSlotBooking'] = $this->customermailer->instantSlotBooking($trainerSlotBookingArray);
 
-	            $trainerSlotBooking['sms']['trainer']['instantSlotBooking'] = $this->trainersms->instantSlotBooking($trainerSlotBookingArray);
-	            $trainerSlotBooking['email']['trainer']['instantSlotBooking'] = $this->trainermailer->instantSlotBooking($trainerSlotBookingArray);
+	            $communication['sms']['trainer']['instantSlotBooking'] = $this->trainersms->instantSlotBooking($trainerSlotBookingArray);
+	            $communication['email']['trainer']['instantSlotBooking'] = $this->trainermailer->instantSlotBooking($trainerSlotBookingArray);
 	        }
 
 	        if($trainerSlotBooking->call_for == "review"){
 
-	            $trainerSlotBooking['sms']['customer']['dietPlanAfter15DaysReviewSlotConfirm'] = $this->customersms->dietPlanAfter15DaysReviewSlotConfirm($trainerSlotBookingArray);
+	            $communication['sms']['customer']['dietPlanAfter15DaysReviewSlotConfirm'] = $this->customersms->dietPlanAfter15DaysReviewSlotConfirm($trainerSlotBookingArray);
 	            //$trainerSlotBooking['email']['customer']['dietPlanAfter15DaysReviewSlotConfirm'] = $this->customermailer->dietPlanAfter15DaysReviewSlotConfirm($trainerSlotBookingArray);
 
-	            $trainerSlotBooking['sms']['trainer']['dietPlanAfter15DaysReviewSlotConfirm'] = $this->trainersms->dietPlanAfter15DaysReviewSlotConfirm($trainerSlotBookingArray);
+	            $communication['sms']['trainer']['dietPlanAfter15DaysReviewSlotConfirm'] = $this->trainersms->dietPlanAfter15DaysReviewSlotConfirm($trainerSlotBookingArray);
 	            //$trainerSlotBooking['email']['trainer']['dietPlanAfter15DaysReviewSlotConfirm'] = $this->trainermailer->dietPlanAfter15DaysReviewSlotConfirm($trainerSlotBookingArray);
 	        }
 
 	        if($trainerSlotBooking->call_for == "followup"){
 
-	            $trainerSlotBooking['sms']['customer']['dietPlanAfter15DaysFollowupSlotConfirm'] = $this->customersms->dietPlanAfter15DaysFollowupSlotConfirm($trainerSlotBookingArray);
+	            $communication['sms']['customer']['dietPlanAfter15DaysFollowupSlotConfirm'] = $this->customersms->dietPlanAfter15DaysFollowupSlotConfirm($trainerSlotBookingArray);
 	            //$trainerSlotBooking['email']['customer']['dietPlanAfter15DaysFollowupSlotConfirm'] = $this->customermailer->dietPlanAfter15DaysFollowupSlotConfirm($trainerSlotBookingArray);
 
-	            $trainerSlotBooking['sms']['trainer']['dietPlanAfter15DaysFollowupSlotConfirm'] = $this->trainersms->dietPlanAfter15DaysFollowupSlotConfirm($trainerSlotBookingArray);
+	            $communication['sms']['trainer']['dietPlanAfter15DaysFollowupSlotConfirm'] = $this->trainersms->dietPlanAfter15DaysFollowupSlotConfirm($trainerSlotBookingArray);
 	            //$trainerSlotBooking['email']['trainer']['dietPlanAfter15DaysFollowupSlotConfirm'] = $this->trainermailer->dietPlanAfter15DaysFollowupSlotConfirm($trainerSlotBookingArray);
 	        }
 
-            $trainerSlotBooking['sms']['customer']['before3HourSlotBooking'] = $this->customersms->before3HourSlotBooking($trainerSlotBookingArray,$delayReminderTimeBefore3Hour);
-            $trainerSlotBooking['sms']['trainer']['before3HourSlotBooking'] = $this->trainersms->before3HourSlotBooking($trainerSlotBookingArray,$delayReminderTimeBefore3Hour);
+            $communication['sms']['customer']['before3HourSlotBooking'] = $this->customersms->before3HourSlotBooking($trainerSlotBookingArray,$delayReminderTimeBefore3Hour);
+            $communication['sms']['trainer']['before3HourSlotBooking'] = $this->trainersms->before3HourSlotBooking($trainerSlotBookingArray,$delayReminderTimeBefore3Hour);
+
+            $trainerSlotBooking->communication = $communication;
+            $trainerSlotBooking->update();
+
+            return "sucess";
 
 
-            if($trainerSlotBooking->call_for == "first"){
+            /*if($trainerSlotBooking->call_for == "first"){
 
-            }
+            }*/
 
 
             
         } catch (Exception $e) {
+
+        	Log::error($e);
+
+        	return "error";
             
         }
 
