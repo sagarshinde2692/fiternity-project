@@ -102,7 +102,6 @@ class FindersController extends \BaseController {
 				->first();
 
 			unset($finderarr['ratecards']);
-			unset($finderarr['photos']);
 
 			$finder = null;	
 
