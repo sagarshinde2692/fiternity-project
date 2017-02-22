@@ -1206,6 +1206,7 @@ class TransactionController extends \BaseController {
         $data['city_id'] =  $order['city_id'];
         $data['city_name'] =  $order['city_name'];
         $data['city_slug'] = $order['city_slug'];
+        $data['offering_type'] = "cross_sell";
 
         $data['referal_order'] = $this->getOrderDetails($order);
 
