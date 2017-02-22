@@ -229,7 +229,7 @@ class TrainerController extends \BaseController {
 	        $trainerSlotBooking->save();
 
 	        if(!isset($order->trainer_id)){
-		        $order->trainer_id = (int)$data['trainer_id'];
+		        $order->trainer_id = $data['trainer_id'];
 		        $order->trainer_name = $trainer->name;
 				$order->trainer_slug = $trainer->slug;
 				$order->trainer_email = $trainer->contact['email'];
