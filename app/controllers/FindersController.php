@@ -97,9 +97,11 @@ class FindersController extends \BaseController {
 				->with('facilities')
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC')->limit(5);}))
-				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
+				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC')->limit(5);}))
+				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
+
+			unset($finderarr['ratecards']);
 
 			$finder = null;	
 
@@ -256,7 +258,7 @@ class FindersController extends \BaseController {
 					$finder['associate_finder'] = $associate_finder;
 				}
 
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -266,55 +268,55 @@ class FindersController extends \BaseController {
 
 			   //return $finderarr['services'];
 
-				if(count($finder['photos']) > 0 ){
-					$photoArr        =   [];
-					usort($finder['photos'], "sort_by_order");
-					foreach ($finder['photos'] as $photo) {
-						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
-						$photoObj                   =   array_except($photo,['servicetags']);
-						$photoObj['servicetags']    =   $servicetags;
-						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
-						array_push($photoArr, $photoObj);
-					}
-					array_set($finder, 'photos', $photoArr);
-//                    print_pretty($photoArr);exit;
+// 				if(count($finder['photos']) > 0 ){
+// 					$photoArr        =   [];
+// 					usort($finder['photos'], "sort_by_order");
+// 					foreach ($finder['photos'] as $photo) {
+// 						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
+// 						$photoObj                   =   array_except($photo,['servicetags']);
+// 						$photoObj['servicetags']    =   $servicetags;
+// 						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
+// 						array_push($photoArr, $photoObj);
+// 					}
+// 					array_set($finder, 'photos', $photoArr);
+// //                    print_pretty($photoArr);exit;
 
-					$service_tags_photo_arr             =   [];
-					$info_tags_photo_arr                =   [];
+// 					$service_tags_photo_arr             =   [];
+// 					$info_tags_photo_arr                =   [];
 
-					if(count($photoArr) > 0 ) {
-						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
-						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
+// 					if(count($photoArr) > 0 ) {
+// 						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
+// 						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
 
-						foreach ($unique_service_tags_arr as $unique_service_tags) {
-							$service_tags_photoObj = [];
-							$service_tags_photoObj['name'] = $unique_service_tags;
-							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
-								if (in_array($unique_service_tags, $value['servicetags'])) {
-									return $value;
-								}
-							});
-							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
-							array_push($service_tags_photo_arr, $service_tags_photoObj);
-						}
+// 						foreach ($unique_service_tags_arr as $unique_service_tags) {
+// 							$service_tags_photoObj = [];
+// 							$service_tags_photoObj['name'] = $unique_service_tags;
+// 							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
+// 								if (in_array($unique_service_tags, $value['servicetags'])) {
+// 									return $value;
+// 								}
+// 							});
+// 							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
+// 							array_push($service_tags_photo_arr, $service_tags_photoObj);
+// 						}
 
-						foreach ($unique_info_tags_arr as $unique_info_tags) {
-							$info_tags_photoObj = [];
-							$info_tags_photoObj['name'] = $unique_info_tags;
-							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
-								if (in_array($unique_info_tags, $value['tags'])) {
-									return $value;
-								}
-							});
-							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
-							array_push($info_tags_photo_arr, $info_tags_photoObj);
-						}
-					}
+// 						foreach ($unique_info_tags_arr as $unique_info_tags) {
+// 							$info_tags_photoObj = [];
+// 							$info_tags_photoObj['name'] = $unique_info_tags;
+// 							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
+// 								if (in_array($unique_info_tags, $value['tags'])) {
+// 									return $value;
+// 								}
+// 							});
+// 							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
+// 							array_push($info_tags_photo_arr, $info_tags_photoObj);
+// 						}
+// 					}
 
-					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
-					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
+// 					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
+// 					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
 
-				}
+// 				}
 
 
 				if(count($finder['services']) > 0 ){
@@ -421,20 +423,22 @@ class FindersController extends \BaseController {
 					->active()
 					->where("_id","!=",(int)$finderarr['_id'])
 					->where('city_id',(int)$finderarr['city_id'])
-					->with('offerings')
+					// ->with('offerings')
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 					->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-					->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage']);
+					->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+					->take(5)
+					->get(['_id','title','slug','brand_id','location_id','city_id','average_rating','finder_coverimage','coverimage', 'category_id']);
 
-					if(count($brandFinder) > 0){
+					// if(count($brandFinder) > 0){
 
-						$brandFinder = $brandFinder->toArray();
+					// 	$brandFinder = $brandFinder->toArray();
 					
-						foreach($brandFinder as $key => $finder1){
-							array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
-						}
+					// 	foreach($brandFinder as $key => $finder1){
+					// 		array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+					// 	}
 
-					}
+					// }
 
 					$finderarr['brand']['brand_detail'] = $brand;
 					$finderarr['brand']['finder_detail'] = $brandFinder;
