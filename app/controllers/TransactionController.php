@@ -932,6 +932,7 @@ class TransactionController extends \BaseController {
         $finder = $finder->toArray();
 
         $finder_city                       =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+        $finder_city_slug                  =    (isset($finder['city']['slug']) && $finder['city']['slug'] != '') ? $finder['city']['slug'] : "";
         $finder_location                   =    (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
         $finder_address                    =    (isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $this->stripTags($finder['contact']['address']) : "";
         $finder_vcc_email                  =    (isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
@@ -966,6 +967,8 @@ class TransactionController extends \BaseController {
         $data['finder_location_id'] =  $finder_location_id;
         $data['finder_id'] =  $finder_id;
         $data['city_id'] =  $city_id;
+        $data['city_name'] = $finder_city;
+        $data['city_slug'] = $finder_city_slug;
 
         return array('status' => 200,'data' =>$data);
     }
@@ -1166,6 +1169,29 @@ class TransactionController extends \BaseController {
         return array('status' => 200,'amount' => $amount);
     }
 
+    public function getOrderDetails($order){
+
+        //$order = Order::find((int)$order_id);
+
+        $referal_order = [];
+
+        $referal_order['order_id'] =  $order['order_id'];
+        $referal_order['city_id'] =  $order['city_id'];
+        $referal_order['city_name'] =  $order['city_name'];
+        $referal_order['city_slug'] = $order['city_slug'];
+        $referal_order['finder_id'] =  $order['finder_id'];
+        $referal_order['finder_name'] =  $order['finder_name'];
+        $referal_order['finder_slug'] =  $order['finder_slug'];
+        $referal_order['ratecard_id'] =  (isset($order['ratecard_id']) && $order['ratecard_id'] != '') ? $order['ratecard_id'] : "";
+        $referal_order['service_id'] =  $order['service_id'];
+        $referal_order['service_name'] =  $order['service_name'];
+        $referal_order['service_duration'] =  $order['service_duration'];
+
+        return $referal_order;
+
+
+    }
+
     public function generaterDietPlanOrder($order){
 
         $data = [];
@@ -1177,6 +1203,11 @@ class TransactionController extends \BaseController {
         $data['customer_email'] = $order['customer_email'];
         $data['customer_phone'] = $order['customer_phone'];
         $data['customer_source'] = $order['customer_source'];
+        $data['city_id'] =  $order['city_id'];
+        $data['city_name'] =  $order['city_name'];
+        $data['city_slug'] = $order['city_slug'];
+
+        $data['referal_order'] = $this->getOrderDetails($order);
 
         array_set($data, 'status', '1');
         array_set($data, 'order_action', 'bought');
