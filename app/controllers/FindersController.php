@@ -268,17 +268,17 @@ class FindersController extends \BaseController {
 
 			   //return $finderarr['services'];
 
-// 				if(count($finder['photos']) > 0 ){
-// 					$photoArr        =   [];
-// 					usort($finder['photos'], "sort_by_order");
-// 					foreach ($finder['photos'] as $photo) {
-// 						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
-// 						$photoObj                   =   array_except($photo,['servicetags']);
-// 						$photoObj['servicetags']    =   $servicetags;
-// 						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
-// 						array_push($photoArr, $photoObj);
-// 					}
-// 					array_set($finder, 'photos', $photoArr);
+				if(count($finder['photos']) > 0 ){
+					$photoArr        =   [];
+					usort($finder['photos'], "sort_by_order");
+					foreach ($finder['photos'] as $photo) {
+						$servicetags                =   (isset($photo['servicetags']) && count($photo['servicetags']) > 0) ? Service::whereIn('_id',$photo['servicetags'])->lists('name') : [];
+						$photoObj                   =   array_except($photo,['servicetags']);
+						$photoObj['servicetags']    =   $servicetags;
+						$photoObj['tags']              =  (isset($photo['tags']) && count($photo['tags']) > 0) ? $photo['tags'] : []; 
+						array_push($photoArr, $photoObj);
+					}
+					array_set($finder, 'photos', $photoArr);
 // //                    print_pretty($photoArr);exit;
 
 // 					$service_tags_photo_arr             =   [];
@@ -316,7 +316,7 @@ class FindersController extends \BaseController {
 // 					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
 // 					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
 
-// 				}
+				}
 
 
 				if(count($finder['services']) > 0 ){
