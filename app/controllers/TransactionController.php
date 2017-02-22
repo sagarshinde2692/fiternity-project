@@ -923,7 +923,7 @@ class TransactionController extends \BaseController {
 
         $data = array();
 
-        $finder                            =   Finder::active()->with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find((int)$finder_id);
+        $finder                            =   Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find((int)$finder_id);
 
         if(!$finder){
             return array('status' => 404,'message' =>'Vendor does not exists');
@@ -948,6 +948,8 @@ class TransactionController extends \BaseController {
         $finder_name                       =    (isset($finder['title']) && $finder['title'] != '') ? ucwords($finder['title']) : "";
         $finder_location_id                =    (isset($finder['location']['_id']) && $finder['location']['_id'] != '') ? $finder['location']['_id'] : "";
         $city_id                           =    $finder['city_id'];
+        $finder_category                       =    (isset($finder['category']['name']) && $finder['category']['name'] != '') ? $finder['category']['name'] : "";
+        $finder_category_slug                  =    (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
 
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
@@ -969,6 +971,8 @@ class TransactionController extends \BaseController {
         $data['city_id'] =  $city_id;
         $data['city_name'] = $finder_city;
         $data['city_slug'] = $finder_city_slug;
+        $data['category_name'] = $finder_category;
+        $data['category_slug'] = $finder_category_slug;
 
         return array('status' => 200,'data' =>$data);
     }
@@ -1186,6 +1190,12 @@ class TransactionController extends \BaseController {
         $referal_order['service_id'] =  $order['service_id'];
         $referal_order['service_name'] =  $order['service_name'];
         $referal_order['service_duration'] =  $order['service_duration'];
+        $referal_order['city_id'] =  $order['city_id'];
+        $referal_order['city_name'] =  $order['city_name'];
+        $referal_order['city_slug'] = $order['city_slug'];
+        $referal_order['category_id'] =  $order['finder_category_id'];
+        $referal_order['category_name'] =  $order['category_name'];
+        $referal_order['category_slug'] = $order['category_slug'];
 
         return $referal_order;
 

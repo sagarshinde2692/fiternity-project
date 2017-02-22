@@ -180,7 +180,7 @@ abstract Class Mailer {
 
 	public function sendDbToWorker($to = '',$email_template, $message_data = [], $label = 'label', $delay = 0){
 
-		//return true;
+		return true;
 
 		$sidekiq = new Sidekiq();
 
