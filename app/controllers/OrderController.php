@@ -146,33 +146,10 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
-        if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-            $hash_verified = true;
-        }else{
 
-            // If amount is zero check for wallet amount
-            if($data['amount'] == 0){
-                if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
-                    $hash_verified = true;
-                }else{
-                    $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
-                    return Response::json($resp,401);
-                }
-            }else{
-                $hashreverse = getReversehash($order);
-                Log::info($data["verify_hash"]);
-                Log::info($hashreverse['reverse_hash']);
-                if($data["verify_hash"] == $hashreverse['reverse_hash']){
-                    $hash_verified = true;
-                }else{
-                    $hash_verified = false;
-                }
-            }
-        }
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
         
         if($data['status'] == 'success' && $hash_verified){
-
-
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
@@ -403,7 +380,7 @@ class OrderController extends \BaseController {
                 
             }
 
-            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+            /*if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
 
                 $preferred_starting_date = $order->preferred_starting_date;
                 $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
@@ -431,7 +408,7 @@ class OrderController extends \BaseController {
 
                 $order->update();
 
-            }
+            }*/
 
             $this->utilities->setRedundant($order);
 

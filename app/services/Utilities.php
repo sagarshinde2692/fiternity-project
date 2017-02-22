@@ -625,16 +625,60 @@ Class Utilities {
                 }
             }
 
-            return "Success";
+
+            return "success";
 
         } catch (Exception $e) {
 
             Log::error($e);
 
-            return "Error";
+            return "error";
             
         }
 
+    }
+
+
+
+    public function verifyOrder($data,$order){
+        if((isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin") || $order->pg_type == "PAYTM"){
+            if($order->pg_type == "PAYTM"){
+                $hashreverse = getpayTMhash($order);
+                if($data["paytm_hash"] == $hashreverse['reverse_hash']){
+                    $hash_verified = true;
+                }else{
+                    $hash_verified = false;
+                }
+            }
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                $hash_verified = true;
+            }
+        }else{
+            // If amount is zero check for wallet amount
+            if($data['amount'] == 0){
+                if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
+                    $hash_verified = true;
+                }else{
+                    $hash_verified = false;
+                    // $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
+                    // return Response::json($resp,401);
+                }
+            }else{
+                $hashreverse = getReversehash($order);
+                Log::info($data["verify_hash"]);
+                Log::info($hashreverse['reverse_hash']);
+                if($data["verify_hash"] == $hashreverse['reverse_hash']){
+                    $hash_verified = true;
+                }else{
+                    $hash_verified = false;
+                }
+            }
+        }
+        if(!$hash_verified){
+            $order["hash_verified"] = false;
+            $order->update();
+        }
+        return $hash_verified;
     }
 
 }

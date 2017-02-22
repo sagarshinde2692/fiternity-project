@@ -2265,6 +2265,7 @@ if (!function_exists(('getReversehash'))){
 
          Log::info($data);
         $data['env'] = 1;
+
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
         $data['service_name'] = trim($data['service_name']);
@@ -2300,9 +2301,9 @@ if (!function_exists(('getReversehash'))){
         $udf4 = "";
         $udf5 = "";
 
-        if(($data['type'] == "booktrials" || $data['type'] == "workout-session") && $data['customer_source'] == "website"){
-            $udf1 = $service_name;
-            // $udf2 = $data['schedule_date'];
+        if(($data['type'] == "booktrials" || $data['type'] == "workout-session" || $data['type'] == "healthytiffintrail") && $data['customer_source'] == "website"){
+            $udf1 = $data['service_name'];
+            // $udf2 = $data['type'] == "healthytiffintrail" ? $data['schedule_date'] : "";
             // $udf3 = $data['schedule_slot'];
             $udf4 = $data['finder_id'];
         }
@@ -2316,6 +2317,43 @@ if (!function_exists(('getReversehash'))){
         return $data;
     }
 }
+
+
+
+
+if (!function_exists(('getpayTMhash'))){
+     function getpayTMhash($data){
+Log::info($data);
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
+
+        $key = 'fitterKEY';
+        $salt = '1086fit';
+        
+        $txnid = $data['txnid'];
+        $amount = $data['amount'].".00";
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $salt.'|success||||||'.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+//    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        
+        Log::info($payhash_str);
+        $data['reverse_hash'] = hash('sha512', $payhash_str);        
+        Log::info($data['paytm_hash']);
+        return $data;
+    }
+}
+
 
 
 ?>
