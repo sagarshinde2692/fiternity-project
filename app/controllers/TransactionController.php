@@ -268,16 +268,16 @@ class TransactionController extends \BaseController {
         $order      =   Order::findOrFail($order_id);
 
         //If Already Status Successfull Just Send Response
-        /*if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+        if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
 
-            $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "Already Status Successfull");
+            $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
             return Response::json($resp,401);
 
         }elseif(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && isset($order->status) && $order->status != '1' && isset($order->order_action) && $order->order_action != 'bought'){
 
-            $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "Status should be Bought");
+            $resp   =   array('status' => 401, 'statustxt' => 'error',"message" => "Status should be Bought");
             return Response::json($resp,401);
-        }*/
+        }
 
         $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
