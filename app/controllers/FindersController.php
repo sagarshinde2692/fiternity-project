@@ -132,6 +132,7 @@ class FindersController extends \BaseController {
 		
 
 			unset($finderarr['ratecards']);
+			unset($finderarr['photos']);
 
 			$finder = null;	
 
