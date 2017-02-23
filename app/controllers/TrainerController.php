@@ -235,6 +235,8 @@ class TrainerController extends \BaseController {
         	$data['healthy_tiffin_link'] = Config::get('app.website')."/mumbai/healthy-tiffins";
         	$data['amount'] = $order->amount;
         	$data['diet_plan_type'] = ucwords($order->service_name);
+        	$data['completed'] = 'no';
+        	$data['diet_plan_sent'] = 'no';
 
         	$trainerSlotBooking = new TrainerSlotBooking($data);
 	        $trainerSlotBooking->save();
