@@ -1933,7 +1933,7 @@ class FindersController extends \BaseController {
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
-						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
+						// if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
 							if($rateval['special_price'] > 0){
 								$app_discount_amount = intval($rateval['special_price'] * ($this->appOfferDiscount/100));
 								$rateval['special_price'] = $rateval['special_price'] - $app_discount_amount;
@@ -1942,7 +1942,7 @@ class FindersController extends \BaseController {
 								$rateval['price'] = $rateval['price'] - $app_discount_amount;
 							}
 							array_push($ratecardArr, $rateval);
-						}
+						// }
 					//}
 				}
 
@@ -2173,6 +2173,7 @@ class FindersController extends \BaseController {
 				array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
 				array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
 
+
 				try {
 					if(isset($finder['info']['service']) && $finder['info']['service'] != ""){
 
@@ -2286,6 +2287,7 @@ class FindersController extends \BaseController {
 				$data['status']                         =       200;
 				$data['finder']                         =       $finder;
 
+
 				$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 				if($finder){
@@ -2302,7 +2304,6 @@ class FindersController extends \BaseController {
 
 						$data['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}
-
 
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
 
