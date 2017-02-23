@@ -184,7 +184,7 @@ class TrainerController extends \BaseController {
 
         	if(isset($order->duration_completed)){
 
-        		if($order->duration >= $order->duration_completed){
+        		if($order->duration_completed >= $order->duration){
         			return Response::json(array('status' => 404,'message' => 'Your sessions are completed'),404);
         		}
 
