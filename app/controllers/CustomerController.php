@@ -2978,4 +2978,25 @@ class CustomerController extends \BaseController {
 	}
 
 
+
+
+	// Diet plan Listing
+	public function listMyDietPlan(){
+		$jwt_token  = Request::header('Authorization');
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		$data['email'] = $decoded->customer->email;
+		$rules = [
+		'email' => 'required|email|max:255'
+		];
+		// return $data['email'];
+		$validator = Validator::make($data, $rules);
+		$current_diet_plan = Order::where('customer_email',$data['email'])->where('type','diet_plan')->orderBy('_id','desc')->first();
+		$resp = array("current_diet_plan",$current_diet_plan);
+		return Response::json($resp,200);
+	}
+
+
 }
