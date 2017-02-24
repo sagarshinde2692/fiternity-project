@@ -1990,7 +1990,7 @@ class FindersController extends \BaseController {
 					/*if($category->_id == 42){
 						array_push($ratecardArr, $rateval);
 					}else{*/
-						// if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
+						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
 							if($rateval['special_price'] > 0){
 								$app_discount_amount = intval($rateval['special_price'] * ($this->appOfferDiscount/100));
 								$rateval['special_price'] = $rateval['special_price'] - $app_discount_amount;
@@ -1999,7 +1999,7 @@ class FindersController extends \BaseController {
 								$rateval['price'] = $rateval['price'] - $app_discount_amount;
 							}
 							array_push($ratecardArr, $rateval);
-						// }
+						}
 					//}
 				}
 
