@@ -28,13 +28,13 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
+	// 'url' => 'https://a1.fitternity.com',
 	//'url' => 'http://appstg.fitn.in',
-	//'url' => 'http://fitapi.com',
+	'url' => 'http://fitapi.com',
 
 
-    'website' => 'https://www.fitternity.com',
-    //'website' => 'http://appstg.fitn.in:8555',
+    // 'website' => 'https://www.fitternity.com',
+    'website' => 'http://appstg.fitn.in:8555',
 
 
 	'app' =>array(

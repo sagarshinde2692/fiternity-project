@@ -1070,12 +1070,17 @@ class MigrationReverseController extends \BaseController {
             $insertData['created_at'] = $data['created_at'];
             $insertData['updated_at'] = $data['updated_at'];
 
+
             if(isset($data['weight']) && $data['weight'] != ""){
                 $insertData['weight'] = (int)$data['weight'];
             }
 
             if(isset($data['weight_type']) && $data['weight_type'] != ""){
                 $insertData['weight_type'] = $data['weight_type'];
+            }
+
+            if(isset($data['flags'])){
+                $insertData['flags'] = $data['flags'];
             }
 
 
