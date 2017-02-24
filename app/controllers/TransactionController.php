@@ -1218,6 +1218,7 @@ class TransactionController extends \BaseController {
         $data['city_slug'] = $order['city_slug'];
         $data['offering_type'] = "cross_sell";
         $data['renewal'] = "no";
+        $data['final_assessment'] = "no";
 
         $data['referal_order'] = $this->getOrderDetails($order);
 
