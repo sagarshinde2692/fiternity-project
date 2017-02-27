@@ -180,6 +180,19 @@ class TrainerController extends \BaseController {
         	$slot_explode = explode("-",$data['slot']);
         	$order_id = (int)$data['order_id'];
 
+        	$order = Order::find($order_id);
+
+        	if(isset($order->duration_completed)){
+
+        		if($order->duration_completed >= $order->duration){
+        			return Response::json(array('status' => 404,'message' => 'Your sessions are completed'),404);
+        		}
+
+        		$order->duration_completed = $order->duration_completed + 1;
+        	}else{
+        		$order->duration_completed = 1;
+        	}
+
         	$oldTrainerSlotBooking = TrainerSlotBooking::where('hidden',false)
 				->where('order_id',$data['order_id'])
 				->first();
@@ -187,8 +200,6 @@ class TrainerController extends \BaseController {
 			if($oldTrainerSlotBooking){
 				$data['call_for'] = "followup";
 			}
-
-			$order = Order::find($order_id);
 
 	        if(isset($order->dietplan_end_date) && $order->dietplan_end_date != "" && strtotime($order->dietplan_end_date) < time()){
 	        	$data['call_for'] = "review";
@@ -224,6 +235,8 @@ class TrainerController extends \BaseController {
         	$data['healthy_tiffin_link'] = Config::get('app.website')."/mumbai/healthy-tiffins";
         	$data['amount'] = $order->amount;
         	$data['diet_plan_type'] = ucwords($order->service_name);
+        	$data['completed'] = 'no';
+        	$data['diet_plan_sent'] = 'no';
 
         	$trainerSlotBooking = new TrainerSlotBooking($data);
 	        $trainerSlotBooking->save();
@@ -235,8 +248,9 @@ class TrainerController extends \BaseController {
 				$order->trainer_email = $trainer->contact['email'];
 				$order->trainer_mobile = $trainer->contact['phone']['mobile'];
 				$order->trainer_landline = $trainer->contact['phone']['landline'];
-		        $order->update();
 		    }
+
+		    $order->update();
 
         	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),'booktrial');
         	$trainerSlotBooking->update(array('redis_id'=>$redisid));
