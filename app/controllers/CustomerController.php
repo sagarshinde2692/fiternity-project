@@ -2994,7 +2994,7 @@ class CustomerController extends \BaseController {
 		// return $data['email'];
 		$validator = Validator::make($data, $rules);
 		$current_diet_plan = Order::where('customer_email',$data['email'])->where('type','diet_plan')->orderBy('_id','desc')->first();
-		$resp = array("current_diet_plan",$current_diet_plan);
+		$resp = array("current_diet_plan"=>$current_diet_plan);
 		return Response::json($resp,200);
 	}
 

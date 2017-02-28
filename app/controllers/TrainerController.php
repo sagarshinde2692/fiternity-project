@@ -73,6 +73,10 @@ class TrainerController extends \BaseController {
 
 
 
+		$slots = [];
+		$allstarthours = [];
+		$unavailable_slots = 0;
+		$total_slots = 0;
 		if(!empty($schedules)){
 
 			$schedules = $schedules->toArray();
@@ -81,21 +85,20 @@ class TrainerController extends \BaseController {
 
 			foreach ($schedules as $schedule) {
 
-				$slots = [];
 
 				foreach ($schedule['slots'] as $duration) {
 
-					$slots[] = ['slot' => $duration['duration'],'available' => true,'trainer_id'=>$schedule['trainer_id']];
+					$slots[] = ['slot' => $duration['duration'],'available' => true,'trainer_id'=>$schedule['trainer_id'],'start_hour' => $duration['start_time']['hours']];
+					$allstarthours[] = [$duration['start_time']['hours']];
 				}
 
-				$unavailable_slots = 0;
-				$total_slots = count($schedule['slots']);
+				$total_slots += count($schedule['slots']);
 
 				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('day',$weekday)->orderBy('_id','desc')->get();
 
 				if(!empty($trainerSlotBooking)){
 
-					$unavailable_slots = count($trainerSlotBooking);
+					$unavailable_slots += count($trainerSlotBooking);
 
 					foreach ($trainerSlotBooking as $value) {
 
@@ -113,7 +116,11 @@ class TrainerController extends \BaseController {
 				$available_slots = $total_slots - $unavailable_slots;
 
 				$available[] =  $available_slots;
-
+				usort($slots, function($a, $b) { //Sort the array using a user defined function
+					// print_r($a);
+					return $a['start_hour'] > $b['start_hour'];
+				});
+				// $slots = sorting_array($slots, "start_hour", $allstarthours, true);
 				$data[] = [
 					'slots'=>$slots,
 					'total_slots'=>$total_slots,
@@ -131,7 +138,7 @@ class TrainerController extends \BaseController {
 		$response['total_slots'] = (!empty($data)) ? $data[0]['total_slots'] : 0;
 		$response['available_slots'] = (!empty($data)) ? $data[0]['available_slots'] : 0;
 		$response['unavailable_slots'] = (!empty($data)) ? $data[0]['unavailable_slots'] : 0;
-		$response['trainer_id'] = (!empty($data)) ? $data[0]['trainer_id'] : "";
+		// $response['trainer_id'] = (!empty($data)) ? $data[0]['trainer_id'] : "";
 		$response['weekday'] = $weekday;
 		$response['date'] = $date;
 		$response['order_id'] = $order_id;
