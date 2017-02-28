@@ -85,7 +85,7 @@ class TrainerController extends \BaseController {
 
 				foreach ($schedule['slots'] as $duration) {
 
-					$slots[] = ['slot' => $duration['duration'],'available' => true];
+					$slots[] = ['slot' => $duration['duration'],'available' => true,'trainer_id'=>$schedule['trainer_id']];
 				}
 
 				$unavailable_slots = 0;
