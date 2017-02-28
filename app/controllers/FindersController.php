@@ -357,7 +357,20 @@ class FindersController extends \BaseController {
 
 						if(count($service['serviceratecard']) > 0){
 
-							foreach ($service['serviceratecard'] as $rateval){
+							foreach ($service['serviceratecard'] as $ratekey => $rateval){
+
+								if(isset($rateval['flags'])){
+
+									if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+										unset($service['serviceratecard'][$ratekey]);
+										continue;
+									}
+
+									if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+										unset($service['serviceratecard'][$ratekey]);
+										continue;
+									}
+								}
 
 								if(!empty($rateval['_id']) && isset($rateval['_id'])){
 
@@ -1872,7 +1885,20 @@ class FindersController extends \BaseController {
 
 				$ratecardArr = [];
 
-				foreach ($item['serviceratecard'] as $rateval){
+				foreach ($item['serviceratecard'] as $ratekey => $rateval){
+
+					if(isset($rateval['flags'])){
+
+						if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+							unset($item['serviceratecard'][$ratekey]);
+							continue;
+						}
+
+						if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+							unset($item['serviceratecard'][$ratekey]);
+							continue;
+						}
+					}
 
 
 					//for ratecards offers
