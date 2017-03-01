@@ -2472,7 +2472,7 @@ class SchedulebooktrialsController extends \BaseController {
             isset($data['customer_email']) ? $customer_email = $data['customer_email'] : null;
             isset($data['customer_phone']) ? $customer_phone = preg_replace("/[^0-9]/", "", $data['customer_phone']) : null;
             $fitcard_user = isset($data['fitcard_user']) ? intval($data['fitcard_user']) : 0;
-            $type = isset($data['type']) ? $type = $data['type'] : '';
+            $type = isset($data['type']) ? $type = $data['type'] : 'booktrials';
 
             $finder_name = (isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
             $finder_slug = (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
