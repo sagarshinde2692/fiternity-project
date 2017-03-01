@@ -177,6 +177,19 @@ class Service extends \Basemodel{
                         $ratecardoffer['offer_text']    =   "";
                         $ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
 
+                        if(isset($value['flags'])){
+
+							if(isset($value['flags']['discother']) && $value['flags']['discother'] == true){
+								$ratecardoffer['offer_text']    =   "";
+								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+							}
+
+							if(isset($value['flags']['disc25or50']) && $value['flags']['disc25or50'] == true){
+								$ratecardoffer['offer_text']    =   "";
+								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+							}
+						}
+
                         $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
                         $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
                         $difference     =   $today_date->diff($end_date);

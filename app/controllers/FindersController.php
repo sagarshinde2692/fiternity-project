@@ -329,6 +329,11 @@ class FindersController extends \BaseController {
 
 						$service['offer_icon'] = "";
 
+						if(isset($service['offer_available']) && $service['offer_available'] == true){
+
+							$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+						}															
+
 						if(isset($service['category']) && isset($service['category']['_id'])){
 							$category_id                =   intval($service['category']['_id']);
 
@@ -359,18 +364,18 @@ class FindersController extends \BaseController {
 
 							foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
-								if(isset($rateval['flags'])){
+								// if(isset($rateval['flags'])){
 
-									if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
-										unset($service['serviceratecard'][$ratekey]);
-										continue;
-									}
+								// 	if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+								// 		unset($service['serviceratecard'][$ratekey]);
+								// 		continue;
+								// 	}
 
-									if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
-										unset($service['serviceratecard'][$ratekey]);
-										continue;
-									}
-								}
+								// 	if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+								// 		unset($service['serviceratecard'][$ratekey]);
+								// 		continue;
+								// 	}
+								// }
 
 								if(!empty($rateval['_id']) && isset($rateval['_id'])){
 
@@ -1880,6 +1885,11 @@ class FindersController extends \BaseController {
 				'offer_icon' => ""
 			);
 
+			if(isset($item['offer_available']) && $item['offer_available'] == true){
+
+				$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+			}
+
 
 			if(count($item['serviceratecard']) > 0){
 
@@ -1887,18 +1897,7 @@ class FindersController extends \BaseController {
 
 				foreach ($item['serviceratecard'] as $ratekey => $rateval){
 
-					if(isset($rateval['flags'])){
-
-						if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
-							unset($item['serviceratecard'][$ratekey]);
-							continue;
-						}
-
-						if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
-							unset($item['serviceratecard'][$ratekey]);
-							continue;
-						}
-					}
+					
 
 
 					//for ratecards offers
@@ -1923,6 +1922,19 @@ class FindersController extends \BaseController {
 								$ratecardoffer                  =   $ratecardoffersRecard;
 								$ratecardoffer['offer_text']    =   "";
 								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+
+								if(isset($rateval['flags'])){
+
+									if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+										$ratecardoffer['offer_text']    =   "";
+										$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+									}
+
+									if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+										$ratecardoffer['offer_text']    =   "";
+										$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+									}
+								}
 
 								$today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
 								$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
