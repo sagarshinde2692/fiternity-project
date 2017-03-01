@@ -204,7 +204,7 @@ class OzonetelsController extends \BaseController {
 
 	    		if(isset($_REQUEST['fit_action']) && $_REQUEST['fit_action'] == 'select_extension'){
 
-		    		if($extension < 1 || $extension > 25){
+		    		if($extension < 1 || $extension > 99){
 
 		    			$this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 			    		$this->ozonetelCollectDtmf->addPlayText("You have dailed wrong extension number please dial correct extension number");
