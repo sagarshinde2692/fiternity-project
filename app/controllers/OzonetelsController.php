@@ -193,7 +193,7 @@ class OzonetelsController extends \BaseController {
 
 			$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
 			$this->addCapture($_REQUEST);
-		    $this->ozonetelResponse->addPlayText("Thank you for calling, This call is recorderd for quality purpose, Please dial the extension number");
+		    $this->ozonetelResponse->addPlayText("This call is recorderd for internal training purpose, Please dial the extension number");
 		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
@@ -223,7 +223,7 @@ class OzonetelsController extends \BaseController {
 				    			if(in_array($ozonetelNoDetails->finder->commercial_type,[1,3]) || ($ozonetelNoDetails->finder->commercial_type == 2 && in_array($ozonetelNoDetails->finder->_id, $this->free_special_finder))){
 
 				    				$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
-						    		//$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
+						    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
 									$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
 									$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
 								   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
