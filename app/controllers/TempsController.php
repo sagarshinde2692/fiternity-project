@@ -326,6 +326,8 @@ class TempsController extends \BaseController {
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                         ->count();
 
+                    Log::info("booktrial_count : ".$booktrial_count);
+
                     if($booktrial_count > 0){
 
                         if($customer_data == null){
