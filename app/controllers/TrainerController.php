@@ -49,7 +49,7 @@ class TrainerController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
-		$date = $request['date'];
+		$date = date('d-m-Y',strtotime($request['date']));
 		$customer_id = (int)$request['customer_id'];
 		$order_id = (int)$request['order_id'];
 		$call_for = "first";
@@ -94,7 +94,10 @@ class TrainerController extends \BaseController {
 
 				$total_slots += count($schedule['slots']);
 
-				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('day',$weekday)->orderBy('_id','desc')->get();
+				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('weekday',$weekday)->orderBy('_id','desc')->get();
+				// echo $schedule['trainer_id'].$weekday;
+				// print_r($trainerSlotBooking);
+				// echo "<br>";
 
 				if(!empty($trainerSlotBooking)){
 
