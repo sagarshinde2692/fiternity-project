@@ -29,12 +29,12 @@ return array(
 	*/
 
 	// 'url' => 'https://a1.fitternity.com',
-	//'url' => 'http://appstg.fitn.in',
-	'url' => 'http://fitapi.com',
+	'url' => 'http://apistage.fitn.in',
+	// 'url' => 'http://fitapi.com',
 
 
     // 'website' => 'https://www.fitternity.com',
-    'website' => 'http://appstg.fitn.in:8555',
+    'website' => 'http://apistage.fitn.in:1122',
 
 
 	'app' =>array(
