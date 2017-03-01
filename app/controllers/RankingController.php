@@ -68,7 +68,7 @@ class RankingController extends \BaseController {
         appending date to rolling builds for new index        
         */
         $timestamp =  date('Y-m-d');
-        $index_name = $this->name.$timestamp;
+        $index_name = $this->name.$timestamp.'-'.random_numbers(3);
 
         /*
        creating new index appended with timestamp
@@ -332,13 +332,25 @@ class RankingController extends \BaseController {
     }
 
 
-    public function IndexRankMongo2Elastic($index_name, $city_id){
+public function IndexRankMongo2Elastic($index_name, $city_id){
    
-       ini_set('max_execution_time', 30000);
+    //    ini_set('max_execution_time', 30000);
 //       ini_set('memory_limit', '512M');
-
        $citykist      =    array(1,2,3,4,8,9);
-       $items = Finder::active()->with(array('country'=>function($query){$query->select('name');}))
+       $finder_count_incity = Finder::active()->where('city_id', $city_id)->count();
+       $i_max = intval($finder_count_incity/1000);
+       for($i = 0;$i<=$i_max;$i++){
+           $skip = $i * 1000;
+           $this->chunkIndex($index_name, $city_id,$skip,1000);
+       }
+}
+public function chunkIndex($index_name, $city_id,$skip,$take){
+    ini_set('max_execution_time', 30000);
+    ini_set('memory_limit', '512M');
+        $items = Finder::active()
+       ->where('city_id', $city_id)
+       ->where('status', '=', '1')
+        ->with(array('country'=>function($query){$query->select('name');}))
        ->with(array('city'=>function($query){$query->select('name');}))
        ->with(array('category'=>function($query){$query->select('name','meta');}))
        ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
@@ -357,19 +369,17 @@ class RankingController extends \BaseController {
        ->orderBy('_id')
                             //->whereIn('category_id', array(42,45))
                             //->whereIn('_id', array(579))
-       ->where('city_id', $city_id)
-       ->where('status', '=', '1')
     //    ->take(30)->skip(0)
-      ->take(50000)->skip(0)
+      ->take($take)->skip($skip)
        ->timeout(400000000)
                             // ->take(3000)->skip(0)
                             //->take(3000)->skip(3000)
        ->get(); 
-
+        Log::info("got finders");
        foreach ($items as $finderdocument) {  
         try{
+            Log::error($finderdocument['title']);
             ini_set('max_execution_time', 300);
-
 //            var_dump($finderdocument->toArray());exit;
             $ratecard_days = 0; $ratecard_money = 0;
             
@@ -384,8 +394,17 @@ class RankingController extends \BaseController {
             $ratecard_count = 0;  $average_monthly = 0;
             $direct_payment_enabled_bool = false;
             foreach ($services as $service) {
-
                $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
+                //    Offer or ratecard flags
+                $flags = array("disc25or50" => "false","discother" => "false");
+                if($service["flags"]){
+                    if($service["flags"]['disc25or50']){
+                        $flags["disc25or50"] = true;
+                    }
+                    if($service["flags"]['discother']){
+                        $flags["discother"] = true;
+                    }
+                }
                switch($service['validity']){
                 case 30:
                 $ratecard_count = $ratecard_count + 1;
@@ -413,52 +432,39 @@ class RankingController extends \BaseController {
                 break;
             }              
         }
-
-
         if(($ratecard_count !==0)){
-
             $average_monthly = ($ratecard_money) / ($ratecard_count);
         }
-
             /*
             Define price range slabs here based on monthly average computed
-
             */
-
             $average_monthly_tag = '';
-
             switch($average_monthly){
                 case ($average_monthly < 1001):
                 $average_monthly_tag = 'one';
                 $rangeval = 1;
                 break;
-
                 case ($average_monthly > 1000 && $average_monthly < 2501):
                 $average_monthly_tag = 'two';
                 $rangeval = 2;
                 break;
-
                 case ($average_monthly > 2500 && $average_monthly < 5001):
                 $average_monthly_tag = 'three';
                 $rangeval = 3;
                 break;
-
                 case ($average_monthly > 5000 && $average_monthly < 7501):
                 $average_monthly_tag = 'four';
                 $rangeval = 4;
                 break;
-
                 case ($average_monthly > 7500 && $average_monthly < 15001):
                 $average_monthly_tag = 'five';
                 $rangeval = 5;
                 break;
-
                 case ($average_monthly > 15000):
                 $average_monthly_tag = 'six';
                 $rangeval = 6;
                 break;
             }
-
             $data = $finderdocument->toArray();
             $score = $this->generateRank($finderdocument);
                 //$trialdata = get_elastic_finder_trialschedules($data);               
@@ -471,15 +477,11 @@ class RankingController extends \BaseController {
          {
             $clusterid  = $data['location']['locationcluster_id'];
         }
-
         if(isset($data['ozonetelno']) && $data['ozonetelno'] != ''){
             $data['ozonetelno']['phone_number'] = '+'.$data['ozonetelno']['phone_number'];
         }
-
         $finder_id = $finderdocument['_id'];
-
         $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8118,8100);
-
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();                                          
         $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);  
@@ -487,7 +489,6 @@ class RankingController extends \BaseController {
         $postdata['free_trial_enable'] = 0;
         
         if(isset($postdata['commercial_type']) && intval($postdata['commercial_type']) !== 0){
-
             $finder_category = strtolower($postdata['category']);
             if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')
                 &&($finder_category !=='healthy tiffins')&&($finder_category !=='sport nutrition supliment stores')
@@ -508,7 +509,7 @@ class RankingController extends \BaseController {
         $postdata['average_price'] = $average_monthly;
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
-
+        $postdata['flags'] = $flags;
         if(in_array(intval($finder_id), $healthy_cap_offers)){
            $postdata['capoffer'] = 1;
        }
@@ -516,24 +517,20 @@ class RankingController extends \BaseController {
           $postdata['capoffer'] = 0;
       }
       
-
       $postfields_data = json_encode($postdata);             
       $posturl = Config::get('app.es.url')."/".$index_name."/finder/" . $finderdocument['_id'];
-      $posturl1 = Config::get('app.es.url')."/fitternityv2/finder/" . $finderdocument['_id'];
+    //   $posturl1 = Config::get('app.es.url')."/fitternityv2/finder/" . $finderdocument['_id'];
        // $posturl = "http://localhost:9200/"."$index_name/finder/" . $finderdocument['_id'];
       $request = array('url' => $posturl, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
-      $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
+    //   $request1 = array('url' => $posturl1, 'port' => Config::get('app.es.port'), 'method' => 'PUT', 'postfields' => $postfields_data );
       $curl_response = es_curl_request($request);
-      $curl_response1 = es_curl_request($request1);
-        echo json_encode($curl_response);
-
+    //   $curl_response1 = es_curl_request($request1);
+        echo "finder indexing ".$finderdocument['_id']." --- ".json_encode($curl_response);
   }
   catch(Exception $e){
     Log::error($e);
 }
 }
-
-
 }
 public function generateRank($finderDocument = ''){
 
