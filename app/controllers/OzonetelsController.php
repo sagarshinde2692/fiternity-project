@@ -218,15 +218,27 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($ozonetelNoDetails){
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && in_array($ozonetelNoDetails->finder->_id, $this->free_special_finder) && $this->sunday != "Sunday"){
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday"){
 
-					    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
-					    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
-								$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
-								$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
-							   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
-							   	$this->updateCapture($_REQUEST,$ozonetelNoDetails->finder->_id,$extension);
+				    			if(in_array($ozonetelNoDetails->finder->commercial_type,[1,3]) || ($ozonetelNoDetails->finder->commercial_type == 2 && in_array($ozonetelNoDetails->finder->_id, $this->free_special_finder))){
 
+				    				$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
+						    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
+									$this->ozonetelCollectDtmf->addPlayText($this->ozonetelIvr());
+									$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_options");
+								   	$this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
+								   	$this->updateCapture($_REQUEST,$ozonetelNoDetails->finder->_id,$extension);
+
+				    			}else{
+
+				    				$phone = $ozonetelNoDetails->finder->contact['phone'];
+						    		$phone = explode(',', $phone);
+						    		$contact_no = preg_replace("/[^0-9]/", "", $phone[0]);//(string)trim($phone[0]);
+						    		$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_vendor_1");
+						    		$this->ozonetelResponse->addDial($contact_no,"true");
+					                $this->updateCapture($_REQUEST,$ozonetelNoDetails->finder->_id,$extension,$add_count = true);
+				    			}
+				    			
 							}else{
 
 								$phone = $ozonetelNoDetails->finder->contact['phone'];
