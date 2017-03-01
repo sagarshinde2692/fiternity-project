@@ -193,7 +193,7 @@ class OzonetelsController extends \BaseController {
 
 			$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=select_extension");
 			$this->addCapture($_REQUEST);
-		    $this->ozonetelResponse->addPlayText("Please dial the extension number");
+		    $this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose, Please dial the extension number");
 		    $this->ozonetelCollectDtmf = new OzonetelCollectDtmf(); //initiate new collect dtmf object
 		    $this->ozonetelResponse->addCollectDtmf($this->ozonetelCollectDtmf);
 
@@ -280,7 +280,7 @@ class OzonetelsController extends \BaseController {
 
 					    		$this->ozonetelResponse->addPlayText("Please hold while we transfer your call to the concerned person");
 
-					    		$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
+					    		//$this->ozonetelResponse->addPlayText("This call is recorderd for quality purpose");
 
 					    		if($extension == 2){
 
