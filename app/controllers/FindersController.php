@@ -591,8 +591,9 @@ class FindersController extends \BaseController {
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
 		}
-
-		$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
+		if($response['finder']['offer_icon'] == ""){
+			$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
+		}
 
 		// if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
 
