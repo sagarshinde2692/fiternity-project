@@ -230,6 +230,24 @@ class SchedulebooktrialsController extends \BaseController {
                 // array_push($scheduleservices, $service);
             }
         }
+
+        $schedules_sort = array();
+        $schedules_slots_empty = array();
+
+        foreach ($scheduleservices as $key => $value) {
+
+            if(count($value['slots']) > 0){
+                $schedules_sort[] = $value;
+            }else{
+                $schedules_slots_empty[] = $value;
+            }
+
+        }
+
+        $scheduleservices = array();
+
+        $scheduleservices = array_merge($schedules_sort,$schedules_slots_empty);
+        
         return $scheduleservices;
     }
 
