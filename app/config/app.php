@@ -38,7 +38,7 @@ return array(
 
 
 	'app' =>array(
-		'discount'		=> 			5,
+		'discount'		=> 			2,
 	),
 
 	/*
