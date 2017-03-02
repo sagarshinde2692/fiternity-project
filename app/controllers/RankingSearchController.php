@@ -731,6 +731,7 @@ class RankingSearchController extends \BaseController
 
 
         $region = Input::json()->get('regions');
+        $womens_day = Input::json()->get('womens_day') ? Input::json()->get('womens_day') : false;
         $locationCount = 0;
         if(count($region) == 1){
 
@@ -777,7 +778,11 @@ class RankingSearchController extends \BaseController
         $trial_filter = '';
         if(intval($free_trial_enable) == 1){
             $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
+        }
 
+        $womens_day_filter = '';
+        if($womens_day){
+            $womens_day_filter = '{"bool": {"should": [{"term" : { "flags.disc25or50" : true,"_cache": true }},{"term" : { "flags.discother" : true,"_cache": true }}]}}';
         }
         $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
 //    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
@@ -865,7 +870,7 @@ class RankingSearchController extends \BaseController
 
         $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-        $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+        $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$womens_day_filter,',');
         if($trials_day_filter !== ''){
             $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
         }

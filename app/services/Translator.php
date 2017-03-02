@@ -639,6 +639,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
+				$resultobject->flags = $result['flags'];
 				$result['facilities'] = (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
 
 				$resultobject->offer_available = "";
@@ -666,6 +667,14 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				}else{
 					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
 				}
+				if(count($search_request) > 0 && isset($search_request['womens_day']) && $search_request['womens_day'] == true){
+					if($result['flags']['disc25or50']){
+						$resultobject->offer_available = "http://b.fitn.in/iconsv1/womens-day/additional-25.png";
+					}else{
+						$resultobject->offer_available = "http://b.fitn.in/iconsv1/womens-day/exclusive.png";
+					}
+				}
+
 
 				// Decide vendor type
 				$resultobject->vendor_type = "";
