@@ -315,7 +315,7 @@ class FindersController extends \BaseController {
 					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
 
 				}
-
+				// $finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 
 				if(count($finder['services']) > 0 ){
 
