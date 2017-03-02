@@ -729,6 +729,24 @@ class ServiceController extends \BaseController {
         	(count($value['slots']) > 0) ? $flag = true : null;
         }
 
+        $schedules_sort = array();
+        $schedules_slots_empty = array();
+
+        foreach ($schedules as $key => $value) {
+
+        	if(count($value['slots']) > 0){
+        		$schedules_sort[] = $value;
+        	}else{
+        		$schedules_slots_empty[] = $value;
+        	}
+
+        }
+
+        $schedules = array();
+
+        $schedules = array_merge($schedules_sort,$schedules_slots_empty);
+
+        
         if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
