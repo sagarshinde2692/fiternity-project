@@ -379,7 +379,7 @@ class FindersController extends \BaseController {
 								if(isset($rateval['flags']) && ($rateval['flags']['disc25or50'] || $rateval['flags']['discother'])){
 									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
 								}else{
-									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-mobile-banner.svg";
+									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 								}
 								if(!empty($rateval['_id']) && isset($rateval['_id'])){
 
@@ -592,7 +592,7 @@ class FindersController extends \BaseController {
 			$response['trials_booked_status']        =      false;
 		}
 
-		$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/women-day-mobile-banner.svg";
+		$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 
 		// if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
 
