@@ -668,9 +668,12 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
 				}
 				if(count($search_request) > 0 && isset($search_request['womens_day']) && $search_request['womens_day'] == true){
-					if($result['flags']['disc25or50']){
+					// echo "disc25or50".$result['flags']['disc25or50'];
+					// echo "discother".$result['flags']['discother'];
+					if($result['flags']['disc25or50'] == 1){
 						$resultobject->offer_available = "http://b.fitn.in/iconsv1/womens-day/additional-25.png";
-					}else{
+					}
+					if($result['flags']['discother'] == 1){
 						$resultobject->offer_available = "http://b.fitn.in/iconsv1/womens-day/exclusive.png";
 					}
 				}
