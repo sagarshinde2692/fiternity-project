@@ -181,12 +181,12 @@ class Service extends \Basemodel{
 
 							if(isset($value['flags']['discother']) && $value['flags']['discother'] == true){
 								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor1.png";
 							}
 
 							if(isset($value['flags']['disc25or50']) && $value['flags']['disc25or50'] == true){
 								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor2.png";
 							}
 						}
 
