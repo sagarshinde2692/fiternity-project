@@ -378,9 +378,10 @@ class FindersController extends \BaseController {
 								// }
 								if(isset($rateval['flags']) && ($rateval['flags']['disc25or50'] || $rateval['flags']['discother'])){
 									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
-								}else{
-									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 								}
+								// else{
+								// 	$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
+								// }
 								if(!empty($rateval['_id']) && isset($rateval['_id'])){
 
 									$ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
