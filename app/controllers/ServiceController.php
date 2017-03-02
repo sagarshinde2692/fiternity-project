@@ -648,9 +648,9 @@ class ServiceController extends \BaseController {
 	        	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
 	        }
 
-            if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
+	        $slot_passed_flag = true;
 
-            	$slot_passed_flag = true;
+            if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
                 foreach ($weekdayslots['slots'] as $slot) {
 
