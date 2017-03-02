@@ -650,6 +650,8 @@ class ServiceController extends \BaseController {
 
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
+            	$slot_passed_flag = true;
+
                 foreach ($weekdayslots['slots'] as $slot) {
 
                     $slot_status 		= 	"available";
@@ -684,6 +686,9 @@ class ServiceController extends \BaseController {
 
                     	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
                         $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
+
+                        ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
+
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
@@ -698,6 +703,8 @@ class ServiceController extends \BaseController {
                 }
                 
             }
+
+            $service['slot_passed_flag'] = $slot_passed_flag;
 
             $service['slots'] = $slots;
 
@@ -742,11 +749,23 @@ class ServiceController extends \BaseController {
 
         }
 
+        $schedules_sort_passed_true = array();
+        $schedules_sort_passed_false = array();
+
+        foreach ($schedules_sort as $key => $value) {
+
+        	if($value['slot_passed_flag']){
+        		$schedules_sort_passed_true[] = $value;
+        	}else{
+        		$schedules_sort_passed_false[] = $value;
+        	}
+
+        }
+
         $schedules = array();
 
-        $schedules = array_merge($schedules_sort,$schedules_slots_empty);
+        $schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
 
-        
         if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
