@@ -1357,10 +1357,10 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			$clusterval->slug = strtolower(str_replace(' ', '-', $cluster['key']));
 			$clusterval->count = $cluster['doc_count'];
 			$clusterval->regions = array();
-			foreach ($cluster['region']['buckets'] as $reg) {
+			foreach ($cluster['region']['attrs']['buckets'] as $reg) {
 				$regval = new \stdClass();
 				$regval->key = $reg['key'];
-				$regval->slug = str_replace(' ', '-', $reg['key']);
+				$regval->slug = $reg['attrsValues']['buckets'][0]['key'];
 				$regval->count = $reg['doc_count'];
 				array_push($clusterval->regions, $regval);
 			}
