@@ -693,6 +693,7 @@ class ServiceController extends \BaseController {
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
                         array_set($slot, 'ratecard_id', $ratecard['_id']);
+                        array_set($slot,'epoch_start_time',$scheduleDateTimeUnix);
                         array_push($slots, $slot);
 
                     }catch(Exception $e){
