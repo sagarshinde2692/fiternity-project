@@ -247,6 +247,7 @@ class FindersController extends \BaseController {
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 
 				$finder['offer_icon'] = "";
+				$finder['offer_icon_mob'] = "";
 
 				$finder['associate_finder'] = null;
 				if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
@@ -378,6 +379,7 @@ class FindersController extends \BaseController {
 								// }
 								if(isset($rateval['flags']) && ($rateval['flags']['disc25or50'] || $rateval['flags']['discother'])){
 									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
+									$finder['offer_icon_mob'] = "https://b.fitn.in/iconsv1/womens-day/exclusive.svg";
 								}
 								// else{
 								// 	$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
@@ -594,6 +596,9 @@ class FindersController extends \BaseController {
 		}
 		if($response['finder']['offer_icon'] == ""){
 			$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
+		}
+		if($response['finder']['offer_icon_mob'] == "" && (int)$response['finder']['commercial_type'] != 0){
+			$response['finder']['offer_icon_mob']        =        "https://a.fitn.in/fitimages/fitmania/offer_available_sale.svg";
 		}
 
 		// if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
