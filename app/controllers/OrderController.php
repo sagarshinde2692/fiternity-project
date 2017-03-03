@@ -410,6 +410,8 @@ class OrderController extends \BaseController {
 
             $this->utilities->setRedundant($order);
 
+            $this->utilities->deleteCommunication($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }else{

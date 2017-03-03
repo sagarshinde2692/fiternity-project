@@ -680,4 +680,62 @@ Class Utilities {
         return $hash_verified;
     }
 
+    public function deleteCommunication($order){
+
+        $queue_id = [];
+
+        if($order['status'] == "1"){
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter3Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter3Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter7Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter7Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter15Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter15Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter30Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter30Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter45Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter45Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if(isset($order->paymentLinkEmailCustomerTiggerCount)){
+                $order->update(['notification_status' => 'purchase_yes']);
+            }
+            
+        }
+
+        if(!empty($queue_id)){
+            $this->sidekiq->delete($queue_id);
+        }
+
+    }
+
 }
