@@ -667,7 +667,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				}else{
 					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
 				}
-				if(count($search_request) > 0 && isset($search_request['womens_day']) && $search_request['womens_day'] == true){
+				if(count($search_request) > 0 && ((isset($search_request['womens_day']) && $search_request['womens_day'] == true) ||(isset($search_request['offers_available']) && $search_request['offers_available'] == true) )){
 					// echo "disc25or50".$result['flags']['disc25or50'];
 					// echo "discother".$result['flags']['discother'];
 					if($result['flags']['disc25or50'] == 1){
