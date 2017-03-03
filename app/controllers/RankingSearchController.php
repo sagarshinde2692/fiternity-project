@@ -2387,15 +2387,24 @@ public function getRankedFinderResultsAppv4()
 
                     },"aggs": {
                     "region": {
-                        "terms": {
-                            "field": "location",
-                            "min_doc_count":1,
-                            "size":"500",
-                            "order": {
-                            "_term": "asc"
+                        "nested": {
+                            "path": "location_obj"
+                        },
+                        "aggs": {
+                            "attrs": {
+                            "terms": {
+                                "field": "location_obj.name"
+                            },
+                            "aggs": {
+                                "attrsValues": {
+                                "terms": {
+                                    "field": "location_obj.slug",
+                                    "size": 100
+                                }
+                                }
+                            }
+                            }
                         }
-
-                    }
                 }
             }}}
         },';
@@ -2549,7 +2558,7 @@ public function getRankedFinderResultsAppv4()
 
         $search_results     =   es_curl_request($request);
 
-        $search_results1    =   json_decode($search_results, true);
+         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
         $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
