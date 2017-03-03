@@ -1105,14 +1105,14 @@ class OrderController extends \BaseController {
 
         $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
 
-        if($data['type'] == 'booktrials' ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'){
+        if($data['type'] == 'booktrials'/* ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'*/){
 
-            // Throw an error if user has already booked a trial for that vendor...
-//            $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-//            if(count($alreadyBookedTrials) > 0){
-//                $resp 	= 	array('status' => 403,'message' => "You have already booked a trial for this vendor");
-//                return Response::json($resp,403);
-//            }
+           // Throw an error if user has already booked a trial for that vendor...
+           $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+           if(count($alreadyBookedTrials) > 0){
+               $resp 	= 	array('status' => 403,'message' => "You have already booked a trial for this vendor");
+               return Response::json($resp,403);
+           }
 
             // Throw an error if user has already booked a trial on same schedule timestamp..
             if(isset($data['schedule_date'])&&isset($data['schedule_slot'])){
