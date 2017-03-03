@@ -622,6 +622,8 @@ Class Utilities {
 
                     $orderData->redundant_order = "1";
                     $orderData->update();
+
+                    $this->deleteCommunication($orderData);
                 }
             }
 
@@ -684,7 +686,7 @@ Class Utilities {
 
         $queue_id = [];
 
-        if($order['status'] == "1"){
+        if((isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && ($order->notification_status == "link_sent_yes" || $order->notification_status == "abandon_cart_yes"))){
 
             if((isset($order->cutomerSmsSendPaymentLinkAfter3Days))){
                 try {
@@ -726,10 +728,18 @@ Class Utilities {
                 }
             }
 
-            if(isset($order->paymentLinkEmailCustomerTiggerCount)){
+            if($order->status == "1"){
                 $order->update(['notification_status' => 'purchase_yes']);
+            }else{
+
+                if(isset($order->paymentLinkEmailCustomerTiggerCount)){
+                    $order->update(['notification_status' => 'link_sent_no']);
+                }else{
+                    $order->update(['notification_status' => 'abandon_cart_no']);
+                }
             }
-            
+
+
         }
 
         if(!empty($queue_id)){
