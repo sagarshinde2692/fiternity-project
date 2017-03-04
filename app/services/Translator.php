@@ -644,7 +644,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 
 				$resultobject->offer_available = "";
 				if(in_array($result['commercial_type'],["1","2","3"])){
-					$resultobject->offer_available = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
+					$resultobject->offer_available = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 				}else{
 					$resultobject->offer_available = "";
 				}
@@ -671,10 +671,10 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					// echo "disc25or50".$result['flags']['disc25or50'];
 					// echo "discother".$result['flags']['discother'];
 					if($result['flags']['disc25or50'] == 1){
-						$resultobject->offer_available = "http://b.fitn.in/iconsv1/womens-day/additional-25.png";
+						$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/additional-25.png";
 					}
 					if($result['flags']['discother'] == 1){
-						$resultobject->offer_available = "http://b.fitn.in/iconsv1/womens-day/exclusive.png";
+						$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/exclusive.png";
 					}
 				}
 
