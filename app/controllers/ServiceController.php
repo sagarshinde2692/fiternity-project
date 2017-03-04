@@ -810,42 +810,54 @@ class ServiceController extends \BaseController {
             $customer_id = intval($decoded->customer->_id);
         }
 
-        if($customer_id == ""){
-        	return array('trial_booked'=>false);
-        }
+        $booktrial_count = 0;
 
-        $booktrial_count = Booktrial::where('customer_id', $customer_id)
+        if($customer_id != ""){
+
+        	$booktrial_count = Booktrial::where('customer_id', $customer_id)
                         ->where('finder_id', '=',$finder_id)
                         ->where('type','booktrials')
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                         ->count();
+        }
 
         if($booktrial_count > 0){
 
-        	if($service_id){
-
-	            $ratecard = Ratecard::where('service_id',$service_id)->where('type','workout session')->first();
-
-	            $service = Service::find((int)$service_id);
-
-	            if($ratecard && $service && isset($service->workoutsessionschedules) && count($service->workoutsessionschedules) > 0){
-
-	                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
-	                    $amount = $ratecard->special_price;
-	                }else{
-	                    $amount = $ratecard->price;
-	                }
-
-	                return array('workout_session_available'=>true,'trial_booked'=>true,'amount'=>(int)$amount);
-	            }
-
-	            return array('workout_session_available'=>false,'trial_booked'=>true,'amount'=>0);
-	        }
-
-            return array('trial_booked'=>true);
+        	$return =  array('trial_booked'=>true);
         }
 
-        return array('trial_booked'=>false);
+        if($service_id){
+
+            $ratecard = Ratecard::where('service_id',$service_id)->where('type','workout session')->first();
+
+            $service = Service::find((int)$service_id);
+
+            if($ratecard && $service && isset($service->workoutsessionschedules) && count($service->workoutsessionschedules) > 0){
+
+                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                    $amount = $ratecard->special_price;
+                }else{
+                    $amount = $ratecard->price;
+                }
+
+                $return = array('workout_session_available'=>true,'amount'=>(int)$amount);
+
+                if($booktrial_count > 0){
+
+		        	$return = array('workout_session_available'=>true,'trial_booked'=>true,'amount'=>(int)$amount);
+		        }
+
+            }
+
+            $return = array('workout_session_available'=>false,'amount'=>0);
+
+            if($booktrial_count > 0){
+
+	        	$return = array('workout_session_available'=>false,'trial_booked'=>true,'amount'=>0);
+	        }
+        }
+
+        return $return;
 
     }
 
