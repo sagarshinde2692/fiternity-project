@@ -1506,7 +1506,22 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
             }
 
+            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !isset($order->cutomerSmsPurchaseAfter10Days) && !isset($order->cutomerSmsPurchaseAfter30Days)){
+
+                $preferred_starting_date = $order->preferred_starting_date;
+                
+                $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+                $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
+
+                $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
+                $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
+
+                $order->update();
+            }
+
             $this->utilities->setRedundant($order);
+
+            $this->utilities->deleteCommunication($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);

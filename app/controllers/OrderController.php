@@ -378,35 +378,19 @@ class OrderController extends \BaseController {
                 
             }
 
-            /*if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->type == "memberships" && !isset($order->cutomerSmsPurchaseAfter10Days) && !isset($order->cutomerSmsPurchaseAfter30Days)){
 
                 $preferred_starting_date = $order->preferred_starting_date;
-                $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
+                
                 $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+                $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
 
-                $category_slug = "no_category";
-
-                if(isset($order->finder_category_id) && $order->finder_category_id != ""){
-
-                    $finder_category_id = $order->finder_category_id;
-
-                    $category = Findercategory::find((int)$finder_category_id);
-
-                    if($category){
-                        $category_slug = $category->slug;
-                    }
-                }
-
-                $order_data = $order->toArray();
-
-                $order_data['category_array'] = $this->getCategoryImage($category_slug);
-
-                $order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
-                $order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
+                $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
+                $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
 
                 $order->update();
 
-            }*/
+            }
 
             $this->utilities->setRedundant($order);
 
