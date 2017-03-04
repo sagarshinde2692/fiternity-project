@@ -828,6 +828,13 @@ class ServiceController extends \BaseController {
 
         if($service_id){
 
+        	$return = array('workout_session_available'=>false,'amount'=>0);
+
+            if($booktrial_count > 0){
+
+	        	$return = array('workout_session_available'=>false,'trial_booked'=>true,'amount'=>0);
+	        }
+
             $ratecard = Ratecard::where('service_id',$service_id)->where('type','workout session')->first();
 
             $service = Service::find((int)$service_id);
@@ -848,13 +855,7 @@ class ServiceController extends \BaseController {
 		        }
 
             }
-
-            $return = array('workout_session_available'=>false,'amount'=>0);
-
-            if($booktrial_count > 0){
-
-	        	$return = array('workout_session_available'=>false,'trial_booked'=>true,'amount'=>0);
-	        }
+            
         }
 
         return $return;
