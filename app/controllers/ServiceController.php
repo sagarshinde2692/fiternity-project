@@ -805,7 +805,7 @@ class ServiceController extends \BaseController {
 
         Log::info('jwt_token : '.$jwt_token);
 
-        if($jwt_token == true && $jwt_token != null){
+        if($jwt_token == true && $jwt_token != 'null'){
             $decoded = decode_customer_token();
             $customer_id = intval($decoded->customer->_id);
         }
