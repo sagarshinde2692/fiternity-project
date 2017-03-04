@@ -53,6 +53,8 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+        Log::info('transactionCapture',$data);
+
         if(!isset($data['type'])){
             return Response::json(array('status' => 404,'message' =>'type field is required'),404);
         }
