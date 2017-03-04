@@ -612,7 +612,7 @@ class ServiceController extends \BaseController {
         }
 
         foreach ($items as $k => $item) {
-
+        	
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 			$item['address'] = isset($item['address']) ? $item['address'] : "";
@@ -784,8 +784,66 @@ class ServiceController extends \BaseController {
         	$data['todays_date'] = date("Y-m-d");
         	$data['requested_date'] = $request['requested_date'];
 
+        	$finder_id = (int)$item['finder_id'];
+        	$service_id = (isset($request['service_id']) && $request['service_id'] != "") ? (int)$request['service_id'] : false;
+
+        	$data = checkTrial($finder_id,$service_id);
+
 	        return Response::json($data,200);
         }
+
+    }
+
+    public function checkTrial($finder_id,$service_id = false){
+
+    	if($finder_id == ""){
+        	return array('trial_booked'=>false);
+        }
+
+    	$customer_id = "";
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token == true && $jwt_token != null){
+            $decoded = decode_customer_token();
+            $customer_id = intval($decoded->customer->_id);
+        }
+
+        if($customer_id == ""){
+        	return array('trial_booked'=>false);
+        }
+
+        $booktrial_count = Booktrial::where('customer_id', $customer_id)
+                        ->where('finder_id', '=',$finder_id)
+                        ->where('type','booktrials')
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->count();
+
+        if($booktrial_count > 0){
+
+        	if($service_id){
+
+	            $ratecard = Ratecard::where('service_id',$service_id)->where('type','workout session')->first();
+
+	            $service = Service::find((int)$service_id);
+
+	            if($ratecard && $service && isset($service->workoutsessionschedules) && count($service->workoutsessionschedules) > 0){
+
+	                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+	                    $amount = $ratecard->special_price;
+	                }else{
+	                    $amount = $ratecard->price;
+	                }
+
+	                return array('workout_session_available'=>true,'trial_booked'=>true,'amount'=>(int)$amount);
+	            }
+
+	            return array('workout_session_available'=>false,'trial_booked'=>true,'amount'=>0);
+	        }
+
+            return array('trial_booked'=>true);
+        }
+
+        return array('trial_booked'=>false);
 
     }
 
