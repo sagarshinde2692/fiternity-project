@@ -742,10 +742,76 @@ Class Utilities {
 
         }
 
+        if(isset($order->purchse_booktrial_id) && $order->purchse_booktrial_id != ""){
+
+            $booktrial = Booktrial::find((int)$order->purchse_booktrial_id);
+
+            if($ooktrial){
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After3Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After3Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After7Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After7Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After15Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After15Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After30Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After30Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup2After3Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After3Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup2After7Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After7Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup2After15Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After15Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+            }
+        
+        }
+
         if(!empty($queue_id)){
             $this->sidekiq->delete($queue_id);
         }
 
     }
+
+    
 
 }
