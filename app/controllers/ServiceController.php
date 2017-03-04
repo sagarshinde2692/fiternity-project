@@ -803,6 +803,8 @@ class ServiceController extends \BaseController {
     	$customer_id = "";
         $jwt_token = Request::header('Authorization');
 
+        Log::info('jwt_token : '.$jwt_token);
+
         if($jwt_token == true && $jwt_token != null){
             $decoded = decode_customer_token();
             $customer_id = intval($decoded->customer->_id);
