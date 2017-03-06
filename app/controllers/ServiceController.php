@@ -796,6 +796,8 @@ class ServiceController extends \BaseController {
 
     public function checkTrial($finder_id,$service_id = false){
 
+    	$return =  array('trial_booked'=>false);
+
     	if($finder_id == ""){
         	return array('trial_booked'=>false);
         }
