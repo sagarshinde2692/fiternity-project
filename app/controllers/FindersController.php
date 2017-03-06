@@ -117,6 +117,12 @@ class FindersController extends \BaseController {
 				$finder['today_opening_hour'] =  null;
 				$finder['today_closing_hour'] = null;
 
+
+				if(isset($finder['flags'])){
+					if(!isset($finder['flags']['state'])){
+						$finder['flags']['state'] = "open";
+					}
+				}
 				$detail_rating_array = array('detail_rating_summary_average','detail_rating_summary_count');
 
 				foreach ($detail_rating_array as $value){
