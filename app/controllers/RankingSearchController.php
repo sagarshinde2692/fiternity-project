@@ -2227,7 +2227,7 @@ public function getRankedFinderResultsAppv4()
         $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
         $category_filter        = $category ? '{"terms" : {  "categorytags": ["'.strtolower($category).'"],"_cache": true}},': '';
         $budget_filter          = $budget ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', $budget)).'"],"_cache": true}},': '';
-        $regions_filter         = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $regions_filter         = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
         $region_tags_filter     = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
         $offerings_filter       = $offerings ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', $offerings)).'"],"_cache": true}},': '';
         $facilities_filter      = $facilities ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', $facilities)).'"],"_cache": true}},': '';
