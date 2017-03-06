@@ -407,26 +407,13 @@ Class CustomerReward {
         $jwt_token = Request::header('Authorization');
 
         Log::info('jwt_token : '.$jwt_token);
-
-        $iosdata = Input::json()->all();
-
-        if(isset($iosdata['customer_source']) && $iosdata['customer_source'] == "ios" && $customer_id){
-
-            $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
-
-            if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
-                $wallet = $customer_wallet->balance;
-            }
-
-            if($customer_wallet && isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
-                $wallet_fitcash_plus = $customer_wallet->balance_fitcash_plus;
-            }
-        }
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
-
+        }
+        
+        if($customer_id){
             $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
 
             if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
@@ -436,7 +423,6 @@ Class CustomerReward {
             if($customer_wallet && isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
                 $wallet_fitcash_plus = $customer_wallet->balance_fitcash_plus;
             }
-
         }
 
         $wallet_percentage = 27 ;

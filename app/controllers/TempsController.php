@@ -287,6 +287,7 @@ class TempsController extends \BaseController {
             $finder_id = "";
             $amount = "";
             $cashback = new \stdClass();
+            $customer_id = "";
 
             if(isset($temp->ratecard_id) && $temp->ratecard_id != ""){
 
@@ -322,7 +323,7 @@ class TempsController extends \BaseController {
                     $data['customer_phone'] = $temp['customer_phone'];
                     $data['customer_id'] = autoRegisterCustomer($data);
 
-                    $temp->customer_id = $data['customer_id'];
+                    $customer_id = $temp->customer_id = $data['customer_id'];
                 }
 
                 $temp->save();
@@ -342,6 +343,7 @@ class TempsController extends \BaseController {
 
                     $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                     $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                    $customer_id = (int)$customer->_id;
 
                 }
 
@@ -387,6 +389,7 @@ class TempsController extends \BaseController {
                                 $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                                 $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
                                 $customer_data['contact_no'] = $customer_phone;
+                                $customer_id = (int)$customer->_id;
 
                             }
                         }
@@ -412,10 +415,10 @@ class TempsController extends \BaseController {
 
             }
 
-            if($finder_id != "" && $amount != ""){
+            if($finder_id != "" && $amount != "" && $customer_id != ""){
 
                 $customerReward     =   new CustomerReward();
-                $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
+                $calculation        =   $customerReward->purchaseGame($amount,$finder_id,"paymentgateway",false,$customer_id);
                 $cashback  = array(
                     'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
                     'percentage'=>$calculation['algo']['cashback'].'%',
