@@ -236,6 +236,7 @@ class RankingController extends \BaseController {
                     "categorytags" : {"type" : "string","index" : "not_analyzed"},
                     "categorytags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
                     "locationtags" : {"type" : "string","index" : "not_analyzed"},
+                    "locationtags_slug" : {"type" : "string","index" : "not_analyzed"},
                     "locationtags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
                     "offerings" : {"type" : "string", "index" : "not_analyzed"},
                     "facilities" : {"type" : "string", "index" : "not_analyzed"},
