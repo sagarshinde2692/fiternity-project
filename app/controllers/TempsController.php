@@ -140,6 +140,7 @@ class TempsController extends \BaseController {
                 $temp->attempt = 1;
                 $temp->verified = "N";
                 $temp->proceed_without_otp = "N";
+                $temp->source = "website";
 
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $temp->finder_id = (int) $data['finder_id'];
@@ -151,6 +152,14 @@ class TempsController extends \BaseController {
 
                 if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
                     $temp->ratecard_id = (int) $data['ratecard_id'];
+                }
+
+                if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
+                    $temp->source = $_GET['device_type'];
+                }
+
+                if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
+                    $temp->version = $_GET['app_version'];
                 }
 
                 $temp->save();
@@ -416,6 +425,13 @@ class TempsController extends \BaseController {
             }
 
             if($finder_id != "" && $amount != "" && $customer_id != ""){
+
+                $device_type = ["android","ios"];
+
+                if($temp->action == "memberships" && isset($_GET['device_type']) &&  in_array($_GET['device_type'], $device_type)){
+
+                    $amount = $amount - intval($amount * (Config::get('app.app.discount')/100));
+                }
 
                 $customerReward     =   new CustomerReward();
                 $calculation        =   $customerReward->purchaseGame($amount,$finder_id,"paymentgateway",false,$customer_id);
