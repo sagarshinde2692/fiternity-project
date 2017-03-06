@@ -147,6 +147,10 @@ class TempsController extends \BaseController {
                     $temp->service_id = (int) $data['service_id'];
                 }
 
+                if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+                    $temp->ratecard_id = (int) $data['ratecard_id'];
+                }
+
                 $temp->save();
 
                 $data['otp'] = $temp->otp;
@@ -277,6 +281,31 @@ class TempsController extends \BaseController {
             
             $customer_data = null;
 
+            $ratecard_id = "";
+            $finder_id = "";
+            $amount = "";
+            $cashback = new \stdClass();
+
+            if(isset($temp->ratecard_id) && $temp->ratecard_id != ""){
+
+                $ratecard_id = (int)$temp->ratecard_id;
+
+                $ratecard = Ratecard::find($ratecard_id);
+
+                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                    $amount = $ratecard->special_price;
+                }else{
+                    $amount = $ratecard->price;
+                }
+
+            }
+
+            if(isset($temp->finder_id) && $temp->finder_id != ""){
+                $finder_id = (int)$temp->finder_id;
+            }
+
+            $return =  array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
+
             if($temp->otp == $otp){
 
                 $temp->verified = "Y";
@@ -313,6 +342,8 @@ class TempsController extends \BaseController {
                     $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
 
                 }
+
+                $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
 
                 if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
 
@@ -358,9 +389,13 @@ class TempsController extends \BaseController {
                             }
                         }
 
+                        $return = array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
+
                         $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
 
                         if($ratecard && count($service->workoutsessionschedules) > 0){
+
+                            $ratecard_id = $ratecard->_id;
 
                             if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                                 $amount = $ratecard->special_price;
@@ -368,15 +403,32 @@ class TempsController extends \BaseController {
                                 $amount = $ratecard->price;
                             }
 
-                            return Response::json(array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no),200);
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
                         }
-
-                        return Response::json(array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no),200);
                     }
                 }
+
             }
 
-            return Response::json(array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no),200);
+            if($finder_id != "" && $amount != ""){
+
+                $customerReward     =   new CustomerReward();
+                $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
+                $cashback  = array(
+                    'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
+                    'percentage'=>$calculation['algo']['cashback'].'%',
+                    'commision'=>$calculation['algo']['cashback'],
+                    'calculation'=>$calculation,
+                    'info'          =>  "You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
+                    'description'=>$calculation['description']
+                );
+
+                unset($cashback['calculation']['description']);
+            }
+
+            $return["cashback"] = $cashback;
+
+            return Response::json($return,200);
 
         }else{
 
