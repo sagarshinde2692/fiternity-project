@@ -7,6 +7,8 @@
  * @author Mahesh Jadhav <mjmjadhav@gmail.com>
  */
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\Utilities as Utilities;
+use App\Services\CustomerReward as CustomerReward;
 
 class TempsController extends \BaseController {
 
