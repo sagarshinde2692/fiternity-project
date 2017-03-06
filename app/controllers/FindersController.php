@@ -122,6 +122,8 @@ class FindersController extends \BaseController {
 					if(!isset($finder['flags']['state'])){
 						$finder['flags']['state'] = "open";
 					}
+				}else{
+					$finder['flags'] = array('state'=>"open");
 				}
 				$detail_rating_array = array('detail_rating_summary_average','detail_rating_summary_count');
 
