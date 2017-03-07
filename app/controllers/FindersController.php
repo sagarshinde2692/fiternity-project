@@ -2396,7 +2396,8 @@ class FindersController extends \BaseController {
 
 						$data['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}
-					$category_id = Servicecategory::where('slug', $category_slug)->first(['_id']);
+
+					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
 					// return $category_id;exit;
 					
 					$category_slug_services = array();
