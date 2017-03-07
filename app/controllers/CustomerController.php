@@ -2120,7 +2120,7 @@ class CustomerController extends \BaseController {
 
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
 		->where('amount','!=',0)
-		->orderBy('created_at', 'DESC')
+		->orderBy('_id', 'DESC')
 		->skip($limit)
 		->take($offset)
 		->get();
