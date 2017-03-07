@@ -1820,13 +1820,13 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership'))->toArray();
+			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction'))->toArray();
 		}else{
 
 			$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 			$membership_services = array_map('intval',$membership_services);
 
-			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership'))->toArray();
+			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction'))->toArray();
 		}
 
 		if(!$items){
@@ -1921,7 +1921,9 @@ class FindersController extends \BaseController {
 				'image'=>$photo,
 				'membership' => (isset($item['membership'])) ? $item['membership'] : "",
 				'trial' => (isset($item['trial'])) ? $item['trial'] : "",
-				'offer_icon' => ""
+				'offer_icon' => "",
+				'servicecategory_id' => $item['servicecategory_id'],
+				'traction' => $item['traction']
 			);
 
 
@@ -2255,31 +2257,7 @@ class FindersController extends \BaseController {
 					array_set($finder, 'open_now', $status);
 				}
 
-				$category_slug_services = array();
-				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
-							if($value['category']['slug'] == $category_slug)
-								{
-								 return $value; 
-								}
-						});
-
-				$non_category_slug_services = array();
-				$non_category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
-							if($value['category']['slug'] != $category_slug)
-								{
-								 return $value; 
-								}
-						});
-
-				function cmp($a, $b)
-	            {
-	            	return $a['traction']['sales'] < $b['traction']['sales'];
-	            }
-
-	        	usort($category_slug_services, "cmp");
-	        	usort($non_category_slug_services, "cmp");
-	        	
-	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
+				
 
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership']  ));
 				array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
@@ -2418,6 +2396,36 @@ class FindersController extends \BaseController {
 
 						$data['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}
+
+					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
+					// return $category_id;exit;
+					
+					$category_slug_services = array();
+					$category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
+							if($value['servicecategory_id'] == $category_id['_id'])
+								{
+								 return $value; 
+								}
+						});
+
+					$non_category_slug_services = array();
+					$non_category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
+							if($value['servicecategory_id'] != $category_id['_id'])
+								{
+								 return $value; 
+								}
+						});
+
+					function cmp($a, $b)
+		            {
+		            	return $a['traction']['sales'] < $b['traction']['sales'];
+		            }
+
+		        	usort($category_slug_services, "cmp");
+		        	usort($non_category_slug_services, "cmp");
+		        	
+		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
+		        	
 
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
 
