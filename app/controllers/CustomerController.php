@@ -2125,6 +2125,8 @@ class CustomerController extends \BaseController {
 		->take($offset)
 		->get();
 
+		$wallet_balance = 0;
+
 		if(count($wallet) > 0){
 
 			$wallet = $wallet->toArray();
@@ -2135,12 +2137,18 @@ class CustomerController extends \BaseController {
 					$wallet[$key]['order_id'] = 0;
 				}
 			}
+
+			$balance = (isset($wallet[0]['balance']) && $wallet[0]['balance'] != "") ? (int) $wallet[0]['balance'] : 0 ;
+			$balance_fitcash_plus = (isset($wallet[0]['balance_fitcash_plus']) && $wallet[0]['balance_fitcash_plus'] != "") ? (int) $wallet[0]['balance_fitcash_plus'] : 0 ;
+
+			$wallet_balance = $balance + $balance_fitcash_plus;
 		}
 
 		return Response::json(
 			array(
 				'status' => 200,
-				'data' => $wallet
+				'data' => $wallet,
+				'wallet_balance'=>$wallet_balance,
 				),200
 
 			);

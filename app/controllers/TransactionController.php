@@ -130,7 +130,11 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$serviceDetail['data']);
 
-        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        if(isset($data['order_id'])){
+            $old_order_id = $order_id = $data['_id'] = (int)$data['order_id'];
+        }else{
+            $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+        }
 
         $data['code'] = $data['order_id'].str_random(8);
 
@@ -159,9 +163,26 @@ class TransactionController extends \BaseController {
 
         $data = $this->unsetData($data);
 
-        $order = new Order($data);
-        $order->_id = $order_id;
-        $order->save();
+        if(isset($old_order_id)){
+
+            $order = Order::find((int)$old_order_id);
+
+            if($order){
+               $order->update($data); 
+            }else{
+                $order = new Order($data);
+                $order->_id = $order_id;
+                $order->save();
+            }
+
+        }else{
+
+            $order = new Order($data);
+            $order->_id = $order_id;
+            $order->save();
+        }
+        
+        
 
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
