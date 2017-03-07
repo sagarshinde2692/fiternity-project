@@ -1158,7 +1158,7 @@ class RankingSearchController extends \BaseController
         $response       =   json_decode($searchresulteresponse1,true);
         if($from == 0 && count(Input::json()->get('offerings')) == 0 && count(Input::json()->get('facilities')) == 0 && count(Input::json()->get('budget')) == 0 && $locationCount == 0){
             $response['campaign'] = array(
-                'image'=>'https://b.fitn.in/iconsv1/womens-day/women_banner_app.png',
+                'image'=>'https://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
                 // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
                 'link'=>'',
                 'title'=>'FitStart 2017',
