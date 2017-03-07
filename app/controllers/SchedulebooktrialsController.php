@@ -1883,6 +1883,8 @@ class SchedulebooktrialsController extends \BaseController {
             $amount                             =   (isset($order->amount) && $order->amount != '') ? $order->amount : "";
             $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
+            $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
                 'premium_session'               =>      $premium_session,
@@ -1969,7 +1971,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'trial_count'                   =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
                 'token'                         =>      random_number_string(),
-                'service_category'              =>      $service_category
+                'service_category'              =>      $service_category,
+                'service_link'                  =>      $service_link
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2658,6 +2661,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $rebook_trial_url         =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrialid);
 
+            $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+
             $booktrialdata = array(
 
                 'booktrialid'         =>      $booktrialid,
@@ -2744,7 +2749,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_profile_url'         =>       $customer_profile_url,
                 'calorie_burn'                  =>      $calorie_burn,
                 'finder_url'                    =>      $finder_url,
-                'rebook_trial_url'              =>      $rebook_trial_url
+                'rebook_trial_url'              =>      $rebook_trial_url,
+                'service_link'                  =>      $service_link
 
             );
 
