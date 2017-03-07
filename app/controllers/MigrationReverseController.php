@@ -1003,6 +1003,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['show_on']      =   "1";
             $insertData['created_at']   =   $data['created_at'];
             $insertData['updated_at']   =   $data['updated_at'];
+            $insertData['showOnFront']   =   isset($data['showOnFront']) ? $data['showOnFront'] : true;
 
 //            return $insertData;
 

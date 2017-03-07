@@ -265,7 +265,7 @@ class FindersController extends \BaseController {
 					$finder['associate_finder'] = $associate_finder;
 				}
 
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available']));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront']));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -334,81 +334,92 @@ class FindersController extends \BaseController {
 
 					foreach ($finder['services'] as $service){
 
-						$service = $service;
+						if(!isset($service['showOnFront']) || (isset($service['showOnFront']) && $service['showOnFront'])){
 
-						$service['offer_icon'] = "";
 
-						if(isset($service['offer_available']) && $service['offer_available'] == true){
 
-							$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
-						}															
+								$service = $service;
 
-						if(isset($service['category']) && isset($service['category']['_id'])){
-							$category_id                =   intval($service['category']['_id']);
+							$service['offer_icon'] = "";
 
-							//calorie_burn
-							$category_calorie_burn      =   300;
-							if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
-								$category_calorie_burn = $service['calorie_burn']['avg'];
-							}else{
-								if(isset($sericecategorysCalorieArr[$category_id])){
-									$category_calorie_burn = $sericecategorysCalorieArr[$category_id];
+							if(isset($service['offer_available']) && $service['offer_available'] == true){
+
+								$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+							}															
+
+							if(isset($service['category']) && isset($service['category']['_id'])){
+								$category_id                =   intval($service['category']['_id']);
+
+								//calorie_burn
+								$category_calorie_burn      =   300;
+								if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
+									$category_calorie_burn = $service['calorie_burn']['avg'];
+								}else{
+									if(isset($sericecategorysCalorieArr[$category_id])){
+										$category_calorie_burn = $sericecategorysCalorieArr[$category_id];
+									}
 								}
-							}
-							$service['calorie_burn']    = $category_calorie_burn;
+								$service['calorie_burn']    = $category_calorie_burn;
 
-							//workout_results
-							$category_workout_result    =   [];
-							if(isset($sericecategorysWorkoutResultArr[$category_id])){
-								$category_workout_result = $sericecategorysWorkoutResultArr[$category_id];
-							}
-							$service['workout_results']     =   $category_workout_result;
-							$service['membership']          =   (isset($service['membership'])) ? $service['membership'] : "";
-							$service['trial']               =   (isset($service['trial'])) ? $service['trial'] : "";
-
-						}
-
-
-						if(count($service['serviceratecard']) > 0){
-
-							foreach ($service['serviceratecard'] as $ratekey => $rateval){
-
-								// if(isset($rateval['flags'])){
-
-								// 	if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
-								// 		unset($service['serviceratecard'][$ratekey]);
-								// 		continue;
-								// 	}
-
-								// 	if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
-								// 		unset($service['serviceratecard'][$ratekey]);
-								// 		continue;
-								// 	}
-								// }
-								if(isset($rateval['flags']) && ($rateval['flags']['disc25or50'] || $rateval['flags']['discother'])){
-									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
-									$finder['offer_icon_mob'] = "https://b.fitn.in/iconsv1/womens-day/exclusive.svg";
+								//workout_results
+								$category_workout_result    =   [];
+								if(isset($sericecategorysWorkoutResultArr[$category_id])){
+									$category_workout_result = $sericecategorysWorkoutResultArr[$category_id];
 								}
-								// else{
-								// 	$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
-								// }
-								if(!empty($rateval['_id']) && isset($rateval['_id'])){
+								$service['workout_results']     =   $category_workout_result;
+								$service['membership']          =   (isset($service['membership'])) ? $service['membership'] : "";
+								$service['trial']               =   (isset($service['trial'])) ? $service['trial'] : "";
 
-									$ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
-										->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-										->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-										->count();
+								if(in_array($category_id, [26, 25, 46, 41])){
+									unset($service['calorie_burn']);
+									unset($service['short_description']);
+									unset($service['workout_results']);
+								}
 
-									if($ratecardoffersRecardsCount > 0){  
+							}
 
-										$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+
+							if(count($service['serviceratecard']) > 0){
+
+								foreach ($service['serviceratecard'] as $ratekey => $rateval){
+
+									// if(isset($rateval['flags'])){
+
+									// 	if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+									// 		unset($service['serviceratecard'][$ratekey]);
+									// 		continue;
+									// 	}
+
+									// 	if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+									// 		unset($service['serviceratecard'][$ratekey]);
+									// 		continue;
+									// 	}
+									// }
+									if(isset($rateval['flags']) && ((isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50']) || (isset($rateval['flags']['discother']) && $rateval['flags']['discother']))){
+										$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
+										$finder['offer_icon_mob'] = "https://b.fitn.in/iconsv1/womens-day/exclusive.svg";
+									}
+									// else{
+									// 	$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
+									// }
+									if(!empty($rateval['_id']) && isset($rateval['_id'])){
+
+										$ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
+											->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+											->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+											->count();
+
+										if($ratecardoffersRecardsCount > 0){  
+
+											$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+										}
 									}
 								}
 							}
+
+
+							array_push($serviceArr, $service);
 						}
-
-
-						array_push($serviceArr, $service);
 					}
 
 					array_set($finder, 'services', $serviceArr);
@@ -1800,13 +1811,13 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership'))->toArray();
+			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'showOnFront'))->toArray();
 		}else{
 
 			$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 			$membership_services = array_map('intval',$membership_services);
 
-			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'offer_available'))->toArray();
+			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'offer_available', 'showOnFront'))->toArray();
 		}
 
 		if(!$items){
@@ -1817,7 +1828,8 @@ class FindersController extends \BaseController {
 
 		foreach ($items as $k => $item) {
 
-			$extra_info = array();
+			if(!isset($item['showOnFront']) || (isset($item['showOnFront']) && $item['showOnFront'])){
+				$extra_info = array();
 
 			/*$extra_info[0] = array(
 				'title'=>'Description',
@@ -2043,6 +2055,7 @@ class FindersController extends \BaseController {
 			}
 
 			array_push($scheduleservices, $service);
+			}
 		}
 
 		//$scheduleservices['offer_icon_vendor'] = $offer_icon_vendor;
