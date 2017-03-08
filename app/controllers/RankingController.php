@@ -339,11 +339,10 @@ class RankingController extends \BaseController {
     }
 
 
-    public function IndexRankMongo2Elastic($index_name, $city_id){
+public function IndexRankMongo2Elastic($index_name, $city_id){
    
     //    ini_set('max_execution_time', 30000);
 //       ini_set('memory_limit', '512M');
-
        $citykist      =    array(1,2,3,4,8,9);
        $finder_count_incity = Finder::active()->count();
        $i_max = (int) $finder_count_incity/1000;
@@ -353,7 +352,6 @@ class RankingController extends \BaseController {
            $this->chunkIndex($index_name, $city_id,$skip,1000);
        }
 }
-
 
 public function chunkIndex($index_name, $city_id,$skip,$take){
     ini_set('max_execution_time', 30000);
@@ -391,7 +389,6 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
         try{
             Log::error($finderdocument['title']);
             ini_set('max_execution_time', 300);
-
 //            var_dump($finderdocument->toArray());exit;
             $ratecard_days = 0; $ratecard_money = 0;
             
@@ -406,8 +403,17 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
             $ratecard_count = 0;  $average_monthly = 0;
             $direct_payment_enabled_bool = false;
             foreach ($services as $service) {
-
                $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
+                //    Offer or ratecard flags
+                $flags = array("disc25or50" => "false","discother" => "false");
+                if(isset($service["flags"])){
+                    if($service["flags"]['disc25or50']){
+                        $flags["disc25or50"] = true;
+                    }
+                    if($service["flags"]['discother']){
+                        $flags["discother"] = true;
+                    }
+                }
                switch($service['validity']){
                 case 30:
                 $ratecard_count = $ratecard_count + 1;
@@ -435,52 +441,39 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
                 break;
             }              
         }
-
-
         if(($ratecard_count !==0)){
-
             $average_monthly = ($ratecard_money) / ($ratecard_count);
         }
-
             /*
             Define price range slabs here based on monthly average computed
-
             */
-
             $average_monthly_tag = '';
-
             switch($average_monthly){
                 case ($average_monthly < 1001):
                 $average_monthly_tag = 'one';
                 $rangeval = 1;
                 break;
-
                 case ($average_monthly > 1000 && $average_monthly < 2501):
                 $average_monthly_tag = 'two';
                 $rangeval = 2;
                 break;
-
                 case ($average_monthly > 2500 && $average_monthly < 5001):
                 $average_monthly_tag = 'three';
                 $rangeval = 3;
                 break;
-
                 case ($average_monthly > 5000 && $average_monthly < 7501):
                 $average_monthly_tag = 'four';
                 $rangeval = 4;
                 break;
-
                 case ($average_monthly > 7500 && $average_monthly < 15001):
                 $average_monthly_tag = 'five';
                 $rangeval = 5;
                 break;
-
                 case ($average_monthly > 15000):
                 $average_monthly_tag = 'six';
                 $rangeval = 6;
                 break;
             }
-
             $data = $finderdocument->toArray();
             $score = $this->generateRank($finderdocument);
                 //$trialdata = get_elastic_finder_trialschedules($data);               
@@ -493,15 +486,11 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
          {
             $clusterid  = $data['location']['locationcluster_id'];
         }
-
         if(isset($data['ozonetelno']) && $data['ozonetelno'] != ''){
             $data['ozonetelno']['phone_number'] = '+'.$data['ozonetelno']['phone_number'];
         }
-
         $finder_id = $finderdocument['_id'];
-
         $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8118,8100);
-
         $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
         $locationcluster->toArray();                                          
         $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);  
@@ -509,7 +498,6 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
         $postdata['free_trial_enable'] = 0;
         
         if(isset($postdata['commercial_type']) && intval($postdata['commercial_type']) !== 0){
-
             $finder_category = strtolower($postdata['category']);
             if(($finder_category !== 'swimming')&&($finder_category !=='sports')&&($finder_category !=='healthy snacks and beverages')
                 &&($finder_category !=='healthy tiffins')&&($finder_category !=='sport nutrition supliment stores')
@@ -530,7 +518,7 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
         $postdata['average_price'] = $average_monthly;
         $postdata['price_range'] = $average_monthly_tag;
         $postdata['direct_payment_enable'] = $direct_payment_enabled_bool;
-
+        $postdata['flags'] = $flags;
         if(in_array(intval($finder_id), $healthy_cap_offers)){
            $postdata['capoffer'] = 1;
        }
@@ -538,7 +526,6 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
           $postdata['capoffer'] = 0;
       }
       
-
       $postfields_data = json_encode($postdata);             
       $posturl = Config::get('app.es.url')."/".$index_name."/finder/" . $finderdocument['_id'];
     //   $posturl1 = Config::get('app.es.url')."/fitternityv2/finder/" . $finderdocument['_id'];
@@ -548,14 +535,12 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
       $curl_response = es_curl_request($request);
     //   $curl_response1 = es_curl_request($request1);
         echo "finder indexing ".$finderdocument['_id']." --- ".json_encode($curl_response);
-
   }
   catch(Exception $e){
     Log::error($e);
 }
 }
 }
-
 
 public function generateRank($finderDocument = ''){
 

@@ -741,6 +741,12 @@ class RankingSearchController extends \BaseController
 
 
         $region = Input::json()->get('regions');
+        if(Input::json()->get('offer_available')){
+            $womens_day = true;    
+        }else{
+            $womens_day = Input::json()->get('womens_day') ? Input::json()->get('womens_day') : false;
+        }
+        
         $locationCount = 0;
         if(count($region) == 1){
 
@@ -787,7 +793,11 @@ class RankingSearchController extends \BaseController
         $trial_filter = '';
         if(intval($free_trial_enable) == 1){
             $trial_filter =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
+        }
 
+        $womens_day_filter = '';
+        if($womens_day){
+            $womens_day_filter = '{"bool": {"should": [{"term" : { "flags.disc25or50" : true,"_cache": true }},{"term" : { "flags.discother" : true,"_cache": true }}]}}';
         }
         $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
 //    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';
@@ -875,7 +885,7 @@ class RankingSearchController extends \BaseController
 
         $should_filtervalue = trim($regions_filter.$region_tags_filter,',');
 
-        $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+        $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$womens_day_filter,',');
         if($trials_day_filter !== ''){
             $must_filtervalue = trim($trial_filter.$commercial_type_filter.$vip_trial_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
         }
@@ -1158,7 +1168,7 @@ class RankingSearchController extends \BaseController
         $response       =   json_decode($searchresulteresponse1,true);
         if($from == 0 && count(Input::json()->get('offerings')) == 0 && count(Input::json()->get('facilities')) == 0 && count(Input::json()->get('budget')) == 0 && $locationCount == 0){
             $response['campaign'] = array(
-                'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
+                'image'=>'https://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
                 // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
                 'link'=>'',
                 'title'=>'FitStart 2017',

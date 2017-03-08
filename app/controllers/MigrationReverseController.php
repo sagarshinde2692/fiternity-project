@@ -766,7 +766,8 @@ class MigrationReverseController extends \BaseController {
                 'created_at' 							=>  (isset($Finder->created_at)) ? $Finder->created_at : $Finder->updated_at,
                 'updated_at' 							=>  $Finder->updated_at,
                 'custom_city'                           =>  isset($Finder->custom_city) ? $Finder->custom_city : "",
-                'custom_location'                       =>  isset($Finder->custom_location) ? $Finder->custom_location : ""
+                'custom_location'                       =>  isset($Finder->custom_location) ? $Finder->custom_location : "",
+                'flags'                                 =>  isset($Finder->flags) ? $Finder->flags : array()
             ];
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
@@ -1071,12 +1072,17 @@ class MigrationReverseController extends \BaseController {
             $insertData['created_at'] = $data['created_at'];
             $insertData['updated_at'] = $data['updated_at'];
 
+
             if(isset($data['weight']) && $data['weight'] != ""){
                 $insertData['weight'] = (int)$data['weight'];
             }
 
             if(isset($data['weight_type']) && $data['weight_type'] != ""){
                 $insertData['weight_type'] = $data['weight_type'];
+            }
+
+            if(isset($data['flags'])){
+                $insertData['flags'] = $data['flags'];
             }
 
 
@@ -1636,7 +1642,7 @@ class MigrationReverseController extends \BaseController {
             if($service_exists){
                 $service_exists->update(['batches' => $batchesdata]);
             }
-
+            
             $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
 
             $this->cacheapi->flushTagKey('finder_detail',$finder->slug);

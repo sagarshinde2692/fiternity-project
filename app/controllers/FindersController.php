@@ -150,6 +150,14 @@ class FindersController extends \BaseController {
 				$finder['today_opening_hour'] =  null;
 				$finder['today_closing_hour'] = null;
 
+
+				if(isset($finder['flags'])){
+					if(!isset($finder['flags']['state'])){
+						$finder['flags']['state'] = "open";
+					}
+				}else{
+					$finder['flags'] = array('state'=>"open");
+				}
 				$detail_rating_array = array('detail_rating_summary_average','detail_rating_summary_count');
 
 				foreach ($detail_rating_array as $value){
@@ -282,6 +290,7 @@ class FindersController extends \BaseController {
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 
 				$finder['offer_icon'] = "";
+				$finder['offer_icon_mob'] = "";
 
 				$finder['associate_finder'] = null;
 				if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
@@ -379,7 +388,7 @@ class FindersController extends \BaseController {
 // 					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
 
 				}
-
+				// $finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 
 				if(count($finder['services']) > 0 ){
 
@@ -392,6 +401,11 @@ class FindersController extends \BaseController {
 						$service = $service;
 
 						$service['offer_icon'] = "";
+
+						if(isset($service['offer_available']) && $service['offer_available'] == true){
+
+							$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+						}															
 
 						if(isset($service['category']) && isset($service['category']['_id'])){
 							$category_id                =   intval($service['category']['_id']);
@@ -421,8 +435,27 @@ class FindersController extends \BaseController {
 
 						if(count($service['serviceratecard']) > 0){
 
-							foreach ($service['serviceratecard'] as $rateval){
+							foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
+								// if(isset($rateval['flags'])){
+
+								// 	if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+								// 		unset($service['serviceratecard'][$ratekey]);
+								// 		continue;
+								// 	}
+
+								// 	if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+								// 		unset($service['serviceratecard'][$ratekey]);
+								// 		continue;
+								// 	}
+								// }
+								if(isset($rateval['flags']) && ($rateval['flags']['disc25or50'] || $rateval['flags']['discother'])){
+									$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
+									$finder['offer_icon_mob'] = "https://b.fitn.in/iconsv1/womens-day/exclusive.svg";
+								}
+								// else{
+								// 	$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
+								// }
 								if(!empty($rateval['_id']) && isset($rateval['_id'])){
 
 									$ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
@@ -432,7 +465,7 @@ class FindersController extends \BaseController {
 
 									if($ratecardoffersRecardsCount > 0){  
 
-										$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+										$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
 									}
 								}
 							}
@@ -637,13 +670,17 @@ class FindersController extends \BaseController {
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
 		}
-
-		$response['finder']['offer_icon']        =        "";
-
-		if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
-
-			$response['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+		if($response['finder']['offer_icon'] == ""){
+			$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 		}
+		if($response['finder']['offer_icon_mob'] == "" && (int)$response['finder']['commercial_type'] != 0){
+			$response['finder']['offer_icon_mob']        =        "https://a.fitn.in/fitimages/fitmania/offer_available_sale.svg";
+		}
+
+		// if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
+
+		// 	$response['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+		// }
 		
 		return Response::json($response);
 
@@ -1841,7 +1878,7 @@ class FindersController extends \BaseController {
 
 			/*$extra_info[0] = array(
 				'title'=>'Description',
-				'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+				'icon'=>'https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
 				'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
 			);*/
 
@@ -1862,13 +1899,13 @@ class FindersController extends \BaseController {
 
 			$extra_info[0] = array(
 				'title'=>'Avg. Calorie Burn',
-				'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+				'icon'=>'https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
 				'description'=>$category_calorie_burn.' Kcal'
 			);
 
 			$extra_info[1] = array(
 				'title'=>'Results',
-				'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+				'icon'=>'https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
 				'description'=>'Burn Fat | Super Cardio'
 			);
 
@@ -1879,7 +1916,7 @@ class FindersController extends \BaseController {
 				if(isset($item['short_description']) && $item['short_description'] != ""){
 					$extra_info[] = array(
 						'title'=>'Meal Contents',
-						'icon'=>'http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+						'icon'=>'https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
 						'description'=> str_replace("&nbsp;", "", strip_tags($item['short_description'])) 
 					);
 				}
@@ -1926,12 +1963,19 @@ class FindersController extends \BaseController {
 				'traction' => $item['traction']
 			);
 
+			if(isset($item['offer_available']) && $item['offer_available'] == true){
+
+				$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/women_offer_ratecard.png";
+			}
+
 
 			if(count($item['serviceratecard']) > 0){
 
 				$ratecardArr = [];
 
-				foreach ($item['serviceratecard'] as $rateval){
+				foreach ($item['serviceratecard'] as $ratekey => $rateval){
+
+					
 
 
 					//for ratecards offers
@@ -1949,13 +1993,26 @@ class FindersController extends \BaseController {
 
 						if(count($ratecardoffersRecards) > 0){ 
 
-							$service['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
-							//$offer_icon_vendor = "http://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+							$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+							//$offer_icon_vendor = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 							
 							foreach ($ratecardoffersRecards as $ratecardoffersRecard){
 								$ratecardoffer                  =   $ratecardoffersRecard;
 								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "http://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+
+								if(isset($rateval['flags'])){
+
+									if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+										$ratecardoffer['offer_text']    =   "";
+										$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+									}
+
+									if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+										$ratecardoffer['offer_text']    =   "";
+										$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+									}
+								}
 
 								$today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
 								$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
@@ -2358,9 +2415,9 @@ class FindersController extends \BaseController {
 				if(!in_array($finderarr['category_id'], $not_assured) && $finderarr['commercial_type'] != 0 ){
 
 					$finder['assured'] = [
-						["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
-						["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
-						["icon" => "http://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
+						["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
+						["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
+						["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
 					];
 				}
 
@@ -2399,7 +2456,7 @@ class FindersController extends \BaseController {
 
 					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
 
-						$data['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
+						$data['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}
 
 					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);

@@ -440,7 +440,7 @@ class CustomerController extends \BaseController {
 		'identity' => 'required'
 		];
 		$validator = Validator::make($data,$rules);
-
+		$data['email'] = strtolower($data['email']);
 		if ($validator->fails()) {
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
 		}else{
@@ -481,6 +481,7 @@ class CustomerController extends \BaseController {
 						return Response::json($this->createToken($customer),200);
 					}
 				}else{
+					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->update();
@@ -2115,7 +2116,7 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 		$request['customer_id'] = $customer_id;
-
+		Log::info($jwt_token);
 		$wallet = array();
 
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
@@ -2447,7 +2448,7 @@ class CustomerController extends \BaseController {
 		$result['campaign'] =  new \stdClass();
 
 		$result['campaign'] = array(
-			'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
+			'image'=>'http://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
 			'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
 			'title'=>'FitStart 2017',
 			'height'=>1,
@@ -2859,18 +2860,20 @@ class CustomerController extends \BaseController {
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 				if($customerwallet){
 					$customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;				
+					$customer_balance_fitcashplus = $customerwallet['balance_fitcash_plus'];
 				}else{
 					$customer_balance 	=	 $amounttobeadded;
+					$customer_balance_fitcashplus = 0;
 				}
 				
 				$cashback_amount 	=	$amounttobeadded;
-
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
 					"type"=>'CASHBACK',
 					"code"=>	$code,
 					"balance"=>	$customer_balance,
+					"balance_fitcash_plus"=>$customer_balance_fitcashplus,
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 					);
 				if($fitcashcode['type'] == "restricted"){
@@ -2878,6 +2881,19 @@ class CustomerController extends \BaseController {
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$amounttobeadded);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
 				}
+				if($fitcashcode['type'] == "fitcashplus"){
+					$walletData["type"] = "FITCASHPLUS";
+					if($customerwallet){
+						$walletData["balance"] = $customerwallet['balance'];
+						$walletData["balance_fitcash_plus"] = $customerwallet['balance_fitcash_plus'] + $amounttobeadded;				
+					}else{
+						$walletData["balance"] = 0;
+						$walletData["balance_fitcash_plus"] = $amounttobeadded;
+					}
+					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
+				}
+				$customer_balance = $walletData["balance"];
+				$customer_balance_fitcashplus = $walletData["balance_fitcash_plus"];
 				// return $walletData;
 
 				$wallet               	=   new CustomerWallet($walletData);
@@ -2885,7 +2901,7 @@ class CustomerController extends \BaseController {
 				$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
 				$wallet->_id          	=   ++ $last_insertion_id;
 				$wallet->save();
-				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
+				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance),'balance_fitcash_plus' => intval($customer_balance_fitcashplus)]);
 
 				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$amounttobeadded." has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
 				return  Response::json($resp, 200);	
