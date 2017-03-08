@@ -110,7 +110,7 @@ class RewardofferController extends BaseController {
             $amount             =   (int)$data['amount'];
             $customerReward     =   new CustomerReward();
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
-
+            $order              =   array();
 
             if(isset($data['order_id']) && $data['order_id'] != ""){
 
@@ -162,7 +162,7 @@ class RewardofferController extends BaseController {
         $ratecard_id    =   (int)$data['ratecard_id'];
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
 
-        if(!$ratecard){
+        if(!$ratecard && count($order) == 0){
             $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
             return  Response::json($resp, 401);
         }
