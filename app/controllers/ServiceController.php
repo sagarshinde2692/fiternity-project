@@ -83,6 +83,15 @@ class ServiceController extends \BaseController {
 		$servicecategoryid 	= intval($servicedata['servicecategory_id']);
 		$servicelocationid 	= intval($servicedata['location_id']);
 		$servicefinderid 	= intval($servicedata['finder_id']);
+		$servicedata['locationtags'] = $servicedata['finder']['locationtags'];
+		if($servicecategoryid==180){
+			if($servicedata['meal_type']=='lunch'){
+				$servicedata['locationtags'] = $servicedata['finder']['lunchlocationtags'];
+			}else if($servicedata['meal_type']=='dinner'){
+				$servicedata['locationtags'] = $servicedata['finder']['dinnerlocationtags'];
+			}
+		}
+
 		$same_vendor_service = $nearby_same_category = $nearby_other_category = [];
 
 		//same service form same location and same category
@@ -163,7 +172,9 @@ class ServiceController extends \BaseController {
 			'active_weekdays' => (isset($item['active_weekdays']) && $item['active_weekdays'] != '') ? array_map('strtolower',$item['active_weekdays']) : "",
 			'workoutsession_active_weekdays' => (isset($item['workoutsession_active_weekdays']) && $item['workoutsession_active_weekdays'] != '') ? array_map('strtolower',$item['workoutsession_active_weekdays']) : "",
 			'trialschedules' => (isset($item['trialschedules']) && !empty($item['trialschedules'])) ? $item['trialschedules'] : "",
-			'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : ""
+			'service_gallery' => (isset($item['service_gallery']) && !empty($item['service_gallery'])) ? $item['service_gallery'] : "",
+			'meal_type' => (isset($item['meal_type'])) ? $item['meal_type'] : "",
+
 
 			// 'workoutsessionschedules' => (isset($item['workoutsessionschedules']) && !empty($item['workoutsessionschedules'])) ? $item['workoutsessionschedules'] : "",
 		);
@@ -176,7 +187,7 @@ class ServiceController extends \BaseController {
 							->where('_id', (int) $service['finder_id'])
 							->first();
 			// return $finderarr;
-			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average'));
+			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'locationtags', 'lunchlocationtags', 'dinnerlocationtags'));
 		}else{
 			$data['finder'] = NULL;
 		}
