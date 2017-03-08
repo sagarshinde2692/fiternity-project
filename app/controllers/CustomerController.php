@@ -480,6 +480,7 @@ class CustomerController extends \BaseController {
 						return Response::json($this->createToken($customer),200);
 					}
 				}else{
+					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->update();
